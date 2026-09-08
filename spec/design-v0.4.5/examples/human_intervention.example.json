@@ -1,0 +1,41 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "simulated_intervention_fixture",
+  "data_mode": "simulated",
+  "incident_id": "inc-demo-01",
+  "incident_revision": "1",
+  "company_id": "co-software-example",
+  "mission_id": "mis-pagination-example",
+  "problem_key": "problem-provider-auth-example",
+  "reason_code": "EXECUTION_CREDENTIAL_UNAVAILABLE",
+  "severity": "requires_action",
+  "status": "open",
+  "requires_human_action": true,
+  "observed_at": "2026-09-07T12:00:00Z",
+  "safe_alias": "研发一组",
+  "safe_summary": "当前执行凭据失效；相关任务已停止新请求。",
+  "safety_actions": [
+    "stop_new_dispatch",
+    "persist_work_records",
+    "reconcile_inflight"
+  ],
+  "requested_human_action": "在已认证工作台重新授权或结束使命",
+  "evidence_refs": [
+    "fixture://evidence/auth-unavailable"
+  ],
+  "delivery": {
+    "notification_id": "ntf-demo-01",
+    "state": "pending",
+    "provider_receipt_id": null,
+    "human_read_confirmed": false,
+    "business_approval_granted": false,
+    "send_enabled": false,
+    "remote_message_id": null
+  },
+  "resolution": {
+    "status": "unresolved",
+    "resume_authorized": false
+  },
+  "secret_material_included": false,
+  "incident_occurrence": "1"
+}

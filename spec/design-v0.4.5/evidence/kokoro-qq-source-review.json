@@ -1,0 +1,46 @@
+{
+  "status": "source_review_only",
+  "date": "2026-09-07",
+  "repository": "chyinan/Kokoro-Engine",
+  "ref": "main",
+  "protocol_observed": "qq_official",
+  "files": [
+    {
+      "id": "P01",
+      "title": "Kokoro-Engine QQ config.rs",
+      "url": "https://github.com/chyinan/Kokoro-Engine/blob/main/src-tauri/src/qqbot/config.rs",
+      "blob_sha": "8302c2935cc96e8c8f06243dbcac699976a79a9f",
+      "range": "完整文件",
+      "scope": "默认禁用、AppID/AppSecret 环境变量、C2C 与 OpenID 白名单；本次未运行测试。"
+    },
+    {
+      "id": "P02",
+      "title": "Kokoro-Engine QQ protocol.rs",
+      "url": "https://github.com/chyinan/Kokoro-Engine/blob/main/src-tauri/src/qqbot/protocol.rs",
+      "blob_sha": "d4c1179aa58f25c239cb79657c29727d404a0a42",
+      "range": "1–270",
+      "scope": "QQ 官方事件解析、白名单与 msg_id/msg_seq 被动回复体；非全文件审计。"
+    },
+    {
+      "id": "P03",
+      "title": "Kokoro-Engine QQ runtime.rs",
+      "url": "https://github.com/chyinan/Kokoro-Engine/blob/main/src-tauri/src/qqbot/runtime.rs",
+      "blob_sha": "89b767a64b01ee307b241c9c975f0ec6088873a6",
+      "range": "1–230、540–840",
+      "scope": "token 获取/缓存、部分授权和 Gateway 路径、AI 回复调用、send_text_reply。主动消息资格未由此证明；没有编译/联调。"
+    }
+  ],
+  "conclusions": [
+    "AppID/AppSecret + Access Token + OpenID official integration",
+    "Inspected reply body binds original inbound msg_id; proactive alert delivery not established",
+    "No existing Kokoro runtime, source code, credentials or LLM reply pipeline copied into package"
+  ],
+  "not_tested": [
+    "Kokoro build/test",
+    "QQ account permission",
+    "proactive send",
+    "delivery rates",
+    "new Go adapter"
+  ],
+  "official_details_fetch_status": "message details timed out / old send page redirected; capability remains unverified"
+}

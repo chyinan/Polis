@@ -1,0 +1,198 @@
+{
+  "document_version": "0.4.5",
+  "kind": "planned_capability_tests_not_run",
+  "tests": [
+    {
+      "test_id": "CAP-01",
+      "scenario": "员工自行查找与读取授权文件",
+      "expected": "无规划员转发可完成；根/版本/返回大小和来源正确",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-02",
+      "scenario": "根外路径、符号链接替换、特殊文件",
+      "expected": "越界/竞态拒绝；不得读取另一公司或控制目录",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-03",
+      "scenario": "同公司公开资料与另一员工私有写区",
+      "expected": "仅共享许可快照可见，私有/控制数据拒绝",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-04",
+      "scenario": "两个员工对同一可写工作区准入",
+      "expected": "维持单写者与 epoch，不靠目录名或 UI 自觉",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-05",
+      "scenario": "文件读取期间内容变化或大文件截断",
+      "expected": "版本变化/截断明示，不能拼成完整一致证据",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-06",
+      "scenario": "快照未 ready、已废弃或 GC 并发",
+      "expected": "按 Artifact/pin 规则，缺失不算可用证据",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-07",
+      "scenario": "扫描技能/配置目录含运行钩子",
+      "expected": "仅登记候选，无模型/脚本/服务/联网安装",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-08",
+      "scenario": "同名集团/项目 Skill 或路径遮蔽",
+      "expected": "按来源和 revision 明确绑定，不静默覆盖",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-09",
+      "scenario": "Skill 多层加载与重复激活",
+      "expected": "目录/正文/附属资料按需；记录确切版本不过量注入",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-10",
+      "scenario": "Skill allowed-tools 或正文请求提权",
+      "expected": "不能改变角色/权限/验收；非法工具调用拒绝",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-11",
+      "scenario": "已批准脚本、缺依赖、未批准 entrypoint",
+      "expected": "正确环境受限执行；缺依赖/非法入口阻塞，不自动安装",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-12",
+      "scenario": "公共目录更新/撤销与活动任务交错",
+      "expected": "固定版本不静默漂移；撤销优先并核对旧执行",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-13",
+      "scenario": "仓库/原生 harness 自动发现 skills/MCP 配置",
+      "expected": "未经批准能力不自动执行；无法约束则资格失败",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-14",
+      "scenario": "MCP stdio 子进程文件/env/网络边界",
+      "expected": "仅获许可挂载和秘密；无 DB/QQ/管理 socket 或宿主 HOME",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-15",
+      "scenario": "Streamable HTTP 认证/跳转/资源请求",
+      "expected": "验证目的地与主体，禁止凭据错投、未授权内网与 TLS 降级",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-16",
+      "scenario": "MCP 新/旧协议 profile 与 SDK 兼容",
+      "expected": "各版本独立记录；无交集明确不支持，不混协议重发写动作",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-17",
+      "scenario": "工具分页/同名/不同员工目录缓存",
+      "expected": "完整有界发现、句柄无歧义、缓存不串 scope",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-18",
+      "scenario": "服务自报 readOnly/idempotent 与真实策略冲突",
+      "expected": "提示不赋权，未知行为不自动按只读或安全重试",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-19",
+      "scenario": "新增工具或现有描述/schema 变化",
+      "expected": "新增待批准，受影响调用暂停；其他工具不无故停机",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-20",
+      "scenario": "两个公司/员工使用有状态浏览器或业务 handle",
+      "expected": "实例/状态隔离，handle 不当身份也不跨 scope 复制",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-21",
+      "scenario": "sampling/elicitation/input_required 等额外请求",
+      "expected": "不自动调用模型/授新权；显式不支持或持久阻塞",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-22",
+      "scenario": "MCP 返回资源链接、媒体、HTML 与超大结果",
+      "expected": "不自动抓取/执行；类型/大小/权限检查，来源和截断可见",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-23",
+      "scenario": "MCP 写操作超时、取消 ACK、HTTP200带工具错误",
+      "expected": "结果按真实证据核对，不重复副作用或冒充成功",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-24",
+      "scenario": "服务内部 AI 成本不可见或重复内部重试",
+      "expected": "计费 limited，禁止宣称总额严格封顶；问题预算不重置",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-25",
+      "scenario": "同 harness 换模型后恢复能力配置",
+      "expected": "原工号/根/Skill版本/工具绑定保持，按新授权核对",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-26",
+      "scenario": "跨 harness 换模型且目标不支持必需能力",
+      "expected": "缺项明确阻塞，预批准等价替代可选，无偷偷全仓重扫",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-27",
+      "scenario": "只读接班中请求脚本/写工具/新增协作",
+      "expected": "拒绝执行；capability receipt 后再按新 epoch 准入",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-28",
+      "scenario": "撤权/禁用 MCP 与在途/排队调用交错",
+      "expected": "新调用拒绝，旧动作核对；旧缓存/句柄不复活授权",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-29",
+      "scenario": "员工休眠与空闲 MCP 回收",
+      "expected": "无新推理；未决工具先排空核对；有状态服务不误共享",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-30",
+      "scenario": "MCP 通知/服务发现洪峰",
+      "expected": "有限去重与相关性判断，无关事件不唤醒全员",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-31",
+      "scenario": "整公司备份缺技能包或含旧工具/秘密句柄",
+      "expected": "默认暂停，不用同名最新替代，不恢复旧执行权或秘密",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "CAP-32",
+      "scenario": "资料→技能→MCP→同事→换班→验收闭环",
+      "expected": "固定四岗位完成受控端到端；全成本与人工介入可查",
+      "execution_status": "not_run"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:capability-call:0.4.4",
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "auth_binding_source",
+    "operation",
+    "request",
+    "expected_without_qualification",
+    "execution_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "capability_call_fixture_not_runtime_request"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "auth_binding_source": {
+      "const": "runtime_only"
+    },
+    "operation": {
+      "const": "tools.call"
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "request_id",
+        "idempotency_key",
+        "expected_binding_revision",
+        "tool_handle",
+        "descriptor_digest",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "expected_binding_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "tool_handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "descriptor_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "arguments": {
+          "type": "object",
+          "required": [
+            "contract_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "contract_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          }
+        }
+      }
+    },
+    "expected_without_qualification": {
+      "type": "object",
+      "required": [
+        "status",
+        "reason_code",
+        "action_dispatched",
+        "model_called"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "rejected"
+        },
+        "reason_code": {
+          "const": "CAPABILITY_UNVERIFIED"
+        },
+        "action_dispatched": {
+          "const": false
+        },
+        "model_called": {
+          "const": false
+        }
+      }
+    },
+    "execution_status": {
+      "const": "not_run"
+    }
+  }
+}

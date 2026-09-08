@@ -1,0 +1,39 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "source_kind": "github_issues_readonly",
+  "source_binding": "feedback-demo",
+  "repository_id": null,
+  "repository_name": null,
+  "credential_secret_ref": null,
+  "connect_enabled": false,
+  "read_only": true,
+  "exclude_pull_requests": true,
+  "remote_writes_enabled": false,
+  "poll_policy": {
+    "approved": false,
+    "poll_interval_seconds": 300,
+    "page_budget": 10,
+    "overlap_seconds": 120,
+    "bounded_full_reconciliation": true
+  },
+  "coverage": {
+    "status": "not_configured",
+    "last_complete_scan": null,
+    "cursor": null,
+    "partial_page_failure": false
+  },
+  "item_observations": [],
+  "closed_mission_behavior": "backlog_without_model",
+  "collection_outside_mission_authorized": false,
+  "comment_context_policy": {
+    "before_formal_triage": true,
+    "bounded": true,
+    "coverage_state": "unverified",
+    "limits_require_deployment_confirmation": true,
+    "incomplete_means": "observe_or_request_curation_not_high_confidence_fix"
+  }
+}

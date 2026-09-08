@@ -1,0 +1,338 @@
+{
+  "document_version": "0.4.5",
+  "review_scope": "same_assistant_adversarial_product_review_not_independent_panel",
+  "user_corrections": [
+    "UX-01"
+  ],
+  "findings": [
+    {
+      "finding_id": "PM-01",
+      "severity": "P0",
+      "summary": "首个用户被错误限缩/目标不清",
+      "disposition": "modified_after_user_correction",
+      "action": "采用UX-01广义长期组织用户；软件仅为证据场景",
+      "spec_sections": [
+        "46.1",
+        "2.6"
+      ],
+      "planned_tests": [
+        "PP-01",
+        "PP-12"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-02",
+      "severity": "P0",
+      "summary": "首发范围不断堆积",
+      "disposition": "release_scope_changed",
+      "action": "R1/R2/R3和范围抵消，不把所有需求同时做完",
+      "spec_sections": [
+        "46.3",
+        "25"
+      ],
+      "planned_tests": [
+        "PP-01",
+        "PP-12"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-03",
+      "severity": "P0",
+      "summary": "缺少投入/停止判定",
+      "disposition": "experiment_contract_proposed",
+      "action": "胜负次序与阈值预注册，数值尚待人确认",
+      "spec_sections": [
+        "46.2",
+        "46.11"
+      ],
+      "planned_tests": [
+        "PP-12"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-04",
+      "severity": "P0",
+      "summary": "单条可用执行组合未证实",
+      "disposition": "reference_profile_defined",
+      "action": "整体模式验证，安全/费用分别声明，失败不降级伪装",
+      "spec_sections": [
+        "46.4",
+        "29"
+      ],
+      "planned_tests": [
+        "PP-09",
+        "FT-17"
+      ],
+      "experiment": "E-HANDOVER",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-05",
+      "severity": "P1",
+      "summary": "用户配置负担过重",
+      "disposition": "workflow_simplified",
+      "action": "模板承担复杂度，五组决定，观察真实上手时间",
+      "spec_sections": [
+        "46.5",
+        "39.1"
+      ],
+      "planned_tests": [
+        "PP-02"
+      ],
+      "experiment": "E-START",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-06",
+      "severity": "P1",
+      "summary": "准备环境与任务ready循环",
+      "disposition": "contract_refined",
+      "action": "基础/准备/目标环境分离，分类任务准入",
+      "spec_sections": [
+        "46.6",
+        "12.1",
+        "42.2.1"
+      ],
+      "planned_tests": [
+        "PP-03",
+        "WF-08"
+      ],
+      "experiment": "E-START",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-07",
+      "severity": "P1",
+      "summary": "固定角色缺少任务/独立审查路径",
+      "disposition": "contract_refined",
+      "action": "模板覆盖检查和测试覆盖层独立规则，缺项预先显示",
+      "spec_sections": [
+        "46.6",
+        "30.6"
+      ],
+      "planned_tests": [
+        "PP-04"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-08",
+      "severity": "P1",
+      "summary": "一个使命阻塞长期工作",
+      "disposition": "contract_refined",
+      "action": "使命是目标授权周期，内部工作包不新建状态机",
+      "spec_sections": [
+        "46.7",
+        "5.6"
+      ],
+      "planned_tests": [
+        "PP-06"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-09",
+      "severity": "P1",
+      "summary": "主管从传话变成盖章瓶颈",
+      "disposition": "contract_refined",
+      "action": "范围内快速协作，协议元信息由可信程序负责",
+      "spec_sections": [
+        "46.6",
+        "11.6"
+      ],
+      "planned_tests": [
+        "PP-05"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-10",
+      "severity": "P1",
+      "summary": "对账正确不代表理解继承",
+      "disposition": "behavior_evaluation_proposed",
+      "action": "关键约束/新改动/回归结果测接班，不只匹配词",
+      "spec_sections": [
+        "46.9",
+        "9.11"
+      ],
+      "planned_tests": [
+        "PP-07"
+      ],
+      "experiment": "E-HANDOVER",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-11",
+      "severity": "P1",
+      "summary": "永远暂停可伪装安全自治",
+      "disposition": "paired_evaluation_proposed",
+      "action": "危险拒绝与合法近邻配对，误拦和重复审批单列",
+      "spec_sections": [
+        "46.9",
+        "23.6"
+      ],
+      "planned_tests": [
+        "PP-08"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-12",
+      "severity": "P1",
+      "summary": "要求用户先写完需求",
+      "disposition": "contract_refined",
+      "action": "有界发现工作包与GoalBrief，正式实施另确认",
+      "spec_sections": [
+        "46.8",
+        "5.6"
+      ],
+      "planned_tests": [
+        "PP-03"
+      ],
+      "experiment": "E-START",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-13",
+      "severity": "P1",
+      "summary": "费用保证界面与后端不匹配",
+      "disposition": "contract_refined",
+      "action": "真实单位/保证/保护额可见，不可硬限则拒绝严格模式",
+      "spec_sections": [
+        "46.4",
+        "14.8"
+      ],
+      "planned_tests": [
+        "PP-09"
+      ],
+      "experiment": "E-START",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-14",
+      "severity": "P1",
+      "summary": "紧急指导被当作普通排队意见",
+      "disposition": "contract_refined",
+      "action": "明确先暂停选项并关联hold/指导，回执如实",
+      "spec_sections": [
+        "46.8",
+        "39.10"
+      ],
+      "planned_tests": [
+        "PP-09"
+      ],
+      "experiment": "E-START",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-15",
+      "severity": "P1",
+      "summary": "工单缺评论上下文",
+      "disposition": "contract_refined",
+      "action": "正式接手前有界comments，partial不当完整理解",
+      "spec_sections": [
+        "46.10",
+        "45.8.1"
+      ],
+      "planned_tests": [
+        "PP-10"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-16",
+      "severity": "P2",
+      "summary": "通知可达而管理不可达",
+      "disposition": "capability_split",
+      "action": "本机/合格远程两级，不加QQ审批或默认隧道",
+      "spec_sections": [
+        "46.10",
+        "42.7.7"
+      ],
+      "planned_tests": [
+        "PP-11"
+      ],
+      "experiment": "E-START",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    },
+    {
+      "finding_id": "PM-17",
+      "severity": "P2",
+      "summary": "维护平台成本吞掉价值",
+      "disposition": "evaluation_and_exit_contract",
+      "action": "安装/每周维护/升级/导出分别计入TCO",
+      "spec_sections": [
+        "46.10",
+        "23.6"
+      ],
+      "planned_tests": [
+        "PP-11",
+        "PP-12"
+      ],
+      "experiment": "E-ORG",
+      "specification_status": "revised_or_decision_recorded",
+      "validation_status": "not_run",
+      "product_hypothesis_status": "awaiting_evidence",
+      "closure_rule": "applicable behavior evidence or explicit owner-approved de-scope; not document presence"
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:mcp-service:0.4.4",
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "connect_enabled",
+    "pay_enabled",
+    "preferred_protocol_profile",
+    "explicit_compatibility_profile",
+    "verified_protocols",
+    "sdk",
+    "servers",
+    "policy",
+    "binding_drafts"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "mcp_definition_fixture_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "connect_enabled": {
+      "const": false
+    },
+    "pay_enabled": {
+      "const": false
+    },
+    "preferred_protocol_profile": {
+      "const": "mcp-2026-07-28"
+    },
+    "explicit_compatibility_profile": {
+      "const": "mcp-2025-11-25"
+    },
+    "verified_protocols": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "sdk": {
+      "type": "object",
+      "required": [
+        "module",
+        "pinned_version",
+        "qualification"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "module": {
+          "const": "github.com/modelcontextprotocol/go-sdk"
+        },
+        "pinned_version": {
+          "type": "null"
+        },
+        "qualification": {
+          "const": "unverified"
+        }
+      }
+    },
+    "servers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "server_definition_id",
+          "transport",
+          "executable_ref",
+          "argv",
+          "endpoint",
+          "secret_ref",
+          "state_scope",
+          "inherit_parent_env",
+          "install_on_connect",
+          "qualified"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "server_definition_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "transport": {
+            "enum": [
+              "stdio",
+              "streamable_http"
+            ]
+          },
+          "executable_ref": {
+            "type": "null"
+          },
+          "argv": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "endpoint": {
+            "type": "null"
+          },
+          "secret_ref": {
+            "type": "null"
+          },
+          "state_scope": {
+            "const": "employee_mission_binding"
+          },
+          "inherit_parent_env": {
+            "const": false
+          },
+          "install_on_connect": {
+            "const": false
+          },
+          "qualified": {
+            "const": false
+          }
+        }
+      },
+      "minItems": 2
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "default_route",
+        "native_bypass_enabled",
+        "untrusted_annotations_grant_permissions",
+        "new_tools_auto_approved",
+        "sampling_enabled",
+        "elicitation_enabled",
+        "auto_oauth_consent",
+        "idle_shutdown_after_seconds_fixture",
+        "cancel_means_remote_stopped"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "default_route": {
+          "const": "runtime_broker"
+        },
+        "native_bypass_enabled": {
+          "const": false
+        },
+        "untrusted_annotations_grant_permissions": {
+          "const": false
+        },
+        "new_tools_auto_approved": {
+          "const": false
+        },
+        "sampling_enabled": {
+          "const": false
+        },
+        "elicitation_enabled": {
+          "const": false
+        },
+        "auto_oauth_consent": {
+          "const": false
+        },
+        "idle_shutdown_after_seconds_fixture": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 600
+        },
+        "cancel_means_remote_stopped": {
+          "const": false
+        }
+      }
+    },
+    "binding_drafts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "binding_ref",
+          "company_id",
+          "employee_id",
+          "server_definition_id",
+          "binding_revision",
+          "approved",
+          "granted_tool_names"
+        ],
+        "properties": {
+          "binding_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "company_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "employee_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "server_definition_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "binding_revision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approved": {
+            "const": false
+          },
+          "granted_tool_names": {
+            "type": "array",
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  }
+}

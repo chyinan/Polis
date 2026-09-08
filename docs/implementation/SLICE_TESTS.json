@@ -1,0 +1,238 @@
+{
+  "baseline": "Draft 0.4.5",
+  "parent_scenarios_status": "not_run",
+  "rule": "Variants are partial evidence only; exposed capabilities receive applicable safety tests regardless of parent release label.",
+  "variants": [
+    {
+      "id": "R0-start",
+      "parents": [
+        "FT-57",
+        "FT-58"
+      ],
+      "invariants": [
+        "INV-03"
+      ],
+      "assertions": "concurrent start, duplicate keys, different start keys, paused slot",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-message",
+      "parents": [
+        "FT-01",
+        "FT-62",
+        "FT-73",
+        "PP-05"
+      ],
+      "invariants": [
+        "INV-03",
+        "INV-06",
+        "INV-10"
+      ],
+      "assertions": "concurrent replay, conflicting body, bounded input, evidence response",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-scope",
+      "parents": [
+        "FT-16",
+        "FT-61",
+        "PP-08"
+      ],
+      "invariants": [
+        "INV-01",
+        "INV-09"
+      ],
+      "assertions": "foreign reads/writes rejected; valid bound employee continues",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-epoch",
+      "parents": [
+        "FT-06",
+        "FT-61",
+        "FT-77",
+        "PP-08"
+      ],
+      "invariants": [
+        "INV-02"
+      ],
+      "assertions": "old epoch and incarnation cannot change state; current binding can",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-process-restart",
+      "parents": [
+        "FT-02",
+        "FT-27",
+        "FT-69"
+      ],
+      "invariants": [
+        "INV-03",
+        "INV-06",
+        "INV-07"
+      ],
+      "assertions": "kill actual helper after request/after fixed artifact; recover and finish",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-acceptance",
+      "parents": [
+        "FT-18",
+        "FT-38",
+        "FT-69",
+        "PP-04"
+      ],
+      "invariants": [
+        "INV-07",
+        "INV-11",
+        "INV-12"
+      ],
+      "assertions": "fixed non-author verifier rejects wrong, missing and corrupt content",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-idle",
+      "parents": [
+        "FT-31",
+        "FT-81",
+        "PP-08"
+      ],
+      "invariants": [
+        "INV-12"
+      ],
+      "assertions": "20 idle reconciliation passes add no fake claims; no model adapter exists",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-transaction",
+      "parents": [
+        "FT-45",
+        "FT-46",
+        "FT-49"
+      ],
+      "invariants": [
+        "INV-03",
+        "INV-10"
+      ],
+      "assertions": "rollback retains state/event cursor; same receipt after replay; company-row serial order",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R0-controller",
+      "parents": [
+        "FT-56",
+        "FT-77"
+      ],
+      "invariants": [
+        "INV-02"
+      ],
+      "assertions": "one controller; retired lease cannot reset successor; close concurrency",
+      "status": "passed",
+      "capability": "exposed_fake_slice",
+      "limits": "Control-plane and scripted workers only; no OS containment, real inference or full parent-scenario claim.",
+      "evidence": [
+        "evidence/development/go-tests-race.txt",
+        "evidence/development/demo-complete.json"
+      ]
+    },
+    {
+      "id": "R1-download-safety",
+      "parents": [
+        "WF-27",
+        "WF-28",
+        "WF-29",
+        "WF-30"
+      ],
+      "invariants": [
+        "INV-07",
+        "INV-09"
+      ],
+      "assertions": "before enabling: unauthorized download, missing/corrupt files, GC/reference protection, secret/nonexportable material",
+      "status": "not_run",
+      "capability": "disabled_in_R0",
+      "limits": "Gate before future capability exposure; not waived by R2 parent scheduling."
+    },
+    {
+      "id": "R1-mcp-results",
+      "parents": [
+        "CAP-22",
+        "CAP-23"
+      ],
+      "invariants": [
+        "INV-09",
+        "INV-12"
+      ],
+      "assertions": "before enabling stdio or remote: resource-link/HTML/media types, bounded size, authorization and safe rendering",
+      "status": "not_run",
+      "capability": "disabled_in_R0",
+      "limits": "Gate before future capability exposure; not waived by R2 parent scheduling."
+    },
+    {
+      "id": "R1-mcp-effects",
+      "parents": [
+        "FT-04",
+        "FT-05",
+        "FT-33",
+        "FT-34",
+        "CAP-22",
+        "CAP-23"
+      ],
+      "invariants": [
+        "INV-04",
+        "INV-05"
+      ],
+      "assertions": "before side effects: timeout/cancel/unknown outcomes and error receipt reconciliation",
+      "status": "not_run",
+      "capability": "disabled_in_R0",
+      "limits": "Gate before future capability exposure; not waived by R2 parent scheduling."
+    }
+  ]
+}

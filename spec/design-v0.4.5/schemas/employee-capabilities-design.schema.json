@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:employee-capabilities:0.4.4",
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "pay_enabled",
+    "company_id",
+    "revision",
+    "approval_status",
+    "public_library",
+    "workspace_policy",
+    "employees",
+    "effective_grants"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "employee_capabilities_fixture_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "pay_enabled": {
+      "const": false
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "approval_status": {
+      "const": "draft"
+    },
+    "public_library": {
+      "type": "object",
+      "required": [
+        "source_host_path",
+        "scan_enabled",
+        "auto_publish",
+        "default_mount",
+        "selection_mode",
+        "same_name_policy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source_host_path": {
+          "type": "null"
+        },
+        "scan_enabled": {
+          "const": false
+        },
+        "auto_publish": {
+          "const": false
+        },
+        "default_mount": {
+          "const": "approved_read_only_snapshot"
+        },
+        "selection_mode": {
+          "const": "explicit_pinned_list"
+        },
+        "same_name_policy": {
+          "const": "qualified_identity_no_auto_shadow"
+        }
+      }
+    },
+    "workspace_policy": {
+      "type": "object",
+      "required": [
+        "cross_employee_live_worktree_read",
+        "shared_references_read_only",
+        "control_and_secrets_mounted",
+        "link_import_policy",
+        "read_versions_required"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "cross_employee_live_worktree_read": {
+          "const": false
+        },
+        "shared_references_read_only": {
+          "const": true
+        },
+        "control_and_secrets_mounted": {
+          "const": false
+        },
+        "link_import_policy": {
+          "const": "reject"
+        },
+        "read_versions_required": {
+          "const": true
+        }
+      }
+    },
+    "employees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "employee_id",
+          "binding_id",
+          "binding_revision",
+          "binding_state",
+          "workspace_root_ref",
+          "requested_workspace_mode",
+          "shared_reference_refs",
+          "skill_revision_refs",
+          "script_entrypoint_refs",
+          "mcp_binding_refs",
+          "tool_selection",
+          "resource_selection",
+          "provisioning_state",
+          "qualification"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "binding_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "binding_revision": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "binding_state": {
+            "const": "draft"
+          },
+          "workspace_root_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "requested_workspace_mode": {
+            "enum": [
+              "task_scoped_write",
+              "read_only_with_scratch"
+            ]
+          },
+          "shared_reference_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "skill_revision_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "script_entrypoint_refs": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "mcp_binding_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "tool_selection": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "resource_selection": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "provisioning_state": {
+            "const": "unprovisioned"
+          },
+          "qualification": {
+            "const": "unverified"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "effective_grants": {
+      "type": "array",
+      "maxItems": 0
+    }
+  }
+}

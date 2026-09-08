@@ -1,0 +1,12 @@
+flowchart TD
+    A[Verified facts / policy] --> B[HumanIntervention + PG outbox]
+    B --> C[Scoped one-use notice permit]
+    C --> D[Authenticated local IPC]
+    D --> E[Single orgctl watch sender]
+    E --> F[QQ official proactive send]
+    F --> G[Actual receipt / unknown]
+    G --> B
+    H[Owner disable / revoke] --> E
+    I[DB unavailable + approved narrow offline capsule] --> E
+    E --> J[Bounded local infrastructure intent / receipt]
+    K[QQ text replies] --> L[No management authority]

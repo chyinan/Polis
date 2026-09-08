@@ -1,0 +1,21 @@
+{
+  "document_version": "0.4.5",
+  "results": "not_run",
+  "execution_enabled": false,
+  "cases": [
+    {
+      "order": [
+        "new_epoch_decided",
+        "capability_apply_timeout"
+      ],
+      "expected": "activation_pending_environment_no_work"
+    },
+    {
+      "order": [
+        "revoke_grant",
+        "late_old_capability_apply"
+      ],
+      "expected": "supervisor_rejects_old_binding"
+    }
+  ]
+}

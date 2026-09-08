@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "design_fixture": true,
+  "event_id": "evt-example-182",
+  "company_id": "co-software-example",
+  "company_seq": "182",
+  "mission_id": "mis-pagination-example",
+  "type": "contract_revision_accepted",
+  "actor": {
+    "kind": "runtime",
+    "id": "policy-engine"
+  },
+  "correlation_id": "change-pagination-2",
+  "causation_id": "evt-example-181",
+  "recorded_at": "2026-09-07T10:00:00Z",
+  "payload": {
+    "contract_id": "api-pagination",
+    "from_revision": 1,
+    "to_revision": 2,
+    "affected_task_ids": [
+      "task-frontend",
+      "task-review"
+    ]
+  }
+}

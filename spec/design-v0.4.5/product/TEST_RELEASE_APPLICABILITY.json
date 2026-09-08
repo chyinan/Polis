@@ -1,0 +1,1632 @@
+{
+  "document_version": "0.4.5",
+  "purpose": "planning_not_release_waiver",
+  "test_count": 232,
+  "tests": [
+    {
+      "test_id": "FT-01",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-02",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-03",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-04",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-05",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-06",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-07",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-08",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-09",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-10",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-11",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-12",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-13",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-14",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-15",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-16",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-17",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-18",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-19",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-20",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-21",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-22",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-23",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-24",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-25",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-26",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-27",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-28",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-29",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-30",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-31",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-32",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-33",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-34",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-35",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-36",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-37",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-38",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-39",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-40",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-41",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-42",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-43",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-44",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-45",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-46",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-47",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-48",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-49",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-50",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-51",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-52",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-53",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-54",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-55",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-56",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-57",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-58",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-59",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-60",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-61",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-62",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-63",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-64",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-65",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-66",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-67",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-68",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-69",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-70",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-71",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-72",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-73",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-74",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-75",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-76",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-77",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-78",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-79",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-80",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-81",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "FT-82",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-01",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-02",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-03",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-04",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-05",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-06",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-07",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-08",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-09",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-10",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-11",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-12",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-13",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-14",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-15",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-16",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-17",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-18",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-19",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-20",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-21",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "NT-22",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-01",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-02",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-03",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-04",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-05",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-06",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-07",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-08",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-09",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-10",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-11",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-12",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-13",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-14",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-15",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-16",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-17",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-18",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-19",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-20",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-21",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-22",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-23",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-24",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-25",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-26",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-27",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-28",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-29",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-30",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-31",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "CAP-32",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-01",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-02",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-03",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-04",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-05",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-06",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-07",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-08",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-09",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-10",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-11",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-12",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-13",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-14",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-15",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-16",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-17",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-18",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-19",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-20",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-21",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-22",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-23",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-24",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-25",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-26",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-27",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-28",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-29",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-30",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-31",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-32",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-33",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-34",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-35",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-36",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-37",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-38",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-39",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-40",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-41",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-42",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-43",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-44",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-45",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-46",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-47",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "UI-48",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-01",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-02",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-03",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-04",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-05",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-06",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-07",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-08",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-09",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-10",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-11",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-12",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-13",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-14",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-15",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-16",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-17",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-18",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-19",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-20",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-21",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-22",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-23",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-24",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-25",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-26",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-27",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-28",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-29",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-30",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-31",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-32",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-33",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-34",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-35",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "WF-36",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-01",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-02",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-03",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-04",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-05",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-06",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-07",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-08",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-09",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-10",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-11",
+      "first_planned_full_scenario": "R2",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    },
+    {
+      "test_id": "PP-12",
+      "first_planned_full_scenario": "R1",
+      "execution_status": "not_run",
+      "variant_rule": "test all applicable assertions before exposing the capability in any release; narrower release is not passed",
+      "deferred_behavior": "unimplemented capability unavailable, planned test retained"
+    }
+  ],
+  "warning": "Assignments are reviewed at executable ReleaseManifest; descriptions, not ID alone, determine required risk coverage."
+}

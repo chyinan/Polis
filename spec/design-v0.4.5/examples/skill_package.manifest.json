@@ -1,0 +1,26 @@
+{
+  "document_version": "0.4.5",
+  "kind": "authored_skill_fixture_not_approved_for_execution",
+  "package_id": "contract-review",
+  "scope": "group",
+  "revision": "1",
+  "skill_ref": "skill-fixture://group/contract-review/revision-1",
+  "package_digest": "fbefaff370adfe890adc43c357fd439a5304abb340657d5dfecd745c9a2af24a",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "sha256": "259babefd4240edc887986bb6d45ef5e7dfd67c335dadb5013453fc4c23408df",
+      "bytes": 789
+    },
+    {
+      "path": "references/acceptance.md",
+      "sha256": "76d0e5cd201f483e540c46027ea17821de37836f1042f1d7661f4bccfe2f1a86",
+      "bytes": 277
+    }
+  ],
+  "source_qualification": "fixture_only",
+  "approval_status": "draft",
+  "execution_enabled": false,
+  "scripts_enabled": false,
+  "grants": []
+}

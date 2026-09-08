@@ -1,0 +1,1711 @@
+{
+  "document_version": "0.4.5",
+  "source_version": "0.4.3",
+  "changed": [
+    {
+      "old_number": "4.7",
+      "new_number": "4.8",
+      "title": "固定身份同时具有固定可修订的工作环境绑定",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "9.8",
+      "new_number": "9.9",
+      "title": "技能使用与工作能力记忆",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "10.7",
+      "new_number": "10.8",
+      "title": "工作环境接班同样要核对",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "17.7",
+      "new_number": "17.8",
+      "title": "员工工作环境与能力管理",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "18.9",
+      "new_number": "18.10",
+      "title": "能力实现基线",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "20.5",
+      "new_number": "20.6",
+      "title": "能力资格新增维度",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "21.7",
+      "new_number": "21.8",
+      "title": "能力配置与工具调用的数据入口",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "24.5",
+      "new_number": "24.4",
+      "title": "Draft 0.4.2 新增 FT 交错验证计划",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "24.6",
+      "new_number": "24.5",
+      "title": "Draft 0.4.2 新增 NT 交错验证计划",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "24.7",
+      "new_number": "24.6",
+      "title": "Draft 0.4.2 新增 UI 交错验证计划",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "24.5",
+      "new_number": "24.7",
+      "title": "员工工作环境与能力测试（Draft 0.4.3）",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "25.1",
+      "new_number": "25.2",
+      "title": "本轮能力交付分段",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "27.5",
+      "new_number": "27.6",
+      "title": "能力范围已定，实际配置待填",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "36.8",
+      "new_number": "36.9",
+      "title": "能力验证门",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "38.7",
+      "new_number": "38.8",
+      "title": "沿现有导航增加能力页签",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "39.7",
+      "new_number": "39.8",
+      "title": "建公司时批量绑定资料和工具",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "40.9",
+      "new_number": "40.10",
+      "title": "能力状态与命令遵守同一可信展示契约",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "41.6",
+      "new_number": "41.7",
+      "title": "本轮能力 UI 交付",
+      "reason": "duplicate_or_following_number_renumbered"
+    },
+    {
+      "old_number": "42.7.5a",
+      "new_number": "42.7.6",
+      "title": "传输回执不是本地生成一个 ID 就算成功",
+      "reason": "letter_suffix_normalized_and_following_numbers_shifted"
+    },
+    {
+      "old_number": "42.7.6",
+      "new_number": "42.7.7",
+      "title": "通知内容、隐私与手机访问",
+      "reason": "letter_suffix_normalized_and_following_numbers_shifted"
+    },
+    {
+      "old_number": "42.7.7",
+      "new_number": "42.7.8",
+      "title": "单一物理发送器、离线基础设施告警与撤销屏障",
+      "reason": "letter_suffix_normalized_and_following_numbers_shifted"
+    },
+    {
+      "old_number": "42.7.8",
+      "new_number": "42.7.9",
+      "title": "工作台接入与配置顺序",
+      "reason": "letter_suffix_normalized_and_following_numbers_shifted"
+    }
+  ],
+  "subsections": [
+    {
+      "number": "1.1",
+      "anchor": "subsection-1-1"
+    },
+    {
+      "number": "1.2",
+      "anchor": "subsection-1-2"
+    },
+    {
+      "number": "1.3",
+      "anchor": "subsection-1-3"
+    },
+    {
+      "number": "1.4",
+      "anchor": "subsection-1-4"
+    },
+    {
+      "number": "2.1",
+      "anchor": "subsection-2-1"
+    },
+    {
+      "number": "2.2",
+      "anchor": "subsection-2-2"
+    },
+    {
+      "number": "2.3",
+      "anchor": "subsection-2-3"
+    },
+    {
+      "number": "2.4",
+      "anchor": "subsection-2-4"
+    },
+    {
+      "number": "2.5",
+      "anchor": "subsection-2-5"
+    },
+    {
+      "number": "2.6",
+      "anchor": "subsection-2-6"
+    },
+    {
+      "number": "3.1",
+      "anchor": "subsection-3-1"
+    },
+    {
+      "number": "3.2",
+      "anchor": "subsection-3-2"
+    },
+    {
+      "number": "3.3",
+      "anchor": "subsection-3-3"
+    },
+    {
+      "number": "3.4",
+      "anchor": "subsection-3-4"
+    },
+    {
+      "number": "3.5",
+      "anchor": "subsection-3-5"
+    },
+    {
+      "number": "4.1",
+      "anchor": "subsection-4-1"
+    },
+    {
+      "number": "4.2",
+      "anchor": "subsection-4-2"
+    },
+    {
+      "number": "4.3",
+      "anchor": "subsection-4-3"
+    },
+    {
+      "number": "4.4",
+      "anchor": "subsection-4-4"
+    },
+    {
+      "number": "4.5",
+      "anchor": "subsection-4-5"
+    },
+    {
+      "number": "4.6",
+      "anchor": "subsection-4-6"
+    },
+    {
+      "number": "4.7",
+      "anchor": "subsection-4-7"
+    },
+    {
+      "number": "4.8",
+      "anchor": "subsection-4-8"
+    },
+    {
+      "number": "4.9",
+      "anchor": "subsection-4-9"
+    },
+    {
+      "number": "5.1",
+      "anchor": "subsection-5-1"
+    },
+    {
+      "number": "5.2",
+      "anchor": "subsection-5-2"
+    },
+    {
+      "number": "5.3",
+      "anchor": "subsection-5-3"
+    },
+    {
+      "number": "5.4",
+      "anchor": "subsection-5-4"
+    },
+    {
+      "number": "5.5",
+      "anchor": "subsection-5-5"
+    },
+    {
+      "number": "5.6",
+      "anchor": "subsection-5-6"
+    },
+    {
+      "number": "6.1",
+      "anchor": "subsection-6-1"
+    },
+    {
+      "number": "6.2",
+      "anchor": "subsection-6-2"
+    },
+    {
+      "number": "6.3",
+      "anchor": "subsection-6-3"
+    },
+    {
+      "number": "6.4",
+      "anchor": "subsection-6-4"
+    },
+    {
+      "number": "7.1",
+      "anchor": "subsection-7-1"
+    },
+    {
+      "number": "7.2",
+      "anchor": "subsection-7-2"
+    },
+    {
+      "number": "8.1",
+      "anchor": "subsection-8-1"
+    },
+    {
+      "number": "8.2",
+      "anchor": "subsection-8-2"
+    },
+    {
+      "number": "8.3",
+      "anchor": "subsection-8-3"
+    },
+    {
+      "number": "8.4",
+      "anchor": "subsection-8-4"
+    },
+    {
+      "number": "8.5",
+      "anchor": "subsection-8-5"
+    },
+    {
+      "number": "8.6",
+      "anchor": "subsection-8-6"
+    },
+    {
+      "number": "9.1",
+      "anchor": "subsection-9-1"
+    },
+    {
+      "number": "9.2",
+      "anchor": "subsection-9-2"
+    },
+    {
+      "number": "9.3",
+      "anchor": "subsection-9-3"
+    },
+    {
+      "number": "9.4",
+      "anchor": "subsection-9-4"
+    },
+    {
+      "number": "9.5",
+      "anchor": "subsection-9-5"
+    },
+    {
+      "number": "9.6",
+      "anchor": "subsection-9-6"
+    },
+    {
+      "number": "9.7",
+      "anchor": "subsection-9-7"
+    },
+    {
+      "number": "9.8",
+      "anchor": "subsection-9-8"
+    },
+    {
+      "number": "9.9",
+      "anchor": "subsection-9-9"
+    },
+    {
+      "number": "9.10",
+      "anchor": "subsection-9-10"
+    },
+    {
+      "number": "9.11",
+      "anchor": "subsection-9-11"
+    },
+    {
+      "number": "10.1",
+      "anchor": "subsection-10-1"
+    },
+    {
+      "number": "10.2",
+      "anchor": "subsection-10-2"
+    },
+    {
+      "number": "10.3",
+      "anchor": "subsection-10-3"
+    },
+    {
+      "number": "10.4",
+      "anchor": "subsection-10-4"
+    },
+    {
+      "number": "10.5",
+      "anchor": "subsection-10-5"
+    },
+    {
+      "number": "10.6",
+      "anchor": "subsection-10-6"
+    },
+    {
+      "number": "10.7",
+      "anchor": "subsection-10-7"
+    },
+    {
+      "number": "10.8",
+      "anchor": "subsection-10-8"
+    },
+    {
+      "number": "10.9",
+      "anchor": "subsection-10-9"
+    },
+    {
+      "number": "11.1",
+      "anchor": "subsection-11-1"
+    },
+    {
+      "number": "11.2",
+      "anchor": "subsection-11-2"
+    },
+    {
+      "number": "11.3",
+      "anchor": "subsection-11-3"
+    },
+    {
+      "number": "11.4",
+      "anchor": "subsection-11-4"
+    },
+    {
+      "number": "11.5",
+      "anchor": "subsection-11-5"
+    },
+    {
+      "number": "11.6",
+      "anchor": "subsection-11-6"
+    },
+    {
+      "number": "12.1",
+      "anchor": "subsection-12-1"
+    },
+    {
+      "number": "12.2",
+      "anchor": "subsection-12-2"
+    },
+    {
+      "number": "12.3",
+      "anchor": "subsection-12-3"
+    },
+    {
+      "number": "12.4",
+      "anchor": "subsection-12-4"
+    },
+    {
+      "number": "12.5",
+      "anchor": "subsection-12-5"
+    },
+    {
+      "number": "12.6",
+      "anchor": "subsection-12-6"
+    },
+    {
+      "number": "13.1",
+      "anchor": "subsection-13-1"
+    },
+    {
+      "number": "13.2",
+      "anchor": "subsection-13-2"
+    },
+    {
+      "number": "13.3",
+      "anchor": "subsection-13-3"
+    },
+    {
+      "number": "13.4",
+      "anchor": "subsection-13-4"
+    },
+    {
+      "number": "13.5",
+      "anchor": "subsection-13-5"
+    },
+    {
+      "number": "13.6",
+      "anchor": "subsection-13-6"
+    },
+    {
+      "number": "13.7",
+      "anchor": "subsection-13-7"
+    },
+    {
+      "number": "13.8",
+      "anchor": "subsection-13-8"
+    },
+    {
+      "number": "14.1",
+      "anchor": "subsection-14-1"
+    },
+    {
+      "number": "14.2",
+      "anchor": "subsection-14-2"
+    },
+    {
+      "number": "14.3",
+      "anchor": "subsection-14-3"
+    },
+    {
+      "number": "14.4",
+      "anchor": "subsection-14-4"
+    },
+    {
+      "number": "14.5",
+      "anchor": "subsection-14-5"
+    },
+    {
+      "number": "14.6",
+      "anchor": "subsection-14-6"
+    },
+    {
+      "number": "14.7",
+      "anchor": "subsection-14-7"
+    },
+    {
+      "number": "14.8",
+      "anchor": "subsection-14-8"
+    },
+    {
+      "number": "15.1",
+      "anchor": "subsection-15-1"
+    },
+    {
+      "number": "15.2",
+      "anchor": "subsection-15-2"
+    },
+    {
+      "number": "15.3",
+      "anchor": "subsection-15-3"
+    },
+    {
+      "number": "15.4",
+      "anchor": "subsection-15-4"
+    },
+    {
+      "number": "15.5",
+      "anchor": "subsection-15-5"
+    },
+    {
+      "number": "15.6",
+      "anchor": "subsection-15-6"
+    },
+    {
+      "number": "15.7",
+      "anchor": "subsection-15-7"
+    },
+    {
+      "number": "15.8",
+      "anchor": "subsection-15-8"
+    },
+    {
+      "number": "15.9",
+      "anchor": "subsection-15-9"
+    },
+    {
+      "number": "16.1",
+      "anchor": "subsection-16-1"
+    },
+    {
+      "number": "16.2",
+      "anchor": "subsection-16-2"
+    },
+    {
+      "number": "16.3",
+      "anchor": "subsection-16-3"
+    },
+    {
+      "number": "16.4",
+      "anchor": "subsection-16-4"
+    },
+    {
+      "number": "16.5",
+      "anchor": "subsection-16-5"
+    },
+    {
+      "number": "16.6",
+      "anchor": "subsection-16-6"
+    },
+    {
+      "number": "17.1",
+      "anchor": "subsection-17-1"
+    },
+    {
+      "number": "17.2",
+      "anchor": "subsection-17-2"
+    },
+    {
+      "number": "17.3",
+      "anchor": "subsection-17-3"
+    },
+    {
+      "number": "17.4",
+      "anchor": "subsection-17-4"
+    },
+    {
+      "number": "17.5",
+      "anchor": "subsection-17-5"
+    },
+    {
+      "number": "17.6",
+      "anchor": "subsection-17-6"
+    },
+    {
+      "number": "17.7",
+      "anchor": "subsection-17-7"
+    },
+    {
+      "number": "17.8",
+      "anchor": "subsection-17-8"
+    },
+    {
+      "number": "17.9",
+      "anchor": "subsection-17-9"
+    },
+    {
+      "number": "18.1",
+      "anchor": "subsection-18-1"
+    },
+    {
+      "number": "18.2",
+      "anchor": "subsection-18-2"
+    },
+    {
+      "number": "18.3",
+      "anchor": "subsection-18-3"
+    },
+    {
+      "number": "18.4",
+      "anchor": "subsection-18-4"
+    },
+    {
+      "number": "18.5",
+      "anchor": "subsection-18-5"
+    },
+    {
+      "number": "18.6",
+      "anchor": "subsection-18-6"
+    },
+    {
+      "number": "18.7",
+      "anchor": "subsection-18-7"
+    },
+    {
+      "number": "18.8",
+      "anchor": "subsection-18-8"
+    },
+    {
+      "number": "18.9",
+      "anchor": "subsection-18-9"
+    },
+    {
+      "number": "18.10",
+      "anchor": "subsection-18-10"
+    },
+    {
+      "number": "18.11",
+      "anchor": "subsection-18-11"
+    },
+    {
+      "number": "19.1",
+      "anchor": "subsection-19-1"
+    },
+    {
+      "number": "19.2",
+      "anchor": "subsection-19-2"
+    },
+    {
+      "number": "19.3",
+      "anchor": "subsection-19-3"
+    },
+    {
+      "number": "19.4",
+      "anchor": "subsection-19-4"
+    },
+    {
+      "number": "19.5",
+      "anchor": "subsection-19-5"
+    },
+    {
+      "number": "19.6",
+      "anchor": "subsection-19-6"
+    },
+    {
+      "number": "19.7",
+      "anchor": "subsection-19-7"
+    },
+    {
+      "number": "19.8",
+      "anchor": "subsection-19-8"
+    },
+    {
+      "number": "19.9",
+      "anchor": "subsection-19-9"
+    },
+    {
+      "number": "20.1",
+      "anchor": "subsection-20-1"
+    },
+    {
+      "number": "20.2",
+      "anchor": "subsection-20-2"
+    },
+    {
+      "number": "20.3",
+      "anchor": "subsection-20-3"
+    },
+    {
+      "number": "20.4",
+      "anchor": "subsection-20-4"
+    },
+    {
+      "number": "20.5",
+      "anchor": "subsection-20-5"
+    },
+    {
+      "number": "20.6",
+      "anchor": "subsection-20-6"
+    },
+    {
+      "number": "20.7",
+      "anchor": "subsection-20-7"
+    },
+    {
+      "number": "21.1",
+      "anchor": "subsection-21-1"
+    },
+    {
+      "number": "21.2",
+      "anchor": "subsection-21-2"
+    },
+    {
+      "number": "21.3",
+      "anchor": "subsection-21-3"
+    },
+    {
+      "number": "21.4",
+      "anchor": "subsection-21-4"
+    },
+    {
+      "number": "21.5",
+      "anchor": "subsection-21-5"
+    },
+    {
+      "number": "21.6",
+      "anchor": "subsection-21-6"
+    },
+    {
+      "number": "21.7",
+      "anchor": "subsection-21-7"
+    },
+    {
+      "number": "21.8",
+      "anchor": "subsection-21-8"
+    },
+    {
+      "number": "21.9",
+      "anchor": "subsection-21-9"
+    },
+    {
+      "number": "22.1",
+      "anchor": "subsection-22-1"
+    },
+    {
+      "number": "22.2",
+      "anchor": "subsection-22-2"
+    },
+    {
+      "number": "22.3",
+      "anchor": "subsection-22-3"
+    },
+    {
+      "number": "22.4",
+      "anchor": "subsection-22-4"
+    },
+    {
+      "number": "22.5",
+      "anchor": "subsection-22-5"
+    },
+    {
+      "number": "23.1",
+      "anchor": "subsection-23-1"
+    },
+    {
+      "number": "23.2",
+      "anchor": "subsection-23-2"
+    },
+    {
+      "number": "23.3",
+      "anchor": "subsection-23-3"
+    },
+    {
+      "number": "23.4",
+      "anchor": "subsection-23-4"
+    },
+    {
+      "number": "23.5",
+      "anchor": "subsection-23-5"
+    },
+    {
+      "number": "23.6",
+      "anchor": "subsection-23-6"
+    },
+    {
+      "number": "24.2",
+      "anchor": "subsection-24-2"
+    },
+    {
+      "number": "24.3",
+      "anchor": "subsection-24-3"
+    },
+    {
+      "number": "24.4",
+      "anchor": "subsection-24-4"
+    },
+    {
+      "number": "24.5",
+      "anchor": "subsection-24-5"
+    },
+    {
+      "number": "24.6",
+      "anchor": "subsection-24-6"
+    },
+    {
+      "number": "24.7",
+      "anchor": "subsection-24-7"
+    },
+    {
+      "number": "24.8",
+      "anchor": "subsection-24-8"
+    },
+    {
+      "number": "25.1",
+      "anchor": "subsection-25-1"
+    },
+    {
+      "number": "25.2",
+      "anchor": "subsection-25-2"
+    },
+    {
+      "number": "25.3",
+      "anchor": "subsection-25-3"
+    },
+    {
+      "number": "26.1",
+      "anchor": "subsection-26-1"
+    },
+    {
+      "number": "26.2",
+      "anchor": "subsection-26-2"
+    },
+    {
+      "number": "26.3",
+      "anchor": "subsection-26-3"
+    },
+    {
+      "number": "27.1",
+      "anchor": "subsection-27-1"
+    },
+    {
+      "number": "27.2",
+      "anchor": "subsection-27-2"
+    },
+    {
+      "number": "27.3",
+      "anchor": "subsection-27-3"
+    },
+    {
+      "number": "27.4",
+      "anchor": "subsection-27-4"
+    },
+    {
+      "number": "27.5",
+      "anchor": "subsection-27-5"
+    },
+    {
+      "number": "27.6",
+      "anchor": "subsection-27-6"
+    },
+    {
+      "number": "27.7",
+      "anchor": "subsection-27-7"
+    },
+    {
+      "number": "27.8",
+      "anchor": "subsection-27-8"
+    },
+    {
+      "number": "29.1",
+      "anchor": "subsection-29-1"
+    },
+    {
+      "number": "29.2",
+      "anchor": "subsection-29-2"
+    },
+    {
+      "number": "29.3",
+      "anchor": "subsection-29-3"
+    },
+    {
+      "number": "29.4",
+      "anchor": "subsection-29-4"
+    },
+    {
+      "number": "30.1",
+      "anchor": "subsection-30-1"
+    },
+    {
+      "number": "30.2",
+      "anchor": "subsection-30-2"
+    },
+    {
+      "number": "30.3",
+      "anchor": "subsection-30-3"
+    },
+    {
+      "number": "30.4",
+      "anchor": "subsection-30-4"
+    },
+    {
+      "number": "30.5",
+      "anchor": "subsection-30-5"
+    },
+    {
+      "number": "30.6",
+      "anchor": "subsection-30-6"
+    },
+    {
+      "number": "31.1",
+      "anchor": "subsection-31-1"
+    },
+    {
+      "number": "31.2",
+      "anchor": "subsection-31-2"
+    },
+    {
+      "number": "31.3",
+      "anchor": "subsection-31-3"
+    },
+    {
+      "number": "31.4",
+      "anchor": "subsection-31-4"
+    },
+    {
+      "number": "31.5",
+      "anchor": "subsection-31-5"
+    },
+    {
+      "number": "32.1",
+      "anchor": "subsection-32-1"
+    },
+    {
+      "number": "32.2",
+      "anchor": "subsection-32-2"
+    },
+    {
+      "number": "32.3",
+      "anchor": "subsection-32-3"
+    },
+    {
+      "number": "32.4",
+      "anchor": "subsection-32-4"
+    },
+    {
+      "number": "32.5",
+      "anchor": "subsection-32-5"
+    },
+    {
+      "number": "33.1",
+      "anchor": "subsection-33-1"
+    },
+    {
+      "number": "33.2",
+      "anchor": "subsection-33-2"
+    },
+    {
+      "number": "33.3",
+      "anchor": "subsection-33-3"
+    },
+    {
+      "number": "33.4",
+      "anchor": "subsection-33-4"
+    },
+    {
+      "number": "33.5",
+      "anchor": "subsection-33-5"
+    },
+    {
+      "number": "34.1",
+      "anchor": "subsection-34-1"
+    },
+    {
+      "number": "34.2",
+      "anchor": "subsection-34-2"
+    },
+    {
+      "number": "34.3",
+      "anchor": "subsection-34-3"
+    },
+    {
+      "number": "34.4",
+      "anchor": "subsection-34-4"
+    },
+    {
+      "number": "34.5",
+      "anchor": "subsection-34-5"
+    },
+    {
+      "number": "35.1",
+      "anchor": "subsection-35-1"
+    },
+    {
+      "number": "35.2",
+      "anchor": "subsection-35-2"
+    },
+    {
+      "number": "35.3",
+      "anchor": "subsection-35-3"
+    },
+    {
+      "number": "35.4",
+      "anchor": "subsection-35-4"
+    },
+    {
+      "number": "35.5",
+      "anchor": "subsection-35-5"
+    },
+    {
+      "number": "35.6",
+      "anchor": "subsection-35-6"
+    },
+    {
+      "number": "35.7",
+      "anchor": "subsection-35-7"
+    },
+    {
+      "number": "36.1",
+      "anchor": "subsection-36-1"
+    },
+    {
+      "number": "36.2",
+      "anchor": "subsection-36-2"
+    },
+    {
+      "number": "36.3",
+      "anchor": "subsection-36-3"
+    },
+    {
+      "number": "36.4",
+      "anchor": "subsection-36-4"
+    },
+    {
+      "number": "36.5",
+      "anchor": "subsection-36-5"
+    },
+    {
+      "number": "36.6",
+      "anchor": "subsection-36-6"
+    },
+    {
+      "number": "36.7",
+      "anchor": "subsection-36-7"
+    },
+    {
+      "number": "36.8",
+      "anchor": "subsection-36-8"
+    },
+    {
+      "number": "36.9",
+      "anchor": "subsection-36-9"
+    },
+    {
+      "number": "36.10",
+      "anchor": "subsection-36-10"
+    },
+    {
+      "number": "37.1",
+      "anchor": "subsection-37-1"
+    },
+    {
+      "number": "37.2",
+      "anchor": "subsection-37-2"
+    },
+    {
+      "number": "37.3",
+      "anchor": "subsection-37-3"
+    },
+    {
+      "number": "37.4",
+      "anchor": "subsection-37-4"
+    },
+    {
+      "number": "38.1",
+      "anchor": "subsection-38-1"
+    },
+    {
+      "number": "38.2",
+      "anchor": "subsection-38-2"
+    },
+    {
+      "number": "38.3",
+      "anchor": "subsection-38-3"
+    },
+    {
+      "number": "38.4",
+      "anchor": "subsection-38-4"
+    },
+    {
+      "number": "38.5",
+      "anchor": "subsection-38-5"
+    },
+    {
+      "number": "38.6",
+      "anchor": "subsection-38-6"
+    },
+    {
+      "number": "38.7",
+      "anchor": "subsection-38-7"
+    },
+    {
+      "number": "38.8",
+      "anchor": "subsection-38-8"
+    },
+    {
+      "number": "38.9",
+      "anchor": "subsection-38-9"
+    },
+    {
+      "number": "39.1",
+      "anchor": "subsection-39-1"
+    },
+    {
+      "number": "39.2",
+      "anchor": "subsection-39-2"
+    },
+    {
+      "number": "39.3",
+      "anchor": "subsection-39-3"
+    },
+    {
+      "number": "39.4",
+      "anchor": "subsection-39-4"
+    },
+    {
+      "number": "39.5",
+      "anchor": "subsection-39-5"
+    },
+    {
+      "number": "39.6",
+      "anchor": "subsection-39-6"
+    },
+    {
+      "number": "39.7",
+      "anchor": "subsection-39-7"
+    },
+    {
+      "number": "39.8",
+      "anchor": "subsection-39-8"
+    },
+    {
+      "number": "39.9",
+      "anchor": "subsection-39-9"
+    },
+    {
+      "number": "39.10",
+      "anchor": "subsection-39-10"
+    },
+    {
+      "number": "40.1",
+      "anchor": "subsection-40-1"
+    },
+    {
+      "number": "40.2",
+      "anchor": "subsection-40-2"
+    },
+    {
+      "number": "40.3",
+      "anchor": "subsection-40-3"
+    },
+    {
+      "number": "40.4",
+      "anchor": "subsection-40-4"
+    },
+    {
+      "number": "40.5",
+      "anchor": "subsection-40-5"
+    },
+    {
+      "number": "40.6",
+      "anchor": "subsection-40-6"
+    },
+    {
+      "number": "40.7",
+      "anchor": "subsection-40-7"
+    },
+    {
+      "number": "40.8",
+      "anchor": "subsection-40-8"
+    },
+    {
+      "number": "40.9",
+      "anchor": "subsection-40-9"
+    },
+    {
+      "number": "40.10",
+      "anchor": "subsection-40-10"
+    },
+    {
+      "number": "40.11",
+      "anchor": "subsection-40-11"
+    },
+    {
+      "number": "41.1",
+      "anchor": "subsection-41-1"
+    },
+    {
+      "number": "41.2",
+      "anchor": "subsection-41-2"
+    },
+    {
+      "number": "41.3",
+      "anchor": "subsection-41-3"
+    },
+    {
+      "number": "41.4",
+      "anchor": "subsection-41-4"
+    },
+    {
+      "number": "41.5",
+      "anchor": "subsection-41-5"
+    },
+    {
+      "number": "41.6",
+      "anchor": "subsection-41-6"
+    },
+    {
+      "number": "41.7",
+      "anchor": "subsection-41-7"
+    },
+    {
+      "number": "41.8",
+      "anchor": "subsection-41-8"
+    },
+    {
+      "number": "42.1",
+      "anchor": "subsection-42-1"
+    },
+    {
+      "number": "42.2",
+      "anchor": "subsection-42-2"
+    },
+    {
+      "number": "42.2.1",
+      "anchor": "subsection-42-2-1"
+    },
+    {
+      "number": "42.2.2",
+      "anchor": "subsection-42-2-2"
+    },
+    {
+      "number": "42.2.3",
+      "anchor": "subsection-42-2-3"
+    },
+    {
+      "number": "42.3",
+      "anchor": "subsection-42-3"
+    },
+    {
+      "number": "42.3.1",
+      "anchor": "subsection-42-3-1"
+    },
+    {
+      "number": "42.3.2",
+      "anchor": "subsection-42-3-2"
+    },
+    {
+      "number": "42.3.3",
+      "anchor": "subsection-42-3-3"
+    },
+    {
+      "number": "42.3.4",
+      "anchor": "subsection-42-3-4"
+    },
+    {
+      "number": "42.4",
+      "anchor": "subsection-42-4"
+    },
+    {
+      "number": "42.4.1",
+      "anchor": "subsection-42-4-1"
+    },
+    {
+      "number": "42.4.2",
+      "anchor": "subsection-42-4-2"
+    },
+    {
+      "number": "42.4.3",
+      "anchor": "subsection-42-4-3"
+    },
+    {
+      "number": "42.5",
+      "anchor": "subsection-42-5"
+    },
+    {
+      "number": "42.5.1",
+      "anchor": "subsection-42-5-1"
+    },
+    {
+      "number": "42.5.2",
+      "anchor": "subsection-42-5-2"
+    },
+    {
+      "number": "42.5.3",
+      "anchor": "subsection-42-5-3"
+    },
+    {
+      "number": "42.6",
+      "anchor": "subsection-42-6"
+    },
+    {
+      "number": "42.6.1",
+      "anchor": "subsection-42-6-1"
+    },
+    {
+      "number": "42.6.2",
+      "anchor": "subsection-42-6-2"
+    },
+    {
+      "number": "42.6.3",
+      "anchor": "subsection-42-6-3"
+    },
+    {
+      "number": "42.7",
+      "anchor": "subsection-42-7"
+    },
+    {
+      "number": "42.7.1",
+      "anchor": "subsection-42-7-1"
+    },
+    {
+      "number": "42.7.2",
+      "anchor": "subsection-42-7-2"
+    },
+    {
+      "number": "42.7.3",
+      "anchor": "subsection-42-7-3"
+    },
+    {
+      "number": "42.7.4",
+      "anchor": "subsection-42-7-4"
+    },
+    {
+      "number": "42.7.5",
+      "anchor": "subsection-42-7-5"
+    },
+    {
+      "number": "42.7.6",
+      "anchor": "subsection-42-7-6"
+    },
+    {
+      "number": "42.7.7",
+      "anchor": "subsection-42-7-7"
+    },
+    {
+      "number": "42.7.8",
+      "anchor": "subsection-42-7-8"
+    },
+    {
+      "number": "42.7.9",
+      "anchor": "subsection-42-7-9"
+    },
+    {
+      "number": "42.8",
+      "anchor": "subsection-42-8"
+    },
+    {
+      "number": "42.9",
+      "anchor": "subsection-42-9"
+    },
+    {
+      "number": "43.1",
+      "anchor": "subsection-43-1"
+    },
+    {
+      "number": "43.2",
+      "anchor": "subsection-43-2"
+    },
+    {
+      "number": "43.3",
+      "anchor": "subsection-43-3"
+    },
+    {
+      "number": "43.4",
+      "anchor": "subsection-43-4"
+    },
+    {
+      "number": "43.5",
+      "anchor": "subsection-43-5"
+    },
+    {
+      "number": "43.6",
+      "anchor": "subsection-43-6"
+    },
+    {
+      "number": "43.7",
+      "anchor": "subsection-43-7"
+    },
+    {
+      "number": "43.8",
+      "anchor": "subsection-43-8"
+    },
+    {
+      "number": "43.9",
+      "anchor": "subsection-43-9"
+    },
+    {
+      "number": "43.10",
+      "anchor": "subsection-43-10"
+    },
+    {
+      "number": "43.11",
+      "anchor": "subsection-43-11"
+    },
+    {
+      "number": "44.1",
+      "anchor": "subsection-44-1"
+    },
+    {
+      "number": "44.2",
+      "anchor": "subsection-44-2"
+    },
+    {
+      "number": "44.3",
+      "anchor": "subsection-44-3"
+    },
+    {
+      "number": "44.3.1",
+      "anchor": "subsection-44-3-1"
+    },
+    {
+      "number": "44.3.2",
+      "anchor": "subsection-44-3-2"
+    },
+    {
+      "number": "44.3.3",
+      "anchor": "subsection-44-3-3"
+    },
+    {
+      "number": "44.4",
+      "anchor": "subsection-44-4"
+    },
+    {
+      "number": "44.4.1",
+      "anchor": "subsection-44-4-1"
+    },
+    {
+      "number": "44.4.2",
+      "anchor": "subsection-44-4-2"
+    },
+    {
+      "number": "44.4.3",
+      "anchor": "subsection-44-4-3"
+    },
+    {
+      "number": "44.4.4",
+      "anchor": "subsection-44-4-4"
+    },
+    {
+      "number": "44.5",
+      "anchor": "subsection-44-5"
+    },
+    {
+      "number": "44.5.1",
+      "anchor": "subsection-44-5-1"
+    },
+    {
+      "number": "44.5.2",
+      "anchor": "subsection-44-5-2"
+    },
+    {
+      "number": "44.5.3",
+      "anchor": "subsection-44-5-3"
+    },
+    {
+      "number": "44.5.4",
+      "anchor": "subsection-44-5-4"
+    },
+    {
+      "number": "44.5.5",
+      "anchor": "subsection-44-5-5"
+    },
+    {
+      "number": "44.5.6",
+      "anchor": "subsection-44-5-6"
+    },
+    {
+      "number": "44.5.7",
+      "anchor": "subsection-44-5-7"
+    },
+    {
+      "number": "44.6",
+      "anchor": "subsection-44-6"
+    },
+    {
+      "number": "44.6.1",
+      "anchor": "subsection-44-6-1"
+    },
+    {
+      "number": "44.6.2",
+      "anchor": "subsection-44-6-2"
+    },
+    {
+      "number": "44.6.3",
+      "anchor": "subsection-44-6-3"
+    },
+    {
+      "number": "44.6.4",
+      "anchor": "subsection-44-6-4"
+    },
+    {
+      "number": "44.7",
+      "anchor": "subsection-44-7"
+    },
+    {
+      "number": "44.8",
+      "anchor": "subsection-44-8"
+    },
+    {
+      "number": "44.9",
+      "anchor": "subsection-44-9"
+    },
+    {
+      "number": "44.10",
+      "anchor": "subsection-44-10"
+    },
+    {
+      "number": "45.1",
+      "anchor": "subsection-45-1"
+    },
+    {
+      "number": "45.2",
+      "anchor": "subsection-45-2"
+    },
+    {
+      "number": "45.2.1",
+      "anchor": "subsection-45-2-1"
+    },
+    {
+      "number": "45.2.2",
+      "anchor": "subsection-45-2-2"
+    },
+    {
+      "number": "45.2.3",
+      "anchor": "subsection-45-2-3"
+    },
+    {
+      "number": "45.3",
+      "anchor": "subsection-45-3"
+    },
+    {
+      "number": "45.3.1",
+      "anchor": "subsection-45-3-1"
+    },
+    {
+      "number": "45.3.2",
+      "anchor": "subsection-45-3-2"
+    },
+    {
+      "number": "45.3.3",
+      "anchor": "subsection-45-3-3"
+    },
+    {
+      "number": "45.4",
+      "anchor": "subsection-45-4"
+    },
+    {
+      "number": "45.4.1",
+      "anchor": "subsection-45-4-1"
+    },
+    {
+      "number": "45.4.2",
+      "anchor": "subsection-45-4-2"
+    },
+    {
+      "number": "45.4.3",
+      "anchor": "subsection-45-4-3"
+    },
+    {
+      "number": "45.4.4",
+      "anchor": "subsection-45-4-4"
+    },
+    {
+      "number": "45.5",
+      "anchor": "subsection-45-5"
+    },
+    {
+      "number": "45.5.1",
+      "anchor": "subsection-45-5-1"
+    },
+    {
+      "number": "45.5.2",
+      "anchor": "subsection-45-5-2"
+    },
+    {
+      "number": "45.5.3",
+      "anchor": "subsection-45-5-3"
+    },
+    {
+      "number": "45.6",
+      "anchor": "subsection-45-6"
+    },
+    {
+      "number": "45.6.1",
+      "anchor": "subsection-45-6-1"
+    },
+    {
+      "number": "45.6.2",
+      "anchor": "subsection-45-6-2"
+    },
+    {
+      "number": "45.6.3",
+      "anchor": "subsection-45-6-3"
+    },
+    {
+      "number": "45.7",
+      "anchor": "subsection-45-7"
+    },
+    {
+      "number": "45.7.1",
+      "anchor": "subsection-45-7-1"
+    },
+    {
+      "number": "45.7.2",
+      "anchor": "subsection-45-7-2"
+    },
+    {
+      "number": "45.7.3",
+      "anchor": "subsection-45-7-3"
+    },
+    {
+      "number": "45.8",
+      "anchor": "subsection-45-8"
+    },
+    {
+      "number": "45.8.1",
+      "anchor": "subsection-45-8-1"
+    },
+    {
+      "number": "45.8.2",
+      "anchor": "subsection-45-8-2"
+    },
+    {
+      "number": "45.8.3",
+      "anchor": "subsection-45-8-3"
+    },
+    {
+      "number": "45.8.4",
+      "anchor": "subsection-45-8-4"
+    },
+    {
+      "number": "45.9",
+      "anchor": "subsection-45-9"
+    },
+    {
+      "number": "45.10",
+      "anchor": "subsection-45-10"
+    },
+    {
+      "number": "45.11",
+      "anchor": "subsection-45-11"
+    },
+    {
+      "number": "46.1",
+      "anchor": "subsection-46-1"
+    },
+    {
+      "number": "46.2",
+      "anchor": "subsection-46-2"
+    },
+    {
+      "number": "46.3",
+      "anchor": "subsection-46-3"
+    },
+    {
+      "number": "46.4",
+      "anchor": "subsection-46-4"
+    },
+    {
+      "number": "46.5",
+      "anchor": "subsection-46-5"
+    },
+    {
+      "number": "46.6",
+      "anchor": "subsection-46-6"
+    },
+    {
+      "number": "46.7",
+      "anchor": "subsection-46-7"
+    },
+    {
+      "number": "46.8",
+      "anchor": "subsection-46-8"
+    },
+    {
+      "number": "46.9",
+      "anchor": "subsection-46-9"
+    },
+    {
+      "number": "46.10",
+      "anchor": "subsection-46-10"
+    },
+    {
+      "number": "46.11",
+      "anchor": "subsection-46-11"
+    },
+    {
+      "number": "46.12",
+      "anchor": "subsection-46-12"
+    },
+    {
+      "number": "46.13",
+      "anchor": "subsection-46-13"
+    },
+    {
+      "number": "46.14",
+      "anchor": "subsection-46-14"
+    }
+  ],
+  "existing_named_anchors_preserved": true,
+  "scope": "historical 0.4.3-to-0.4.4 mapping retained; all current 0.4.5 subsection anchors indexed",
+  "current_registry_version": "0.4.5"
+}

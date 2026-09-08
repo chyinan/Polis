@@ -1,0 +1,20 @@
+{
+  "document_version": "0.4.5",
+  "review_date": "2026-09-07",
+  "scope": "official_skills_mcp_targeted_read",
+  "mcp_current_revision_observed": "2026-07-28",
+  "mcp_compatibility_profile": "2025-11-25",
+  "runtime_tested": false,
+  "sdk_installed": false,
+  "sources": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08"
+  ],
+  "no_third_party_code_copied": true
+}

@@ -1,0 +1,53 @@
+{
+  "document_version": "0.4.5",
+  "kind": "simulated_upstream_descriptor",
+  "execution_enabled": false,
+  "server_definition_id": "mcp-fixture-contracts",
+  "binding_revision": "1",
+  "descriptor_digest": "58ee28c8247c9f77281428db009adb68ca554d4e69d470ea574dc16ea5fce640",
+  "upstream_tool": {
+    "name": "lookup_contract",
+    "description": "设计测试服务：按合同 ID 读取冻结接口资料。",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "contract_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "contract_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "revision",
+        "content"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  "trusted_classification": "unverified",
+  "allowed_for_real_calls": false,
+  "annotation_is_authorization": false,
+  "runtime_tool_handle": null
+}

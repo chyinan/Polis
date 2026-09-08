@@ -1,0 +1,74 @@
+document_version: 0.4.5
+design_kind: draft_not_runtime_config
+execution_enabled: false
+company_id: co-software-example
+template_revision: software-fixed-1
+active_mission_limit: 1
+dynamic_roles_enabled: false
+state_store:
+  engine: postgresql
+  major: 18
+  driver: pgx/v5
+  query_codegen: sqlc
+  migration_tool: goose/v3
+  secondary_database: null
+budget:
+  pay_enabled: false
+  currency: USD
+  limit_microunits: '0'
+  closing_reserve_microunits: '0'
+  billing_visibility: unverified
+capacity:
+  inference_slots: 2
+  tool_slots: 2
+  employee_active_session_limit: 1
+employees:
+- employee_id: emp-planning
+  role: planner_architect
+  model_profile_ref: null
+  role_revision: 1
+  capability_binding_ref: cap-emp-planning-1
+- employee_id: emp-backend
+  role: backend
+  model_profile_ref: null
+  role_revision: 1
+  capability_binding_ref: cap-emp-backend-1
+- employee_id: emp-frontend
+  role: frontend
+  model_profile_ref: null
+  role_revision: 1
+  capability_binding_ref: cap-emp-frontend-1
+- employee_id: emp-review
+  role: independent_reviewer
+  model_profile_ref: null
+  role_revision: 1
+  capability_binding_ref: cap-emp-review-1
+autonomy:
+  production_publish: false
+  real_content_publish: false
+  live_financial_trading: false
+  self_modify_runtime: false
+  role_self_change: false
+sleep:
+  idle_llm_polling: false
+  durable_work_queue: true
+  notifications_are_hints: true
+  reconcile_interval_seconds: 30
+  pause_overrides_wake: true
+qualification:
+  status: unverified
+  allowed_execution_mode: null
+  real_model_authorization: false
+lifecycle:
+  bootstrap_template: bootstrap-plan@1
+  planner_employee_id: emp-planning
+  paused_mission_holds_slot: true
+  terminal_reopen_allowed: false
+employee_tool_contract: employee-ops@1
+notification_policy_ref: null
+capability_catalog_fixture: employee_capabilities.draft.yaml
+capability_activation:
+  import_starts_services: false
+  future_public_additions_auto_enabled: false
+  native_auto_discovery: must_be_qualified
+  active_grants: []

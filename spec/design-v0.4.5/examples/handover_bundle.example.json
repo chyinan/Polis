@@ -1,0 +1,133 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "handover_fixture_not_real_evidence",
+  "activation_allowed": false,
+  "employee_id": "emp-backend",
+  "role_revision": 1,
+  "company_id": "co-software-example",
+  "mission_id": "mis-pagination-example",
+  "old_epoch": "3",
+  "proposed_epoch": "4",
+  "source_cursor": {
+    "stream": "company",
+    "company_id": "co-software-example",
+    "company_seq": "182"
+  },
+  "input_revisions": {
+    "mission": "1",
+    "contract": "2",
+    "grant": "1",
+    "memory": "7"
+  },
+  "unfinished_obligations": [
+    "confirm-error-code-to-frontend"
+  ],
+  "current_task": "implement-pagination-v2",
+  "artifact_ref": "fixture://workspace/uncommitted-snapshot",
+  "pending_actions": [
+    {
+      "action_id": "act-test-1",
+      "status": "outcome_unknown",
+      "expected_recovery": "reconcile_before_retry"
+    }
+  ],
+  "writer_isolation": {
+    "status": "simulated_not_verified",
+    "real_evidence_ref": null
+  },
+  "corrections": [
+    {
+      "old_record": "mem-auth-v1",
+      "current_record": "mem-auth-v2",
+      "status": "needs_revalidation"
+    }
+  ],
+  "resume_checks": [
+    "verify_current_grant",
+    "reconcile_old_writer",
+    "verify_artifact_hash",
+    "drain_events_after_source_cursor",
+    "preserve_obligations",
+    "verify_capability_binding_revision",
+    "verify_pinned_skill_manifest",
+    "requalify_mcp_descriptors_and_data_egress",
+    "reconcile_pending_tool_invocations"
+  ],
+  "new_model_profile_ref": null,
+  "secret_material_included": false,
+  "snapshot_consistency": {
+    "isolation": "repeatable_read",
+    "facts_and_cursor_same_snapshot": true,
+    "materialization_lease_ref": "fixture://lease/handover-1",
+    "recheck_current_authorization_before_activation": true
+  },
+  "restore_grant": {
+    "kind": "read_only",
+    "business_workspace_writable": false,
+    "external_dispatch_allowed": false
+  },
+  "artifact_publication": {
+    "input_status": "fixture_only_not_verified",
+    "requires_file_ready_before_db_publish": true
+  },
+  "runtime_identity": {
+    "installation_id": "install-fixture",
+    "runtime_incarnation": "incarnation-fixture-new",
+    "credential_material_included": false
+  },
+  "environment_activation": {
+    "state": "activation_pending_environment",
+    "write_capability_receipt": null,
+    "new_work_admitted": false
+  },
+  "capability_context": {
+    "binding_ref": "cap-emp-backend-1",
+    "binding_revision": "1",
+    "workspace_manifest_ref": "fixture://workspace/emp-backend/snapshot-1",
+    "loaded_skills": [
+      {
+        "skill_ref": "skill-fixture://group/contract-review/revision-1",
+        "package_digest": "fbefaff370adfe890adc43c357fd439a5304abb340657d5dfecd745c9a2af24a",
+        "must_revalidate_before_use": true
+      }
+    ],
+    "mcp_bindings": [
+      {
+        "binding_ref": "fixture://mcp-binding/emp-backend/contracts-1",
+        "descriptor_digest": "58ee28c8247c9f77281428db009adb68ca554d4e69d470ea574dc16ea5fce640",
+        "protocol_profile": "mcp-2026-07-28",
+        "connection_state": "reconnect_required",
+        "qualification": "unverified"
+      }
+    ],
+    "pending_tool_invocations": [
+      "fixture://invocation/mcp-1"
+    ],
+    "native_session_or_bearer_handles_included": false,
+    "secret_material_included": false,
+    "catalog_only_in_restore": true,
+    "write_tools_allowed_before_activation": false,
+    "real_capability_receipts": []
+  },
+  "workflow_context": {
+    "input_asset_refs": [
+      "input:design-v1"
+    ],
+    "input_manifest_status": "not_sent",
+    "environment_profile": "env-node-demo",
+    "job_refs": [
+      "job-demo-api"
+    ],
+    "browser_run_refs": [],
+    "pending_guidance_refs": [
+      "guidance-demo-1"
+    ],
+    "human_takeover_lease": null,
+    "delivery_refs": [],
+    "feedback_refs": [],
+    "restoring_can_prepare_environment": false,
+    "restoring_can_start_browser": false,
+    "restoring_can_control_jobs": false,
+    "secret_material_included": false
+  }
+}

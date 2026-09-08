@@ -1,0 +1,473 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>真实工作闭环与七份工作合同 · Draft 0.4.5 · Draft 0.4.5</title><style>
+:root{color-scheme:light;--bg:#f6f7f9;--paper:#fff;--text:#182432;--muted:#536273;--line:#dbe2e9;--accent:#264e73;--soft:#edf3f7}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:76px}body{margin:0;font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}a{color:var(--accent);text-decoration:none;overflow-wrap:anywhere}a:hover{text-decoration:underline}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #397fae;outline-offset:3px}header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;height:62px;padding:0 24px;background:var(--paper);border-bottom:1px solid var(--line)}.brand{font-size:14px;font-weight:650;line-height:1.4}.edition{color:var(--muted);font-size:12px;letter-spacing:.08em}.toolbar{display:flex;gap:8px;flex-shrink:0}button{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:6px 12px;background:var(--paper);color:var(--text);cursor:pointer;min-height:36px}.layout{display:grid;grid-template-columns:278px minmax(0,1fr);max-width:1600px;margin:auto}.sidebar{position:sticky;top:62px;align-self:start;height:calc(100vh - 62px);overflow:auto;padding:20px 14px;border-right:1px solid var(--line);background:var(--paper)}.sidebar input{width:100%;font:inherit;font-size:13px;padding:9px 10px;border:1px solid #8794a1;border-radius:6px;margin-bottom:14px;color:var(--text);background:var(--paper)}.navgroup{border-bottom:1px solid var(--line);padding:7px 0}.navgroup summary{font-size:13px;line-height:1.6;cursor:pointer}.navgroup summary a{color:var(--text)}.subnav{padding:6px 0 0 14px}.subnav a{display:block;font-size:12px;line-height:1.5;margin:0 0 8px;color:var(--muted)}main{min-width:0;padding:32px 40px 70px}article{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:36px 44px;max-width:1100px;margin:auto;overflow-wrap:anywhere}h1{font-size:32px;line-height:1.3;margin:0 0 18px;letter-spacing:-.02em}h2{font-size:25px;line-height:1.5;margin:52px 0 18px;border-top:1px solid var(--line);padding-top:24px}h3{font-size:20px;line-height:1.5;margin:32px 0 14px}h4{font-size:17px;margin:24px 0 12px}p{margin:13px 0}li{margin:5px 0}blockquote{margin:24px 0;padding:12px 20px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 6px 6px 0}blockquote p{margin:6px 0}.notice{max-width:1100px;margin:0 auto 18px;padding:13px 17px;font-size:13px;border:1px solid var(--line);background:var(--soft);border-radius:8px;color:var(--muted)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;background:var(--soft);padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}pre{max-width:100%;overflow:auto;background:#15222f;color:#eef3f8;border-radius:8px;padding:18px;font-size:13px;line-height:1.6;tab-size:2}pre code{background:none;color:inherit;padding:0;white-space:pre;overflow-wrap:normal}.table-wrap{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:7px}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.65;min-width:540px}th{text-align:left;background:var(--soft);font-weight:650}td,th{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}tr:last-child td{border-bottom:0}td{min-width:80px}hr{border:0;border-top:1px solid var(--line);margin:28px 0}.mobile-menu{display:none}.back{display:block;margin:24px 0;font-size:13px}.print-note{font-size:12px;color:var(--muted);text-align:center;margin-top:24px}[hidden]{display:none!important}
+body.dark{color-scheme:dark;--bg:#101822;--paper:#16222f;--text:#e6edf5;--muted:#adbccd;--line:#334557;--accent:#96bfdf;--soft:#213547}
+@media(max-width:1000px){.layout{grid-template-columns:236px minmax(0,1fr)}main{padding:24px}article{padding:28px}}
+@media(max-width:760px){header{padding:0 12px;height:64px}.brand{font-size:12px;max-width:180px}.edition{font-size:10px}.toolbar{gap:5px}button{padding:6px 9px;font-size:12px}.mobile-menu{display:inline-block}.layout{display:block}.sidebar{display:none;position:fixed;z-index:15;top:64px;height:calc(100dvh - 64px);width:min(88vw,330px);box-shadow:12px 0 28px #0002}.sidebar.open{display:block}main{padding:16px 10px 40px}article{padding:22px 16px;border-radius:8px}.notice{padding:12px;font-size:12px}body{font-size:15px}h1{font-size:27px}h2{font-size:22px;margin-top:36px;padding-top:20px}h3{font-size:19px}h4{font-size:16px}pre{padding:12px;font-size:12px}table{font-size:13px;min-width:520px}blockquote{padding:10px 13px;margin:20px 0}.table-wrap{margin:16px 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{header,.sidebar,.notice,.print-note{display:none}.layout{display:block}main{padding:0}article{border:0;max-width:none;padding:0}pre{white-space:pre-wrap;overflow-wrap:anywhere}pre code{white-space:pre-wrap}.table-wrap{overflow:visible}table{min-width:0;font-size:10px}body{font-size:11px}h2{break-before:auto}tr,blockquote,pre{break-inside:avoid}}
+</style></head><body><header><div><div class="brand">长期自治 Agent 组织运行时</div><div class="edition">DRAFT 0.4.5 · DESIGN DOCUMENT</div></div><div class="toolbar"><button id="menu" class="mobile-menu" aria-controls="sidebar" aria-expanded="false">目录</button><button id="theme" aria-label="切换深浅主题">深浅主题</button></div></header><div class="layout"><nav class="sidebar" id="sidebar" aria-label="文档目录"><label for="filter" class="edition">章节筛选</label><input id="filter" type="search" placeholder="查找章节…"><details class="navgroup"><summary><a href="#section-45">45. 正常工作闭环：资料进入、环境准备、开发调试、指导、交付与反馈</a></summary><div class="subnav"><a href="#subsection-45-1">45.1 本轮定位与最小可用路径</a><a href="#subsection-45-2">45.2 C-INTAKE：资料接收与模型可用表示</a><a href="#subsection-45-3">45.3 C-ENVIRONMENT：正常依赖准备不是隐形插件安装</a><a href="#subsection-45-4">45.4 C-JOBS：命令、长作业与开发服务</a><a href="#subsection-45-5">45.5 C-BROWSER：调研、应用验证与安全预览</a><a href="#subsection-45-6">45.6 C-GUIDANCE：人类指导、需求变化与接管交还</a><a href="#subsection-45-7">45.7 C-DELIVERY：可取得、可运行、可反馈的交付</a><a href="#subsection-45-8">45.8 C-FEEDBACK：来自外界的新工作</a><a href="#subsection-45-9">45.9 数据、员工操作与工作台集成</a><a href="#subsection-45-10">45.10 正常工作验收、变体与阶段门</a><a href="#subsection-45-11">45.11 文档和设计包维护规则</a></div></details></nav><main><div class="notice"><strong>设计文档 · 非运行结果</strong>　2026-09-08<br>本阅读版不是可运行工作台；真实产品、目标项目、模型与账号测试尚未完成。外部参考链接只在你点击时打开。</div><article><h1>真实工作闭环与七份工作合同 · Draft 0.4.5</h1>
+<p>本文件从<a href="../ARCHITECTURE.html">主规范</a>生成；不作为另一份独立真相。产品与目标应用仍未实现或实测。</p>
+<p><a id="section-45"></a></p>
+<h2>45. 正常工作闭环：资料进入、环境准备、开发调试、指导、交付与反馈</h2>
+<h3>45.1 本轮定位与最小可用路径 <a id="subsection-45-1"></a></h3>
+<p><strong>本章补齐的是“允许员工干活时，怎样真正把事情干成”。</strong> 不增加岗位，不换控制面技术栈，不以表单审批取代员工自主工作；将已有 Task、Artifact、Evidence、Action、Obligation、CapabilityBinding 和预算机制串成可用流程。七份合同是模块边界与用户体验约束，不是七个微服务。</p>
+<pre><code class="language-text">人提交目标 + 原有项目 + 参考图/文档/测试数据
+  → 原件安全接收，内容表示与输入版本就绪
+  → 固定规划岗规划，环境准备工作按预授权执行
+  → 员工编辑代码、运行命令，启动受管理测试服务
+  → 受控浏览器实际操作应用并保存证据
+  → 人补充资料/纠偏，必要时安全接管并交还
+  → 交付固定版本、运行说明、验证结果与下载入口
+  → 在有效维护使命中接收新问题；否则进入公司待办池
+</code></pre>
+<p>“入口存在”“实现完成”“对支持组合测试通过”仍为三个状态。本章描述完整工作链与失败行为，R1只要求46.3所列最小可用子集；PDF/CSV/ZIP、真实反馈等按R2资格开放，不能用全链蓝图阻塞最早价值实验。精准版本/账号/执行物/费用在资格测试后填写；样本execution_enabled=false，没有访问用户工单。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>最小能力</th>
+<th>首版参考实现路线</th>
+<th>不宣称已经覆盖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>资料入口</td>
+<td>工作台上传 + 受信 CLI 导入宿主目录/仓库；统一 Artifact 接收服务</td>
+<td>所有办公格式、无限大小、任意扫描件均可理解</td>
+</tr>
+<tr>
+<td>项目环境</td>
+<td>一个 Linux Node/npm 锁文件项目 profile；工具环境与控制面分离</td>
+<td>任意语言、GPU/移动端构建、任意 Dev Container 配置自动执行</td>
+</tr>
+<tr>
+<td>命令与服务</td>
+<td>既有 supervisor/合格 harness 映射为 JobRun；程序管理状态</td>
+<td>浏览器内完整 Web Terminal、通用远程桌面</td>
+</tr>
+<tr>
+<td>浏览器验证</td>
+<td>隔离 Playwright/Chromium 执行环境，固定访问范围</td>
+<td>任意登录站点、验证码、绕开访问限制</td>
+</tr>
+<tr>
+<td>人类协作</td>
+<td>工作台上下文指导、结构化变更、受控补丁导入/交还</td>
+<td>QQ 远程命令、多人实时编辑同一工作树</td>
+</tr>
+<tr>
+<td>交付</td>
+<td>不可变 DeliveryManifest + 鉴权下载/说明/证据；预览可选</td>
+<td>必然发布生产、构建件适配所有 OS</td>
+</tr>
+<tr>
+<td>外部反馈</td>
+<td>已授权仓库的 GitHub Issues 只读轮询；界面手动反馈是无外网入口</td>
+<td>默认接入用户所有仓库、工单评论/关单等远端写操作</td>
+</tr>
+</tbody>
+</table></div>
+<p>GitHub 是本版第一个真实反馈来源的设计选择，不是已经绑定用户账户。搜索由获授权的搜索 MCP 提供；没有搜索服务时仍可读明确批准的 URL，但不得称为已完成开放网络搜索。</p>
+<p><a id="contract-intake"></a></p>
+<h3>45.2 C-INTAKE：资料接收与模型可用表示 <a id="subsection-45-2"></a></h3>
+<h4>45.2.1 三种入口，四个不同完成状态 <a id="subsection-45-2-1"></a></h4>
+<p>入口为浏览器选择文件上传、受信 CLI 导入控制宿主目录、登记获授权仓库/URL 后显式执行抓取。浏览器中的电脑路径不等于服务器路径；远端管理页面不提供任意宿主路径枚举。用户原目录默认只读取样、复制到受控快照，禁止在“导入”时覆盖原项目或改写其 Git 状态。</p>
+<p>过程分为 <code>uploading → stored → processing → usable / partial / unsupported / rejected</code>；“stored”只表示原件完整保存，不代表文档已经解析、更不代表模型已读取。每个文件保留原始名称作为显示字段，存储使用受控 ID；关联公司、使命/任务、来源、字节数、内容 hash、敏感等级和保留政策。</p>
+<p>上传完成请求幂等，最终 hash/大小由服务端确认；中断重传不能生成重复输入绑定或触发重复任务。首版不强制实现分片续传，超限应在上传前提示，服务端仍执行硬限；部分上传超时回收，尚未固定的文件不能供员工读取。URL 获取使用现有数据出口/SSRF 规则，网络接收不在数据库事务内进行。</p>
+<p><strong>上传只接收资料，不启动使命、不安装依赖、不自动接入其中的 Skill/MCP。</strong> 用户明确将资料加入一个已运行任务时，才创建 InputRevision 和相关信号。确定性解析可沿预授权的处理配置运行；需要付费视觉、转录或额外外发的转换必须先通过对应授权及预算，普通上传按钮不隐藏一次模型调用。</p>
+<h4>45.2.2 支持矩阵及可定位表示 <a id="subsection-45-2-2"></a></h4>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>已开放该类型时的必需路径（R1/R2见46.3）</th>
+<th>保留的定位与限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UTF-8 文本、代码、Markdown</td>
+<td>有界读取/搜索；换编码需显式报告</td>
+<td>原件 hash、行范围、截断与读取版本；不静默替换乱码</td>
+</tr>
+<tr>
+<td>PNG/JPEG 截图</td>
+<td>图片表示，经已验证的 harness 图片输入送给模型</td>
+<td>像素尺寸、变换记录和原图引用；路径文本不当作已看图</td>
+</tr>
+<tr>
+<td>PDF</td>
+<td>文本提取 + 按页栅格表示；图表/版式任务可取对应页面</td>
+<td>原页码、解析器版本、字符/页面覆盖率；扫描或加密无可用路径则 partial/unsupported</td>
+</tr>
+<tr>
+<td>CSV</td>
+<td>表头、行数/列数、有界分段读取；类型为推断且可纠正</td>
+<td>分隔符、编码、行范围与原始字段；不执行公式或自动当代码</td>
+</tr>
+<tr>
+<td>ZIP 项目包</td>
+<td>检查清单后解包至新隔离根</td>
+<td>原包和树清单指纹；不自动运行安装钩子、仓库配置或嵌套压缩包</td>
+</tr>
+<tr>
+<td>Git 仓库</td>
+<td>获授权的只读获取 + 固定 commit 的受控副本</td>
+<td>仓库身份/commit/ref；未提交本地改动通过明确快照另存</td>
+</tr>
+<tr>
+<td>其他格式</td>
+<td>保存后明确不可处理，或拒绝不支持类型</td>
+<td>不用“已上传”掩盖 xlsx/docx/音视频/超大资料尚不支持</td>
+</tr>
+</tbody>
+</table></div>
+<p>PDF 文本与页面图引用应可互相定位；不要求 OCR 首发，但不能将扫描页没有提取文字误认成空页。若任务确需扫描页内容，使用获授权的视觉路径或明确等待转换。CSV 导出到电子表格时另检查公式注入风险，原始数据保留不变，显示层不擅自改值。</p>
+<p>输入原件、DerivedRepresentation 和实际 ModelInputManifest 分离：记录本次会话实际收到的文本范围、图片/页面、转换摘要和省略项，而非只保存“这个文件存在”。目标模型与 harness 的组合必须支持该输入类型；替换模型时重新按需求核对，不能将图片悄悄变成文件名、将无内容的链接当作已经提供信息。</p>
+<h4>45.2.3 处理环境、安全和共享 <a id="subsection-45-2-3"></a></h4>
+<p>限制单文件大小、文件数、解压后总大小、嵌套深度、页面/像素上限、解析时长与内存；实际限值在部署配置锁定。文件扩展名、浏览器 MIME 和 magic 都不是单独的安全证明，解析器运行在无业务凭据、默认无外网的隔离工作进程。输入不放在工作台可执行 webroot；受控下载和预览分别处理。<a href="../ARCHITECTURE.html#ref-w01">W01</a></p>
+<p>ZIP 拒绝路径逃逸、绝对路径、重复条目覆盖、链接/特殊文件及大小声明不符；按解压实际字节计量。原件不因解析失败消失。仓库导入不继承宿主 HOME、credential helper、任意 filter/hook；submodule/LFS/额外 URL 需在来源策略内，缺失内容明确展示，不按半个 checkout 宣称完整。</p>
+<p>解析产物通过既有 staging→ready/pin/GC 协议发布。管理员选择哪些输入绑定到任务；同公司获权成员自行读取，无需主管转发。替换附件生成新 revision，明确哪些任务需要重读；已有模型上下文不会自动忘记旧图，按 C-MEMORY 和 C-GUIDANCE 处理。</p>
+<p>**接受标准：**员工能指出所依据的文件及范围；图片路径确实被转成可用图片输入；失败和不支持有明确 UI；越权或半成品不会被当作已经读懂的资料。</p>
+<p><a id="contract-environment"></a></p>
+<h3>45.3 C-ENVIRONMENT：正常依赖准备不是隐形插件安装 <a id="subsection-45-3"></a></h3>
+<h4>45.3.1 控制软件的栈与目标项目的栈分离 <a id="subsection-45-3-1"></a></h4>
+<p>控制面继续用 Go/PostgreSQL，工作台用 React。员工开发的项目可以采用不同语言；首版只认证一个明确的 Node/npm 项目 profile，其余语言在同一环境接口下逐项扩展，不因为仓库写了 Python/Java/Rust 就自动拥有相应运行能力。</p>
+<p><code>ProjectEnvironmentRevision</code> 保存：工具链/镜像指纹、代码输入 revision、lockfile 指纹、依赖来源、安装步骤/脚本政策、构建/测试/启动入口、必要服务与健康条件、工作根与 scratch、网络出口、资源上限、缓存边界与资格记录。项目内 README、package.json、devcontainer.json 可提出候选配置，但不自动成为可信部署脚本。</p>
+<p>人可以一次批准项目环境政策；授权内重复安装、构建和重建无需逐次审批。<code>environment.ensure</code> 查询已有准备结果，必要时创建独立 EnvironmentPreparationRun；必须先准入再执行，多个员工同时请求同一准备键不会并行破坏同一依赖目录。共同可复用的是已固定的只读环境层，各员工的可写工作目录独立。</p>
+<h4>45.3.2 明确允许的依赖操作 <a id="subsection-45-3-2"></a></h4>
+<p><strong>首版禁止的是未授权的安装、宿主全局修改，以及发现/加载 Skill 或 MCP 时偷偷安装。不是禁止在隔离项目环境中，按批准政策自动准备依赖。</strong> 第 44 章的自动安装范围以此限定。</p>
+<p>Node 参考 profile 使用已确认 lockfile 的 clean install。<code>npm ci</code> 要求锁文件、会因清单不匹配而失败且不会替用户更新锁文件；它仍要单独处理安装脚本。<code>ignore-scripts</code> 不意味着之后显式 <code>npm run</code> 也不执行代码。<a href="../ARCHITECTURE.html#ref-w02">W02</a></p>
+<p>参考安装按固定 npm 版本执行 <code>npm ci --ignore-scripts --no-audit --no-fund</code>，但这只是一个可审核步骤，不是万能沙箱。需要生命周期脚本的项目应通过明确的 install-script policy，限定解析到的包版本、网络和资源后执行；不能遇到失败就自动改成允许全部脚本。不同 npm 版本的脚本策略能力以资格测试为准，不凭某个新 flag 假定所有环境已支持。</p>
+<p>lockfile 中的 tarball/git/file/registry 目标、项目 <code>.npmrc</code>、额外下载及工具遥测都是网络/文件输入，受批准来源和最小 env 限制。不要把广域 registry 凭据留给后续任意测试；支持凭据访问的准备阶段与无凭据执行阶段分开，或将必要短期凭据与该受信工具范围绑定。安装内容仍是不可信代码。</p>
+<p>开发中确需新增依赖，可在预授权的来源、许可类别、脚本/体积/网络边界内提出并接受 DependencyChange，生成新 lockfile 和环境 revision；越过边界才找人。不得“每加一行 import 就审批”，也不得无声扩大宿主/平台权限。无锁文件或其他语言缺合格 profile 时，返回 <code>environment_plan_required</code> 并交固定规划/开发岗提出方案。</p>
+<h4>45.3.3 附属服务和环境状态 <a id="subsection-45-3-3"></a></h4>
+<p>测试数据库、缓存、模拟 API 使用独立 ToolService/临时卷和最小测试凭据；<strong>禁止将组织控制数据库当作被测应用的业务库</strong>。参考 Node demo 可以先不需要外部数据库；使用数据库项目的资格测试另包含初始化、迁移、清理和数据隔离。</p>
+<p>环境状态为 <code>unprepared / preparing / ready / failed / dirty / revoked</code>，由准备回执和健康检查决定，不由模型自报 ready。准备失败保留原因与有界输出，不反复触发所有员工安装。源代码、lockfile、镜像、政策或工具链变化后，按受影响依赖失效；不把任意旧 node_modules 当验证基线。</p>
+<p>生产/审查缓存按信任级别隔离，已变更可写缓存不作为独立验收唯一依据。环境资源计入公司/使命预算，长作业和数据库临时数据纳入回收；保留正在被任务、接班或交付引用的必要层。<code>EnvironmentReady</code> 是一个可核验依赖，可以唤醒等待任务；普通检查由程序完成，不烧模型轮询。</p>
+<p><a id="contract-jobs"></a></p>
+<h3>45.4 C-JOBS：命令、长作业与开发服务 <a id="subsection-45-4"></a></h3>
+<h4>45.4.1 一份执行身份，不造第二个 Shell 运行时 <a id="subsection-45-4-1"></a></h4>
+<p>普通本地开发允许在 Task/Attempt 的受限环境内运行合格命令。<code>JobRun</code> 统一包装已认证 harness 原生命令或 supervisor 执行；同一次真实执行只有一个 JobRun，不将原生工具事件与外围脚本记成两次独立执行。<code>scripts.run</code> 是固定 Skill 入口的专用路径，不等于员工只能运行提前写好的技能脚本。</p>
+<p>命令记录 cwd/workspace、argv 或显式 shell 脚本文本的 hash、工具环境 revision、env 白名单、输入策略、所用授权、超时/输出/资源限制，以及 company/employee/task/attempt/incarnation/epoch。执行自由度由实际沙箱约束；不能只靠字符串禁词宣称 Shell 安全。共享分支更新、真实发布和外部账号写入仍必须走 Action，不能藏在普通命令后面。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>Job 种类</th>
+<th>生命周期目标</th>
+<th>完成/异常判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>batch</td>
+<td>构建、测试、有限数据处理</td>
+<td>退出码/结果文件与证据齐备；0 只表示进程正常结束，不等于任务验收</td>
+</tr>
+<tr>
+<td>service</td>
+<td>前端 dev server、后端 API、测试 DB</td>
+<td>独立 startup timeout、就绪探测、有限驻留寿命；持续运行不是命令超时</td>
+</tr>
+<tr>
+<td>controlled_input</td>
+<td>明确获准的有限交互程序</td>
+<td>有 typed prompt 与输入渠道；默认 stdin 关闭，不无期限等人</td>
+</tr>
+</tbody>
+</table></div>
+<p>首版不提供通用 Web Terminal。遇到未支持的登录/密码/确认交互时报告 <code>input_required</code>，只通过受信身份流程处理，不将密钥写进普通聊天。测试脚本需要 TTY 且未获资格时明确 unsupported，而不是让 Agent 反复空等。</p>
+<h4>45.4.2 状态、日志与暂停 <a id="subsection-45-4-2"></a></h4>
+<p><code>accepted → starting → running</code>，service 另记录 <code>readiness=not_ready / ready / unhealthy</code>；结束为 exited/failed/cancelled，无法核对保留 outcome_unknown。取消 ACK 不等于进程树和远端工作已经停止。日志有 offset、truncated/gap、大小限额和来源；长输出落有界文件引用，不把所有 stdout 注入模型或控制 DB。</p>
+<p>员工可用 <code>jobs.start/status/logs/stop</code>；状态和日志查询不额外调用模型。<code>jobs.start</code> 带幂等键，回执丢失先核对现有 JobRun。普通工作等到服务/测试事件时休眠；JobRun 的运行时长、工具费用与资源不因模型休眠而清零。全局急停路径不被日志洪峰或满员作业阻塞。</p>
+<h4>45.4.3 服务地址、借用与真实就绪 <a id="subsection-45-4-3"></a></h4>
+<p>服务只能绑定其隔离网络内的允许地址/端口。记录 <code>ServiceEndpoint</code> 与服务实例 generation，不能按“3000 端口有人回应”就认定是当前项目；ready 探测必须同时验证所属进程/容器、预期代码 revision 和配置的健康响应。禁止自动 reuse 不明来源服务。Playwright 已提供命令、ready URL、多服务及关闭配置；本项目需要在其外保证资源身份和版本正确。<a href="../ARCHITECTURE.html#ref-w03">W03</a></p>
+<p>前端/测试员工经已批准的 peer access 借用服务，得到对特定服务端口的访问授权，不获得所有者文件写权、宿主网络或 DB 权限。记录消费者和 TTL；有获授权消费者时不会仅因原员工睡眠立即关闭，无消费者且到 idle deadline 后由程序回收。明确关闭/撤权优先于普通借用；调用者得到清晰失效状态，不转发到刚被复用的新端口。</p>
+<p>开发模式可以带热更新，但记录 mutable=true，不能用它的截图为不可变 candidate 最终验收。验收服务从冻结产物/干净快照启动，截图和结果绑定该 service generation。</p>
+<h4>45.4.4 换班、重启与回收 <a id="subsection-45-4-4"></a></h4>
+<p>长期服务由 supervisor 管理，而非依赖模型连接维持。换脑时核对旧作业：写当前工作区的构建/测试必须排空或隔离，不能旧写者仍在、新员工就接着改；冻结快照上的只读服务可在明确重新授权后保留，但旧会话不能再控制它。转交控制 handle 使用新 epoch，历史 producer attempt 不改写。</p>
+<p>宿主重启后不凭复用 PID 或 open port 认领进程，需 supervisor 的 job/container identity 与 generation；无法确认则停止/隔离重建或保持 blocked，不猜。收尾撤销预览/借用与测试账号，清理只针对所属服务、缓存和卷，不杀其他公司进程。<code>JobFinished</code>、<code>ServiceReady</code> 与 <code>ArtifactAccepted</code> 是不同事件。</p>
+<p><a id="contract-browser"></a></p>
+<h3>45.5 C-BROWSER：调研、应用验证与安全预览 <a id="subsection-45-5"></a></h3>
+<h4>45.5.1 三条路径不能混在一起 <a id="subsection-45-5-1"></a></h4>
+<p><strong>搜索/网页读取</strong>：获授权的搜索 MCP 返回发现结果，网页读取使用批准的 HTTP/浏览器访问路径。返回 URL、标题、获取时刻、访问状态、引用片段和内容指纹；搜索摘要不冒充已读原文。输入 URL 不是网站写权限，不执行页面嵌入的“新系统指令”。若没有搜索 provider，只支持明确 URL 阅读并在能力表显示 <code>search=unavailable</code>。</p>
+<p><strong>目标应用验证</strong>：首版参考隔离 Playwright/Chromium，访问 C-JOBS 提供的特定服务端点。DOM/可访问树、表单交互、可见结果、控制台和网络错误及截图作为测试证据；不因拿到页面就宣称功能正确。<a href="../ARCHITECTURE.html#ref-w04">W04</a></p>
+<p><strong>供人试用的预览</strong>：工作台可以给出已授权的预览定位；不是将任意生成代码当作工作台 React 组件，也不是默认发布公网。第一条闭环可以先交付截图/追踪和本机隔离预览，远程预览必须在独立访问边界通过测试后才启用。</p>
+<h4>45.5.2 浏览器执行合同 <a id="subsection-45-5-2"></a></h4>
+<p>浏览器资源按公司/使命/员工和用途隔离，不附着到管理员平日使用的 Chrome。测试账号、Cookie、storageState 和 bearer handle 只在相应受控环境中保存；不进入原始日志、模型接班包、下载交付物。Playwright 官方提醒，认证状态可能足以冒用账号，必须避免公开提交和不当复用。<a href="../ARCHITECTURE.html#ref-w05">W05</a></p>
+<p>默认使用无秘密的临时测试账号，按测试要求填充/重置数据。验证码、未知登录和超出授权的第三方跳转进入明确等待；不能自动绕过。浏览器导航、重定向、iframe、下载、WebSocket 与后续资源请求均受网络出口政策约束；只检查最初 URL 的域名不足以形成隔离。创建/删除真实记录仍是外部 Action，不以“点击按钮”绕开副作用管理。</p>
+<p>记录 BrowserRun：browser build、执行环境、candidate/服务 generation、输入数据版本、viewport/locale/timezone、步骤、断言、截图/DOM/log/trace 的 Artifact 引用。截图只能证明捕获的画面，功能验证需要操作与断言；模型视觉评价与确定性测试分开，不能把漂亮截图等同全部通过。</p>
+<p>拿到图片但无法实际送进当前模型时显示 visual_input_unavailable。可继续不依赖视觉的检查；需要比较参考图时必须使用合格视觉链或由人处理，不能编造“已经看过”。</p>
+<h4>45.5.3 预览不进入管理员信任域 <a id="subsection-45-5-3"></a></h4>
+<p>首版不在工作台同源路径托管生成应用，不在管理页面注入其 HTML/JavaScript。预览使用独立 origin 和隔离浏览器 profile，使用不携带管理 Cookie、令牌或默认登录态的访问路径。<strong>仅换端口并不足以完整隔离 Cookie 和所有侧通道</strong>；实施必须验证 host-only Cookie、Origin/CSRF、网络拒绝访问控制面和无 opener/非可信消息处理。</p>
+<p>预览 Origin/route/generation 有明确生命周期和访问者范围；禁止宽泛 CORS、共享 Service Worker、开放目录和直接暴露宿主端口。需要预览鉴权时，凭据通过独立受限访问机制，不能复制管理员会话或长期 token 进 URL。截图/纯文本作为未具备隔离预览资格时的可用退路。</p>
+<p>员工生成的测试应用无法取得控制 DB/管理 API 网络权限；防护不能只依赖浏览器同源规则。关闭预览对新连接生效，已有连接的中止需要真实回执；网络断线不自动把预览发布到另一公网地址。<a href="../ARCHITECTURE.html#ref-w09">W09</a></p>
+<p><a id="contract-guidance"></a></p>
+<h3>45.6 C-GUIDANCE：人类指导、需求变化与接管交还 <a id="subsection-45-6"></a></h3>
+<h4>45.6.1 工作台是指导入口，QQ 仍只提醒 <a id="subsection-45-6-1"></a></h4>
+<p>公司/使命/任务/员工详情提供一个轻量“指导与反馈”输入区，可附已登记资料、引用和具体问题。不要求打开原生 CLI，也不引入另一套聊天数据库。人可直接联系固定员工，消息绑定真实管理员身份与当前 scope；组织成员间的直接协作不变。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>处理方式</th>
+<th>不应隐式发生</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>补充资料/建议</td>
+<td>保存 Guidance，定向建立待处理责任，在安全边界读取</td>
+<td>新建使命、扩大网络、马上打断无关任务</td>
+</tr>
+<tr>
+<td>询问进度</td>
+<td>默认展示现有事实；明确要求额外分析才准入一次付费工作</td>
+<td>每次打开对话框都召唤模型</td>
+</tr>
+<tr>
+<td>回答澄清问题</td>
+<td>挂到既有 Question/Obligation，记录被采用状态</td>
+<td>标记该任务所有验收已经通过</td>
+</tr>
+<tr>
+<td>正式需求/优先级变更</td>
+<td>用户选择下一边界处理，或先暂停指定工作再处理；形成ChangeRequest/新输入版本与影响分析</td>
+<td>自由文本未经确认修改成功标准/金额；未取得停止回执就称已停</td>
+</tr>
+<tr>
+<td>管理授权</td>
+<td>复用正式命令/确认流程</td>
+<td>因写在消息里就获得管理员操作能力</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>received / queued / considered / applied / declined / superseded</code> 分开：工具确认保存不代表员工已处理；采用一条意见要关联对应任务/版本。公司暂停时消息照常入库，但不被普通通知唤醒；恢复后按版本补齐。人也不会因为直接给前端一句话就获得第二个未协调写会话。</p>
+<h4>45.6.2 变更不能只改 prompt <a id="subsection-45-6-2"></a></h4>
+<p>ChangeRequest 指定原需求 revision、拟议变更、范围和是否需要阻止旧结果发布。小范围补充可在既定任务中处理；改变正式成功标准、权限或预算须按管理流程确认。程序能计算显式依赖，不能宣称完整理解所有自然语言影响；不确定时固定规划岗做有界分析，关键范围保守阻止旧候选放行。</p>
+<p>相关 Task/Input/Contract 生成新 revision，旧候选的受影响批准 invalidated；尚未启动的旧任务取消或 supersede，正在执行的工作在安全边界更新或中断。无关任务继续工作，不为一处按钮文案重启全公司。被替换附件保持历史引用但不再是当前输入。</p>
+<p>员工尚未理解需求时提出结构化 Question：具体未知、相关证据、能够继续的部分、期限与预算。没有人回答时保持等待，只有确实阻塞且需要人采取动作时经现有 QQ 规则通知。已经超时/被新变更替代的问题，迟到回答不复活旧任务。</p>
+<h4>45.6.3 接管写入与交还 <a id="subsection-45-6-3"></a></h4>
+<p>首版优先通过受控补丁/新快照导入让人修改，而不是开放在线 IDE。人也可以按明确 CLI 流程在隔离副本工作；不需要对每行改动审批。</p>
+<pre><code class="language-text">人请求 TakeoverLease（指定 task/workspace/外部资源）
+  → 暂停相关新派发，排空/停止或隔离相关写者
+  → 收到实际交接回执后才把编辑副本交给人
+  → 人提交补丁/快照及基线，声明完成
+  → 程序核对差异、根目录、当前版本和在途影响
+  → 接受新的工作基线，使受影响验收失效
+  → 归还租约、重新构造上下文、显式恢复
+</code></pre>
+<p>人工改动要保存 human provenance，计入人类介入时间；不是 AI 的无人产出。补丁针对过期基线不得直接覆盖，先创建冲突或合并候选；导入也不能启用其中的 Skill/MCP/运行脚本。接管超时不自动夺回仍在使用的副本并双写；先核对权限回收，不能安全收回则等待。</p>
+<p>管理员直接在系统之外改共享目标时，不能承诺完全阻止；检测 drift 后冻结相关写回，登记外部修改和新基线。只按 Resume 而不核对人改了什么，不满足交还合同。人可结束使命，不必为了让旧计划继续执行而撤回自己的修复。</p>
+<p><a id="contract-delivery"></a></p>
+<h3>45.7 C-DELIVERY：可取得、可运行、可反馈的交付 <a id="subsection-45-7"></a></h3>
+<h4>45.7.1 DeliveryManifest 不等于“全部聊天记录打包” <a id="subsection-45-7-1"></a></h4>
+<p>在任务/使命页提供“交付”视图，聚合已有不可变产物和证据。<code>DeliveryManifest</code> 包含 delivery_id/revision、company/mission、源输入与精确代码版本、环境/构建信息、文件清单和 hash/大小、运行说明、验收结果、已知限制、许可/来源说明以及反馈入口；秘密、开发缓存和原生模型会话不作为普通交付附件。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>软件交付最少包含</th>
+<th>内容/研究交付最少包含</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定源码或补丁、需要的构建件、启动/测试命令、依赖/支持平台、配置说明、验证证据与未解决项</td>
+<td>定稿或报告、来源与获取时间、必要素材、可用导出、事实/实验边界及发布状态</td>
+</tr>
+</tbody>
+</table></div>
+<p>构建件必须来自清单绑定的版本/环境；不是把最新目录里找到的可执行文件随手上传。源码交付、构建件交付、通过测试和真实部署是不同状态。第一参考环境是 Linux，不因控制面 Go 可跨平台就说员工产物支持 Windows/macOS。</p>
+<h4>45.7.2 发布给人、业务验收与人接受分开 <a id="subsection-45-7-2"></a></h4>
+<p>交付状态为 <code>assembling / ready / invalidated / withdrawn</code>；人对交付的态度单列 <code>not_requested / awaiting_feedback / accepted / changes_requested</code>。在授权内通过内部验收后，可以自动生成 ready 交付，不要求每个内部步骤人签字。是否必须得到用户接受才能结束使命，在 Mission 合同事先明确；默认不凭沉默捏造 user_accepted。</p>
+<p>一次下载、预览或 QQ 消息都不算人验收。需要用户试用时，设置有限反馈期限和到期行为；它不是让模型一直等待的活跃会话。收到修改请求时，在有效使命内生成修订任务；已结束使命只将反馈送入公司 backlog，待人开新使命，不偷偷复活原授权。</p>
+<h4>45.7.3 安全下载与可重现说明 <a id="subsection-45-7-3"></a></h4>
+<p>下载经过后端鉴权，内容以固定 ArtifactRevision 流式提供，明确文件名/MIME/大小/hash；不得将任意磁盘路径直接暴露给客户端。原始 HTML、可执行文件按附件下载，可信的文本/图片预览与运行应用预览分别隔离。导出保留 pin 直到生成/传输阶段安全完成，采用有期限的下载租约而非永久 pin。</p>
+<p>交付清单不会让已撤销或已删除资料重新可见；敏感来源不具备导出权时，脱敏或形成有缺失说明的新清单，不能继续称完整可重现。新问题推翻验证结论时追加 invalidation 和新 delivery revision，历史不覆盖。重新构建依赖不可获得时如实说明，不以 hash/lockfile 声称永远可复现。</p>
+<p>可配置普通完成通知，但默认 QQ 仍只发接管问题；交付 ready 不等于要新增一条成功推送。终态报告和待决事项在工作台始终可查。</p>
+<p><a id="contract-feedback"></a></p>
+<h3>45.8 C-FEEDBACK：来自外界的新工作 <a id="subsection-45-8"></a></h3>
+<h4>45.8.1 首个真实来源选择与执行边界 <a id="subsection-45-8-1"></a></h4>
+<p>本版选择<strong>GitHub Issues 只读轮询</strong>作为首个真实反馈适配目标，复用已授权 HTTP/平台能力，由普通程序调度；不默认扫描用户个人全部仓库，不依赖人工复制每条反馈。安装时选择确切 repository ID/范围、只读凭据、观察起点、筛选政策和预算；没有实际配置时只运行模拟来源或界面手动反馈，不称已接通 GitHub。</p>
+<p>collector初读issue标题/正文/状态与指定范围更新；正式triage/修复前再读取单issue的有界评论上下文，保留评论ID/revision、覆盖时间与截断。GitHub提供单issue评论的只读及分页接口。<a href="../ARCHITECTURE.html#ref-d01">D01</a> 超限/无权时可以观察或等待整理，不据旧正文高置信度实施；评论正文中的命令不变成授权。完整timeline、所有webhook、远端关单/评论/发布关联不默认支持。Issues接口可能返回PR，仍按本profile识别排除。<a href="../ARCHITECTURE.html#ref-w06">W06</a></p>
+<h4>45.8.2 幂等输入与有界覆盖 <a id="subsection-45-8-2"></a></h4>
+<p><code>FeedbackSourceBinding</code> 保存来源身份、权限/过滤 revision、采集游标和 coverage；<code>FeedbackObservation</code> 保存 provider item ID、源更新时间、原文指纹、抓取时间及模式。更新同一反馈产生新观察版本，不反复创建同名新任务；有新相关信息时定向唤醒，只有“仍然 open”不每日唤醒一次。</p>
+<p>分清首次基线、完整扫描与增量轮询。使用分页时，页面记录落盘后才能推进该页扫描状态；只有完成本批必要页，才推进可声明的覆盖水位。限流、失联或页失败显示 <code>partial/stale</code>，不把失败页当空列表；按官方分页链接和限流提示有界退避。<a href="../ARCHITECTURE.html#ref-w07">W07–W08</a></p>
+<p><code>updated_at</code> 不是唯一 ID 或全局提交顺序。参考实现采用重叠时间窗口和 item ID + 内容指纹去重；必要时周期性有界完整核对。分页过程中列表可能变化，不能宣称快照式无遗漏；明确最终一致覆盖、上次完整扫描和未知删除/权限丢失。不得把 403/404 自动当作用户删除了所有 issue，也不得将不再匹配筛选的记录默认为“问题已解决”。</p>
+<p>首版只对选定规模、在限额内可反复扫描的仓库声明资格；无法在轮询窗口覆盖时缩小范围或延长 SLA 并经用户确认，不悄悄丢最后几页。API 请求的 304/ETag 可作优化，但不能替代每页输入记录和覆盖账本。</p>
+<h4>45.8.3 观察、待办与使命的关系 <a id="subsection-45-8-3"></a></h4>
+<p>来源文字先按不可信资料保存，再规则去重/分类。准备正式接手时先按额度取必要评论；未覆盖范围明确partial，评论编辑/更正触发受影响工作核对，不靠标题匹配排除关键信息。无意义重复不调用模型，必要语义判断创建有界triage Task交现有岗位。程序限制请求/正文/评论量，不让外部工单洪峰无限烧钱。</p>
+<p>新反馈在<strong>有效维护/运营使命</strong>中，符合范围才创建或更新正式任务。一次性交付已关闭后，新反馈进入 Company backlog：可以在有单独有限授权的 collection policy 下采集，但不能沿旧使命授权自动启动模型。没有独立采集授权就停止轮询。一个公司仍只占用一个未释放使命。</p>
+<p>对外评论、变更状态、提交 PR 属于另外的外部写 Action；首版只读 collector 不拥有这些权限。内部记录“已处理”不得说成远端工单已经关闭。后续需要反馈写回时，另登记目标与幂等/结果核对政策。</p>
+<h4>45.8.4 保留真实运营指标 <a id="subsection-45-8-4"></a></h4>
+<p>反馈来源的 completeness、时延、权限状态与业务质量分开。模型认为修好了，只能指向实际 artifact/evidence；来源后来关闭不一定由本团队修复，必须记录归因边界。公司 backlog 数、有效任务数、已验证修复与用户认可分开，不用“看到 10 条 issue”伪装“解决 10 个问题”。</p>
+<p><a id="workflow-integration"></a></p>
+<h3>45.9 数据、员工操作与工作台集成 <a id="subsection-45-9"></a></h3>
+<p>所有对象依旧存 Go/PG 与现有产物库。新增逻辑记录只包括 InputAsset/Representation/InputBinding、ProjectEnvironmentRevision/PreparationRun、JobRun/ServiceEndpoint/BorrowerLease、BrowserRun、Guidance/ChangeRequest/TakeoverLease、DeliveryManifest/UserDisposition、FeedbackBinding/Observation/BacklogItem。它们复用 Task/Action/Artifact/Usage，不创造另一套预算、员工或事件总线。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>employee-ops@1 草案操作</th>
+<th>具体作用</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs.list</code> / <code>inputs.read</code></td>
+<td>获取绑定资料、范围及模型可用表示</td>
+<td>有界、按权，不将上传直接当模型已读</td>
+</tr>
+<tr>
+<td><code>environment.status</code> / <code>environment.ensure</code></td>
+<td>查看环境或按已有政策申请准备</td>
+<td>ensure 可执行但不自批新来源/脚本</td>
+</tr>
+<tr>
+<td><code>jobs.start</code> / <code>jobs.status</code> / <code>jobs.logs</code> / <code>jobs.stop</code></td>
+<td>普通命令、服务及其回执</td>
+<td>状态查询不轮询模型；停止需真实结果</td>
+</tr>
+<tr>
+<td><code>research.search</code> / <code>research.fetch</code></td>
+<td>调用已登记搜索能力或获准网页读取</td>
+<td>固定工具绑定，网络/来源/成本可查，无后端时 unavailable</td>
+</tr>
+<tr>
+<td><code>browser.run</code> / <code>browser.results</code></td>
+<td>固定步骤或受控交互、证据读取</td>
+<td>目标和 credential scope 不可自行换成管理员浏览器</td>
+</tr>
+<tr>
+<td><code>guidance.read</code> / <code>guidance.respond</code> / <code>questions.ask</code></td>
+<td>读取人的意见、回复处理结果、提出澄清</td>
+<td>自由文本不能改变管理权限</td>
+</tr>
+<tr>
+<td><code>delivery.propose</code></td>
+<td>提交交付清单候选</td>
+<td>只引用已固定版本，不自行填写 user_accepted</td>
+</tr>
+<tr>
+<td><code>feedback.read</code> / <code>feedback.triage</code></td>
+<td>读取获权反馈，提出任务分类/关联</td>
+<td>不控制 collector 凭据，不自动对外关单</td>
+</tr>
+</tbody>
+</table></div>
+<p>以上为逻辑操作目录，不是独立 HTTP endpoint 数量承诺。<code>inputs.read</code> 在恢复阶段只能读取所需已固定表示；不能启动新解析或外发。<code>environment.status/jobs.status/jobs.logs/browser.results/guidance.read/feedback.read</code> 也仅限恢复所需的只读记录；search/fetch/start/ensure/run/stop/写操作不因此开放。紧急停止由受信控制面处理，不依赖恢复模型持有全权。</p>
+<p>工作台沿现有侧栏加入页签：使命“资料/指导/交付”、任务“作业/测试与预览”、公司“反馈待办”；环境准备归员工工作环境。上传、接收、已处理、已交付、已验收和用户接受单独反馈，未知不画绿色。查看这些页面不调用模型；真实环境准备、浏览器运行、搜索/抓取和预览启动都是可见的授权操作。</p>
+<p>人提交指导、换附件、接管或接受交付使用既有管理命令/幂等回执，不暴露 worker 管理权限。工作台 JS 不直接运行包管理器、浏览器或 GitHub token；模拟页面明确标识并禁用真实外发。QQ 通知仍指向待决事项，不嵌入完整源码、附件或可直接执行的批准链接。</p>
+<p><a id="workflow-acceptance"></a></p>
+<h3>45.10 正常工作验收、变体与阶段门 <a id="subsection-45-10"></a></h3>
+<p><strong>WF-36 是正常工作验收，不是把所有故障一次塞进去。</strong> 使用固定的小型现有 Node Web 项目、截图、文本需求、CSV 与文本型 PDF（各件有真实 hash）。现有四个岗位不变；依赖预批准，测试数据无生产秘密，真实模型总预算先由人批准。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>实际工作</th>
+<th>必须留下的证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 接收</td>
+<td>人上传资料/导入仓库，选择输入版本，明确启动</td>
+<td>原件/表示清单、原项目未改证明、ModelInputManifest</td>
+</tr>
+<tr>
+<td>2 准备</td>
+<td>固定规划岗拆近期任务，环境按授权准备</td>
+<td>计划版本、环境/锁文件和准备回执；没有偷偷改宿主</td>
+</tr>
+<tr>
+<td>3 开发</td>
+<td>前后端自主找资料、用已批准 Skills/MCP 并直接交流</td>
+<td>实际消息/责任/代码产物；主管不是传话筒</td>
+</tr>
+<tr>
+<td>4 验证</td>
+<td>受管理服务就绪，浏览器操作应用、保存结果</td>
+<td>Job/服务 generation、步骤/断言、DOM/截图/失败或通过</td>
+</tr>
+<tr>
+<td>5 纠偏</td>
+<td>人提交一条小需求变化，员工读取并更新</td>
+<td>Guidance/ChangeRequest、受影响批准失效、新输入与产物</td>
+</tr>
+<tr>
+<td>6 交付</td>
+<td>固定结果、说明和证据，提供鉴权下载</td>
+<td>DeliveryManifest、下载清单/hash、明确限制和支持平台</td>
+</tr>
+<tr>
+<td>7 反馈</td>
+<td>在预授权维护期读取一条选定来源的新问题并处理</td>
+<td>真实/模拟模式、来源 ID/版本、triage/修复/验收、无重复任务</td>
+</tr>
+</tbody>
+</table></div>
+<p>测试运行一次完整正常路径后，分别加以下变体：图像能力缺失、安装脚本不允许、服务启动失败/端口冲突、人工补丁接管、模型断线、已结束使命接收新反馈、外部分页中断。必须报告失败，不人工补完以后仍标无人完成。WF/UI 与既有 FT/NT/CAP 分别统计；静态样本通过不等于任何工作链已经运行。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>首次需要时验证</th>
+<th>无资格时行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G0-INTAKE</td>
+<td>支持格式、解析隔离、真实图片/文档输入和换模型</td>
+<td>partial/unsupported，保留原件，拒绝假阅读</td>
+</tr>
+<tr>
+<td>G0-PROJECT-ENV</td>
+<td>锁文件、安装策略、准备并发和工具链 profile</td>
+<td>环境阻塞，允许阅读/规划但不伪装可运行</td>
+</tr>
+<tr>
+<td>G0-JOBS</td>
+<td>命令/服务/就绪、日志和换班后核对</td>
+<td>不重复启动；旧写者未知则暂停相关写工作</td>
+</tr>
+<tr>
+<td>G0-BROWSER</td>
+<td>目标应用交互、证据、网络/认证和预览隔离</td>
+<td>无浏览器资格不得声称应用实测；截图交付不伪装交互预览</td>
+</tr>
+<tr>
+<td>G1-GUIDANCE</td>
+<td>指导、变更、人工接管/交还和版本失效</td>
+<td>保存输入、明确待处理；无接管回执不共享写权</td>
+</tr>
+<tr>
+<td>G1-DELIVERY</td>
+<td>清单、鉴权下载、运行说明、用户态与历史保护</td>
+<td>不发布残缺 ready；缺平台/环境支持须标明</td>
+</tr>
+<tr>
+<td>G4-FEEDBACK</td>
+<td>一个真实只读来源、分页/重试/覆盖、使命边界</td>
+<td>模拟与手动反馈可先做；不宣称真实无人运营</td>
+</tr>
+</tbody>
+</table></div>
+<p>实施不等待所有 Gate 通过才写代码。第一纵向切片先做文本/图片输入、一个环境、一个 Job、一个服务、最小浏览器验证、一个可下载结果；PDF/CSV/ZIP 和外部来源在相应阶段补齐后才声明支持。工具栈无需重新选型，未批准权限/费用不因赶阶段而自动开放。</p>
+<p><a id="workflow-maintenance"></a></p>
+<h3>45.11 文档和设计包维护规则 <a id="subsection-45-11"></a></h3>
+<p>0.4.3 中 17.7、18.9、20.5、21.7、38.7、39.7、40.9、41.6 等重复编号，本版统一修正；完整重编号映射见 <code>audit/SECTION_RENUMBERING.json</code>。每个数字小节新增唯一 subsection 锚点；原 section/contract 锚点保留。规范与独立阅读副本从同一正文生成，后续引用优先使用具名合同和锚点，不以单个含糊数字决定实施。</p>
+<p>新增七条需求 REQ-35～41、八条 ADR-057～064、WF-01～36 和 UI-41～48；原 FT-01～82、NT-01～22、CAP-01～32 与既有 UI 测试保留。测试总表和需求映射由目录文件生成，不能正文自己维护一套不同总数。此次发现 AR-16～22 对应七条实务流程；AR-23 对应文档编号歧义。产品项 patched_in_spec/not_run；编号清理仅能记录 document_verified，不上升为产品验证。</p>
+<p>本轮完成的是设计、样本和阅读器检查，不是员工已经读图、浏览器已经测应用或 GitHub 反馈已经接入。没有复制第三方实现、没有使用实际账号、没有外发用户资料、没有运行付费模型或新的目标项目。</p>
+<p><strong>本章准则：安全和持久性为工作服务。接得住真实材料、跑得起项目、看得到实际结果、听得懂人的纠偏、交得出可用产物、接得上新反馈，才是一条真正可用的自治工作链。</strong></p>
+</article><div class="print-note">离线阅读 · 无外部字体与渲染依赖 · 所有运行资格以真实证据为准</div></main></div><script>
+const sidebar=document.getElementById('sidebar');const menu=document.getElementById('menu');
+menu.addEventListener('click',()=>{const v=sidebar.classList.toggle('open');menu.setAttribute('aria-expanded',String(v));});
+document.getElementById('theme').addEventListener('click',()=>{document.body.classList.toggle('dark');});
+document.getElementById('filter').addEventListener('input',e=>{let q=e.target.value.trim().toLowerCase();document.querySelectorAll('.navgroup').forEach(g=>{let match=g.textContent.toLowerCase().includes(q);g.hidden=!match;if(q&&match)g.open=true;g.querySelectorAll('.subnav a').forEach(a=>{a.hidden=q&&!a.textContent.toLowerCase().includes(q);});});});
+sidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{sidebar.classList.remove('open');menu.setAttribute('aria-expanded','false');}));
+function highlight(){let key=decodeURIComponent(location.hash.slice(1));sidebar.querySelectorAll('a').forEach(a=>{let active=a.getAttribute('href')==='#'+key;a.toggleAttribute('aria-current',active);if(active){let g=a.closest('details');if(g)g.open=true;}});}window.addEventListener('hashchange',highlight);highlight();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sidebar.classList.remove('open');menu.setAttribute('aria-expanded','false');}});
+</script></body></html>

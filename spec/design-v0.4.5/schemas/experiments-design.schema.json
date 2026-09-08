@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "experiments-design.schema.json",
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "numbers_are_proposals_not_measurements",
+    "hypotheses_are_not_verified",
+    "experiments"
+  ],
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "non_executable_experiment_plan"
+    },
+    "numbers_are_proposals_not_measurements": {
+      "const": true
+    },
+    "hypotheses_are_not_verified": {
+      "const": true
+    },
+    "experiments": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "execution_enabled",
+          "pay_enabled",
+          "owner_budget_authorized",
+          "approved_budget",
+          "results",
+          "threshold_status"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "E-START",
+              "E-ORG",
+              "E-HANDOVER"
+            ]
+          },
+          "status": {
+            "const": "not_run"
+          },
+          "execution_enabled": {
+            "const": false
+          },
+          "pay_enabled": {
+            "const": false
+          },
+          "owner_budget_authorized": {
+            "const": false
+          },
+          "approved_budget": {
+            "type": "null"
+          },
+          "results": {
+            "type": "null"
+          },
+          "threshold_status": {
+            "const": "proposed_awaiting_owner_confirmation"
+          }
+        }
+      }
+    }
+  }
+}

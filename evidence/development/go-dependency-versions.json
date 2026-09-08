@@ -1,0 +1,32 @@
+{
+  "github.com/jackc/pgx/v5": {
+    "Version": "v5.11.0",
+    "Time": "2026-09-07T23:39:32Z",
+    "Origin": {
+      "VCS": "git",
+      "URL": "https://github.com/jackc/pgx",
+      "Hash": "5e583fa7aabfa88b796292f849fc9d7d75ac159d",
+      "Ref": "refs/tags/v5.11.0"
+    }
+  },
+  "github.com/pressly/goose/v3": {
+    "Version": "v3.28.0",
+    "Time": "2026-09-02T08:26:26Z",
+    "Origin": {
+      "VCS": "git",
+      "URL": "https://github.com/pressly/goose",
+      "Hash": "43d2d9c819ed6c9ba2b67a86bdf9fc08562495b7",
+      "Ref": "refs/tags/v3.28.0"
+    }
+  },
+  "github.com/sqlc-dev/sqlc": {
+    "Version": "v1.31.1",
+    "Time": "2026-04-22T14:52:15Z",
+    "Origin": {
+      "VCS": "git",
+      "URL": "https://github.com/sqlc-dev/sqlc",
+      "Hash": "a95e91d70ad9e1181253c333a1cfdd75ae4b95a5",
+      "Ref": "refs/tags/v1.31.1"
+    }
+  }
+}

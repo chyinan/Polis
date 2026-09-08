@@ -1,0 +1,30 @@
+{
+  "os": "Windows-11-10.0.26200-SP0",
+  "arch": "AMD64",
+  "go version": {
+    "available": false
+  },
+  "node --version": {
+    "path": "C:\\Program Files\\nodejs\\node.EXE",
+    "output": "v24.15.0\n"
+  },
+  "python --version": {
+    "path": "C:\\Python314\\python.EXE",
+    "output": "Python 3.14.4\n"
+  },
+  "psql --version": {
+    "available": false
+  },
+  "docker version": {
+    "path": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.EXE",
+    "output": "Client:\n Version:           29.4.1\n API version:       1.54\n Go version:        go1.26.2\n Git commit:        055a478\n Built:             Mon Apr 20 16:35:45 2026\n OS/Arch:           windows/amd64\n Context:           desktop-linux\n"
+  },
+  "wsl --list --verbose": {
+    "path": "C:\\Windows\\system32\\wsl.EXE",
+    "output": " \u0000 \u0000N\u0000A\u0000M\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000S\u0000T\u0000A\u0000T\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000V\u0000E\u0000R\u0000S\u0000I\u0000O\u0000N\u0000\n\u0000\n\u0000*\u0000 \u0000U\u0000b\u0000u\u0000n\u0000t\u0000u\u0000-\u00002\u00002\u0000.\u00000\u00004\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000S\u0000t\u0000o\u0000p\u0000p\u0000e\u0000d\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u00002\u0000\n\u0000\n\u0000 \u0000 \u0000d\u0000o\u0000c\u0000k\u0000e\u0000r\u0000-\u0000d\u0000e\u0000s\u0000k\u0000t\u0000o\u0000p\u0000 \u0000 \u0000 \u0000 \u0000S\u0000t\u0000o\u0000p\u0000p\u0000e\u0000d\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u00002\u0000\n\u0000\n\u0000"
+  },
+  "codex --version": {
+    "path": "C:\\Users\\chyinan\\AppData\\Roaming\\npm\\codex.CMD",
+    "output": "codex-cli 0.151.0\n"
+  }
+}

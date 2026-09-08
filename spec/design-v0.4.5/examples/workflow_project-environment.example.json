@@ -1,0 +1,39 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "profile_id": "env-node-demo",
+  "profile_revision": "1",
+  "base_image_digest": null,
+  "node_version": null,
+  "npm_version": null,
+  "source_revision": null,
+  "lockfile_digest": null,
+  "preparation_policy": {
+    "auto_prepare_within_approved_policy": true,
+    "effective_approval_ref": null,
+    "run_on_skill_load": false,
+    "allow_host_global_install": false,
+    "dependency_sources": [],
+    "lifecycle_scripts": "denied_unless_explicit_policy",
+    "install_argv": [
+      "npm",
+      "ci",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund"
+    ],
+    "allow_implicit_lockfile_update": false
+  },
+  "test_database": "isolated_if_needed_not_control_db",
+  "connect_enabled": false,
+  "credentials": [],
+  "limits_are_test_parameters": true,
+  "limits": {
+    "timeout_seconds": 600,
+    "memory_bytes": 2147483648,
+    "disk_bytes": 4294967296
+  }
+}

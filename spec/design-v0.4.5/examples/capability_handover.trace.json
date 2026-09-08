@@ -1,0 +1,43 @@
+{
+  "document_version": "0.4.5",
+  "kind": "hypothetical_trace_not_execution",
+  "results": "not_run",
+  "execution_enabled": false,
+  "steps": [
+    {
+      "step": 1,
+      "event": "persisted_capability_binding",
+      "employee": "emp-backend"
+    },
+    {
+      "step": 2,
+      "event": "model_disconnected",
+      "pending_tool_result": "unknown"
+    },
+    {
+      "step": 3,
+      "event": "old_writer_quiesced_in_fixture",
+      "real_evidence": null
+    },
+    {
+      "step": 4,
+      "event": "bundle_includes_pinned_skills_and_mcp_descriptors",
+      "secrets": false
+    },
+    {
+      "step": 5,
+      "event": "restoring_read_only",
+      "tools_call_allowed": false
+    },
+    {
+      "step": 6,
+      "event": "binding_revision_changed",
+      "expected": "reject_old_binding_and_requalify"
+    },
+    {
+      "step": 7,
+      "event": "qualification_missing",
+      "expected": "remain_paused_no_fabricated_activation"
+    }
+  ]
+}

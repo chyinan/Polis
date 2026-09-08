@@ -1,0 +1,13 @@
+flowchart TD
+  Human[Human management workbench] --> Group
+  Group --> CompanyA[Company: Software]
+  Group --> CompanyB[Company: Content]
+  CompanyA --> Mission[Versioned long-running Mission]
+  CompanyA --> EmployeeA[Fixed Employee A]
+  CompanyA --> EmployeeB[Fixed Employee B]
+  EmployeeA <--> Messages[Durable peer messages and obligations]
+  Messages <--> EmployeeB
+  EmployeeA --> Binding[Replaceable model binding]
+  Binding --> Session[Temporary Session and Attempt]
+  EmployeeA --> Memory[Persistent facts and work responsibilities]
+  Mission --> Tasks[Tasks and recurring routines]

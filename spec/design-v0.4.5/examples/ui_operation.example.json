@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "execution_enabled": false,
+  "data_mode": "simulated",
+  "company_id": "co-demo",
+  "request_id": "req-pause-example",
+  "operation_id": "op-pause-example",
+  "command": "pause_new_dispatch",
+  "expected_revision": "12",
+  "status": "accepted",
+  "effective_for_new_dispatch": false,
+  "quiesced": false,
+  "unknown_in_flight": 1,
+  "message": "示例请求已受理，停止情况尚未确认；没有执行任何真实命令"
+}

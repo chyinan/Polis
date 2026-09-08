@@ -1,0 +1,191 @@
+{
+  "document_version": "0.4.5",
+  "source_of_truth": "ARCHITECTURE.md#section-46",
+  "primary_user_confirmation": {
+    "id": "UX-01",
+    "source": "user_message_current_conversation",
+    "text": "期望能长期执行目标，有虚拟公司组织指挥，强于单顶尖模型局限的用户",
+    "do_not_narrow_to_programmers": true
+  },
+  "decisions": [
+    {
+      "decision_id": "PD-01",
+      "title": "首要用户与场景分离",
+      "decision": "长期复杂目标/虚拟组织是产品定位；软件为第一验证场景",
+      "spec_sections": [
+        "46.1"
+      ],
+      "review_findings": [
+        "PM-01"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-02",
+      "title": "分层发布与范围抵消",
+      "decision": "R1完整最小自用、R2受控试用、R3扩域，保留既有契约",
+      "spec_sections": [
+        "46.3"
+      ],
+      "review_findings": [
+        "PM-02"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-03",
+      "title": "可证伪组织价值",
+      "decision": "安全/质量→完成能力→人工负担→成本时间，真实试验再确认增益",
+      "spec_sections": [
+        "46.2",
+        "46.11"
+      ],
+      "review_findings": [
+        "PM-03"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-04",
+      "title": "整体参考组合",
+      "decision": "固定整体执行组合与独立费用口径，未验证不宣称restricted",
+      "spec_sections": [
+        "46.4"
+      ],
+      "review_findings": [
+        "PM-04",
+        "PM-13"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-05",
+      "title": "模板与五组决定",
+      "decision": "人确认固定组织和边界，产品消化复杂配置",
+      "spec_sections": [
+        "46.5"
+      ],
+      "review_findings": [
+        "PM-05"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-06",
+      "title": "分类前置与责任覆盖",
+      "decision": "区分基础/准备/目标环境；固定岗位包含有限交叉检查",
+      "spec_sections": [
+        "46.6"
+      ],
+      "review_findings": [
+        "PM-06",
+        "PM-07"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-07",
+      "title": "协作快速路径",
+      "decision": "当前任务内澄清不经主模型盖章，受控元信息由程序补全",
+      "spec_sections": [
+        "46.6"
+      ],
+      "review_findings": [
+        "PM-09"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-08",
+      "title": "使命内部工作包",
+      "decision": "Mission为目标授权周期，根任务分组承接维护/小功能",
+      "spec_sections": [
+        "46.7"
+      ],
+      "review_findings": [
+        "PM-08"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-09",
+      "title": "有界探索与紧急指导",
+      "decision": "允许模糊目标；下一边界/先暂停处理分开",
+      "spec_sections": [
+        "46.8"
+      ],
+      "review_findings": [
+        "PM-12",
+        "PM-14"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-10",
+      "title": "行为接班与允许/拒绝配对",
+      "decision": "验证关键判断而非只对账；误拦也计缺陷",
+      "spec_sections": [
+        "46.9"
+      ],
+      "review_findings": [
+        "PM-10",
+        "PM-11"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-11",
+      "title": "反馈/远程接管/维护退出",
+      "decision": "评论上下文有界补齐；本机与合格远程分开；总拥有成本可查",
+      "spec_sections": [
+        "46.10"
+      ],
+      "review_findings": [
+        "PM-15",
+        "PM-16",
+        "PM-17"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    },
+    {
+      "decision_id": "PD-12",
+      "title": "证据与产品转向规则",
+      "decision": "失败可收缩实验但不私自改写长期组织定位；新增功能要抵消资源",
+      "spec_sections": [
+        "46.11",
+        "46.12"
+      ],
+      "review_findings": [
+        "PM-02",
+        "PM-03"
+      ],
+      "status": "design_decision_recorded",
+      "runtime_validation": "not_run"
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H-ORG",
+      "status": "awaiting_evidence"
+    },
+    {
+      "id": "H-HANDOVER",
+      "status": "awaiting_evidence"
+    },
+    {
+      "id": "H-USABILITY",
+      "status": "awaiting_evidence"
+    }
+  ]
+}

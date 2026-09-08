@@ -1,0 +1,334 @@
+{
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "send_enabled",
+    "test_send_authorized",
+    "llm_generation_enabled",
+    "channel_kind",
+    "route_id",
+    "route_revision",
+    "app_id",
+    "credential_secret_ref",
+    "endpoint_profile_ref",
+    "recipient",
+    "disclosure",
+    "policy",
+    "qualification",
+    "workbench_link",
+    "watchdog",
+    "implementation_evidence",
+    "sender"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "notification_draft_not_runtime_config"
+    },
+    "send_enabled": {
+      "const": false
+    },
+    "test_send_authorized": {
+      "const": false
+    },
+    "llm_generation_enabled": {
+      "const": false
+    },
+    "channel_kind": {
+      "const": "qq_official"
+    },
+    "route_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "route_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "app_id": {
+      "type": "null"
+    },
+    "credential_secret_ref": {
+      "type": "null"
+    },
+    "endpoint_profile_ref": {
+      "type": "null"
+    },
+    "recipient": {
+      "type": "object",
+      "required": [
+        "kind",
+        "user_openid",
+        "group_openid"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "c2c",
+            "group"
+          ]
+        },
+        "user_openid": {
+          "type": "null"
+        },
+        "group_openid": {
+          "type": "null"
+        }
+      }
+    },
+    "disclosure": {
+      "type": "object",
+      "required": [
+        "allowed_company_ids",
+        "safe_alias",
+        "allow_raw_logs",
+        "allow_source_code",
+        "allow_secret_material"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "allowed_company_ids": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "safe_alias": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "allow_raw_logs": {
+          "const": false
+        },
+        "allow_source_code": {
+          "const": false
+        },
+        "allow_secret_material": {
+          "const": false
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "trigger",
+        "notify_normal_completion",
+        "notify_idle",
+        "notify_recovered_transient_errors",
+        "inbound_management_commands",
+        "deduplication",
+        "retry_on_unknown",
+        "max_send_attempts",
+        "max_reminders",
+        "reminder_interval_seconds",
+        "pending_ttl_seconds",
+        "parameters_are_unvalidated_examples"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "trigger": {
+          "const": "human_action_required"
+        },
+        "notify_normal_completion": {
+          "const": false
+        },
+        "notify_idle": {
+          "const": false
+        },
+        "notify_recovered_transient_errors": {
+          "const": false
+        },
+        "inbound_management_commands": {
+          "const": false
+        },
+        "deduplication": {
+          "const": "scope_problem_occurrence_route_severity_generation"
+        },
+        "retry_on_unknown": {
+          "const": "bounded_notice_only_same_incident_id"
+        },
+        "max_send_attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
+        },
+        "max_reminders": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
+        },
+        "reminder_interval_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
+        },
+        "pending_ttl_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
+        },
+        "parameters_are_unvalidated_examples": {
+          "const": true
+        }
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "required": [
+        "token_auth",
+        "passive_reply",
+        "proactive_without_inbound_msg_id",
+        "unattended_ready",
+        "evidence_ref",
+        "platform_quota_known"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "token_auth": {
+          "const": "unverified"
+        },
+        "passive_reply": {
+          "const": "unverified"
+        },
+        "proactive_without_inbound_msg_id": {
+          "const": "unverified"
+        },
+        "unattended_ready": {
+          "const": false
+        },
+        "evidence_ref": {
+          "type": "null"
+        },
+        "platform_quota_known": {
+          "const": false
+        }
+      }
+    },
+    "workbench_link": {
+      "type": "object",
+      "required": [
+        "verified_base_url",
+        "include_bearer_or_approval_token",
+        "without_reachable_url"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verified_base_url": {
+          "type": "null"
+        },
+        "include_bearer_or_approval_token": {
+          "const": false
+        },
+        "without_reachable_url": {
+          "const": "incident_id_only"
+        }
+      }
+    },
+    "watchdog": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "same_host_only",
+        "whole_host_failure_covered",
+        "reads_company_content",
+        "can_dispatch_work"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "const": false
+        },
+        "same_host_only": {
+          "const": true
+        },
+        "whole_host_failure_covered": {
+          "const": false
+        },
+        "reads_company_content": {
+          "const": false
+        },
+        "can_dispatch_work": {
+          "const": false
+        }
+      }
+    },
+    "implementation_evidence": {
+      "type": "object",
+      "required": [
+        "proactive_route",
+        "our_adapter",
+        "source_ids",
+        "is_account_permission_proof"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "proactive_route": {
+          "const": "upstream_source_confirmed"
+        },
+        "our_adapter": {
+          "const": "not_implemented"
+        },
+        "source_ids": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        "is_account_permission_proof": {
+          "const": false
+        }
+      }
+    },
+    "sender": {
+      "type": "object",
+      "required": [
+        "mode",
+        "enabled",
+        "offline_capsule_enabled",
+        "offline_capsule_valid_seconds",
+        "business_payload_during_db_outage",
+        "revocation_requires_sender_barrier",
+        "restart_reactivates_capsule"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "const": "single_orgctl_watch"
+        },
+        "enabled": {
+          "const": false
+        },
+        "offline_capsule_enabled": {
+          "const": false
+        },
+        "offline_capsule_valid_seconds": {
+          "type": "null"
+        },
+        "business_payload_during_db_outage": {
+          "const": false
+        },
+        "revocation_requires_sender_barrier": {
+          "const": true
+        },
+        "restart_reactivates_capsule": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:qq-notification:0.4.4"
+}

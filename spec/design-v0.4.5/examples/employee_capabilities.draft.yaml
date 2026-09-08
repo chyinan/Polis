@@ -1,0 +1,94 @@
+document_version: 0.4.5
+design_kind: employee_capabilities_fixture_not_runtime_config
+execution_enabled: false
+pay_enabled: false
+company_id: co-software-example
+revision: '1'
+approval_status: draft
+public_library:
+  source_host_path: null
+  scan_enabled: false
+  auto_publish: false
+  default_mount: approved_read_only_snapshot
+  selection_mode: explicit_pinned_list
+  same_name_policy: qualified_identity_no_auto_shadow
+workspace_policy:
+  cross_employee_live_worktree_read: false
+  shared_references_read_only: true
+  control_and_secrets_mounted: false
+  link_import_policy: reject
+  read_versions_required: true
+employees:
+- employee_id: emp-planning
+  binding_id: cap-emp-planning-1
+  binding_revision: '1'
+  binding_state: draft
+  workspace_root_ref: fixture://workspace/emp-planning
+  requested_workspace_mode: task_scoped_write
+  shared_reference_refs:
+  - fixture://shared/contract-v2
+  skill_revision_refs:
+  - skill-fixture://group/contract-review/revision-1
+  script_entrypoint_refs: []
+  mcp_binding_refs:
+  - fixture://mcp-binding/emp-planning/contracts-1
+  tool_selection:
+  - lookup_contract
+  resource_selection: []
+  provisioning_state: unprovisioned
+  qualification: unverified
+- employee_id: emp-backend
+  binding_id: cap-emp-backend-1
+  binding_revision: '1'
+  binding_state: draft
+  workspace_root_ref: fixture://workspace/emp-backend
+  requested_workspace_mode: task_scoped_write
+  shared_reference_refs:
+  - fixture://shared/contract-v2
+  skill_revision_refs:
+  - skill-fixture://group/contract-review/revision-1
+  script_entrypoint_refs: []
+  mcp_binding_refs:
+  - fixture://mcp-binding/emp-backend/contracts-1
+  tool_selection:
+  - lookup_contract
+  resource_selection: []
+  provisioning_state: unprovisioned
+  qualification: unverified
+- employee_id: emp-frontend
+  binding_id: cap-emp-frontend-1
+  binding_revision: '1'
+  binding_state: draft
+  workspace_root_ref: fixture://workspace/emp-frontend
+  requested_workspace_mode: task_scoped_write
+  shared_reference_refs:
+  - fixture://shared/contract-v2
+  skill_revision_refs:
+  - skill-fixture://group/contract-review/revision-1
+  script_entrypoint_refs: []
+  mcp_binding_refs:
+  - fixture://mcp-binding/emp-frontend/contracts-1
+  tool_selection:
+  - lookup_contract
+  resource_selection: []
+  provisioning_state: unprovisioned
+  qualification: unverified
+- employee_id: emp-review
+  binding_id: cap-emp-review-1
+  binding_revision: '1'
+  binding_state: draft
+  workspace_root_ref: fixture://workspace/emp-review
+  requested_workspace_mode: read_only_with_scratch
+  shared_reference_refs:
+  - fixture://shared/contract-v2
+  skill_revision_refs:
+  - skill-fixture://group/contract-review/revision-1
+  script_entrypoint_refs: []
+  mcp_binding_refs:
+  - fixture://mcp-binding/emp-review/contracts-1
+  tool_selection:
+  - lookup_contract
+  resource_selection: []
+  provisioning_state: unprovisioned
+  qualification: unverified
+effective_grants: []

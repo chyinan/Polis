@@ -1,0 +1,10 @@
+flowchart TD
+  Owner[人确认使命与授权] --> Start[接受启动命令]
+  Start --> Tx[事务创建唯一 activation 与 bootstrap]
+  Tx --> Wake[唤醒固定规划员]
+  Wake --> Plan[提议近期计划]
+  Plan --> Gate[内核资格与结构检查]
+  Gate --> Team[已有员工直接协作]
+  Team --> Closing[closing 收尾]
+  Closing --> End[终态与释放使命槽]
+  End --> Late[迟到结果仅历史核对]

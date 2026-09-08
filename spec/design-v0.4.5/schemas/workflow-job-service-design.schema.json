@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:job-service:0.4.4",
+  "description": "Disabled documentation fixture only; not a production authorization schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "pay_enabled",
+    "qualification",
+    "company_id",
+    "employee_id",
+    "task_id",
+    "job_id",
+    "kind",
+    "state",
+    "environment_profile",
+    "service",
+    "stdin_policy",
+    "logs",
+    "stop_requested",
+    "stop_confirmed",
+    "runtime_identity",
+    "management_or_provider_secrets_present"
+  ],
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "workflow_fixture_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "pay_enabled": {
+      "const": false
+    },
+    "qualification": {
+      "const": "unverified"
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "employee_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpoint",
+        "generation",
+        "ready",
+        "bound_candidate",
+        "reuse_unverified_port",
+        "consumers",
+        "idle_grace_seconds"
+      ],
+      "properties": {
+        "endpoint": {
+          "type": "null"
+        },
+        "generation": {
+          "type": "null"
+        },
+        "ready": {
+          "const": false
+        },
+        "bound_candidate": {
+          "type": "null"
+        },
+        "reuse_unverified_port": {
+          "const": false
+        },
+        "consumers": {
+          "type": "array",
+          "items": {},
+          "maxItems": 1000
+        },
+        "idle_grace_seconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "stdin_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cursor",
+        "truncated"
+      ],
+      "properties": {
+        "cursor": {
+          "type": "null"
+        },
+        "truncated": {
+          "const": false
+        }
+      }
+    },
+    "stop_requested": {
+      "const": false
+    },
+    "stop_confirmed": {
+      "const": false
+    },
+    "runtime_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "incarnation",
+        "employee_epoch"
+      ],
+      "properties": {
+        "incarnation": {
+          "type": "null"
+        },
+        "employee_epoch": {
+          "type": "null"
+        }
+      }
+    },
+    "management_or_provider_secrets_present": {
+      "const": false
+    }
+  }
+}

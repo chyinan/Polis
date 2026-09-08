@@ -1,0 +1,32 @@
+{
+  "kind": "planned_interleavings_not_execution_log",
+  "test_ids": [
+    "FT-29",
+    "FT-30",
+    "FT-31",
+    "FT-32"
+  ],
+  "llm_polling_allowed": false,
+  "cases": [
+    {
+      "name": "new_work_commits_before_sleep",
+      "steps": [
+        "transaction:enqueue_actionable_work+increment_work_generation+outbox",
+        "sleep_attempt:lock_employee_schedule",
+        "sleep_attempt:observe_actionable_work",
+        "do_not_sleep:admit_at_most_one_session"
+      ]
+    },
+    {
+      "name": "sleep_commits_before_new_work",
+      "steps": [
+        "sleep_attempt:lock_schedule+recheck+commit_sleeping",
+        "transaction:enqueue_work+increment_work_generation+upsert_work_signal",
+        "notification_lost",
+        "program_reconciler:query_durable_work",
+        "admission:check_pause_budget_epoch_and_single_session"
+      ]
+    }
+  ],
+  "results": "not_run"
+}

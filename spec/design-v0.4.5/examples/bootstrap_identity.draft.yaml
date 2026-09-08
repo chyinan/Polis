@@ -1,0 +1,20 @@
+document_version: 0.4.5
+design_kind: bootstrap_identity_draft
+execution_enabled: false
+owner_initialization:
+  method: trusted_local_cli
+  enabled: false
+  default_password: null
+  one_time_code: null
+  public_first_visitor_claim: false
+admin_session_logout_revokes_mission: false
+mission_grant_revocation_requires_worker_token_expiry: false
+secret_source:
+  method: protected_host_service_credentials
+  path: null
+  worker_can_read: false
+  include_in_backup: false
+remote_access:
+  enabled: false
+  verified_base_url: null
+qualification: unverified

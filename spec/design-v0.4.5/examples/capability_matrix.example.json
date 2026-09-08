@@ -1,0 +1,21 @@
+{
+  "kind": "unverified_qualification_template",
+  "platform": "linux/amd64",
+  "harness": "codex_app_server",
+  "harness_version": null,
+  "model_profile_ref": null,
+  "requested_mode": "restricted",
+  "current_mode": "not_admitted",
+  "capabilities": {
+    "active_input": "unverified",
+    "portable_handover_same_harness": "unverified",
+    "portable_handover_cross_harness": "unverified",
+    "writer_isolation": "unverified",
+    "network_egress": "unverified",
+    "credential_isolation": "unverified",
+    "usage_visibility": "unverified",
+    "recursive_delegation_control": "unverified"
+  },
+  "real_model_authorization": false,
+  "strict_mode_may_start": false
+}

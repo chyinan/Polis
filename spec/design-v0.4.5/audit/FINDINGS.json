@@ -1,0 +1,475 @@
+{
+  "document_version": "0.4.5",
+  "scope": "frozen_v0.4.3",
+  "reviewer": "same_assistant_three_review_views_not_independent_reviewers",
+  "findings": [
+    {
+      "finding_id": "AR-01",
+      "summary": "QQ 主动路径与账号资格混为一个未知项",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "42.1 / 42.7.5",
+      "requirements": [
+        "REQ-28"
+      ],
+      "planned_tests": [
+        "NT-15",
+        "NT-16",
+        "UI-29"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-02",
+      "summary": "独立 watch 与主服务撤权可能使用不同路由状态",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "42.7.8",
+      "requirements": [
+        "REQ-14",
+        "REQ-28"
+      ],
+      "planned_tests": [
+        "NT-17",
+        "NT-18",
+        "NT-22",
+        "UI-30"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-03",
+      "summary": "通知缺回执与故障复发的去重语义未完全收口",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "42.7.4 / 42.7.6",
+      "requirements": [
+        "REQ-28"
+      ],
+      "planned_tests": [
+        "NT-19",
+        "NT-20",
+        "NT-21"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-04",
+      "summary": "员工协议缺少读取确认、责任闭合与合同/记忆提议入口",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "42.3.2～42.3.3",
+      "requirements": [
+        "REQ-02",
+        "REQ-24"
+      ],
+      "planned_tests": [
+        "FT-73",
+        "FT-74"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-05",
+      "summary": "激活 DB 与 OS 写能力落实不是一个事务",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "10.2 / 42.6.2",
+      "requirements": [
+        "REQ-27"
+      ],
+      "planned_tests": [
+        "FT-75",
+        "FT-76",
+        "UI-31"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-06",
+      "summary": "任务先 SKIP LOCKED 再补早期锁的描述冲突",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "18.4 / 43.3",
+      "requirements": [
+        "REQ-18"
+      ],
+      "planned_tests": [
+        "FT-71",
+        "FT-72"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-07",
+      "summary": "旧备份/原生 resume 可能带回旧凭据与执行语义",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "19.6 / 43.4",
+      "requirements": [
+        "REQ-17",
+        "REQ-25"
+      ],
+      "planned_tests": [
+        "FT-77",
+        "FT-78",
+        "UI-32"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-08",
+      "summary": "验收完成与实际分支更新之间的基线竞争",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "13.5 / 43.5",
+      "requirements": [
+        "REQ-26",
+        "REQ-27"
+      ],
+      "planned_tests": [
+        "FT-79",
+        "FT-80"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-09",
+      "summary": "未满足等待条件可能因旧待办不断唤醒",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "30.2 / 43.6",
+      "requirements": [
+        "REQ-13"
+      ],
+      "planned_tests": [
+        "FT-81"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-10",
+      "summary": "压力和时钟异常下控制/证据的优先级不够明确",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "43.7",
+      "requirements": [
+        "REQ-04",
+        "REQ-16"
+      ],
+      "planned_tests": [
+        "FT-82",
+        "NT-18"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable harness/database/transport tests",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-11",
+      "summary": "缺少可持续审核的范围、状态与停止标准",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "43.1～43.2 / 43.8",
+      "requirements": [
+        "REQ-12"
+      ],
+      "planned_tests": [],
+      "verification_status": "not_run",
+      "evidence_needed": "readiness/static traceability",
+      "residual_note": "No claim of absence of unknown defects."
+    },
+    {
+      "finding_id": "AR-12",
+      "summary": "工作区有基础接口但文件发现/共享和访问路径细则未闭合",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "44.3",
+      "requirements": [
+        "REQ-29"
+      ],
+      "planned_tests": [
+        "CAP-01",
+        "CAP-02",
+        "CAP-03",
+        "CAP-05"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable workspace/harness/MCP/Skill tests",
+      "residual_note": "Scope clarified; not a proof of no unknown omissions."
+    },
+    {
+      "finding_id": "AR-13",
+      "summary": "公共 Skills 未形成首版发现、加载、版本与脚本合同",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "44.4",
+      "requirements": [
+        "REQ-30"
+      ],
+      "planned_tests": [
+        "CAP-07",
+        "CAP-08",
+        "CAP-10",
+        "CAP-12"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable workspace/harness/MCP/Skill tests",
+      "residual_note": "Scope clarified; not a proof of no unknown omissions."
+    },
+    {
+      "finding_id": "AR-14",
+      "summary": "MCP 仅有适配占位，缺少实际服务和逐工具调用治理",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "44.5",
+      "requirements": [
+        "REQ-31"
+      ],
+      "planned_tests": [
+        "CAP-14",
+        "CAP-15",
+        "CAP-16",
+        "CAP-19",
+        "CAP-23"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable workspace/harness/MCP/Skill tests",
+      "residual_note": "Scope clarified; not a proof of no unknown omissions."
+    },
+    {
+      "finding_id": "AR-15",
+      "summary": "文件/Skill/MCP 能力绑定未完整进入员工持久接班和 UI",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "44.6 / 44.8",
+      "requirements": [
+        "REQ-32"
+      ],
+      "planned_tests": [
+        "CAP-25",
+        "CAP-26",
+        "CAP-27",
+        "CAP-31",
+        "UI-38"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "real applicable workspace/harness/MCP/Skill tests",
+      "residual_note": "Scope clarified; not a proof of no unknown omissions."
+    },
+    {
+      "finding_id": "AR-16",
+      "summary": "资料提交与多模态输入可用的实际工作链未完整定义",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.2",
+      "requirements": [
+        "REQ-35"
+      ],
+      "planned_tests": [
+        "WF-01",
+        "WF-02",
+        "WF-03",
+        "WF-04",
+        "WF-05",
+        "WF-36",
+        "UI-41"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "applicable real project/tool/API workflow tests",
+      "residual_note": "Design contract is not implemented functionality."
+    },
+    {
+      "finding_id": "AR-17",
+      "summary": "项目环境与依赖可自主准备的实际工作链未完整定义",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.3",
+      "requirements": [
+        "REQ-36"
+      ],
+      "planned_tests": [
+        "WF-06",
+        "WF-07",
+        "WF-08",
+        "WF-09",
+        "WF-10",
+        "WF-36",
+        "UI-42"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "applicable real project/tool/API workflow tests",
+      "residual_note": "Design contract is not implemented functionality."
+    },
+    {
+      "finding_id": "AR-18",
+      "summary": "命令、长作业与服务有完整生命周期的实际工作链未完整定义",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.4",
+      "requirements": [
+        "REQ-37"
+      ],
+      "planned_tests": [
+        "WF-11",
+        "WF-12",
+        "WF-13",
+        "WF-14",
+        "WF-15",
+        "WF-36",
+        "UI-43"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "applicable real project/tool/API workflow tests",
+      "residual_note": "Design contract is not implemented functionality."
+    },
+    {
+      "finding_id": "AR-19",
+      "summary": "能调查来源并实际操作目标应用的实际工作链未完整定义",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.5",
+      "requirements": [
+        "REQ-38"
+      ],
+      "planned_tests": [
+        "WF-16",
+        "WF-17",
+        "WF-18",
+        "WF-19",
+        "WF-20",
+        "WF-36",
+        "UI-44"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "applicable real project/tool/API workflow tests",
+      "residual_note": "Design contract is not implemented functionality."
+    },
+    {
+      "finding_id": "AR-20",
+      "summary": "支持日常指导与人工接管交还的实际工作链未完整定义",
+      "severity": "high",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.6",
+      "requirements": [
+        "REQ-39"
+      ],
+      "planned_tests": [
+        "WF-21",
+        "WF-22",
+        "WF-23",
+        "WF-24",
+        "WF-25",
+        "WF-36",
+        "UI-45"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "applicable real project/tool/API workflow tests",
+      "residual_note": "Design contract is not implemented functionality."
+    },
+    {
+      "finding_id": "AR-21",
+      "summary": "产物可交到人手中并继续修订的实际工作链未完整定义",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.7",
+      "requirements": [
+        "REQ-40"
+      ],
+      "planned_tests": [
+        "WF-26",
+        "WF-27",
+        "WF-28",
+        "WF-29",
+        "WF-30",
+        "WF-36",
+        "UI-46"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "applicable real project/tool/API workflow tests",
+      "residual_note": "Design contract is not implemented functionality."
+    },
+    {
+      "finding_id": "AR-22",
+      "summary": "至少一条真实外部反馈工作链的实际工作链未完整定义",
+      "severity": "medium",
+      "kind": "design_review_not_observed_runtime_bug",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.8",
+      "requirements": [
+        "REQ-41"
+      ],
+      "planned_tests": [
+        "WF-31",
+        "WF-32",
+        "WF-33",
+        "WF-34",
+        "WF-35",
+        "WF-36",
+        "UI-47",
+        "UI-48"
+      ],
+      "verification_status": "not_run",
+      "evidence_needed": "applicable real project/tool/API workflow tests",
+      "residual_note": "Design contract is not implemented functionality."
+    },
+    {
+      "finding_id": "AR-23",
+      "summary": "重复小节数字使规范引用有歧义",
+      "severity": "medium",
+      "kind": "document_structure_defect",
+      "disposition": "patched_in_spec",
+      "spec_locations": "45.11",
+      "requirements": [
+        "REQ-18",
+        "REQ-21"
+      ],
+      "planned_tests": [
+        "DOC-NUMBERING"
+      ],
+      "verification_status": "document_verified",
+      "evidence_needed": "unique heading numbers and named anchor regression",
+      "residual_note": "Only document structure, not product runtime verification."
+    }
+  ],
+  "claim": "design_patch_only_not_runtime_verified"
+}

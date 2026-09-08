@@ -1,0 +1,30 @@
+document_version: 0.4.5
+design_kind: draft_not_runtime_config
+execution_enabled: false
+company_id: co-content-example
+mission_id: mis-content-example
+type: operation
+timezone: Asia/Shanghai
+state: draft
+goals:
+  daily_artifact: source-traceable news draft
+  growth_target: null
+  guaranteed_business_outcome: false
+routine:
+  occurrence_key: routine_id+logical_day
+  catch_up_policy: coalesce_latest
+  max_catch_up: 1
+constraints:
+  requires_source_evidence: true
+  publish_environment: simulator_only
+  real_account_ref: null
+  pay_enabled: false
+  protected_acceptance_can_self_change: false
+observations:
+  fixture_only: true
+  real_platform_connected: false
+stop_conditions:
+- deadline
+- budget_exhausted
+- permission_revoked
+- evidence_unavailable

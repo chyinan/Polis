@@ -1,0 +1,183 @@
+{
+  "document_version": "0.4.5",
+  "gates": [
+    {
+      "gate_id": "GATE-ENV",
+      "required_input": "实际宿主、容器、harness 与依赖版本",
+      "stage": "before_restricted_execution",
+      "evidence_required": "G0-EXEC；凭据/网络/写者停止证据",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-MODEL",
+      "required_input": "两条真实模型路径、工具协议与权限降级",
+      "stage": "before_portable_handover_claim",
+      "evidence_required": "G0-EMPLOYEE/G0-HANDOVER；同 harness 与跨供应商分别记录",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-DB",
+      "required_input": "锁序/预算/消息/快照/产物/恢复代际",
+      "stage": "before_unattended_state_claim",
+      "evidence_required": "真实 PG 及 OS 崩溃/竞争测试，非 SQLite 替身",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-QQ",
+      "required_input": "本应用 C2C 主动投递、无对话窗口、sender 冻结与重启",
+      "stage": "before_qq_unattended_ready",
+      "evidence_required": "明确目标的真实外发授权及资格报告；群另测",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-OWNER",
+      "required_input": "管理员初始化、凭据存储、解锁与删除/撤销恢复",
+      "stage": "before_real_accounts",
+      "evidence_required": "本机身份/会话与恢复测试",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-RESOURCES",
+      "required_input": "运行预算、收尾额度、日志/存储/队列限额、备份保留",
+      "stage": "before_paid_run",
+      "evidence_required": "人确认的配置；未批准禁用，不代购",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-EVAL",
+      "required_input": "固定任务/对照/阈值/全部尝试记录",
+      "stage": "before_quality_or_economics_claim",
+      "evidence_required": "实验前注册，真实产物验收与人工介入记录",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-LONGRUN",
+      "required_input": "持续运行、异常覆盖与真实回收/备份演练",
+      "stage": "before_long_autonomy_claim",
+      "evidence_required": "活动/等待/故障分计；同机监督覆盖缺口明确接受",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_paused_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-WORKSPACE",
+      "required_input": "真实根目录、访问/链接/快照/读写隔离",
+      "stage": "before_workspace_access_claim",
+      "evidence_required": "G0-WORKSPACE / CAP-01..06",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_disabled_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-SKILLS",
+      "required_input": "维护者批准的技能包与解释器环境",
+      "stage": "before_skill_execution_claim",
+      "evidence_required": "G0-SKILLS / CAP-07..13",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_disabled_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-MCP",
+      "required_input": "固定 SDK、两类传输、协议 profile、endpoint 与凭据",
+      "stage": "before_mcp_compatibility_claim",
+      "evidence_required": "G0-MCP / CAP-14..24",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_disabled_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-CAPABILITY",
+      "required_input": "持久绑定、工具回收和跨后端接班",
+      "stage": "before_environment_continuity_claim",
+      "evidence_required": "G0-CAPABILITY / CAP-25..32, UI-33..40",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "remain_disabled_or_limit_claimed_scope"
+    },
+    {
+      "gate_id": "GATE-WORKFLOW-INTAKE",
+      "required_input": "原件、表示、实际模型输入分开；支持矩阵与失败可见",
+      "stage": "before_claiming_intake",
+      "evidence_required": "C-INTAKE: WF-01,WF-02,WF-03,WF-04,WF-05",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "preserve_inputs_and_current_scope_report_partial_or_blocked"
+    },
+    {
+      "gate_id": "GATE-WORKFLOW-ENVIRONMENT",
+      "required_input": "批准范围内自动安装，控制面/目标栈和测试库隔离",
+      "stage": "before_claiming_environment",
+      "evidence_required": "C-ENVIRONMENT: WF-06,WF-07,WF-08,WF-09,WF-10",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "preserve_inputs_and_current_scope_report_partial_or_blocked"
+    },
+    {
+      "gate_id": "GATE-WORKFLOW-JOBS",
+      "required_input": "作业身份/就绪/借用/停止/换班可核对，不因睡眠误杀",
+      "stage": "before_claiming_jobs",
+      "evidence_required": "C-JOBS: WF-11,WF-12,WF-13,WF-14,WF-15",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "preserve_inputs_and_current_scope_report_partial_or_blocked"
+    },
+    {
+      "gate_id": "GATE-WORKFLOW-BROWSER",
+      "required_input": "合格搜索/浏览器、真实输入和版本证据，预览不入管理信任域",
+      "stage": "before_claiming_browser",
+      "evidence_required": "C-BROWSER: WF-16,WF-17,WF-18,WF-19,WF-20",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "preserve_inputs_and_current_scope_report_partial_or_blocked"
+    },
+    {
+      "gate_id": "GATE-WORKFLOW-GUIDANCE",
+      "required_input": "直接指导、变更版本、补丁导入和独占写交还，不篡改历史",
+      "stage": "before_claiming_guidance",
+      "evidence_required": "C-GUIDANCE: WF-21,WF-22,WF-23,WF-24,WF-25",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "preserve_inputs_and_current_scope_report_partial_or_blocked"
+    },
+    {
+      "gate_id": "GATE-WORKFLOW-DELIVERY",
+      "required_input": "固定交付清单、鉴权下载、运行说明、人接受与内部验收分开",
+      "stage": "before_claiming_delivery",
+      "evidence_required": "C-DELIVERY: WF-26,WF-27,WF-28,WF-29,WF-30",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "preserve_inputs_and_current_scope_report_partial_or_blocked"
+    },
+    {
+      "gate_id": "GATE-WORKFLOW-FEEDBACK",
+      "required_input": "GitHub Issues只读轮询/覆盖与去重，有效使命内处理、终态进backlog",
+      "stage": "before_claiming_feedback",
+      "evidence_required": "C-FEEDBACK: WF-31,WF-32,WF-33,WF-34,WF-35",
+      "status": "not_run_or_not_configured",
+      "failure_policy": "preserve_inputs_and_current_scope_report_partial_or_blocked"
+    },
+    {
+      "gate_id": "GATE-PRODUCT-ORG",
+      "required_input": "首要目标族、相同上限、A/B/D对照、质量与人力/成本护栏",
+      "stage": "before_related_product_claim_or_scope_expansion",
+      "evidence_required": "E-ORG pre-registered fixtures, owner-approved thresholds and budget, all results",
+      "status": "awaiting_evidence_and_owner_threshold_confirmation",
+      "failure_policy": "iterate_or_limit_claim_no_silent_product_pivot"
+    },
+    {
+      "gate_id": "GATE-PRODUCT-HANDOVER",
+      "required_input": "关键判断继承及新改动的外部验证",
+      "stage": "before_related_product_claim_or_scope_expansion",
+      "evidence_required": "E-HANDOVER pre-registered fixtures, owner-approved thresholds and budget, all results",
+      "status": "awaiting_evidence_and_owner_threshold_confirmation",
+      "failure_policy": "iterate_or_limit_claim_no_silent_product_pivot"
+    },
+    {
+      "gate_id": "GATE-PRODUCT-USABILITY",
+      "required_input": "独立上手、误拦、手机范围及维护负担",
+      "stage": "before_related_product_claim_or_scope_expansion",
+      "evidence_required": "E-START pre-registered fixtures, owner-approved thresholds and budget, all results",
+      "status": "awaiting_evidence_and_owner_threshold_confirmation",
+      "failure_policy": "iterate_or_limit_claim_no_silent_product_pivot"
+    }
+  ],
+  "unknown_risks": "not provably empty",
+  "production_ready": false
+}

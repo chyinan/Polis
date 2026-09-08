@@ -1,0 +1,141 @@
+{
+  "document_version": "0.4.5",
+  "kind": "candidate_design_tokens_not_approved_product",
+  "unit": "CSS px",
+  "colors": {
+    "light": {
+      "canvas": "#F7F8FA",
+      "surface": "#FFFFFF",
+      "surface_subtle": "#F1F3F5",
+      "text": "#17212B",
+      "text_muted": "#526171",
+      "accent": "#264E73",
+      "on_accent": "#FFFFFF",
+      "border": "#DCE2E8",
+      "control_border": "#7B8794",
+      "focus": "#264E73",
+      "success": "#17623B",
+      "success_bg": "#ECFDF3",
+      "warning": "#8A4B08",
+      "warning_bg": "#FFF6E8",
+      "danger": "#B42318",
+      "danger_bg": "#FFF1F0",
+      "info": "#245B9A",
+      "info_bg": "#EEF5FF"
+    },
+    "dark": {
+      "canvas": "#11161C",
+      "surface": "#18212B",
+      "surface_subtle": "#202B36",
+      "text": "#EDF2F7",
+      "text_muted": "#B0BECD",
+      "accent": "#ADC9EB",
+      "on_accent": "#142231",
+      "border": "#344454",
+      "control_border": "#8193A6",
+      "focus": "#ADC9EB",
+      "success": "#79D6A3",
+      "success_bg": "#173327",
+      "warning": "#F3C580",
+      "warning_bg": "#382D1B",
+      "danger": "#FFB0A8",
+      "danger_bg": "#3D2424",
+      "info": "#B0D2FF",
+      "info_bg": "#20334C"
+    }
+  },
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48
+  ],
+  "radius": {
+    "control": 6,
+    "panel": 8,
+    "dialog": 12
+  },
+  "font": {
+    "body_stack": "system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+    "mono_stack": "ui-monospace, SFMono-Regular, Consolas, monospace",
+    "body": 14,
+    "reading": 16,
+    "secondary": 13,
+    "page_title": 24,
+    "section_title": 18,
+    "number_variant": "tabular-nums",
+    "remote_fonts": false
+  },
+  "layout": {
+    "sidebar": 232,
+    "page_padding_desktop": 32,
+    "page_padding_mobile": 16,
+    "min_content_track": "minmax(0,1fr)"
+  },
+  "motion": {
+    "normal_ms": 150,
+    "reduced_motion_ms": 0,
+    "idle_pulse": false
+  },
+  "contrast_pairs": [
+    {
+      "foreground": "text",
+      "background": "surface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "text_muted",
+      "background": "surface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "text_muted",
+      "background": "canvas",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "accent",
+      "background": "surface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "on_accent",
+      "background": "accent",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "success",
+      "background": "success_bg",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "warning",
+      "background": "warning_bg",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "danger",
+      "background": "danger_bg",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "info",
+      "background": "info_bg",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "control_border",
+      "background": "surface",
+      "minimum": 3
+    },
+    {
+      "foreground": "focus",
+      "background": "surface",
+      "minimum": 3
+    }
+  ],
+  "contrast_scope": "only explicit pairs; not complete WCAG conformance"
+}

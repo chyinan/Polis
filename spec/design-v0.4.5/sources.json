@@ -1,0 +1,441 @@
+{
+  "status": "research_sources_not_test_results",
+  "sources": [
+    {
+      "id": "N01",
+      "title": "SQLite — Appropriate Uses",
+      "url": "https://www.sqlite.org/whentouse.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N02",
+      "title": "PostgreSQL — Versioning Policy",
+      "url": "https://www.postgresql.org/support/versioning/",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N03",
+      "title": "PostgreSQL 18 — LISTEN / NOTIFY",
+      "url": "https://www.postgresql.org/docs/18/sql-listen.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N04",
+      "title": "PostgreSQL 18 — SELECT locking clauses",
+      "url": "https://www.postgresql.org/docs/current/sql-select.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N05",
+      "title": "PostgreSQL 18 — Transaction Isolation",
+      "url": "https://www.postgresql.org/docs/18/transaction-iso.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N06",
+      "title": "PostgreSQL 18 — Row Security Policies",
+      "url": "https://www.postgresql.org/docs/18/ddl-rowsecurity.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N07",
+      "title": "pgx v5 / sqlc Go integration",
+      "url": "https://docs.sqlc.dev/en/stable/guides/using-go-and-pgx.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N08",
+      "title": "goose — migration annotations / provider",
+      "url": "https://pressly.github.io/goose/documentation/annotations/",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N09",
+      "title": "PostgreSQL 18 — pg_dump / backup",
+      "url": "https://www.postgresql.org/docs/18/app-pgdump.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N10",
+      "title": "Docker — Rootless mode",
+      "url": "https://docs.docker.com/engine/security/rootless/",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N11",
+      "title": "React / Vite — build tooling",
+      "url": "https://react.dev/learn/build-a-react-app-from-scratch",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N12",
+      "title": "TanStack Query — Overview",
+      "url": "https://tanstack.com/query/latest/docs/framework/react/overview",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N13",
+      "title": "Playwright — documentation",
+      "url": "https://playwright.dev/docs/intro",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N14",
+      "title": "PostgreSQL 18 — text search / pg_trgm",
+      "url": "https://www.postgresql.org/docs/18/textsearch-intro.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N15",
+      "title": "Go — releases",
+      "url": "https://go.dev/dl/",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "N16",
+      "title": "PostgreSQL 18 — Sequence Manipulation Functions",
+      "url": "https://www.postgresql.org/docs/18/functions-sequence.html",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test"
+    },
+    {
+      "id": "U01",
+      "title": "Paperclip — ui/package.json",
+      "url": "https://github.com/paperclipai/paperclip/blob/master/ui/package.json",
+      "accessed": "2026-09-07",
+      "scope": "本轮经 GitHub 连接器定向读取，blob SHA 7104d63d8fab94ea69d67ac40a9bf1ea00a063a3。确认 UI 技术栈及 workspace 依赖耦合；不是整仓审计，也不是视觉质量客观评级。"
+    },
+    {
+      "id": "U02",
+      "title": "Radix Primitives — Introduction / Accessibility",
+      "url": "https://www.radix-ui.com/primitives/docs/overview/introduction",
+      "accessed": "2026-09-07",
+      "scope": "无样式原语、标签/焦点/键盘职责；补充 https://www.radix-ui.com/primitives/docs/overview/accessibility 。使用原语不代表产品自动符合 WCAG。"
+    },
+    {
+      "id": "U03",
+      "title": "React Router — Declarative installation",
+      "url": "https://reactrouter.com/start/declarative/installation",
+      "accessed": "2026-09-07",
+      "scope": "Vite/React 中的声明式 SPA 接入；不选择 framework/SSR 模式。"
+    },
+    {
+      "id": "U04",
+      "title": "TanStack Query — Query Keys",
+      "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-keys",
+      "accessed": "2026-09-07",
+      "scope": "query key 需要反映数据依赖范围；本项目认证/company/版本规则是独立设计。"
+    },
+    {
+      "id": "U05",
+      "title": "MDN — Using server-sent events",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events",
+      "accessed": "2026-09-07",
+      "scope": "单向流、自动重连、事件 id 与连接限制；不代表持久补漏或业务幂等自动成立。"
+    },
+    {
+      "id": "U06",
+      "title": "W3C — WCAG 2.2",
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "accessed": "2026-09-07",
+      "scope": "对比、reflow、焦点、拖拽替代与目标尺寸依据；本轮不宣称产品合规。"
+    },
+    {
+      "id": "U07",
+      "title": "W3C WAI-ARIA — Dialog Modal Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "accessed": "2026-09-07",
+      "scope": "对话框焦点、键盘、标签与关闭行为参考。"
+    },
+    {
+      "id": "U08",
+      "title": "Playwright — Accessibility testing",
+      "url": "https://playwright.dev/docs/accessibility-testing",
+      "accessed": "2026-09-07",
+      "scope": "自动工具结合人工检查；文档阅读版测试不等于真正产品 UI 测试。"
+    },
+    {
+      "id": "U09",
+      "title": "Lucide — React",
+      "url": "https://lucide.dev/guide/react",
+      "accessed": "2026-09-07",
+      "scope": "按需图标组件和内联 SVG；没有打包其素材或复制 UI 源码。"
+    },
+    {
+      "id": "U10",
+      "title": "Vite — Features / CSS Modules / TypeScript",
+      "url": "https://vite.dev/guide/features.html",
+      "accessed": "2026-09-07",
+      "scope": "CSS Modules 与构建工具边界；Vite 转译不等于 TypeScript 类型检查。"
+    },
+    {
+      "id": "P01",
+      "title": "Kokoro-Engine QQ config.rs",
+      "url": "https://github.com/chyinan/Kokoro-Engine/blob/main/src-tauri/src/qqbot/config.rs",
+      "blob_sha": "8302c2935cc96e8c8f06243dbcac699976a79a9f",
+      "range": "完整文件",
+      "scope": "默认禁用、AppID/AppSecret 环境变量、C2C 与 OpenID 白名单；本次未运行测试。",
+      "accessed": "2026-09-07",
+      "verification": "source_read_not_runtime_test"
+    },
+    {
+      "id": "P02",
+      "title": "Kokoro-Engine QQ protocol.rs",
+      "url": "https://github.com/chyinan/Kokoro-Engine/blob/main/src-tauri/src/qqbot/protocol.rs",
+      "blob_sha": "d4c1179aa58f25c239cb79657c29727d404a0a42",
+      "range": "1–270",
+      "scope": "QQ 官方事件解析、白名单与 msg_id/msg_seq 被动回复体；非全文件审计。",
+      "accessed": "2026-09-07",
+      "verification": "source_read_not_runtime_test"
+    },
+    {
+      "id": "P03",
+      "title": "Kokoro-Engine QQ runtime.rs",
+      "url": "https://github.com/chyinan/Kokoro-Engine/blob/main/src-tauri/src/qqbot/runtime.rs",
+      "blob_sha": "89b767a64b01ee307b241c9c975f0ec6088873a6",
+      "range": "1–230、540–840",
+      "scope": "token 获取/缓存、部分授权和 Gateway 路径、AI 回复调用、send_text_reply。主动消息资格未由此证明；没有编译/联调。",
+      "accessed": "2026-09-07",
+      "verification": "source_read_not_runtime_test"
+    },
+    {
+      "id": "P04",
+      "title": "QQ 机器人官方文档：启动接入",
+      "url": "https://bot.q.qq.com/wiki/develop/api-v2/",
+      "scope": "确认 AppID/AppSecret 与 Access Token 接入。消息概述及凭证细则获取超时，旧发送路径重定向；未确认当前主动配额、回复窗口和用户应用权限。",
+      "accessed": "2026-09-07",
+      "verification": "source_read_not_runtime_test"
+    },
+    {
+      "id": "P05",
+      "title": "PostgreSQL 18：Transaction Isolation",
+      "url": "https://www.postgresql.org/docs/18/transaction-iso.html",
+      "scope": "Read Committed 的语句快照与 Repeatable Read 的事务快照；本项目具体接班、pin 和文件发布协议是拟议设计，未执行并发实验。",
+      "accessed": "2026-09-07",
+      "verification": "source_read_not_runtime_test"
+    },
+    {
+      "id": "Q01",
+      "title": "Tencent Connect QQ Bot README（定时主动推送与平台拦截提示）",
+      "url": "https://github.com/tencent-connect/openclaw-qqbot/blob/main/README.zh.md",
+      "blob_sha": "349f669602b49b5c291ab1fa7f149b262bfe9c50",
+      "read_lines": [
+        25,
+        150
+      ],
+      "scope": "source_review_only; not live send",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q02",
+      "title": "Tencent Connect 主动发送模块",
+      "url": "https://github.com/tencent-connect/openclaw-qqbot/blob/a4479eea5931afdd3d504ac3b1c0860025c4d171/src/features/proactive.ts",
+      "commit": "a4479eea5931afdd3d504ac3b1c0860025c4d171",
+      "blob_sha": "e5724b23b51a844aeb1478f4fff63414ff2cf82f",
+      "read_lines": [
+        [
+          1,
+          245
+        ],
+        [
+          260,
+          470
+        ]
+      ],
+      "scope": "selected function path without inbound msgId; not full SDK audit",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q03",
+      "title": "Hermes 官方 QQ 文档（通知目标配置）",
+      "url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/qqbot",
+      "scope": "official documentation; QQBOT_HOME_CHANNEL; not proof of all application permissions",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q04",
+      "title": "QQ 官方接入入口与消息细则访问边界",
+      "url": "https://bot.q.qq.com/wiki/develop/api-v2/",
+      "scope": "entry read; linked server-inter/message/overview.html timed out; current quota not verified",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q05",
+      "title": "PostgreSQL 18 Explicit Locking",
+      "url": "https://www.postgresql.org/docs/18/explicit-locking.html",
+      "scope": "lock lifetime/order reference; proposed transaction paths not tested",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q06",
+      "title": "Git update-ref（期望旧 OID 条件更新）",
+      "url": "https://git-scm.com/docs/git-update-ref",
+      "scope": "documented conditional ref update; proposed integration adapter not tested",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "S01",
+      "title": "Agent Skills — Specification",
+      "url": "https://agentskills.io/specification",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "SKILL.md、元数据、可选附属目录、渐进加载与 allowed-tools 实验性；本项目的批准/指纹/撤权规则为独立设计。"
+    },
+    {
+      "id": "S02",
+      "title": "Agent Skills — Adding skills support",
+      "url": "https://agentskills.io/client-implementation/adding-skills-support",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "客户端发现、分层读取与项目来源信任；本项目不采用自动覆盖同名批准技能的默认。"
+    },
+    {
+      "id": "S03",
+      "title": "MCP — Versioning and Compatibility",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "2026-07-28 当前请求式协议与 2025-11-25 握手兼容路径分开；不代表 SDK 已验证。补充：https://modelcontextprotocol.io/docs/2026-07-28/learn/versioning 和 https://modelcontextprotocol.io/specification/2026-07-28/server/discover 。"
+    },
+    {
+      "id": "S04",
+      "title": "MCP — stdio / Streamable HTTP",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "传输类别和进程/网络边界；补充 https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http 。"
+    },
+    {
+      "id": "S05",
+      "title": "MCP — Tools",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "工具目录/命名、schema、非可信注解、结果与有状态工具的显式 handle。项目授权/回执/预算为自己的规范。"
+    },
+    {
+      "id": "S06",
+      "title": "MCP — Roots",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/client/roots",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "提供文件根的协议机制；本项目仍要求 OS containment，不能把协议信息等同强制隔离。"
+    },
+    {
+      "id": "S07",
+      "title": "MCP — Security Best Practices",
+      "url": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "受众/秘密边界、SSRF、反向请求及本地进程风险；补充 https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations 。"
+    },
+    {
+      "id": "S08",
+      "title": "MCP — Official Go SDK",
+      "url": "https://github.com/modelcontextprotocol/go-sdk",
+      "accessed": "2026-09-07",
+      "scope": "targeted_official_documentation_not_runtime_test",
+      "note": "官方 Go 客户端/服务端 SDK 作为实现首选；未在本包安装/编译或证明任意协议版本支持。"
+    },
+    {
+      "id": "W01",
+      "title": "OWASP — File Upload Cheat Sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+      "accessed": "2026-09-08",
+      "scope": "资料上传的类型/大小/存储与隔离边界；不能据此声称产品已经安全。"
+    },
+    {
+      "id": "W02",
+      "title": "npm — npm ci",
+      "url": "https://docs.npmjs.com/cli/v11/commands/npm-ci/",
+      "accessed": "2026-09-08",
+      "scope": "锁文件、安装与ignore-scripts的行为；锁定实际版本，不采用未核验的默认值。"
+    },
+    {
+      "id": "W03",
+      "title": "Playwright — Web server",
+      "url": "https://playwright.dev/docs/test-webserver",
+      "accessed": "2026-09-08",
+      "scope": "就绪URL、启动/关闭、复用、多服务；业务Job与资源身份由本项目定义。"
+    },
+    {
+      "id": "W04",
+      "title": "Playwright — Screenshots",
+      "url": "https://playwright.dev/docs/screenshots",
+      "accessed": "2026-09-08",
+      "scope": "页面和元素截图能力；截图不等于业务功能验证。"
+    },
+    {
+      "id": "W05",
+      "title": "Playwright — Authentication",
+      "url": "https://playwright.dev/docs/auth",
+      "accessed": "2026-09-08",
+      "scope": "测试认证状态的敏感性；使用隔离测试账户与环境。"
+    },
+    {
+      "id": "W06",
+      "title": "GitHub — REST endpoints for issues",
+      "url": "https://docs.github.com/en/rest/issues/issues",
+      "accessed": "2026-09-08",
+      "scope": "Issues可能含PR、since与字段；本文选择只读来源，无用户账户接入。"
+    },
+    {
+      "id": "W07",
+      "title": "GitHub — REST pagination",
+      "url": "https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api",
+      "accessed": "2026-09-08",
+      "scope": "分页读取；重叠去重与覆盖状态是本项目设计而非API快照保证。"
+    },
+    {
+      "id": "W08",
+      "title": "GitHub — REST best practices",
+      "url": "https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api",
+      "accessed": "2026-09-08",
+      "scope": "限流/条件请求/重试；轮询是首版取舍，非推荐取代所有webhook。"
+    },
+    {
+      "id": "W09",
+      "title": "WHATWG HTML Origins / RFC 6265 Cookie security",
+      "url": "https://html.spec.whatwg.org/multipage/browsers.html#origin",
+      "accessed": "2026-09-08",
+      "scope": "origin和Cookie隔离不同；补充 https://httpwg.org/specs/rfc6265.html#security-considerations 。仅更换端口不形成完整凭据隔离。"
+    },
+    {
+      "id": "D01",
+      "title": "GitHub issue comments",
+      "url": "https://docs.github.com/en/rest/issues/comments",
+      "accessed": "2026-09-08",
+      "scope": "targeted_primary_documentation_not_runtime_test"
+    },
+    {
+      "id": "D02",
+      "title": "OpenAI Codex app-server",
+      "url": "https://developers.openai.com/codex/app-server",
+      "accessed": "2026-09-08",
+      "scope": "targeted_primary_documentation_not_runtime_test"
+    },
+    {
+      "id": "D03",
+      "title": "MCP versioning",
+      "url": "https://modelcontextprotocol.io/specification/versioning",
+      "accessed": "2026-09-08",
+      "scope": "targeted_primary_documentation_not_runtime_test"
+    }
+  ],
+  "document_version": "0.4.5"
+}

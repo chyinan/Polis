@@ -1,0 +1,13 @@
+stateDiagram-v2
+  requested --> draining
+  draining --> reconciling
+  reconciling --> isolated: old writer stopped or contained
+  isolated --> bundle_ready: durable records plus pending responsibilities
+  bundle_ready --> qualifying: profile policy budget and context checks
+  qualifying --> restoring
+  restoring --> validating: replay event delta without side effects
+  validating --> activation_pending_environment: commit new epoch decision
+  activation_pending_environment --> active: supervisor capability receipt verified
+  activation_pending_environment --> paused_recovery: capability failure or unknown receipt
+  reconciling --> paused_recovery: unknown uncontained writer
+  qualifying --> paused_recovery: incompatible profile

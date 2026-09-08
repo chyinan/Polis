@@ -1,0 +1,126 @@
+{
+  "document_version": "0.4.5",
+  "contracts": [
+    {
+      "path": "contracts/C-EXEC.md",
+      "section": 29
+    },
+    {
+      "path": "contracts/C-AUTHORITY.md",
+      "section": 30
+    },
+    {
+      "path": "contracts/C-SLEEP.md",
+      "section": 31
+    },
+    {
+      "path": "contracts/C-REVOKE.md",
+      "section": 32
+    },
+    {
+      "path": "contracts/C-MEMORY.md",
+      "section": 33
+    },
+    {
+      "path": "contracts/C-RETRY.md",
+      "section": 34
+    },
+    {
+      "path": "contracts/C-UPGRADE.md",
+      "section": 35
+    },
+    {
+      "path": "contracts/C-READY.md",
+      "section": 36
+    },
+    {
+      "path": "contracts/C-WORKBENCH.md",
+      "section": 40
+    },
+    {
+      "path": "contracts/C-MISSION.md",
+      "start_anchor": "contract-mission",
+      "end_anchor": "contract-employee-ops"
+    },
+    {
+      "path": "contracts/C-EMPLOYEE-OPS.md",
+      "start_anchor": "contract-employee-ops",
+      "end_anchor": "contract-bootstrap-resource"
+    },
+    {
+      "path": "contracts/C-BOOTSTRAP.md",
+      "start_anchor": "contract-bootstrap-resource",
+      "end_anchor": "contract-resource"
+    },
+    {
+      "path": "contracts/C-RESOURCE.md",
+      "start_anchor": "contract-resource",
+      "end_anchor": "contract-continuity"
+    },
+    {
+      "path": "contracts/C-CONTINUITY.md",
+      "start_anchor": "contract-continuity",
+      "end_anchor": "contract-notify"
+    },
+    {
+      "path": "contracts/C-NOTIFY.md",
+      "start_anchor": "contract-notify",
+      "end_anchor": "preflight-artifacts"
+    },
+    {
+      "path": "contracts/C-WORKSPACE.md",
+      "start_anchor": "contract-workspace",
+      "end_anchor": "contract-skills"
+    },
+    {
+      "path": "contracts/C-SKILLS.md",
+      "start_anchor": "contract-skills",
+      "end_anchor": "contract-mcp"
+    },
+    {
+      "path": "contracts/C-MCP.md",
+      "start_anchor": "contract-mcp",
+      "end_anchor": "contract-capability-binding"
+    },
+    {
+      "path": "contracts/C-INTAKE.md",
+      "start_anchor": "contract-intake",
+      "end_anchor": "contract-environment"
+    },
+    {
+      "path": "contracts/C-ENVIRONMENT.md",
+      "start_anchor": "contract-environment",
+      "end_anchor": "contract-jobs"
+    },
+    {
+      "path": "contracts/C-JOBS.md",
+      "start_anchor": "contract-jobs",
+      "end_anchor": "contract-browser"
+    },
+    {
+      "path": "contracts/C-BROWSER.md",
+      "start_anchor": "contract-browser",
+      "end_anchor": "contract-guidance"
+    },
+    {
+      "path": "contracts/C-GUIDANCE.md",
+      "start_anchor": "contract-guidance",
+      "end_anchor": "contract-delivery"
+    },
+    {
+      "path": "contracts/C-DELIVERY.md",
+      "start_anchor": "contract-delivery",
+      "end_anchor": "contract-feedback"
+    },
+    {
+      "path": "contracts/C-FEEDBACK.md",
+      "start_anchor": "contract-feedback",
+      "end_anchor": "workflow-integration"
+    },
+    {
+      "path": "contracts/C-CAPABILITY.md",
+      "start_anchor": "contract-capability-binding",
+      "end_heading": "44.7"
+    }
+  ]
+}

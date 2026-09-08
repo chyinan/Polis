@@ -1,0 +1,388 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "release_plan_not_runtime_config",
+  "execution_enabled": false,
+  "primary_user": "long_horizon_goal_owners_seeking_organized_virtual_company_beyond_single_frontier_agent",
+  "software_is_validation_domain_not_user_definition": true,
+  "fixed_roles": true,
+  "runtime_stage_labels": [
+    "R0",
+    "R1",
+    "R2",
+    "R3"
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-01",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-02",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-03",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-04",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-05",
+      "earliest_delivery": "R1",
+      "coverage": "R1多阶段/多会话；R2真实多天；R3新领域",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-06",
+      "earliest_delivery": "R1",
+      "coverage": "R1单活动公司仍强制scope；R2多公司实际运行",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-07",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-08",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-09",
+      "earliest_delivery": "R1",
+      "coverage": "早期E-ORG；有证据才扩域；不是每任务必须更便宜",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-10",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-11",
+      "earliest_delivery": "R1",
+      "coverage": "R1核心对象不写死Git、非Git契约fixture；R3真实新领域",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-12",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-13",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-14",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-15",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-16",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-17",
+      "earliest_delivery": "R1",
+      "coverage": "R1安全重启与可用备份；R2更新恢复/TCO",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-18",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-19",
+      "earliest_delivery": "R1",
+      "coverage": "R1最小企业风真实状态页；R2上手与完整视图",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-20",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-21",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-22",
+      "earliest_delivery": "R1",
+      "coverage": "从R1起无办公室依赖；办公室功能继续延期，未来是否立项单独决定，不是R3必做",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-23",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-24",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-25",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-26",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-27",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-28",
+      "earliest_delivery": "R1",
+      "coverage": "QQ主动C2C最小通道；未联调只能监督自用",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-29",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-30",
+      "earliest_delivery": "R1",
+      "coverage": "R1选定版本只读Skill/共享目录；R2库管理与脚本profile",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-31",
+      "earliest_delivery": "R1",
+      "coverage": "R1受控stdio；R2 Streamable HTTP；逐组合测试",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-32",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-33",
+      "earliest_delivery": "R1",
+      "coverage": "R1绑定/权限/未验证状态；R2高级公共库管理",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-34",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-35",
+      "earliest_delivery": "R1",
+      "coverage": "R1文本/PNG/JPEG/目录Git导入；R2 PDF/CSV/ZIP",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-36",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-37",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-38",
+      "earliest_delivery": "R1",
+      "coverage": "R1受控目标浏览器/明确URL；搜索提供者及远程预览按资格后开",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-39",
+      "earliest_delivery": "R1",
+      "coverage": "R1参考组合内实际实现；扩组合另测",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-40",
+      "earliest_delivery": "R1",
+      "coverage": "R1可下载源码/说明/证据；R2完整可用退出/升级",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    },
+    {
+      "requirement_id": "REQ-41",
+      "earliest_delivery": "R2",
+      "coverage": "R1手动反馈；R2只读Issue及必要有界comments；终态不复活",
+      "scope_status": "planned",
+      "implementation_status": "not_implemented",
+      "verification_status": "not_run",
+      "mandatory_safety_for_exposed_capability": true
+    }
+  ],
+  "new_scope_requires_offset": true,
+  "office_remains_deferred": true,
+  "no_safety_waiver_for_smaller_release": true
+}

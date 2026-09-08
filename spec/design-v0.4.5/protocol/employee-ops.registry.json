@@ -1,0 +1,381 @@
+{
+  "document_version": "0.4.5",
+  "protocol_version": "employee-ops@1",
+  "status": "draft_permission_catalog_not_full_runtime_schema",
+  "operations": [
+    {
+      "name": "work.current",
+      "mode": "read",
+      "role": "all",
+      "result": "work_view",
+      "requires_current_binding": true
+    },
+    {
+      "name": "context.read",
+      "mode": "read",
+      "role": "all",
+      "result": "context_fragment",
+      "requires_current_binding": true
+    },
+    {
+      "name": "collab.read",
+      "mode": "read",
+      "role": "all",
+      "result": "message_page",
+      "requires_current_binding": true
+    },
+    {
+      "name": "collab.ack",
+      "mode": "write",
+      "role": "active_employee",
+      "result": "observation_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "collab.send",
+      "mode": "write",
+      "role": "active_employee",
+      "result": "message_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "obligation.resolve",
+      "mode": "write",
+      "role": "obligation_owner",
+      "result": "resolution_proposal_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "contract.propose",
+      "mode": "write",
+      "role": "authorized_role",
+      "result": "contract_proposal_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "memory.propose",
+      "mode": "write",
+      "role": "authorized_role",
+      "result": "memory_proposal_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "work.checkpoint",
+      "mode": "write",
+      "role": "active_employee",
+      "result": "checkpoint_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "artifact.submit",
+      "mode": "write",
+      "role": "task_author",
+      "result": "candidate_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "work.block",
+      "mode": "write",
+      "role": "active_employee",
+      "result": "blocker_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "work.yield",
+      "mode": "write",
+      "role": "active_employee",
+      "result": "yield_operation",
+      "requires_current_binding": true
+    },
+    {
+      "name": "plan.propose",
+      "mode": "write",
+      "role": "planner",
+      "result": "plan_proposal_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "review.submit",
+      "mode": "write",
+      "role": "independent_reviewer",
+      "result": "review_receipt",
+      "requires_current_binding": true
+    },
+    {
+      "name": "handover.confirm",
+      "mode": "restore_write",
+      "role": "restoring_employee",
+      "result": "handover_declaration",
+      "requires_current_binding": true
+    },
+    {
+      "name": "workspace.list",
+      "mode": "read",
+      "role": "all",
+      "result": "workspace_entries",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "workspace.search",
+      "mode": "read",
+      "role": "all",
+      "result": "workspace_matches",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "workspace.read",
+      "mode": "read",
+      "role": "all",
+      "result": "file_fragment",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "workspace.snapshot",
+      "mode": "write",
+      "role": "workspace_owner",
+      "result": "snapshot_operation",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "skills.list",
+      "mode": "read",
+      "role": "all",
+      "result": "skill_catalog",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "skills.load",
+      "mode": "read_with_audit",
+      "role": "all",
+      "result": "skill_content",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "scripts.run",
+      "mode": "execute",
+      "role": "authorized_role",
+      "result": "tool_receipt",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "tools.list",
+      "mode": "read",
+      "role": "all",
+      "result": "tool_catalog",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "tools.describe",
+      "mode": "read",
+      "role": "all",
+      "result": "tool_descriptor",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "tools.call",
+      "mode": "execute",
+      "role": "authorized_role",
+      "result": "tool_invocation",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "resources.list",
+      "mode": "remote_read",
+      "role": "authorized_role",
+      "result": "resource_catalog",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "resources.read",
+      "mode": "remote_read",
+      "role": "authorized_role",
+      "result": "resource_content",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.3"
+    },
+    {
+      "name": "inputs.list",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "inputs.read",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "environment.status",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "environment.ensure",
+      "mode": "execute",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "jobs.start",
+      "mode": "execute",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "jobs.status",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "jobs.logs",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "jobs.stop",
+      "mode": "execute",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "research.search",
+      "mode": "execute",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "research.fetch",
+      "mode": "execute",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "browser.run",
+      "mode": "execute",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "browser.results",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "guidance.read",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "guidance.respond",
+      "mode": "write",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "questions.ask",
+      "mode": "write",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "delivery.propose",
+      "mode": "write",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "feedback.read",
+      "mode": "read",
+      "role": "authorized_reader",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    },
+    {
+      "name": "feedback.triage",
+      "mode": "write",
+      "role": "authorized_active_employee",
+      "result": "versioned_receipt_or_view",
+      "requires_current_binding": true,
+      "introduced_in_document": "0.4.4"
+    }
+  ],
+  "restore_allowlist": [
+    "work.current",
+    "context.read",
+    "collab.read",
+    "handover.confirm",
+    "workspace.list",
+    "workspace.search",
+    "workspace.read",
+    "skills.list",
+    "skills.load",
+    "tools.list",
+    "tools.describe",
+    "inputs.list",
+    "inputs.read",
+    "environment.status",
+    "jobs.status",
+    "jobs.logs",
+    "browser.results",
+    "guidance.read",
+    "feedback.read"
+  ],
+  "inbox_read_does_not_resolve_obligation": true,
+  "restore_additional_constraints": "Read only frozen/recorded inputs and records required for handover; no fetch, conversion, browser start, preparation or job control.",
+  "adapter_metadata_policy": {
+    "identity_source": "authenticated binding, never model body",
+    "stable_call_key": "trusted persisted adapter call identity; unknown replay requires reconcile",
+    "model_supplies": "work intent, scoped target, relevant version/evidence",
+    "auto_ack_is_not_applied": true
+  }
+}

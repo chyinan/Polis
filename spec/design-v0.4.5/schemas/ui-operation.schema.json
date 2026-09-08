@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "execution_enabled",
+    "data_mode",
+    "company_id",
+    "request_id",
+    "operation_id",
+    "command",
+    "expected_revision",
+    "status",
+    "effective_for_new_dispatch",
+    "quiesced",
+    "unknown_in_flight",
+    "message"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "data_mode": {
+      "const": "simulated"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "operation_id": {
+      "type": "string"
+    },
+    "command": {
+      "type": "string"
+    },
+    "expected_revision": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "effective_for_new_dispatch": {
+      "type": "boolean"
+    },
+    "quiesced": {
+      "type": "boolean"
+    },
+    "unknown_in_flight": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "message": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Design fixture; not production API"
+}

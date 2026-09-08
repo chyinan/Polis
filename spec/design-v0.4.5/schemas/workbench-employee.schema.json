@@ -1,0 +1,236 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "execution_enabled",
+    "meta",
+    "employee",
+    "status",
+    "model_binding",
+    "responsibilities",
+    "usage",
+    "allowed_actions",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company_id",
+        "entity_revision",
+        "snapshot_cursor",
+        "observed_at",
+        "data_mode",
+        "freshness"
+      ],
+      "properties": {
+        "company_id": {
+          "type": "string"
+        },
+        "entity_revision": {
+          "type": "string"
+        },
+        "snapshot_cursor": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string"
+        },
+        "data_mode": {
+          "const": "simulated"
+        },
+        "freshness": {
+          "type": "string"
+        }
+      }
+    },
+    "employee": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "employee_id",
+        "role",
+        "role_revision",
+        "display_name"
+      ],
+      "properties": {
+        "employee_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "role_revision": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary",
+        "active_model_requests",
+        "in_flight_tools",
+        "reason"
+      ],
+      "properties": {
+        "primary": {
+          "type": "string"
+        },
+        "active_model_requests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "in_flight_tools": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "model_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "desired_profile_id",
+        "active_profile_id",
+        "activation"
+      ],
+      "properties": {
+        "desired_profile_id": {
+          "type": "string"
+        },
+        "active_profile_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "activation": {
+          "type": "string"
+        }
+      }
+    },
+    "responsibilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "open_obligations",
+        "current_task_id"
+      ],
+      "properties": {
+        "open_obligations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "current_task_id": {
+          "type": "string"
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quality",
+        "amount_microunits",
+        "currency",
+        "note"
+      ],
+      "properties": {
+        "quality": {
+          "type": "string"
+        },
+        "amount_microunits": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "required": [
+        "binding_ref",
+        "binding_revision",
+        "configuration",
+        "provisioning",
+        "qualification",
+        "workspaces",
+        "selected_skill_count",
+        "active_tool_calls",
+        "mcp_connections",
+        "real_calls_allowed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "binding_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "binding_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "configuration": {
+          "const": "draft"
+        },
+        "provisioning": {
+          "const": "unprovisioned"
+        },
+        "qualification": {
+          "const": "unverified"
+        },
+        "workspaces": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "selected_skill_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_tool_calls": {
+          "const": 0
+        },
+        "mcp_connections": {
+          "const": "not_started"
+        },
+        "real_calls_allowed": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Design fixture; not production API"
+}

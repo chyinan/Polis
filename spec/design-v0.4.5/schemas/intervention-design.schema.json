@@ -1,0 +1,188 @@
+{
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "data_mode",
+    "incident_id",
+    "incident_revision",
+    "company_id",
+    "mission_id",
+    "problem_key",
+    "reason_code",
+    "severity",
+    "status",
+    "requires_human_action",
+    "observed_at",
+    "safe_alias",
+    "safe_summary",
+    "safety_actions",
+    "requested_human_action",
+    "evidence_refs",
+    "delivery",
+    "resolution",
+    "secret_material_included",
+    "incident_occurrence"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "simulated_intervention_fixture"
+    },
+    "data_mode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "incident_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "incident_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "mission_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "problem_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "reason_code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "severity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "requires_human_action": {
+      "const": true
+    },
+    "observed_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "safe_alias": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "safe_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "safety_actions": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      }
+    },
+    "requested_human_action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "evidence_refs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "required": [
+        "notification_id",
+        "state",
+        "provider_receipt_id",
+        "human_read_confirmed",
+        "business_approval_granted",
+        "send_enabled",
+        "remote_message_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "notification_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "state": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "provider_receipt_id": {
+          "type": "null"
+        },
+        "human_read_confirmed": {
+          "const": false
+        },
+        "business_approval_granted": {
+          "const": false
+        },
+        "send_enabled": {
+          "const": false
+        },
+        "remote_message_id": {
+          "type": "null"
+        }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "required": [
+        "status",
+        "resume_authorized"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "resume_authorized": {
+          "const": false
+        }
+      }
+    },
+    "secret_material_included": {
+      "const": false
+    },
+    "incident_occurrence": {
+      "const": "1"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:intervention:0.4.4"
+}

@@ -1,0 +1,6 @@
+.tools/
+.runtime/
+bin/
+*.test
+*.exe
+

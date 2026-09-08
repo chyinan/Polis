@@ -1,0 +1,23 @@
+{
+  "document_version": "0.4.5",
+  "status": "design_targets_not_qualified",
+  "profiles": [
+    {
+      "id": "node-npm-linux",
+      "purpose": "target_project_not_control_stack",
+      "qualified": false
+    },
+    {
+      "id": "playwright-chromium-isolated",
+      "purpose": "test_generated_application_not_workbench",
+      "qualified": false
+    },
+    {
+      "id": "github-issues-readonly",
+      "purpose": "first_real_feedback_source",
+      "qualified": false
+    }
+  ],
+  "fallbacks_must_be_explicit": true,
+  "auto_account_connection": false
+}

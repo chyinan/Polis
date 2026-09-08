@@ -1,0 +1,48 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "notification_trace_not_runtime_result",
+  "results": "not_run",
+  "send_enabled": false,
+  "steps": [
+    {
+      "input": "upstream_proactive_source_confirmed",
+      "expected": "implementation_route_selected_not_account_qualification"
+    },
+    {
+      "input": "normal_task_complete",
+      "expected": "no_notification"
+    },
+    {
+      "input": "credential_missing_no_qualified_fallback",
+      "expected": "open_incident_stop_new_work"
+    },
+    {
+      "input": "duplicate_failure_logs",
+      "expected": "same_incident_no_unbounded_send"
+    },
+    {
+      "input": "QQ_proactive_unverified",
+      "expected": "unattended_not_ready_no_false_success"
+    },
+    {
+      "input": "explicit_test_authorized_and_simulated_probe_pass",
+      "expected": "fixture_qualification_only_not_real_qualification"
+    },
+    {
+      "input": "provider_accepts_notification",
+      "expected": "provider_accepted_not_human_read"
+    },
+    {
+      "input": "QQ_reply_continue",
+      "expected": "no_management_action_no_llm_call"
+    },
+    {
+      "input": "owner_acknowledges_in_workbench",
+      "expected": "acknowledged_not_resolved_or_resumed"
+    },
+    {
+      "input": "route_revoked_before_retry",
+      "expected": "pending_retry_superseded"
+    }
+  ]
+}

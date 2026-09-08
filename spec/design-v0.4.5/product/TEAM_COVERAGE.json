@@ -1,0 +1,83 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "fixed_team_coverage_draft",
+  "execution_enabled": false,
+  "role_changes_at_runtime": false,
+  "template_requires_human_confirmation": true,
+  "employee_ids": [
+    "emp-planning",
+    "emp-backend",
+    "emp-frontend",
+    "emp-review"
+  ],
+  "coverage": [
+    {
+      "task_type": "planning",
+      "owner": "emp-planning",
+      "eligible_independent_checkers": [
+        "emp-review"
+      ],
+      "acceptance_path": "owner_protected_goal_contract",
+      "qualification": "unverified"
+    },
+    {
+      "task_type": "frontend",
+      "owner": "emp-frontend",
+      "eligible_independent_checkers": [
+        "emp-review"
+      ],
+      "acceptance_path": "trusted_baseline_plus_independent_review",
+      "qualification": "unverified"
+    },
+    {
+      "task_type": "backend",
+      "owner": "emp-backend",
+      "eligible_independent_checkers": [
+        "emp-review"
+      ],
+      "acceptance_path": "trusted_baseline_plus_independent_review",
+      "qualification": "unverified"
+    },
+    {
+      "task_type": "environment_plan",
+      "owner": "emp-backend",
+      "eligible_independent_checkers": [
+        "emp-planning"
+      ],
+      "acceptance_path": "current_environment_policy",
+      "qualification": "unverified"
+    },
+    {
+      "task_type": "regression_test_overlay",
+      "owner": "emp-review",
+      "eligible_independent_checkers": [
+        "emp-backend",
+        "emp-frontend"
+      ],
+      "acceptance_path": "separate_test_quality_review_not_final_production_acceptance",
+      "qualification": "unverified"
+    },
+    {
+      "task_type": "design_change",
+      "owner": "emp-planning",
+      "eligible_independent_checkers": [
+        "emp-review"
+      ],
+      "acceptance_path": "risk_policy_owner_if_outside_scope",
+      "qualification": "unverified"
+    },
+    {
+      "task_type": "delivery_assembly",
+      "owner": "emp-planning",
+      "eligible_independent_checkers": [
+        "emp-review"
+      ],
+      "acceptance_path": "immutable_manifest_and_deterministic_checks",
+      "qualification": "unverified"
+    }
+  ],
+  "missing_path": "show_requires_human_before_admission",
+  "checker_policy": "not author of exact candidate; test-overlay review does not permit production self-acceptance",
+  "trusted_baseline_mutable_by_workers": false,
+  "guarantees_semantic_independence": false
+}

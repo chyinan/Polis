@@ -1,0 +1,23 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "delivery_id": "delivery-demo",
+  "revision": "1",
+  "mission_id": "mis-pagination-example",
+  "state": "assembling",
+  "source_revision": null,
+  "environment_profile": "env-node-demo",
+  "artifacts": [],
+  "verification_status": "not_run",
+  "user_disposition": "not_requested",
+  "download_counts_as_acceptance": false,
+  "runtime_notes": "待真实产物生成后填写，不保证当前存在可运行结果。",
+  "known_limitations": [
+    "All artifacts and executions are unverified."
+  ],
+  "secret_material_included": false,
+  "preview_ref": null
+}

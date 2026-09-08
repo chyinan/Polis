@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:feedback-source:0.4.4",
+  "description": "Disabled documentation fixture only; not a production authorization schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "pay_enabled",
+    "qualification",
+    "source_kind",
+    "source_binding",
+    "repository_id",
+    "repository_name",
+    "credential_secret_ref",
+    "connect_enabled",
+    "read_only",
+    "exclude_pull_requests",
+    "remote_writes_enabled",
+    "poll_policy",
+    "coverage",
+    "item_observations",
+    "closed_mission_behavior",
+    "collection_outside_mission_authorized"
+  ],
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "workflow_fixture_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "pay_enabled": {
+      "const": false
+    },
+    "qualification": {
+      "const": "unverified"
+    },
+    "source_kind": {
+      "const": "github_issues_readonly"
+    },
+    "source_binding": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": "null"
+    },
+    "repository_name": {
+      "type": "null"
+    },
+    "credential_secret_ref": {
+      "type": "null"
+    },
+    "connect_enabled": {
+      "const": false
+    },
+    "read_only": {
+      "const": true
+    },
+    "exclude_pull_requests": {
+      "const": true
+    },
+    "remote_writes_enabled": {
+      "const": false
+    },
+    "poll_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approved",
+        "poll_interval_seconds",
+        "page_budget",
+        "overlap_seconds",
+        "bounded_full_reconciliation"
+      ],
+      "properties": {
+        "approved": {
+          "const": false
+        },
+        "poll_interval_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "page_budget": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overlap_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bounded_full_reconciliation": {
+          "const": true
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "last_complete_scan",
+        "cursor",
+        "partial_page_failure"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "last_complete_scan": {
+          "type": "null"
+        },
+        "cursor": {
+          "type": "null"
+        },
+        "partial_page_failure": {
+          "const": false
+        }
+      }
+    },
+    "item_observations": {
+      "type": "array",
+      "items": {},
+      "maxItems": 1000
+    },
+    "closed_mission_behavior": {
+      "type": "string",
+      "minLength": 1
+    },
+    "collection_outside_mission_authorized": {
+      "const": false
+    },
+    "comment_context_policy": {
+      "type": "object",
+      "required": [
+        "before_formal_triage",
+        "bounded",
+        "coverage_state"
+      ],
+      "properties": {
+        "before_formal_triage": {
+          "const": true
+        },
+        "bounded": {
+          "const": true
+        },
+        "coverage_state": {
+          "const": "unverified"
+        }
+      }
+    }
+  }
+}

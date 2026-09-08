@@ -1,0 +1,43 @@
+{
+  "document_version": "0.4.3",
+  "date": "2026-09-07",
+  "status": "design_and_static_fixture_only",
+  "scope": "workspaces_shared_skills_mcp_employee_capability_continuity",
+  "original_0_4_2_sha256": "a4d7e7ab8b96808d0f4d5f0606f0056083e3a986d0a8abb7a99c8eae8c73fd8a",
+  "original_preserved": true,
+  "chapters": 44,
+  "requirements": 34,
+  "adrs": 56,
+  "contracts": 19,
+  "employee_logical_operations": 27,
+  "planned_tests": {
+    "FT": 82,
+    "NT": 22,
+    "UI": 40,
+    "CAP": 32,
+    "total": 176,
+    "all_status": "not_run"
+  },
+  "static_checks": 334,
+  "static_status": "pass",
+  "reader_render_cases": 18,
+  "reader_render_method": "file:// navigation blocked by container browser policy; rendered exact HTML using Playwright set_content in system Chromium. Hyperlinks checked statically, not live navigated. No Agent product or API server",
+  "new_capability_findings": [
+    "AR-12",
+    "AR-13",
+    "AR-14",
+    "AR-15"
+  ],
+  "live_calls": {
+    "models": 0,
+    "MCP": 0,
+    "QQ": 0
+  },
+  "not_claimed": [
+    "all possible omissions eliminated",
+    "MCP interoperability validated",
+    "runtime implemented",
+    "security isolation validated",
+    "real UI implemented"
+  ]
+}

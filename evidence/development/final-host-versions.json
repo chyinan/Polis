@@ -1,0 +1,63 @@
+[
+  {
+    "command": [
+      "wsl",
+      "-d",
+      "Ubuntu-22.04",
+      "--",
+      "/mnt/d/Programs/Polis/.tools/go/bin/go",
+      "version"
+    ],
+    "exit_code": 0,
+    "stdout": "go version go1.26.8 linux/amd64\n",
+    "stderr": "wsl: \u68c0\u6d4b\u5230 localhost \u4ee3\u7406\u914d\u7f6e\uff0c\u4f46\u672a\u955c\u50cf\u5230 WSL\u3002NAT \u6a21\u5f0f\u4e0b\u7684 WSL \u4e0d\u652f\u6301 localhost \u4ee3\u7406\u3002\r\n"
+  },
+  {
+    "command": [
+      "wsl",
+      "-d",
+      "Ubuntu-22.04",
+      "--",
+      "/mnt/d/Programs/Polis/.tools/bin/sqlc",
+      "version"
+    ],
+    "exit_code": 0,
+    "stdout": "v1.31.1\n",
+    "stderr": "wsl: \u68c0\u6d4b\u5230 localhost \u4ee3\u7406\u914d\u7f6e\uff0c\u4f46\u672a\u955c\u50cf\u5230 WSL\u3002NAT \u6a21\u5f0f\u4e0b\u7684 WSL \u4e0d\u652f\u6301 localhost \u4ee3\u7406\u3002\r\n"
+  },
+  {
+    "command": [
+      "wsl",
+      "-d",
+      "Ubuntu-22.04",
+      "--",
+      "gcc",
+      "--version"
+    ],
+    "exit_code": 0,
+    "stdout": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "stderr": "wsl: \u68c0\u6d4b\u5230 localhost \u4ee3\u7406\u914d\u7f6e\uff0c\u4f46\u672a\u955c\u50cf\u5230 WSL\u3002NAT \u6a21\u5f0f\u4e0b\u7684 WSL \u4e0d\u652f\u6301 localhost \u4ee3\u7406\u3002\r\n"
+  },
+  {
+    "command": [
+      "wsl",
+      "-d",
+      "Ubuntu-22.04",
+      "--",
+      "uname",
+      "-a"
+    ],
+    "exit_code": 0,
+    "stdout": "Linux DESKTOP-L1ND50Q 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux\n",
+    "stderr": "wsl: \u68c0\u6d4b\u5230 localhost \u4ee3\u7406\u914d\u7f6e\uff0c\u4f46\u672a\u955c\u50cf\u5230 WSL\u3002NAT \u6a21\u5f0f\u4e0b\u7684 WSL \u4e0d\u652f\u6301 localhost \u4ee3\u7406\u3002\r\n"
+  },
+  {
+    "command": [
+      "docker",
+      "version"
+    ],
+    "exit_code": 1,
+    "stdout": "Client:\n Version:           29.4.1\n API version:       1.54\n Go version:        go1.26.2\n Git commit:        055a478\n Built:             Mon Apr 20 16:35:45 2026\n OS/Arch:           windows/amd64\n Context:           desktop-linux\n",
+    "stderr": "failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n"
+  }
+]

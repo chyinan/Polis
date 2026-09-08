@@ -1,0 +1,23 @@
+{
+  "internal/core/validation.go": "0b1eb72a36b71b2ef953f8183dfbcab292072a9f9d35d893fc759c6f2f203ea6",
+  "internal/core/validation_test.go": "2193c78e9e270d3866b0f8320ea6b0f2a694d12989a330347e606e8e7a29de0f",
+  "internal/dbgen/db.go": "84f598c6b75bfcb2abf4c6fbe856276271ccb1899028c767b01f05ad1f13cd87",
+  "internal/dbgen/models.go": "b8019716e5f07dfdb710a0484ba1edd14bdb9c8a0311801afe36e1d77647bda1",
+  "internal/dbgen/queries.sql.go": "8a37a96dabf3184499867a5beb467a2853edf7bb3e51bb1ac3fa8d77e9c2265f",
+  "internal/kernel/blob.go": "d938b931856fd865dab1ef4adf597bfa518e65e001f6d62569bf86e9d281e8ed",
+  "internal/kernel/collaboration.go": "58b7416a3cae8852425cdc5b6e3577ae1ddfe32f20b485a7fcf9231f94fb966a",
+  "internal/kernel/fake_worker.go": "7795a2ebd17111fd8b09c18ac93c9acab64db03e294270b5b959807695e98ccc",
+  "internal/kernel/fault_test.go": "cb18248fd52456d1997079fefb9c21a98009d80257ae2dbbb345ac9aed3f498c",
+  "internal/kernel/kernel.go": "9247aaa1dbd685a3bc9a1b92af0748f3565bb260ea4aca21d75ac706762f613d",
+  "internal/kernel/kernel_test.go": "b6fe506145efe845c7c4a07d0210875d9a93ce0f2e029184270247ece35cdafc",
+  "internal/kernel/lifecycle_test.go": "c6012f589ffe00aa7b7ac88e50c7d4e58ab3858d44749063c0c5702873ecbaf3",
+  "internal/kernel/mission.go": "b0ddc208c36ba848cc7740d8335f8610aeb59fe61d3af7e2f6ee8f9a38f16308",
+  "internal/kernel/recovery.go": "aa4e009c50882a799c6bc6dbcc05c6c8c766b1a35351dc2e63f51c9737b5ab19",
+  "cmd/polis/main.go": "cc5972ee282c4744f448bbab3aee064374028f246dcb63f4458f189b10390731",
+  "cmd/polisd/main.go": "55b787100de53b1671efba2beb325daf0e939edc07c0c8127008513cc8cb5cd1",
+  "db/migrate.go": "8718032007d4e1bfe867f27baf7d41f359db8f382f1715e31852abc23cb96e86",
+  "db/queries.sql": "b933638d407d3b5a0aa8c91ebb9f293cea284abf9283669a8d9a38ecc9e1d79f",
+  "db/migrations/00001_r0.sql": "4339f502157ed5202c625c7c95952b7184141acfae6b9b79a8cec915ace512df",
+  "go.mod": "33ed715c5a955bcd7ce7b0a06e425f365403b282929e43f395b0b990db3d3782",
+  "go.sum": "151948d7b53d08ab45a9413077e6c881664c248e393f78188a121701449941df"
+}

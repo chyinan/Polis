@@ -1,0 +1,14 @@
+flowchart TB
+    Admin[人确认公共目录、Skills 与 MCP 定义] --> Binding[员工能力绑定版本]
+    Binding --> Employee[固定员工 / 可换模型会话]
+    Employee --> Entry[受认证 employee-ops]
+    Entry --> Gate[当前授权、资源、数据出口与版本检查]
+    Gate --> Workspace[任务工作区与冻结共享资料]
+    Gate --> Skill[SkillRevision 按需加载]
+    Skill --> Script[另行授权的受控脚本]
+    Gate --> Bridge[Go MCPBridge]
+    Bridge --> Local[独立 stdio 工具进程]
+    Bridge --> Remote[授权 Streamable HTTP 服务]
+    Entry --> Evidence[工作与能力使用记录]
+    Evidence --> Handover[中立接班包 / 新环境资格核对]
+    Handover --> Binding

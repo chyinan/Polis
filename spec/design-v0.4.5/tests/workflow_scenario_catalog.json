@@ -1,0 +1,258 @@
+{
+  "document_version": "0.4.5",
+  "kind": "workflow_test_plan_not_results",
+  "tests": [
+    {
+      "test_id": "WF-01",
+      "scenario": "资料上传与任务绑定",
+      "expected": "原件完整保存不等于可用；明确绑定输入才影响任务，上传不启动模型",
+      "primary_contract": "C-INTAKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-02",
+      "scenario": "真实图片/PDF表示与换模型",
+      "expected": "实际输入清单含图像或页表示；不支持时partial/blocked，不伪装已读",
+      "primary_contract": "C-INTAKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-03",
+      "scenario": "半上传/重复完成/公司切换",
+      "expected": "幂等固定和正确归属；半成品不可读取，原项目不被改动",
+      "primary_contract": "C-INTAKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-04",
+      "scenario": "恶意ZIP/超限解析/编码问题",
+      "expected": "拒绝路径覆盖/炸弹/越权；限额和失败可见，解析不获凭据",
+      "primary_contract": "C-INTAKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-05",
+      "scenario": "附件替换或同名文件",
+      "expected": "新InputRevision触发受影响读取/验收失效，原件历史保留",
+      "primary_contract": "C-INTAKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-06",
+      "scenario": "批准的锁文件项目准备",
+      "expected": "在隔离环境自动准备依赖，记录lockfile/环境/回执，不改宿主",
+      "primary_contract": "C-ENVIRONMENT",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-07",
+      "scenario": "安装钩子或陌生下载目的地",
+      "expected": "不因Skill加载或安装失败自动允许脚本/网络，精确阻塞",
+      "primary_contract": "C-ENVIRONMENT",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-08",
+      "scenario": "并发ensure或准备中崩溃",
+      "expected": "同一准备键不双写，环境未ready不放行；可核对有界重试",
+      "primary_contract": "C-ENVIRONMENT",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-09",
+      "scenario": "项目库/缓存与控制面数据",
+      "expected": "测试数据库和凭据独立；审查缓存不信任作者可写缓存",
+      "primary_contract": "C-ENVIRONMENT",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-10",
+      "scenario": "新增依赖/变更工具链",
+      "expected": "授权内形成DependencyChange和新环境版本；越界需确认",
+      "primary_contract": "C-ENVIRONMENT",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-11",
+      "scenario": "有限命令成功失败与大输出",
+      "expected": "退出/结果/截断分明，未吞掉关键回执，0不自动任务通过",
+      "primary_contract": "C-JOBS",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-12",
+      "scenario": "服务就绪/端口冲突/地址复用",
+      "expected": "确认当前服务实例和代码，不误接别公司或旧服务",
+      "primary_contract": "C-JOBS",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-13",
+      "scenario": "服务仍被同事借用时员工睡眠",
+      "expected": "推理归零，服务按TTL/消费者保留，费用继续记录",
+      "primary_contract": "C-JOBS",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-14",
+      "scenario": "模型断线或宿主重启有旧作业",
+      "expected": "按稳定Job身份核对，旧写者未隔离不双写，不以PID猜归属",
+      "primary_contract": "C-JOBS",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-15",
+      "scenario": "交互等待/取消/服务到期",
+      "expected": "unsupported或input_required，停止回执真实且只回收所属资源",
+      "primary_contract": "C-JOBS",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-16",
+      "scenario": "搜索/网页读取与来源缺失",
+      "expected": "有具体工具及来源时间；无搜索后端不假装全网检索",
+      "primary_contract": "C-BROWSER",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-17",
+      "scenario": "操作真实测试应用并捕获证据",
+      "expected": "步骤/断言/DOM/截图绑定实际service generation与候选",
+      "primary_contract": "C-BROWSER",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-18",
+      "scenario": "热更新预览与冻结验收",
+      "expected": "mutable画面不当最终通过，验收对冻结版本执行",
+      "primary_contract": "C-BROWSER",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-19",
+      "scenario": "预览访问管理接口/认证状态泄漏",
+      "expected": "隔离origin/profile/网络且不共享Cookie、密钥或opener能力",
+      "primary_contract": "C-BROWSER",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-20",
+      "scenario": "跳转/资源/下载越界与视觉缺失",
+      "expected": "全链出口控制；缺视觉不伪称看图，结果不执行任意HTML",
+      "primary_contract": "C-BROWSER",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-21",
+      "scenario": "直接指导/回答问题/公司暂停",
+      "expected": "消息正确归属，收到与采用分开；暂停不因指导而自动推理",
+      "primary_contract": "C-GUIDANCE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-22",
+      "scenario": "需求变化和旧批准在途",
+      "expected": "受影响Input/Contract/Task更新并重验，无关工作可继续",
+      "primary_contract": "C-GUIDANCE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-23",
+      "scenario": "人工接管与旧写者仍运行",
+      "expected": "无隔离/排空回执不共享写权，记录human provenance",
+      "primary_contract": "C-GUIDANCE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-24",
+      "scenario": "人工补丁过期基线和安全交还",
+      "expected": "不覆盖并发修改；核对差异/输入/证据后显式恢复",
+      "primary_contract": "C-GUIDANCE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-25",
+      "scenario": "迟到澄清或恶意管理文字",
+      "expected": "不复活旧任务、不改变授权，QQ仍不接受命令",
+      "primary_contract": "C-GUIDANCE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-26",
+      "scenario": "生成可下载可运行交付清单",
+      "expected": "清单引用准确产物、环境、说明和限制，打包完成才ready",
+      "primary_contract": "C-DELIVERY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-27",
+      "scenario": "下载越权/文件丢失/清理竞争",
+      "expected": "鉴权和pin有效，损坏/缺失不输出绿色完整交付",
+      "primary_contract": "C-DELIVERY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-28",
+      "scenario": "内部通过和用户接受",
+      "expected": "下载不当接受、沉默不当同意；是否等人由使命合同指定",
+      "primary_contract": "C-DELIVERY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-29",
+      "scenario": "反馈要求修改/历史验收失效",
+      "expected": "新交付版本和修订任务，不改写旧证据或重开终态使命",
+      "primary_contract": "C-DELIVERY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-30",
+      "scenario": "交付包含秘密/不可导出来源",
+      "expected": "排除或形成有缺失说明的新清单，不复制凭据/缓存",
+      "primary_contract": "C-DELIVERY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-31",
+      "scenario": "真实GitHub Issues只读来源",
+      "expected": "配置确切仓库和最小权限，过滤PR；不默认访问全账号",
+      "primary_contract": "C-FEEDBACK",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-32",
+      "scenario": "分页中断/同时间更新/列表变化",
+      "expected": "落盘后推进覆盖；重叠去重/有界完整核对，失败非空结果",
+      "primary_contract": "C-FEEDBACK",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-33",
+      "scenario": "重复/更新/关闭反馈",
+      "expected": "同项新版本不重复派活；关闭归因不伪造，本地处理非远端关单",
+      "primary_contract": "C-FEEDBACK",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-34",
+      "scenario": "已结束使命和独立采集授权",
+      "expected": "可采集则进backlog不启动模型，无采集授权则停止轮询",
+      "primary_contract": "C-FEEDBACK",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-35",
+      "scenario": "工单洪峰/限流/恶意内容",
+      "expected": "限定triage和预算，展示partial/stale，不跟随外部命令提权",
+      "primary_contract": "C-FEEDBACK",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "WF-36",
+      "scenario": "完整正常工作闭环：资料→环境→开发→浏览器→指导→交付→反馈",
+      "expected": "固定四岗、真实输入与交付证据、人工参与明示；先正常路径再叠故障，不以mock当实现",
+      "primary_contract": "WORKFLOW-END-TO-END",
+      "execution_status": "not_run"
+    }
+  ]
+}

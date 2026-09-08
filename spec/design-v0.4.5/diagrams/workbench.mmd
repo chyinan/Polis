@@ -1,0 +1,8 @@
+flowchart LR
+  Human[人类管理者] --> UI[企业工作台 SPA]
+  UI -->|已认证命令| API[Go 控制 API]
+  API --> Core[固定组织 / 使命 / 权限 / 预算]
+  Core --> DB[(PostgreSQL)]
+  API -->|快照 + SSE| UI
+  UI -.未来可选，不实施.-> Office[办公室视图]
+  Office -.相同 API，不持有业务状态.-> API

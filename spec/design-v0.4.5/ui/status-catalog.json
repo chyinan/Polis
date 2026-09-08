@@ -1,0 +1,96 @@
+{
+  "document_version": "0.4.5",
+  "kind": "display_mapping_not_scheduler",
+  "statuses": [
+    {
+      "key": "working",
+      "label_zh": "工作中",
+      "tone": "info"
+    },
+    {
+      "key": "sleeping",
+      "label_zh": "休眠",
+      "tone": "neutral"
+    },
+    {
+      "key": "wake_pending",
+      "label_zh": "等待准入",
+      "tone": "neutral"
+    },
+    {
+      "key": "waiting_tool",
+      "label_zh": "等待工具",
+      "tone": "neutral"
+    },
+    {
+      "key": "waiting_peer",
+      "label_zh": "等待同事",
+      "tone": "neutral"
+    },
+    {
+      "key": "waiting_external",
+      "label_zh": "等待外部数据",
+      "tone": "neutral"
+    },
+    {
+      "key": "waiting_quota",
+      "label_zh": "等待额度",
+      "tone": "warning"
+    },
+    {
+      "key": "handover",
+      "label_zh": "接班中",
+      "tone": "info"
+    },
+    {
+      "key": "paused",
+      "label_zh": "已暂停",
+      "tone": "neutral"
+    },
+    {
+      "key": "lost_contact",
+      "label_zh": "失去联系",
+      "tone": "warning"
+    },
+    {
+      "key": "stopped",
+      "label_zh": "已停止",
+      "tone": "neutral"
+    }
+  ],
+  "additional_dimensions": [
+    "active_model_requests",
+    "in_flight_tools",
+    "data_freshness",
+    "data_mode",
+    "usage_quality"
+  ],
+  "unknown_enum_behavior": "incompatible_do_not_assume_success",
+  "sleeping_implies_zero_total_resource_cost": false,
+  "activation_phase_addendum": {
+    "activation_pending_environment": "新 epoch 已决定，等待当前环境写能力回执；尚不派发新工作",
+    "authoritative": "backend_operation_and_capability_receipt",
+    "not_equivalent_to": "working"
+  },
+  "capability_dimensions": {
+    "configuration": [
+      "draft",
+      "approved",
+      "disabled",
+      "revoked"
+    ],
+    "provisioning": [
+      "unprovisioned",
+      "connecting",
+      "available",
+      "unavailable",
+      "reconciling"
+    ],
+    "qualification": [
+      "supported",
+      "limited",
+      "unsupported",
+      "unverified"
+    ]
+  }
+}

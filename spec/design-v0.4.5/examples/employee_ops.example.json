@@ -1,0 +1,41 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "employee_ops_fixture_not_runtime_request",
+  "execution_enabled": false,
+  "runtime_binding": {
+    "company_id": "co-software-example",
+    "employee_id": "emp-backend",
+    "session_id": "session-fixture-1",
+    "attempt_id": "attempt-fixture-1",
+    "epoch": "4",
+    "grant_kind": "active",
+    "source": "authenticated_runtime_binding_not_tool_arguments"
+  },
+  "tool_request": {
+    "protocol_version": "employee-ops@1",
+    "request_id": "req-fixture-1",
+    "idempotency_key": "collab-fixture-1",
+    "expected_revision": "2",
+    "tool": "collab.send",
+    "arguments": {
+      "recipient_employee_id": "emp-frontend",
+      "task_id": "task-frontend-example",
+      "message_kind": "action_request",
+      "contract_ref": "fixture://contract/pagination/2",
+      "expected_action": "confirm_error_codes",
+      "content": "请基于已接受的合同第二版确认错误码。"
+    }
+  },
+  "expected_receipt": {
+    "status": "persisted",
+    "message_id": "msg-fixture-1",
+    "obligation_id": "obl-fixture-1",
+    "applied": false
+  },
+  "execution_status": "not_run",
+  "runtime_identity": {
+    "installation_id": "install-fixture",
+    "runtime_incarnation": "incarnation-fixture-new",
+    "credential_material_included": false
+  }
+}

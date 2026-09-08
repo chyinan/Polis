@@ -1,0 +1,35 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "company_id": "co-software-example",
+  "employee_id": "emp-backend",
+  "task_id": "task-demo",
+  "job_id": "job-demo-api",
+  "kind": "service",
+  "state": "not_started",
+  "environment_profile": "env-node-demo",
+  "service": {
+    "endpoint": null,
+    "generation": null,
+    "ready": false,
+    "bound_candidate": null,
+    "reuse_unverified_port": false,
+    "consumers": [],
+    "idle_grace_seconds": 120
+  },
+  "stdin_policy": "closed",
+  "logs": {
+    "cursor": null,
+    "truncated": false
+  },
+  "stop_requested": false,
+  "stop_confirmed": false,
+  "runtime_identity": {
+    "incarnation": null,
+    "employee_epoch": null
+  },
+  "management_or_provider_secrets_present": false
+}

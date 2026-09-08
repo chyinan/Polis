@@ -1,0 +1,30 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "company_id": "co-software-example",
+  "mission_id": "mis-pagination-example",
+  "guidance_id": "guidance-demo-1",
+  "type": "change_request",
+  "state": "draft",
+  "base_input_revision": "1",
+  "attachment_refs": [
+    "input:design-v1"
+  ],
+  "text": "参考图稍后确认；本样本不执行。",
+  "applied_revision": null,
+  "grants_changed": false,
+  "paid_analysis_authorized": false,
+  "takeover": {
+    "lease_id": null,
+    "scope": "workspace_demo",
+    "old_writer_quiesced": false,
+    "human_edit_enabled": false,
+    "patch_ref": null,
+    "patch_base": null,
+    "returned": false,
+    "resume_authorized": false
+  }
+}

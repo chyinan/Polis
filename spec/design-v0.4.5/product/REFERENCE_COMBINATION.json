@@ -1,0 +1,41 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "reference_combination_draft",
+  "reference_id": "local-team-node@1",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "notification_send_enabled": false,
+  "qualification": "unverified",
+  "host": "linux-amd64",
+  "control_stack": [
+    "go",
+    "postgresql-18",
+    "react-typescript-vite"
+  ],
+  "worker": "codex-app-server",
+  "exact_versions": null,
+  "primary_model_profile_ref": null,
+  "fallback_model_profile_ref": null,
+  "cross_harness_probe_ref": null,
+  "employee_ids": [
+    "emp-planning",
+    "emp-backend",
+    "emp-frontend",
+    "emp-review"
+  ],
+  "r1_active_companies": 1,
+  "dynamic_hiring": false,
+  "resource_mode": "authorized_isolated_copy",
+  "production_access": false,
+  "skills_mode": "selected_immutable_readonly_revisions",
+  "mcp_r1_transport": "stdio",
+  "mcp_r2_transport": "streamable_http",
+  "browser": "isolated-playwright-chromium",
+  "budget_guarantee": "unverified",
+  "strict_dollar_cap_claim": false,
+  "required_money_budget": null,
+  "credentials": null,
+  "remote_management": "not_configured",
+  "qq_qualification": "unverified",
+  "runtime_implementation": "not_implemented"
+}

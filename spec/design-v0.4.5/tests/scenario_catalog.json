@@ -1,0 +1,554 @@
+{
+  "document_version": "0.4.5",
+  "kind": "test_plan_not_results",
+  "tests": [
+    {
+      "test_id": "FT-01",
+      "scenario": "相同消息重复投递",
+      "expected": "不重复创建任务/扣费/发布；责任仍可追踪",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-02",
+      "scenario": "DB 提交后、消息发送前崩溃",
+      "expected": "重启从 outbox 补发",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-03",
+      "scenario": "工具完成但模型连接断线",
+      "expected": "先检查工具结果，不重新执行同一副作用",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-04",
+      "scenario": "已派发外部动作但回执丢失",
+      "expected": "outcome_unknown，核对或暂停，不假称失败",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-05",
+      "scenario": "旧 worker 活着但通信失联",
+      "expected": "隔离/停止前不生成第二个可写执行者",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-06",
+      "scenario": "旧 epoch 迟交成果",
+      "expected": "保存历史观察，拒绝改变当前任务与批准",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-07",
+      "scenario": "额度归零无法再调用旧模型",
+      "expected": "无额外旧模型调用也能生成最小接班包",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-08",
+      "scenario": "更换模型/供应商",
+      "expected": "工号、任务、未读消息和 Obligation 保留，资格不符拒绝",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-09",
+      "scenario": "接班包构建后有新消息",
+      "expected": "激活前/后可靠补齐，不永久漏读",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-10",
+      "scenario": "目标模型上下文放不下必需约束",
+      "expected": "重新分解或拒绝，不删安全/验收条款",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-11",
+      "scenario": "合同或产物在 review 后改变",
+      "expected": "相关批准失效并重验",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-12",
+      "scenario": "多公司同时争抢最后预算",
+      "expected": "所有层级和共享账号准入一致，不多花同一余额",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-13",
+      "scenario": "内部递归 spawn 绕预算",
+      "expected": "拒绝或明确不支持严格模式",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-14",
+      "scenario": "网络恢复后积压周期任务",
+      "expected": "按补跑政策处理，不无上限补发",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-15",
+      "scenario": "不可信网页/消息要求提权",
+      "expected": "作为数据保存，不能改变 policy",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-16",
+      "scenario": "公司 A 猜中公司 B 的资源 ID",
+      "expected": "API、记忆检索、产物读取均拒绝越权",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-17",
+      "scenario": "worker shell 绕过文件/工具网关",
+      "expected": "真隔离阻止；否则不得标记 restricted 达标",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-18",
+      "scenario": "验证工具缺失/超时",
+      "expected": "inconclusive/not_run，不通过",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-19",
+      "scenario": "循环依赖与无进展争论",
+      "expected": "有界升级，明确 blocker，不无限模型往返",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-20",
+      "scenario": "磁盘低水位/真实 ENOSPC",
+      "expected": "停新动作、保护可恢复记录，说明不能写入的损失",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-21",
+      "scenario": "导入备份内含已完成发布",
+      "expected": "暂停核对，不重放外部动作",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-22",
+      "scenario": "全员被换成资格不足的模型",
+      "expected": "保留公司状态，等待，不假装已接续",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-23",
+      "scenario": "关闭/重开 UI、事件游标过期",
+      "expected": "daemon 不受影响，视图从权威快照恢复",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-24",
+      "scenario": "使命期限到达但目标未满足",
+      "expected": "ended_not_met/等待新授权，不自行无限延期",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-25",
+      "scenario": "自动内部验收与有限授权",
+      "expected": "合法测试动作不用逐次人审，未授权目标拒绝",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-26",
+      "scenario": "冷启动基线对比",
+      "expected": "单体同样有记忆与恢复，无隐藏人工代操作",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-27",
+      "scenario": "假摘要丢失待回复事项",
+      "expected": "从权威 Obligation 重建，摘要不能删除责任",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-28",
+      "scenario": "退款/补偿或重试被当恢复自动放行",
+      "expected": "单独检查动作授权与幂等，不继承无限权限",
+      "primary_contract": "BASE-0.2",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-29",
+      "scenario": "休眠确认前后并发到达新任务",
+      "expected": "持久待办与调度代次不丢；最终只准入一个执行会话",
+      "primary_contract": "C-SLEEP",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-30",
+      "scenario": "NOTIFY 丢失、监听连接断开或重启",
+      "expected": "提交 LISTEN 后核对持久待办；不依赖通知重播",
+      "primary_contract": "C-SLEEP",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-31",
+      "scenario": "重复唤醒、FYI、ACK 和消息洪峰",
+      "expected": "去重/合并；非行动信息不启动付费推理",
+      "primary_contract": "C-SLEEP",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-32",
+      "scenario": "人工暂停期间收到任务/定时器",
+      "expected": "只持久记录；显式恢复前不调用模型或工具",
+      "primary_contract": "C-SLEEP",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-33",
+      "scenario": "撤权先于最终派发许可消费",
+      "expected": "拒绝旧授权动作，记录回执与可结算预留",
+      "primary_contract": "C-REVOKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-34",
+      "scenario": "最终许可消费先于撤权",
+      "expected": "列为在途核对；不误报副作用已撤销",
+      "primary_contract": "C-REVOKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-35",
+      "scenario": "许可目标、正文 hash、epoch 或期限被替换",
+      "expected": "单次许可拒绝复用，旧输入不能执行",
+      "primary_contract": "C-REVOKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-36",
+      "scenario": "许可提交与网络发送之间进程崩溃",
+      "expected": "恢复为已知未发或 outcome_unknown，不能盲重试",
+      "primary_contract": "C-REVOKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-37",
+      "scenario": "关键事实更正但活动上下文仍有旧假设",
+      "expected": "显式依赖失效；高风险动作冻结并重建上下文",
+      "primary_contract": "C-MEMORY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-38",
+      "scenario": "作者换模型/会话后请求给自己批准",
+      "expected": "按员工与产物来源拒绝伪独立审核",
+      "primary_contract": "C-AUTHORITY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-39",
+      "scenario": "同事消息请求抢占/强制新增任务",
+      "expected": "职责和准入规则决定，不凭发送者 priority 提权",
+      "primary_contract": "C-AUTHORITY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-40",
+      "scenario": "清理缓存与新产物引用并发",
+      "expected": "pin/引用检查保护活跃责任和唯一恢复证据",
+      "primary_contract": "C-MEMORY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-41",
+      "scenario": "删除敏感记忆后导入更旧备份",
+      "expected": "应用当前删除/撤销清单，不重新激活已删内容",
+      "primary_contract": "C-MEMORY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-42",
+      "scenario": "SDK、adapter、scheduler 层层重试",
+      "expected": "记录唯一重试归属及总上限，不形成隐藏倍乘",
+      "primary_contract": "C-RETRY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-43",
+      "scenario": "同一问题换 task_id 重新申请预算",
+      "expected": "ProblemKey 与 Mission 限额持续累计",
+      "primary_contract": "C-RETRY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-44",
+      "scenario": "普通开发争抢收尾预留",
+      "expected": "拒绝侵占；验收/恢复可用但不超总预算",
+      "primary_contract": "C-RETRY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-45",
+      "scenario": "DB 序列化失败或死锁后重试",
+      "expected": "仅重试完整纯 DB 事务；无双扣和外部重复操作",
+      "primary_contract": "C-RETRY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-46",
+      "scenario": "DB COMMIT 成功后客户端未收到响应",
+      "expected": "同 request_id 查询回执；不换 ID 重做",
+      "primary_contract": "C-REVOKE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-47",
+      "scenario": "运行时/schema 不兼容或迁移中断",
+      "expected": "维护态拒绝派发，备份/迁移可核对，不静默填默认",
+      "primary_contract": "C-UPGRADE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-48",
+      "scenario": "数据库备份存在但引用产物缺失",
+      "expected": "备份不标 ready；恢复不通过，不伪装完整接班",
+      "primary_contract": "C-UPGRADE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-49",
+      "scenario": "旧事务晚提交但事件 ID 较小",
+      "expected": "提交有序 company_seq/未确认 outbox 不漏事件",
+      "primary_contract": "C-UPGRADE",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-50",
+      "scenario": "连接池残留公司上下文/RLS 绕过角色",
+      "expected": "事务作用域隔离；非授权查询拒绝且留下证据",
+      "primary_contract": "C-EXEC",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-51",
+      "scenario": "多公司事件游标乱序/权限过滤",
+      "expected": "使用分 stream 安全水位与权威快照，不跳漏或泄漏",
+      "primary_contract": "C-READY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-52",
+      "scenario": "所有员工等待无人拥有的事项或调度饥饿",
+      "expected": "程序检测，创建受限 blocker/公平唤醒，不靠模型空转",
+      "primary_contract": "C-SLEEP",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-53",
+      "scenario": "宿主休眠后跨过期限/预算周期",
+      "expected": "恢复按当前时间和补跑规则，未结算责任不清零",
+      "primary_contract": "C-SLEEP",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-54",
+      "scenario": "native harness 读凭据/绕网关或 provider 切换越域",
+      "expected": "资格测试失败，拒绝 restricted/目标模型接班",
+      "primary_contract": "C-EXEC",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-55",
+      "scenario": "运行时自修改或聊天伪造管理审批",
+      "expected": "只能提议；可信发布/管理路径执行",
+      "primary_contract": "C-AUTHORITY",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-56",
+      "scenario": "控制实例 DB 锁失联但旧 worker 仍活着",
+      "expected": "新实例先隔离核对，不以锁释放证明旧写者已死",
+      "primary_contract": "C-EXEC",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-57",
+      "scenario": "唯一 bootstrap 的并发/重复启动",
+      "expected": "同使命 activation 仅一份首次规划；请求回执丢失仍不重复付费规划",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-58",
+      "scenario": "缺规划员/无合格后端与暂停占槽",
+      "expected": "明确阻塞、不自动招聘；暂停/等待不能启动同公司第二使命",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-59",
+      "scenario": "使命收尾时崩溃、周期任务仍到期",
+      "expected": "恢复 closing、停止旧业务准入；责任有明确闭合/移交且不误标通过",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-60",
+      "scenario": "使命终态后迟到消息/费用/回执",
+      "expected": "仅历史核对；不重新唤醒旧工作线，未知负债和资源责任仍保留",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-61",
+      "scenario": "员工工具自填身份/过期 epoch/越权",
+      "expected": "服务端会话绑定拒绝；不把任意 tool 参数当身份或审批",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-62",
+      "scenario": "员工工具重复键、正文冲突、超大或坏格式",
+      "expected": "稳定错误与幂等回执；失败不当完成、不无限模型纠格式",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-63",
+      "scenario": "管理员首次初始化竞态/默认凭据/远端抢注",
+      "expected": "仅受信本机路径建立一个 owner；一次码有界、无默认密码和 URL 泄漏",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-64",
+      "scenario": "浏览器登出与使命撤权混淆",
+      "expected": "登出不取消预授权使命；明确撤权不因 worker token 未过期而失效",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-65",
+      "scenario": "重启后 SecretRef 未解锁或 worker 读取秘密",
+      "expected": "waiting_secret_unlock 或拒绝；不从备份/其他公司补秘密，不宣称受限隔离通过",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-66",
+      "scenario": "两公司通过不同别名写同一目标",
+      "expected": "规范化 ResourceKey 检查冲突；旧写者未隔离不转交资源",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-67",
+      "scenario": "接班事实和 company_seq 读取期间有并发提交",
+      "expected": "同快照事实与游标；增量消息可补齐；当前授权另作激活核对",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-68",
+      "scenario": "新模型在 restoring/validating 尝试写入",
+      "expected": "只读 grant/冻结挂载拒绝；正式 epoch 激活后才授予写能力",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-69",
+      "scenario": "staging/固定文件/DB 发布/GC 之间中断",
+      "expected": "孤立文件可核对；半成品不得 ready；引用/pin 防误删",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-70",
+      "scenario": "审查测试写缓存或试图修改被审产物",
+      "expected": "受控 scratch 可写、候选只读；hash 变更导致相关检查不通过",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-71",
+      "scenario": "候选选择与任务认领/撤权并发",
+      "expected": "候选无权威；按统一锁族重验，无反向补锁和双预留",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-72",
+      "scenario": "任务已被其他 worker 认领或使命已关闭",
+      "expected": "跳过旧候选；无半个 Attempt/预算占用",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-73",
+      "scenario": "读取/确认同事消息后尝试自动清掉责任",
+      "expected": "安全游标与 observed 分开；责任须经 obligation.resolve 证据检查",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-74",
+      "scenario": "员工提合同/记忆变更或伪造 approved",
+      "expected": "正式 proposal 回执；未批准不改变有效版本",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-75",
+      "scenario": "epoch 激活决定后环境写能力落实失败",
+      "expected": "activation_pending_environment；不派活，不退回旧 epoch",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-76",
+      "scenario": "延迟环境 grant 与撤权/换班交错",
+      "expected": "supervisor 拒绝旧 incarnation/epoch/grant，未重获写能力",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-77",
+      "scenario": "恢复旧 DB 后收到旧 token/许可/事件游标",
+      "expected": "新 incarnation；旧执行拒绝，UI 重新快照，旧写者独立隔离",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-78",
+      "scenario": "权限变窄仍尝试原生 resume 或克隆安装",
+      "expected": "无法保证降权则新建中立会话；克隆不自动接管共享目标",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-79",
+      "scenario": "验证期间目标分支被外部人更新",
+      "expected": "期望旧 OID 条件写入失败，重组合重验，不 force push",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-80",
+      "scenario": "作者污染验证缓存/测试器或修改候选",
+      "expected": "可信验证基线与独立 scratch/cache；不得假独立放行",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-81",
+      "scenario": "所有成员等待，旧未读消息反复触发",
+      "expected": "WaitCondition 未满足不反复推理；显式环/无负责人问题有界处理",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "FT-82",
+      "scenario": "日志/消息洪峰与截止/时钟异常交错",
+      "expected": "保留关键记录和管理容量，不静默丢已接受工作；到期核对不无限延长",
+      "execution_status": "not_run"
+    }
+  ]
+}

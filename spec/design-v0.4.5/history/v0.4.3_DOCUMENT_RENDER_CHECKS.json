@@ -1,0 +1,391 @@
+{
+  "document_version": "0.4.3",
+  "check_kind": "offline_document_reader_render_only",
+  "method": "file:// navigation blocked by container browser policy; rendered exact HTML using Playwright set_content in system Chromium. Hyperlinks checked statically, not live navigated. No Agent product or API server",
+  "status": "pass",
+  "cases": 18,
+  "results": [
+    {
+      "document": "ARCHITECTURE.html",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "metrics": {
+        "viewport": 1440,
+        "body": 1440,
+        "root": 1440,
+        "articleText": 139270,
+        "sections": 48,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "ARCHITECTURE.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "viewport": 390,
+        "body": 390,
+        "root": 390,
+        "articleText": 139270,
+        "sections": 48,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "ARCHITECTURE.html",
+      "viewport": {
+        "width": 320,
+        "height": 760
+      },
+      "metrics": {
+        "viewport": 320,
+        "body": 320,
+        "root": 320,
+        "articleText": 139270,
+        "sections": 48,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "capabilities/CAPABILITY_SPEC.html",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "metrics": {
+        "viewport": 1440,
+        "body": 1440,
+        "root": 1440,
+        "articleText": 14921,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "capabilities/CAPABILITY_SPEC.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "viewport": 390,
+        "body": 390,
+        "root": 390,
+        "articleText": 14921,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "capabilities/CAPABILITY_SPEC.html",
+      "viewport": {
+        "width": 320,
+        "height": 760
+      },
+      "metrics": {
+        "viewport": 320,
+        "body": 320,
+        "root": 320,
+        "articleText": 14921,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "ui/FRONTEND_SPEC.html",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "metrics": {
+        "viewport": 1440,
+        "body": 1440,
+        "root": 1440,
+        "articleText": 14475,
+        "sections": 5,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "ui/FRONTEND_SPEC.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "viewport": 390,
+        "body": 390,
+        "root": 390,
+        "articleText": 14475,
+        "sections": 5,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "ui/FRONTEND_SPEC.html",
+      "viewport": {
+        "width": 320,
+        "height": 760
+      },
+      "metrics": {
+        "viewport": 320,
+        "body": 320,
+        "root": 320,
+        "articleText": 14475,
+        "sections": 5,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "preflight/PREFLIGHT_SPEC.html",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "metrics": {
+        "viewport": 1440,
+        "body": 1440,
+        "root": 1440,
+        "articleText": 18363,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "preflight/PREFLIGHT_SPEC.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "viewport": 390,
+        "body": 390,
+        "root": 390,
+        "articleText": 18363,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "preflight/PREFLIGHT_SPEC.html",
+      "viewport": {
+        "width": 320,
+        "height": 760
+      },
+      "metrics": {
+        "viewport": 320,
+        "body": 320,
+        "root": 320,
+        "articleText": 18363,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "preflight/QQ_NOTIFICATION_SPEC.html",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "metrics": {
+        "viewport": 1440,
+        "body": 1440,
+        "root": 1440,
+        "articleText": 7339,
+        "sections": 0,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "preflight/QQ_NOTIFICATION_SPEC.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "viewport": 390,
+        "body": 390,
+        "root": 390,
+        "articleText": 7339,
+        "sections": 0,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "preflight/QQ_NOTIFICATION_SPEC.html",
+      "viewport": {
+        "width": 320,
+        "height": 760
+      },
+      "metrics": {
+        "viewport": 320,
+        "body": 320,
+        "root": 320,
+        "articleText": 7339,
+        "sections": 0,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "audit/AUDIT_REPORT.html",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "metrics": {
+        "viewport": 1440,
+        "body": 1440,
+        "root": 1440,
+        "articleText": 4368,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "audit/AUDIT_REPORT.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "viewport": 390,
+        "body": 390,
+        "root": 390,
+        "articleText": 4368,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    },
+    {
+      "document": "audit/AUDIT_REPORT.html",
+      "viewport": {
+        "width": 320,
+        "height": 760
+      },
+      "metrics": {
+        "viewport": 320,
+        "body": 320,
+        "root": 320,
+        "articleText": 4368,
+        "sections": 1,
+        "notice": "本阅读版不是可运行工作台。产品运行时、真实模型、MCP 和 QQ 联调均未执行；样本默认禁用。静态校验不等于功能或安全验证。"
+      },
+      "navigation_filter_theme_checked": true,
+      "script_errors": [],
+      "external_requests": [],
+      "issues": [],
+      "status": "pass"
+    }
+  ],
+  "not_verified": [
+    "real React product",
+    "runtime",
+    "MCP integrations",
+    "all-browser compatibility",
+    "complete WCAG conformance"
+  ],
+  "screenshots": "selected viewpoints inspected separately; screenshots are not product UI",
+  "selected_visual_inspections": [
+    {
+      "file": "capabilities_desktop.png",
+      "result": "readable layout; duplicate heading removed in subsequent render"
+    },
+    {
+      "file": "capabilities_mobile.png",
+      "result": "final mobile layout inspected; no clipping or overlap seen"
+    },
+    {
+      "file": "mcp_desktop_detail.png",
+      "result": "final MCP detail text and diagram inspected; no overlap seen"
+    }
+  ]
+}

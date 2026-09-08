@@ -1,0 +1,68 @@
+document_version: 0.4.5
+design_kind: notification_draft_not_runtime_config
+send_enabled: false
+test_send_authorized: false
+llm_generation_enabled: false
+channel_kind: qq_official
+route_id: route-qq-example
+route_revision: '1'
+app_id: null
+credential_secret_ref: null
+endpoint_profile_ref: null
+recipient:
+  kind: c2c
+  user_openid: null
+  group_openid: null
+disclosure:
+  allowed_company_ids:
+  - co-software-example
+  safe_alias: 研发一组
+  allow_raw_logs: false
+  allow_source_code: false
+  allow_secret_material: false
+policy:
+  trigger: human_action_required
+  notify_normal_completion: false
+  notify_idle: false
+  notify_recovered_transient_errors: false
+  inbound_management_commands: false
+  deduplication: scope_problem_occurrence_route_severity_generation
+  retry_on_unknown: bounded_notice_only_same_incident_id
+  max_send_attempts: 3
+  max_reminders: 1
+  reminder_interval_seconds: 1800
+  pending_ttl_seconds: 86400
+  parameters_are_unvalidated_examples: true
+qualification:
+  token_auth: unverified
+  passive_reply: unverified
+  proactive_without_inbound_msg_id: unverified
+  unattended_ready: false
+  evidence_ref: null
+  platform_quota_known: false
+workbench_link:
+  verified_base_url: null
+  include_bearer_or_approval_token: false
+  without_reachable_url: incident_id_only
+watchdog:
+  enabled: false
+  same_host_only: true
+  whole_host_failure_covered: false
+  reads_company_content: false
+  can_dispatch_work: false
+implementation_evidence:
+  proactive_route: upstream_source_confirmed
+  our_adapter: not_implemented
+  source_ids:
+  - Q01
+  - Q02
+  - Q03
+  is_account_permission_proof: false
+sender:
+  mode: single_orgctl_watch
+  enabled: false
+  offline_capsule_enabled: false
+  offline_capsule_valid_seconds: null
+  business_payload_during_db_outage: false
+  revocation_requires_sender_barrier: true
+  restart_reactivates_capsule: false

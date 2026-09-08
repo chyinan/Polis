@@ -1,0 +1,39 @@
+{
+  "stage": "R0 fake vertical slice only",
+  "commands": [
+    {
+      "command": "bash scripts/test.sh",
+      "exit_code": 0
+    },
+    {
+      "command": "POLIS_TEST_RACE=1 bash scripts/test.sh",
+      "exit_code": 0
+    },
+    {
+      "command": "bash scripts/demo.sh",
+      "exit_code": 0
+    },
+    {
+      "command": "python -X utf8 verify_checksums.py",
+      "exit_code": 0,
+      "files": 172
+    },
+    {
+      "command": "python -X utf8 validate_design_pack.py --json ../../evidence/development/design-static-checks.json",
+      "exit_code": 0,
+      "checks": 489
+    }
+  ],
+  "postgres": "18.6",
+  "go": "1.26.8",
+  "not_run": [
+    "real model calls and behavioral handover",
+    "QQ",
+    "MCP",
+    "OS containment",
+    "host power loss",
+    "full design parent scenarios",
+    "long-term organization value"
+  ],
+  "cleanup": "unique test databases dropped; dedicated PG stopped"
+}

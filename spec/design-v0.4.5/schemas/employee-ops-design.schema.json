@@ -1,0 +1,215 @@
+{
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "runtime_binding",
+    "tool_request",
+    "expected_receipt",
+    "execution_status",
+    "runtime_identity"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "employee_ops_fixture_not_runtime_request"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "runtime_binding": {
+      "type": "object",
+      "required": [
+        "company_id",
+        "employee_id",
+        "session_id",
+        "attempt_id",
+        "epoch",
+        "grant_kind",
+        "source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "company_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "employee_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "attempt_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "epoch": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "grant_kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "tool_request": {
+      "type": "object",
+      "required": [
+        "protocol_version",
+        "request_id",
+        "idempotency_key",
+        "expected_revision",
+        "tool",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "expected_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "arguments": {
+          "type": "object",
+          "required": [
+            "recipient_employee_id",
+            "task_id",
+            "message_kind",
+            "contract_ref",
+            "expected_action",
+            "content"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "recipient_employee_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "task_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "message_kind": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "contract_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "expected_action": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "content": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      }
+    },
+    "expected_receipt": {
+      "type": "object",
+      "required": [
+        "status",
+        "message_id",
+        "obligation_id",
+        "applied"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "message_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "obligation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "applied": {
+          "const": false
+        }
+      }
+    },
+    "execution_status": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "runtime_identity": {
+      "type": "object",
+      "required": [
+        "installation_id",
+        "runtime_incarnation",
+        "credential_material_included"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "installation_id": {
+          "const": "install-fixture"
+        },
+        "runtime_incarnation": {
+          "const": "incarnation-fixture-new"
+        },
+        "credential_material_included": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:employee-ops:0.4.4"
+}

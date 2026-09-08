@@ -1,0 +1,326 @@
+{
+  "document_version": "0.4.5",
+  "kind": "ui_test_plan_not_results",
+  "tests": [
+    {
+      "test_id": "UI-01",
+      "scenario": "人工建公司、保存/创建/启动",
+      "expected": "建公司只形成固定组织草案或未启动组织；模型探测/使命执行须另行授权；没有自动岗位生成",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-02",
+      "scenario": "创建请求重复或响应丢失",
+      "expected": "同一幂等意图只创建一次；以原 request_id 核对回执，不重复调用付费模型",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-03",
+      "scenario": "模板更新或新 CLI 会话出现",
+      "expected": "活动组织不自动改编制；会话不是员工；变更须人确认新版本",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-04",
+      "scenario": "活动与休眠员工更换模型",
+      "expected": "EmployeeId/责任保留；目标绑定与活动绑定分开；休眠绑定不立即推理",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-05",
+      "scenario": "查看/筛选/刷新/悬停休眠员工",
+      "expected": "没有可执行工作时模型调用增量为零；普通查询不隐式触发 Agent",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-06",
+      "scenario": "休眠但仍有后台工具、失联但有旧状态",
+      "expected": "展示多个事实及最后观测；不把 sleeping、lost_contact 和工具活动混同",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-07",
+      "scenario": "未知费用、空数据、来源缺失",
+      "expected": "未知不是零；空/失败/无权限可区分；不画伪完成率",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-08",
+      "scenario": "公司 A 请求晚于切换 B 返回",
+      "expected": "A 数据/通知/详情不会写进 B；跨公司不复用 placeholder 内容",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-09",
+      "scenario": "退出登录、授权收回、权限变窄",
+      "expected": "流/查询/原文详情失效清除；后端拒绝访问；不从持久缓存重新显露",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-10",
+      "scenario": "SSE 断流、重复、乱序、权限过滤",
+      "expected": "重连按安全水位补齐；数据不倒退或清零；UI 显示过期/重连",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-11",
+      "scenario": "服务恢复代际变化、游标过期、未知枚举",
+      "expected": "重新获取快照或显示不兼容；不拼接不同流，不默认成功",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-12",
+      "scenario": "HTTP 202 或长时操作未结束",
+      "expected": "显示已受理和阶段，不宣称执行完毕；未知状态不自动归为失败",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-13",
+      "scenario": "写入 ACK 丢失、重复点击、多标签提交",
+      "expected": "同 request_id 查询并保持幂等；不通过重命名请求重复派发",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-14",
+      "scenario": "确认期间目标或权限 revision 改变",
+      "expected": "保留草案并展示冲突；重新确认，不静默覆盖当前配置",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-15",
+      "scenario": "过期视图发起暂停/急停、控制端不可达",
+      "expected": "可达时仍允许已认证降风险请求；不可达则未确认，不离线自动重放",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-16",
+      "scenario": "确认弹窗打开时切公司、操作回执晚到",
+      "expected": "未提交弹窗取消；已提交回执归原 scope，不能误报当前公司成功",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-17",
+      "scenario": "作者自审、聊天伪造管理指令",
+      "expected": "UI 不提供绕过流程；后端独立拒绝；读消息不关闭 Obligation",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-18",
+      "scenario": "日志/Markdown 内含脚本、SVG、追踪图片",
+      "expected": "不执行脚本、不默认加载外部资源；原文/导出与正常查询同等鉴权",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-19",
+      "scenario": "办公室延期、组织关系可视化",
+      "expected": "无 3D/像素运行依赖或隐藏场景；列表/关系查看不会自动创建岗位或任务",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-20",
+      "scenario": "深浅主题、键盘、焦点、对比和 reduced-motion",
+      "expected": "检查目标色对与完整交互；状态不只靠颜色；对话框焦点正确；无障碍扫描配合人工",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-21",
+      "scenario": "320/360/390 与桌面、200% 文字缩放",
+      "expected": "主体不溢出；复杂表格局部可访问滚动；关键操作仍可用且 scope 明确",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-22",
+      "scenario": "大整数金额/版本、多币种与订阅额度",
+      "expected": "无 Number 精度损失或单位混算；金额由后端口径给出；不同版本域不乱比较",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-23",
+      "scenario": "后端断开或预览 fixture",
+      "expected": "不静默回落到模拟成功；模拟模式永久标识且禁真实业务执行",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-24",
+      "scenario": "长开页面、事件洪峰、分页、输入中更新",
+      "expected": "连接/内存/DOM 有界；不刷 token 或抢焦点；截图与业务状态不伪造",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-25",
+      "scenario": "QQ 配置保存、测试外发、启用",
+      "expected": "三动作分离；GET/导入不发；未验证主动能力明确标示",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-26",
+      "scenario": "QQ 平台接受、用户确认与问题解决",
+      "expected": "三个独立状态；不把 provider_accepted 标成已读/已审批/已恢复",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-27",
+      "scenario": "通知目标披露范围与移动端入口",
+      "expected": "显示安全别名/公司范围；无 token URL 或 localhost 假入口",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-28",
+      "scenario": "发送失败/问题过期/路线撤回",
+      "expected": "保留未知/失败回执，取消过期待发，不假装成功或自动恢复",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-29",
+      "scenario": "主动通知来源已确认但账号没有联调",
+      "expected": "分别展示实施依据、适配器状态、目标资格，未测试不打绿勾",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-30",
+      "scenario": "关闭外发的 sender 回执丢失",
+      "expected": "显示撤销待确认与在途清单，不假成功或离线重放",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-31",
+      "scenario": "模型恢复已核对但 OS 写授权仍 pending",
+      "expected": "目标绑定与真正工作状态分开，不提前显示 active",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-32",
+      "scenario": "服务数据恢复代际变化或通知无远端 ID",
+      "expected": "重取授权快照；本地与远端 ID 分开，不伪造阅读/审批",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-33",
+      "scenario": "公共库扫描/保存/服务资格探测",
+      "expected": "普通查看不启动程序/模型；明确探测单独确认目标与成本",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-34",
+      "scenario": "人工建公司批量选择 Skill/MCP 与根权限",
+      "expected": "创建保持未启动，选中清单版本固定，不自动接受未来工具",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-35",
+      "scenario": "工具目录或确认弹窗中切换公司",
+      "expected": "旧数据/晚到回执不串公司，未提交操作取消",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-36",
+      "scenario": "已批准配置但连接不可用/资格未验证",
+      "expected": "批准、连接、执行可用性分别显示，不以绿色连接代替资格",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-37",
+      "scenario": "Skill 更新/工具 schema 变更时提交旧操作",
+      "expected": "展示差异与受影响任务，版本冲突不得静默覆盖",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-38",
+      "scenario": "接班中挂载/工具能力未落实",
+      "expected": "显示 activation_pending_environment，不能提前显示可写/工作中",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-39",
+      "scenario": "MCP 描述/图标/返回文件预览含不可信内容",
+      "expected": "无自动外部加载/执行，所有原文同 scope 鉴权",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-40",
+      "scenario": "空闲工具回收、费用未知与 QQ 接管联动",
+      "expected": "查看不唤醒；未知不为零；只有真正接管事项外发",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-41",
+      "scenario": "上传/解析/不支持/实际模型输入",
+      "expected": "原件保存、可用表示和已提供模型分开，切公司不串附件",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-42",
+      "scenario": "环境准备和依赖变更确认",
+      "expected": "展示来源/脚本/资源与准备失败，查看不安装、不推理",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-43",
+      "scenario": "作业日志和开发服务入口",
+      "expected": "端口归属/就绪/TTL/实例正确；日志分页有界，取消非已停",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-44",
+      "scenario": "目标应用浏览器证据与预览",
+      "expected": "冻结版本可追溯，管理信任域隔离，无资格预览清楚不可用",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-45",
+      "scenario": "日常指导/需求变更/澄清",
+      "expected": "收到与采用分开，影响范围/旧输入可查，不因聊天授权",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-46",
+      "scenario": "人工接管与交还冲突",
+      "expected": "显示写者停止证据和补丁差异；未交还不自动双写",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-47",
+      "scenario": "交付下载/运行说明/用户接受",
+      "expected": "缺失/过期/无权限明确；下载不变成用户验收通过",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "UI-48",
+      "scenario": "外部反馈覆盖/去重/终态待办",
+      "expected": "真实/模拟、partial/stale、来源和使命边界可见，不自动恢复旧公司工作",
+      "primary_contract": "C-WORKBENCH",
+      "execution_status": "not_run"
+    }
+  ]
+}

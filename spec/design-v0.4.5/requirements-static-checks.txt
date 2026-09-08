@@ -1,0 +1,6 @@
+PyYAML
+jsonschema
+beautifulsoup4
+
+# Offline reader generation (not runtime dependency)
+markdown-it-py>=3,<5

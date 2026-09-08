@@ -1,0 +1,10 @@
+stateDiagram-v2
+  working --> quiescing: safe work boundary
+  quiescing --> sleeping: durable state and no actionable work
+  sleeping --> wake_pending: durable task or obligation
+  wake_pending --> working: revalidate policy budget epoch capacity
+  sleeping --> paused: management or authorization
+  wake_pending --> paused: pause overrides wake
+  paused --> wake_pending: explicit resume and pending work
+  wake_pending --> waiting_quota: no approved capacity
+  waiting_quota --> wake_pending: approved quota recheck

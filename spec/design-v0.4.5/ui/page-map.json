@@ -1,0 +1,161 @@
+{
+  "document_version": "0.4.5",
+  "kind": "planned_pages_not_implemented",
+  "office_enabled": false,
+  "pages": [
+    {
+      "scope": "group",
+      "path": "/",
+      "title": "公司总览",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "group",
+      "path": "/companies/new",
+      "title": "新建公司",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "group",
+      "path": "/group/resources",
+      "title": "集团资源",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "group",
+      "path": "/group/settings",
+      "title": "集团设置",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/overview",
+      "title": "公司工作台",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/missions/:missionId",
+      "title": "使命",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/tasks",
+      "title": "任务",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/tasks/:taskId",
+      "title": "任务详情",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/employees",
+      "title": "员工",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/employees/:employeeId",
+      "title": "员工详情",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/activity",
+      "title": "活动",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/resources",
+      "title": "资源",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/evidence",
+      "title": "证据",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/decisions",
+      "title": "待决事项",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/settings",
+      "title": "设置",
+      "status": "not_implemented"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/missions/:missionId/inputs",
+      "title": "使命资料",
+      "status": "not_implemented",
+      "presentation": "nested_tab_or_existing_group"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/missions/:missionId/guidance",
+      "title": "使命指导",
+      "status": "not_implemented",
+      "presentation": "nested_tab_or_existing_group"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/missions/:missionId/deliveries",
+      "title": "交付清单",
+      "status": "not_implemented",
+      "presentation": "nested_tab_or_existing_group"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/tasks/:taskId/jobs",
+      "title": "任务作业",
+      "status": "not_implemented",
+      "presentation": "nested_tab_or_existing_group"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/tasks/:taskId/browser",
+      "title": "目标应用验证",
+      "status": "not_implemented",
+      "presentation": "nested_tab_or_existing_group"
+    },
+    {
+      "scope": "company",
+      "path": "/companies/:companyId/feedback",
+      "title": "反馈待办",
+      "status": "not_implemented",
+      "presentation": "nested_tab_or_existing_group"
+    }
+  ],
+  "notification_extension": {
+    "settings": "notification routes and explicit test/enable",
+    "decisions": "incident and delivery views",
+    "new_chat_page": false,
+    "spec": "ARCHITECTURE.md#contract-notify"
+  },
+  "capability_extension": {
+    "group_settings_tabs": [
+      "public-skills",
+      "mcp-definitions"
+    ],
+    "company_settings_tabs": [
+      "workspace-bindings",
+      "capability-bindings"
+    ],
+    "employee_tabs": [
+      "workspace-and-tools"
+    ],
+    "same_existing_navigation": true,
+    "plugin_marketplace": false,
+    "spec": "ARCHITECTURE.md#section-44"
+  }
+}

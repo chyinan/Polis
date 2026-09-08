@@ -1,0 +1,13 @@
+flowchart TD
+  UI[React / TS / Vite workbench] --> API[HTTP and SSE]
+  API --> Kernel[Go modular monolith]
+  Kernel --> PG[(PostgreSQL 18)]
+  Kernel --> Blobs[Company-scoped artifact files]
+  Kernel --> Supervisor[Trusted supervisor / dispatcher]
+  Supervisor --> Harness[Qualified Agent harness]
+  Harness --> Tools[Restricted tool environment]
+  Kernel --> Queue[Durable tasks / outbox / employee schedules]
+  Queue --> PG
+  PG -. notification hints only .-> Kernel
+  Tools --> Evidence[Versioned artifacts / receipts / evidence]
+  Evidence --> Kernel

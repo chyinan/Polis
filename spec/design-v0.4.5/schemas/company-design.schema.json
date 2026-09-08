@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:company:0.4.4",
+  "title": "Draft 0.3 公司设计样本（非运行时配置）",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "company_id",
+    "template_revision",
+    "active_mission_limit",
+    "dynamic_roles_enabled",
+    "state_store",
+    "budget",
+    "capacity",
+    "employees",
+    "autonomy",
+    "sleep",
+    "qualification",
+    "lifecycle",
+    "employee_tool_contract",
+    "notification_policy_ref",
+    "capability_catalog_fixture",
+    "capability_activation"
+  ],
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "draft_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template_revision": {
+      "type": "string"
+    },
+    "active_mission_limit": {
+      "const": 1
+    },
+    "dynamic_roles_enabled": {
+      "const": false
+    },
+    "state_store": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine",
+        "major",
+        "driver",
+        "query_codegen",
+        "migration_tool",
+        "secondary_database"
+      ],
+      "properties": {
+        "engine": {
+          "const": "postgresql"
+        },
+        "major": {
+          "const": 18
+        },
+        "driver": {
+          "const": "pgx/v5"
+        },
+        "query_codegen": {
+          "const": "sqlc"
+        },
+        "migration_tool": {
+          "const": "goose/v3"
+        },
+        "secondary_database": {
+          "type": "null"
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pay_enabled",
+        "currency",
+        "limit_microunits",
+        "closing_reserve_microunits",
+        "billing_visibility"
+      ],
+      "properties": {
+        "pay_enabled": {
+          "const": false
+        },
+        "currency": {
+          "const": "USD"
+        },
+        "limit_microunits": {
+          "const": "0"
+        },
+        "closing_reserve_microunits": {
+          "const": "0"
+        },
+        "billing_visibility": {
+          "const": "unverified"
+        }
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inference_slots",
+        "tool_slots",
+        "employee_active_session_limit"
+      ],
+      "properties": {
+        "inference_slots": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "tool_slots": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "employee_active_session_limit": {
+          "const": 1
+        }
+      }
+    },
+    "employees": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "employee_id",
+          "role",
+          "model_profile_ref",
+          "role_revision",
+          "capability_binding_ref"
+        ],
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "enum": [
+              "planner_architect",
+              "backend",
+              "frontend",
+              "independent_reviewer"
+            ]
+          },
+          "model_profile_ref": {
+            "type": "null"
+          },
+          "role_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "capability_binding_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        }
+      }
+    },
+    "autonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "production_publish",
+        "real_content_publish",
+        "live_financial_trading",
+        "self_modify_runtime",
+        "role_self_change"
+      ],
+      "properties": {
+        "production_publish": {
+          "const": false
+        },
+        "real_content_publish": {
+          "const": false
+        },
+        "live_financial_trading": {
+          "const": false
+        },
+        "self_modify_runtime": {
+          "const": false
+        },
+        "role_self_change": {
+          "const": false
+        }
+      }
+    },
+    "sleep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "idle_llm_polling",
+        "durable_work_queue",
+        "notifications_are_hints",
+        "reconcile_interval_seconds",
+        "pause_overrides_wake"
+      ],
+      "properties": {
+        "idle_llm_polling": {
+          "const": false
+        },
+        "durable_work_queue": {
+          "const": true
+        },
+        "notifications_are_hints": {
+          "const": true
+        },
+        "reconcile_interval_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pause_overrides_wake": {
+          "const": true
+        }
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "allowed_execution_mode",
+        "real_model_authorization"
+      ],
+      "properties": {
+        "status": {
+          "const": "unverified"
+        },
+        "allowed_execution_mode": {
+          "type": "null"
+        },
+        "real_model_authorization": {
+          "const": false
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": [
+        "bootstrap_template",
+        "planner_employee_id",
+        "paused_mission_holds_slot",
+        "terminal_reopen_allowed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "bootstrap_template": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "planner_employee_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "paused_mission_holds_slot": {
+          "const": true
+        },
+        "terminal_reopen_allowed": {
+          "const": false
+        }
+      }
+    },
+    "employee_tool_contract": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "notification_policy_ref": {
+      "type": "null"
+    },
+    "capability_catalog_fixture": {
+      "const": "employee_capabilities.draft.yaml"
+    },
+    "capability_activation": {
+      "type": "object",
+      "required": [
+        "import_starts_services",
+        "future_public_additions_auto_enabled",
+        "native_auto_discovery",
+        "active_grants"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "import_starts_services": {
+          "const": false
+        },
+        "future_public_additions_auto_enabled": {
+          "const": false
+        },
+        "native_auto_discovery": {
+          "const": "must_be_qualified"
+        },
+        "active_grants": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    }
+  }
+}

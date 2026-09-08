@@ -1,0 +1,31 @@
+document_version: 0.4.5
+kind: ui_design_not_production_config
+execution_enabled: false
+data_mode: simulated
+visual:
+  reference: Paperclip-like professional enterprise
+  copy_upstream_brand: false
+  themes:
+  - light
+  - dark
+  - system
+  office_enabled: false
+  office_style: null
+  scene_engine: null
+organization:
+  creation: human_confirmed_fixed_roster
+  dynamic_roles_enabled: false
+  create_starts_mission: false
+  session_discovery_creates_employee: false
+client:
+  query_cache: memory_only_scoped
+  offline_mutation_queue: false
+  viewing_triggers_model: false
+  command_202_means: accepted_not_completed
+  high_risk_optimistic_success: false
+capabilities:
+  view_starts_services: false
+  explicit_probe_confirmation: true
+  future_tools_auto_approved: false
+  configuration_is_availability: false
+  binding_changes_require_revision: true

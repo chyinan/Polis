@@ -1,0 +1,57 @@
+/* Draft 0.4 candidate tokens, generated from design-tokens.json. Not a working app. */
+:root, [data-theme="light"] {
+  --color-canvas: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #F1F3F5;
+  --color-text: #17212B;
+  --color-text-muted: #526171;
+  --color-accent: #264E73;
+  --color-on-accent: #FFFFFF;
+  --color-border: #DCE2E8;
+  --color-control-border: #7B8794;
+  --color-focus: #264E73;
+  --color-success: #17623B;
+  --color-success-bg: #ECFDF3;
+  --color-warning: #8A4B08;
+  --color-warning-bg: #FFF6E8;
+  --color-danger: #B42318;
+  --color-danger-bg: #FFF1F0;
+  --color-info: #245B9A;
+  --color-info-bg: #EEF5FF;
+}
+[data-theme="dark"] {
+  --color-canvas: #11161C;
+  --color-surface: #18212B;
+  --color-surface-subtle: #202B36;
+  --color-text: #EDF2F7;
+  --color-text-muted: #B0BECD;
+  --color-accent: #ADC9EB;
+  --color-on-accent: #142231;
+  --color-border: #344454;
+  --color-control-border: #8193A6;
+  --color-focus: #ADC9EB;
+  --color-success: #79D6A3;
+  --color-success-bg: #173327;
+  --color-warning: #F3C580;
+  --color-warning-bg: #382D1B;
+  --color-danger: #FFB0A8;
+  --color-danger-bg: #3D2424;
+  --color-info: #B0D2FF;
+  --color-info-bg: #20334C;
+}
+:root {
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  --radius-dialog: 12px;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --motion-duration: 150ms;
+}
+@media (prefers-reduced-motion: reduce) { :root { --motion-duration: 0ms; } }

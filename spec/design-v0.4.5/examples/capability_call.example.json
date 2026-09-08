@@ -1,0 +1,24 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "capability_call_fixture_not_runtime_request",
+  "execution_enabled": false,
+  "auth_binding_source": "runtime_only",
+  "operation": "tools.call",
+  "request": {
+    "request_id": "fixture-request-1",
+    "idempotency_key": "fixture-intent-1",
+    "expected_binding_revision": "1",
+    "tool_handle": "fixture://tool/lookup-contract-v1",
+    "descriptor_digest": "58ee28c8247c9f77281428db009adb68ca554d4e69d470ea574dc16ea5fce640",
+    "arguments": {
+      "contract_id": "contract-fixture-v2"
+    }
+  },
+  "expected_without_qualification": {
+    "status": "rejected",
+    "reason_code": "CAPABILITY_UNVERIFIED",
+    "action_dispatched": false,
+    "model_called": false
+  },
+  "execution_status": "not_run"
+}

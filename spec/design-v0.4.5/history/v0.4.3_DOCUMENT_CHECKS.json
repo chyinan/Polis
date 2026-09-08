@@ -1,0 +1,1703 @@
+{
+  "document_version": "0.4.3",
+  "check_kind": "static_document_and_fixture_only",
+  "status": "pass",
+  "counts": {
+    "chapters": 44,
+    "requirements": 34,
+    "contracts": 19,
+    "planned_fault_tests": 82,
+    "planned_ui_tests": 40,
+    "planned_notification_tests": 22,
+    "planned_capability_tests": 32,
+    "checks": 334
+  },
+  "checks": [
+    {
+      "name": "main_document_has_44_chapters",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "main_anchor_ids_unique",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "html_anchor_ids_unique",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "html_contains_all_document_anchors",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "html_contains_full_manuscript",
+      "status": "pass",
+      "detail": "Guards against accidentally rendering only the navigation/header."
+    },
+    {
+      "name": "html_internal_links",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "offline_no_external_render_dependencies",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "code_fences:00_START_HERE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:ARCHITECTURE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:CHANGELOG_0.4.1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:CHANGELOG_0.4.2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:CHANGELOG_0.4.3.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:CHANGELOG_0.4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:DELIVERY_NOTES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:adr/STACK_DECISION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:audit/AUDIT_REPORT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:capabilities/CAPABILITY_SPEC.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-AUTHORITY.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-BOOTSTRAP.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-CAPABILITY.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-CONTINUITY.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-EMPLOYEE-OPS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-EXEC.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-MCP.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-MEMORY.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-MISSION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-NOTIFY.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-READY.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-RESOURCE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-RETRY.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-REVOKE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-SKILLS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-SLEEP.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-UPGRADE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-WORKBENCH.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:contracts/C-WORKSPACE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:examples/skills/contract-review/SKILL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:examples/skills/contract-review/references/acceptance.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:preflight/PREFLIGHT_SPEC.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:preflight/QQ_NOTIFICATION_SPEC.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:tests/READINESS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "code_fences:ui/FRONTEND_SPEC.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "markdown_local_links",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "structured_files_parsed",
+      "status": "pass",
+      "detail": "57 files parsed"
+    },
+    {
+      "name": "schema:company-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:handover-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:event-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:workbench-employee.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:ui-operation.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:qq-notification-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:intervention-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:employee-ops-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "company_execution_disabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "company_budget_zero",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "company_fixed_roles",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_ids_unique",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "independent_reviewer_exists",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no_paid_idle_polling",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "single_postgresql_database",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "content_simulated_and_disabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "versions_honestly_unqualified",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no_fabricated_exact_version_pins",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "catalog_82_unique_planned_tests",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "tests_not_claimed_executed",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "catalog_matches_document_table",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "34_requirements_mapped",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "40_unique_planned_ui_tests",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui_tests_not_claimed_executed",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui_catalog_matches_document",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "22_unique_planned_notification_tests",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "notification_tests_not_claimed_executed",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "notification_catalog_matches_document",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "32_unique_planned_capability_tests",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_tests_not_claimed_executed",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_catalog_matches_document",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "test_refs_resolve",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "every_planned_test_has_requirement",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "document_requirement_table_matches",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "nineteen_contracts",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-EXEC",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-AUTHORITY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-SLEEP",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-REVOKE",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-MEMORY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-RETRY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-UPGRADE",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-READY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "contract_matches_main:C-WORKBENCH",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "trace_not_runtime_result:wake_race.trace.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "trace_not_runtime_result:revocation.trace.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "56_architecture_decisions",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "frontend_chapters_match_main",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui_configuration_disabled_simulated",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "office_explicitly_deferred",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "human_fixed_roster",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "create_does_not_start",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "view_does_not_wake",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no_offline_command_queue",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no_optimistic_critical_success",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui_examples_not_live",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "sleep_can_have_inflight_tools",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "unknown_amount_not_zero",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "large_revision_transmitted_as_string",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "rebinding_does_not_mean_running",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "accepted_pause_not_completed",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "page_paths_unique",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "pages_no_office_placeholder",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "company_pages_are_scoped",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "pages_honestly_not_implemented",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no_bundled_font_files",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:canvas",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:surface",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:surface_subtle",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:text",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:text_muted",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:accent",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:on_accent",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:border",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:control_border",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:focus",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:success",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:success_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:warning",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:warning_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:danger",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:danger_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:info",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:light:info_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "color_pair:light:text/surface",
+      "status": "pass",
+      "detail": "16.293:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:text_muted/surface",
+      "status": "pass",
+      "detail": "6.350:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:text_muted/canvas",
+      "status": "pass",
+      "detail": "5.976:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:accent/surface",
+      "status": "pass",
+      "detail": "8.679:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:on_accent/accent",
+      "status": "pass",
+      "detail": "8.679:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:success/success_bg",
+      "status": "pass",
+      "detail": "6.994:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:warning/warning_bg",
+      "status": "pass",
+      "detail": "6.342:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:danger/danger_bg",
+      "status": "pass",
+      "detail": "5.977:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:info/info_bg",
+      "status": "pass",
+      "detail": "6.300:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:control_border/surface",
+      "status": "pass",
+      "detail": "3.661:1, required 3:1; declared pair only"
+    },
+    {
+      "name": "color_pair:light:focus/surface",
+      "status": "pass",
+      "detail": "8.679:1, required 3:1; declared pair only"
+    },
+    {
+      "name": "css_token:dark:canvas",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:surface",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:surface_subtle",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:text",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:text_muted",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:accent",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:on_accent",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:border",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:control_border",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:focus",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:success",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:success_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:warning",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:warning_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:danger",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:danger_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:info",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "css_token:dark:info_bg",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "color_pair:dark:text/surface",
+      "status": "pass",
+      "detail": "14.439:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:text_muted/surface",
+      "status": "pass",
+      "detail": "8.591:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:text_muted/canvas",
+      "status": "pass",
+      "detail": "9.601:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:accent/surface",
+      "status": "pass",
+      "detail": "9.550:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:on_accent/accent",
+      "status": "pass",
+      "detail": "9.464:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:success/success_bg",
+      "status": "pass",
+      "detail": "7.770:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:warning/warning_bg",
+      "status": "pass",
+      "detail": "8.407:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:danger/danger_bg",
+      "status": "pass",
+      "detail": "8.147:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:info/info_bg",
+      "status": "pass",
+      "detail": "8.240:1, required 4.5:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:control_border/surface",
+      "status": "pass",
+      "detail": "5.156:1, required 3:1; declared pair only"
+    },
+    {
+      "name": "color_pair:dark:focus/surface",
+      "status": "pass",
+      "detail": "9.550:1, required 3:1; declared pair only"
+    },
+    {
+      "name": "no_remote_fonts_or_idle_animation",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_unique_ids:ARCHITECTURE.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_local_links:ARCHITECTURE.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_no_external_dependencies:ARCHITECTURE.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_has_not_product_notice:ARCHITECTURE.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_unique_ids:ui/FRONTEND_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_local_links:ui/FRONTEND_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_no_external_dependencies:ui/FRONTEND_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_has_not_product_notice:ui/FRONTEND_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_unique_ids:preflight/PREFLIGHT_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_local_links:preflight/PREFLIGHT_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_no_external_dependencies:preflight/PREFLIGHT_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_has_not_product_notice:preflight/PREFLIGHT_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_unique_ids:preflight/QQ_NOTIFICATION_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_local_links:preflight/QQ_NOTIFICATION_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_no_external_dependencies:preflight/QQ_NOTIFICATION_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_has_not_product_notice:preflight/QQ_NOTIFICATION_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_unique_ids:audit/AUDIT_REPORT.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_local_links:audit/AUDIT_REPORT.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_no_external_dependencies:audit/AUDIT_REPORT.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_has_not_product_notice:audit/AUDIT_REPORT.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_unique_ids:capabilities/CAPABILITY_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reader_local_links:capabilities/CAPABILITY_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_no_external_dependencies:capabilities/CAPABILITY_SPEC.html",
+      "status": "pass",
+      "detail": "[]"
+    },
+    {
+      "name": "reader_has_not_product_notice:capabilities/CAPABILITY_SPEC.html",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "subcontract_matches_main:C-MISSION",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "subcontract_matches_main:C-EMPLOYEE-OPS",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "subcontract_matches_main:C-BOOTSTRAP",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "subcontract_matches_main:C-RESOURCE",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "subcontract_matches_main:C-CONTINUITY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "subcontract_matches_main:C-NOTIFY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "preflight_matches_main",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_spec_matches_main",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_disabled_and_no_test_authorization",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_official_not_unapproved_protocol",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_deterministic_not_llm_chat",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_no_secrets_or_recipient_claims",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_account_qualification_not_claimed",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_no_normal_noise",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_bounded_retries",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_no_magic_remote_link",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "watchdog_not_a_second_scheduler",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "handover_snapshot_design",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "handover_read_only_before_activation",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "new_trace_not_runtime_result:mission_bootstrap.trace.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "new_trace_not_runtime_result:notification_delivery.trace.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "design_schema_rejects_enabled:send_enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "design_schema_rejects_enabled:llm_generation_enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "design_schema_rejects_enabled:test_send_authorized",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "design_schema_rejects_raw_secret_field",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_design_schema_rejects_extra_actor",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "all_fixture_versions_current",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "source_review_not_execution",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_upstream_route_evidence_distinct_from_runtime",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "sole_sender_disabled_with_revocation_barrier",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "offline_capsule_no_default_authority",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_schema_rejects_unsafe_claim:sender.enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_schema_rejects_unsafe_claim:sender.offline_capsule_enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_schema_rejects_unsafe_claim:qualification.proactive_without_inbound_msg_id",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_schema_rejects_unsafe_claim:qualification.unattended_ready",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_schema_rejects_unsafe_claim:implementation_evidence.is_account_permission_proof",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_schema_rejects_unsafe_claim:recipient.kind",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_ops_names_unique_complete",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_ops_not_a_production_schema",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_ops_restore_restricted",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_ops_auth_bound_not_model_supplied",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "inbox_read_is_not_obligation_resolution",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:work.block",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:tools.list",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:contract.propose",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:work.yield",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:collab.send",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:skills.list",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:resources.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:plan.propose",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:workspace.list",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:context.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:work.checkpoint",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:workspace.search",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:scripts.run",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:tools.call",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:collab.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:tools.describe",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:skills.load",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:review.submit",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:handover.confirm",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:memory.propose",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:workspace.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:workspace.snapshot",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:collab.ack",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:obligation.resolve",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:work.current",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:artifact.submit",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:resources.list",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "runtime_incarnation_present_in_handover_and_ops",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "activation_pending_environment_not_writing",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "audit_trace_not_executed:notification_revoke.trace.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "audit_trace_not_executed:activation_gap.trace.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "review_findings_unique",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "findings_not_runtime_bug_claims",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "findings_patched_not_claimed_verified",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no_fabricated_independent_reviewers",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "finding_requirement_refs_resolve",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "finding_test_refs_resolve",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "finding_locations_have_referenced_sections",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "twelve_evidence_gates_not_hidden",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no_production_or_unknown_risk_zero_claim",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "all_gates_open_with_failure_policy",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "audit_chapter_matches_main",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "qq_source_evidence_not_live_send",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "all_test_ids_globally_unique",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:employee-capabilities-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_execution:employee-capabilities-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_secret:employee-capabilities-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:mcp-service-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_execution:mcp-service-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_secret:mcp-service-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:skill-manifest-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_execution:skill-manifest-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_secret:skill-manifest-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "schema:capability-call-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_execution:capability-call-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_schema_rejects_secret:capability-call-design.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capabilities_no_grants_and_no_scans",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "public_library_fixed_and_no_shadow",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "workspace_shared_is_not_peer_live_tree",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_employees_match_fixed_roster",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "company_binding_refs_resolve",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "all_bindings_remain_unverified",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "reviewer_input_read_only",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_definition_not_connection",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_two_declared_transports_not_live",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_sdk_unpinned_not_fabricated",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_no_inherited_secrets_or_install",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_no_uncontrolled_reverse_calls",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_hints_do_not_grant_or_autoadopt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_definitions_shared_but_employee_bindings_distinct",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_draft_bindings_no_active_tools",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_calls_default_rejected",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_trace_is_hypothesis",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "handover_restores_binding_not_authority",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "handover_contains_no_native_secrets",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "handover_mcp_binding_belongs_to_employee",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "handover_skill_and_catalogue_agree",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "skill_fixture_file_hash:SKILL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "skill_fixture_inside_root:SKILL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "skill_fixture_file_hash:references/acceptance.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "skill_fixture_inside_root:references/acceptance.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "skill_fixture_manifest_digest",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "skill_fixture_required_metadata",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "skill_fixture_no_executable_assets",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "descriptor_hint_is_not_permission",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "descriptor_digest_matches_local_fixture",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "handover_descriptor_matches_fixture",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_draft_rejects:connect_enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_draft_rejects:pay_enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_draft_rejects_policy:sampling_enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_draft_rejects_policy:new_tools_auto_approved",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "mcp_draft_rejects_policy:native_bypass_enabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_draft_rejects_fake_qualification",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_contract_matches:C-WORKSPACE",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_contract_matches:C-SKILLS",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_contract_matches:C-MCP",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_contract_matches:C-CAPABILITY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_standalone_matches_main",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "capability_read_ops_do_not_allow_restoring_execution",
+      "status": "pass",
+      "detail": ""
+    }
+  ],
+  "not_executed": [
+    "PostgreSQL integration/concurrency tests",
+    "Agent runtime implementation",
+    "real harness/model calls",
+    "containment/security qualification",
+    "paid-model benchmarks",
+    "FT-01 through FT-82",
+    "UI-01 through UI-40",
+    "CAP-01 through CAP-32",
+    "live Skills/MCP activation and capability handover",
+    "NT-01 through NT-22",
+    "QQ live sends and proactive qualification",
+    "production React workbench",
+    "long-running autonomous operation"
+  ],
+  "caution": "A static validation pass is not evidence that the proposed architecture works."
+}

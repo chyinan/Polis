@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:browser-run:0.4.4",
+  "description": "Disabled documentation fixture only; not a production authorization schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "pay_enabled",
+    "qualification",
+    "reference_backend",
+    "browser_version",
+    "target_endpoint",
+    "target_service_generation",
+    "candidate_revision",
+    "preview_enabled",
+    "shares_management_origin",
+    "shares_management_cookies",
+    "uses_personal_browser",
+    "control_network_access",
+    "network_destinations",
+    "steps",
+    "evidence_refs",
+    "model_vision_delivery",
+    "result"
+  ],
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "workflow_fixture_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "pay_enabled": {
+      "const": false
+    },
+    "qualification": {
+      "const": "unverified"
+    },
+    "reference_backend": {
+      "type": "string",
+      "minLength": 1
+    },
+    "browser_version": {
+      "type": "null"
+    },
+    "target_endpoint": {
+      "type": "null"
+    },
+    "target_service_generation": {
+      "type": "null"
+    },
+    "candidate_revision": {
+      "type": "null"
+    },
+    "preview_enabled": {
+      "const": false
+    },
+    "shares_management_origin": {
+      "const": false
+    },
+    "shares_management_cookies": {
+      "const": false
+    },
+    "uses_personal_browser": {
+      "const": false
+    },
+    "control_network_access": {
+      "const": false
+    },
+    "network_destinations": {
+      "type": "array",
+      "items": {},
+      "maxItems": 1000
+    },
+    "steps": {
+      "type": "array",
+      "items": {},
+      "maxItems": 1000
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {},
+      "maxItems": 1000
+    },
+    "model_vision_delivery": {
+      "type": "string",
+      "minLength": 1
+    },
+    "result": {
+      "const": "not_run"
+    }
+  }
+}

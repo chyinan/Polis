@@ -1,0 +1,123 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "non_executable_experiment_plan",
+  "numbers_are_proposals_not_measurements": true,
+  "hypotheses_are_not_verified": true,
+  "experiments": [
+    {
+      "id": "E-START",
+      "hypothesis": "H-USABILITY",
+      "trial": {
+        "minimum_naive_target_users": 3,
+        "required_independent_completers_proposed": 2
+      },
+      "proposed_thresholds": {
+        "initial_install_active_human_minutes": 45,
+        "repeat_mission_setup_active_human_minutes": 15
+      },
+      "planned_tests": [
+        "PP-02",
+        "PP-03",
+        "PP-09",
+        "PP-11"
+      ],
+      "primary_outcome": "independent usable result and human effort including setup",
+      "excluded_claim": "general population statistical estimate",
+      "status": "not_run",
+      "threshold_status": "proposed_awaiting_owner_confirmation",
+      "execution_enabled": false,
+      "pay_enabled": false,
+      "owner_budget_authorized": false,
+      "approved_budget": null,
+      "authorized_accounts": [],
+      "registered_fixture_digest": null,
+      "results": null
+    },
+    {
+      "id": "E-ORG",
+      "hypothesis": "H-ORG",
+      "trial": {
+        "goal_families": 3,
+        "repeats_per_family_per_configuration": 2,
+        "configurations": [
+          "A_strong_single_with_same_infrastructure",
+          "B_sequential_executor_and_independent_review",
+          "D_fixed_organization"
+        ],
+        "planned_real_runs_if_full_design": 18,
+        "existing_framework_C": "separate_optional_replication"
+      },
+      "proposed_thresholds": {
+        "quality_non_regression_required": true,
+        "capacity_win_additional_families_pass_both_repeats": 1,
+        "burden_win_human_reduction_fraction": 0.3,
+        "burden_win_max_comparable_cost_ratio": 1.5,
+        "burden_win_max_elapsed_time_ratio": 1.5,
+        "hard_safety_violations_allowed": 0
+      },
+      "planned_tests": [
+        "PP-01",
+        "PP-04",
+        "PP-05",
+        "PP-06",
+        "PP-08",
+        "PP-10",
+        "PP-12"
+      ],
+      "primary_outcome": "long-horizon qualified completion; if equivalent, lower total human burden",
+      "reference_selection": "always report A separately; predeclare global A/B comparator by qualified goal count, quality, then total human effort; never switch per goal",
+      "zero_baseline_human_handling": "no percentage victory; report no burden advantage or evaluate capacity",
+      "incomparable_cost_handling": "separate units; cost guardrail inconclusive",
+      "all_attempts_included": true,
+      "status": "not_run",
+      "threshold_status": "proposed_awaiting_owner_confirmation",
+      "execution_enabled": false,
+      "pay_enabled": false,
+      "owner_budget_authorized": false,
+      "approved_budget": null,
+      "authorized_accounts": [],
+      "registered_fixture_digest": null,
+      "results": null,
+      "no_per_goal_composite_baseline": true
+    },
+    {
+      "id": "E-HANDOVER",
+      "hypothesis": "H-HANDOVER",
+      "trial": {
+        "distinct_scenarios": 3,
+        "switches_per_scenario": 2,
+        "old_model_final_summary_calls": 0
+      },
+      "proposed_thresholds": {
+        "minimum_behavior_successes": 5,
+        "planned_switches": 6,
+        "critical_integrity_failures_allowed": 0
+      },
+      "planned_tests": [
+        "PP-07",
+        "FT-07",
+        "FT-08",
+        "FT-09",
+        "CAP-25"
+      ],
+      "primary_outcome": "preserve key behavior on actual subsequent work, not only metadata",
+      "grading": "frozen external assertions and actual artifact changes; no self-grading",
+      "status": "not_run",
+      "threshold_status": "proposed_awaiting_owner_confirmation",
+      "execution_enabled": false,
+      "pay_enabled": false,
+      "owner_budget_authorized": false,
+      "approved_budget": null,
+      "authorized_accounts": [],
+      "registered_fixture_digest": null,
+      "results": null
+    }
+  ],
+  "stop_rules": [
+    "any critical safety violation disables affected mode",
+    "unusable reference combination blocks scale-out",
+    "no organization gain blocks additional scale/scope",
+    "inadequate budget or sample is inconclusive",
+    "product pivot needs explicit owner decision"
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:human-guidance:0.4.4",
+  "description": "Disabled documentation fixture only; not a production authorization schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "pay_enabled",
+    "qualification",
+    "company_id",
+    "mission_id",
+    "guidance_id",
+    "type",
+    "state",
+    "base_input_revision",
+    "attachment_refs",
+    "text",
+    "applied_revision",
+    "grants_changed",
+    "paid_analysis_authorized",
+    "takeover"
+  ],
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "workflow_fixture_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "pay_enabled": {
+      "const": false
+    },
+    "qualification": {
+      "const": "unverified"
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mission_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "guidance_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_input_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attachment_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 1000
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "applied_revision": {
+      "type": "null"
+    },
+    "grants_changed": {
+      "const": false
+    },
+    "paid_analysis_authorized": {
+      "const": false
+    },
+    "takeover": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lease_id",
+        "scope",
+        "old_writer_quiesced",
+        "human_edit_enabled",
+        "patch_ref",
+        "patch_base",
+        "returned",
+        "resume_authorized"
+      ],
+      "properties": {
+        "lease_id": {
+          "type": "null"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "old_writer_quiesced": {
+          "const": false
+        },
+        "human_edit_enabled": {
+          "const": false
+        },
+        "patch_ref": {
+          "type": "null"
+        },
+        "patch_base": {
+          "type": "null"
+        },
+        "returned": {
+          "const": false
+        },
+        "resume_authorized": {
+          "const": false
+        }
+      }
+    }
+  }
+}

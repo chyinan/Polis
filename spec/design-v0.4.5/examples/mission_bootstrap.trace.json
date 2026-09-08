@@ -1,0 +1,46 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "bootstrap_trace_not_runtime_result",
+  "execution_enabled": false,
+  "results": "not_run",
+  "company_id": "co-software-example",
+  "mission_id": "mis-pagination-example",
+  "activation_id": "activation-fixture-1",
+  "bootstrap_template": "bootstrap-plan@1",
+  "planner_employee_id": "emp-planning",
+  "bootstrap_uniqueness": [
+    "mission_id",
+    "activation_id",
+    "bootstrap_kind"
+  ],
+  "steps": [
+    {
+      "event": "start_request_A",
+      "expected": "create_one_bootstrap"
+    },
+    {
+      "event": "same_request_ACK_lost",
+      "expected": "lookup_original_receipt"
+    },
+    {
+      "event": "duplicate_start_different_request_id",
+      "expected": "return_existing_activation_or_conflict_no_second_bootstrap"
+    },
+    {
+      "event": "mission_paused",
+      "expected": "slot_still_occupied"
+    },
+    {
+      "event": "start_second_mission",
+      "expected": "reject_occupied"
+    },
+    {
+      "event": "close_first_mission",
+      "expected": "drain_fence_resolve_responsibilities"
+    },
+    {
+      "event": "late_receipt",
+      "expected": "historical_reconcile_only"
+    }
+  ]
+}

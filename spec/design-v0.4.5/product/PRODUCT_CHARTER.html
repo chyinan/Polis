@@ -1,0 +1,325 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>产品定位、分层交付与对抗审查处置 · Draft 0.4.5 · Draft 0.4.5</title><style>
+:root{color-scheme:light;--bg:#f6f7f9;--paper:#fff;--text:#182432;--muted:#536273;--line:#dbe2e9;--accent:#264e73;--soft:#edf3f7}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:76px}body{margin:0;font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}a{color:var(--accent);text-decoration:none;overflow-wrap:anywhere}a:hover{text-decoration:underline}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #397fae;outline-offset:3px}header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;height:62px;padding:0 24px;background:var(--paper);border-bottom:1px solid var(--line)}.brand{font-size:14px;font-weight:650;line-height:1.4}.edition{color:var(--muted);font-size:12px;letter-spacing:.08em}.toolbar{display:flex;gap:8px;flex-shrink:0}button{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:6px 12px;background:var(--paper);color:var(--text);cursor:pointer;min-height:36px}.layout{display:grid;grid-template-columns:278px minmax(0,1fr);max-width:1600px;margin:auto}.sidebar{position:sticky;top:62px;align-self:start;height:calc(100vh - 62px);overflow:auto;padding:20px 14px;border-right:1px solid var(--line);background:var(--paper)}.sidebar input{width:100%;font:inherit;font-size:13px;padding:9px 10px;border:1px solid #8794a1;border-radius:6px;margin-bottom:14px;color:var(--text);background:var(--paper)}.navgroup{border-bottom:1px solid var(--line);padding:7px 0}.navgroup summary{font-size:13px;line-height:1.6;cursor:pointer}.navgroup summary a{color:var(--text)}.subnav{padding:6px 0 0 14px}.subnav a{display:block;font-size:12px;line-height:1.5;margin:0 0 8px;color:var(--muted)}main{min-width:0;padding:32px 40px 70px}article{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:36px 44px;max-width:1100px;margin:auto;overflow-wrap:anywhere}h1{font-size:32px;line-height:1.3;margin:0 0 18px;letter-spacing:-.02em}h2{font-size:25px;line-height:1.5;margin:52px 0 18px;border-top:1px solid var(--line);padding-top:24px}h3{font-size:20px;line-height:1.5;margin:32px 0 14px}h4{font-size:17px;margin:24px 0 12px}p{margin:13px 0}li{margin:5px 0}blockquote{margin:24px 0;padding:12px 20px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 6px 6px 0}blockquote p{margin:6px 0}.notice{max-width:1100px;margin:0 auto 18px;padding:13px 17px;font-size:13px;border:1px solid var(--line);background:var(--soft);border-radius:8px;color:var(--muted)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;background:var(--soft);padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}pre{max-width:100%;overflow:auto;background:#15222f;color:#eef3f8;border-radius:8px;padding:18px;font-size:13px;line-height:1.6;tab-size:2}pre code{background:none;color:inherit;padding:0;white-space:pre;overflow-wrap:normal}.table-wrap{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:7px}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.65;min-width:540px}th{text-align:left;background:var(--soft);font-weight:650}td,th{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}tr:last-child td{border-bottom:0}td{min-width:80px}hr{border:0;border-top:1px solid var(--line);margin:28px 0}.mobile-menu{display:none}.back{display:block;margin:24px 0;font-size:13px}.print-note{font-size:12px;color:var(--muted);text-align:center;margin-top:24px}[hidden]{display:none!important}
+body.dark{color-scheme:dark;--bg:#101822;--paper:#16222f;--text:#e6edf5;--muted:#adbccd;--line:#334557;--accent:#96bfdf;--soft:#213547}
+@media(max-width:1000px){.layout{grid-template-columns:236px minmax(0,1fr)}main{padding:24px}article{padding:28px}}
+@media(max-width:760px){header{padding:0 12px;height:64px}.brand{font-size:12px;max-width:180px}.edition{font-size:10px}.toolbar{gap:5px}button{padding:6px 9px;font-size:12px}.mobile-menu{display:inline-block}.layout{display:block}.sidebar{display:none;position:fixed;z-index:15;top:64px;height:calc(100dvh - 64px);width:min(88vw,330px);box-shadow:12px 0 28px #0002}.sidebar.open{display:block}main{padding:16px 10px 40px}article{padding:22px 16px;border-radius:8px}.notice{padding:12px;font-size:12px}body{font-size:15px}h1{font-size:27px}h2{font-size:22px;margin-top:36px;padding-top:20px}h3{font-size:19px}h4{font-size:16px}pre{padding:12px;font-size:12px}table{font-size:13px;min-width:520px}blockquote{padding:10px 13px;margin:20px 0}.table-wrap{margin:16px 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{header,.sidebar,.notice,.print-note{display:none}.layout{display:block}main{padding:0}article{border:0;max-width:none;padding:0}pre{white-space:pre-wrap;overflow-wrap:anywhere}pre code{white-space:pre-wrap}.table-wrap{overflow:visible}table{min-width:0;font-size:10px}body{font-size:11px}h2{break-before:auto}tr,blockquote,pre{break-inside:avoid}}
+</style></head><body><header><div><div class="brand">长期自治 Agent 组织运行时</div><div class="edition">DRAFT 0.4.5 · DESIGN DOCUMENT</div></div><div class="toolbar"><button id="menu" class="mobile-menu" aria-controls="sidebar" aria-expanded="false">目录</button><button id="theme" aria-label="切换深浅主题">深浅主题</button></div></header><div class="layout"><nav class="sidebar" id="sidebar" aria-label="文档目录"><label for="filter" class="edition">章节筛选</label><input id="filter" type="search" placeholder="查找章节…"><details class="navgroup"><summary><a href="#section-46">46. 产品章程、分层发布与对抗性审查处置</a></summary><div class="subnav"><a href="#subsection-46-1">46.1 首要用户：需要组织承接长期目标的人</a><a href="#subsection-46-2">46.2 产品假设与胜负次序</a><a href="#subsection-46-3">46.3 长期蓝图、自用与对外试用不是同一发布承诺</a><a href="#subsection-46-4">46.4 一条整体可用的参考组合</a><a href="#subsection-46-5">46.5 配置应由模板消化，目标与授权仍由人决定</a><a href="#subsection-46-6">46.6 环境前置条件、岗位覆盖和轻量协作</a><a href="#subsection-46-7">46.7 Mission 是一个有界目标与授权周期，内部允许多个工作包</a><a href="#subsection-46-8">46.8 模糊目标、日常指导和“先停一下”</a><a href="#subsection-46-9">46.9 接班要测理解迁移，也要测合法工作不被误拦</a><a href="#subsection-46-10">46.10 外部反馈、手机接管与维护成本</a><a href="#subsection-46-11">46.11 三项先行实验与投入决策</a><a href="#subsection-46-12">46.12 四个月时间盒重新以学习顺序组织</a><a href="#subsection-46-13">46.13 产品审查登记与最小新增验收</a><a href="#subsection-46-14">46.14 本版结论与残余风险</a></div></details></nav><main><div class="notice"><strong>设计文档 · 非运行结果</strong>　2026-09-08<br>本阅读版不是可运行工作台；真实产品、目标项目、模型与账号测试尚未完成。外部参考链接只在你点击时打开。</div><article><h1>产品定位、分层交付与对抗审查处置 · Draft 0.4.5</h1>
+<p>本文件从<a href="../ARCHITECTURE.html">主规范</a>生成；不作为另一份独立真相。产品与目标应用仍未实现或实测。</p>
+<p><a id="section-46"></a></p>
+<h2>46. 产品章程、分层发布与对抗性审查处置</h2>
+<h3>46.1 首要用户：需要组织承接长期目标的人 <a id="subsection-46-1"></a></h3>
+<p><strong>首要用户是期望长期执行复杂目标、希望通过虚拟公司的组织指挥与成员协作，突破单个顶尖模型 Agent 局限的人。</strong> 这是维护者在本轮明确确认的产品定位。软件开发者只是其中一种，不把产品改成只服务程序员的编码面板或仅保存会话的工具。</p>
+<p>用户需要的价值不是员工数量或拟人化表演，而是：交出长期目标后，组织能够分工、直接交流、保留决策和未完成承诺、跨会话与模型故障接续、根据外部反馈调整近期计划，并在约定边界内交付或持续运营。人保留目标、组织编制、资源与关键授权的决定权，日常不充当传话员。</p>
+<p><strong>“强于单顶尖模型”是需要证据支持的产品目标，不是对每项任务、任意模型或任意经营结果的无条件保证。</strong> 比较对象是同样有持久记忆、工具、定时和恢复能力的强单 Agent，而不是裸聊天。短小任务采用单执行者/顺序审查，不构成放弃组织：员工档案、职责和工作资产仍然存在。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>层次</th>
+<th>本版决定</th>
+<th>不能混淆的事情</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>产品用户</td>
+<td>有长期复杂目标，希望组织协作突破单体局限的人</td>
+<td>不限定为软件工程师；也不保证所有用户已有完整需求规格</td>
+</tr>
+<tr>
+<td>首个验证场景</td>
+<td>已有仓库的多阶段改动与维护，结果易于检查</td>
+<td>这是实验控制，不是把 Git/代码写成所有使命的定义</td>
+</tr>
+<tr>
+<td>首个参与者</td>
+<td>维护者及少量愿意使用受限参考组合的目标用户</td>
+<td>初期支持门槛不等于永久要求每位用户成为系统管理员</td>
+</tr>
+<tr>
+<td>后续领域</td>
+<td>内容草稿运营、研究和其他有合格工具/反馈的长期工作</td>
+<td>新领域要有独立评价；不从软件成功外推经营成功</td>
+</tr>
+</tbody>
+</table></div>
+<p>核心需求与可用场景分别维护。用户能给出目标、允许资源、风险边界和何时需要自己决定；不要求用户事先写出所有任务、依赖、工具参数和验收用例。</p>
+<h3>46.2 产品假设与胜负次序 <a id="subsection-46-2"></a></h3>
+<p>产品假设 H-ORG：在某些跨阶段、跨会话、存在并行工作与真实反馈的目标上，固定组织比同等基础设施的单个顶尖 Agent 有更高的有效完成能力，或在不降低完成质量的前提下显著减少人类维持工作的负担。H-HANDOVER：保留工作状态与证据能让新模型继承关键判断，而不只是恢复工号和文件。H-USABILITY：配置与维护成本不会吞掉节省的人力。三项均 <strong>awaiting_evidence</strong>。</p>
+<p>评价采用先后次序，不把多个指标加权成一个可任意解释的漂亮总分：</p>
+<ol>
+<li><strong>安全与真实质量先决</strong>：适用不变量成立，独立验收不退化，不造假、不隐瞒人工修补。危险动作被正确阻止不是失败；本应安全执行的动作被无谓阻止需要另外统计。</li>
+<li><strong>长期目标完成能力</strong>：固定目标族、预算/期限上限和外部验收，比较哪些目标真的完成、哪些仍需人接管；记录失败原因，不把基础设施配置缺失造成的对手失败称为模型局限。</li>
+<li><strong>人的总负担</strong>：在同等合格结果下，比较配置、指导、传话、修补、审批、恢复和日常维护的总人工时间，不只看运行中点击次数。</li>
+<li><strong>费用与交付时间护栏</strong>：全部推理、协调、重试、接班和工具成本归账；未能量化的订阅消耗不冒充美元。不能无限加钱加时间来制造“突破”。</li>
+</ol>
+<p>软件试验只能建立软件场景的证据。即使最终观察到只有持久接班有益，也只能得出“接班组件有价值，组织增益尚未成立”；是否把产品改为接班工具须由维护者另行确认，<strong>不得悄悄把原愿景改写为已经成功的新定位</strong>。</p>
+<h3>46.3 长期蓝图、自用与对外试用不是同一发布承诺 <a id="subsection-46-3"></a></h3>
+<p>保留 REQ-01～41 与全部既有工作合同，但按发布层选择实现及验证范围。本版不再把历史每一句“首版”都解释成第一次自用前的全量阻塞。以下 R0～R3 是产品成熟度标签，G0～G4 仍是技术证据门；二者不等于软件版本号，也不等于特定日期必定完成。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>发布层</th>
+<th>可交付体验</th>
+<th>刻意限制</th>
+<th>放行依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R0 可证伪原型</td>
+<td>fake/小预算真实执行，验证消息、状态、接班、停止与基线</td>
+<td>不是用户产品；无无人看守宣称；可先用 CLI 和最小真实状态页</td>
+<td>最高风险接口和真实权限组合有证据，或明确反证</td>
+</tr>
+<tr>
+<td>R1 首个自用版本</td>
+<td>一家公司、一个项目资源、固定四成员；跨阶段工作、直接协作、持久接班、真实验证与可下载交付</td>
+<td>一个合格 Linux/Node 参考工作环境；资料先文本/PNG/JPEG与受控目录/Git导入；手动反馈；无生产发布</td>
+<td>对该支持范围适用的安全/工作流测试全部通过，完成 E-HANDOVER 与短期 E-ORG 证据</td>
+</tr>
+<tr>
+<td>R2 受控试用版本</td>
+<td>目标用户无需作者口头救援能开始；至少一段多天工作；真实反馈和可诊断运维</td>
+<td>少量已测公司/资源/模型组合；受控增添格式、Streamable HTTP和跨后端迁移；不称任意兼容</td>
+<td>E-START/E-ORG/E-HANDOVER，适用跨日、反馈、恢复和总拥有成本检查</td>
+</tr>
+<tr>
+<td>R3 领域与规模扩展</td>
+<td>根据已证实需求扩展内容/研究等领域、更多环境与组织规模</td>
+<td>不预设全部四个月内完成；办公室和动态岗位仍不在范围</td>
+<td>每个领域、执行链、规模有自己的支持矩阵与增益证据</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>R1 保留 Skills、MCP 与 QQ，不把维护者明确要求的能力全部推到将来。</strong> 最小形态是人选定的只读公共 Skill 版本与公司引用、一个经过中介的合格 stdio MCP 服务、确定性 QQ 官方 C2C 主动通知。完整技能库管理、远程 MCP、更多媒体和复杂远程预览在 R2/R3 按范围推进。QQ 尚未取得实际主动投递资格时只允许标明“受监护自用”，不称已经可无人值守；同机通知覆盖限制继续适用。</p>
+<p>R1 只有一个活动公司是用户体验/容量范围，不取消 Company ID、集团边界或跨 scope 拒绝测试。尚不实现的功能从入口隐藏或明确不可用；保留测试为 planned_later，不填 passed，也不将“not applicable to R1”写成永久无须实现。<code>product/RELEASE_SCOPE.json</code> 对每条需求记录 R1/R2/R3 范围与限制，不用 41 个相同的“必做”替代优先级。</p>
+<h3>46.4 一条整体可用的参考组合 <a id="subsection-46-4"></a></h3>
+<p>参考组合 <code>local-team-node@1</code> 由一个版本化清单描述：Linux amd64、已认证 supervisor/隔离方式、同宿主 PostgreSQL、Go 控制面、固定版本 Codex app-server、一个 Node/npm 项目环境、冻结资料/技能、一个受控 MCP 和 Playwright/Chromium 目标应用验证。公司指向可丢弃或授权副本；共享写回限明确的本地集成 ref，无生产密钥和开放公网发布。</p>
+<p><strong>这是一条拟验证的整体组合，不是已经合格的安装包。</strong> 当前所有版本锁、凭据、实验预算和资格均待实测；清单默认 disabled。不能把“每个组件能启动”当作整条组合 restricted。真实执行前必须通过读取范围、凭据/网络边界、停止旧写者、工具映射、消息、接班和验收资格。<a href="../ARCHITECTURE.html#ref-d02">D02</a></p>
+<p>同 harness 换模型至少测试两个获授权的合格配置；跨 harness/供应商应在 R0 就做一个低成本接入探针，避免最后才发现主张不可实现。R1 是否已经达到跨后端级别按实测公布；R2 若声称跨后端工作连续性，就必须有该路径，不能以同 harness 两个模型替代。</p>
+<p>资源限制独立于文件安全资格：订阅模式可有可验证的请求/时间/并发上界而美元费用部分不可见。启动页必须显示 <code>budget_guarantee</code>、已知单位、未知在途责任、保护收尾额和停止行为；用户选择“必须严格美元封顶”但后端不可证实时拒绝此组合，不自动降为估算。API 严格上界也只有在可控制完整调用链并通过尾部消耗测试后才能声明。</p>
+<p><code>trusted_local</code> 可以用于明确接受风险的实验，但不算 restricted 已通过。若可用后端都无法形成满足核心边界的参考组合，应暂停扩充产品，报告 blocker 并修改明确范围/适配方式；不以放宽秘密/预算规则换取绿色演示。</p>
+<h3>46.5 配置应由模板消化，目标与授权仍由人决定 <a id="subsection-46-5"></a></h3>
+<p>默认向导合并为五组用户决定：<strong>目标和项目资料 → 固定团队模板及模型 → 可用环境/工具 → 费用、期限与外部动作边界 → 审阅并创建</strong>。单独启动保持不变；不自动招人、不自动运行探针、不将模板当成真实授权。</p>
+<p>模板给出可解释默认值和角色/工具差异，普通用户不需要逐项理解 epoch、outbox、协议 profile、retry visibility。高级配置折叠但可检查；准备使用的资料目的地、真实账户、外部写目标与费用口径必须在审阅页可见，不藏进“推荐设置”。模板更新仍需版本确认。</p>
+<p>明确区分 <strong>安装配置时间</strong> 与 <strong>每次新使命配置时间</strong>，两者都记入总成本。诊断页给出具体缺项和最小恢复动作，不只是红色 <code>unverified</code>；状态未就绪时可以保存草案并阅读资料，不强迫重新填写公司配置。R1 可接受文档指导的本机部署；R2 要通过未参与设计用户独立设置和运行的实验。</p>
+<h3>46.6 环境前置条件、岗位覆盖和轻量协作 <a id="subsection-46-6"></a></h3>
+<p><strong>基础 Agent 环境和目标项目环境分开。</strong> 准入按任务类型判断，而不是所有任务都要求项目已 ready：</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>工作类型</th>
+<th>必需前置条件</th>
+<th>不要求的前置条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>有界需求探索/规划</td>
+<td>合格模型与读取工具、已授权输入、目标范围和有限预算</td>
+<td>完整目标项目依赖、项目测试 DB、已确定的最终实施计划</td>
+</tr>
+<tr>
+<td>环境准备</td>
+<td>已批准 preparation policy、受控准备执行器、源/锁文件或已批准生成步骤、资源上界</td>
+<td>待准备的目标环境已经 ready</td>
+</tr>
+<tr>
+<td>代码实现</td>
+<td>可安全读写的任务工作副本、合格开发工具；需要运行时再等相关环境</td>
+<td>不依赖该步骤的无关服务已启动</td>
+</tr>
+<tr>
+<td>构建/验证</td>
+<td>指定候选、对应项目环境与服务/输入版本、独立验收规则</td>
+<td>所有业务任务都已完成</td>
+</tr>
+</tbody>
+</table></div>
+<p>程序在启动/计划接受时可创建去重的环境准备请求；<code>environment.ensure</code> 也可触发同一请求。计划缺少某些环境信息可以转成受限探索，不用“没有环境无法生成环境”的循环阻塞掩盖缺失实现。</p>
+<p>固定四岗模板必须有一张<strong>任务类型覆盖表</strong>：规划/澄清、前后端实现、环境计划、回归测试、设计审查、集成验收各有已授权负责人和决定/验收路径。创建前先做结构覆盖检查，模型是否胜任仍需资格测试。没有独立路径的类型明确显示“需要人参与”，不能承诺全自治。</p>
+<p>验证员可在独立测试覆盖层编写回归测试，但不得修改已批准成功标准或可信验收器。开发成员可审核测试补丁的断言质量；该审核不是对其自己生产代码的最终批准。生产候选最终由未参与该候选实现的验证员检查，程序执行受保护的基线验收。高风险任务若要求更强来源分离而四岗覆盖不了，就在任务准入时请求人或拒绝该模式，不自动添加员工，不递归无限“审查审查员”。</p>
+<p><strong>普通协作快速路径</strong>：当前已分配任务范围内的澄清、资料快照、错误定位和小型帮助，可由相关员工直接处理，程序记录责任与因果关系，不必每条请求唤醒规划模型。需要改变正式合同、增加工作范围、改变独立性/资源或新增跨任务依赖时，才沿计划/审批规则升级；依赖变化仍记录版本并检查环，不因走快速路径取消可追踪性。</p>
+<p>认证身份、固定作用域、普通回执关联和工具调用的稳定幂等元信息由可信适配层补入；模型只表达工作意图、目标与证据。工具重放继续使用原稳定调用身份；无法识别是不是重放时进入核对，不自动生成新幂等键。重要请求的 applied 仍需证据，程序不得把省步骤实现为自动“事情办完了”。</p>
+<h3>46.7 Mission 是一个有界目标与授权周期，内部允许多个工作包 <a id="subsection-46-7"></a></h3>
+<p>Company 长期保留，Mission 是该组织当前承担的目标及授权周期，不是每个小功能，也不是整个 Git 仓库永久寿命。一项维护 Mission 可覆盖数个工作包、里程碑和周期职责；<strong>工作包只是现有任务根/分组及其输入范围，不新增一套调度或授权状态机</strong>。</p>
+<p>在现行目标、预算、时间和权限范围内新增功能/修复，可按已批准 intake policy 创建或调整工作包；不需重建公司。实质改变目标或资源边界须由人确认新 MissionRevision/Envelope；超出当前目标但不紧急的工作进入 backlog。一个活跃 Mission 的限制保留，不为并行两个不同使命悄悄复用旧许可。</p>
+<p>达到交付里程碑可以继续进入事先批准的维护期，无需先终结又复活；维护期不在原合同内，则明确创建新的使命授权。已经 terminal 的使命永不直接重开。此规则同时适用于内容运营的期次、研究任务的实验包，不把 WorkPackage 定义成 PR。</p>
+<h3>46.8 模糊目标、日常指导和“先停一下” <a id="subsection-46-8"></a></h3>
+<p>允许用户给出目标简述和有限探索授权，而不预先写完整规格。固定规划岗执行 discovery 工作包：阅读资料、提出少量高影响问题、比较有限方案，输出 GoalContract 草案与近期计划；探索本身有明确交付物、时间/费用上限和禁止外部效果。未知偏好可按用户确认的默认假设研究，影响成功标准/不可逆行动的歧义必须先确认。</p>
+<p>草案被确认后才进入相应实施授权；现有使命可按有界 phase 从 discovery 进入 delivery，仍采用版本化合同，不增加临时岗位。系统可以提出目标和验收建议，不能以“帮你做决定”伪造人已批准。当前信息不足时继续不受影响部分；不要将每个措辞细节都升级成 QQ 接管。</p>
+<p>指导入口提供两个明确的处理选项：<strong>下一工作边界处理</strong>，或 <strong>先暂停选定工作，再处理变更</strong>。第二项由认证管理命令先持久化 hold 与 Guidance 的关联，随后停止新派发/申请中断；不等待模型理解文字才建立暂停请求。范围不清时可向人提供明确的公司级暂停选项，不能自行扩大或缩小暂停范围。界面区分已受理、禁止新派发、在途尚未停止和已隔离；仅发送一段自然语言不等于动作已撤回。</p>
+<p>暂停完成前可能发生的外部效果沿原撤权协议核对。危急时保持独立的易达急停入口，指导功能不取代它。人工补丁交还仍需差异、来源、依赖与测试核对，不因用户点 Resume 就认为旧模型已更新理解。</p>
+<h3>46.9 接班要测理解迁移，也要测合法工作不被误拦 <a id="subsection-46-9"></a></h3>
+<p>E-HANDOVER 除身份/文件/责任对账外，选择真实可检验的关键约束：兼容处理为什么存在、已否定方案为何不适用、哪个同事承诺尚未履行、最新输入替换了什么。故意让新模型面对相似但不相同的后续改动，通过实际产物和隐藏回归检查验证它是否正确运用这些背景。</p>
+<p>答案不能由接班声明自己打分，也不能仅靠匹配摘要中的关键词。记录旧模型断线后零次“临终总结”、新模型读取范围、恢复时间、重复探索、所保留的行为约束和最终结果。恢复来源记录保持程序/模型/人工区分；检查器与测试数据在预注册时冻结。换模型能力不足也是真实结果，不把更换回原模型的补救算成跨模型成功。</p>
+<p>为关键拒绝规则配置 <strong>deny/allow 近邻对照</strong>：未授权源被拒绝，已批准正常依赖可以准备；旧 epoch 不能写，新且已落实权限的执行可以写；无关 FYI 不唤醒，确实可执行的同事请求会唤醒；不完整 issue 被标注，已取得上下文的有效反馈可以推进。误拦由冻结的用例预期或人复核定性，不能由运行模型自行把安全拒绝全称为误报。</p>
+<p>统计 <code>unnecessary_blocker_rate</code>、重复审批、人为等待分钟数和安全拒绝正确率。选择“永远暂停”不可能通过产品验收；为了通过自治指标而删除保护同样失败。</p>
+<h3>46.10 外部反馈、手机接管与维护成本 <a id="subsection-46-10"></a></h3>
+<p><strong>反馈上下文</strong>：GitHub collector 保持只读，发现问题与正式接手分开。正式 triage/修复前取得该 issue 当前正文、状态及有界相关评论；GitHub 提供单 issue 评论读取与分页接口。<a href="../ARCHITECTURE.html#ref-d01">D01</a> 记录评论 ID/修订、覆盖范围/时间、截断原因和权限错误。评论数量或内容超限时不声称完整理解：允许仅观察、请求整理，或选定正文已整理且有人工标记的队列；不得无提示据过时正文直接实施高影响修复。完整 timeline 和远端写回仍不必首发。</p>
+<p><strong>手机接管</strong>：<code>local_management</code> 与 <code>remote_management_qualified</code> 分别展示。本地管理收到 QQ 后可能要回电脑；不能宣传“随时随地处理”。远程模式必须有单独获批的认证、TLS、网络和移动端资格路径，验证从通知定位、登录、查看风险、提交处理、看见真实状态的完整流程；不自动建立公网隧道，也不把 QQ 回复变成管理员命令。</p>
+<p><strong>总拥有成本</strong>：除每次任务的消耗外，记录安装与每周维护分钟、存储净增长、工具/模型更新造成的停工、常见故障恢复、备份与导出所需操作。R2 做至少一次跨日正常运行和一次受控更新/恢复，不用“系统已安全停住”等同低维护成本。试用支持过程也记人工投入，不能作者在后台修了系统却称用户零接管。</p>
+<p>退出路径复用公司导出/备份，但应提供阅读友好的使命、任务、决策、产物与证据清单，不要求必须继续运行本产品才能理解已完成工作；导出不含秘密，并明示缺失或受限数据。不为可用退出而保证其他系统可原生恢复所有执行状态。</p>
+<h3>46.11 三项先行实验与投入决策 <a id="subsection-46-11"></a></h3>
+<p>下列数值是 <strong>提出的首轮判定阈值</strong>，不是行业事实或已测成绩；<code>product/EXPERIMENTS.json</code> 以 awaiting_owner_confirmation 保存。所有真实模型/工具费用另有用户预算批准；预算为 null/未授权时只允许静态或 fake 演练。改阈值必须在新实验前留理由、产生新实验版本，不事后调整历史结论。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>实验</th>
+<th>最小试验设计</th>
+<th>建议判定与失败处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E-START 首次使用</td>
+<td>至少3名未参与设计的目标用户；先提供一个他们能够判断成果的已支持任务，再记录本机安装和使命建立/交付；不要求懂内部协议</td>
+<td>合格参考宿主上至少2/3可按文档独立完成；首次安装人工操作候选上限45分钟，重复使命配置15分钟；下载/外部等待与人工操作分记，超限先修默认值和诊断</td>
+</tr>
+<tr>
+<td>E-ORG 组织价值</td>
+<td>预注册3类跨阶段目标，每配置重复2次；A强单体、B顺序审查、D固定组织同数据/工具/恢复与上限；C现有方案可另复现</td>
+<td>不降低验收与适用安全；按下述两条胜路之一，否则不扩大岗位/领域/规模；样本只支持本地产品决策</td>
+</tr>
+<tr>
+<td>E-HANDOVER 行为接班</td>
+<td>至少3个不同目标场景、每场景2次切换，含无临终总结、关键约束和新变更</td>
+<td>状态/权限关键断言全部满足，6次中建议至少5次保留所测关键行为并交付合格后续结果；未通过先修记录/构造/模型资格，不靠工号一致宣称成功</td>
+</tr>
+</tbody>
+</table></div>
+<p>E-ORG 始终单独报告相对 A（强单体）的结果，同时以 A/B 的较强配置作发布参考：比较规则须预注册，先按全组目标合格完成数、再按质量、再按总人工负担选定一个参考配置，不逐个目标拼接对手，也不事后选择最差对手。第一条胜路为<strong>能力扩展</strong>：D 至少多完成一个目标族（该族两次均合格），且对参考已经能完成的目标不出现质量退化；同时不超过相同的绝对费用/时间上限。第二条胜路为<strong>负担降低</strong>：在合格目标数不低于参考时，对共同完成的目标，含所有尝试的人力中位数至少降低30%，可比的总成本与日历耗时各不高于参考的1.5倍。若基线人工已接近零，不计算夸大百分比，转而检查完成能力或报告无优势。</p>
+<p>每个目标聚合该配置的所有成功/失败尝试，不按“只看成功那一次”计费；人工安装既单列又按预注册使用窗口摊销，不把一次性研发成本混入使用成本，也不删除使用所需维护成本。严格比较预算使用相同已批准上限；费用不可比时只能给出资源分项和受限结论，不能宣称已通过货币成本护栏。检查较弱对手失败是否来自工具/输入权限不平等、不可用环境或人为差异；存在不可消除偏差时结论为 inconclusive。</p>
+<p>独立验收/盲评、场景顺序与执行配置、停机归因和人工援助记录在运行前冻结。不得将样例检查器的答案、对照运行的解法或新模型测验答案泄漏到被测 Agent。发现严重越权、双写或错误接受立即停止相应模式；没有持续付费“凑够成功样本”的许可。</p>
+<p>**决策不是只有继续：**有初步组织增益则迭代同一目标族；只有接班增益则收缩实验以改善协作并向维护者报告；全部无收益则暂停扩展、考虑贡献已有项目/更改方案；要改成不同产品必须由维护者决定。预算不足或样本缺失标 inconclusive，不写成功也不当成已证明无效。</p>
+<h3>46.12 四个月时间盒重新以学习顺序组织 <a id="subsection-46-12"></a></h3>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>时间盒</th>
+<th>优先回答的问题</th>
+<th>可不同时完成的部分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第1–2周</td>
+<td>上游复现、一个整体受控组合、消息/异模型接班与成本能否成立</td>
+<td>不要求所有解析器、全部 UI 和全部第三方 MCP</td>
+</tr>
+<tr>
+<td>第3–5周</td>
+<td>R1 最小真实纵向路径与冷启动准备；尽早首次 E-HANDOVER/E-ORG</td>
+<td>不以“要先建完26份契约所有对象”延期第一次真实工作</td>
+</tr>
+<tr>
+<td>第6–9周</td>
+<td>修复真实失败、降低配置/协调成本、完成可重复 R1</td>
+<td>没有增益不增加员工/公司数；高级公共库和多格式可后排</td>
+</tr>
+<tr>
+<td>第10–12周</td>
+<td>有条件进入 R2；E-START、反馈上下文、跨后端及多天实验</td>
+<td>若核心失败，继续证实/否定核心，不强赶对外试用</td>
+</tr>
+<tr>
+<td>第13–16周</td>
+<td>稳定性、运维和受控扩域取舍；交付证据与已知限制</td>
+<td>不保证全部 R2 或 R3 功能；内容模板可先做领域契约验证</td>
+</tr>
+</tbody>
+</table></div>
+<p>每次接受新能力，要给出它改善哪个目标/指标、预计工程与验证工作、引入的维护负担，以及本时间盒推迟什么。不再只写“在原阶段补上、不影响工期”。延期功能保留契约；减少范围不减少被交付能力的安全、恢复或真假状态标准。</p>
+<h3>46.13 产品审查登记与最小新增验收 <a id="subsection-46-13"></a></h3>
+<p>本轮17项 PM 审查按同一编号记录在 <code>product/REVIEW_DISPOSITIONS.json</code>；用户对首要目标的纠正记录为 UX-01，并改变 PM-01 的处置：<strong>拒绝将首要用户限缩为程序员，接受明确长期目标类别及第一验证场景</strong>。不把每项问题都变成新微服务或新增员工；主要采用重排范围、修订既有合同、配对测试和真实实验。</p>
+<p>保留原220项计划；增加12项 PP 产品场景，复用现有fixture和接口，而不是再复制一套底层测试。E-START/E-ORG/E-HANDOVER 是组织这些场景的实验协议，不与用例数重复相加。</p>
+<div aria-label="可横向滚动的规范表格" class="table-wrap" tabindex="0"><table>
+<thead>
+<tr>
+<th>测试ID</th>
+<th>场景</th>
+<th>必须观察的行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PP-01</td>
+<td>首要目标与发布范围</td>
+<td>一般长期组织用户不被改成仅程序员；R1限制和未实现能力可查，固定员工不自动生成</td>
+</tr>
+<tr>
+<td>PP-02</td>
+<td>无作者帮助创建与启动</td>
+<td>五组决定可完成；缺项可诊断；模板不自授权限；真实人工时间记录</td>
+</tr>
+<tr>
+<td>PP-03</td>
+<td>冷启动及模糊目标</td>
+<td>基础Agent可探索/准备；目标依赖未ready不循环阻塞；探索有界且不自改成功标准</td>
+</tr>
+<tr>
+<td>PP-04</td>
+<td>固定团队责任覆盖</td>
+<td>必需任务有负责人/独立检查路径；缺路径明确需要人；测试作者不自批验收政策</td>
+</tr>
+<tr>
+<td>PP-05</td>
+<td>普通协作快速路径</td>
+<td>范围内协作不强制唤醒规划员；越范围仍升级；元信息自动化不把ACK当applied</td>
+</tr>
+<tr>
+<td>PP-06</td>
+<td>同使命新工作包</td>
+<td>维护与小功能在原授权内并存；超范围留待批准；终态不复活</td>
+</tr>
+<tr>
+<td>PP-07</td>
+<td>实际判断的跨模型接班</td>
+<td>行为回归与新任务检验关键约束；不只看身份/文件/关键词；全部费用和失败归账</td>
+</tr>
+<tr>
+<td>PP-08</td>
+<td>安全拒绝与合法近邻</td>
+<td>越界阻止且正常工作能继续；不必要阻塞独立统计，不靠永远暂停获得高分</td>
+</tr>
+<tr>
+<td>PP-09</td>
+<td>费用口径与紧急指导</td>
+<td>不可证美元硬限不伪装；保护额度可见；先暂停选项有真实屏障回执，不等待LLM理解</td>
+</tr>
+<tr>
+<td>PP-10</td>
+<td>反馈评论上下文</td>
+<td>正式接手前读取有界评论；截断/403/修订可见；不据旧正文忽略更正</td>
+</tr>
+<tr>
+<td>PP-11</td>
+<td>手机接管与可维护退出</td>
+<td>本机/远程范围诚实；合格远程流程可处理后验证结果；更新/导出和维护时间可记录</td>
+</tr>
+<tr>
+<td>PP-12</td>
+<td>组织增益与停止决策</td>
+<td>对手不被削弱；目标/全部尝试/成本与人工时间冻结统计；无增益不扩大范围；不改写愿景自称获胜</td>
+</tr>
+</tbody>
+</table></div>
+<p>PP 定义待执行而非已运行；产品假设不得因本文件写完而关闭。<code>product/DECISIONS.json</code> 保存处置，<code>product/RELEASE_SCOPE.json</code> 保存范围，<code>product/EXPERIMENTS.json</code> 保存待确认协议；主文档是规则真相，这些是机器可检验的索引/设计样本，不是新运行时数据库。</p>
+<h3>46.14 本版结论与残余风险 <a id="subsection-46-14"></a></h3>
+<p>本版已经决定：保留广义长期组织目标；以软件作为第一证据路径；R1/R2/R3分层；减少配置与协议手续；修正准备前置、责任覆盖、工作包、指导暂停和反馈上下文；用三项实验和维护成本决定扩展。用户确认了目标，不代表已经批准真实费用、账户连接、测试阈值或全部发布结果。</p>
+<p>仍待证实：真实执行组合能否受控、团队是否比合格顶尖单体更有效、接班是否保留关键理解、目标用户能否轻松操作、是否可承受长期成本。限制不能靠文档“关闭”，也不能靠不断追加功能绕开。<strong>这是产品决策修订，不是完成了一次独立产品试验；对抗审查仍由同一助手切换视角完成，不冒充多位独立专家投票。</strong></p>
+<blockquote>
+<p><strong>最终方向不变：造一个能接住长期复杂目标的虚拟组织。分阶段交付是为了尽快检验组织是否真正强于单体的局限，而不是为了把愿景缩成更容易宣布成功的小工具。</strong></p>
+</blockquote>
+</article><div class="print-note">离线阅读 · 无外部字体与渲染依赖 · 所有运行资格以真实证据为准</div></main></div><script>
+const sidebar=document.getElementById('sidebar');const menu=document.getElementById('menu');
+menu.addEventListener('click',()=>{const v=sidebar.classList.toggle('open');menu.setAttribute('aria-expanded',String(v));});
+document.getElementById('theme').addEventListener('click',()=>{document.body.classList.toggle('dark');});
+document.getElementById('filter').addEventListener('input',e=>{let q=e.target.value.trim().toLowerCase();document.querySelectorAll('.navgroup').forEach(g=>{let match=g.textContent.toLowerCase().includes(q);g.hidden=!match;if(q&&match)g.open=true;g.querySelectorAll('.subnav a').forEach(a=>{a.hidden=q&&!a.textContent.toLowerCase().includes(q);});});});
+sidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{sidebar.classList.remove('open');menu.setAttribute('aria-expanded','false');}));
+function highlight(){let key=decodeURIComponent(location.hash.slice(1));sidebar.querySelectorAll('a').forEach(a=>{let active=a.getAttribute('href')==='#'+key;a.toggleAttribute('aria-current',active);if(active){let g=a.closest('details');if(g)g.open=true;}});}window.addEventListener('hashchange',highlight);highlight();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sidebar.classList.remove('open');menu.setAttribute('aria-expanded','false');}});
+</script></body></html>

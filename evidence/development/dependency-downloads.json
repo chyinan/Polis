@@ -1,0 +1,18 @@
+[
+  [
+    "https://go.dev/dl/go1.26.8.linux-amd64.tar.gz",
+    "d0f743b33e8d8945e6b1f432edd15785c70507121d6e2a723b21285eddf8b57b"
+  ],
+  [
+    "https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-18/postgresql-18_18.6-1.pgdg22.04+2_amd64.deb",
+    "2aab00b13babd3d9abc257bc5f6b00efa1f7c27cda071413f358d2e0cdb84420"
+  ],
+  [
+    "https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-18/postgresql-client-18_18.6-1.pgdg22.04+2_amd64.deb",
+    "ad4e491adceaf1453162c62691473ace78ed81ab20f50d11b344a793d13ed4bd"
+  ],
+  [
+    "https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-18/libpq5_18.6-1.pgdg22.04+2_amd64.deb",
+    "8af0b458834e219f3aa7c904fa1237ea484950486e3165a3a90204878e060530"
+  ]
+]

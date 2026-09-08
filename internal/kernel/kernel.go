@@ -1,0 +1,250 @@
+// pattern: Imperative Shell
+package kernel
+
+import (
+	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"os"
+	"polis/internal/core"
+	"polis/internal/dbgen"
+	"strings"
+	"sync"
+)
+
+type Scope struct{ company string }
+type Binding struct {
+	scope                 Scope
+	employee, incarnation string
+	epoch                 int64
+}
+type Receipt struct {
+	ID     string `json:"id"`
+	Status string `json:"status"`
+}
+type Task struct {
+	ID, Mission, Owner, Kind, State string
+	Generation                      int64
+}
+type Obligation struct{ ID, State string }
+type Artifact struct{ ID, Digest, State, Verdict string }
+type Snapshot struct {
+	MissionState string
+	CompanySeq   int64
+	Tasks        []Task
+	Employees    []string
+	Messages     []string
+	Obligations  []Obligation
+	Artifacts    []Artifact
+	FakeClaims   int64
+}
+type Kernel struct {
+	pool              *pgxpool.Pool
+	lease             *pgxpool.Conn
+	leaseMu           sync.Mutex
+	incarnation, root string
+}
+
+// Open never migrates schema. Only in-process fake work can be recovered in R0.
+func Open(ctx context.Context, dsn, root string) (*Kernel, error) {
+	cfg, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		return nil, err
+	}
+	if !strings.HasPrefix(cfg.ConnConfig.Database, "polis_r0_") {
+		return nil, core.Denied
+	}
+	cfg.MaxConns = 8
+	p, err := pgxpool.NewWithConfig(ctx, cfg)
+	if err != nil {
+		return nil, err
+	}
+	k := &Kernel{pool: p, incarnation: newID(), root: root}
+	fail := func(e error) (*Kernel, error) { k.Close(); return nil, e }
+	k.lease, err = p.Acquire(ctx)
+	if err != nil {
+		return fail(err)
+	}
+	var locked bool
+	err = k.lease.QueryRow(ctx, "SELECT pg_try_advisory_lock(714209831)").Scan(&locked)
+	if err != nil {
+		return fail(err)
+	}
+	if !locked {
+		return fail(core.Denied)
+	}
+	var version int
+	var super bool
+	err = p.QueryRow(ctx, "SELECT current_setting('server_version_num')::int,rolsuper FROM pg_roles WHERE rolname=current_user").Scan(&version, &super)
+	if err != nil {
+		return fail(err)
+	}
+	if version < 180000 || version >= 190000 || super {
+		return fail(core.Denied)
+	}
+	var schema int64
+	err = p.QueryRow(ctx, "SELECT max(version_id) FROM goose_db_version WHERE is_applied").Scan(&schema)
+	if err != nil {
+		return fail(err)
+	}
+	if schema != 1 {
+		return fail(fmt.Errorf("incompatible schema: %d", schema))
+	}
+	if err = os.MkdirAll(root, 0700); err != nil {
+		return fail(err)
+	}
+	if err = k.txRecover(ctx); err != nil {
+		return fail(err)
+	}
+	return k, nil
+}
+func (k *Kernel) Close() {
+	if k == nil {
+		return
+	}
+	k.leaseMu.Lock()
+	if k.lease != nil {
+		_ = k.lease.Conn().Close(context.Background())
+		k.lease.Release()
+		k.lease = nil
+	}
+	k.leaseMu.Unlock()
+	if k.pool != nil {
+		k.pool.Close()
+	}
+}
+
+// LocalScope is a trusted local OS management entry, never offered to workers.
+func (k *Kernel) LocalScope(id string) Scope { return Scope{id} }
+func newID() string {
+	b := make([]byte, 16)
+	if _, e := rand.Read(b); e != nil {
+		panic(e)
+	}
+	return hex.EncodeToString(b)
+}
+func fingerprint(v any) string {
+	b, e := json.Marshal(v)
+	if e != nil {
+		panic(e)
+	}
+	s := sha256.Sum256(b)
+	return hex.EncodeToString(s[:])
+}
+
+func (k *Kernel) guard(ctx context.Context, tx pgx.Tx, s Scope, b *Binding) error {
+	if !core.ValidID(s.company) {
+		return core.Malformed
+	}
+	k.leaseMu.Lock()
+	alive := k.lease != nil
+	var e error
+	if alive {
+		e = k.lease.Ping(ctx)
+	}
+	k.leaseMu.Unlock()
+	if !alive || e != nil {
+		return core.StaleEpoch
+	}
+	var incarnation string
+	if e = tx.QueryRow(ctx, "SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE").Scan(&incarnation); e != nil {
+		return e
+	}
+	if incarnation != k.incarnation {
+		return core.StaleEpoch
+	}
+	if _, e = dbgen.New(tx).LockCompany(ctx, s.company); errors.Is(e, pgx.ErrNoRows) {
+		return core.OutOfScope
+	} else if e != nil {
+		return e
+	}
+	if b != nil {
+		if b.scope != s || b.incarnation != incarnation {
+			return core.StaleEpoch
+		}
+		var epoch int64
+		if e = tx.QueryRow(ctx, "SELECT epoch FROM employees WHERE company_id=$1 AND id=$2", s.company, b.employee).Scan(&epoch); errors.Is(e, pgx.ErrNoRows) {
+			return core.OutOfScope
+		} else if e != nil {
+			return e
+		}
+		if epoch != b.epoch {
+			return core.StaleEpoch
+		}
+	}
+	return nil
+}
+
+// TXWrite serializes this small slice at the company lifecycle guard. Its
+// callback only performs database operations. The event head is advanced last.
+func (k *Kernel) TXWrite(ctx context.Context, s Scope, b *Binding, key, op string, input any, fn func(pgx.Tx) (Receipt, error)) (Receipt, error) {
+	if !core.ValidID(key) {
+		return Receipt{}, core.Malformed
+	}
+	tx, e := k.pool.Begin(ctx)
+	if e != nil {
+		return Receipt{}, e
+	}
+	defer tx.Rollback(ctx)
+	if e = k.guard(ctx, tx, s, b); e != nil {
+		return Receipt{}, e
+	}
+	actor := "local-owner"
+	if b != nil {
+		actor = b.employee
+	}
+	hash := fingerprint(struct {
+		Op    string
+		Input any
+	}{op, input})
+	var old string
+	var raw []byte
+	e = tx.QueryRow(ctx, "SELECT fingerprint,result FROM receipts WHERE company_id=$1 AND actor=$2 AND key=$3", s.company, actor, key).Scan(&old, &raw)
+	if e == nil {
+		if old != hash {
+			return Receipt{}, core.Conflict
+		}
+		var r Receipt
+		e = json.Unmarshal(raw, &r)
+		return r, e
+	}
+	if !errors.Is(e, pgx.ErrNoRows) {
+		return Receipt{}, e
+	}
+	r, e := fn(tx)
+	if e != nil {
+		return Receipt{}, e
+	}
+	raw, e = json.Marshal(r)
+	if e != nil {
+		return Receipt{}, e
+	}
+	if _, e = tx.Exec(ctx, "INSERT INTO receipts VALUES($1,$2,$3,$4,$5)", s.company, actor, key, hash, raw); e != nil {
+		return Receipt{}, e
+	}
+	if e = appendEvent(ctx, tx, s, op, r); e != nil {
+		return Receipt{}, e
+	}
+	if e = tx.Commit(ctx); e != nil {
+		return Receipt{}, e
+	}
+	return r, nil
+}
+func appendEvent(ctx context.Context, tx pgx.Tx, s Scope, kind string, payload any) error {
+	var seq int64
+	if e := tx.QueryRow(ctx, "UPDATE companies SET company_seq=company_seq+1 WHERE id=$1 RETURNING company_seq", s.company).Scan(&seq); e != nil {
+		return e
+	}
+	raw, e := json.Marshal(payload)
+	if e != nil {
+		return e
+	}
+	_, e = tx.Exec(ctx, "INSERT INTO events(company_id,company_seq,kind,payload) VALUES($1,$2,$3,$4)", s.company, seq, kind, raw)
+	return e
+}

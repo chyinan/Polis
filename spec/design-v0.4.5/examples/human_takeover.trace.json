@@ -1,0 +1,18 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "results": "not_run",
+  "steps": [
+    "request_scoped_takeover",
+    "await_actual_old_writer_stop",
+    "create_human_copy",
+    "import_patch_against_base",
+    "conflict_or_new_snapshot",
+    "invalidate_affected_evidence",
+    "release_lease_and_explicit_resume"
+  ],
+  "grants_during_pending": []
+}

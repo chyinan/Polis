@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:skill-manifest:0.4.4",
+  "type": "object",
+  "required": [
+    "document_version",
+    "kind",
+    "package_id",
+    "scope",
+    "revision",
+    "skill_ref",
+    "package_digest",
+    "files",
+    "source_qualification",
+    "approval_status",
+    "execution_enabled",
+    "scripts_enabled",
+    "grants"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "kind": {
+      "const": "authored_skill_fixture_not_approved_for_execution"
+    },
+    "package_id": {
+      "const": "contract-review"
+    },
+    "scope": {
+      "const": "group"
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "skill_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "package_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "source_qualification": {
+      "const": "fixture_only"
+    },
+    "approval_status": {
+      "const": "draft"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "scripts_enabled": {
+      "const": false
+    },
+    "grants": {
+      "type": "array",
+      "maxItems": 0
+    }
+  }
+}

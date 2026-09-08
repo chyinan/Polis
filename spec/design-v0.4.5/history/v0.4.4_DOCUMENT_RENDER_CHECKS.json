@@ -1,0 +1,412 @@
+{
+  "document_version": "0.4.4",
+  "checked_on": "2026-09-08",
+  "kind": "offline_document_reader_only",
+  "status": "pass",
+  "viewports_tested": [
+    1440,
+    390,
+    320
+  ],
+  "reader_count": 7,
+  "render_cases": 21,
+  "assertion_count": 168,
+  "export_main_link_resolves_on_filesystem": true,
+  "render_transport": "Playwright set_content with external requests blocked; file navigation blocked by container browser policy",
+  "results": [
+    {
+      "reader": "ARCHITECTURE.html",
+      "viewport": 1440,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 163015,
+      "scroll_width": 1440,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "ARCHITECTURE.html",
+      "viewport": 390,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 163015,
+      "scroll_width": 390,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "ARCHITECTURE.html",
+      "viewport": 320,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 163015,
+      "scroll_width": 320,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "ui/FRONTEND_SPEC.html",
+      "viewport": 1440,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 15082,
+      "scroll_width": 1440,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "ui/FRONTEND_SPEC.html",
+      "viewport": 390,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 15082,
+      "scroll_width": 390,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "ui/FRONTEND_SPEC.html",
+      "viewport": 320,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 15082,
+      "scroll_width": 320,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "preflight/PREFLIGHT_SPEC.html",
+      "viewport": 1440,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 18414,
+      "scroll_width": 1440,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "preflight/PREFLIGHT_SPEC.html",
+      "viewport": 390,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 18414,
+      "scroll_width": 390,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "preflight/PREFLIGHT_SPEC.html",
+      "viewport": 320,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 18414,
+      "scroll_width": 320,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "preflight/QQ_NOTIFICATION_SPEC.html",
+      "viewport": 1440,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 7394,
+      "scroll_width": 1440,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "preflight/QQ_NOTIFICATION_SPEC.html",
+      "viewport": 390,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 7394,
+      "scroll_width": 390,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "preflight/QQ_NOTIFICATION_SPEC.html",
+      "viewport": 320,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 7394,
+      "scroll_width": 320,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "audit/AUDIT_REPORT.html",
+      "viewport": 1440,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 4558,
+      "scroll_width": 1440,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "audit/AUDIT_REPORT.html",
+      "viewport": 390,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 4558,
+      "scroll_width": 390,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "audit/AUDIT_REPORT.html",
+      "viewport": 320,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 4558,
+      "scroll_width": 320,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "capabilities/CAPABILITY_SPEC.html",
+      "viewport": 1440,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 15023,
+      "scroll_width": 1440,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "capabilities/CAPABILITY_SPEC.html",
+      "viewport": 390,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 15023,
+      "scroll_width": 390,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "capabilities/CAPABILITY_SPEC.html",
+      "viewport": 320,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 15023,
+      "scroll_width": 320,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "workflows/WORKFLOW_SPEC.html",
+      "viewport": 1440,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 16270,
+      "scroll_width": 1440,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "workflows/WORKFLOW_SPEC.html",
+      "viewport": 390,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 16270,
+      "scroll_width": 390,
+      "status": "pass",
+      "errors": []
+    },
+    {
+      "reader": "workflows/WORKFLOW_SPEC.html",
+      "viewport": 320,
+      "checks": {
+        "content_present": true,
+        "no_document_horizontal_overflow": true,
+        "unique_dom_ids": true,
+        "menu_keyboard": true,
+        "filter": true,
+        "theme": true,
+        "no_script_errors": true,
+        "no_external_asset_requests": true
+      },
+      "article_characters": 16270,
+      "scroll_width": 320,
+      "status": "pass",
+      "errors": []
+    }
+  ],
+  "not_tested": [
+    "React product UI",
+    "target-project application",
+    "screen-reader/full WCAG compliance",
+    "Agent/model execution",
+    "PostgreSQL/MCP/QQ/GitHub runtime integration"
+  ],
+  "note": "Browser checks cover generated documentation only; screenshots are documentation, not product screenshots.",
+  "manual_visual_review": {
+    "status": "pass",
+    "views": [
+      "workflow intake at 1440px",
+      "human guidance at 390px"
+    ],
+    "observed": "Readable headings, body and local-scroll tables; no overlapping text. This is document review, not product aesthetic acceptance."
+  }
+}

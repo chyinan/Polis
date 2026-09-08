@@ -1,0 +1,114 @@
+{
+  "document_version": "0.4.5",
+  "kind": "product_plan_not_results",
+  "tests": [
+    {
+      "test_id": "PP-01",
+      "scenario": "首要目标与发布范围",
+      "expected": "一般长期组织用户不被改成仅程序员；R1限制和未实现能力可查，固定员工不自动生成",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-02",
+      "scenario": "无作者帮助创建与启动",
+      "expected": "五组决定可完成；缺项可诊断；模板不自授权限；真实人工时间记录",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-03",
+      "scenario": "冷启动及模糊目标",
+      "expected": "基础Agent可探索/准备；目标依赖未ready不循环阻塞；探索有界且不自改成功标准",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-04",
+      "scenario": "固定团队责任覆盖",
+      "expected": "必需任务有负责人/独立检查路径；缺路径明确需要人；测试作者不自批验收政策",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-05",
+      "scenario": "普通协作快速路径",
+      "expected": "范围内协作不强制唤醒规划员；越范围仍升级；元信息自动化不把ACK当applied",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-06",
+      "scenario": "同使命新工作包",
+      "expected": "维护与小功能在原授权内并存；超范围留待批准；终态不复活",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-07",
+      "scenario": "实际判断的跨模型接班",
+      "expected": "行为回归与新任务检验关键约束；不只看身份/文件/关键词；全部费用和失败归账",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-08",
+      "scenario": "安全拒绝与合法近邻",
+      "expected": "越界阻止且正常工作能继续；不必要阻塞独立统计，不靠永远暂停获得高分",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-09",
+      "scenario": "费用口径与紧急指导",
+      "expected": "不可证美元硬限不伪装；保护额度可见；先暂停选项有真实屏障回执，不等待LLM理解",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-10",
+      "scenario": "反馈评论上下文",
+      "expected": "正式接手前读取有界评论；截断/403/修订可见；不据旧正文忽略更正",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-11",
+      "scenario": "手机接管与可维护退出",
+      "expected": "本机/远程范围诚实；合格远程流程可处理后验证结果；更新/导出和维护时间可记录",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    },
+    {
+      "test_id": "PP-12",
+      "scenario": "组织增益与停止决策",
+      "expected": "对手不被削弱；目标/全部尝试/成本与人工时间冻结统计；无增益不扩大范围；不改写愿景自称获胜",
+      "primary_contract": "PRODUCT-CHARTER",
+      "execution_status": "not_run",
+      "test_level": "product_behavior_or_experiment",
+      "spec_anchor": "section-46"
+    }
+  ]
+}

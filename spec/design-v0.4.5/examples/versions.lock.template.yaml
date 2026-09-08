@@ -1,0 +1,48 @@
+document_version: 0.4.5
+kind: compatibility_template_not_a_completed_lock
+execution_enabled: false
+qualification_status: unverified
+selected_stack:
+  language: Go
+  database: PostgreSQL
+  database_major: 18
+  driver_family: pgx/v5
+  sql_generation: sqlc
+  migration_family: goose/v3
+  frontend:
+  - React
+  - TypeScript
+  - Vite
+  - TanStack Query
+  transport:
+  - HTTP
+  - SSE
+  reference_platform: linux/amd64
+  package_manager: npm
+pins:
+  go_toolchain: null
+  postgres_patch: null
+  postgres_image_digest: null
+  pgx: null
+  sqlc: null
+  goose: null
+  node_lts: null
+  npm: null
+  frontend_lock_sha256: null
+  harness_version: null
+  harness_schema_sha256: null
+  worker_image_digest: null
+  mcp_go_sdk: null
+  local_mcp_service: null
+required_evidence:
+- G0-DB
+- G0-EXEC
+- G0-HANDOVER
+- G0-OPS
+- G0-BASELINE
+fallback_databases: []
+floating_latest_allowed: false
+capability_protocol_targets:
+- '2026-07-28'
+- '2025-11-25'
+capability_protocol_verified: []

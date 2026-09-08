@@ -1,0 +1,14 @@
+sequenceDiagram
+  participant H as 人
+  participant C as 控制面
+  participant S as Supervisor
+  participant W as 固定员工
+  H->>C: 请求指定工作区接管
+  C->>S: 排空或隔离旧写者
+  S-->>C: 实际停止/隔离回执
+  C-->>H: 受控副本与基线
+  H->>C: 补丁与交还请求
+  C->>C: 核对基线/差异/失效证据
+  C->>S: 当前epoch重新授权
+  S-->>C: 能力落实回执
+  C->>W: 新上下文与明确恢复

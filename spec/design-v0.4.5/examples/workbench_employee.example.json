@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "execution_enabled": false,
+  "meta": {
+    "company_id": "co-demo",
+    "entity_revision": "9007199254740993",
+    "snapshot_cursor": "opaque-preview-cursor",
+    "observed_at": "2026-09-07T02:00:00Z",
+    "data_mode": "simulated",
+    "freshness": "fresh"
+  },
+  "employee": {
+    "employee_id": "backend-01",
+    "role": "backend_engineer",
+    "role_revision": "4",
+    "display_name": "后端工程师"
+  },
+  "status": {
+    "primary": "sleeping",
+    "active_model_requests": 0,
+    "in_flight_tools": 1,
+    "reason": "暂无新的可执行推理任务；已派发测试仍在运行"
+  },
+  "model_binding": {
+    "desired_profile_id": "profile-B",
+    "active_profile_id": null,
+    "activation": "on_next_real_work"
+  },
+  "responsibilities": {
+    "open_obligations": 2,
+    "current_task_id": "task-demo"
+  },
+  "usage": {
+    "quality": "unavailable",
+    "amount_microunits": null,
+    "currency": "USD",
+    "note": "设计样本：未获得费用数据，不代表免费"
+  },
+  "allowed_actions": [
+    "view_evidence"
+  ],
+  "capabilities": {
+    "binding_ref": "fixture://cap/backend-01-1",
+    "binding_revision": "1",
+    "configuration": "draft",
+    "provisioning": "unprovisioned",
+    "qualification": "unverified",
+    "workspaces": [],
+    "selected_skill_count": 1,
+    "active_tool_calls": 0,
+    "mcp_connections": "not_started",
+    "real_calls_allowed": false
+  }
+}

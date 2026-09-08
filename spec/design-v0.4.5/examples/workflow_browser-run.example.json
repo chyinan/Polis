@@ -1,0 +1,22 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "reference_backend": "playwright_chromium_isolated",
+  "browser_version": null,
+  "target_endpoint": null,
+  "target_service_generation": null,
+  "candidate_revision": null,
+  "preview_enabled": false,
+  "shares_management_origin": false,
+  "shares_management_cookies": false,
+  "uses_personal_browser": false,
+  "control_network_access": false,
+  "network_destinations": [],
+  "steps": [],
+  "evidence_refs": [],
+  "model_vision_delivery": "not_sent",
+  "result": "not_run"
+}

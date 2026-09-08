@@ -1,0 +1,39 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "company_id": "co-software-example",
+  "mission_id": "mis-pagination-example",
+  "auto_start_mission": false,
+  "external_processing_enabled": false,
+  "formats": [
+    "text_utf8",
+    "png",
+    "jpeg",
+    "pdf_text_and_page",
+    "csv",
+    "zip_project",
+    "git_snapshot"
+  ],
+  "assets": [
+    {
+      "asset_ref": "input:design-v1",
+      "kind": "image",
+      "source_hash": null,
+      "status": "not_uploaded",
+      "model_delivery_status": "not_sent",
+      "representation_refs": []
+    }
+  ],
+  "limits_are_test_parameters": true,
+  "limits": {
+    "upload_bytes": 26214400,
+    "unpacked_bytes": 209715200,
+    "archive_entries": 1000,
+    "pdf_pages": 200,
+    "image_pixels": 40000000
+  },
+  "secrets_included": false
+}

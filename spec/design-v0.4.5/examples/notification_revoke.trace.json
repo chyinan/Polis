@@ -1,0 +1,32 @@
+{
+  "document_version": "0.4.5",
+  "results": "not_run",
+  "send_enabled": false,
+  "cases": [
+    {
+      "order": [
+        "db_down",
+        "owner_local_freeze",
+        "sender_freeze_persisted",
+        "old_capsule_send"
+      ],
+      "expected": "reject_no_new_send"
+    },
+    {
+      "order": [
+        "permit_consumed",
+        "freeze_effective",
+        "late_provider_accept"
+      ],
+      "expected": "listed_inflight_not_promised_recalled"
+    },
+    {
+      "order": [
+        "sender_restart",
+        "db_down",
+        "old_capsule_present"
+      ],
+      "expected": "offline_capsule_invalid_no_reactivation"
+    }
+  ]
+}

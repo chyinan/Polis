@@ -1,0 +1,47 @@
+{
+  "document_version": "0.4.5",
+  "design_kind": "workflow_fixture_not_runtime_config",
+  "execution_enabled": false,
+  "pay_enabled": false,
+  "qualification": "unverified",
+  "results": "not_run",
+  "trace_kind": "hypothetical_normal_workflow",
+  "fixture_inputs": "To be created and hashed before runtime test; no fake hash values.",
+  "steps": [
+    {
+      "step": 1,
+      "stage": "intake",
+      "planned_assertion": "原件/表示/模型输入不同状态"
+    },
+    {
+      "step": 2,
+      "stage": "environment",
+      "planned_assertion": "批准环境内准备，控制DB不暴露"
+    },
+    {
+      "step": 3,
+      "stage": "work",
+      "planned_assertion": "固定成员直接通信与版本产物"
+    },
+    {
+      "step": 4,
+      "stage": "browser",
+      "planned_assertion": "实例正确、冻结输入、真实证据"
+    },
+    {
+      "step": 5,
+      "stage": "guidance",
+      "planned_assertion": "只更新受影响工作，不自授新权"
+    },
+    {
+      "step": 6,
+      "stage": "delivery",
+      "planned_assertion": "可下载固定清单且不虚报user acceptance"
+    },
+    {
+      "step": 7,
+      "stage": "feedback",
+      "planned_assertion": "有效维护使命处理；终态只保存backlog"
+    }
+  ]
+}

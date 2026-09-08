@@ -1,0 +1,54 @@
+{
+  "document_version": "0.4.5",
+  "status": "source_review_only",
+  "sources": [
+    {
+      "id": "Q01",
+      "title": "Tencent Connect QQ Bot README（定时主动推送与平台拦截提示）",
+      "url": "https://github.com/tencent-connect/openclaw-qqbot/blob/main/README.zh.md",
+      "blob_sha": "349f669602b49b5c291ab1fa7f149b262bfe9c50",
+      "read_lines": [
+        25,
+        150
+      ],
+      "scope": "source_review_only; not live send",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q02",
+      "title": "Tencent Connect 主动发送模块",
+      "url": "https://github.com/tencent-connect/openclaw-qqbot/blob/a4479eea5931afdd3d504ac3b1c0860025c4d171/src/features/proactive.ts",
+      "commit": "a4479eea5931afdd3d504ac3b1c0860025c4d171",
+      "blob_sha": "e5724b23b51a844aeb1478f4fff63414ff2cf82f",
+      "read_lines": [
+        [
+          1,
+          245
+        ],
+        [
+          260,
+          470
+        ]
+      ],
+      "scope": "selected function path without inbound msgId; not full SDK audit",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q03",
+      "title": "Hermes 官方 QQ 文档（通知目标配置）",
+      "url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/qqbot",
+      "scope": "official documentation; QQBOT_HOME_CHANNEL; not proof of all application permissions",
+      "accessed": "2026-09-07"
+    },
+    {
+      "id": "Q04",
+      "title": "QQ 官方接入入口与消息细则访问边界",
+      "url": "https://bot.q.qq.com/wiki/develop/api-v2/",
+      "scope": "entry read; linked server-inter/message/overview.html timed out; current quota not verified",
+      "accessed": "2026-09-07"
+    }
+  ],
+  "conclusion": "upstream proactive route confirmed; our adapter not implemented and account not tested",
+  "live_messages_sent": 0,
+  "credentials_accessed": false
+}

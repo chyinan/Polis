@@ -1,0 +1,138 @@
+{
+  "document_version": "0.4.5",
+  "status": "planned_not_executed",
+  "tests": [
+    {
+      "test_id": "NT-01",
+      "scenario": "普通完成/休眠/ACK/自动恢复成功",
+      "expected": "QQ 外发数与模型调用增量为零，活动只留工作台",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-02",
+      "scenario": "确需接管问题的重复日志与并发事件",
+      "expected": "一个稳定 Incident；按作用域/目标/级别去重，有界提醒",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-03",
+      "scenario": "模型额度归零时触发合法接管通知",
+      "expected": "从持久事实生成模板，不调用旧模型；已授权发送不依赖推理额度",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-04",
+      "scenario": "无近期入站 msg_id 的 QQ 主动消息测试",
+      "expected": "主动路径已有上游依据；无入站 msg_id 的本应用真实测试通过才 ready，被动成功不能代替",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-05",
+      "scenario": "QQ token 过期、403、限流",
+      "expected": "分类处理与有界刷新/退避；不伪造 msg_id 或换号绕过限制",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-06",
+      "scenario": "QQ 已接收但本地回执丢失",
+      "expected": "outcome_unknown；通知专用有界重复策略保留相同事件号，不称已读",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-07",
+      "scenario": "发送前事件已解决/到期/路线被撤销",
+      "expected": "按最终派发屏障核对，未派发旧消息 superseded；既有在途明确保留，不保证撤回",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-08",
+      "scenario": "配置导入、GET 刷新、测试按钮",
+      "expected": "导入/查询不外发；真实测试需明确目标与授权并有回执",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-09",
+      "scenario": "QQ群/收件者越域、资料含秘密或恶意链接",
+      "expected": "按管理披露范围与安全别名发送；拒绝跨公司原文和不可信正文注入",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-10",
+      "scenario": "QQ 回复“同意/继续/加预算”",
+      "expected": "不产生管理命令、不运行模型；接管确认也不自动解决问题",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-11",
+      "scenario": "QQ 服务长期失败或重复通知故障",
+      "expected": "有界重试、channel_degraded；工作台持久保留，不递归通知自己",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-12",
+      "scenario": "daemon/数据库不可用但独立 watch 存活",
+      "expected": "仅在有效窄离线授权下由唯一 sender 发送基础设施模板；否则停止；业务状态 unknown",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-13",
+      "scenario": "整机断电/断网或 QQ 与 watch 同时失效",
+      "expected": "明确覆盖缺口；恢复后仅核对仍有效问题，不宣传必达",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-14",
+      "scenario": "手机不能访问工作台/链接受限",
+      "expected": "无凭据链接；未配安全可达地址时给事件号，不发 localhost 假远程入口",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-15",
+      "scenario": "QQ 主动路线与实际账号资格分层",
+      "expected": "上游已知路径不显示为不支持；实际应用未测仍禁止冒称已就绪",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-16",
+      "scenario": "C2C/群/环境/AppID 切换与过期 qualification",
+      "expected": "路由类型明确；不同目标分别验证，旧资格不复用",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-17",
+      "scenario": "PG 失效时禁用外发或撤销 route",
+      "expected": "单 sender 本机屏障；未收到冻结/过期证据前不显示已全停",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-18",
+      "scenario": "sender 重启、墙钟回拨或离线胶囊过期",
+      "expected": "不延长或重激活旧授权；离线无当前资格时停止新发",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-19",
+      "scenario": "平台响应缺 ID/畸形/权限错误",
+      "expected": "不伪造平台 ID、不将未知当成功、不错误无限刷新 token",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-20",
+      "scenario": "故障恢复后同类故障再次出现",
+      "expected": "新 incident_occurrence；不被旧去重永久抑制，重复日志仍合并",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-21",
+      "scenario": "问题解决/目标撤销与发送许可消费竞争",
+      "expected": "未进入门禁者停止；既有在途列明，不宣称撤回远端消息",
+      "execution_status": "not_run"
+    },
+    {
+      "test_id": "NT-22",
+      "scenario": "主服务/监督事件争抢同一 Bot 或共享外部 Bot",
+      "expected": "我方单发送器和有界计数；其他应用冲突未知明确标限，不隐式刷新覆盖",
+      "execution_status": "not_run"
+    }
+  ]
+}

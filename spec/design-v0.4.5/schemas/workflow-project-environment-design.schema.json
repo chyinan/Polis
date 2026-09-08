@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:project-environment:0.4.4",
+  "description": "Disabled documentation fixture only; not a production authorization schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_version",
+    "design_kind",
+    "execution_enabled",
+    "pay_enabled",
+    "qualification",
+    "profile_id",
+    "profile_revision",
+    "base_image_digest",
+    "node_version",
+    "npm_version",
+    "source_revision",
+    "lockfile_digest",
+    "preparation_policy",
+    "test_database",
+    "connect_enabled",
+    "credentials",
+    "limits_are_test_parameters",
+    "limits"
+  ],
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "workflow_fixture_not_runtime_config"
+    },
+    "execution_enabled": {
+      "const": false
+    },
+    "pay_enabled": {
+      "const": false
+    },
+    "qualification": {
+      "const": "unverified"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_image_digest": {
+      "type": "null"
+    },
+    "node_version": {
+      "type": "null"
+    },
+    "npm_version": {
+      "type": "null"
+    },
+    "source_revision": {
+      "type": "null"
+    },
+    "lockfile_digest": {
+      "type": "null"
+    },
+    "preparation_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "auto_prepare_within_approved_policy",
+        "effective_approval_ref",
+        "run_on_skill_load",
+        "allow_host_global_install",
+        "dependency_sources",
+        "lifecycle_scripts",
+        "install_argv",
+        "allow_implicit_lockfile_update"
+      ],
+      "properties": {
+        "auto_prepare_within_approved_policy": {
+          "const": true
+        },
+        "effective_approval_ref": {
+          "type": "null"
+        },
+        "run_on_skill_load": {
+          "const": false
+        },
+        "allow_host_global_install": {
+          "const": false
+        },
+        "dependency_sources": {
+          "type": "array",
+          "items": {},
+          "maxItems": 1000
+        },
+        "lifecycle_scripts": {
+          "type": "string",
+          "minLength": 1
+        },
+        "install_argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maxItems": 1000
+        },
+        "allow_implicit_lockfile_update": {
+          "const": false
+        }
+      }
+    },
+    "test_database": {
+      "type": "string",
+      "minLength": 1
+    },
+    "connect_enabled": {
+      "const": false
+    },
+    "credentials": {
+      "type": "array",
+      "items": {},
+      "maxItems": 1000
+    },
+    "limits_are_test_parameters": {
+      "const": true
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "timeout_seconds",
+        "memory_bytes",
+        "disk_bytes"
+      ],
+      "properties": {
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "memory_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "disk_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

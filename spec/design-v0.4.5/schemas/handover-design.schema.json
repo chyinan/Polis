@@ -1,0 +1,437 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agent-org:design:handover:0.4.4",
+  "type": "object",
+  "required": [
+    "document_version",
+    "design_kind",
+    "activation_allowed",
+    "employee_id",
+    "role_revision",
+    "company_id",
+    "mission_id",
+    "old_epoch",
+    "proposed_epoch",
+    "source_cursor",
+    "input_revisions",
+    "unfinished_obligations",
+    "current_task",
+    "artifact_ref",
+    "pending_actions",
+    "writer_isolation",
+    "corrections",
+    "resume_checks",
+    "new_model_profile_ref",
+    "secret_material_included",
+    "snapshot_consistency",
+    "restore_grant",
+    "artifact_publication",
+    "runtime_identity",
+    "environment_activation",
+    "capability_context",
+    "workflow_context"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "document_version": {
+      "const": "0.4.5"
+    },
+    "design_kind": {
+      "const": "handover_fixture_not_real_evidence"
+    },
+    "activation_allowed": {
+      "const": false
+    },
+    "employee_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role_revision": {
+      "type": "integer"
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mission_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "old_epoch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "proposed_epoch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_cursor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stream",
+        "company_id",
+        "company_seq"
+      ],
+      "properties": {
+        "stream": {
+          "const": "company"
+        },
+        "company_id": {
+          "type": "string"
+        },
+        "company_seq": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      }
+    },
+    "input_revisions": {
+      "type": "object"
+    },
+    "unfinished_obligations": {
+      "type": "array"
+    },
+    "current_task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pending_actions": {
+      "type": "array"
+    },
+    "writer_isolation": {
+      "type": "object"
+    },
+    "corrections": {
+      "type": "array"
+    },
+    "resume_checks": {
+      "type": "array"
+    },
+    "new_model_profile_ref": {
+      "const": null
+    },
+    "secret_material_included": {
+      "const": false
+    },
+    "snapshot_consistency": {
+      "type": "object",
+      "required": [
+        "isolation",
+        "facts_and_cursor_same_snapshot",
+        "materialization_lease_ref",
+        "recheck_current_authorization_before_activation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "isolation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "facts_and_cursor_same_snapshot": {
+          "const": true
+        },
+        "materialization_lease_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "recheck_current_authorization_before_activation": {
+          "const": true
+        }
+      }
+    },
+    "restore_grant": {
+      "type": "object",
+      "required": [
+        "kind",
+        "business_workspace_writable",
+        "external_dispatch_allowed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "business_workspace_writable": {
+          "const": false
+        },
+        "external_dispatch_allowed": {
+          "const": false
+        }
+      }
+    },
+    "artifact_publication": {
+      "type": "object",
+      "required": [
+        "input_status",
+        "requires_file_ready_before_db_publish"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "input_status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "requires_file_ready_before_db_publish": {
+          "const": true
+        }
+      }
+    },
+    "runtime_identity": {
+      "type": "object",
+      "required": [
+        "installation_id",
+        "runtime_incarnation",
+        "credential_material_included"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "installation_id": {
+          "const": "install-fixture"
+        },
+        "runtime_incarnation": {
+          "const": "incarnation-fixture-new"
+        },
+        "credential_material_included": {
+          "const": false
+        }
+      }
+    },
+    "environment_activation": {
+      "type": "object",
+      "required": [
+        "state",
+        "write_capability_receipt",
+        "new_work_admitted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "const": "activation_pending_environment"
+        },
+        "write_capability_receipt": {
+          "type": "null"
+        },
+        "new_work_admitted": {
+          "const": false
+        }
+      }
+    },
+    "capability_context": {
+      "type": "object",
+      "required": [
+        "binding_ref",
+        "binding_revision",
+        "workspace_manifest_ref",
+        "loaded_skills",
+        "mcp_bindings",
+        "pending_tool_invocations",
+        "native_session_or_bearer_handles_included",
+        "secret_material_included",
+        "catalog_only_in_restore",
+        "write_tools_allowed_before_activation",
+        "real_capability_receipts"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "binding_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "binding_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "workspace_manifest_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "loaded_skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "skill_ref",
+              "package_digest",
+              "must_revalidate_before_use"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "skill_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "package_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "must_revalidate_before_use": {
+                "const": true
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "mcp_bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "binding_ref",
+              "descriptor_digest",
+              "protocol_profile",
+              "connection_state",
+              "qualification"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "binding_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "descriptor_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "protocol_profile": {
+                "enum": [
+                  "mcp-2026-07-28",
+                  "mcp-2025-11-25"
+                ]
+              },
+              "connection_state": {
+                "const": "reconnect_required"
+              },
+              "qualification": {
+                "const": "unverified"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "pending_tool_invocations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "minItems": 0
+        },
+        "native_session_or_bearer_handles_included": {
+          "const": false
+        },
+        "secret_material_included": {
+          "const": false
+        },
+        "catalog_only_in_restore": {
+          "const": true
+        },
+        "write_tools_allowed_before_activation": {
+          "const": false
+        },
+        "real_capability_receipts": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "workflow_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_asset_refs",
+        "input_manifest_status",
+        "environment_profile",
+        "job_refs",
+        "browser_run_refs",
+        "pending_guidance_refs",
+        "human_takeover_lease",
+        "delivery_refs",
+        "feedback_refs",
+        "restoring_can_prepare_environment",
+        "restoring_can_start_browser",
+        "restoring_can_control_jobs",
+        "secret_material_included"
+      ],
+      "properties": {
+        "input_asset_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maxItems": 1000
+        },
+        "input_manifest_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment_profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "job_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maxItems": 1000
+        },
+        "browser_run_refs": {
+          "type": "array",
+          "items": {},
+          "maxItems": 1000
+        },
+        "pending_guidance_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maxItems": 1000
+        },
+        "human_takeover_lease": {
+          "type": "null"
+        },
+        "delivery_refs": {
+          "type": "array",
+          "items": {},
+          "maxItems": 1000
+        },
+        "feedback_refs": {
+          "type": "array",
+          "items": {},
+          "maxItems": 1000
+        },
+        "restoring_can_prepare_environment": {
+          "const": false
+        },
+        "restoring_can_start_browser": {
+          "const": false
+        },
+        "restoring_can_control_jobs": {
+          "const": false
+        },
+        "secret_material_included": {
+          "const": false
+        }
+      }
+    }
+  }
+}

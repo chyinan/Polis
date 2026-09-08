@@ -1,0 +1,133 @@
+{
+  "document_version": "0.4.5",
+  "kind": "component_plan",
+  "primitive_family": "radix-primitives",
+  "styling": "css-modules-and-semantic-tokens",
+  "components": [
+    {
+      "name": "AppShell",
+      "responsibility": "导航和作用域",
+      "status": "not_implemented"
+    },
+    {
+      "name": "ScopeHeader",
+      "responsibility": "所属公司/连接/模式",
+      "status": "not_implemented"
+    },
+    {
+      "name": "PageHeader",
+      "responsibility": "标题和动作",
+      "status": "not_implemented"
+    },
+    {
+      "name": "EmployeeIdentity",
+      "responsibility": "稳定身份",
+      "status": "not_implemented"
+    },
+    {
+      "name": "StatusBadge",
+      "responsibility": "多维状态",
+      "status": "not_implemented"
+    },
+    {
+      "name": "Freshness",
+      "responsibility": "数据新鲜度",
+      "status": "not_implemented"
+    },
+    {
+      "name": "ResourceAmount",
+      "responsibility": "金额/单位/口径",
+      "status": "not_implemented"
+    },
+    {
+      "name": "EvidenceLink",
+      "responsibility": "精确版本证据",
+      "status": "not_implemented"
+    },
+    {
+      "name": "RevisionTag",
+      "responsibility": "版本",
+      "status": "not_implemented"
+    },
+    {
+      "name": "OperationPanel",
+      "responsibility": "异步阶段和结果",
+      "status": "not_implemented"
+    },
+    {
+      "name": "DataTable",
+      "responsibility": "分页/筛选",
+      "status": "not_implemented"
+    },
+    {
+      "name": "EmptyState",
+      "responsibility": "空/错/无权限",
+      "status": "not_implemented"
+    },
+    {
+      "name": "DecisionDialog",
+      "responsibility": "范围/差异/确认",
+      "status": "not_implemented"
+    },
+    {
+      "name": "CapabilityBindingPanel",
+      "responsibility": "当前绑定与差异、权限/资格/可用性分离",
+      "status": "not_implemented"
+    },
+    {
+      "name": "WorkspaceAccessTable",
+      "responsibility": "授权根、读写和快照版本",
+      "status": "not_implemented"
+    },
+    {
+      "name": "SkillRevisionTable",
+      "responsibility": "来源、版本、已加载与执行范围",
+      "status": "not_implemented"
+    },
+    {
+      "name": "MCPQualificationPanel",
+      "responsibility": "服务探测、协议/传输、目录变更与成本",
+      "status": "not_implemented"
+    },
+    {
+      "name": "InputAssetPanel",
+      "responsibility": "上传/解析/实际输入覆盖",
+      "status": "not_implemented"
+    },
+    {
+      "name": "EnvironmentPanel",
+      "responsibility": "依赖来源与准备状态",
+      "status": "not_implemented"
+    },
+    {
+      "name": "JobServicePanel",
+      "responsibility": "作业与服务就绪/借用",
+      "status": "not_implemented"
+    },
+    {
+      "name": "BrowserEvidencePanel",
+      "responsibility": "候选版本与验证/预览",
+      "status": "not_implemented"
+    },
+    {
+      "name": "GuidancePanel",
+      "responsibility": "指导/澄清/变更处理",
+      "status": "not_implemented"
+    },
+    {
+      "name": "TakeoverPanel",
+      "responsibility": "独占写交接与补丁返回",
+      "status": "not_implemented"
+    },
+    {
+      "name": "DeliveryPanel",
+      "responsibility": "清单/说明/鉴权下载/人接受",
+      "status": "not_implemented"
+    },
+    {
+      "name": "FeedbackInbox",
+      "responsibility": "真实来源覆盖与任务关联",
+      "status": "not_implemented"
+    }
+  ]
+}

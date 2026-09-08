@@ -1,0 +1,45 @@
+{
+  "document_version": "0.4.4",
+  "date": "2026-09-08",
+  "deliverable_kind": "architecture_spec_and_disabled_design_samples",
+  "source_baseline": {
+    "filename": "agent_org_architecture_v0.4.3_2026-09-07.md",
+    "sha256": "ab0a910f68da46f6636c77e72bd2840fb1cc3a59f2b3ada4bcda067e7dff0698",
+    "preserved_unchanged": true
+  },
+  "main_sha256": "bd83ccf7bd381a8d119037c0b3601dd26491307c1bfa10b829e972a5a69b4a48",
+  "static_check_status": "pass",
+  "static_check_count": 440,
+  "offline_reader_render_cases": 21,
+  "offline_reader_assertions": 168,
+  "render_status": "pass",
+  "product_test_plans": {
+    "FT": 82,
+    "NT": 22,
+    "CAP": 32,
+    "UI": 48,
+    "WF": 36,
+    "total": 220,
+    "all_status": "not_run"
+  },
+  "new_scope": [
+    "intake and multimodal input",
+    "preauthorized project environment preparation",
+    "commands and services",
+    "research and browser verification",
+    "human guidance and takeover return",
+    "usable deliveries",
+    "read-only external feedback"
+  ],
+  "chapters": 45,
+  "requirements": 41,
+  "architectural_decisions": 64,
+  "canonical_contracts": 26,
+  "employee_operations": 45,
+  "renumbered_legacy_subsections": 22,
+  "real_models_called": false,
+  "real_accounts_accessed": false,
+  "real_notifications_sent": false,
+  "target_application_executed": false,
+  "unverified": "Runtime implementation, database concurrency, harness/Skills/MCP qualification, QQ/GitHub integration and autonomous long-running performance remain unverified."
+}

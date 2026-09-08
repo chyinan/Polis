@@ -1,0 +1,44 @@
+{
+  "document_version": "0.4.5",
+  "status": "unverified",
+  "mode": "disabled",
+  "protocol_profiles": [
+    {
+      "version": "2026-07-28",
+      "transport": "stdio",
+      "status": "unverified",
+      "evidence_ref": null
+    },
+    {
+      "version": "2026-07-28",
+      "transport": "streamable_http",
+      "status": "unverified",
+      "evidence_ref": null
+    },
+    {
+      "version": "2025-11-25",
+      "transport": "stdio",
+      "status": "unverified",
+      "evidence_ref": null
+    },
+    {
+      "version": "2025-11-25",
+      "transport": "streamable_http",
+      "status": "unverified",
+      "evidence_ref": null
+    }
+  ],
+  "gates": {
+    "workspace_boundary": "not_run",
+    "skill_load": "not_run",
+    "script_isolation": "not_run",
+    "native_discovery_blocked": "not_run",
+    "descriptor_drift": "not_run",
+    "data_egress": "not_run",
+    "counter_requests": "not_run",
+    "handover": "not_run",
+    "idle_reclaim": "not_run"
+  },
+  "exact_sdk_version": null,
+  "runtime_enabled": false
+}

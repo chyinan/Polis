@@ -1,0 +1,29 @@
+{
+  "kind": "planned_interleavings_not_execution_log",
+  "test_ids": [
+    "FT-33",
+    "FT-34",
+    "FT-35",
+    "FT-36"
+  ],
+  "linearization_point": "durable_final_permit_consumption_into_dispatch_pipeline",
+  "cases": [
+    {
+      "order": [
+        "revocation_effective",
+        "attempt_final_permit_consumption"
+      ],
+      "expected": "reject_dispatch"
+    },
+    {
+      "order": [
+        "final_permit_consumed",
+        "revocation_effective",
+        "external_receipt_unknown"
+      ],
+      "expected": "report_in_flight_then_reconcile_or_isolate_not_claim_cancelled"
+    }
+  ],
+  "physical_effect_after_revoke_can_be_excluded_for_inflight": false,
+  "results": "not_run"
+}

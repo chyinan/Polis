@@ -1,0 +1,165 @@
+{
+  "document_version": "0.4.5",
+  "baseline": "agent_org_architecture_v0.4.4_2026-09-08.md",
+  "baseline_sha256": "bd83ccf7bd381a8d119037c0b3601dd26491307c1bfa10b829e972a5a69b4a48",
+  "user_correction": "UX-01",
+  "changes": [
+    {
+      "kind": "paragraph",
+      "old_excerpt": "## 总体架构与真实工作闭环 · Draft 0.4.4",
+      "new_excerpt": "## 总体架构、产品定位与分层交付 · Draft 0.4.5"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "**版本语义：文档 0.4.4，不代表软件 release；工作流程已细化，所有真实运行与资格测试仍待实现。**",
+      "new_excerpt": "**版本语义：文档 0.4.5，不代表软件 release；长期产品目标与 R1/R2/R3 发布范围分开，所有真实运行与产品价值试验仍待实现。**"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "本版以完整 Draft 0.4.3 为基线，补齐资料输入、项目环境、作业/服务、浏览器、人工指导与接管、交付和外部反馈七条工作链，修正重复编号并同步相关原章节。Go/PostgreSQL/React、",
+      "new_excerpt": "本版以完整 Draft 0.4.4 为基线，落实对抗性产品审查，并采用维护者最新确认的首要用户目标：希望虚拟公司长期执行复杂目标、通过组织指挥与协作突破单个顶尖 Agent 局限的人。软件只是第一验证场景。修订发布范围、配置负担、工作前置条"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "- [附录 A. 本版参考资料与证据范围](#appendix-a)",
+      "new_excerpt": "- [46. 产品章程、分层发布与对抗审查处置](#section-46)\n- [附录 A. 本版参考资料与证据范围](#appendix-a)"
+    },
+    {
+      "kind": "section",
+      "number": 1
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "## 03. 用户需求与首版边界",
+      "new_excerpt": "## 03. 用户需求、长期能力与发布边界"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "首版目标是一位人类管理者、本地优先部署、少量隔离公司、每家公司一个活跃 Mission、固定成员、受限执行并发。先把软件开发领域跑通，再用内容草稿/模拟发布验证领域解耦。",
+      "new_excerpt": "长期目标服务于希望组织承接长期复杂工作的用户，不限职业和业务域。R1 首个自用参考场景限定一位管理者、一家活动公司、一个授权项目资源、固定成员和有限并发；数据模型保留集团/公司隔离且测试跨scope拒绝。R2 逐步开放少量合格公司与组合，R"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "工作区与共享资料、公共/公司 Skills、MCP 工具与资源的显式接入及其持久员工绑定纳入首版；按第 44 章逐步实现与验收。可按阶段限制已认证后端/服务，不能仅留“可扩展接口”就宣称完成。技能市场",
+      "new_excerpt": "工作区与共享资料、Skills/MCP及持久员工绑定保持正式产品需求。R1至少提供选定只读Skill和一个受控stdio MCP的实际使用路径；完整公共库管理和远程传输在R2按资格推进，不能全留接口就称已完成。QQ主动接管通知在R1保留，尚"
+    },
+    {
+      "kind": "section_addition",
+      "number": 2
+    },
+    {
+      "kind": "section_addition",
+      "number": 3
+    },
+    {
+      "kind": "section_addition",
+      "number": 5
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "任务变为 ready 前必须具备批准的输入版本、明确负责人、可执行环境、所需证据和验收方法。复杂任务可由规划岗位提议拆解；内核拒绝不完整任务、非法依赖和越权计划。",
+      "new_excerpt": "任务变为ready前必须具备批准输入、负责人、该任务类型实际需要的执行环境与验收方法。基础Agent环境、项目准备环境和目标应用运行环境分开：规划/有界探索不等完整项目依赖；环境准备只要求已批准准备政策与受控执行器，不能要求被准备环境已re"
+    },
+    {
+      "kind": "section_addition",
+      "number": 11
+    },
+    {
+      "kind": "section_addition",
+      "number": 14
+    },
+    {
+      "kind": "section_addition",
+      "number": 9
+    },
+    {
+      "kind": "section_addition",
+      "number": 23
+    },
+    {
+      "kind": "section",
+      "number": 25
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "第45章七份工作合同纳入首版；WF-36证明资料能用、项目能跑、结果能验证和交付，WF-01～35分别检验边界。无需发明新员工来准备环境/监听日志；程序控制与现有岗位承担工作。",
+      "new_excerpt": "第45章七份工作合同保留为完整能力目标，按46.3分配到R1/R2/R3；WF-36是这些能力已具备时的综合验收，不要求所有格式/真实反馈在第一次自用前齐备。R1选其最小子路径并明确支持范围，适用安全门不能删。无需新员工准备环境/监听日志，"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "时间盒优先用于验证最高风险假设，不保证在四个月内达到全部愿景。时间不足删模板、平台和 UI 装饰，不删接班、休眠、直接协作、验收、撤权、预算或持久性。剩余未决事项仅包括真实版本/环境、模型资格、批准实",
+      "new_excerpt": "时间盒优先验证最高风险假设，不保证四个月完成全部愿景。按R1/R2/R3收缩功能面但不删除已开放能力的接班、休眠、直接协作、验收、撤权、预算或持久性。未决事项还包括组织增益、行为接班与上手/维护负担等产品假设，并非只剩版本和账号。主数据库等"
+    },
+    {
+      "kind": "section_addition",
+      "number": 30
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "保存公司和 Mission 草案不执行模型。`StartMission` 经人类管理身份、当前版本、模型/环境资格、使命授权、预算和资源校验后，在一个短事务内：",
+      "new_excerpt": "保存公司和Mission草案不执行模型。`StartMission`核对管理身份、当前版本、基础Agent读/规划环境、使命授权、预算与资源；项目依赖尚未ready不阻止获准的bootstrap/环境准备。按任务类型准入，见12.1/46."
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "| 步骤 | 人需要确认什么 | 运行时可做什么 / 不能做什么 |\n|---|---|---|\n| 1. 基本信息 | 公司名称、业务域、隔离范围 | 创建公司草案；不执行使命 |\n| 2. 固定组",
+      "new_excerpt": "| 用户决定组 | 需要确认什么 | 模板/运行时承担什么 |\n|---|---|---|\n| 1. 目标与资料 | 公司名称、业务目标、项目/资料、允许的探索范围 | 保存草案；可以未有完整规格，不启动模型 |\n| 2. 固定团队与模型 "
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "正式需求/优先级变更 | 用户选择变更意图，形成 ChangeRequest/新输入版本与影响分析 | 自由文本未经确认修改成功标准或金额 |",
+      "new_excerpt": "正式需求/优先级变更 | 用户选择下一边界处理，或先暂停指定工作再处理；形成ChangeRequest/新输入版本与影响分析 | 自由文本未经确认修改成功标准/金额；未取得停止回执就称已停 |"
+    },
+    {
+      "kind": "section_addition",
+      "number": 39
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "首版的最小能力是：工作区目录与文件操作；公共/公司级 Skill 登记、版本固定、按需加载及受控脚本入口；管理员登记的本地 stdio 和远程 Streamable HTTP MCP 接入；工具与资源",
+      "new_excerpt": "完整能力目标包括工作区操作、公共/公司Skill登记/固定/加载/受控脚本、stdio与Streamable HTTP MCP、逐工具授权及持久环境接班。R1先实际接通选定Skill与一个合格stdio服务；R2补受控远程服务与完整管理路径"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "实施顺序：先持久绑定与 Workspace → Skill 导入/固定/加载 → 一个受控 stdio 服务 → Streamable HTTP → 换班/撤权/回收交错 → 工作台与通知。可以分纵向",
+      "new_excerpt": "实施顺序按纵向路径：R1持久绑定/Workspace/选定Skill/一个stdio服务与接班/撤权测试同步；R2补Streamable HTTP、公共库管理与更多组合。工具工作台和通知随适用阶段提供；这是明确分层，不是仅留扩展接口就称完成"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "首版读 issue 标题/正文/状态与指定范围的更新；完整 comments timeline、代码托管的所有 webhook、自动关单/评论/发布 commit 关联都不默认打包支持。GitHub ",
+      "new_excerpt": "collector初读issue标题/正文/状态与指定范围更新；正式triage/修复前再读取单issue的有界评论上下文，保留评论ID/revision、覆盖时间与截断。GitHub提供单issue评论的只读及分页接口。[D01](#re"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "来源文字先按不可信资料存储，再规则去重/分类。无意义重复或非目标反馈不调用模型；确需语义判断时创建有限 triage Task，交给已有规划/验证成员，成本归原使命。程序防洪峰和长度攻击，不能让一个外",
+      "new_excerpt": "来源文字先按不可信资料保存，再规则去重/分类。准备正式接手时先按额度取必要评论；未覆盖范围明确partial，评论编辑/更正触发受影响工作核对，不靠标题匹配排除关键信息。无意义重复不调用模型，必要语义判断创建有界triage Task交现有"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "“入口存在”“实现完成”“对支持组合测试通过”仍为三个状态。正文规定最低目标与失败行为；精准包版本、账号、真实执行物和费用只在资格验证后填写。所有新样本 execution_enabled=false",
+      "new_excerpt": "“入口存在”“实现完成”“对支持组合测试通过”仍为三个状态。本章描述完整工作链与失败行为，R1只要求46.3所列最小可用子集；PDF/CSV/ZIP、真实反馈等按R2资格开放，不能用全链蓝图阻塞最早价值实验。精准版本/账号/执行物/费用在资"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "| 类型 | 首版必需路径 | 保留的定位与限制 |",
+      "new_excerpt": "| 类型 | 已开放该类型时的必需路径（R1/R2见46.3） | 保留的定位与限制 |"
+    },
+    {
+      "kind": "paragraph",
+      "old_excerpt": "| REQ-41 | 至少一条真实外部反馈工作链 | GitHub Issues只读轮询/覆盖与去重，有效使命内处理、终态进backlog |",
+      "new_excerpt": "| REQ-41 | 至少一条真实外部反馈工作链 | GitHub Issues只读轮询与有界评论上下文，覆盖/去重，有效使命内处理、终态进backlog；R2验证 |"
+    },
+    {
+      "kind": "section",
+      "number": 28
+    },
+    {
+      "kind": "section_addition",
+      "number": 27
+    },
+    {
+      "kind": "section_addition",
+      "number": 43
+    }
+  ],
+  "source_scope": "targeted_sections_and_programmatic_full_manuscript_edit_not_runtime_validation"
+}

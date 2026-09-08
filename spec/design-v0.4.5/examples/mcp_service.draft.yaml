@@ -1,0 +1,72 @@
+document_version: 0.4.5
+design_kind: mcp_definition_fixture_not_runtime_config
+execution_enabled: false
+connect_enabled: false
+pay_enabled: false
+preferred_protocol_profile: mcp-2026-07-28
+explicit_compatibility_profile: mcp-2025-11-25
+verified_protocols: []
+sdk:
+  module: github.com/modelcontextprotocol/go-sdk
+  pinned_version: null
+  qualification: unverified
+servers:
+- server_definition_id: mcp-fixture-local
+  transport: stdio
+  executable_ref: null
+  argv: []
+  endpoint: null
+  secret_ref: null
+  state_scope: employee_mission_binding
+  inherit_parent_env: false
+  install_on_connect: false
+  qualified: false
+- server_definition_id: mcp-fixture-contracts
+  transport: streamable_http
+  executable_ref: null
+  argv: []
+  endpoint: null
+  secret_ref: null
+  state_scope: employee_mission_binding
+  inherit_parent_env: false
+  install_on_connect: false
+  qualified: false
+policy:
+  default_route: runtime_broker
+  native_bypass_enabled: false
+  untrusted_annotations_grant_permissions: false
+  new_tools_auto_approved: false
+  sampling_enabled: false
+  elicitation_enabled: false
+  auto_oauth_consent: false
+  idle_shutdown_after_seconds_fixture: 120
+  cancel_means_remote_stopped: false
+binding_drafts:
+- binding_ref: fixture://mcp-binding/emp-planning/contracts-1
+  company_id: co-software-example
+  employee_id: emp-planning
+  server_definition_id: mcp-fixture-contracts
+  binding_revision: '1'
+  approved: false
+  granted_tool_names: []
+- binding_ref: fixture://mcp-binding/emp-backend/contracts-1
+  company_id: co-software-example
+  employee_id: emp-backend
+  server_definition_id: mcp-fixture-contracts
+  binding_revision: '1'
+  approved: false
+  granted_tool_names: []
+- binding_ref: fixture://mcp-binding/emp-frontend/contracts-1
+  company_id: co-software-example
+  employee_id: emp-frontend
+  server_definition_id: mcp-fixture-contracts
+  binding_revision: '1'
+  approved: false
+  granted_tool_names: []
+- binding_ref: fixture://mcp-binding/emp-review/contracts-1
+  company_id: co-software-example
+  employee_id: emp-review
+  server_definition_id: mcp-fixture-contracts
+  binding_revision: '1'
+  approved: false
+  granted_tool_names: []
