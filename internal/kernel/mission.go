@@ -149,7 +149,7 @@ func (k *Kernel) TXClaim(ctx context.Context, b Binding) (Task, error) {
 		return Task{}, e
 	}
 	var t Task
-	e = tx.QueryRow(ctx, `SELECT t.id,t.mission_id,t.owner,t.kind,t.state,t.generation FROM tasks t JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id WHERE t.company_id=$1 AND t.owner=$2 AND t.state='ready' AND m.state='active' AND NOT EXISTS(SELECT 1 FROM tasks x WHERE x.company_id=t.company_id AND x.owner=t.owner AND x.state='working') ORDER BY t.id LIMIT 1`, b.scope.company, b.employee).Scan(&t.ID, &t.Mission, &t.Owner, &t.Kind, &t.State, &t.Generation)
+	e = tx.QueryRow(ctx, `SELECT t.id,t.mission_id,t.owner,t.kind,t.state,t.generation FROM tasks t JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id WHERE t.company_id=$1 AND t.owner=$2 AND t.kind IN ('bootstrap_plan','compute') AND t.state='ready' AND m.state='active' AND NOT EXISTS(SELECT 1 FROM tasks x WHERE x.company_id=t.company_id AND x.owner=t.owner AND x.state='working') ORDER BY t.id LIMIT 1`, b.scope.company, b.employee).Scan(&t.ID, &t.Mission, &t.Owner, &t.Kind, &t.State, &t.Generation)
 	if errors.Is(e, pgx.ErrNoRows) {
 		return Task{}, core.Denied
 	}

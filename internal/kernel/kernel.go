@@ -23,6 +23,7 @@ type Binding struct {
 	scope                 Scope
 	employee, incarnation string
 	epoch                 int64
+	session               string
 }
 type Receipt struct {
 	ID     string `json:"id"`
@@ -93,7 +94,7 @@ func Open(ctx context.Context, dsn, root string) (*Kernel, error) {
 	if err != nil {
 		return fail(err)
 	}
-	if schema != 1 {
+	if schema != 2 {
 		return fail(fmt.Errorf("incompatible schema: %d", schema))
 	}
 	if err = os.MkdirAll(root, 0700); err != nil {
@@ -176,6 +177,11 @@ func (k *Kernel) guard(ctx context.Context, tx pgx.Tx, s Scope, b *Binding) erro
 		}
 		if epoch != b.epoch {
 			return core.StaleEpoch
+		}
+		if b.session != "" {
+			if _, e = k.checkSession(ctx, tx, *b, true); e != nil {
+				return e
+			}
 		}
 	}
 	return nil

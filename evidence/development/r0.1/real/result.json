@@ -1,0 +1,17 @@
+{
+  "status": "inconclusive",
+  "single_worker": "not_run",
+  "handover": "not_run",
+  "behavior": "not_run",
+  "error": "profile completed without required persisted receipt",
+  "mode": "same-harness_same-model_different-effort",
+  "medium_turns": 3,
+  "high_turns": 0,
+  "Started": "2026-09-08T05:33:22.102442076Z",
+  "Finished": "2026-09-08T05:34:51.482164426Z",
+  "Version": "codex-cli 0.151.0",
+  "BinaryDigest": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+  "CapabilityDigest": "4fd3254378d087f0f5503cdc89e569293ceb595d30adc0d27b73a4dd90a43285",
+  "SchemaDigest": "6032863e8a892b00eb34433d5fefb057066a7b700cf5f6ce06b1321e382b7455",
+  "Artifacts": null
+}

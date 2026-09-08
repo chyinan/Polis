@@ -5,6 +5,8 @@ export LD_LIBRARY_PATH="$PWD/.tools/pg/usr/lib/x86_64-linux-gnu"
 pg="$PWD/.tools/pg/usr/lib/postgresql/18/bin"
 socket="$PWD/.runtime/linux/pg-socket"
 export TMPDIR="$PWD/.runtime/linux/test-tmp"
+export POLIS_GO_ROOT="$PWD/.tools/go"
+export POLIS_CODEX_BINARY="$PWD/.tools/codex-linux/package/vendor/x86_64-unknown-linux-musl/bin/codex"
 mkdir -p "$TMPDIR" bin evidence/development
 database="polis_r0_test_$(date +%s)_$$"
 admin="host=$socket port=55432 dbname=postgres user=$(id -un)"
@@ -17,9 +19,11 @@ bash scripts/go.sh run ./cmd/polis migrate
 "$pg/psql" "$POLIS_DSN" -v ON_ERROR_STOP=1 -c 'GRANT USAGE ON SCHEMA public TO polis_runtime; GRANT SELECT,INSERT,UPDATE ON ALL TABLES IN SCHEMA public TO polis_runtime;'
 export POLIS_TEST_DSN="host=$socket port=55432 dbname=$database user=polis_runtime"
 test_flags=()
-log=go-tests.txt
-if [ "${POLIS_TEST_RACE:-0}" = 1 ]; then test_flags=(-race); log=go-tests-race.txt; fi
+mkdir -p evidence/development/r0.1
+log=r0.1/go-tests.txt
+if [ "${POLIS_TEST_RACE:-0}" = 1 ]; then test_flags=(-race); log=r0.1/go-tests-race.txt; fi
 bash scripts/go.sh test "${test_flags[@]}" -count=1 -v ./... 2>&1 | tee "evidence/development/$log"
 bash scripts/go.sh vet ./...
 bash scripts/go.sh build -o bin/polis ./cmd/polis
 bash scripts/go.sh build -o bin/polisd ./cmd/polisd
+bash scripts/go.sh build -o bin/polis-probe ./cmd/polis-probe

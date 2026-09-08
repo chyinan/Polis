@@ -74,7 +74,7 @@ func (k *Kernel) TXSubmit(ctx context.Context, b Binding, w Task, key string, co
 		if e != nil {
 			return Receipt{}, e
 		}
-		if t.State != "working" || t.Kind != "compute" {
+		if t.State != "working" || (t.Kind != "compute" && t.Kind != "compat") {
 			return Receipt{}, core.Denied
 		}
 		var existing, digest string
@@ -108,11 +108,11 @@ func (k *Kernel) TXSubmit(ctx context.Context, b Binding, w Task, key string, co
 		if e != nil {
 			return Receipt{}, e
 		}
-		if t.State != "working" || t.Kind != "compute" {
+		if t.State != "working" || (t.Kind != "compute" && t.Kind != "compat") {
 			return Receipt{}, core.Denied
 		}
 		id := stage.ID
-		_, e = tx.Exec(ctx, "INSERT INTO artifacts(company_id,id,task_id,author,digest,bytes,state,contract) VALUES($1,$2,$3,$4,$5,$6,'ready',$7)", b.scope.company, id, t.ID, b.employee, digest, len(content), core.Contract)
+		_, e = tx.Exec(ctx, "INSERT INTO artifacts(company_id,id,task_id,author,digest,bytes,state,contract) SELECT $1,$2,$3,$4,$5,$6,'ready',contract FROM missions WHERE company_id=$1 AND id=$7", b.scope.company, id, t.ID, b.employee, digest, len(content), t.Mission)
 		if e != nil {
 			return Receipt{}, e
 		}
@@ -179,13 +179,16 @@ func (k *Kernel) TXVerify(ctx context.Context, b Binding, id, key string) (Recei
 	if b.employee != "emp-review" {
 		return Receipt{}, core.Denied
 	}
-	var digest, author, task string
-	e := k.pool.QueryRow(ctx, "SELECT digest,author,task_id FROM artifacts WHERE company_id=$1 AND id=$2", b.scope.company, id).Scan(&digest, &author, &task)
+	var digest, author, task, contract string
+	e := k.pool.QueryRow(ctx, "SELECT digest,author,task_id,contract FROM artifacts WHERE company_id=$1 AND id=$2", b.scope.company, id).Scan(&digest, &author, &task, &contract)
 	if errors.Is(e, pgx.ErrNoRows) {
 		return Receipt{}, core.OutOfScope
 	}
 	if e != nil {
 		return Receipt{}, e
+	}
+	if contract != core.Contract {
+		return Receipt{}, core.Denied
 	}
 	content, e := readBlob(k.root, b.scope.company, digest)
 	if e != nil {

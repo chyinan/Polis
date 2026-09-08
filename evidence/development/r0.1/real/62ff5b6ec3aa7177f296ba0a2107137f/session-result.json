@@ -1,0 +1,10 @@
+{
+  "artifact_id": "",
+  "error": "profile completed without required persisted receipt",
+  "forced_checkpoint_boundary": false,
+  "profile": "gpt-5.6-sol/medium",
+  "session_id": "62ff5b6ec3aa7177f296ba0a2107137f",
+  "stop_confirmed": true,
+  "stop_receipt": "process-group:48280:waited",
+  "task_id": "65bc8688944e9471b9955a2c71232227"
+}

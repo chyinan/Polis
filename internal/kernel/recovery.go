@@ -120,7 +120,11 @@ func (k *Kernel) txResetFakeState(ctx context.Context) error {
 	if e != nil {
 		return e
 	}
-	_, e = tx.Exec(ctx, "UPDATE tasks SET state='ready',generation=generation+1 WHERE state='working'")
+	_, e = tx.Exec(ctx, "UPDATE worker_sessions SET state='reconcile_required' WHERE state!='stopped'")
+	if e != nil {
+		return e
+	}
+	_, e = tx.Exec(ctx, "UPDATE tasks t SET state='ready',generation=generation+1 WHERE state='working' AND NOT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=t.company_id AND s.task_id=t.id AND s.state!='stopped')")
 	if e != nil {
 		return e
 	}

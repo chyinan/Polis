@@ -6,7 +6,7 @@ Build AI organizations that outlive their models.
 
 Polis｜长期自治 AI 组织运行时
 
-This checkout implements one R0 kernel experiment based on Draft 0.4.5. A local CLI explicitly starts a mission; fixed planning/backend FakeWorkers collaborate through persisted messages and responsibility; a separate deterministic reviewer checks an immutable arithmetic artifact. Four employee profiles survive controller restarts. No model calls are implemented.
+This checkout contains the R0 deterministic kernel and the R0.1 opt-in Codex worker probe. Default `polis`/`polisd` commands still use FakeWorkers. The one authorized real R0.1 attempt was inconclusive: native inference worked, but a missing tool-host mount prevented any accepted employee operation. That packaging issue is repaired and offline callback/behavior tests pass; the repaired real handover has not been run. See [the R0.1 report](docs/implementation/R0_1_REPORT.md).
 
 ## Run in the prepared workspace
 

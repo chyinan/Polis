@@ -1,0 +1,13 @@
+{
+  "baseline": "Draft 0.4.5 / 51383e7",
+  "full_parent_scenarios": "not_run",
+  "variants": [
+    {"id":"R01-identity","parents":["FT-06","FT-61","FT-62","FT-77"],"invariants":["INV-01","INV-02","INV-09"],"status":"passed","evidence":"worker lifecycle and employee ops PG tests"},
+    {"id":"R01-restore-stop","parents":["FT-05","FT-56","FT-68","FT-75","FT-76"],"invariants":["INV-02","INV-06"],"status":"passed_partial","limit":"bound local processes, mediated writes and fail-closed recovery; not general OS containment"},
+    {"id":"R01-pause","parents":["FT-32","FT-33","PP-08"],"invariants":["INV-01"],"status":"passed","evidence":"paused write/activation refusal with resumed valid neighbor"},
+    {"id":"R01-native-protocol","parents":["FT-61","FT-62"],"invariants":["INV-11","INV-12"],"status":"passed","limit":"pinned app-server + local scripted provider, no inference; not real model qualification"},
+    {"id":"R01-scripted-behavior","parents":["PP-07","PP-08","FT-38","FT-80"],"invariants":["INV-07","INV-11"],"status":"passed","evidence":"negative-zero behavior, rejected lifecycle bypass, frozen tests must run and pass"},
+    {"id":"R01-real-single","parents":["FT-61","PP-04"],"invariants":["INV-12"],"status":"failed","reason":"native helper absent from namespace; zero accepted employee operations"},
+    {"id":"R01-real-handover","parents":["FT-08","PP-07"],"invariants":["INV-06","INV-07"],"status":"not_run","reason":"no primary checkpoint/artifact and primary-profile turn cap exhausted"}
+  ]
+}

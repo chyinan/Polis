@@ -1,0 +1,10 @@
+{
+  "binary_sha256": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+  "configuration_sha256": "4fd3254378d087f0f5503cdc89e569293ceb595d30adc0d27b73a4dd90a43285",
+  "native_protocol": "passed_without_inference",
+  "real_profiles": "not_run",
+  "schema_sha256": "6032863e8a892b00eb34433d5fefb057066a7b700cf5f6ce06b1321e382b7455",
+  "scope": "mediated_fixture_only; native shell/delegation/external tools disabled; network is available to native provider transport",
+  "tools_sha256": "d0886c0e93a53efd424ad48f7f02f7f9ae76ad46ff9a46a6aff316ac4b87cbd9",
+  "version": "codex-cli 0.151.0"
+}

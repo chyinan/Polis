@@ -1,0 +1,96 @@
+?   	polis/cmd/polis	[no test files]
+?   	polis/cmd/polis-probe	[no test files]
+?   	polis/cmd/polisd	[no test files]
+?   	polis/db	[no test files]
+=== RUN   TestScriptedProtocolHelper
+--- PASS: TestScriptedProtocolHelper (0.00s)
+=== RUN   TestForeignNativeCorrelationNeverReachesKernel
+--- PASS: TestForeignNativeCorrelationNeverReachesKernel (0.03s)
+=== RUN   TestBudgetPersistsReservations
+--- PASS: TestBudgetPersistsReservations (0.02s)
+=== RUN   TestNativeProtocolWithoutInference
+--- PASS: TestNativeProtocolWithoutInference (1.58s)
+PASS
+ok  	polis/internal/codex	1.627s
+=== RUN   TestCandidateRequiresExactContractAndIndependentChecker
+=== RUN   TestCandidateRequiresExactContractAndIndependentChecker/valid
+=== RUN   TestCandidateRequiresExactContractAndIndependentChecker/wrong_sum
+=== RUN   TestCandidateRequiresExactContractAndIndependentChecker/self_approval
+=== RUN   TestCandidateRequiresExactContractAndIndependentChecker/empty
+--- PASS: TestCandidateRequiresExactContractAndIndependentChecker (0.00s)
+    --- PASS: TestCandidateRequiresExactContractAndIndependentChecker/valid (0.00s)
+    --- PASS: TestCandidateRequiresExactContractAndIndependentChecker/wrong_sum (0.00s)
+    --- PASS: TestCandidateRequiresExactContractAndIndependentChecker/self_approval (0.00s)
+    --- PASS: TestCandidateRequiresExactContractAndIndependentChecker/empty (0.00s)
+PASS
+ok  	polis/internal/core	0.003s
+?   	polis/internal/dbgen	[no test files]
+?   	polis/internal/fixture	[no test files]
+=== RUN   TestFaultBoundaries
+=== RUN   TestFaultBoundaries/singleton-controller
+=== RUN   TestFaultBoundaries/FT-45-transaction-rollback
+=== RUN   TestFaultBoundaries/FT-01-concurrent-message-replay
+=== RUN   TestFaultBoundaries/FT-67-query-does-not-change-incarnation-or-state
+=== RUN   TestFaultBoundaries/FT-16-foreign-write-with-valid-identity
+=== RUN   TestFaultBoundaries/FT-06-task-generation-neighbor
+=== RUN   TestFaultBoundaries/publication-has-durable-staging-record
+=== RUN   TestFaultBoundaries/bad-artifact-is-never-accepted
+=== RUN   TestFaultBoundaries/missing-artifact-on-restart
+--- PASS: TestFaultBoundaries (0.14s)
+    --- PASS: TestFaultBoundaries/singleton-controller (0.00s)
+    --- PASS: TestFaultBoundaries/FT-45-transaction-rollback (0.01s)
+    --- PASS: TestFaultBoundaries/FT-01-concurrent-message-replay (0.02s)
+    --- PASS: TestFaultBoundaries/FT-67-query-does-not-change-incarnation-or-state (0.01s)
+    --- PASS: TestFaultBoundaries/FT-16-foreign-write-with-valid-identity (0.00s)
+    --- PASS: TestFaultBoundaries/FT-06-task-generation-neighbor (0.00s)
+    --- PASS: TestFaultBoundaries/publication-has-durable-staging-record (0.00s)
+    --- PASS: TestFaultBoundaries/bad-artifact-is-never-accepted (0.00s)
+    --- PASS: TestFaultBoundaries/missing-artifact-on-restart (0.03s)
+=== RUN   TestCrashHelper
+--- PASS: TestCrashHelper (0.00s)
+=== RUN   TestProcessCrashRecovery
+--- PASS: TestProcessCrashRecovery (0.28s)
+=== RUN   TestPostgresSlice
+=== RUN   TestPostgresSlice/FT-57-concurrent-start
+=== RUN   TestPostgresSlice/FT-58-paused-mission-keeps-slot
+=== RUN   TestPostgresSlice/FT-01-62-message-idempotency-and-conflict
+=== RUN   TestPostgresSlice/FT-16-scope-deny-allow-neighbors
+=== RUN   TestPostgresSlice/FT-02-27-restart-recovers-pending-responsibility
+=== RUN   TestPostgresSlice/FT-06-stale-epoch-valid-neighbor
+=== RUN   TestPostgresSlice/FT-73-response-requires-evidence
+=== RUN   TestPostgresSlice/FT-38-independent-fixed-verification
+=== RUN   TestPostgresSlice/FT-69-fixed-artifact-survives-restart
+=== RUN   TestPostgresSlice/FT-31-81-idle-no-repeated-claims
+=== RUN   TestPostgresSlice/FT-69-corrupt-file-invalidates-acceptance
+--- PASS: TestPostgresSlice (0.34s)
+    --- PASS: TestPostgresSlice/FT-57-concurrent-start (0.02s)
+    --- PASS: TestPostgresSlice/FT-58-paused-mission-keeps-slot (0.01s)
+    --- PASS: TestPostgresSlice/FT-01-62-message-idempotency-and-conflict (0.01s)
+    --- PASS: TestPostgresSlice/FT-16-scope-deny-allow-neighbors (0.00s)
+    --- PASS: TestPostgresSlice/FT-02-27-restart-recovers-pending-responsibility (0.03s)
+    --- PASS: TestPostgresSlice/FT-06-stale-epoch-valid-neighbor (0.04s)
+    --- PASS: TestPostgresSlice/FT-73-response-requires-evidence (0.01s)
+    --- PASS: TestPostgresSlice/FT-38-independent-fixed-verification (0.01s)
+    --- PASS: TestPostgresSlice/FT-69-fixed-artifact-survives-restart (0.03s)
+    --- PASS: TestPostgresSlice/FT-31-81-idle-no-repeated-claims (0.06s)
+    --- PASS: TestPostgresSlice/FT-69-corrupt-file-invalidates-acceptance (0.05s)
+=== RUN   TestLostLeaseCannotRecoverOverSuccessor
+--- PASS: TestLostLeaseCannotRecoverOverSuccessor (0.08s)
+=== RUN   TestCloseReleasesLeaseMutexBeforeWaitingForTransactions
+--- PASS: TestCloseReleasesLeaseMutexBeforeWaitingForTransactions (0.04s)
+=== RUN   TestWorkerLifecycleAndMediation
+    worker_test.go:45: got <nil>, want POLICY_DENIED
+--- FAIL: TestWorkerLifecycleAndMediation (0.11s)
+=== RUN   TestEmployeeOpsBehavioralHandover
+--- PASS: TestEmployeeOpsBehavioralHandover (39.36s)
+FAIL
+FAIL	polis/internal/kernel	40.357s
+?   	polis/internal/probe	[no test files]
+=== RUN   TestStopProofBindsSessionAndWaitsForExit
+--- PASS: TestStopProofBindsSessionAndWaitsForExit (0.00s)
+=== RUN   TestIsolatedVerifierRejectsBaselineAndAcceptsValidNeighbor
+    runner_test.go:37: test lifecycle bypass was accepted
+--- FAIL: TestIsolatedVerifierRejectsBaselineAndAcceptsValidNeighbor (20.83s)
+FAIL
+FAIL	polis/internal/runner	20.834s
+FAIL

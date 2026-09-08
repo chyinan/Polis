@@ -1,0 +1,14 @@
+{
+  "overall": "inconclusive",
+  "single_worker": "failed",
+  "failure_class": "native_tool_environment_packaging",
+  "handover": "not_run",
+  "real_behavioral_acceptance": "not_run",
+  "medium_turns": 3,
+  "high_turns": 0,
+  "reason": "codex-code-mode-host absent inside namespace; all tool attempts failed before Polis callback",
+  "raw_result_note": "real/result.json retained verbatim; its single_worker=not_run default was inaccurate for an attempted execution. This assessment distinguishes attempted failure from unexecuted handover. Reporter code corrected for future experiments.",
+  "post_fix_real_calls": 0,
+  "repair": "required sibling binary mounted and fingerprinted; native callback validated with local scripted Responses provider; capability warnings fail closed",
+  "extra_authorization_needed": "A new bounded retest allowance (suggested: 2 medium + 1 high, max 10 minutes, concurrency 1). Existing allowance is retained and cannot be reset automatically."
+}

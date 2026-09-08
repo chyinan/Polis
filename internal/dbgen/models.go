@@ -99,3 +99,51 @@ type Task struct {
 	Generation int64
 	Plan       []byte
 }
+
+type WorkerCheck struct {
+	CompanyID string
+	ID        string
+	SessionID string
+	Digest    string
+	Phase     string
+	Passed    bool
+	Report    []byte
+}
+
+type WorkerCheckpoint struct {
+	CompanyID string
+	ID        string
+	SessionID string
+	Digest    string
+	Data      []byte
+}
+
+type WorkerObservation struct {
+	CompanyID string
+	ID        string
+	SessionID string
+	Reason    string
+	Data      []byte
+}
+
+type WorkerSession struct {
+	CompanyID        string
+	ID               string
+	EmployeeID       string
+	TaskID           string
+	Generation       int64
+	Epoch            int64
+	Incarnation      string
+	Profile          string
+	State            string
+	CapabilityDigest pgtype.Text
+	ProcessPid       pgtype.Int8
+	StopReceipt      pgtype.Text
+}
+
+type WorkerWorkspace struct {
+	CompanyID string
+	TaskID    string
+	Digest    string
+	Revision  int64
+}

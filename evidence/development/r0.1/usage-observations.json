@@ -1,0 +1,28 @@
+{
+  "observations": 14,
+  "last_cumulative": {
+    "threadId": "01a07f81-c5c2-7710-b120-591a5ace05ac",
+    "turnId": "01a07f82-8521-78a2-aae9-7d3c0bd4cecd",
+    "tokenUsage": {
+      "total": {
+        "totalTokens": 130846,
+        "inputTokens": 129538,
+        "cachedInputTokens": 98432,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 1308,
+        "reasoningOutputTokens": 373
+      },
+      "last": {
+        "totalTokens": 10228,
+        "inputTokens": 10167,
+        "cachedInputTokens": 9728,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 61,
+        "reasoningOutputTokens": 9
+      },
+      "modelContextWindow": 258400
+    }
+  },
+  "money": "not_estimated",
+  "note": "native cumulative counters; do not sum successive totals"
+}

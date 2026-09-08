@@ -1,0 +1,25 @@
+{
+  "EmployeeID": "emp-backend",
+  "Task": {
+    "ID": "65bc8688944e9471b9955a2c71232227",
+    "Mission": "mission-single",
+    "Owner": "emp-backend",
+    "Kind": "compat",
+    "State": "ready",
+    "Generation": 0
+  },
+  "Workspace": {
+    "Digest": "a7b5554eac81be5bbad7863548b88e5d9cdceeb01d529553a4d3d20473dc60cb",
+    "Content": "package formatter\n\nimport (\n \"math\"\n \"strconv\"\n)\n\nfunc Render(v float64) string {\n if v == 0 {\n  if math.Signbit(v) { return \"-0\" }\n  return \"0\"\n }\n return strconv.FormatFloat(v, 'f', -1, 64)\n}\n",
+    "Revision": 1
+  },
+  "Obligations": [
+    {
+      "ID": "88d88d47636c2fbed0d9838e69c3befd",
+      "State": "pending"
+    }
+  ],
+  "Checkpoints": null,
+  "CompanySeq": 3,
+  "Contract": "signed-zero@1"
+}

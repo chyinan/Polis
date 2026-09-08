@@ -1,0 +1,45 @@
+approval_policy = "never"
+sandbox_mode = "read-only"
+web_search = "disabled"
+cli_auth_credentials_store = "file"
+project_doc_max_bytes = 0
+model_reasoning_effort = "medium"
+model_provider = "polis-openai"
+[model_providers.polis-openai]
+name = "OpenAI"
+requires_openai_auth = true
+request_max_retries = 0
+stream_max_retries = 0
+supports_websockets = false
+[features]
+shell_tool = false
+unified_exec = false
+apply_patch_freeform = false
+shell_snapshot = false
+multi_agent = false
+multi_agent_v2 = false
+collab = false
+apps = false
+connectors = false
+plugins = false
+hooks = false
+codex_hooks = false
+plugin_hooks = false
+js_repl = false
+code_mode = false
+browser_use = false
+computer_use = false
+image_generation = false
+view_image = false
+tool_search = false
+skill_search = false
+skip_host_skill_discovery = true
+skill_mcp_dependency_install = false
+memory_tool = false
+memories = false
+goals = false
+responses_websockets = false
+responses_websockets_v2 = false
+[features.tool_registry]
+error_on_tool_collisions = true
+turn_metadata_includes_tool_info = true

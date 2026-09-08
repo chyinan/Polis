@@ -1,9 +1,7 @@
-# Current implementation slice
+# Next slice: finish R0.1 evidence
 
-Explicit local test mission → unique bootstrap owned by emp-planning → direct bounded request to emp-backend → evidence-bearing response → fixed candidate → deterministic non-author emp-review verification → process restart recovery. Four fixed profiles include idle emp-frontend. Two scripted FakeWorkers do the collaboration; the checker is trusted deterministic code.
+The integration code and offline behavior tests exist. The first real attempt failed at a missing native helper and consumed all 3 primary-profile turns. Do not expand into R1, QQ, MCP, feedback or UI.
 
-Use scoped internal handles bound by the trusted local CLI, never identity fields in worker payloads. No HTTP worker endpoint or browser authentication is exposed. Keep normalized PG records, company-guard transactions, ordered company events, durable outbox and stable receipts. A controller owns an advisory lock and new incarnation. Only in-process fake work may be recovered automatically; this is not OS writer isolation.
+Only after renewed owner authorization: run a new named experiment with at most 2 GPT-5.6 Sol Medium turns and 1 High turn, concurrency 1, total wall time 10 minutes. Preserve the old `real/` evidence and allowance. First prove single-worker tool execution, then checkpoint-based forced interruption and same-Employee neutral handover with the signed-zero behavioral check. Missing receipts, failed acceptance, unknown outcomes or exhausted allowance stop the run.
 
-Tests: duplicate/concurrent start and message, body conflict, foreign company access, stale epoch/incarnation and valid neighbor, transaction rollback, pending responsibility and artifact recovery, idle bounded reconciliation, bad/missing/corrupt artifact and author self-approval rejection. Full parent FT/PP scenarios remain not_run when only an R0 variant runs.
-
-No paid worker adapter, workspace command execution, MCP, downloads, GC, QQ, complete UI or business integration in this slice. Go CLI queries are sufficient. Stop after this bounded slice is verified.
+The concrete command and prerequisites are in `REAL_MODEL_PROBE.md`. Code changes should be limited to failures exposed by this bounded experiment. A repaired local-provider test is not a real-model success.

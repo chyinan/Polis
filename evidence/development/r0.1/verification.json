@@ -1,0 +1,15 @@
+{
+  "normal_pg_tests": "passed",
+  "race_pg_tests": "passed",
+  "go_vet": "passed",
+  "build_all_three_commands": "passed",
+  "native_local_scripted_provider_callback": "passed",
+  "scripted_behavioral_handover": "passed",
+  "real_single_worker": "failed",
+  "real_handover": "not_run",
+  "real_behavior": "not_run",
+  "real_medium_turns": 3,
+  "real_high_turns": 0,
+  "post_fix_real_turns": 0,
+  "baseline": "51383e7"
+}
