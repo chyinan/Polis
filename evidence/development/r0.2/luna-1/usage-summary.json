@@ -1,0 +1,23 @@
+{
+  "updates": 9,
+  "by_session": {
+    "e9485489eeece81bcce3678779e3f91c": {
+      "totalTokens": 23220,
+      "inputTokens": 22753,
+      "cachedInputTokens": 12800,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 467,
+      "reasoningOutputTokens": 77
+    },
+    "8cc15e9fa95d3feb5407d9254dd78860": {
+      "totalTokens": 56611,
+      "inputTokens": 55737,
+      "cachedInputTokens": 41728,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 874,
+      "reasoningOutputTokens": 141
+    }
+  },
+  "money": "not_estimated",
+  "note": "cumulative native counters; not summed across updates"
+}

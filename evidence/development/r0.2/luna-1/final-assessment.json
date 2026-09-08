@@ -22,4 +22,6 @@
   "r0_2_result_preserved": true,
   "no_automatic_retry": true,
   "money": "not_estimated"
+  ,"native_usage_updates": 9
+  ,"medium_session_totals": {"e9485489eeece81bcce3678779e3f91c": 23220, "8cc15e9fa95d3feb5407d9254dd78860": 56611}
 }

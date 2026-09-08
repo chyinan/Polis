@@ -70,7 +70,7 @@ func parseRecoveredCandidate(path, artifactID string) (string, kernel.Checkpoint
 		Arguments json.RawMessage
 	}
 	calls := map[string]callInfo{}
-	var content, checkedContent, checkedDigest, checkReceipt string
+	var content, checkedContent, checkedDigest, checkReceipt, currentContent, currentDigest, acceptedContent string
 	var cp kernel.Checkpoint
 	var cpReceipt string
 	artifactOK := false
@@ -122,6 +122,9 @@ func parseRecoveredCandidate(path, artifactID string) (string, kernel.Checkpoint
 			continue
 		}
 		call := calls[tr.CallID]
+		if artifactOK {
+			continue
+		}
 		switch tr.Tool {
 		case "polis_workspace_replace":
 			if call.Tool != tr.Tool || result.Receipt.Status != "persisted" {
@@ -138,6 +141,21 @@ func parseRecoveredCandidate(path, artifactID string) (string, kernel.Checkpoint
 				continue
 			}
 			content = a.Content
+			currentContent = content
+			currentDigest = result.Receipt.ID
+			// A successful replacement invalidates every prior check and checkpoint.
+			checkedContent, checkedDigest, checkReceipt = "", "", ""
+			cp = kernel.Checkpoint{}
+			cpReceipt = ""
+		case "polis_workspace_read", "polis_work_current", "polis_context_read":
+			var data struct {
+				Digest  string `json:"Digest"`
+				Content string `json:"Content"`
+			}
+			_ = json.Unmarshal(result.Data, &data)
+			if data.Content != "" && data.Digest != "" {
+				currentContent, currentDigest = data.Content, data.Digest
+			}
 		case "polis_workspace_check":
 			if result.Receipt.Status != "persisted" {
 				continue
@@ -164,8 +182,9 @@ func parseRecoveredCandidate(path, artifactID string) (string, kernel.Checkpoint
 			}
 			cp, cpReceipt = candidate, result.Receipt.ID
 		case "polis_artifact_submit":
-			if result.Receipt.Status == "candidate" && result.Receipt.ID == artifactID && cpReceipt != "" && checkedDigest != "" && checkedDigest == digestFor(checkedContent) {
+			if result.Receipt.Status == "candidate" && result.Receipt.ID == artifactID && cpReceipt != "" && checkedDigest != "" && checkedDigest == digestFor(checkedContent) && currentDigest == checkedDigest && currentContent == checkedContent {
 				artifactOK = true
+				acceptedContent = checkedContent
 			}
 		}
 	}
@@ -175,7 +194,7 @@ func parseRecoveredCandidate(path, artifactID string) (string, kernel.Checkpoint
 	if !artifactOK {
 		return "", cp, errors.New("no artifact receipt bound to successful checked content and checkpoint")
 	}
-	return checkedContent, cp, nil
+	return acceptedContent, cp, nil
 }
 func contains(values []string, want string) bool {
 	for _, v := range values {

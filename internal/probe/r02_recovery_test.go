@@ -63,10 +63,60 @@ func TestRecoveredCandidateUsesSuccessfulCheckedContent(t *testing.T) {
 	if content != a || cp.Summary != "checkpoint" {
 		t.Fatalf("recovered content/checkpoint mismatch: %q %+v", content, cp)
 	}
+	badLines := append([]entry{}, lines[:6]...)
+	badLines = append(badLines,
+		entry{"receive", map[string]any{"method": "item/tool/call", "params": map[string]any{"callId": "replace-b2", "tool": "polis_workspace_replace", "arguments": map[string]any{"content": b, "expected_digest": digestA}}}},
+		entry{"tool_result", map[string]any{"call_id": "replace-b2", "tool": "polis_workspace_replace", "result": map[string]any{"receipt": map[string]any{"id": digestB, "status": "persisted"}}}},
+		entry{"receive", map[string]any{"method": "item/tool/call", "params": map[string]any{"callId": "artifact-2", "tool": "polis_artifact_submit", "arguments": map[string]any{}}}},
+		entry{"tool_result", map[string]any{"call_id": "artifact-2", "tool": "polis_artifact_submit", "result": map[string]any{"receipt": map[string]any{"id": "artifact-1", "status": "candidate"}}}},
+	)
+	badPath := filepath.Join(dir, "protocol-bad.jsonl")
+	f, e = os.Create(badPath)
+	if e != nil {
+		t.Fatal(e)
+	}
+	enc = json.NewEncoder(f)
+	for _, line := range badLines {
+		if e = enc.Encode(line); e != nil {
+			t.Fatal(e)
+		}
+	}
+	f.Close()
+	if _, _, e = parseRecoveredCandidate(badPath, "artifact-1"); e == nil {
+		t.Fatal("unverified post-check replacement was accepted")
+	}
+	freezeLines := append([]entry{}, lines...)
+	c := "package formatter\nfunc Render(v float64) string { return \"C\" }\n"
+	dc := sha256.Sum256([]byte(c))
+	freezeLines = append(freezeLines, entry{"receive", map[string]any{"method": "item/tool/call", "params": map[string]any{"callId": "replace-c", "tool": "polis_workspace_replace", "arguments": map[string]any{"content": c, "expected_digest": digestA}}}}, entry{"tool_result", map[string]any{"call_id": "replace-c", "tool": "polis_workspace_replace", "result": map[string]any{"receipt": map[string]any{"id": hex.EncodeToString(dc[:]), "status": "persisted"}}}})
+	freezePath := filepath.Join(dir, "protocol-freeze.jsonl")
+	f, e = os.Create(freezePath)
+	if e != nil {
+		t.Fatal(e)
+	}
+	enc = json.NewEncoder(f)
+	for _, line := range freezeLines {
+		if e = enc.Encode(line); e != nil {
+			t.Fatal(e)
+		}
+	}
+	f.Close()
+	content, _, e = parseRecoveredCandidate(freezePath, "artifact-1")
+	if e != nil || content != a {
+		t.Fatalf("accepted artifact was not frozen: %q %v", content, e)
+	}
 }
 
-func TestLoadRecoveredRealEvidenceFixture(t *testing.T){
-	root:=os.Getenv("POLIS_R02_EVIDENCE");if root==""{t.Skip("POLIS_R02_EVIDENCE required")}
-	r,e:=loadRecoveredReal(root);if e!=nil{t.Fatal(e)}
-	if r.Artifact==""||r.Content==""||r.Checkpoint.Summary==""{t.Fatal("incomplete recovered evidence")}
+func TestLoadRecoveredRealEvidenceFixture(t *testing.T) {
+	root := os.Getenv("POLIS_R02_EVIDENCE")
+	if root == "" {
+		t.Skip("POLIS_R02_EVIDENCE required")
+	}
+	r, e := loadRecoveredReal(root)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if r.Artifact == "" || r.Content == "" || r.Checkpoint.Summary == "" {
+		t.Fatal("incomplete recovered evidence")
+	}
 }

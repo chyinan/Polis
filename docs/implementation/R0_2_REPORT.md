@@ -12,6 +12,8 @@ Turn 2 used a new GPT-5.6 Luna Medium session with the same Polis EmployeeId `em
 
 The two Medium turns therefore demonstrate real mediated worker calls, persisted checkpoints, forced interruption, a new native session, same EmployeeId continuity, a neutral bundle and a continuation artifact. The original temporary database was cleaned up by the script after it wrote the immutable evidence. That cleanup exposed a review-task uniqueness bug before High; it is fixed offline by using the distinct `review` task kind. The High-only recovery command can reconstruct the exact Medium2 candidate from the protocol log, but its attempt was refused because the original ten-minute allowance had expired. It consumed no High turn.
 
+The native app-server emitted nine cumulative usage updates. The last totals were 23,220 tokens for Medium1 and 56,611 for Medium2 (input/output breakdowns are in `usage-summary.json`). These counters are reported as observed usage only; they are not a dollar estimate and successive updates were not summed.
+
 ## Behavior-level status
 
 The real High behavior acceptance is **NOT RUN**. The real Medium2 model did produce a candidate that passed the deterministic full signed-zero checker in the original driver before the review-task creation failure, but that checker is not a substitute for the authorized independent High review. The offline equivalent remains passed: `TestEmployeeOpsBehavioralHandover` deliberately breaks signed-zero handling and fails the checker, then accepts the valid `RenderWithUnit` neighbor; the checker also rejects test-lifecycle bypasses.
