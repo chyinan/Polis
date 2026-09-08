@@ -4,7 +4,7 @@ ALTER TABLE missions ADD CHECK(contract IN ('r0-arithmetic@1','signed-zero@1'));
 ALTER TABLE artifacts DROP CONSTRAINT artifacts_contract_check;
 ALTER TABLE artifacts ADD CHECK(contract IN ('r0-arithmetic@1','signed-zero@1'));
 ALTER TABLE tasks DROP CONSTRAINT tasks_kind_check;
-ALTER TABLE tasks ADD CHECK(kind IN ('bootstrap_plan','compute','compat'));
+ALTER TABLE tasks ADD CHECK(kind IN ('bootstrap_plan','compute','compat','review'));
 CREATE TABLE worker_sessions (
  company_id text NOT NULL,
  id text NOT NULL,

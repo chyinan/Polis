@@ -70,7 +70,7 @@ func (k *Kernel) TXNewWorker(ctx context.Context, s Scope, task, profile string)
 		if e != nil {
 			return Receipt{}, e
 		}
-		if t.Kind != "compat" || t.State == "completed" {
+		if (t.Kind != "compat" && t.Kind != "review") || t.State == "completed" {
 			return Receipt{}, core.Denied
 		}
 		ms, e := missionState(ctx, tx, s, t.Mission)

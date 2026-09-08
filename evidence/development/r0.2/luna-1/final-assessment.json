@@ -1,0 +1,25 @@
+{
+  "overall": "inconclusive",
+  "model": "gpt-5.6-luna",
+  "codex_version": "0.151.0",
+  "medium_turns": 2,
+  "high_turns": 0,
+  "turn_1": "passed",
+  "turn_2": "passed",
+  "turn_durations_ms": {"medium_1": 59024, "medium_2": 67090},
+  "tool_events": {
+    "medium_1": ["context_read", "workspace_read", "work_current", "workspace_replace", "workspace_check", "work_checkpoint"],
+    "medium_2": ["work_current", "workspace_read", "context_read", "workspace_replace", "workspace_check", "work_checkpoint", "artifact_submit"]
+  },
+  "stop_receipts": ["process-group:12991:waited", "process-group:14980:waited"],
+  "same_employee_id": "emp-backend",
+  "artifact_id": "57761d55c7b0dbf63668b9f8010de41d",
+  "old_writer": "rejected",
+  "real_behavior_acceptance": "not_run",
+  "high_gate": "not_started_before_10_minute_deadline",
+  "why": "The first two Medium turns completed before the optional review task could be repaired and the persisted total allowance expired. The later High-only recovery stopped before reserve and consumed no High turn.",
+  "historical_r0_1_preserved": true,
+  "r0_2_result_preserved": true,
+  "no_automatic_retry": true,
+  "money": "not_estimated"
+}

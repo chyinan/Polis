@@ -26,10 +26,11 @@ type CheckRunner interface {
 // EmployeeTools is constructed by the trusted adapter. No payload can select
 // company, employee, attempt, epoch or task. callID comes from the native bridge.
 type EmployeeTools struct {
-	Kernel  *Kernel
-	Binding Binding
-	Checker CheckRunner
-	Phase   string
+	Kernel   *Kernel
+	Binding  Binding
+	Checker  CheckRunner
+	Phase    string
+	ReadOnly bool
 }
 
 func strictArgs(raw []byte, v any) error {
@@ -82,6 +83,9 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		return ToolResult{Data: h}, e
 	case "workspace_replace":
+		if t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
 		var args struct {
 			ExpectedDigest string `json:"expected_digest"`
 			Content        string `json:"content"`
@@ -125,6 +129,9 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		r, e := k.TXCheckpoint(ctx, b, key, args)
 		return ToolResult{Receipt: &r}, e
 	case "artifact_submit":
+		if t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
 		var args struct{}
 		if e := strictArgs(raw, &args); e != nil {
 			return ToolResult{}, e

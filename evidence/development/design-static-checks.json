@@ -1326,12 +1326,42 @@
       "detail": ""
     },
     {
+      "name": "employee_operation_in_main:artifact.submit",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "name": "employee_operation_in_main:research.search",
       "status": "pass",
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:workspace.snapshot",
+      "name": "employee_operation_in_main:work.checkpoint",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:inputs.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:research.fetch",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:inputs.list",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:workspace.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:skills.load",
       "status": "pass",
       "detail": ""
     },
@@ -1341,7 +1371,67 @@
       "detail": ""
     },
     {
+      "name": "employee_operation_in_main:jobs.logs",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:work.yield",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:context.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:delivery.propose",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:work.block",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:jobs.status",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:collab.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:tools.describe",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:plan.propose",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:resources.read",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:jobs.stop",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "name": "employee_operation_in_main:handover.confirm",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:workspace.search",
       "status": "pass",
       "detail": ""
     },
@@ -1351,12 +1441,37 @@
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:browser.run",
+      "name": "employee_operation_in_main:memory.propose",
       "status": "pass",
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:skills.load",
+      "name": "employee_operation_in_main:browser.results",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:scripts.run",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:jobs.start",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:collab.send",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:contract.propose",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:skills.list",
       "status": "pass",
       "detail": ""
     },
@@ -1371,132 +1486,7 @@
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:skills.list",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:memory.propose",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:feedback.read",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:feedback.triage",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:research.fetch",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:tools.describe",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:work.block",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:tools.call",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:context.read",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:resources.read",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:jobs.logs",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:plan.propose",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:work.current",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:scripts.run",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:inputs.list",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:tools.list",
-      "status": "pass",
-      "detail": ""
-    },
-    {
       "name": "employee_operation_in_main:workspace.list",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:workspace.search",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:environment.status",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:collab.read",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:jobs.start",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:inputs.read",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:delivery.propose",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:jobs.status",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:contract.propose",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:resources.list",
       "status": "pass",
       "detail": ""
     },
@@ -1506,12 +1496,32 @@
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:workspace.read",
+      "name": "employee_operation_in_main:tools.list",
       "status": "pass",
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:artifact.submit",
+      "name": "employee_operation_in_main:feedback.triage",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:environment.status",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:resources.list",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:tools.call",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "employee_operation_in_main:feedback.read",
       "status": "pass",
       "detail": ""
     },
@@ -1521,32 +1531,22 @@
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:browser.results",
-      "status": "pass",
-      "detail": ""
-    },
-    {
       "name": "employee_operation_in_main:review.submit",
       "status": "pass",
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:work.yield",
+      "name": "employee_operation_in_main:workspace.snapshot",
       "status": "pass",
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:collab.send",
+      "name": "employee_operation_in_main:work.current",
       "status": "pass",
       "detail": ""
     },
     {
-      "name": "employee_operation_in_main:work.checkpoint",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "name": "employee_operation_in_main:jobs.stop",
+      "name": "employee_operation_in_main:browser.run",
       "status": "pass",
       "detail": ""
     },

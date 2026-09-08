@@ -9,6 +9,7 @@ import (
 	"os"
 	"polis/internal/runner"
 	"testing"
+	"time"
 )
 
 func TestScriptedProtocolHelper(t *testing.T) {
@@ -122,4 +123,13 @@ func TestReducedRetestBudgetDoesNotExpandToDefaults(t *testing.T) {
 	if e = b.Reserve("high"); e == nil {
 		t.Fatal("high cap expanded")
 	}
+}
+
+func TestPersistedBudgetKeepsOriginalDeadline(t *testing.T){
+	path:=t.TempDir()+"/expired.json"
+	started:=time.Now().UTC().Add(-11*time.Minute)
+	raw,_:=json.Marshal(Budget{Started:started,MediumLimit:2,HighLimit:1})
+	if e:=os.WriteFile(path,raw,0600);e!=nil{t.Fatal(e)}
+	b,e:=OpenBudget(path);if e!=nil{t.Fatal(e)}
+	if e=b.Reserve("high");e==nil{t.Fatal("expired budget regained a fresh window")}
 }

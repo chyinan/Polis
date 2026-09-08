@@ -1,0 +1,45 @@
+{
+  "EmployeeID": "emp-backend",
+  "Task": {
+    "ID": "8385aaea98c0203abd0f7b3b3b9b858c",
+    "Mission": "mission-r02",
+    "Owner": "emp-backend",
+    "Kind": "compat",
+    "State": "working",
+    "Generation": 1
+  },
+  "Workspace": {
+    "Digest": "ab16a20143a09651aa8564cc3eff229aaf3dc965e1e340cf8ccb8eef399b64ae",
+    "Content": "package formatter\n\nimport (\n \"math\"\n \"strconv\"\n)\n\nfunc Render(v float64) string {\n if v == 0 {\n  if math.Signbit(v) { return \"-0\" }\n  return \"0\"\n }\n rendered := strconv.FormatFloat(v, 'f', -1, 64)\n if v \u003e 0 { return \"+\" + rendered }\n return rendered\n}\n",
+    "Revision": 2
+  },
+  "Obligations": [
+    {
+      "ID": "259d03733796566edefed6abeefc1b1c",
+      "State": "pending"
+    }
+  ],
+  "Checkpoints": [
+    {
+      "summary": "First milestone implemented and frozen workspace checks passed. Positive nonzero Render outputs now include a leading +; negative, +0, and -0 behavior remains compatible. No artifact submitted.",
+      "facts": [
+        "Compatibility contract is signed-zero@1.",
+        "Baseline explicitly distinguishes +0 and -0: math.Signbit(-0) must yield \"-0\", while +0 must yield \"0\".",
+        "Strictly positive values are identified by v \u003e 0; negative values and both zero cases must retain prior behavior."
+      ],
+      "decisions": [
+        "Preserve the existing v == 0 branch unchanged.",
+        "Format nonzero values with strconv.FormatFloat(v, 'f', -1, 64), then prepend \"+\" only when v \u003e 0.",
+        "Implement only the first milestone; optional units are deferred to the later employee session."
+      ],
+      "rejected": [
+        "Rejected prepending \"+\" to every non-negative value because it would change zero behavior, especially the required \"0\" output for +0 and potentially \"-0\" handling."
+      ],
+      "evidence": [
+        "57fdbf25e49a3658018aaebebff77c17"
+      ]
+    }
+  ],
+  "CompanySeq": 12,
+  "Contract": "signed-zero@1"
+}

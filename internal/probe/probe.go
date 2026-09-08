@@ -21,6 +21,7 @@ import (
 type Config struct {
 	DSN, Binary, AuthFile, Root, Evidence, GoRoot, SchemaDigest, ProxyURL string
 	MediumLimit, HighLimit                                                int
+	Model                                                                 string
 }
 type Result struct {
 	Status                                                string `json:"status"`
@@ -65,7 +66,7 @@ func Inspect(cfg Config) error {
 		return e
 	}
 	defer p.Stop()
-	c, e := codex.New(p, filepath.Join(cfg.Evidence, "inspect-"+fmt.Sprint(time.Now().UnixNano())))
+	c, e := codex.NewWithModel(p, filepath.Join(cfg.Evidence, "inspect-"+fmt.Sprint(time.Now().UnixNano())), cfg.Model)
 	if e != nil {
 		return e
 	}
@@ -221,7 +222,7 @@ func Run(cfg Config) (result Result, err error) {
 }
 
 func runSession(ctx context.Context, cfg Config, k *kernel.Kernel, scope kernel.Scope, task, effort, instructions, phase string, partial bool, budget *codex.Budget, v runner.Verifier) (artifact, capability string, err error) {
-	b, e := k.TXNewWorker(ctx, scope, task, "gpt-5.6-sol/"+effort)
+	b, e := k.TXNewWorker(ctx, scope, task, cfg.Model+"/"+effort)
 	if e != nil {
 		return "", "", e
 	}
@@ -255,9 +256,9 @@ func runSession(ctx context.Context, cfg Config, k *kernel.Kernel, scope kernel.
 		if c != nil {
 			c.Close()
 		}
-		_ = writeJSON(filepath.Join(cfg.Evidence, b.SessionID(), "session-result.json"), map[string]any{"session_id": b.SessionID(), "task_id": task, "profile": "gpt-5.6-sol/" + effort, "forced_checkpoint_boundary": partial, "artifact_id": artifact, "stop_receipt": proof.Description(), "stop_confirmed": proof.For(b.SessionID()), "error": fmt.Sprint(err)})
+		_ = writeJSON(filepath.Join(cfg.Evidence, b.SessionID(), "session-result.json"), map[string]any{"session_id": b.SessionID(), "task_id": task, "profile": cfg.Model + "/" + effort, "forced_checkpoint_boundary": partial, "artifact_id": artifact, "stop_receipt": proof.Description(), "stop_confirmed": proof.For(b.SessionID()), "error": fmt.Sprint(err)})
 	}()
-	c, e = codex.New(p, filepath.Join(cfg.Evidence, b.SessionID()))
+	c, e = codex.NewWithModel(p, filepath.Join(cfg.Evidence, b.SessionID()), cfg.Model)
 	if e != nil {
 		return "", cap, e
 	}

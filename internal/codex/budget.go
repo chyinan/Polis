@@ -42,6 +42,28 @@ func NewBudget(path string, limits ...int) (*Budget, error) {
 	}
 	return b, f.Sync()
 }
+
+// OpenBudget resumes exactly one previously created allowance. It never
+// initializes missing limits or changes the start time, so a retest cannot reset
+// the original experiment by choosing a new process.
+func OpenBudget(path string) (*Budget, error) {
+	raw, e := os.ReadFile(path)
+	if e != nil {
+		return nil, e
+	}
+	var b Budget
+	if e = json.Unmarshal(raw, &b); e != nil {
+		return nil, e
+	}
+	if b.Started.IsZero() || b.path != "" && b.path != path {
+		return nil, errors.New("invalid persisted allowance")
+	}
+	if b.MediumLimit < 1 || b.MediumLimit > 3 || b.HighLimit < 1 || b.HighLimit > 3 {
+		return nil, errors.New("invalid persisted allowance limits")
+	}
+	b.path = path
+	return &b, nil
+}
 func (b *Budget) Reserve(effort string) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()

@@ -1,0 +1,31 @@
+{
+  "number": 2,
+  "purpose": "same EmployeeId: neutral handover continuation",
+  "profile": "gpt-5.6-luna/medium",
+  "status": "passed",
+  "started": "2026-09-08T07:07:56.637889522Z",
+  "finished": "2026-09-08T07:09:03.72801998Z",
+  "duration_ms": 67090,
+  "thread_id": "01a07fd8-614c-7430-aebe-68884df138a2",
+  "session_id": "8cc15e9fa95d3feb5407d9254dd78860",
+  "tool_events": [
+    "work_current",
+    "workspace_read",
+    "context_read",
+    "workspace_replace",
+    "workspace_check",
+    "work_checkpoint",
+    "artifact_submit"
+  ],
+  "receipts": [
+    "d14c95ecfdefbced2531d7a9baf3497bab1e3ca4c5bc85c1aced6364cc10cca6",
+    "2c96407a8b1eb9c728fcaac0592a0f01",
+    "b0ee253c776468fe4ac85c7f25ab7276",
+    "57761d55c7b0dbf63668b9f8010de41d"
+  ],
+  "stop_receipt": "process-group:14980:waited",
+  "stop_confirmed": true,
+  "artifact_id": "57761d55c7b0dbf63668b9f8010de41d",
+  "checkpoint_id": "b0ee253c776468fe4ac85c7f25ab7276",
+  "check_passed": true
+}

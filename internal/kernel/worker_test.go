@@ -197,6 +197,9 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 		t.Fatal(r.Error)
 	}
 	stop(b2, p2)
+	if _, e := k.TXCreateReviewProbe(ctx, s, "behavior-mission", r.Receipt.ID); e != nil {
+		t.Fatalf("review task could not coexist with compat task: %v", e)
+	}
 	legacyReviewer, e := k.BindFake(ctx, s, "emp-review")
 	must(t, e)
 	_, e = k.TXVerify(ctx, legacyReviewer, r.Receipt.ID, "wrong-verifier")

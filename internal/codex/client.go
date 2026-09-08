@@ -34,6 +34,7 @@ type Client struct {
 	logMu    sync.Mutex
 	wg       sync.WaitGroup
 	closed   chan struct{}
+	model    string
 }
 type TurnResult struct {
 	State    string
@@ -41,6 +42,13 @@ type TurnResult struct {
 }
 
 func New(p *runner.Process, evidence string) (*Client, error) {
+	return NewWithModel(p, evidence, "gpt-5.6-sol")
+}
+
+func NewWithModel(p *runner.Process, evidence, model string) (*Client, error) {
+	if model == "" {
+		return nil, errors.New("model profile required")
+	}
 	if e := os.MkdirAll(evidence, 0700); e != nil {
 		return nil, e
 	}
@@ -48,7 +56,7 @@ func New(p *runner.Process, evidence string) (*Client, error) {
 	if e != nil {
 		return nil, e
 	}
-	c := &Client{process: p, incoming: make(chan Message, 64), readErr: make(chan error, 2), log: f, closed: make(chan struct{})}
+	c := &Client{process: p, incoming: make(chan Message, 64), readErr: make(chan error, 2), log: f, closed: make(chan struct{}), model: model}
 	c.wg.Add(2)
 	go func() {
 		defer c.wg.Done()
@@ -202,7 +210,7 @@ func (c *Client) Initialize(ctx context.Context) error {
 	return c.send(Message{Method: "initialized"})
 }
 func (c *Client) StartThread(ctx context.Context, effort string) (string, error) {
-	params := map[string]any{"model": "gpt-5.6-sol", "allowProviderModelFallback": false, "approvalPolicy": "never", "sandbox": "read-only", "cwd": "/work", "environments": []any{}, "ephemeral": true, "dynamicTools": Tools(), "config": map[string]any{"model_reasoning_effort": effort}, "developerInstructions": "You are one fixed Polis employee. Use only polis_* dynamic tools for company context and changes. Native thread IDs are not task authority. Do not use shell, apply_patch, web, external MCP, delegation or account tools. Tool receipts, not natural-language completion, determine progress."}
+	params := map[string]any{"model": c.model, "allowProviderModelFallback": false, "approvalPolicy": "never", "sandbox": "read-only", "cwd": "/work", "environments": []any{}, "ephemeral": true, "dynamicTools": Tools(), "config": map[string]any{"model_reasoning_effort": effort}, "developerInstructions": "You are one fixed Polis employee. Use only polis_* dynamic tools for company context and changes. Native thread IDs are not task authority. Do not use shell, apply_patch, web, external MCP, delegation or account tools. Tool receipts, not natural-language completion, determine progress."}
 	raw, e := c.Request(ctx, "thread/start", params)
 	if e != nil {
 		return "", e
@@ -221,13 +229,13 @@ func (c *Client) StartThread(ctx context.Context, effort string) (string, error)
 	if e = json.Unmarshal(raw, &r); e != nil {
 		return "", e
 	}
-	if r.Thread.ID == "" || r.Model != "gpt-5.6-sol" || r.Effort != effort || r.Approval != "never" || r.Sandbox.Type != "readOnly" {
+	if r.Thread.ID == "" || r.Model != c.model || r.Effort != effort || r.Approval != "never" || r.Sandbox.Type != "readOnly" {
 		return "", errors.New("native profile or permission mismatch")
 	}
 	return r.Thread.ID, nil
 }
 func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handler func(string, string, json.RawMessage) (json.RawMessage, bool)) (TurnResult, error) {
-	raw, e := c.Request(ctx, "turn/start", map[string]any{"threadId": thread, "model": "gpt-5.6-sol", "effort": effort, "input": []any{map[string]any{"type": "text", "text": prompt}}})
+	raw, e := c.Request(ctx, "turn/start", map[string]any{"threadId": thread, "model": c.model, "effort": effort, "input": []any{map[string]any{"type": "text", "text": prompt}}})
 	if e != nil {
 		return TurnResult{}, e
 	}

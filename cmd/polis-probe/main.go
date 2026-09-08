@@ -31,6 +31,7 @@ func run() error {
 		return e
 	}
 	cfg := probe.Config{DSN: os.Getenv("POLIS_DSN"), AuthFile: os.Getenv("POLIS_CODEX_AUTH_FILE"), Binary: filepath.Join(cwd, ".tools/codex-linux/package/vendor/x86_64-unknown-linux-musl/bin/codex"), Root: filepath.Join(cwd, ".runtime/linux/r01-probe"), Evidence: filepath.Join(cwd, "evidence/development/r0.1/real"), GoRoot: filepath.Join(cwd, ".tools/go"), SchemaDigest: os.Getenv("POLIS_SCHEMA_DIGEST")}
+	cfg.Model = "gpt-5.6-sol"
 	if *inspect {
 		cfg.Evidence = filepath.Join(cwd, "evidence/development/r0.1", *label)
 		cfg.ProxyURL = os.Getenv("POLIS_NATIVE_PROXY")

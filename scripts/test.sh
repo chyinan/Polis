@@ -27,3 +27,5 @@ bash scripts/go.sh vet ./...
 bash scripts/go.sh build -o bin/polis ./cmd/polis
 bash scripts/go.sh build -o bin/polisd ./cmd/polisd
 bash scripts/go.sh build -o bin/polis-probe ./cmd/polis-probe
+bash scripts/go.sh build -o bin/polis-r02 ./cmd/polis-r02
+bash scripts/go.sh build -o bin/polis-r02-high ./cmd/polis-r02-high

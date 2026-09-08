@@ -1,0 +1,81 @@
+{
+  "status": "inconclusive",
+  "model": "gpt-5.6-luna",
+  "codex_version": "codex-cli 0.151.0",
+  "schema_digest": "6032863e8a892b00eb34433d5fefb057066a7b700cf5f6ce06b1321e382b7455",
+  "capability_digest": "6e44c5f8aeca55513580b70bb49e7b936372fc2a4b6b85e01cc0f5502bb7c1c2",
+  "started": "2026-09-08T07:06:57.553914957Z",
+  "finished": "2026-09-08T07:09:03.734232042Z",
+  "turns": [
+    {
+      "number": 1,
+      "purpose": "single real worker: mediated partial task",
+      "profile": "gpt-5.6-luna/medium",
+      "status": "passed",
+      "started": "2026-09-08T07:06:57.595613903Z",
+      "finished": "2026-09-08T07:07:56.61974882Z",
+      "duration_ms": 59024,
+      "thread_id": "01a07fd7-7fcd-7d71-b549-477033cedb30",
+      "session_id": "e9485489eeece81bcce3678779e3f91c",
+      "tool_events": [
+        "context_read",
+        "workspace_read",
+        "work_current",
+        "workspace_replace",
+        "workspace_check",
+        "work_checkpoint"
+      ],
+      "receipts": [
+        "ab16a20143a09651aa8564cc3eff229aaf3dc965e1e340cf8ccb8eef399b64ae",
+        "57fdbf25e49a3658018aaebebff77c17",
+        "f77b1bacd26e3a7c77614f6dc990f0c5"
+      ],
+      "stop_receipt": "process-group:12991:waited",
+      "stop_confirmed": true,
+      "checkpoint_id": "f77b1bacd26e3a7c77614f6dc990f0c5",
+      "check_passed": true
+    },
+    {
+      "number": 2,
+      "purpose": "same EmployeeId: neutral handover continuation",
+      "profile": "gpt-5.6-luna/medium",
+      "status": "passed",
+      "started": "2026-09-08T07:07:56.637889522Z",
+      "finished": "2026-09-08T07:09:03.72801998Z",
+      "duration_ms": 67090,
+      "thread_id": "01a07fd8-614c-7430-aebe-68884df138a2",
+      "session_id": "8cc15e9fa95d3feb5407d9254dd78860",
+      "tool_events": [
+        "work_current",
+        "workspace_read",
+        "context_read",
+        "workspace_replace",
+        "workspace_check",
+        "work_checkpoint",
+        "artifact_submit"
+      ],
+      "receipts": [
+        "d14c95ecfdefbced2531d7a9baf3497bab1e3ca4c5bc85c1aced6364cc10cca6",
+        "2c96407a8b1eb9c728fcaac0592a0f01",
+        "b0ee253c776468fe4ac85c7f25ab7276",
+        "57761d55c7b0dbf63668b9f8010de41d"
+      ],
+      "stop_receipt": "process-group:14980:waited",
+      "stop_confirmed": true,
+      "artifact_id": "57761d55c7b0dbf63668b9f8010de41d",
+      "checkpoint_id": "b0ee253c776468fe4ac85c7f25ab7276",
+      "check_passed": true
+    }
+  ],
+  "single_worker": "passed",
+  "handover": "passed",
+  "behavior": "",
+  "old_writer": "rejected",
+  "error": "ERROR: duplicate key value violates unique constraint \"tasks_company_id_mission_id_kind_key\" (SQLSTATE 23505)",
+  "usage": {
+    "medium_turns": 2,
+    "high_turns": 0,
+    "money": "not_estimated",
+    "limit": "2 Medium + 1 High; 10 minutes; concurrency 1"
+  }
+}

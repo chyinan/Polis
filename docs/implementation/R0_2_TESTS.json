@@ -1,0 +1,14 @@
+{
+  "baseline": "Draft 0.4.5 / 51383e7 / febe1b6",
+  "scope": "R0.2 fixed Codex app-server, GPT-5.6 Luna, one EmployeeId, same harness",
+  "allowance": {"medium": 2, "high": 1, "concurrency": 1, "wall_clock_minutes": 10, "unknown_retry": false},
+  "variants": [
+    {"id":"R02-native-host","parents":["FT-61","FT-62"],"status":"passed","evidence":"Luna --inspect; app-server 0.151.0 and 7 dynamic tools"},
+    {"id":"R02-medium-single","parents":["FT-61","FT-68","FT-69"],"status":"passed","evidence":"real turn 1; 6 mediated tool events, checkpoint, stop receipt"},
+    {"id":"R02-medium-handover","parents":["FT-08","FT-67","FT-68","FT-75","FT-76"],"status":"passed","evidence":"real turn 2; same emp-backend, neutral bundle, continuation artifact, old writer rejected"},
+    {"id":"R02-high-behavior","parents":["PP-07","PP-08","FT-38","FT-80"],"status":"not_run","evidence":"High reservation refused after persisted 10-minute allowance expired"},
+    {"id":"R02-offline-behavior-oracle","parents":["PP-07","FT-80"],"status":"passed","evidence":"independent compiled signed-zero checker; no real model"}
+    ,{"id":"R02-recovery-integrity","parents":["FT-46","FT-67","FT-69"],"status":"passed","evidence":"successful receipt/digest/checkpoint parser; stale request cannot replace accepted content"}
+  ],
+  "outside_scope": ["QQ","MCP","GitHub feedback","browser","React UI","cross-provider handover","parallel real employees"]
+}

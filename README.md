@@ -6,7 +6,7 @@ Build AI organizations that outlive their models.
 
 Polis｜长期自治 AI 组织运行时
 
-This checkout contains the R0 deterministic kernel and the R0.1 opt-in Codex worker probe. Default `polis`/`polisd` commands still use FakeWorkers. The one authorized real R0.1 attempt was inconclusive: native inference worked, but a missing tool-host mount prevented any accepted employee operation. That packaging issue is repaired and offline callback/behavior tests pass; the repaired real handover has not been run. See [the R0.1 report](docs/implementation/R0_1_REPORT.md).
+This checkout contains the R0 deterministic kernel and the R0.2 opt-in Codex worker probe. Default `polis`/`polisd` commands still use FakeWorkers. R0.2 used GPT-5.6 Luna: two real Medium turns completed the mediated partial task and same-Employee handover continuation; the optional High behavior review was not run because the authorized 10-minute window expired. See [the R0.2 report](docs/implementation/R0_2_REPORT.md).
 
 ## Run in the prepared workspace
 

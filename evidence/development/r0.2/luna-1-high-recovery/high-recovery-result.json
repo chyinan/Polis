@@ -1,0 +1,21 @@
+{
+  "status": "inconclusive",
+  "model": "gpt-5.6-luna",
+  "codex_version": "codex-cli 0.151.0",
+  "schema_digest": "6032863e8a892b00eb34433d5fefb057066a7b700cf5f6ce06b1321e382b7455",
+  "capability_digest": "",
+  "started": "2026-09-08T07:29:04.3199566Z",
+  "finished": "2026-09-08T07:29:04.320086109Z",
+  "turns": null,
+  "single_worker": "",
+  "handover": "",
+  "behavior": "",
+  "old_writer": "",
+  "error": "probe allowance exhausted before High reservation; no model turn started",
+  "usage": {
+    "medium_turns": 2,
+    "high_turns": 0,
+    "money": "not_estimated",
+    "limit": "existing R0.2 allowance: 2 Medium consumed + 1 High remaining"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "status": "not_started",
+  "command": "bash scripts/go.sh run ./cmd/polis-r02-high --old-evidence evidence/development/r0.2/luna-1",
+  "result": "rejected before database or native process because POLIS_DSN was not supplied",
+  "model_turns": 0,
+  "allowance_changed": false,
+  "not_part_of_real_probe": true
+}
