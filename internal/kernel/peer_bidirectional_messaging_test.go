@@ -166,6 +166,60 @@ func TestProductDirectSendRacingCandidateSubmissionNeverCommitsAfterSubmission(t
 	}
 }
 
+func TestProductDirectSendRacingMissionPauseHasSerializedOutcome(t *testing.T) {
+	env := newPeerHardeningEnv(t, 24)
+	start := make(chan struct{})
+	var wait sync.WaitGroup
+	var message ProductDirectMessage
+	var messageErr error
+	var pause Receipt
+	var pauseErr error
+	wait.Add(2)
+	go func() {
+		defer wait.Done()
+		<-start
+		message, messageErr = env.k.TXProductDirectMessage(env.ctx, env.backend, ProductDirectMessageInput{
+			ToEmployeeID: "emp-frontend", ToTaskID: env.fixture.Frontend.ID, Body: "pause race request", Actionable: true,
+		}, "direct-pause-race-send")
+	}()
+	go func() {
+		defer wait.Done()
+		<-start
+		pause, pauseErr = env.k.TXSetMissionPausedCommand(env.ctx, env.scope, env.fixture.Mission, true, "direct-pause-race-pause")
+	}()
+	close(start)
+	wait.Wait()
+	if pauseErr != nil {
+		t.Fatalf("mission pause failed: %v", pauseErr)
+	}
+	if messageErr != nil && !errors.Is(messageErr, core.Denied) {
+		t.Fatalf("direct send error=%v, want success or paused-Mission denial", messageErr)
+	}
+	if messageErr != nil {
+		var count int
+		if err := env.k.pool.QueryRow(env.ctx, `SELECT count(*) FROM messages WHERE company_id=$1 AND body='pause race request'`, env.scope.company).Scan(&count); err != nil {
+			t.Fatal(err)
+		}
+		if count != 0 {
+			t.Fatalf("denied send persisted %d messages after Mission pause", count)
+		}
+		return
+	}
+	var sendSeq, pauseSeq int64
+	if err := env.k.pool.QueryRow(env.ctx, `SELECT company_seq FROM events WHERE company_id=$1 AND kind='product.collab.send' AND payload->>'id'=$2`, env.scope.company, message.ID).Scan(&sendSeq); err != nil {
+		t.Fatal(err)
+	}
+	if err := env.k.pool.QueryRow(env.ctx, `SELECT company_seq FROM events WHERE company_id=$1 AND kind='mission.pause' AND payload->>'id'=$2`, env.scope.company, env.fixture.Mission).Scan(&pauseSeq); err != nil {
+		t.Fatal(err)
+	}
+	if sendSeq >= pauseSeq {
+		t.Fatalf("send event sequence %d followed Mission pause sequence %d", sendSeq, pauseSeq)
+	}
+	if pause.Status != "paused" {
+		t.Fatalf("pause receipt=%+v, want paused", pause)
+	}
+}
+
 func TestProductDirectFYIsHaveNoObligationAndAdvanceInEventOrder(t *testing.T) {
 	env := newPeerHardeningEnv(t, 24)
 	scheduleBefore, err := env.k.EmployeeSchedule(env.ctx, env.scope, "emp-frontend")

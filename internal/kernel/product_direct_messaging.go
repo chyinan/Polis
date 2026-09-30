@@ -109,6 +109,18 @@ func (k *Kernel) TXProductDirectMessage(ctx context.Context, b Binding, input Pr
 		return out, core.Denied
 	}
 	receipt, err := k.TXWrite(ctx, b.scope, &b, key, "product.collab.send", input, func(tx pgx.Tx) (Receipt, error) {
+		// Lock the Mission before its Tasks. This keeps a concurrent pause from
+		// committing between the active-state check and the message write.
+		var sourceMissionID, missionState string
+		if err := tx.QueryRow(ctx, `SELECT mission_id FROM tasks WHERE company_id=$1 AND id=$2`, b.scope.company, b.task).Scan(&sourceMissionID); err != nil {
+			return Receipt{}, err
+		}
+		if err := tx.QueryRow(ctx, `SELECT state FROM missions WHERE company_id=$1 AND id=$2 FOR SHARE`, b.scope.company, sourceMissionID).Scan(&missionState); err != nil {
+			return Receipt{}, err
+		}
+		if missionState != "active" {
+			return Receipt{}, core.Denied
+		}
 		// Lock both Task rows in stable ID order so a concurrent submission
 		// cannot make a ready/working target terminal between validation and send.
 		type taskState struct{ owner, mission, state string }
@@ -137,19 +149,15 @@ WHERE company_id=$1 AND id=ANY($2::text[]) ORDER BY id FOR UPDATE`, b.scope.comp
 			return Receipt{}, core.Denied
 		}
 		sourceOwner, sourceMission, sourceState := source.owner, source.mission, source.state
+		if sourceMission != sourceMissionID {
+			return Receipt{}, core.Integrity
+		}
 		if sourceOwner != b.employee || sourceState != "working" {
 			return Receipt{}, core.Denied
 		}
 		targetOwner, targetMission, targetState := target.owner, target.mission, target.state
 		if targetOwner != input.ToEmployeeID || !fixedDirectMessageEmployee(targetOwner) || targetMission != sourceMission ||
 			(targetState != "ready" && targetState != "working") {
-			return Receipt{}, core.Denied
-		}
-		mission, err := missionState(ctx, tx, b.scope, sourceMission)
-		if err != nil {
-			return Receipt{}, err
-		}
-		if mission != "active" {
 			return Receipt{}, core.Denied
 		}
 		messageID := newID()
