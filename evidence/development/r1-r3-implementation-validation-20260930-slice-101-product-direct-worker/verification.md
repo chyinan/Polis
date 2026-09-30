@@ -19,9 +19,9 @@ No database migration was added. `core.TaskKind` still admits only `compat/emp-b
 - `rtk bash scripts/go.sh test ./...` — passed.
 - `rtk bash scripts/go.sh build ./cmd/...` — passed for Linux amd64.
 - `rtk bash -lc 'GOOS=windows GOARCH=amd64 ./scripts/go.sh build ./cmd/...'` — passed for Windows amd64.
-- `rtk git diff --check` — passed after source/evidence closeout; rerun after the cloud handoff document is final.
+- `rtk git diff --check` — passed after source, evidence, and handoff updates before the closeout commit.
 
-Provider tests assert that exact @7 is accepted only under the Fake Runtime purpose/envelope/markers, while real mode, altered surface identity, and mixed Skill/direct profiles are denied. Review follow-up added a `FOR SHARE` Mission lock, stable ordered source/target Task locks, and rejects a missing `actionable` field instead of converting it to FYI. Concurrent submission and pause tests verify their event ordering against sends. No model egress, QQ send, external MCP/GitHub call, business account, or production action was performed.
+Provider tests assert that exact @7 is accepted only under the Fake Runtime purpose/envelope/markers, while real mode, altered surface identity, and mixed Skill/direct profiles are denied. Review follow-up added a `FOR SHARE` Mission lock, stable ordered source/target Task locks, and rejects a missing `actionable` field instead of converting it to FYI. Concurrent submission and pause tests verify their event ordering against sends. Read-only re-review of `aa0a53e..6df7d54` found zero remaining Critical, Important, or Minor findings. No model egress, QQ send, external MCP/GitHub call, business account, or production action was performed.
 
 ## Remaining boundary
 
