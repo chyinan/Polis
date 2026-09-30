@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-09-30, Slice 100 / Schema 72. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-09-30, Slice 101 / Schema 72. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 101: Product Worker direct messaging (no migration)
+
+The current product Worker adapter now supports direct send, ordered inbox, acknowledgement, workspace-application evidence, and candidate-Artifact resolution through a separately versioned `polis-product-tool-surface@7`. `work_current` exposes no more than 16 same-Mission Tasks owned by another fixed employee, plus a truncation bit. The Kernel verifies current session/Task ownership, explicit recipient ownership, fixed roster membership, same-Mission scope and ready/working target state. An actionable message creates the Obligation, work signal and employee wake atomically; an FYI creates neither and does not advance the schedule. Request application requires the current workspace revision, a current-digest workspace.replace receipt, and a same-session workspace_check receipt; resolution requires the recipient Task's candidate Artifact. The surface has exact manifest `82d7b2dbc41ff3dbed56813b3b3adcfad48818fb29653bcd2debf1f280e507eb` and schema 3503 bytes / `769f7c9f4afb1c1d0ebfb43037a06d8f2ddb661bc111970c4d199f48f962fd42`. It is accepted only in the exact zero-egress Fake Runtime profile. Real provider authorization remains @4; historical @4/@5/@6 and peer registries are unchanged. Task eligibility remains `compat/emp-backend`; real provider and other-role qualification remain open. Dedicated PostgreSQL 18, full Go, and Linux/Windows command builds pass. No migration or external action was used. Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-101-product-direct-worker/verification.md`.
 
 ## Slice 100: Bidirectional direct messages for the fixed peer pair (no migration)
 
@@ -88,13 +92,13 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 100
+## Finite remaining work at Slice 101
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
 Software closure, bounded to the current REQ ledger:
 
-- Finish direct member communication and the remaining worker scheduling path: REQ-02 still needs integration with the current product Worker surface and the other fixed roles; REQ-13 fairness/quota readiness and automatic Worker admission/dispatch also remain. The existing fixed peer pair now has a bidirectional Kernel message/Obligation path. Routine occurrence→Task→Handover and Workbench Routine create/list/legacy repair are implemented. Routine persistence, due materialization, LISTEN/reconnect, bounded scans, startup reconciliation, and the schedule projection are implemented.
+- Finish REQ-02 across remaining fixed roles and qualification: the product Worker now exposes direct messaging only through the unqualified zero-egress Fake @7 surface; real-provider authorization remains @4 and other fixed roles are not product-provider executable. REQ-13 fairness/quota readiness and automatic Worker admission/dispatch also remain. Routine occurrence→Task→Handover and Workbench Routine create/list/legacy repair are implemented. Routine persistence, due materialization, LISTEN/reconnect, bounded scans, startup reconciliation, and the schedule projection are implemented.
 - Complete lifecycle safety: REQ-14 revocation, REQ-15 memory invalidation, REQ-16 retry/closeout budgets, REQ-25 continuing authorization, REQ-26 shared-write resource binding, REQ-29 shared-file workspace access, and REQ-39 remaining safe-change handling.
 - Complete the formal employee/runtime and continuity path for REQ-23–24, REQ-27, and REQ-30–34: current command surfaces and capability state machines exist, but direct communication, selected Skill, controlled MCP, and successor workflows are not available on the qualified product Worker path.
 - Add signing integration. Verify existing first-run, tray/hide/reopen, packaged artifact download, install/uninstall, login-start behavior, and update rollback in a clean Windows VM; the opt-in startup code is implemented but not host-qualified.
@@ -348,7 +352,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | REQ | Requirement | Earliest | Current state | Target |
 |---|---|---:|---|---|
 | 01 | Fixed company members and responsibilities | R1 | done-local; R1 qualification pending | R1 |
-| 02 | Direct member-to-member communication | R1 | partial; the fixed Backend/Frontend peer pair has bidirectional messages, an ordered persisted inbox, FYI acknowledgement, actionable Obligation/wake and Artifact-backed resolution. `PeerFrontendToolsWithDirectMessaging` is a separate tool registry that preserves the historical default surface. The current product Worker surface and other fixed-role pairs remain open | R1 |
+| 02 | Direct member-to-member communication | R1 | partial; fixed Backend/Frontend peer messaging is bidirectional. The current product Worker has an exact @7 direct-message extension with bounded same-Mission targets and full request/FYI lifecycle, but it is accepted only by zero-egress Fake Runtime; real provider admission remains @4 and other fixed roles are not product-provider executable | R1 |
 | 03 | Identity, memory and model are decoupled | R1 | partial; handover exists but R1 continuity is unqualified | R1 |
 | 04 | Work resumes after quota exhaustion, disconnect or restart | R1 | partial; recovery foundation exists | R1 |
 | 05 | Long-horizon missions | R1 | partial; multi-stage path is not release-qualified | R1, then R2 multi-day and R3 domains |

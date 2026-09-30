@@ -1,5 +1,13 @@
 # Current handoff — approved R1–R3 implementation (2026-09-30)
 
+## Latest continuation status (Slice 101, product Worker direct messaging; Schema 72)
+
+Added a separately versioned 12-tool product Worker extension for direct messages: bounded same-Mission target discovery, send, inbox, acknowledgement, application evidence, and Artifact-backed resolution. The Kernel binds every operation to the current WorkerSession Task and fixed employee roster. Actionable sends atomically persist their Obligation, WorkSignal and employee wake; FYIs create neither and advance in event order after acknowledgement. The recipient must provide the current workspace revision plus a current-digest workspace.replace receipt and a current-session workspace_check receipt before marking a request applied, then resolve it with its own current candidate Artifact.
+
+The exact `polis-product-tool-surface@7` manifest is `82d7b2dbc41ff3dbed56813b3b3adcfad48818fb29653bcd2debf1f280e507eb` (12 tools, schema 3503 bytes, digest `769f7c9f4afb1c1d0ebfb43037a06d8f2ddb661bc111970c4d199f48f962fd42`). Only the explicit zero-egress Fake Runtime purpose and markers accept @7. Real provider authorization remains pinned to @4; the historical @4/@5/@6 and peer registries remain unchanged. Product-provider task admission remains limited to `compat/emp-backend`; other fixed roles and real qualification remain open. No migration was added.
+
+The dedicated disposable PostgreSQL 18 employee-schedule suite through Schema 72, targeted Go packages, full Go suite, Linux amd64 build, Windows amd64 build, and `git diff --check` pass. No external provider, QQ, MCP, GitHub or production action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-101-product-direct-worker/verification.md`.
+
 ## Latest continuation status (Slice 100, bidirectional peer messages; Schema 72)
 
 The fixed Backend/Frontend peer path now supports direct messages in both directions. `collab.send` requires the sender's current WorkerSession Task and binds the named recipient to the other ready/working peer Task in the same Company/Mission and accepted ContractRevision. An actionable message creates the existing Obligation, WorkSignal and EmployeeSchedule wake atomically; FYI messages can be read and acknowledged without creating work, and the inbox advances to the next FYI after acknowledgement. Apply and resolve require the recipient's session to own the obligated Task. Cross-Mission and finalized-task targets are rejected. `PeerFrontendToolsWithDirectMessaging` is additive; the default `PeerFrontendTools` and `PeerFrontendToolsV1` remain unchanged for historical R0.3A paths. No migration or real provider call was needed.

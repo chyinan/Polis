@@ -43,6 +43,42 @@ func ProductGuidanceToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithGuidance())
 }
 
+// ProductDirectMessagingToolSurface is the separately versioned direct-message
+// extension. It is accepted only by the exact zero-egress fake validator below.
+const ProductDirectMessagingToolSurfaceQualification = "polis-product-tool-surface@7"
+
+const (
+	OfflineDirectMessagingToolSurfacePurpose        = "offline-direct-messaging-tool-surface"
+	OfflineDirectMessagingToolSurfaceSimulationMark = "offline-direct-messaging-tool-surface-unqualified"
+	ProductDirectMessagingManifestDigest            = "82d7b2dbc41ff3dbed56813b3b3adcfad48818fb29653bcd2debf1f280e507eb"
+	ProductDirectMessagingSchemaDigest              = "769f7c9f4afb1c1d0ebfb43037a06d8f2ddb661bc111970c4d199f48f962fd42"
+	ProductDirectMessagingSchemaBytes               = 3503
+)
+
+func ProductDirectMessagingToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithDirectMessaging())
+}
+
+// ValidateOfflineFakeProductDirectMessagingSurface verifies the exact pinned
+// @7 shape under an explicitly unqualified zero-egress simulation profile.
+func ValidateOfflineFakeProductDirectMessagingSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductDirectMessagingToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductDirectMessagingToolSurfaceQualification ||
+		profile.Purpose != OfflineDirectMessagingToolSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineDirectMessagingToolSurfaceSimulationMark ||
+		profile.ProductProviderL2Fingerprint != OfflineDirectMessagingToolSurfaceSimulationMark || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 12 || expected.ManifestDigest != ProductDirectMessagingManifestDigest ||
+		expected.AggregateSchemaBytes != ProductDirectMessagingSchemaBytes || expected.AggregateSchemaDigest != ProductDirectMessagingSchemaDigest ||
+		surface.ToolCount != 12 || observed.ToolCount != 12 ||
+		surface.ManifestDigest != ProductDirectMessagingManifestDigest || observed.ManifestDigest != ProductDirectMessagingManifestDigest ||
+		surface.AggregateSchemaBytes != ProductDirectMessagingSchemaBytes || observed.AggregateSchemaBytes != ProductDirectMessagingSchemaBytes ||
+		surface.AggregateSchemaDigest != ProductDirectMessagingSchemaDigest || observed.AggregateSchemaDigest != ProductDirectMessagingSchemaDigest {
+		return fmt.Errorf("direct-message product surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
+}
+
 const (
 	ProductControlledMCPToolSurfaceQualification           = "polis-product-tool-surface@mcp-v1"
 	ProductControlledMCPToolSurfaceV2Qualification         = "polis-product-tool-surface@mcp-v2"

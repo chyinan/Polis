@@ -126,6 +126,22 @@ func TestLaunchQualificationAdapterAcceptsExplicitOfflineControlledMCPSurface(t 
 	}
 }
 
+func TestLaunchQualificationAdapterAcceptsExplicitOfflineDirectMessagingSurface(t *testing.T) {
+	runtime := provider.NewFakeRuntime(provider.FakeRuntimeConfig{DirectMessagingSurface: true})
+	profile := runtime.ExecutionProfile()
+	adapter, err := NewRealProviderWorkerLaunchQualificationAdapter(runtime)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = adapter.Readiness(context.Background()); err != nil {
+		t.Fatalf("explicit fake direct-message surface readiness: %v", err)
+	}
+	if adapter.ToolSurface().ManifestDigest != provider.ProductDirectMessagingManifestDigest ||
+		profile.ToolSurfaceQualification != provider.ProductDirectMessagingToolSurfaceQualification {
+		t.Fatalf("adapter surface/profile=%+v/%+v, want the unqualified direct-message @7 profile", adapter.ToolSurface(), profile)
+	}
+}
+
 func TestRealProviderWorkerAdapterMissingBindingCannotQualifyOrSubmit(t *testing.T) {
 	dsn := os.Getenv("POLIS_R05B3_TEST_DSN")
 	if dsn == "" {

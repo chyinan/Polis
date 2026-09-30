@@ -33,6 +33,7 @@ type EmployeeTools struct {
 	Phase                     string
 	ReadOnly                  bool
 	ProductSurface            bool
+	DirectMessagingSurface    bool
 	SkillLoadSurface          bool
 	GuidanceSurface           bool
 	ControlledMCPSurface      bool
@@ -104,6 +105,9 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 			return ToolResult{}, e
 		}
 		h, e := k.Handover(ctx, b)
+		if e == nil && name == "work_current" && t.ProductSurface && t.DirectMessagingSurface {
+			h.DirectMessageTargets, h.DirectMessageTargetsTruncated, e = k.ProductDirectMessageTargets(ctx, b)
+		}
 		if !t.SkillLoadSurface {
 			h.SkillCatalog = nil
 			h.SkillCatalogTruncated = false
@@ -120,6 +124,59 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 			return ToolResult{Data: h.Workspace}, e
 		}
 		return ToolResult{Data: h}, e
+	case "collab_send":
+		if !t.ProductSurface || !t.DirectMessagingSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args ProductDirectMessageInput
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		message, e := k.TXProductDirectMessage(ctx, b, args, key)
+		return ToolResult{Data: message}, e
+	case "collab_inbox":
+		if !t.ProductSurface || !t.DirectMessagingSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct{}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		inbox, e := k.ProductDirectInbox(ctx, b)
+		return ToolResult{Data: inbox}, e
+	case "collab_ack":
+		if !t.ProductSurface || !t.DirectMessagingSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			MessageID string `json:"message_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		return ToolResult{}, k.TXProductDirectMessageAck(ctx, b, args.MessageID, key)
+	case "collab_apply":
+		if !t.ProductSurface || !t.DirectMessagingSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args ProductDirectApplyRequest
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		receipt, e := k.TXProductDirectApply(ctx, b, args, key)
+		return ToolResult{Receipt: &receipt}, e
+	case "obligation_resolve":
+		if !t.ProductSurface || !t.DirectMessagingSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ObligationID string `json:"obligation_id"`
+			ArtifactID   string `json:"artifact_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		return ToolResult{}, k.TXProductDirectResolve(ctx, b, args.ObligationID, args.ArtifactID, key)
 	case "guidance_read":
 		if !t.ProductSurface || !t.GuidanceSurface {
 			return ToolResult{}, core.Denied

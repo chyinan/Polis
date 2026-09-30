@@ -48,6 +48,32 @@ func ProductEmployeeTools() []any {
 	})
 }
 
+// ProductEmployeeToolsWithDirectMessaging is a separately versioned product
+// surface. The historical @4, Skill @5 and guidance @6 registries stay fixed.
+func ProductEmployeeToolsWithDirectMessaging() []any {
+	tools := ProductEmployeeTools()
+	directTools := productTools([]peerToolDefinition{
+		{"collab_send", "Send a direct FYI or actionable request to an exact same-Mission Task returned by work_current. The recipient must be another fixed Polis employee; the control plane verifies Task ownership and state.", map[string]any{
+			"to_employee_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^emp-(planning|backend|frontend|review)$"},
+			"to_task_id":     map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"body":           map[string]any{"type": "string", "minLength": 1, "maxLength": 4096},
+			"actionable":     map[string]any{"type": "boolean", "description": "true creates a persisted Obligation and wake signal; false creates an FYI with no work obligation"},
+		}},
+		{"collab_inbox", "Read the next persisted direct message for your current Task. Messages are delivered and observed in a bounded, deterministic order.", nil},
+		{"collab_ack", "Acknowledge the exact current inbox message by its message_id. Acknowledgement does not resolve an actionable request.", map[string]any{"message_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80}}},
+		{"collab_apply", "Record that a current actionable request was applied to your own workspace. Supply the current workspace_revision, a workspace.replace receipt from this employee matching the current digest, and a workspace_check receipt from this session for that digest; this call never writes source content.", map[string]any{
+			"obligation_id":      map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"workspace_revision": map[string]any{"type": "integer", "minimum": 1},
+			"evidence_refs":      stringArray(),
+		}},
+		{"obligation_resolve", "Resolve an applied direct request only with a ready candidate Artifact authored by your current Task.", map[string]any{
+			"obligation_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"artifact_id":   map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+	})
+	return append(tools, directTools...)
+}
+
 // ProductEmployeeToolsWithReadOnlySkill is a separately versioned surface.
 // The historical qualified surface above remains byte-for-byte unchanged.
 func ProductEmployeeToolsWithReadOnlySkill() []any {

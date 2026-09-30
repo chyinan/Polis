@@ -15,6 +15,8 @@ const (
 
 	EmployeePlanningID = "emp-planning"
 	EmployeeBackendID  = "emp-backend"
+	EmployeeFrontendID = "emp-frontend"
+	EmployeeReviewID   = "emp-review"
 )
 
 // IsProductProviderExecutableTask classifies work for the current generic

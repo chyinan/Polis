@@ -30,19 +30,21 @@ type BoundSkillSummary struct {
 	References    []SkillReferenceSummary `json:"references"`
 }
 type HandoverBundle struct {
-	EmployeeID            string
-	Task                  Task
-	Workspace             Workspace
-	Obligations           []Obligation
-	Checkpoints           []Checkpoint
-	SkillCatalog          []BoundSkillSummary    `json:"skill_catalog,omitempty"`
-	SkillCatalogTruncated bool                   `json:"skill_catalog_truncated,omitempty"`
-	SkillLoads            []SkillLoadUse         `json:"skill_loads,omitempty"`
-	SkillLoadsTruncated   bool                   `json:"skill_loads_truncated,omitempty"`
-	MCPToolSets           []BoundStdioMCPToolSet `json:"mcp_tool_sets,omitempty"`
-	CompanySeq            int64
-	Contract              string
-	ToolBudget            ToolCallBudget
+	EmployeeID                    string
+	Task                          Task
+	Workspace                     Workspace
+	Obligations                   []Obligation
+	Checkpoints                   []Checkpoint
+	DirectMessageTargets          []ProductDirectMessageTarget `json:"direct_message_targets,omitempty"`
+	DirectMessageTargetsTruncated bool                         `json:"direct_message_targets_truncated,omitempty"`
+	SkillCatalog                  []BoundSkillSummary          `json:"skill_catalog,omitempty"`
+	SkillCatalogTruncated         bool                         `json:"skill_catalog_truncated,omitempty"`
+	SkillLoads                    []SkillLoadUse               `json:"skill_loads,omitempty"`
+	SkillLoadsTruncated           bool                         `json:"skill_loads_truncated,omitempty"`
+	MCPToolSets                   []BoundStdioMCPToolSet       `json:"mcp_tool_sets,omitempty"`
+	CompanySeq                    int64
+	Contract                      string
+	ToolBudget                    ToolCallBudget
 }
 type Checkpoint struct {
 	AcceptanceCheckerRevision          string   `json:"acceptance_checker_revision,omitempty"`
