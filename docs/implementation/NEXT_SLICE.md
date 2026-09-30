@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-09-30)
 
-## Latest continuation status (Slice 99, Workbench Routine authoring; Schema 72)
+## Latest continuation status (Slice 100, bidirectional peer messages; Schema 72)
+
+The fixed Backend/Frontend peer path now supports direct messages in both directions. `collab.send` requires the sender's current WorkerSession Task and binds the named recipient to the other ready/working peer Task in the same Company/Mission and accepted ContractRevision. An actionable message creates the existing Obligation, WorkSignal and EmployeeSchedule wake atomically; FYI messages can be read and acknowledged without creating work, and the inbox advances to the next FYI after acknowledgement. Apply and resolve require the recipient's session to own the obligated Task. Cross-Mission and finalized-task targets are rejected. `PeerFrontendToolsWithDirectMessaging` is additive; the default `PeerFrontendTools` and `PeerFrontendToolsV1` remain unchanged for historical R0.3A paths. No migration or real provider call was needed.
+
+The dedicated PostgreSQL 18 Schema 60→72 suite passes with the new reverse-direction send/inbox/ack/apply/candidate/resolve, FYI inbox advancement, target-scope and WorkerSession-binding assertions. The full Go suite, Linux/Windows amd64 command builds, and `git diff --check` pass. This advances the fixed peer pair's Kernel path; integration with the current product Worker surface, other fixed roles, and provider qualification remain open under REQ-02. Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-100-peer-direct-messaging/verification.md`.
+
+## Previous Slice 99 (Workbench Routine authoring; Schema 72)
 
 The Workbench now lists daily Routines within the selected Mission, creates instruction-bearing Routines, and repairs legacy `needs_instruction` occurrences. Creation fixes the task instruction; repair is idempotent and atomically materializes the blocked Tasks. The Mission overview uses the authenticated real Workbench API and keeps existing Routines read-only except for the explicit repair action. No schema change, automatic Worker dispatcher, or provider request was added.
 

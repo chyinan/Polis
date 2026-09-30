@@ -131,7 +131,7 @@ type r03aPreflight struct {
 }
 
 func PeerSchemaDigest() string {
-	raw, _ := json.Marshal(map[string]any{"backend": codex.PeerBackendTools(), "frontend": codex.PeerFrontendTools(), "reviewer": codex.PeerReviewerTools()})
+	raw, _ := json.Marshal(map[string]any{"backend": codex.PeerBackendTools(), "frontend": codex.PeerFrontendToolsV1(), "reviewer": codex.PeerReviewerTools()})
 	return digest(raw)
 }
 
@@ -174,7 +174,7 @@ func InspectR03A(cfg R03AConfig) error {
 	if _, e = c.StartThreadWithTools(ctx, "medium", codex.PeerBackendTools(), "R0.3A preflight only; no inference turn."); e != nil {
 		return e
 	}
-	if _, e = c.StartThreadWithTools(ctx, "medium", codex.PeerFrontendTools(), "R0.3A preflight only; no inference turn."); e != nil {
+	if _, e = c.StartThreadWithTools(ctx, "medium", codex.PeerFrontendToolsV1(), "R0.3A preflight only; no inference turn."); e != nil {
 		return e
 	}
 	if _, e = c.StartThreadWithTools(ctx, "high", codex.PeerReviewerTools(), "R0.3A preflight only; no inference turn."); e != nil {
@@ -461,7 +461,7 @@ func runPeerSession(ctx context.Context, cfg R03AConfig, k *kernel.Kernel, b ker
 	if role == "peer_backend" {
 		tools = codex.PeerBackendTools()
 	} else {
-		tools = codex.PeerFrontendTools()
+		tools = codex.PeerFrontendToolsV1()
 	}
 	thread, e := c.StartThreadWithTools(ctx, "medium", tools, developer)
 	if e != nil {

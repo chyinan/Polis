@@ -53,11 +53,11 @@ func ValidateExecutionEnvelopeFingerprint(expected, actual string) error {
 func FrontendRuntimeActivationPreflight(ctx context.Context, cfg R03APaginationV3Config) (FrontendRuntimeActivationPreflightReport, error) {
 	policy := cfg.TransportPolicy
 	if err := validateR03ATransportPolicy(policy); err != nil {
-		return FrontendRuntimeActivationPreflightReport{Status: "FRONTEND_RUNTIME_ACTIVATION_PREFLIGHT_FAILED", RegisteredToolCount: len(codex.PeerFrontendTools()), ProviderEgress: false, BusinessMutation: false, AllowanceCreated: false}, err
+		return FrontendRuntimeActivationPreflightReport{Status: "FRONTEND_RUNTIME_ACTIVATION_PREFLIGHT_FAILED", RegisteredToolCount: len(codex.PeerFrontendToolsV1()), ProviderEgress: false, BusinessMutation: false, AllowanceCreated: false}, err
 	}
 	report := FrontendRuntimeActivationPreflightReport{
 		Status:              "FRONTEND_RUNTIME_ACTIVATION_PREFLIGHT_FAILED",
-		RegisteredToolCount: len(codex.PeerFrontendTools()),
+		RegisteredToolCount: len(codex.PeerFrontendToolsV1()),
 		TurnStarted:         false,
 		ProviderEgress:      false,
 		BusinessMutation:    false,
@@ -131,7 +131,7 @@ func FrontendRuntimeActivationPreflight(ctx context.Context, cfg R03APaginationV
 	report.InitializeCompleted = true
 	report.InitializeLatencyMS = time.Since(initializeStarted).Milliseconds()
 	threadStarted := time.Now()
-	if _, err = client.StartThreadWithTools(ctx, "medium", codex.PeerFrontendTools(), "Local runtime activation preflight only. Do not call turn/start or any business tool."); err != nil {
+	if _, err = client.StartThreadWithTools(ctx, "medium", codex.PeerFrontendToolsV1(), "Local runtime activation preflight only. Do not call turn/start or any business tool."); err != nil {
 		client.Close()
 		report.ThreadStartLatencyMS = time.Since(threadStarted).Milliseconds()
 		report.ProcessExit = fmt.Sprint(process.WaitError())

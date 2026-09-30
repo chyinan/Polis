@@ -145,6 +145,23 @@ func PeerBackendTools() []any {
 }
 
 func PeerFrontendTools() []any {
+	return PeerFrontendToolsV1()
+}
+
+// PeerFrontendToolsWithDirectMessaging is the additive peer frontend surface
+// that registers the same direct-send capability as the backend peer surface.
+func PeerFrontendToolsWithDirectMessaging() []any {
+	tools := PeerFrontendToolsV1()
+	send := peerTools([]peerToolDefinition{{
+		"collab_send", "Send a direct message and optional actionable request to the current peer task. Use the explicit employee, task and accepted contract IDs returned by work_current.",
+		map[string]any{"to_employee_id": map[string]any{"type": "string"}, "to_task_id": map[string]any{"type": "string"}, "contract_revision_id": map[string]any{"type": "string"}, "body": map[string]any{"type": "string", "maxLength": 4096}, "actionable": map[string]any{"type": "boolean"}},
+	}})
+	return append(tools, send[0])
+}
+
+// PeerFrontendToolsV1 preserves the historical frontend registry used by the
+// R0.3A probe. PeerFrontendToolsWithDirectMessaging adds the direct-send tool.
+func PeerFrontendToolsV1() []any {
 	return peerTools([]peerToolDefinition{
 		{"work_current", "Read your frontend task, v1 starting contract, neutral handover state, and observable tool-call budget.", nil},
 		{"context_read", "Read the approved v1 task context and observable tool-call budget only.", nil},

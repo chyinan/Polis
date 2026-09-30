@@ -119,7 +119,7 @@ func (t PeerEmployeeTools) call(ctx context.Context, name, key string, raw []byt
 		revision, e := k.PeerContractRead(ctx, b, args.RevisionID)
 		return ToolResult{Data: revision}, e
 	case "collab_send":
-		if t.Role != "peer_backend" {
+		if t.Role != "peer_backend" && t.Role != "peer_frontend" {
 			return ToolResult{}, core.Denied
 		}
 		var args struct {
@@ -148,7 +148,7 @@ func (t PeerEmployeeTools) call(ctx context.Context, name, key string, raw []byt
 		}
 		return ToolResult{Data: message}, e
 	case "collab_inbox":
-		if t.Role != "peer_frontend" {
+		if t.Role != "peer_backend" && t.Role != "peer_frontend" {
 			return ToolResult{}, core.Denied
 		}
 		var args struct{}
@@ -158,7 +158,7 @@ func (t PeerEmployeeTools) call(ctx context.Context, name, key string, raw []byt
 		inbox, e := k.PeerInbox(ctx, b)
 		return ToolResult{Data: inbox}, e
 	case "collab_ack":
-		if t.Role != "peer_frontend" {
+		if t.Role != "peer_backend" && t.Role != "peer_frontend" {
 			return ToolResult{}, core.Denied
 		}
 		var args struct {
@@ -169,7 +169,7 @@ func (t PeerEmployeeTools) call(ctx context.Context, name, key string, raw []byt
 		}
 		return ToolResult{}, k.TXPeerAck(ctx, b, args.MessageID, key)
 	case "collab_apply":
-		if t.Role != "peer_frontend" {
+		if t.Role != "peer_backend" && t.Role != "peer_frontend" {
 			return ToolResult{}, core.Denied
 		}
 		args, rejection, code := parsePeerApplyRequest(raw)
@@ -218,7 +218,7 @@ func (t PeerEmployeeTools) call(ctx context.Context, name, key string, raw []byt
 		r, e := k.TXSubmit(ctx, b, h.Task, key, []byte(h.Workspace.Content))
 		return ToolResult{Receipt: &r}, e
 	case "obligation_resolve":
-		if t.Role != "peer_frontend" {
+		if t.Role != "peer_backend" && t.Role != "peer_frontend" {
 			return ToolResult{}, core.Denied
 		}
 		if t.Initial {

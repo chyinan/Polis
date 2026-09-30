@@ -1,6 +1,12 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 99 — Workbench Routine authoring and legacy repair (Schema 72, no migration)
+## Slice 100 — Bidirectional peer messages for the fixed pair (Schema 72, no migration)
+
+The fixed Backend/Frontend peer path now supports direct messages in both directions. The source Task must equal the current WorkerSession Task, be owned by the bound Employee, and remain `working`; the target Task must be ready/working, belong to the explicit recipient, be the other peer role in the same Company/Mission, and use the accepted ContractRevision. Actionable sends transactionally persist the message, Obligation, WorkSignal and recipient schedule wake; FYI messages remain readable without creating an Obligation or wake, and the inbox advances to the next pending FYI after acknowledgement. Apply and resolve require the WorkerSession to own the obligated Task; resolution uses that Task's own candidate Artifact. Cross-Mission and finalized-task targets are denied. `PeerFrontendToolsWithDirectMessaging` is an explicit extension; the default `PeerFrontendTools` and historical R0.3A probes retain the old schema.
+
+Verification passed: dedicated disposable PostgreSQL 18 Schema 60→72 suite, including frontend→backend send/inbox/ack/apply/candidate/resolve; full Go suite; Linux/Windows amd64 command builds; `git diff --check`. No migration or external provider was used. The current product Worker surface and other fixed-role pairs remain open under REQ-02. Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-100-peer-direct-messaging/verification.md`.
+
+## Previous Slice 99 — Workbench Routine authoring and legacy repair (Schema 72, no migration)
 
 The authenticated Workbench can list daily Routines for the selected Mission, create a Routine with a fixed task instruction, and repair legacy `needs_instruction` occurrences. Create and repair use idempotency keys; the PostgreSQL integration covers create/readback and legacy occurrence→repair→linked Task readback. The Mission overview exposes these commands through the existing real API, while fixture mode does not create or repair Routines. No automatic Worker dispatch or provider request was added.
 

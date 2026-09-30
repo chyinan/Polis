@@ -42,7 +42,7 @@ type r03aFrontendL2OldSurface struct {
 }
 
 func buildR03AFrontendToolSurface() (codex.ToolSurfaceManifest, []any, []byte, error) {
-	return buildPeerToolSurface(codex.PeerFrontendTools(), 12, r03aFrontendL2SurfaceID, r03aFrontendToolBindings, r03aFrontendL2PolicyWriteMode)
+	return buildPeerToolSurface(codex.PeerFrontendToolsV1(), 12, r03aFrontendL2SurfaceID, r03aFrontendToolBindings, r03aFrontendL2PolicyWriteMode)
 }
 
 func loadHandoverV4FrontendToolSurface(protocolPath string) (codex.ToolSurfaceManifest, []any, []byte, error) {

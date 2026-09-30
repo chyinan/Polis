@@ -232,7 +232,15 @@ func (k *Kernel) PeerHandover(ctx context.Context, b Binding) (PeerHandoverBundl
 	out.WorkspaceDigest, out.WorkspaceRevision = h.Workspace.Digest, h.Workspace.Revision
 	out.Checkpoints = h.Checkpoints
 	out.ToolBudget = h.ToolBudget
-	if e := k.pool.QueryRow(ctx, "SELECT m.id,m.delivery_state,m.contract_revision_id,COALESCE(o.id,''),COALESCE(o.state,'') FROM messages m LEFT JOIN obligations o ON o.company_id=m.company_id AND o.id=m.id WHERE m.company_id=$1 AND m.task_id=$2 ORDER BY CASE WHEN o.state IN ('pending','observed','applied') THEN 0 ELSE 1 END,m.id DESC LIMIT 1", b.scope.company, out.TaskID).Scan(&out.MessageID, &out.MessageState, &out.ContractRevisionID, &out.ObligationID, &out.ObligationState); errors.Is(e, pgx.ErrNoRows) {
+	if e := k.pool.QueryRow(ctx, `SELECT m.id,m.delivery_state,m.contract_revision_id,COALESCE(o.id,''),COALESCE(o.state,'')
+FROM messages m
+LEFT JOIN obligations o ON o.company_id=m.company_id AND o.id=m.id
+LEFT JOIN events e ON e.company_id=m.company_id AND e.kind='collab.send' AND e.payload->>'id'=m.id
+WHERE m.company_id=$1 AND m.task_id=$2 AND m.contract_revision_id IS NOT NULL
+  AND ((o.id IS NOT NULL AND o.state IN ('pending','observed','acknowledged','applied'))
+    OR (o.id IS NULL AND m.kind='fyi' AND m.delivery_state IN ('persisted','delivered','observed')))
+ORDER BY CASE WHEN o.id IS NOT NULL THEN 0 ELSE 1 END,COALESCE(e.company_seq,0),m.id
+LIMIT 1`, b.scope.company, out.TaskID).Scan(&out.MessageID, &out.MessageState, &out.ContractRevisionID, &out.ObligationID, &out.ObligationState); errors.Is(e, pgx.ErrNoRows) {
 		return out, nil
 	} else if e != nil {
 		return out, e
@@ -538,7 +546,15 @@ func (k *Kernel) PeerInbox(ctx context.Context, b Binding) (PeerInbox, error) {
 	if h.MessageID == "" || h.ContractRevisionID == "" {
 		return out, core.OutOfScope
 	}
-	if h.ObligationState != "pending" && h.ObligationState != "observed" && h.ObligationState != "applied" {
+	var messageKind string
+	if e = k.pool.QueryRow(ctx, "SELECT kind FROM messages WHERE company_id=$1 AND id=$2 AND recipient=$3", b.scope.company, h.MessageID, b.employee).Scan(&messageKind); e != nil {
+		return out, e
+	}
+	if h.ObligationID == "" {
+		if messageKind != "fyi" {
+			return out, core.OutOfScope
+		}
+	} else if h.ObligationState != "pending" && h.ObligationState != "observed" && h.ObligationState != "acknowledged" && h.ObligationState != "applied" {
 		return out, core.OutOfScope
 	}
 	if h.MessageState == "persisted" {
@@ -693,6 +709,9 @@ WHERE s.company_id=$1 AND s.message_id=m.id AND m.mission_id=$2 AND c.revision<$
 
 func (k *Kernel) TXPeerSend(ctx context.Context, b Binding, input PeerSendInput, key string) (PeerMessage, error) {
 	var out PeerMessage
+	if input.FromTask == "" || input.FromTask != b.task {
+		return out, core.Denied
+	}
 	if input.Body == "" || len(input.Body) > core.MaxContent {
 		return out, core.Malformed
 	}
@@ -705,24 +724,32 @@ func (k *Kernel) TXPeerSend(ctx context.Context, b Binding, input PeerSendInput,
 		targetEmployee = "emp-frontend"
 	}
 	r, e := k.TXWrite(ctx, b.scope, &b, key, "collab.send", input, func(tx pgx.Tx) (Receipt, error) {
-		var fromKind, fromMission, toOwner, toKind, state string
-		if e := tx.QueryRow(ctx, "SELECT kind,mission_id,state FROM tasks WHERE company_id=$1 AND id=$2", b.scope.company, input.FromTask).Scan(&fromKind, &fromMission, &state); e != nil {
+		var fromOwner, fromKind, fromMission, toOwner, toKind, toMission, state, targetState string
+		if e := tx.QueryRow(ctx, "SELECT owner,kind,mission_id,state FROM tasks WHERE company_id=$1 AND id=$2", b.scope.company, input.FromTask).Scan(&fromOwner, &fromKind, &fromMission, &state); e != nil {
 			return Receipt{}, e
 		}
-		if e := tx.QueryRow(ctx, "SELECT owner,kind FROM tasks WHERE company_id=$1 AND id=$2", b.scope.company, targetTask).Scan(&toOwner, &toKind); errors.Is(e, pgx.ErrNoRows) {
+		if e := tx.QueryRow(ctx, "SELECT owner,kind,mission_id,state FROM tasks WHERE company_id=$1 AND id=$2", b.scope.company, targetTask).Scan(&toOwner, &toKind, &toMission, &targetState); errors.Is(e, pgx.ErrNoRows) {
 			return Receipt{}, peerSendDenied("target_task_not_found", "to_task_id must be the current peer task ID returned by work_current.", targetEmployee, targetTask, state, input.ContractRevisionID)
 		} else if e != nil {
 			return Receipt{}, e
 		}
-		if b.employee != "emp-backend" || fromKind != "peer_backend" || toOwner != targetEmployee || toKind != "peer_frontend" {
-			return Receipt{}, peerSendDenied("target_task_not_owned_by_employee", "to_task_id must belong to the supplied to_employee_id and be the peer_frontend task in this company.", targetEmployee, targetTask, state, input.ContractRevisionID)
+		if toMission != fromMission {
+			return Receipt{}, peerSendDenied("target_task_outside_mission", "the target peer task must belong to the sender's current Mission.", targetEmployee, targetTask, state, input.ContractRevisionID)
+		}
+		if input.FromTask != b.task || fromOwner != b.employee ||
+			!((fromKind == "peer_backend" && toKind == "peer_frontend") || (fromKind == "peer_frontend" && toKind == "peer_backend")) ||
+			toOwner != targetEmployee {
+			return Receipt{}, peerSendDenied("target_task_not_owned_by_employee", "to_task_id must belong to the supplied employee and be the other current peer task in this company.", targetEmployee, targetTask, state, input.ContractRevisionID)
+		}
+		if targetState != "ready" && targetState != "working" {
+			return Receipt{}, peerSendDenied("target_task_not_current", "the target peer task must be ready or working.", targetEmployee, targetTask, targetState, input.ContractRevisionID)
 		}
 		if state != "working" {
 			reason := "peer_send_not_allowed_in_task_state"
 			if state == "candidate" {
 				reason = "peer_send_not_allowed_in_candidate_state"
 			}
-			return Receipt{}, peerSendDenied(reason, "collaboration must be persisted while the backend task is working, before candidate publication.", targetEmployee, targetTask, state, input.ContractRevisionID)
+			return Receipt{}, peerSendDenied(reason, "collaboration must be persisted while the sender task is working, before candidate publication.", targetEmployee, targetTask, state, input.ContractRevisionID)
 		}
 		var contractState string
 		if e := tx.QueryRow(ctx, "SELECT state FROM contract_revisions WHERE company_id=$1 AND id=$2 AND mission_id=$3", b.scope.company, input.ContractRevisionID, fromMission).Scan(&contractState); errors.Is(e, pgx.ErrNoRows) {
@@ -841,17 +868,17 @@ func (k *Kernel) TXPeerApply(ctx context.Context, b Binding, request PeerApplyRe
 		return Receipt{}, err
 	}
 	return k.TXWrite(ctx, b.scope, &b, key, "collab.apply", request, func(tx pgx.Tx) (Receipt, error) {
-		var task, mission, messageState, obligationState, messageContractID string
-		if err := tx.QueryRow(ctx, `SELECT o.task_id,t.mission_id,m.delivery_state,o.state,m.contract_revision_id
+		var task, mission, owner, messageState, obligationState, messageContractID string
+		if err := tx.QueryRow(ctx, `SELECT o.task_id,t.mission_id,o.owner,m.delivery_state,o.state,m.contract_revision_id
 FROM obligations o
 JOIN messages m ON m.company_id=o.company_id AND m.id=o.id
 JOIN tasks t ON t.company_id=o.company_id AND t.id=o.task_id
 JOIN worker_sessions ws ON ws.company_id=o.company_id AND ws.id=$3 AND ws.task_id=o.task_id
 WHERE o.company_id=$1 AND o.id=$2
-FOR UPDATE OF o,m`, b.scope.company, request.ObligationID, b.session).Scan(&task, &mission, &messageState, &obligationState, &messageContractID); err != nil {
+FOR UPDATE OF o,m`, b.scope.company, request.ObligationID, b.session).Scan(&task, &mission, &owner, &messageState, &obligationState, &messageContractID); err != nil {
 			return Receipt{}, peerApplyDenied("obligation_not_current", "the supplied obligation is not the current peer responsibility; read collab_inbox or work_current again.", request, "", 0)
 		}
-		if b.employee != "emp-frontend" || (messageState != "observed" && messageState != "acknowledged") || (obligationState != "observed" && obligationState != "acknowledged") {
+		if b.employee != owner || (messageState != "observed" && messageState != "acknowledged") || (obligationState != "observed" && obligationState != "acknowledged") {
 			return Receipt{}, peerApplyDenied("obligation_not_current", "the obligation must be observed or acknowledged and must not be stale, superseded or resolved.", request, request.ContractRevisionID, 0)
 		}
 		var currentContractID string
@@ -867,14 +894,14 @@ FOR UPDATE OF o,m`, b.scope.company, request.ObligationID, b.session).Scan(&task
 			return Receipt{}, err
 		}
 		if request.WorkspaceRevision != currentWorkspaceRevision {
-			return Receipt{}, peerApplyDenied("workspace_revision_mismatch", "workspace_revision must equal the current frontend workspace revision.", request, currentContractID, currentWorkspaceRevision)
+			return Receipt{}, peerApplyDenied("workspace_revision_mismatch", "workspace_revision must equal the current recipient workspace revision.", request, currentContractID, currentWorkspaceRevision)
 		}
 		var observedWorkspaceRevision int64
 		if err := tx.QueryRow(ctx, "SELECT task_revision FROM messages WHERE company_id=$1 AND id=$2", b.scope.company, request.ObligationID).Scan(&observedWorkspaceRevision); err != nil {
 			return Receipt{}, err
 		}
 		if observedWorkspaceRevision <= 0 || currentWorkspaceRevision <= observedWorkspaceRevision {
-			return Receipt{}, peerApplyDenied("workspace_not_changed_since_observation", "write the frontend workspace after observing the obligation, then submit its new workspace revision.", request, currentContractID, currentWorkspaceRevision)
+			return Receipt{}, peerApplyDenied("workspace_not_changed_since_observation", "write the recipient workspace after observing the obligation, then submit its new workspace revision.", request, currentContractID, currentWorkspaceRevision)
 		}
 		mutationEvidence := false
 		invalidEvidence := make([]InvalidEvidenceRef, 0)
@@ -966,7 +993,7 @@ func (k *Kernel) TXPeerResolve(ctx context.Context, b Binding, obligationID, art
 		if e := tx.QueryRow(ctx, "SELECT task_id,owner,state FROM obligations WHERE company_id=$1 AND id=$2", b.scope.company, obligationID).Scan(&task, &owner, &state); e != nil {
 			return Receipt{}, e
 		}
-		if b.employee != owner || owner != "emp-frontend" || state != "applied" {
+		if task != b.task || b.employee != owner || state != "applied" {
 			return Receipt{}, core.Denied
 		}
 		var digest string

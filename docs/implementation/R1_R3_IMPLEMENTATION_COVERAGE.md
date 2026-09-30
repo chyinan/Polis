@@ -1,8 +1,12 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-09-30, Slice 99 / Schema 72. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-09-30, Slice 100 / Schema 72. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
-## Slice 99: Workbench Routine authoring and legacy instruction repair (no migration)
+## Slice 100: Bidirectional direct messages for the fixed peer pair (no migration)
+
+The existing peer-message lifecycle now permits both `emp-backend` and `emp-frontend` to send messages to the other current peer Task, read its inbox, acknowledge it, apply actionable requests to their own workspace, and resolve them with their own candidate Artifact. FYI messages remain readable and acknowledgeable without creating an Obligation or wake; repeated reads advance through pending FYIs in send-event order after each acknowledgement. The Kernel requires the source Task to equal the task bound to the WorkerSession; the target must be the ready/working opposite peer Task for the named employee in the same Company/Mission, and the message must reference the accepted contract revision. Apply and resolve also bind to the WorkerSession's task. Actionable sends still create an Obligation and wake signal transactionally. `PeerFrontendToolsWithDirectMessaging` is additive; the default `PeerFrontendTools`/`PeerFrontendToolsV1` and historical R0.3A probes retain their old registry. Dedicated PostgreSQL verification covers the full frontend→backend send/inbox/ack/apply/checkpoint/candidate/resolve flow, FYI readback/order, cross-Mission denial, finalized-target denial, and task-binding fences. No migration, real provider turn, external send, or production action was used. The general R1 product Worker surface and other fixed-role pairs remain unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-100-peer-direct-messaging/verification.md`.
+
+## Previous Slice 99: Workbench Routine authoring and legacy instruction repair (no migration)
 
 The authenticated Workbench now lists daily Routines scoped to the selected Company and Mission, creates a Routine only with its fixed task instruction, and repairs legacy `needs_instruction` rows through an idempotent command. The Mission overview exposes the create and repair forms only on the real Workbench API; instructions are frozen at creation, while old blocked occurrences stay visible until repaired. PostgreSQL integration verifies create→readback, legacy materialization→blocked readback→repair→linked Task readback. Frontend validation, all Go tests, Linux/Windows amd64 command builds, frontend typecheck/tests/lint/build, migration hash validation, and diff check pass. No automatic Worker dispatch or provider request was added. Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-99-workbench-routine-management/verification.md`.
 
@@ -84,13 +88,13 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 99
+## Finite remaining work at Slice 100
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
 Software closure, bounded to the current REQ ledger:
 
-- Finish direct member communication and the remaining worker scheduling path: REQ-02; REQ-13 fairness/quota readiness and automatic Worker admission/dispatch. Kernel occurrence→Task→Handover and Workbench Routine create/list/legacy repair are implemented. Routine persistence, due materialization, LISTEN/reconnect, bounded scans, startup reconciliation, and the schedule projection are implemented.
+- Finish direct member communication and the remaining worker scheduling path: REQ-02 still needs integration with the current product Worker surface and the other fixed roles; REQ-13 fairness/quota readiness and automatic Worker admission/dispatch also remain. The existing fixed peer pair now has a bidirectional Kernel message/Obligation path. Routine occurrence→Task→Handover and Workbench Routine create/list/legacy repair are implemented. Routine persistence, due materialization, LISTEN/reconnect, bounded scans, startup reconciliation, and the schedule projection are implemented.
 - Complete lifecycle safety: REQ-14 revocation, REQ-15 memory invalidation, REQ-16 retry/closeout budgets, REQ-25 continuing authorization, REQ-26 shared-write resource binding, REQ-29 shared-file workspace access, and REQ-39 remaining safe-change handling.
 - Complete the formal employee/runtime and continuity path for REQ-23–24, REQ-27, and REQ-30–34: current command surfaces and capability state machines exist, but direct communication, selected Skill, controlled MCP, and successor workflows are not available on the qualified product Worker path.
 - Add signing integration. Verify existing first-run, tray/hide/reopen, packaged artifact download, install/uninstall, login-start behavior, and update rollback in a clean Windows VM; the opt-in startup code is implemented but not host-qualified.
@@ -344,7 +348,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | REQ | Requirement | Earliest | Current state | Target |
 |---|---|---:|---|---|
 | 01 | Fixed company members and responsibilities | R1 | done-local; R1 qualification pending | R1 |
-| 02 | Direct member-to-member communication | R1 | partial; historical runtime path exists | R1 |
+| 02 | Direct member-to-member communication | R1 | partial; the fixed Backend/Frontend peer pair has bidirectional messages, an ordered persisted inbox, FYI acknowledgement, actionable Obligation/wake and Artifact-backed resolution. `PeerFrontendToolsWithDirectMessaging` is a separate tool registry that preserves the historical default surface. The current product Worker surface and other fixed-role pairs remain open | R1 |
 | 03 | Identity, memory and model are decoupled | R1 | partial; handover exists but R1 continuity is unqualified | R1 |
 | 04 | Work resumes after quota exhaustion, disconnect or restart | R1 | partial; recovery foundation exists | R1 |
 | 05 | Long-horizon missions | R1 | partial; multi-stage path is not release-qualified | R1, then R2 multi-day and R3 domains |
