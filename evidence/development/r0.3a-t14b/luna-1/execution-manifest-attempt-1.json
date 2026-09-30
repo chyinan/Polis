@@ -1,0 +1,39 @@
+{
+  "fingerprint_schema_version": "canonical-manifest-v3",
+  "canonical_manifest_digest": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "canonical_manifest": {
+    "fingerprint_schema_version": "canonical-manifest-v3",
+    "combination": {
+      "codex_version": "0.153.4",
+      "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+      "model": "gpt-5.6-luna",
+      "effort": "medium",
+      "runtime_profile": "wsl-linux-amd64",
+      "sandbox_class": "read-only",
+      "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+      "auth_source_class": "mounted_codex_auth_file",
+      "code_mode_host_sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+      "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+      "native_protocol_digest": "d052a9f423be59cd61cffb9dd8bf65b4e1a161b49800706c136c2f8862976244"
+    },
+    "auth": {
+      "auth_source_class": "mounted_codex_auth_file",
+      "auth_identity_fingerprint_schema_version": "auth-identity-v1",
+      "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+      "auth_identity_fingerprint_status": "available",
+      "auth_credential_revision_fingerprint_schema_version": "auth-credential-revision-v1",
+      "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+      "auth_credential_revision_fingerprint_status": "available"
+    },
+    "transport": {
+      "provider_transport_policy": "native_default",
+      "websocket_policy": "native_default"
+    }
+  },
+  "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+  "derivation_schema_version": "effective-execution-config-v1",
+  "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+  "launch_config_digest": "7a181704f0acfa4da6302288e894075edc3e8bcbd1fb19eeb9208ce29bc751c8",
+  "auth_snapshot_used": false,
+  "offline_regression_passed": true
+}

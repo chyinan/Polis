@@ -1,0 +1,47 @@
+                                          Table "public.worker_sessions"
+      Column       |  Type  | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+-------------------+--------+-----------+----------+---------+----------+-------------+--------------+-------------
+ company_id        | text   |           | not null |         | extended |             |              | 
+ id                | text   |           | not null |         | extended |             |              | 
+ employee_id       | text   |           | not null |         | extended |             |              | 
+ task_id           | text   |           | not null |         | extended |             |              | 
+ generation        | bigint |           | not null |         | plain    |             |              | 
+ epoch             | bigint |           | not null |         | plain    |             |              | 
+ incarnation       | text   |           | not null |         | extended |             |              | 
+ profile           | text   |           | not null |         | extended |             |              | 
+ state             | text   |           | not null |         | extended |             |              | 
+ capability_digest | text   |           |          |         | extended |             |              | 
+ process_pid       | bigint |           |          |         | plain    |             |              | 
+ stop_receipt      | text   |           |          |         | extended |             |              | 
+ tool_call_limit   | bigint |           | not null | 0       | plain    |             |              | 
+ tool_calls_used   | bigint |           | not null | 0       | plain    |             |              | 
+Indexes:
+    "worker_sessions_pkey" PRIMARY KEY, btree (company_id, id)
+    "one_live_worker" UNIQUE, btree (company_id, employee_id) WHERE state <> 'stopped'::text
+Check constraints:
+    "worker_sessions_check" CHECK (state <> 'stopped'::text OR stop_receipt IS NOT NULL)
+    "worker_sessions_state_check" CHECK (state = ANY (ARRAY['restoring'::text, 'validating'::text, 'activation_pending_environment'::text, 'active'::text, 'stopping'::text, 'stopped'::text, 'reconcile_required'::text]))
+    "worker_sessions_tool_call_limit_check" CHECK (tool_call_limit >= 0)
+    "worker_sessions_tool_calls_used_check" CHECK (tool_calls_used >= 0)
+    "worker_tool_calls_within_limit" CHECK (tool_call_limit = 0 OR tool_calls_used <= tool_call_limit)
+Foreign-key constraints:
+    "worker_sessions_company_id_employee_id_fkey" FOREIGN KEY (company_id, employee_id) REFERENCES employees(company_id, id)
+    "worker_sessions_company_id_task_id_fkey" FOREIGN KEY (company_id, task_id) REFERENCES tasks(company_id, id)
+Referenced by:
+    TABLE "worker_checkpoints" CONSTRAINT "worker_checkpoints_company_id_session_id_fkey" FOREIGN KEY (company_id, session_id) REFERENCES worker_sessions(company_id, id)
+    TABLE "worker_checks" CONSTRAINT "worker_checks_company_id_session_id_fkey" FOREIGN KEY (company_id, session_id) REFERENCES worker_sessions(company_id, id)
+    TABLE "worker_observations" CONSTRAINT "worker_observations_company_id_session_id_fkey" FOREIGN KEY (company_id, session_id) REFERENCES worker_sessions(company_id, id)
+Not-null constraints:
+    "worker_sessions_company_id_not_null" NOT NULL "company_id"
+    "worker_sessions_id_not_null" NOT NULL "id"
+    "worker_sessions_employee_id_not_null" NOT NULL "employee_id"
+    "worker_sessions_task_id_not_null" NOT NULL "task_id"
+    "worker_sessions_generation_not_null" NOT NULL "generation"
+    "worker_sessions_epoch_not_null" NOT NULL "epoch"
+    "worker_sessions_incarnation_not_null" NOT NULL "incarnation"
+    "worker_sessions_profile_not_null" NOT NULL "profile"
+    "worker_sessions_state_not_null" NOT NULL "state"
+    "worker_sessions_tool_call_limit_not_null" NOT NULL "tool_call_limit"
+    "worker_sessions_tool_calls_used_not_null" NOT NULL "tool_calls_used"
+Access method: heap
+

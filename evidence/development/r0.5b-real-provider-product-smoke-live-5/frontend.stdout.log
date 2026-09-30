@@ -1,0 +1,92 @@
+
+> polis-workbench@0.1.0 dev
+> vite --host 127.0.0.1 --port 4183
+
+
+  VITE v7.3.6  ready in 305 ms
+
+  ➜  Local:   http://127.0.0.1:4183/
+12:40:42 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+12:40:49 [vite] (client) hmr update /src/app/App.tsx
+12:41:51 [vite] (client) hmr update /src/pages/CompanyOverviewPage.tsx
+12:42:03 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+12:42:19 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+12:45:45 [vite] (client) hmr update /src/pages/SubpagePanels.tsx
+12:46:47 [vite] (client) hmr update /src/pages/CompanyOverviewPage.tsx
+21:28:50 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+21:31:01 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+21:31:27 [vite] (client) hmr update /src/app/App.tsx
+21:32:03 [vite] (client) hmr update /src/app/App.tsx
+21:33:49 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+21:34:45 [vite] (client) hmr update /src/pages/GroupPages.tsx
+21:35:02 [vite] (client) hmr update /src/pages/GroupPages.tsx
+21:35:18 [vite] (client) hmr update /src/app/App.tsx
+21:35:55 [vite] (client) hmr update /src/pages/GroupPages.tsx
+21:39:18 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+21:54:00 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+21:54:11 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+21:54:26 [vite] (client) hmr update /src/app/App.tsx
+21:54:26 [vite] (client) hmr update /src/app/App.tsx
+21:54:35 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+21:55:05 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+21:59:49 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:00:03 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:00:18 [vite] (client) hmr update /src/app/App.tsx
+22:00:33 [vite] (client) hmr update /src/app/App.tsx
+22:00:50 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+22:01:47 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+22:10:39 [vite] (client) hmr update /src/app/App.tsx
+22:10:39 [vite] (client) hmr update /src/app/App.tsx
+22:11:01 [vite] (client) hmr update /src/app/App.tsx
+22:11:36 [vite] (client) hmr update /src/app/App.tsx
+22:21:33 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:21:47 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:22:07 [vite] (client) hmr update /src/app/App.tsx
+22:22:07 [vite] (client) hmr update /src/app/App.tsx
+22:22:24 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+22:22:51 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:23:21 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:24:08 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+22:24:26 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+22:24:57 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+22:30:40 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:30:40 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:30:55 [vite] (client) hmr update /src/app/App.tsx
+22:30:55 [vite] (client) hmr update /src/app/App.tsx
+22:31:05 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+22:31:41 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+22:31:41 [vite] (client) hmr update /src/app/App.tsx
+22:31:41 [vite] (client) hmr update /src/components/workbench-shell/AppShell.tsx
+22:39:40 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:40:01 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:40:44 [vite] (client) hmr update /src/app/App.tsx
+22:42:01 [vite] (client) hmr update /src/app/App.tsx
+22:42:23 [vite] (client) hmr update /src/app/App.tsx
+22:42:56 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+22:43:27 [vite] (client) hmr update /src/pages/SubpagePanels.tsx
+22:43:47 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+22:49:06 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:49:27 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:49:46 [vite] (client) hmr update /src/app/App.tsx
+22:49:46 [vite] (client) hmr update /src/app/App.tsx
+22:49:57 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+22:50:19 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+22:50:19 [vite] (client) hmr update /src/app/App.tsx
+22:50:19 [vite] (client) hmr update /src/components/workbench-shell/AppShell.tsx
+22:58:00 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:58:20 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:58:34 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+22:59:02 [vite] (client) hmr update /src/app/App.tsx
+22:59:02 [vite] (client) hmr update /src/app/App.tsx
+22:59:25 [vite] (client) hmr update /src/app/App.tsx, /src/pages/ActivityPage.tsx, /src/pages/GroupPages.tsx, /src/pages/CompanyOverviewPage.tsx, /src/pages/WorkbenchPages.tsx
+23:00:49 [vite] (client) hmr update /src/pages/WorkbenchPages.tsx
+23:00:49 [vite] (client) hmr update /src/app/App.tsx
+23:06:31 [vite] (client) hmr update /src/app/App.tsx, /src/pages/CompanyOverviewPage.tsx
+23:06:31 [vite] (client) hmr update /src/app/App.tsx
+23:07:58 [vite] (client) hmr update /src/app/App.tsx
+23:07:58 [vite] (client) hmr update /src/components/workbench-shell/AppShell.tsx
+23:19:48 [vite] (client) hmr update /src/pages/SubpagePanels.tsx
+23:32:28 [vite] vite.config.ts changed, restarting server...
+23:32:28 [vite] server restarted.
+23:33:57 [vite] vite.config.ts changed, restarting server...
+23:33:57 [vite] server restarted.

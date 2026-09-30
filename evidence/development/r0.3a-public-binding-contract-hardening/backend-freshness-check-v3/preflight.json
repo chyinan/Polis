@@ -1,0 +1,134 @@
+{
+  "acceptance_qualification": {
+    "acceptance_remediation": "PASSED",
+    "behavior_verifier": "r03a-pagination-behavior@1",
+    "behavioral_verifier": {
+      "revision": "r03a-pagination-behavior@1",
+      "source_digest": "59eb2a6986eb08fd2d0e093d7d8e45921b5b124c4193e361399ceeddc73e76a3"
+    },
+    "business_contract": "r03a-pagination-contract@3",
+    "checker_binding_feedback_quality": "PASSED",
+    "eligible_for_new_peer_collaboration_run": "YES",
+    "eligible_for_new_v3_backend_sample": true,
+    "frozen_v3_regression": {
+      "check_receipt_regression": true,
+      "correct_binding_behavior_negative_remains_fail": true,
+      "hidden_oracle_exposed": false,
+      "old_coarse_outcome_unknown_reproduced": true,
+      "wrong_bindings_fail_with_public_reason": true
+    },
+    "future_public_contract": {
+      "revision": "r03a-pagination-contract@3",
+      "sha256": "5bc44edeec9b490cf142fa2310f51d8257437f282dd1264e643de24ad57ce12a"
+    },
+    "implementation_binding_contract": "r03a-backend-binding@1",
+    "provider_surface": {
+      "aggregate_schema_bytes": 2048,
+      "aggregate_schema_digest": "ad2d5e53c585ba3eea65614432e05fb8ad3056c234faee57ac43eb2d125b8763",
+      "changed": false,
+      "manifest_digest": "f1a112788fb1c879a1e7e8e73b515e0ae560352d1f0ee8f5a6f19cf5fc8c0c16",
+      "qualification_action": "business/acceptance qualification only; no L1/L2 live canary",
+      "tool_count": 11
+    },
+    "public_binding_contract": {
+      "allowed_top_level_declarations": [
+        "const"
+      ],
+      "declaration_kind": "function",
+      "entrypoint": "FetchItems",
+      "imports_allowed": false,
+      "package": "backend",
+      "parameters": [
+        {
+          "name": "cursor",
+          "type": "string"
+        },
+        {
+          "name": "limit",
+          "type": "int"
+        }
+      ],
+      "receiver_allowed": false,
+      "return_type": "string",
+      "revision": "r03a-backend-binding@1",
+      "sha256": "56042f5096e8c4abce06530ca7d4bb910c2deb7c914cabd8f663779576ffb717",
+      "source": "internal/fixture/backend_binding.go:BackendBindingContractV1"
+    },
+    "public_binding_contract_hardening": "PASSED",
+    "qualification": "R0.3A-PUBLIC-BINDING-CONTRACT-HARDENING",
+    "status": "PASSED",
+    "verification": {
+      "diff_check": "PASS",
+      "full_tests": "PASS",
+      "high": 0,
+      "historical_evidence_modified": false,
+      "linux_build": "PASS",
+      "medium": 0,
+      "postgresql_deterministic_suite": "PASS",
+      "provider_egress": 0,
+      "race": "PASS",
+      "vet": "PASS",
+      "windows_build": "PASS"
+    }
+  },
+  "allowance_created": false,
+  "authorization_binding": {
+    "execution_fingerprint": "d5e7e43d9a8d0b7f2cd2e0337ae0649d3ab9755c56380af41a68f994a6cd0536",
+    "employee_id": "emp-backend",
+    "problem_key": "r03a-real-peer-collaboration-v1",
+    "purpose": "real_backend_peer_collaboration",
+    "model": "gpt-5.6-luna",
+    "profile": "gpt-5.6-luna/medium",
+    "effort": "medium",
+    "allowance_limits": {
+      "medium_limit": 1,
+      "high_limit": 0,
+      "concurrency": 1,
+      "tool_call_limit": 48
+    }
+  },
+  "backend_l2_fingerprint": "d5e7e43d9a8d0b7f2cd2e0337ae0649d3ab9755c56380af41a68f994a6cd0536",
+  "backend_l2_manifest": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-current-binary-backend-l2-v2\\execution-manifest.json",
+  "behavior_verifier": "r03a-pagination-behavior@1",
+  "blob_qualification": {
+    "loader_schema_version": "r0.3a-blob-durability-consumer-v2",
+    "source_qualification_path": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-blob-durability\\qualification.json",
+    "source_qualification_id": "R0.3A Blob Durability Windows Qualification",
+    "source_qualification_content_digest": "eb30f9ea18652be45232eb3b1d327e71ee4d2f8072fae4fb3ffb3da321659d9a",
+    "normalized_contract_digest": "5e390a59d40bd8d307b1b4b2280a6c1021980c07be62e4c3e0c1851db997b294",
+    "qualification": "R0.3A Blob Durability Windows Qualification",
+    "status": "PASSED",
+    "medium_consumed": 0,
+    "high_consumed": 0,
+    "provider_egress": 0,
+    "eligible_for_backend_continuation_3": true,
+    "file_content_sync": "forced_on_windows_and_linux_failure_is_fatal",
+    "atomic_finalize": "rename_failure_is_fatal",
+    "linux_parent_directory_sync": "strong_file_sync_atomic_rename_parent_directory_fsync",
+    "windows_parent_directory_sync": "explicitly_classified_unsupported_after_file_sync_and_atomic_rename; weaker_than_unix_and_not_equivalent",
+    "windows_smoke_status": "PASSED",
+    "windows_content_hash_correct": true,
+    "windows_final_blob_present": true,
+    "windows_atomic_finalization": "final_digest_present_no_stage_file",
+    "windows_parent_sync_outcome": "explicitly_unsupported",
+    "windows_stage_files": 0,
+    "windows_cleanup": "owned_company_directory_removed",
+    "os_root_traversal": "PASSED",
+    "design_pack_modified": false,
+    "transport_forensics_continued": false
+  },
+  "contract_revision": "r03a-pagination-contract@3",
+  "high_limit": 0,
+  "historical_evidence_modified": false,
+  "implementation_binding_contract": "r03a-backend-binding@1",
+  "medium_limit": 1,
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "passed": true,
+  "provider_egress": 0,
+  "purpose": "real_backend_peer_collaboration",
+  "qualification": "R0.3A-PAGINATION-V3-REAL-BACKEND",
+  "status": "preflight_passed",
+  "subject_revision": "r03a-pagination-v3-business-subject@1",
+  "tool_call_limit": 48,
+  "worker_started": false
+}

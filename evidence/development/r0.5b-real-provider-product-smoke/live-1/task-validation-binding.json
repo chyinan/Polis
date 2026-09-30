@@ -1,0 +1,20 @@
+{
+  "record_type": "polis-task-validation-binding-evidence@1",
+  "status": "NOT_CREATED",
+  "task_id": null,
+  "mission_id": "4f000865902ec201d528c8ce3a039798",
+  "public_contract": {
+    "revision": "text-acceptance@1",
+    "required_text": [
+      "Mission ID: {{mission_id}}",
+      "Task ID: {{task_id}}",
+      "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+      "Task summary: This artifact records one small product integration smoke."
+    ]
+  },
+  "binding_digest": null,
+  "runner_kind": null,
+  "runner_revision": null,
+  "validator_receipt": null,
+  "reason": "No product Task was created because Start was not attempted."
+}

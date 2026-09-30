@@ -1,0 +1,17 @@
+{
+  "source": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/",
+  "historical_live2_modified": false,
+  "workspace_digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+  "workspace_revision": 2,
+  "task_validation_binding_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+  "validation_status": "PASS",
+  "delivery_operation": "polis_task_submit",
+  "qualified_checkpoint": "created",
+  "artifact": "created",
+  "task_state": "candidate",
+  "provider_reservation": 0,
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "verdict": "PASSED_OFFLINE_COUNTERFACTUAL"
+}

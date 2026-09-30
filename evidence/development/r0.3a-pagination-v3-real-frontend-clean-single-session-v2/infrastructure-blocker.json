@@ -1,0 +1,29 @@
+{
+  "status": "INCONCLUSIVE",
+  "frontend_real_execution": "INCONCLUSIVE",
+  "frontend_provider_turn": "NOT_STARTED",
+  "reason_code": "CAS_ROOT_BINDING_MISMATCH_DURING_KERNEL_OPEN",
+  "kernel_expected_cas_root": "/home/chyinan/.local/state/polis-recovery/r03a-frontend-clean-baseline-v1/blobs",
+  "materialized_cas_root": "/home/chyinan/.local/state/polis-recovery/r03a-frontend-clean-baseline-v1/cas",
+  "artifact_before_kernel_open": {
+    "id": "f73981340227622e9c16dbf45e961a3f",
+    "state": "ready",
+    "verdict": "candidate",
+    "digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672"
+  },
+  "artifact_after_kernel_open": {
+    "state": "missing",
+    "verdict": "invalidated"
+  },
+  "company_sequence_before": 62,
+  "company_sequence_after": 64,
+  "runtime_incarnation_after": "2b26cd41eccb5913822392c6797ca40f",
+  "employee_epoch_after": 3,
+  "workspace_message_obligation_contract_unchanged": true,
+  "allowance_created": true,
+  "medium_reserved": 0,
+  "worker_created": false,
+  "provider_egress": 0,
+  "retry": false,
+  "historical_evidence_modified": false
+}

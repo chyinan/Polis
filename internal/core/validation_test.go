@@ -1,7 +1,10 @@
 // pattern: Functional Core
 package core
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 
 func TestCandidateRequiresExactContractAndIndependentChecker(t *testing.T) {
 	for _, tc := range []struct {
@@ -18,5 +21,12 @@ func TestCandidateRequiresExactContractAndIndependentChecker(t *testing.T) {
 				t.Fatalf("CheckCandidate = %v, want valid %v", got, tc.valid)
 			}
 		})
+	}
+}
+
+func TestConflictErrorKeepsMachineCodeAndHumanState(t *testing.T) {
+	err := ConflictError{Reason: "mission is already active", CurrentState: "active"}
+	if !errors.Is(err, Conflict) || err.Error() != "mission is already active" || err.CurrentState != "active" {
+		t.Fatalf("conflict error = %v/%q, want conflict with active state", err, err.CurrentState)
 	}
 }

@@ -13,7 +13,7 @@ admin="host=$socket port=55432 dbname=postgres user=$(id -un)"
 trap '"$pg/dropdb" -h "$socket" -p 55432 "$database"' EXIT
 export POLIS_DSN="host=$socket port=55432 dbname=$database user=$(id -un)"
 bin/polis migrate
-"$pg/psql" "$POLIS_DSN" -v ON_ERROR_STOP=1 -c 'GRANT USAGE ON SCHEMA public TO polis_runtime; GRANT SELECT,INSERT,UPDATE ON ALL TABLES IN SCHEMA public TO polis_runtime;'
+"$pg/psql" "$POLIS_DSN" -v ON_ERROR_STOP=1 -c 'GRANT USAGE ON SCHEMA public TO polis_runtime; GRANT SELECT,INSERT,UPDATE ON ALL TABLES IN SCHEMA public TO polis_runtime; GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA public TO polis_runtime;'
 export POLIS_DSN="host=$socket port=55432 dbname=$database user=polis_runtime"
 bin/polis create demo-company demo-mission
 bin/polis start demo-company demo-mission

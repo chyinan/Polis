@@ -1,0 +1,53 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-PHYSICAL-STATE-BINDING-SALVAGE",
+  "status": "PASSED",
+  "physical_cluster_bound_to_sample6": true,
+  "source_state_identity_reestablished": true,
+  "source": {
+    "pgdata": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6/postgres/pgdata",
+    "system_identifier": "7685325910591533502",
+    "pg_control_sha256": "b4247c0593726d913b17ecc0dc4968d653683fcc6d3bd39cbef76da7b1e493a0"
+  },
+  "clone": {
+    "pgdata": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6-salvage/clone",
+    "system_identifier": "7685325910591533502",
+    "pg_control_sha256": "b4247c0593726d913b17ecc0dc4968d653683fcc6d3bd39cbef76da7b1e493a0",
+    "file_manifest_sha256": "052d7eebd3556752c0b0534d392ca7f47bc7e7e947676f30ae419dce3c7fe9a5",
+    "method": "cp -a from shut-down source PGDATA",
+    "network": "unix_socket_only"
+  },
+  "database": {
+    "name": "polis_r0_3a_pagination_v3_backend_20260914174837_31960",
+    "exists": true,
+    "oid": "16384",
+    "owner": "chyinan",
+    "schema_version": 5
+  },
+  "runtime_role": {
+    "name": "polis_runtime",
+    "present": true
+  },
+  "anchors": {
+    "contract_revision": true,
+    "message": true,
+    "obligation_pending": true,
+    "work_signal": true,
+    "checkpoint": true,
+    "artifact": true,
+    "workspace": true,
+    "workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "frontend_sessions": 0,
+    "frontend_task_state": "ready",
+    "planner_relay": 0
+  },
+  "salvage_manifest": {
+    "path": "/mnt/d/Programs/Polis/evidence/development/r0.3a-sample-6-physical-state-binding-salvage-v1/PreservedPostgresAccessManifest.salvage.json",
+    "sha256": "147e47ddf7a833d91eb184998586f00954580bc44604e226b03653ad4400bad7",
+    "historical_manifest_present": false,
+    "creation_phase": "post_failure_salvage"
+  },
+  "salvage_manifest_status": "PASSED",
+  "eligible_for_sample_6_recovery_continuation": "YES",
+  "sample6_source_mutated": false,
+  "provider_egress": 0
+}

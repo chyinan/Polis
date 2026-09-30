@@ -1,0 +1,202 @@
+跳到主要内容
+P
+polis
+R1 WORKBENCH
+r05b-live-2
+作用域公司
+公司
+公司总览
+使命
+任务
+员工
+组织关系
+活动
+资源
+证据
+待决事项
+反馈
+Bot提醒
+设置
+浅色主题
+Polis
+/
+r05b-live-2
+
+公司 / 工作台
+
+公司总览
+P
+r05b-live-2
+作用域公司
+
+r05b-live-2
+
+snapshot real
+查看活动
+员工
+4
+0 个工作中 · 逻辑身份
+当前任务
+2
+0 工作中 · 0 candidate
+开放义务
+0
+待验收
+2
+当前目标
+R0.5B LIVE_2 real-provider product smoke
+已取消
+Source
+r0-arithmetic@1
+ContractRevision
+不可得
+unknown
+unknown
+公开验收条件
+Mission ID: {{mission_id}}
+Task ID: {{task_id}}
+Acknowledgement: This artifact was produced through the Polis real-provider product path.
+Task summary: This artifact records one small product integration smoke.
+Human command surface
+cancelled
+已取消
+当前运行周期
+Snapshot
+FRESH
+snapshot cursor
+company-seq:29
+entity revision
+company-seq:29
+observed at
+2026/9/17 GMT+8 19:07
+source
+PostgreSQL runtime read model
+
+人员 / 执行
+
+员工与 WorkerSession
+
+BACKEND EMPLOYEE
+
+emp-backend
+已停止
+Employee logical identity
+emp-backend
+WorkerSession
+f3a7f944…d0e5bb
+MODEL PROFILE
+gpt-5.6-luna/medium
+EPOCH
+3
+ACTIVE REQUESTS
+不可得
+IN-FLIGHT TOOLS
+不可得
+CURRENT TASK · NONE
+当前无任务占用
+no active task
+QUALIFICATION
+unverified
+evidence 不可得
+HANDOVER / SUCCESSOR
+可下钻
+
+FRONTEND EMPLOYEE
+
+emp-frontend
+休眠
+Employee logical identity
+emp-frontend
+WorkerSession
+未启动
+MODEL PROFILE
+不可得
+EPOCH
+2
+ACTIVE REQUESTS
+不可得
+IN-FLIGHT TOOLS
+不可得
+CURRENT TASK · NONE
+当前无任务占用
+no active task
+QUALIFICATION
+unverified
+evidence 不可得
+HANDOVER / SUCCESSOR
+无接班
+
+PLANNING EMPLOYEE
+
+emp-planning
+休眠
+Employee logical identity
+emp-planning
+WorkerSession
+未启动
+MODEL PROFILE
+不可得
+EPOCH
+2
+ACTIVE REQUESTS
+不可得
+IN-FLIGHT TOOLS
+不可得
+CURRENT TASK · NONE
+当前无任务占用
+no active task
+QUALIFICATION
+unverified
+evidence 不可得
+HANDOVER / SUCCESSOR
+无接班
+
+REVIEW EMPLOYEE
+
+emp-review
+休眠
+Employee logical identity
+emp-review
+WorkerSession
+未启动
+MODEL PROFILE
+不可得
+EPOCH
+2
+ACTIVE REQUESTS
+不可得
+IN-FLIGHT TOOLS
+不可得
+CURRENT TASK · NONE
+当前无任务占用
+no active task
+QUALIFICATION
+unverified
+evidence 不可得
+HANDOVER / SUCCESSOR
+无接班
+证据边界
+Checkpoint、Artifact、Acceptance
+01
+Workspace checkpoint
+
+暂无 checkpoint · 当前 worker 状态记录
+
+unknown
+02
+Artifact / evidence
+
+暂无 artifact · verdict 不可得
+
+unknown
+03
+Final acceptance
+
+仍需验收
+
+pending
+当前没有责任记录
+需要人决定
+待处理事项
+0 项
+当前没有待处理事项。

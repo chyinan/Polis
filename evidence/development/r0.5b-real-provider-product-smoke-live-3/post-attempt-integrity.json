@@ -1,0 +1,26 @@
+{
+    "status":  "PASS",
+    "checks":  {
+                   "company_count":  1,
+                   "mission_count":  1,
+                   "task_count":  2,
+                   "provider_task_count":  1,
+                   "binding_count":  1,
+                   "worker_session_count":  1,
+                   "stopped_worker_session_count":  1,
+                   "provider_terminal_observation_count":  1,
+                   "worker_check_count":  0,
+                   "checkpoint_count":  0,
+                   "artifact_count":  0,
+                   "artifact_qualification_count":  0,
+                   "mission_state":  "active",
+                   "task_state":  "working",
+                   "allowance_medium_turns":  1,
+                   "allowance_high_turns":  0,
+                   "allowance_tool_calls_used":  0,
+                   "protocol_bytes":  0,
+                   "cas_workspace_blob_present":  true,
+                   "provider_process_alive":  false,
+                   "no_credentials_recorded":  true
+               }
+}

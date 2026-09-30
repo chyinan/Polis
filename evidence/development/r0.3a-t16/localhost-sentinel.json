@@ -1,0 +1,15 @@
+{
+  "guest": {
+    "passed": true,
+    "endpoint": "http://127.0.0.1:45923",
+    "response_classification": "exact_fixed_sentinel"
+  },
+  "host": {
+    "passed": true,
+    "endpoint": "http://127.0.0.1:45923",
+    "response_classification": "exact_fixed_sentinel"
+  },
+  "interpretation": "Guest reached a host loopback test endpoint; this weakens localhost namespace isolation, but does not prove the historical T6 proxy instance or provider traffic was used.",
+  "localhost_proxy_reachable_from_guest": "YES",
+  "provider_or_internet_accessed": false
+}

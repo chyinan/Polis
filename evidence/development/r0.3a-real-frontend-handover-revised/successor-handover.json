@@ -1,0 +1,59 @@
+{
+  "EmployeeID": "emp-frontend",
+  "TaskID": "3243c57410762f2cd8b666e3ad35c8c9",
+  "WorkspaceDigest": "aae3482ff7442125965ac24a884b1b5527a0d7a880f6d0c33d3f7b4c5e42a9e1",
+  "ContractRevisionID": "4f57c71061c10ab5a78f632d8db59321",
+  "MessageID": "7d027b5a8fd2267a68b364e47f4635ca",
+  "ObligationID": "7d027b5a8fd2267a68b364e47f4635ca",
+  "MessageState": "applied",
+  "ObligationState": "applied",
+  "WorkspaceRevision": 2,
+  "Checkpoints": [
+    {
+      "acceptance_checker_revision": "peer-semantic-checker@2",
+      "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+      "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+      "contract_supersession_policy_revision": "peer-contract-supersession@2",
+      "finalization_state": "not_qualified",
+      "kind": "progress",
+      "summary": "Applied the accepted cursor-contract frontend change, but the public semantic checker reports an invalid candidate and response-shape mismatch; responsibility remains unfulfilled.",
+      "facts": [
+        "Accepted contract revision 4f57c71061c10ab5a78f632d8db59321 requires GET /items?cursor={cursor}\u0026limit={limit}, items[].id/name, and next_cursor pagination.",
+        "Workspace replacement persisted at revision 2 with digest aae3482ff7442125965ac24a884b1b5527a0d7a880f6d0c33d3f7b4c5e42a9e1.",
+        "collab_apply recorded the workspace change against obligation 7d027b5a8fd2267a68b364e47f4635ca."
+      ],
+      "decisions": [
+        "Stop at the real handover boundary after recording checker feedback.",
+        "Do not submit an artifact or resolve the obligation."
+      ],
+      "rejected": [
+        "candidate_syntax_invalid: provide a compilable frontend candidate with the response consumer function.",
+        "response_shape_mismatch: consume all fields required by the accepted contract response schema."
+      ],
+      "evidence_refs": [
+        "aae3482ff7442125965ac24a884b1b5527a0d7a880f6d0c33d3f7b4c5e42a9e1",
+        "7d027b5a8fd2267a68b364e47f4635ca",
+        "f28c1113240ca9f73b67832fe83ea2ba"
+      ],
+      "workspace_digest": "aae3482ff7442125965ac24a884b1b5527a0d7a880f6d0c33d3f7b4c5e42a9e1",
+      "workspace_revision": 2,
+      "contract_revision_id": "4f57c71061c10ab5a78f632d8db59321",
+      "failed_checks": [
+        "candidate_syntax",
+        "response_shape_compatibility"
+      ],
+      "pending_message_id": "7d027b5a8fd2267a68b364e47f4635ca",
+      "pending_message_state": "applied",
+      "pending_obligation_id": "7d027b5a8fd2267a68b364e47f4635ca",
+      "pending_obligation_state": "applied",
+      "session_id": "3d46f033d952c8363790fce7e1ca6c28",
+      "epoch": 3,
+      "next_action": "A subsequent frontend employee must make the candidate compilable and consume the complete accepted response shape, then rerun workspace_check."
+    }
+  ],
+  "ToolBudget": {
+    "tool_call_limit": 48,
+    "tool_calls_used": 0,
+    "tool_calls_remaining": 48
+  }
+}

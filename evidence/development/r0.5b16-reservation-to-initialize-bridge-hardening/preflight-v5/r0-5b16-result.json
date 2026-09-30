@@ -1,0 +1,331 @@
+{
+  "record_type": "polis-r0.5b16-reservation-to-initialize-bridge-hardening@1",
+  "status": "PASSED",
+  "historical_live4_boundary": "D:\\Programs\\Polis\\evidence\\development\\r0.5b16-reservation-to-initialize-bridge-hardening\\preflight-v5\\live4-boundary.json",
+  "cycles": [
+    {
+      "cycle": 1,
+      "company_id": "r05b16-cycle-1-1789959282332034200",
+      "mission_id": "c9bd5a2a7c7ce16f1d79003b784632dd",
+      "task_id": "bd9a81e1c3bd3e6dd5c13ac64da683ce",
+      "session_id": "d81ebac1ecbc86ce2a65ee70797d76b3",
+      "result": {
+        "CompanyID": "r05b16-cycle-1-1789959282332034200",
+        "MissionID": "c9bd5a2a7c7ce16f1d79003b784632dd",
+        "TaskID": "bd9a81e1c3bd3e6dd5c13ac64da683ce",
+        "SessionID": "d81ebac1ecbc86ce2a65ee70797d76b3",
+        "Epoch": 2,
+        "Incarnation": "75c80097fde3b136d2bbfaa21bf219be",
+        "ProcessPID": 79312,
+        "ProcessExited": true,
+        "ProcessStarted": true,
+        "InitializePassed": true,
+        "ThreadStarted": true,
+        "RegisteredToolCount": 7,
+        "RegisteredToolDigest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+        "BusinessBindingPassed": true,
+        "CleanStop": true,
+        "ProviderReservations": 1,
+        "ActiveReservations": 0,
+        "ClosedReservations": 1,
+        "ProviderEgress": 0,
+        "Initialization": {
+          "phase": "initialize",
+          "reason_code": "",
+          "process_created": true,
+          "pid_present": true,
+          "child_exit_observed": true,
+          "initialize_request_sent": true,
+          "initialize_ack_received": true,
+          "initialized_notification_sent": true,
+          "stdout_pipe_state": "closed",
+          "stderr_category": "stderr_present_unclassified",
+          "safe_message": "",
+          "lifecycle": [
+            {
+              "phase": "initialize_prepare_started"
+            },
+            {
+              "phase": "initialize_payload_ready"
+            },
+            {
+              "phase": "initialize_write_started"
+            },
+            {
+              "phase": "initialize_write_completed"
+            },
+            {
+              "phase": "initialize_ack_received"
+            }
+          ]
+        }
+      },
+      "protocol": {
+        "initialize_request_count": 1,
+        "initialize_response_count": 1,
+        "initialize_sent_at": "2026-09-21T02:54:43.0961491Z",
+        "initialize_received_at": "2026-09-21T02:54:43.2948633Z",
+        "thread_start_request_count": 1,
+        "thread_start_response_count": 1,
+        "thread_start_sent_at": "2026-09-21T02:54:43.3012567Z",
+        "thread_start_received_at": "2026-09-21T02:54:46.9403385Z",
+        "registered_tool_count": 7,
+        "registered_tools_manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+        "turn_start_count": 0,
+        "turn_start_at": "0001-01-01T00:00:00Z",
+        "first_output_at": "0001-01-01T00:00:00Z",
+        "first_output": "",
+        "turn_completed_count": 0,
+        "turn_completed_at": "0001-01-01T00:00:00Z",
+        "tool_call_event_count": 0,
+        "lifecycle_phases": [
+          "initialize_prepare_started",
+          "initialize_payload_ready",
+          "initialize_write_started",
+          "initialize_write_completed",
+          "initialize_ack_received"
+        ]
+      },
+      "protocol_path": "D:\\Programs\\Polis\\evidence\\development\\r0.5b16-reservation-to-initialize-bridge-hardening\\preflight-v5\\provider\\cycle-1\\d81ebac1ecbc86ce2a65ee70797d76b3\\protocol.jsonl",
+      "lifecycle_phases": [
+        "initialize_prepare_started",
+        "initialize_payload_ready",
+        "initialize_write_started",
+        "initialize_write_completed",
+        "initialize_ack_received"
+      ],
+      "task_state": "working",
+      "worker_state": "stopped",
+      "reservations_created": 1,
+      "reservations_active": 0,
+      "reservations_closed": 1,
+      "provider_egress": 0,
+      "turn_started": 0,
+      "orphan_processes": 0
+    },
+    {
+      "cycle": 2,
+      "company_id": "r05b16-cycle-2-1789959287495114000",
+      "mission_id": "035fb7c3fcbe783826a408c78a351965",
+      "task_id": "e27dcfd20b73f729622a29cea08a1068",
+      "session_id": "e4c89ac98b7ad6462351d068efae145b",
+      "result": {
+        "CompanyID": "r05b16-cycle-2-1789959287495114000",
+        "MissionID": "035fb7c3fcbe783826a408c78a351965",
+        "TaskID": "e27dcfd20b73f729622a29cea08a1068",
+        "SessionID": "e4c89ac98b7ad6462351d068efae145b",
+        "Epoch": 2,
+        "Incarnation": "75c80097fde3b136d2bbfaa21bf219be",
+        "ProcessPID": 85552,
+        "ProcessExited": true,
+        "ProcessStarted": true,
+        "InitializePassed": true,
+        "ThreadStarted": true,
+        "RegisteredToolCount": 7,
+        "RegisteredToolDigest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+        "BusinessBindingPassed": true,
+        "CleanStop": true,
+        "ProviderReservations": 1,
+        "ActiveReservations": 0,
+        "ClosedReservations": 1,
+        "ProviderEgress": 0,
+        "Initialization": {
+          "phase": "initialize",
+          "reason_code": "",
+          "process_created": true,
+          "pid_present": true,
+          "child_exit_observed": true,
+          "initialize_request_sent": true,
+          "initialize_ack_received": true,
+          "initialized_notification_sent": true,
+          "stdout_pipe_state": "closed",
+          "stderr_category": "stderr_present_unclassified",
+          "safe_message": "",
+          "lifecycle": [
+            {
+              "phase": "initialize_prepare_started"
+            },
+            {
+              "phase": "initialize_payload_ready"
+            },
+            {
+              "phase": "initialize_write_started"
+            },
+            {
+              "phase": "initialize_write_completed"
+            },
+            {
+              "phase": "initialize_ack_received"
+            }
+          ]
+        }
+      },
+      "protocol": {
+        "initialize_request_count": 1,
+        "initialize_response_count": 1,
+        "initialize_sent_at": "2026-09-21T02:54:48.2586292Z",
+        "initialize_received_at": "2026-09-21T02:54:48.4590935Z",
+        "thread_start_request_count": 1,
+        "thread_start_response_count": 1,
+        "thread_start_sent_at": "2026-09-21T02:54:48.4653955Z",
+        "thread_start_received_at": "2026-09-21T02:54:51.2528939Z",
+        "registered_tool_count": 7,
+        "registered_tools_manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+        "turn_start_count": 0,
+        "turn_start_at": "0001-01-01T00:00:00Z",
+        "first_output_at": "0001-01-01T00:00:00Z",
+        "first_output": "",
+        "turn_completed_count": 0,
+        "turn_completed_at": "0001-01-01T00:00:00Z",
+        "tool_call_event_count": 0,
+        "lifecycle_phases": [
+          "initialize_prepare_started",
+          "initialize_payload_ready",
+          "initialize_write_started",
+          "initialize_write_completed",
+          "initialize_ack_received"
+        ]
+      },
+      "protocol_path": "D:\\Programs\\Polis\\evidence\\development\\r0.5b16-reservation-to-initialize-bridge-hardening\\preflight-v5\\provider\\cycle-2\\e4c89ac98b7ad6462351d068efae145b\\protocol.jsonl",
+      "lifecycle_phases": [
+        "initialize_prepare_started",
+        "initialize_payload_ready",
+        "initialize_write_started",
+        "initialize_write_completed",
+        "initialize_ack_received"
+      ],
+      "task_state": "working",
+      "worker_state": "stopped",
+      "reservations_created": 1,
+      "reservations_active": 0,
+      "reservations_closed": 1,
+      "provider_egress": 0,
+      "turn_started": 0,
+      "orphan_processes": 0
+    },
+    {
+      "cycle": 3,
+      "company_id": "r05b16-cycle-3-1789959291814557500",
+      "mission_id": "e40e3f22e6f6fdfc96093d96abe04ecc",
+      "task_id": "d5756b5105f823ce84c8d81559ff6e23",
+      "session_id": "4501404fc1baa4e0f957ce90a69b4555",
+      "result": {
+        "CompanyID": "r05b16-cycle-3-1789959291814557500",
+        "MissionID": "e40e3f22e6f6fdfc96093d96abe04ecc",
+        "TaskID": "d5756b5105f823ce84c8d81559ff6e23",
+        "SessionID": "4501404fc1baa4e0f957ce90a69b4555",
+        "Epoch": 2,
+        "Incarnation": "75c80097fde3b136d2bbfaa21bf219be",
+        "ProcessPID": 31708,
+        "ProcessExited": true,
+        "ProcessStarted": true,
+        "InitializePassed": true,
+        "ThreadStarted": true,
+        "RegisteredToolCount": 7,
+        "RegisteredToolDigest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+        "BusinessBindingPassed": true,
+        "CleanStop": true,
+        "ProviderReservations": 1,
+        "ActiveReservations": 0,
+        "ClosedReservations": 1,
+        "ProviderEgress": 0,
+        "Initialization": {
+          "phase": "initialize",
+          "reason_code": "",
+          "process_created": true,
+          "pid_present": true,
+          "child_exit_observed": true,
+          "initialize_request_sent": true,
+          "initialize_ack_received": true,
+          "initialized_notification_sent": true,
+          "stdout_pipe_state": "closed",
+          "stderr_category": "stderr_present_unclassified",
+          "safe_message": "",
+          "lifecycle": [
+            {
+              "phase": "initialize_prepare_started"
+            },
+            {
+              "phase": "initialize_payload_ready"
+            },
+            {
+              "phase": "initialize_write_started"
+            },
+            {
+              "phase": "initialize_write_completed"
+            },
+            {
+              "phase": "initialize_ack_received"
+            }
+          ]
+        }
+      },
+      "protocol": {
+        "initialize_request_count": 1,
+        "initialize_response_count": 1,
+        "initialize_sent_at": "2026-09-21T02:54:52.5584247Z",
+        "initialize_received_at": "2026-09-21T02:54:52.7518602Z",
+        "thread_start_request_count": 1,
+        "thread_start_response_count": 1,
+        "thread_start_sent_at": "2026-09-21T02:54:52.7587901Z",
+        "thread_start_received_at": "2026-09-21T02:54:55.3873024Z",
+        "registered_tool_count": 7,
+        "registered_tools_manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+        "turn_start_count": 0,
+        "turn_start_at": "0001-01-01T00:00:00Z",
+        "first_output_at": "0001-01-01T00:00:00Z",
+        "first_output": "",
+        "turn_completed_count": 0,
+        "turn_completed_at": "0001-01-01T00:00:00Z",
+        "tool_call_event_count": 0,
+        "lifecycle_phases": [
+          "initialize_prepare_started",
+          "initialize_payload_ready",
+          "initialize_write_started",
+          "initialize_write_completed",
+          "initialize_ack_received"
+        ]
+      },
+      "protocol_path": "D:\\Programs\\Polis\\evidence\\development\\r0.5b16-reservation-to-initialize-bridge-hardening\\preflight-v5\\provider\\cycle-3\\4501404fc1baa4e0f957ce90a69b4555\\protocol.jsonl",
+      "lifecycle_phases": [
+        "initialize_prepare_started",
+        "initialize_payload_ready",
+        "initialize_write_started",
+        "initialize_write_completed",
+        "initialize_ack_received"
+      ],
+      "task_state": "working",
+      "worker_state": "stopped",
+      "reservations_created": 1,
+      "reservations_active": 0,
+      "reservations_closed": 1,
+      "provider_egress": 0,
+      "turn_started": 0,
+      "orphan_processes": 0
+    }
+  ],
+  "provider_reservations_created": 3,
+  "provider_reservations_active": 0,
+  "provider_reservations_closed": 3,
+  "provider_egress": 0,
+  "turn_started": 0,
+  "orphan_processes": 0,
+  "provider_surface_changed": false,
+  "runtime_binding_changed": true,
+  "launch_envelope_changed": false,
+  "execution_fingerprint_changed": false,
+  "B14_live_qualification": "STALE",
+  "eligible_for_new_live_product_smoke": "NO_UNTIL_NEW_QUALIFICATION",
+  "current_identity": {
+    "surface_id": "polis-product-tool-surface@4",
+    "manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+    "schema_bytes": 2206,
+    "schema_digest": "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+    "execution_fingerprint": "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+    "runtime_version": "0.154.0-alpha.6.2",
+    "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+    "helper_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+    "launch_envelope_fingerprint": "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d"
+  },
+  "generated_at": "2026-09-21T02:54:55.4166267Z"
+}

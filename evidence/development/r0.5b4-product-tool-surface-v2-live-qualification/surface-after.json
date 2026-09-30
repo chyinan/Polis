@@ -1,0 +1,177 @@
+{
+  "record_type": "polis-product-tool-surface@2",
+  "surface_id": "polis-product-tool-surface@2",
+  "tool_count": 7,
+  "tools": [
+    {
+      "description": "Read the currently authorized Task, its public validation binding, current workspace metadata, handover context and tool budget.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_work_current",
+      "type": "function"
+    },
+    {
+      "description": "Read approved context and persisted facts and decisions available to the current worker session.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_context_read",
+      "type": "function"
+    },
+    {
+      "description": "Read the full content, digest and revision of the current authorized Task workspace.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_workspace_read",
+      "type": "function"
+    },
+    {
+      "description": "Replace the full content of the current authorized Task workspace using its expected digest and revision. The current worker session is the only writer; stale digest or revision returns a conflict and success returns the persisted receipt and new revision.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "expected_digest": {
+            "maxLength": 64,
+            "minLength": 64,
+            "type": "string"
+          },
+          "expected_revision": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "content",
+          "expected_digest",
+          "expected_revision"
+        ],
+        "type": "object"
+      },
+      "name": "polis_workspace_replace",
+      "type": "function"
+    },
+    {
+      "description": "Validate the current authorized Task workspace against the public acceptance contract bound to this Task. Returns structured PASS, FAIL, VALIDATION_NOT_CONFIGURED, VALIDATOR_UNAVAILABLE or INFRASTRUCTURE_ERROR feedback.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_workspace_check",
+      "type": "function"
+    },
+    {
+      "description": "Persist progress or qualified state for the current Task. A qualified checkpoint requires a passing validation receipt for the current workspace revision and TaskValidationBinding.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "decisions": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "evidence_refs": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "failed_checks": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "progress",
+              "qualified"
+            ],
+            "type": "string"
+          },
+          "next_action": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "rejected": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "summary": {
+            "maxLength": 512,
+            "type": "string"
+          }
+        },
+        "required": [
+          "decisions",
+          "evidence_refs",
+          "facts",
+          "failed_checks",
+          "kind",
+          "next_action",
+          "rejected",
+          "summary"
+        ],
+        "type": "object"
+      },
+      "name": "polis_work_checkpoint",
+      "type": "function"
+    },
+    {
+      "description": "Submit the current authorized Task workspace as a candidate artifact. Submission requires a current qualified checkpoint and matching TaskValidationBinding; a Task without configured validation cannot be qualified or submitted.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_artifact_submit",
+      "type": "function"
+    }
+  ],
+  "manifest_digest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+  "aggregate_schema_bytes": 1470,
+  "aggregate_schema_digest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+  "historical_b2_surface_status": "STALE",
+  "historical_r03a_surfaces_status": "HISTORICAL / NOT_REUSABLE"
+}

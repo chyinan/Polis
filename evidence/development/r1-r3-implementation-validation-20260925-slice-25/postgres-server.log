@@ -1,0 +1,17 @@
+2026-09-25 06:48:01.267 CST [709612] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-09-25 06:48:01.267 CST [709612] LOG:  listening on IPv4 address "127.0.0.1", port 56442
+2026-09-25 06:48:01.275 CST [709612] LOG:  listening on Unix socket "/tmp/polis-r1-s25.iId0j2/socket/.s.PGSQL.56442"
+2026-09-25 06:48:01.285 CST [709618] LOG:  database system was shut down at 2026-09-25 06:48:00 CST
+2026-09-25 06:48:01.291 CST [709612] LOG:  database system is ready to accept connections
+2026-09-25 06:49:15.391 CST [709755] FATAL:  database "chyinan" does not exist
+2026-09-25 06:49:21.387 CST [709826] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-09-25 06:49:21.387 CST [709826] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-09-25 06:53:15.489 CST [709616] LOG:  checkpoint starting: time
+2026-09-25 06:56:52.276 CST [709612] LOG:  received fast shutdown request
+2026-09-25 06:56:52.284 CST [709612] LOG:  aborting any active transactions
+2026-09-25 06:56:52.286 CST [709612] LOG:  background worker "logical replication launcher" (PID 709621) exited with exit code 1
+2026-09-25 06:56:52.498 CST [709616] LOG:  checkpoint complete: wrote 2261 buffers (13.8%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=216.785 s, sync=0.197 s, total=217.009 s; sync files=932, longest=0.006 s, average=0.001 s; distance=12175 kB, estimate=12175 kB; lsn=0/236F148, redo lsn=0/233A290
+2026-09-25 06:56:52.498 CST [709616] LOG:  shutting down
+2026-09-25 06:56:52.503 CST [709616] LOG:  checkpoint starting: shutdown immediate
+2026-09-25 06:56:52.539 CST [709616] LOG:  checkpoint complete: wrote 66 buffers (0.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.016 s, total=0.041 s; sync files=42, longest=0.005 s, average=0.001 s; distance=211 kB, estimate=10978 kB; lsn=0/236F1C0, redo lsn=0/236F1C0
+2026-09-25 06:56:52.556 CST [709612] LOG:  database system is shut down

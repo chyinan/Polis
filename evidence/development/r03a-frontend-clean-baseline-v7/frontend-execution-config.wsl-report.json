@@ -1,0 +1,37 @@
+{
+  "status": "FRONTEND_EXECUTION_CONFIG_READY",
+  "secret_sources_present": {
+    "auth_file": true,
+    "dsn": true,
+    "postgres_snapshot_dsn": true
+  },
+  "config_digest": "810c9adc21b38273c3b1fff1c4846873b0fc1be4028e73da36103aa2144131ea",
+  "path_encoding": "wsl_absolute",
+  "employee_id": "emp-frontend",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "purpose": "real_backend_peer_collaboration",
+  "execution_fingerprint": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+  "tool_call_limit": 48,
+  "medium_limit": 1,
+  "concurrency": 1,
+  "transport_policy": {
+    "transport_policy_revision": "r03a-transport-policy@1",
+    "initialize_timeout_ms": 30000,
+    "start_acknowledgement_ms": 30000,
+    "first_output_deadline_ms": 90000,
+    "reconnect_grace_ms": 30000,
+    "streaming_idle_ms": 90000,
+    "total_turn_deadline_ms": 600000,
+    "reconciliation_ms": 5000
+  },
+  "path_diagnostics": [
+    {
+      "logical_role": "authorization_binding_path",
+      "consumer_os": "windows",
+      "representation_os": "wsl",
+      "path_kind": "file",
+      "required_semantics": "future_output_file_parent_accessible",
+      "status": "PASS"
+    }
+  ]
+}

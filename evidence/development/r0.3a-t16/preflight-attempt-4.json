@@ -1,0 +1,8 @@
+{
+  "error": "preflight_failed: guest network inventory parse: missing interface inventory",
+  "high_consumed": 0,
+  "medium_consumed": 0,
+  "passed": false,
+  "provider_model_egress": 0,
+  "status": "preflight_failed"
+}

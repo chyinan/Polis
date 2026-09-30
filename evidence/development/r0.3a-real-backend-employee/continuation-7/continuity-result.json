@@ -1,0 +1,13 @@
+{
+    "qualification":  "R0.3A-AUTHORITATIVE-STATE-CONTINUITY",
+    "status":  "FAILED",
+    "backend_real_execution":  "UNKNOWN",
+    "authoritative_state_continuity":  "FAILED",
+    "eligible_for_frontend_phase":  false,
+    "medium":  0,
+    "high":  0,
+    "provider_egress":  0,
+    "historical_evidence_modified":  false,
+    "error":  "restored CAS verification failed",
+    "generated_at":  "2026-09-12T13:58:26.8122060Z"
+}

@@ -1,0 +1,117 @@
+{
+  "allowance_consumed": false,
+  "comparison": {
+    "credential_revision": "DIFFERENT",
+    "field_name_semantics_mismatch": true,
+    "identity": "NOT_RECONSTRUCTABLE",
+    "incomparable_fingerprint_types": false,
+    "reason_code": "auth_credential_revision_changed",
+    "reason_codes": [
+      "auth_credential_revision_changed",
+      "auth_identity_not_reconstructable"
+    ],
+    "source_class": "SAME",
+    "strict_experiment_comparable": false
+  },
+  "credential_revision_reconciliation": {
+    "algorithm": "SHA-256",
+    "canonicalization": "exact complete auth.json bytes; no JSON parse or normalization",
+    "current_field_name": "auth_credential_revision_fingerprint",
+    "current_schema_version": "auth-credential-revision-v1",
+    "current_value": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+    "historical_field_name": "auth_identity_fingerprint",
+    "historical_schema_version": "NOT_RECORDED; reconstructed semantic is auth-credential-revision-v1",
+    "historical_value": "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4",
+    "identity_interpretation": "not a stable account identity",
+    "status": "DIFFERENT"
+  },
+  "current_value": {
+    "credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+    "credential_revision_status": "available",
+    "identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+    "identity_status": "available",
+    "raw_claim_values_emitted": false
+  },
+  "fingerprint_definitions": [
+    {
+      "canonicalization_algorithm": "raw file bytes via Get-FileHash -LiteralPath; no JSON normalization",
+      "field_name": "T8 B.auth.sha256 / user_auth_file_opaque_fingerprint",
+      "hash_algorithm": "SHA-256",
+      "schema_version": "NOT_RECORDED",
+      "semantic_definition": "opaque credential-material file revision, not stable identity",
+      "source_data": "host auth.json selected by scripts/r03a-t8-execution-diff.ps1"
+    },
+    {
+      "canonicalization_algorithm": "none in T9; inherits T8 raw auth.json bytes",
+      "field_name": "T9 auth_identity_fingerprint",
+      "hash_algorithm": "SHA-256",
+      "schema_version": "NOT_RECORDED",
+      "semantic_definition": "copied T8 complete-file credential revision SHA; field name is a semantic mislabel",
+      "source_data": "T8 execution-diff.json B.auth.sha256, read by internal/probe/r03a_t9.go"
+    },
+    {
+      "canonicalization_algorithm": "not applicable",
+      "field_name": "T10 combination.auth_source_class",
+      "hash_algorithm": "not applicable",
+      "schema_version": "canonical-manifest-v1",
+      "semantic_definition": "auth source category only; no identity or credential revision digest",
+      "source_data": "T10 qualification-state.json combination"
+    },
+    {
+      "canonicalization_algorithm": "exact raw auth.json bytes; no JSON normalization",
+      "field_name": "T11 current auth comparison",
+      "hash_algorithm": "SHA-256",
+      "schema_version": "NOT_RECORDED in original T11; corrected future schema is auth-credential-revision-v1",
+      "semantic_definition": "T11 implementation computed complete-file credential revision SHA but stored/compared it as identity",
+      "source_data": "current POLIS_CODEX_AUTH_FILE bytes read by internal/probe/r03a_t11_runner.go"
+    },
+    {
+      "canonicalization_algorithm": "Go encoding/json compact deterministic struct serialization",
+      "field_name": "canonical-manifest-v1",
+      "hash_algorithm": "SHA-256",
+      "schema_version": "canonical-manifest-v1",
+      "semantic_definition": "legacy/current execution combination digest; historical meaning unchanged",
+      "source_data": "JSON object containing fingerprint_schema_version and ExecutionCombination"
+    },
+    {
+      "canonicalization_algorithm": "Go encoding/json compact deterministic struct serialization including schema version",
+      "field_name": "canonical-manifest-v2",
+      "hash_algorithm": "SHA-256",
+      "schema_version": "canonical-manifest-v2",
+      "semantic_definition": "future execution combination digest with explicit auth source, identity and credential revision layers",
+      "source_data": "ExecutionCombination plus AuthFingerprintManifest"
+    }
+  ],
+  "future_policy_correction": {
+    "canonical_manifest_v1": "unchanged; historical T7/T9/T10 meanings preserved",
+    "canonical_manifest_v2": "implemented as opt-in AuthFingerprintManifest-bearing schema",
+    "credential_revision_change_reason_code": "auth_credential_revision_changed",
+    "identity_change_reason_code": "auth_identity_changed",
+    "identity_unavailable_reason_code": "auth_identity_not_reconstructable",
+    "t11_comparator": "uses separate auth identity and credential revision manifests"
+  },
+  "historical_t9_value": {
+    "actual_semantic": "credential revision fingerprint",
+    "field_name": "auth_identity_fingerprint",
+    "stable_identity": "NOT_RECONSTRUCTABLE",
+    "value": "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4"
+  },
+  "policy_decision": {
+    "auth_identity_changed_claim": "not asserted",
+    "credential_revision_changed_claim": "confirmed",
+    "eligible_for_new_T11_version_only_canary": "NO",
+    "historical_T9_strict_version_only_control": "NO",
+    "next_authorized_experiment": "current-auth 0.151.0 no-proxy zero-tool baseline"
+  },
+  "provider_egress": "prohibited_and_not_run",
+  "qualification": "R0.3A-T11A",
+  "t11_history": {
+    "live_canary": "NOT_STARTED",
+    "medium_consumed": 0,
+    "model_calls": 0,
+    "preflight_path": "/mnt/d/Programs/Polis/evidence/development/r0.3a-t11/luna-1/preflight.json",
+    "preflight_preserved": true,
+    "preflight_status": "preflight_failed",
+    "result": "preflight_failed"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "actual_transport": "not_observable",
+  "allowance_start": "2026-09-10T11:27:58.232009268Z",
+  "configured_transport_policy": "native_default",
+  "dynamic_tool_count": 0,
+  "initialize": true,
+  "process_start": "2026-09-10T11:27:58.243785106Z",
+  "process_stop": "2026-09-10T11:29:43.978490048Z",
+  "readiness_manifest": "2026-09-10T11:28:05.125697928Z",
+  "stop_confirmed": true,
+  "stop_receipt": "process-group:438:waited",
+  "thread_started": true,
+  "tool_events": [],
+  "turn_completed": null,
+  "turn_started": true,
+  "user_message_item": true
+}

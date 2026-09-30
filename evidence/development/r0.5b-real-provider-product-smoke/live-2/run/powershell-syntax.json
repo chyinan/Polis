@@ -1,0 +1,37 @@
+{
+  "result": "PASS",
+  "scripts": [
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/start-server.ps1",
+      "errors": 0
+    },
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/start-frontend.ps1",
+      "errors": 0
+    },
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/stop-services.ps1",
+      "errors": 0
+    },
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/freeze-post-turn-evidence.ps1",
+      "errors": 0
+    },
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/finalize-live2-result.ps1",
+      "errors": 0
+    },
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/verify-final-integrity.ps1",
+      "errors": 0
+    },
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/run/check-powershell-syntax.ps1",
+      "errors": 0
+    },
+    {
+      "path": "evidence/development/r0.5b-real-provider-product-smoke/live-2/preflight-tests/inspect-auth-shape.ps1",
+      "errors": 0
+    }
+  ]
+}

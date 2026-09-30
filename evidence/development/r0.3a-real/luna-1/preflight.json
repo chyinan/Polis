@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "model": "gpt-5.6-luna",
+  "schema_digest": "29781abec755d7acb618d76a40a82010fedd031af7f8165d5eee588665f5a1d4",
+  "binary_sha256": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+  "capability_digest": "9f009fe3b4ffb8041aae0a0ae85161a1596fdba5def4104183b56eac43b01724",
+  "native_protocol": "passed_without_inference",
+  "no_inference": true,
+  "reviewer_grant": "work_current,context_read,workspace_read,review_submit",
+  "hidden_verifier": "not_registered"
+}

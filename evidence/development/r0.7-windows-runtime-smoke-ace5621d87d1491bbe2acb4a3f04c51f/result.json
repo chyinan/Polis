@@ -1,0 +1,13 @@
+{
+    "record_type":  "r0.7-windows-runtime-smoke@1",
+    "status":  "passed",
+    "provider_business_egress":  0,
+    "external_notifications":  0,
+    "postgres_port":  58230,
+    "backend_port":  58231,
+    "database":  "polis_r0_smoke_ace5621d87d1",
+    "health_status":  200,
+    "active_work":  false,
+    "shutdown_status":  202,
+    "backend_exit_code":  null
+}

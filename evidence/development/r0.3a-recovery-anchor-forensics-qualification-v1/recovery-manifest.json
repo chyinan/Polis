@@ -1,0 +1,25 @@
+{
+    "schema_version":  "r0.3a-recovery-evidence-manifest-v1",
+    "snapshot_sha256":  "883c0ad98022904da65dcc1156d7b2ad5f1ba87dc779dfb3684b411b73b45c26",
+    "snapshot_size":  61853,
+    "postgres_major":  18,
+    "schema_version_number":  5,
+    "migration_schema_digest":  "e4622bbe77fb9ac23e479d317d9063870dee19b67884017a521b68b91693cd5e",
+    "snapshot_manifest_sha256":  "45e3f2543a87ff469a8a0e5edb2e1345f94c775db37fa6018912fa1351c57f02",
+    "blob_manifest_sha256":  "30b4e91415a447e6614e333c006704beed808be8fc85aed1ea1b3d6f86c281b1",
+    "source_database_semantic_identity":  "deterministic:r0.3a-authoritative-recovery:recovery-company/recovery-mission",
+    "anchors":  {
+                    "company_id":  "recovery-company",
+                    "mission_id":  "recovery-mission",
+                    "final_contract_revision_id":  "recovery-contract-v4",
+                    "message_id":  "recovery-peer-message",
+                    "obligation_id":  "recovery-peer-message",
+                    "checkpoint_id":  "recovery-qualified-checkpoint",
+                    "artifact_id":  "recovery-backend-artifact",
+                    "artifact_digest":  "d68fc722eb7a4f12fd2488583dc48be5ff6be1638a388840d33b57623b5dd17a"
+                },
+    "state_anchor_digest":  "81c51b9915b7ebc3c8f49c7fb45117efb8f317930cf3001384fd96801339104f",
+    "old_writer_fenced":  true,
+    "credentials_included":  false,
+    "historical_evidence_modified":  false
+}

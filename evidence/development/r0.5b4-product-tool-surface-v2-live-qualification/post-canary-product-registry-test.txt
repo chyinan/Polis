@@ -1,0 +1,4 @@
+=== RUN   TestProductEmployeeToolsExposeGenericAuthorizedTaskSemantics
+--- PASS: TestProductEmployeeToolsExposeGenericAuthorizedTaskSemantics (0.00s)
+PASS
+ok  	polis/internal/codex	0.033s

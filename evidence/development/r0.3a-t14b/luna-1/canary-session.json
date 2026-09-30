@@ -1,0 +1,15 @@
+{
+  "status": "NOT_STARTED",
+  "result": "preflight_failed",
+  "process_start": "2026-09-10T10:54:46.960456836Z",
+  "process_stop": "2026-09-10T10:54:46.971981315Z",
+  "initialize_request_written": true,
+  "initialize_response_observed": false,
+  "thread_start": false,
+  "turn_start": false,
+  "medium_consumed": 0,
+  "stop_receipt": "process-group:421:waited",
+  "stop_confirmed": true,
+  "actual_transport": "not_observable",
+  "reason_code": "host_guest_home_path_conflation"
+}

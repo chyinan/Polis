@@ -1,0 +1,243 @@
+{
+    "task":  "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_4",
+    "result":  "INCONCLUSIVE",
+    "classification":  "runtime/init failure before initialize request/ack, thread/start and real provider turn; no retry authorized",
+    "failure_boundary":  "INCONCLUSIVE_PREPROVIDER",
+    "business":  {
+                     "company":  {
+                                     "id":  "r05b-live-4",
+                                     "bootstrap":  "controlled Company/roster bootstrap only; Mission/Task creation remained browser-only"
+                                 },
+                     "mission":  {
+                                     "id":  "073f6cd7178f0b074c597c388dfee71e",
+                                     "title":  "LIVE_4 product smoke",
+                                     "state":  "active",
+                                     "created_through":  "Workbench Real mode",
+                                     "started_through":  "Workbench Real mode",
+                                     "acceptance_contract":  {
+                                                                 "revision":  "text-acceptance@1",
+                                                                 "required_text":  [
+                                                                                       "Mission ID: {{mission_id}}",
+                                                                                       "Task ID: {{task_id}}",
+                                                                                       "Acknowledgement: Polis real-provider execution completed.",
+                                                                                       "Task summary: product-smoke.md records the requested one-sentence summary."
+                                                                                   ]
+                                                             },
+                                     "cancel_post_count":  0
+                                 },
+                     "task_roles":  {
+                                        "total_task_rows":  2,
+                                        "tasks":  [
+                                                      {
+                                                          "id":  "7bf1a131dce3a91ed352c4cc68d2b83b",
+                                                          "kind":  "bootstrap_plan",
+                                                          "owner":  "emp-planning",
+                                                          "state":  "completed",
+                                                          "generation":  0,
+                                                          "mission_id":  "073f6cd7178f0b074c597c388dfee71e"
+                                                      },
+                                                      {
+                                                          "id":  "c6875ffd3c5889b3b89483d3718c2714",
+                                                          "kind":  "compat",
+                                                          "owner":  "emp-backend",
+                                                          "state":  "working",
+                                                          "generation":  1,
+                                                          "mission_id":  "073f6cd7178f0b074c597c388dfee71e"
+                                                      }
+                                                  ],
+                                        "provider_executable_task_count":  1,
+                                        "provider_executable_employee_count":  1,
+                                        "provider_bearing_worker_session_count":  1,
+                                        "planning_provider_usage":  0
+                                    }
+                 },
+    "task_validation_binding":  {
+                                    "present":  true,
+                                    "task_id":  "c6875ffd3c5889b3b89483d3718c2714",
+                                    "mission_id":  "073f6cd7178f0b074c597c388dfee71e",
+                                    "configuration_digest":  "6aed54594b5193184e9875f0755ecdeb845949660105be16be05404831b2eac6",
+                                    "acceptance_revision":  "text-acceptance@1",
+                                    "runner_kind":  "text_contains_all",
+                                    "runner_revision":  "text-contains-all@1",
+                                    "public_contract":  {
+                                                            "revision":  "text-acceptance@1",
+                                                            "required_text":  [
+                                                                                  "Mission ID: 073f6cd7178f0b074c597c388dfee71e",
+                                                                                  "Task ID: c6875ffd3c5889b3b89483d3718c2714",
+                                                                                  "Acknowledgement: Polis real-provider execution completed.",
+                                                                                  "Task summary: product-smoke.md records the requested one-sentence summary."
+                                                                              ]
+                                                        }
+                                },
+    "workspace":  {
+                      "task_id":  "c6875ffd3c5889b3b89483d3718c2714",
+                      "digest":  "12f53417d4e6aef0dadde1e58902bd5437bff36c649305532e9fdb5652eca7c4",
+                      "revision":  1,
+                      "initial_content_written":  true,
+                      "deliverable_produced":  false,
+                      "workspace_check":  "NOT_RUN",
+                      "task_submit":  "NOT_RUN"
+                  },
+    "provider_binding":  {
+                             "authorization_count":  1,
+                             "purpose":  "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_4",
+                             "model":  "gpt-5.6-luna",
+                             "effort":  "medium",
+                             "profile":  "gpt-5.6-luna/medium",
+                             "provider_mode":  "real",
+                             "surface_id":  "polis-product-tool-surface@4",
+                             "tool_count":  7,
+                             "manifest_digest":  "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+                             "aggregate_schema_bytes":  2206,
+                             "aggregate_schema_digest":  "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+                             "exact_surface_execution_fingerprint":  "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+                             "product_provider_v4_L2_fingerprint":  "59a4ac003fb0f49360382a707f7057edc03e0574ba328d0cf3a59eeab2726781",
+                             "execution_envelope":  "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d",
+                             "runtime_version":  "0.154.0-alpha.6.2",
+                             "binary_sha256":  "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+                             "helper_sha256":  "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+                             "task_id":  "c6875ffd3c5889b3b89483d3718c2714",
+                             "task_kind":  "compat",
+                             "task_owner":  "emp-backend",
+                             "employee_id":  "emp-backend",
+                             "employee_role":  "backend",
+                             "session_id":  "4fc969762beee091c99dceadd73bc17a",
+                             "epoch":  3,
+                             "incarnation":  "05a32bc0db6b2f581c378d95339e7a0a",
+                             "task_validation_binding_digest":  "6aed54594b5193184e9875f0755ecdeb845949660105be16be05404831b2eac6",
+                             "workspace_digest":  "12f53417d4e6aef0dadde1e58902bd5437bff36c649305532e9fdb5652eca7c4",
+                             "workspace_revision":  1,
+                             "persistence":  "authorization was validated and reservation succeeded; terminal usage was not persisted because initialization failed before a turn"
+                         },
+    "initialization":  {
+                           "process_created":  true,
+                           "pid":  2624,
+                           "pid_present":  true,
+                           "child_alive_before_initialize":  true,
+                           "initialize_request_sent":  false,
+                           "initialize_ack_received":  false,
+                           "initialized_notification_sent":  false,
+                           "phase":  "initialize",
+                           "reason_code":  "",
+                           "safe_message":  "",
+                           "stdout_pipe_state":  "open",
+                           "stderr_category":  "unavailable",
+                           "child_exit_observed":  false
+                       },
+    "provider":  {
+                     "reservation":  1,
+                     "provider_egress":  0,
+                     "turn_start":  0,
+                     "real_provider_turn":  0,
+                     "first_output_latency_ms":  null,
+                     "elapsed_ms":  379,
+                     "input_tokens":  null,
+                     "output_tokens":  null,
+                     "tool_calls":  0,
+                     "reconnects":  0,
+                     "registered_tool_count":  0,
+                     "thread_start":  "NOT_SENT/NOT_OBSERVED",
+                     "terminal_phase":  "provider.runtime.initialization_failed",
+                     "protocol_path":  "provider-evidence\\4fc969762beee091c99dceadd73bc17a\\protocol.jsonl",
+                     "protocol_bytes":  0,
+                     "provider_process_alive_after_capture":  false,
+                     "orphan_provider_process":  0
+                 },
+    "delivery":  {
+                     "workspace_check":  "NOT_RUN",
+                     "task_submit":  "NOT_RUN",
+                     "qualified_checkpoint_count":  0,
+                     "artifact_count":  0,
+                     "artifact_digest":  null,
+                     "artifact_cas_resolution":  "NOT_REACHED_NO_ARTIFACT",
+                     "task_final_state":  "working",
+                     "mission_final_state":  "active"
+                 },
+    "browser_observation":  {
+                                "browser_engine":  "Codex in-app browser via CUA",
+                                "company_id":  "r05b-live-4",
+                                "mission_id":  "073f6cd7178f0b074c597c388dfee71e",
+                                "mission_create_post_count":  1,
+                                "mission_start_post_count":  1,
+                                "mission_cancel_post_count":  0,
+                                "routes_observed":  [
+                                                        "/companies/r05b-live-4/overview",
+                                                        "/companies/r05b-live-4/activity",
+                                                        "/companies/r05b-live-4/tasks"
+                                                    ],
+                                "real_mode_visible":  true,
+                                "mission_state_visible":  "active",
+                                "task_count_visible":  2,
+                                "provider_task_visible":  true,
+                                "employee_count_visible":  4,
+                                "provider_worker_stopped_visible":  true,
+                                "checkpoint_absence_visible":  true,
+                                "artifact_count_visible":  0,
+                                "activity_count":  12,
+                                "sse_requests":  0,
+                                "screenshot_capture":  "CUA accessibility observations captured; no screenshot file generated"
+                            },
+    "activity":  {
+                     "snapshot_cursor":  "company-seq:12",
+                     "event_count":  12,
+                     "provider_initialization_failed":  true,
+                     "provider_turn_inconclusive_event_present":  false,
+                     "worker_terminal_visible":  true,
+                     "sse_requests":  0
+                 },
+    "counters":  {
+                     "mission_business_instances":  1,
+                     "second_missions":  0,
+                     "provider_executable_tasks":  1,
+                     "provider_executable_employees":  1,
+                     "provider_bearing_sessions":  1,
+                     "business_authorizations":  1,
+                     "provider_reservations":  1,
+                     "provider_egress":  0,
+                     "real_provider_turns":  0,
+                     "retries":  0,
+                     "successors":  0,
+                     "high":  0,
+                     "duplicate_reservations":  0,
+                     "orphan_sessions":  0,
+                     "orphan_provider_processes":  0,
+                     "orphan_provider_turns":  0
+                 },
+    "surface":  {
+                    "surface_id":  "polis-product-tool-surface@4",
+                    "manifest_digest":  "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+                    "schema_bytes":  2206,
+                    "schema_digest":  "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+                    "exact_surface_execution_fingerprint":  "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+                    "provider_L2_fingerprint":  "59a4ac003fb0f49360382a707f7057edc03e0574ba328d0cf3a59eeab2726781",
+                    "launch_envelope_fingerprint":  "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d",
+                    "b15_current_identity_match":  true
+                },
+    "lifecycle":  {
+                      "worker_session_state":  "stopped",
+                      "compat_task_state":  "working",
+                      "mission_state":  "active",
+                      "lifecycle_contract":  "B15 current lifecycle: initialization failure stops WorkerSession without synthesizing business failure, candidate or Artifact"
+                  },
+    "evidence":  {
+                     "allowance":  "allowance.json",
+                     "server_preflight":  "server-preflight.json",
+                     "authoritative_final_state":  "authoritative-final-state.json",
+                     "postgres_final_state":  "postgres-final-state.json",
+                     "activity_snapshot":  "activity-snapshot.json",
+                     "browser_e2e":  "browser-e2e-result.json",
+                     "provider_initialization":  "postgres-final-state.json#worker_observations[provider_initialization]",
+                     "provider_protocol":  "provider-evidence\\4fc969762beee091c99dceadd73bc17a\\protocol.jsonl",
+                     "post_provider_query":  "post-provider-state-query.txt",
+                     "no_credentials_recorded":  true
+                 },
+    "post_attempt":  {
+                         "no_provider_traffic_after_terminal":  true,
+                         "no_second_start":  true,
+                         "no_cancel_command":  true,
+                         "live3_historical_evidence_modified":  false,
+                         "sse_started":  false,
+                         "multi_agent_e2e_started":  false,
+                         "freeze_reason":  "terminal before initialize/turn; stop after evidence capture"
+                     }
+}

@@ -1,0 +1,43 @@
+{
+  "process_start": "2026-09-09T07:38:03.818890938Z",
+  "thread_started": "2026-09-09T07:38:11.471383522Z",
+  "turn_started": "2026-09-09T07:38:11.518770277Z",
+  "user_message_started": "2026-09-09T07:38:16.536996161Z",
+  "first_valid_output": null,
+  "disconnects": [
+    {
+      "time": "2026-09-09T07:38:46.85250458Z",
+      "delta_from_turn_started_ms": 35333,
+      "phase": "pre_first_output_reconnecting",
+      "event": "responseStreamDisconnected",
+      "will_retry": true,
+      "http_status_code": null
+    },
+    {
+      "time": "2026-09-09T07:38:52.404312929Z",
+      "delta_from_turn_started_ms": 40885,
+      "phase": "pre_first_output_reconnecting",
+      "event": "responseStreamDisconnected",
+      "will_retry": true,
+      "http_status_code": null
+    },
+    {
+      "time": "2026-09-09T07:39:41.799051248Z",
+      "delta_from_turn_started_ms": 90280,
+      "phase": "pre_first_output_reconnecting",
+      "event": "responseStreamDisconnected",
+      "will_retry": true,
+      "http_status_code": null
+    }
+  ],
+  "turn_completed": null,
+  "terminal_condition": "first_valid_output_deadline_exceeded",
+  "deadline_elapsed": "1m30.003185659s",
+  "process_stop_confirmed": true,
+  "stop_receipt": "process-group:192234:waited",
+  "experiment_total_elapsed_ms": 106788,
+  "native_usage_updates": 0,
+  "token_total": 0,
+  "dynamic_tool_count": 0,
+  "business_side_effects": 0
+}

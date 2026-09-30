@@ -12,6 +12,8 @@ import (
 	"polis/internal/core"
 )
 
+const maxBoundedCASReadBytes int64 = 8 << 20
+
 func blobDir(root, company string) (*os.Root, error) {
 	if !core.ValidID(company) {
 		return nil, core.Malformed
@@ -46,42 +48,19 @@ func putBlob(root, company string, content []byte) (string, error) {
 		return "", e
 	}
 	stage := ".stage-" + newID()
-	f, e := r.OpenFile(stage, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-	if e != nil {
+	if e := finalizeBlob(r, stage, digest, content, defaultBlobFinalizeOperations()); e != nil {
 		return "", e
-	}
-	defer r.Remove(stage)
-	if _, e = f.Write(content); e == nil {
-		e = f.Sync()
-	}
-	closeErr := f.Close()
-	if e != nil {
-		return "", e
-	}
-	if closeErr != nil {
-		return "", closeErr
-	}
-	if e = r.Chmod(stage, 0444); e != nil {
-		return "", e
-	}
-	if e = r.Rename(stage, digest); e != nil {
-		return "", e
-	}
-	dir, e := r.Open(".")
-	if e != nil {
-		return "", e
-	}
-	e = dir.Sync()
-	closeErr = dir.Close()
-	if e != nil {
-		return "", e
-	}
-	if closeErr != nil {
-		return "", closeErr
 	}
 	return digest, nil
 }
 func readBlob(root, company, digest string) ([]byte, error) {
+	return readBlobBounded(root, company, digest, core.MaxContent)
+}
+
+func readBlobBounded(root, company, digest string, maxBytes int64) ([]byte, error) {
+	if maxBytes < 1 || maxBytes > maxBoundedCASReadBytes {
+		return nil, core.Malformed
+	}
 	if len(digest) != 64 {
 		return nil, core.Integrity
 	}
@@ -102,15 +81,15 @@ func readBlob(root, company, digest string) ([]byte, error) {
 	if e != nil {
 		return nil, e
 	}
-	if !info.Mode().IsRegular() {
+	if !info.Mode().IsRegular() || info.Size() < 0 || info.Size() > maxBytes {
 		return nil, core.Integrity
 	}
-	b, e := io.ReadAll(io.LimitReader(f, core.MaxContent+1))
+	b, e := io.ReadAll(io.LimitReader(f, maxBytes+1))
 	if e != nil {
 		return nil, e
 	}
 	h := sha256.Sum256(b)
-	if len(b) > core.MaxContent || hex.EncodeToString(h[:]) != digest {
+	if int64(len(b)) > maxBytes || hex.EncodeToString(h[:]) != digest {
 		return nil, core.Integrity
 	}
 	return b, nil

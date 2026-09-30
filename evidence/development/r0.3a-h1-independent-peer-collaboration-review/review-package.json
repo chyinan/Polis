@@ -1,0 +1,293 @@
+{
+  "artifact_mutation": false,
+  "candidate_writes": false,
+  "contract_mutation": false,
+  "hidden_verifier_available": false,
+  "historical_evidence_modified": false,
+  "message_obligation_mutation": false,
+  "qualification": "R0.3A-H1-INDEPENDENT-PEER-COLLABORATION-REVIEW",
+  "read_only": true,
+  "reviewer_tools": [
+    {
+      "description": "Read the frozen peer-collaboration review scope.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_work_current",
+      "type": "function"
+    },
+    {
+      "description": "Read the frozen initial specification and allowlisted provenance.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_context_read",
+      "type": "function"
+    },
+    {
+      "description": "Read the frozen backend and frontend candidates and their integrated references.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_workspace_read",
+      "type": "function"
+    },
+    {
+      "description": "Submit one independent verdict with allowlisted evidence, findings, confidence and limitations; this cannot modify candidates.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "findings": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "limitations": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "verdict": {
+            "enum": [
+              "passed",
+              "failed",
+              "inconclusive"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "confidence",
+          "evidence",
+          "findings",
+          "limitations",
+          "verdict"
+        ],
+        "type": "object"
+      },
+      "name": "polis_review_submit",
+      "type": "function"
+    }
+  ],
+  "subject": {
+    "SubjectRevision": "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+    "ProblemKey": "r03a-real-peer-collaboration-v1",
+    "CompanyID": "r03a-t2-company-1789221294871371900",
+    "Contract": {
+      "id": "4f57c71061c10ab5a78f632d8db59321",
+      "mission": "",
+      "endpoint": "GET /items?cursor={cursor}\u0026limit={limit}",
+      "schema": "{\"items\":[\"id\",\"name\"],\"next_cursor\":\"string|null\"}",
+      "digest": "7d7325dcc9052a361e4da8691cf8ea1ae83ba25a79282faca376372343fda9be",
+      "state": "accepted",
+      "revision": 3,
+      "base_revision": 0
+    },
+    "MessageID": "7d027b5a8fd2267a68b364e47f4635ca",
+    "ObligationID": "7d027b5a8fd2267a68b364e47f4635ca",
+    "ObligationOwner": "emp-frontend",
+    "FinalObligationState": "fulfilled",
+    "BackendArtifactID": "5bf77f15ee867b857f116faad0312c4f",
+    "FrontendArtifactID": "a0191e5ce29a56eb347b421df39fb86e",
+    "BackendDigest": "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+    "FrontendDigest": "16f3c32b05a6a57edaf38d42b4c7ebf706be593c09b836ea70097dc2a0af768f",
+    "BackendContent": "package backend\n\nconst Endpoint = \"GET /items?cursor={cursor}\u0026limit={limit}\"\n\nfunc FetchItems(cursor string, limit int) string {\n\titems := []string{\"id\", \"name\"}\n\tnext_cursor := \"2\"\n\t_ = cursor\n\t_ = limit\n\t_ = items\n\t_ = next_cursor\n\treturn \"items,next_cursor\"\n}\n",
+    "FrontendContent": "package frontend\n\nfunc ConsumeItems(body string) string {\n\t_ = body\n\treturn \"items; items[].id/name; next_cursor\"\n}\n\n// GET /items?cursor={cursor}\u0026limit={limit}\n// Render items[].id/name and advance pagination from next_cursor; null ends paging.\n// contract-v3\n",
+    "BackendSessionID": "54c3ebd10316add86f0035d94cf4ebb2",
+    "BackendSessionIncarnation": "e942e86329dc3179004e54e09aee0402",
+    "FrontendInitialSession": {
+      "number": 1,
+      "employee": "emp-frontend",
+      "purpose": "frontend initial employee: observe and apply recovered peer responsibility",
+      "profile": "gpt-5.6-luna/medium",
+      "status": "passed",
+      "started": "2026-09-13T11:50:51.0449393Z",
+      "finished": "2026-09-13T11:51:33.5108719Z",
+      "duration_ms": 42465,
+      "native_duration_ms": 45,
+      "process_started": true,
+      "initialize_completed": true,
+      "thread_started": true,
+      "turn_started": true,
+      "provider_egress": true,
+      "turn_completed": true,
+      "epoch": 3,
+      "incarnation": "5fda8dfb9339917c1deaf409b22ad425",
+      "tool_calls_used": 9,
+      "tool_calls_remaining": 39,
+      "thread_id": "01a09a9b-2072-7502-bca0-815ec39f6be7",
+      "session_id": "a300088a9d514a9c85e7beff5399ace9",
+      "tool_events": [
+        "collab_inbox",
+        "work_current",
+        "collab_ack",
+        "contract_read",
+        "workspace_read",
+        "workspace_replace",
+        "collab_apply",
+        "workspace_check",
+        "work_checkpoint"
+      ],
+      "receipts": [
+        "c9f13d62fc208dfe2152af28891ef782f566a9fbb4ffdf171422bfedb242980c",
+        "7d027b5a8fd2267a68b364e47f4635ca",
+        "1562cf1670d108167fd7974fc3244a3e",
+        "a2fd6529630de256e4fc459ede45d2fe"
+      ],
+      "stop_receipt": "windows-process-handle:2372:waited",
+      "stop_confirmed": true,
+      "checkpoint_id": "a2fd6529630de256e4fc459ede45d2fe",
+      "token_usage": {
+        "total": {
+          "totalTokens": 75565,
+          "inputTokens": 74849,
+          "cachedInputTokens": 59136,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 716,
+          "reasoningOutputTokens": 286
+        },
+        "last": {
+          "totalTokens": 13201,
+          "inputTokens": 13167,
+          "cachedInputTokens": 12032,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 34,
+          "reasoningOutputTokens": 7
+        }
+      },
+      "native_usage_updates": 6
+    },
+    "FrontendSuccessorSession": {
+      "number": 2,
+      "employee": "emp-frontend",
+      "purpose": "frontend successor: restore and fulfill the inherited peer responsibility",
+      "profile": "gpt-5.6-luna/medium",
+      "status": "passed",
+      "started": "2026-09-13T11:51:33.5242323Z",
+      "finished": "2026-09-13T11:53:08.0850094Z",
+      "duration_ms": 94560,
+      "native_duration_ms": 32,
+      "process_started": true,
+      "initialize_completed": true,
+      "thread_started": true,
+      "turn_started": true,
+      "provider_egress": true,
+      "turn_completed": true,
+      "epoch": 4,
+      "incarnation": "5fda8dfb9339917c1deaf409b22ad425",
+      "tool_calls_used": 16,
+      "tool_calls_remaining": 32,
+      "thread_id": "01a09a9b-c681-7c71-b5d1-15eb9602f943",
+      "session_id": "ccd5906064dce787c3dc864f6eb8aa7b",
+      "tool_events": [
+        "work_current",
+        "collab_inbox",
+        "contract_read",
+        "workspace_read",
+        "workspace_replace",
+        "workspace_check",
+        "workspace_replace",
+        "workspace_check",
+        "workspace_replace",
+        "workspace_check",
+        "work_checkpoint",
+        "work_checkpoint",
+        "artifact_submit",
+        "obligation_resolve",
+        "work_current",
+        "workspace_read"
+      ],
+      "receipts": [
+        "0639da8e8a4d8fea830c838995d3770551573d6e7e2893384e6e3c51cf5f5f96",
+        "83dfca8598688de4d1ef94be53b50455",
+        "598ea6060f1b418b7881383b9ee0d4a3a305415cf213a4d1267bab2c356988dc",
+        "1b8d63d09f3760befa42d1a25a0c005c",
+        "16f3c32b05a6a57edaf38d42b4c7ebf706be593c09b836ea70097dc2a0af768f",
+        "047c99bdc3eaa1d1a37dccb80bd05b15",
+        "93054ca68a451d75f38dc98c4d490c0b",
+        "a0191e5ce29a56eb347b421df39fb86e"
+      ],
+      "stop_receipt": "windows-process-handle:36112:waited",
+      "stop_confirmed": true,
+      "checkpoint_id": "93054ca68a451d75f38dc98c4d490c0b",
+      "artifact_id": "a0191e5ce29a56eb347b421df39fb86e",
+      "token_usage": {
+        "total": {
+          "totalTokens": 212932,
+          "inputTokens": 210250,
+          "cachedInputTokens": 167168,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 2682,
+          "reasoningOutputTokens": 857
+        },
+        "last": {
+          "totalTokens": 18738,
+          "inputTokens": 18616,
+          "cachedInputTokens": 17152,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 122,
+          "reasoningOutputTokens": 39
+        }
+      },
+      "native_usage_updates": 13
+    },
+    "PositiveIntegration": true,
+    "NegativeControlPassed": false,
+    "OldWriterRejection": true,
+    "RuntimeIncarnation": "5fda8dfb9339917c1deaf409b22ad425",
+    "SourceRuntimeIncarnation": "e942e86329dc3179004e54e09aee0402",
+    "PolicyRevisions": {
+      "acceptance_checker_revision": "peer-semantic-checker@3",
+      "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+      "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+      "contract_supersession_policy_revision": "peer-contract-supersession@2"
+    },
+    "AllowedRefs": [
+      "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+      "4f57c71061c10ab5a78f632d8db59321",
+      "7d027b5a8fd2267a68b364e47f4635ca",
+      "7d027b5a8fd2267a68b364e47f4635ca",
+      "5bf77f15ee867b857f116faad0312c4f",
+      "a0191e5ce29a56eb347b421df39fb86e",
+      "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+      "16f3c32b05a6a57edaf38d42b4c7ebf706be593c09b836ea70097dc2a0af768f",
+      "a300088a9d514a9c85e7beff5399ace9",
+      "ccd5906064dce787c3dc864f6eb8aa7b"
+    ]
+  },
+  "workspace_writes": false
+}

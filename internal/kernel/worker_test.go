@@ -36,6 +36,7 @@ func TestWorkerLifecycleAndMediation(t *testing.T) {
 	must(t, e)
 	defer p.Stop()
 	must(t, k.TXAttachWorker(ctx, first, p))
+	must(t, k.TXAttachWorker(ctx, first, p))
 	_, e = k.Workspace(ctx, first)
 	must(t, e)
 	_, e = k.TXReplace(ctx, first, "replace", "not-current", "bad")
@@ -62,6 +63,7 @@ func TestWorkerLifecycleAndMediation(t *testing.T) {
 	proof, e := p.Stop()
 	must(t, e)
 	must(t, k.TXConfirmStopped(ctx, first, proof))
+	must(t, k.TXConfirmStopped(ctx, first, proof))
 	second, e := k.TXNewWorker(ctx, s, task.ID, "gpt-5.6-sol/high")
 	must(t, e)
 	p2, e := runner.Start(second.SessionID(), []string{"/bin/sleep", "60"}, nil)
@@ -84,6 +86,83 @@ func TestWorkerLifecycleAndMediation(t *testing.T) {
 	must(t, k.TXActivateWorker(ctx, second, "measured-capability-digest"))
 	_, e = k.TXReplace(ctx, second, "valid-neighbor", bundle.Workspace.Digest, bundle.Workspace.Content+"\n// next\n")
 	must(t, e)
+}
+
+func TestTXNewWorkerHonorsEmployeeAdmissionBarriers(t *testing.T) {
+	dsn := os.Getenv("POLIS_TEST_DSN")
+	if dsn == "" {
+		t.Skip("dedicated PG required")
+	}
+	ctx := context.Background()
+	k, err := Open(ctx, dsn, t.TempDir())
+	must(t, err)
+	defer k.Close()
+	for _, state := range []string{"paused", "waiting_quota"} {
+		t.Run(state, func(t *testing.T) {
+			scope, err := k.TXCreateCompany(ctx, "worker-admission-barrier-"+state)
+			must(t, err)
+			task, err := k.TXCreateProbe(ctx, scope, "worker-admission-barrier-mission")
+			must(t, err)
+			_, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET state=$2,pause_reason=$3
+WHERE company_id=$1 AND employee_id='emp-backend'`, scope.company, state, map[string]string{"paused": "mission_paused", "waiting_quota": "provider_quota_exhausted"}[state])
+			must(t, err)
+
+			if _, err = k.TXNewWorker(ctx, scope, task.ID, "offline-model/medium"); err != core.Denied {
+				t.Fatalf("TXNewWorker error=%v, want denied while schedule is %s", err, state)
+			}
+			var sessions int
+			if err = k.pool.QueryRow(ctx, `SELECT count(*) FROM worker_sessions WHERE company_id=$1 AND employee_id='emp-backend'`, scope.company).Scan(&sessions); err != nil {
+				t.Fatal(err)
+			}
+			if sessions != 0 {
+				t.Fatalf("WorkerSessions after denied %s admission=%d, want 0", state, sessions)
+			}
+			var persisted string
+			if err = k.pool.QueryRow(ctx, `SELECT state FROM employee_schedules WHERE company_id=$1 AND employee_id='emp-backend'`, scope.company).Scan(&persisted); err != nil {
+				t.Fatal(err)
+			}
+			if persisted != state {
+				t.Fatalf("schedule after denied admission=%q, want %q", persisted, state)
+			}
+		})
+	}
+}
+
+func TestTXNewWorkerMarksEmployeeScheduleAdmitted(t *testing.T) {
+	dsn := os.Getenv("POLIS_TEST_DSN")
+	if dsn == "" {
+		t.Skip("dedicated PG required")
+	}
+	ctx := context.Background()
+	k, err := Open(ctx, dsn, t.TempDir())
+	must(t, err)
+	defer k.Close()
+	scope, err := k.TXCreateCompany(ctx, "worker-admitted-schedule-company")
+	must(t, err)
+	task, err := k.TXCreateProbe(ctx, scope, "worker-admitted-schedule-mission")
+	must(t, err)
+
+	if _, err = k.TXNewWorker(ctx, scope, task.ID, "offline-model/medium"); err != nil {
+		t.Fatal(err)
+	}
+	var scheduleState, workerState string
+	if err = k.pool.QueryRow(ctx, `SELECT s.state,w.state FROM employee_schedules s
+JOIN worker_sessions w ON w.company_id=s.company_id AND w.employee_id=s.employee_id
+WHERE s.company_id=$1 AND s.employee_id='emp-backend'`, scope.company).Scan(&scheduleState, &workerState); err != nil {
+		t.Fatal(err)
+	}
+	if scheduleState != "admitted" || workerState != "restoring" {
+		t.Fatalf("schedule/WorkerSession reservation=(%q,%q), want (admitted,restoring)", scheduleState, workerState)
+	}
+	if _, err = k.TXReconcileEmployeeSchedule(ctx, scope, "emp-backend", "worker-admitted-reconcile"); err != nil {
+		t.Fatal(err)
+	}
+	if err = k.pool.QueryRow(ctx, `SELECT state FROM employee_schedules WHERE company_id=$1 AND employee_id='emp-backend'`, scope.company).Scan(&scheduleState); err != nil {
+		t.Fatal(err)
+	}
+	if scheduleState != "admitted" {
+		t.Fatalf("schedule after reconciling a restoring WorkerSession=%q, want admitted", scheduleState)
+	}
 }
 
 type unknownCheck struct{}
@@ -146,7 +225,7 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 	if r.Error != "" {
 		t.Fatal(r.Error)
 	}
-	cp := Checkpoint{Summary: "positive sign added; unit milestone remains", Facts: []string{"negative zero encodes debit direction"}, Decisions: []string{"retain signed-zero branch"}, Rejected: []string{"v >= 0 would classify negative zero as positive"}, Evidence: []string{r.Receipt.ID}}
+	cp := Checkpoint{Summary: "positive sign added; unit milestone remains", Facts: []string{"negative zero encodes debit direction"}, Decisions: []string{"retain signed-zero branch"}, Rejected: []string{"v >= 0 would classify negative zero as positive"}, EvidenceRefs: []string{r.Receipt.ID}}
 	raw, _ = json.Marshal(cp)
 	r = tools.Call(ctx, "work_checkpoint", "checkpoint", raw)
 	if r.Error != "" {
@@ -159,6 +238,26 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 	must(t, e)
 	if len(bundle.Checkpoints) != 1 || len(bundle.Obligations) != 1 {
 		t.Fatal("neutral bundle lost knowledge or responsibility")
+	}
+	reviewerTools := ReviewerTools{Kernel: k, Binding: b2, Evidence: ReviewerEvidence{SubjectRevision: "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c", ArtifactID: "candidate", CandidateDigest: bundle.Workspace.Digest, Contract: "signed-zero@1", TaskInput: "Preserve the signed-zero compatibility contract for the frozen candidate.", AllowedPath: "formatter.go"}}
+	current := reviewerTools.Call(ctx, "work_current", "review-current", []byte(`{}`))
+	if current.Error != "" {
+		t.Fatal(current.Error)
+	}
+	currentJSON, e := json.Marshal(current.Data)
+	must(t, e)
+	if strings.Contains(string(currentJSON), "Checkpoints") || strings.Contains(string(currentJSON), "Obligations") {
+		t.Fatalf("reviewer context exposed handover internals: %s", currentJSON)
+	}
+	workspaceRead := reviewerTools.Call(ctx, "workspace_read", "review-workspace", []byte(`{}`))
+	if workspaceRead.Error != "" {
+		t.Fatal(workspaceRead.Error)
+	}
+	if _, ok := workspaceRead.Data.(ReviewerWorkspaceView); !ok {
+		t.Fatalf("reviewer workspace returned unexpected type %T", workspaceRead.Data)
+	}
+	if write := reviewerTools.Call(ctx, "workspace_replace", "review-write", []byte(`{"expected_digest":"x","content":"bad"}`)); write.Error != string(core.Denied) {
+		t.Fatalf("reviewer write was not denied: %s", write.Error)
 	}
 	late := tools.Call(ctx, "workspace_replace", "late", []byte(`{"expected_digest":"x","content":"bad"}`))
 	if late.Error != string(core.StaleEpoch) {
@@ -186,7 +285,7 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 	if r.Error != "" {
 		t.Fatal(r.Error)
 	}
-	cp.Evidence = []string{r.Receipt.ID}
+	cp.EvidenceRefs = []string{r.Receipt.ID}
 	raw, _ = json.Marshal(cp)
 	r = tools.Call(ctx, "work_checkpoint", "second-checkpoint", raw)
 	if r.Error != "" {

@@ -1,0 +1,17 @@
+{
+    "qualification":  "R0.3A-FRONTEND-WINDOWS-NATIVE-RUNNER-INTEGRATION",
+    "status":  "PASSED",
+    "config_bridge":  "PASSED",
+    "launch_mode":  "windows_native_direct",
+    "execution_envelope_fingerprint":  null,
+    "initialize":  "PASSED",
+    "thread_registration":  "PASSED",
+    "registered_tools":  12,
+    "turn_started":  0,
+    "provider_egress":  0,
+    "business_mutation":  0,
+    "allowance_created":  0,
+    "clean_stop":  "PASSED",
+    "provider_surface_changed":  false,
+    "historical_evidence_modified":  false
+}

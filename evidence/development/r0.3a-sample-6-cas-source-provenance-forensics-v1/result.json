@@ -1,0 +1,42 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-CAS-SOURCE-PROVENANCE-FORENSICS",
+  "status": "PASSED",
+  "classification": "CAS_CONFIG_WIRING_DEFECT",
+  "historical_cas_manifest_present": false,
+  "configured_cas_root": "D:\\Polis-recovery\\r0.3a-pagination-v3-backend-sample-6-runtime\\backend\\blobs",
+  "resolved_cas_root": "/mnt/d/Polis-recovery/r0.3a-pagination-v3-backend-sample-6-runtime/backend/blobs",
+  "canonical_resolved_path": "/mnt/d/Polis-recovery/r0.3a-pagination-v3-backend-sample-6-runtime/backend/blobs",
+  "path_class": "absolute_windows_path_resolved_to_wsl_drvfs",
+  "filesystem_type": "v9fs",
+  "runtime_root": "D:\\Polis-recovery\\r0.3a-pagination-v3-backend-sample-6-runtime\\backend",
+  "runtime_incarnation": "4c41d58bdc86ca84b41251aaec689143",
+  "source_runtime_binding": {
+    "session_id": "1bb014b85129c72da4e720fe67115df5",
+    "employee_id": "emp-backend",
+    "epoch": 2
+  },
+  "blob_layout": {
+    "sentinel": ".pagination-runtime directory",
+    "required_layout": "<company_id>/<sha256>",
+    "company_id": "r03a-pagination-v3-company-1789379324974307400",
+    "regular_blob_count": 4
+  },
+  "required_blob_set_source": "frozen production recovery-anchor CAS metadata; no blob synthesis",
+  "required_blob_set_known": true,
+  "required_blobs_present": true,
+  "required_blobs_digest_match": true,
+  "required_blobs": [
+    {"digest": "cb58aa1ffbbf3e44f53f49ecedfdd7e1c0d19bb98a98d209bcaad9b0cff7d832", "size": 1871, "present": true, "sha256_match": true},
+    {"digest": "d8a78697f5450ace5134d8687ec00edad7137f38b02fee628cc728b030d89efa", "size": 90, "present": true, "sha256_match": true},
+    {"digest": "e2d27d8aa9187eb9ddd0a0ff547af31df440e9590ccdb313b242bda97b67ed8f", "size": 89, "present": true, "sha256_match": true},
+    {"digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "size": 789, "present": true, "sha256_match": true, "artifact_digest": true}
+  ],
+  "source_cas_root_identified": true,
+  "cas_source_recoverable": true,
+  "root_content_state": "complete_and_digest_intact",
+  "v4_blocker": "runner used regular-file test for .pagination-runtime; actual layout uses a directory sentinel",
+  "source_database_started": false,
+  "provider_egress": 0,
+  "historical_evidence_modified": false,
+  "eligible_for_sample_6_recovery_continuation_v5": "CONDITIONAL_ON_CAS_SOURCE_BINDING_HARDENING"
+}

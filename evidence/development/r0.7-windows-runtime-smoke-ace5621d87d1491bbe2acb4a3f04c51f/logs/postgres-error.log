@@ -1,0 +1,13 @@
+2026-09-22 11:41:34.280 CST [76904] LOG:  starting PostgreSQL 18.0 on x86_64-windows, compiled by msvc-19.44.35215, 64-bit
+2026-09-22 11:41:34.282 CST [76904] LOG:  listening on IPv4 address "127.0.0.1", port 58230
+2026-09-22 11:41:34.476 CST [80088] LOG:  database system was shut down at 2026-09-22 11:41:33 CST
+2026-09-22 11:41:34.484 CST [76904] LOG:  database system is ready to accept connections
+2026-09-22 11:41:35.232 CST [11676] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-09-22 11:41:35.232 CST [11676] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-09-22 11:41:36.211 CST [76904] LOG:  received fast shutdown request
+2026-09-22 11:41:36.212 CST [76904] LOG:  aborting any active transactions
+2026-09-22 11:41:36.219 CST [76904] LOG:  background worker "logical replication launcher" (PID 25340) exited with exit code 1
+2026-09-22 11:41:36.220 CST [68456] LOG:  shutting down
+2026-09-22 11:41:36.221 CST [68456] LOG:  checkpoint starting: shutdown immediate
+2026-09-22 11:41:36.450 CST [68456] LOG:  checkpoint complete: wrote 1099 buffers (6.7%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.045 s, sync=0.178 s, total=0.230 s; sync files=461, longest=0.002 s, average=0.001 s; distance=6015 kB, estimate=6015 kB; lsn=0/1DD1488, redo lsn=0/1DD1488
+2026-09-22 11:41:36.474 CST [76904] LOG:  database system is shut down

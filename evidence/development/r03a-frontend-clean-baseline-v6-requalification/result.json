@@ -1,0 +1,15 @@
+{
+  "status": "PASSED",
+  "baseline_manifest_hash": "dba435fe759e274e9006d36c06a06fe05e2a8b4e1108c03781aee9e7ca352dbb",
+  "execution_config": "PASSED",
+  "FrontendStartingStateProbe": "PASSED",
+  "FrontendActivationPreflight": "PASSED",
+  "FrontendRuntimeActivationPreflight": "PASSED",
+  "PaginationRuntimePreflight": "PASSED",
+  "mutation": 0,
+  "allowance": 0,
+  "Worker": 0,
+  "Medium": 0,
+  "provider_egress": 0,
+  "historical_evidence_modified": false
+}

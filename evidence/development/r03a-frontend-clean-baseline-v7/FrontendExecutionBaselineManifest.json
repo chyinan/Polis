@@ -1,0 +1,109 @@
+{
+    "baseline_generation_id":  "r03a-frontend-clean-baseline-v7",
+    "cas_inventory_digest":  "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+    "company_id":  "r03a-pagination-v3-company-1789379324974307400",
+    "contract_revision_id":  "92566d902cd328c0b694ef32188dabf5",
+    "employee_epoch":  2,
+    "employee_id":  "emp-frontend",
+    "frontend_l2_binding":  {
+                                "qualification":  "R0.3A-CURRENT-BINARY-REVISED-FRONTEND-L2",
+                                "execution_fingerprint":  "4683d1be44f96b3589442140f51d8257437f282dd1264e643de24ad57ce12a",
+                                "tool_manifest_digest":  "65a5f56535c6a87f7a6213883d2cf3be300849ad1233a9e3a357046eb4f667e6",
+                                "tool_count":  12,
+                                "aggregate_schema_digest":  "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+                                "aggregate_schema_bytes":  2217
+                            },
+    "frontend_sessions":  0,
+    "frontend_task_id":  "629af90e4bc469dc3e961a9bdb7d555a",
+    "live_writer":  0,
+    "message_id":  "45a77c6833518bd8fef1ddfe8d28b985",
+    "message_state":  "persisted",
+    "mission_id":  "r03a-pagination-v3-mission-1789379324974307400",
+    "obligation_id":  "45a77c6833518bd8fef1ddfe8d28b985",
+    "obligation_state":  "pending",
+    "package_mutated":  false,
+    "planner_relay":  0,
+    "postgres":  {
+                     "cluster_system_identifier":  "7685979471005729323",
+                     "database_name":  "polis_r0_3a_frontend_clean_baseline_v7",
+                     "database_oid":  "16384"
+                 },
+    "recovery_anchor_ids":  {
+                                "backend_artifact_id":  "f73981340227622e9c16dbf45e961a3f",
+                                "backend_checkpoint_id":  "13164a801bac0760050c5f456bfd3f82",
+                                "message_id":  "45a77c6833518bd8fef1ddfe8d28b985",
+                                "obligation_id":  "45a77c6833518bd8fef1ddfe8d28b985"
+                            },
+    "recovery_anchor_probe":  "PASSED",
+    "recovery_anchor_probe_revision":  "r03a-peer-recovery-anchors-read-only@1",
+    "required_cas_blobs":  4,
+    "runtime_cas_binding":  {
+                                "canonical_root":  "/home/chyinan/.local/state/polis-recovery/r03a-frontend-clean-baseline-v7/blobs",
+                                "company_namespace":  "r03a-pagination-v3-company-1789379324974307400",
+                                "layout_revision":  "r03a-cas-layout@1",
+                                "required_blob_count":  4,
+                                "required_blob_inventory_digest":  "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf"
+                            },
+    "runtime_incarnation":  "a6b554d464dd71bd5dc1afdec8f95854",
+    "schema_version":  "r03a-frontend-execution-baseline-manifest@1",
+    "semantic_closure_digest":  "9b0720862316504709452ef414d349cf27c2561ef6f9b4c1fe845b7f0b38278f",
+    "source_recovery_package":  {
+                                    "cas_manifest_sha256":  "9a7d103f56f9dd7300ba10bd88d337cafd286dbcd09177c483f4129125a7ff0f",
+                                    "dump_sha256":  "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+                                    "package_generation_id":  "r03a-sample-6-recovery-20260914T150111Z-307",
+                                    "package_manifest_sha256":  "acb19b8acd25e3f9230bafa9ed5cfeaf707d3a9bd07f036bfbb4e55fea555c5c",
+                                    "semantic_closure_revision":  "r03a-semantic-closure@1"
+                                },
+    "synthesized_blobs":  0,
+    "synthesized_rows":  0,
+    "verified_cas_blobs":  4,
+    "workspace_digest":  "e2d27d8aa9187eb9ddd0a0ff547af31df440e9590ccdb313b242bda97b67ed8f",
+    "workspace_revision":  1,
+    "writer_authority":  null,
+    "baseline_manifest_revision":  "r03a-frontend-execution-baseline-manifest@7",
+    "runtime_database_binding":  {
+                                     "schema_version":  "r03a-runtime-database-binding@1",
+                                     "postgres_major":  18,
+                                     "cluster_system_identifier":  "7685979471005729323",
+                                     "database_name":  "polis_r0_3a_frontend_clean_baseline_v7",
+                                     "database_oid":  "16384",
+                                     "schema_migration_identity":  "5",
+                                     "fingerprint":  "10f5b1f2d9dc6b739c74926f178786df1c3c4e4a52b743ced41977e3304f172c"
+                                 },
+    "database_access_strategy":  "r03a-windows-wsl-direct-tcp@1",
+    "windows_database_access_view":  {
+                                         "access_path":  "tcp://172.24.72.52:55432",
+                                         "access_view_fingerprint":  "896754edc1df4114fe0332c8478f468d809710d9dcf0bc07381e631454f94400",
+                                         "access_strategy_revision":  "r03a-windows-wsl-direct-tcp@1",
+                                         "runtime_database_binding_fingerprint":  "10f5b1f2d9dc6b739c74926f178786df1c3c4e4a52b743ced41977e3304f172c",
+                                         "endpoint_source":  "v7-qualified-wsl-direct-tcp",
+                                         "authoritative_inventory_digest":  "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+                                         "consumer_os":  "windows",
+                                         "transport":  "tcp",
+                                         "host":  "172.24.72.52",
+                                         "port":  55432,
+                                         "target_wsl_distribution":  "Ubuntu-22.04",
+                                         "resolution_method":  "wsl.exe -d Ubuntu-22.04 -- hostname -I",
+                                         "hba_source_address":  "172.24.64.1/32",
+                                         "source_wsl_path":  "/home/chyinan/.local/state/polis-recovery/r03a-frontend-clean-baseline-v7/blobs",
+                                         "translation_method":  "wslpath -a -w"
+                                     },
+    "frontend_consumption_stack":  {
+                                       "frontend_consumption_contract":  "r03a-frontend-consumption-contract@1",
+                                       "frontend_binding":  "r03a-frontend-binding@1",
+                                       "frontend_behavior_verifier":  "r03a-frontend-pagination-behavior@1",
+                                       "qualification_evidence":  "r0.3a-frontend-public-consumption-abi-remediation/qualification.json"
+                                   },
+    "frontend_consumption_stack_digest":  "d94c32396ea4c577dfb624f0531fcb83ac31b8c8747cd919f60523eaca820b4e",
+    "execution_envelope_fingerprint":  "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+    "native_launch_fingerprint":  "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+    "transport_policy_revision":  "r03a-transport-policy@1",
+    "pagination_runtime_binding":  {
+                                       "revision":  "r03a-pagination-runtime-binding@1",
+                                       "runtime_os":  "windows",
+                                       "preflight":  "PASSED",
+                                       "required_blob_count":  4,
+                                       "inventory_digest":  "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf"
+                                   },
+    "provider_surface_changed":  false
+}

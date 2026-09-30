@@ -1,0 +1,11 @@
+{
+    "task_id":  "7682cd197e8436a763f22ce3198a60ce",
+    "mission_id":  "81ee562d602a059ed8a4ce2f5be80803",
+    "checkpoint_id":  "e1053ac73bab502e04bfa3bb8b35e39e",
+    "validation_receipt_id":  null,
+    "artifact_id":  "9ba046913a0d58ca0ad58df867f297b9",
+    "workspace_digest":  "531f5988cba3b3edb01ad3671a0b4014fdf57df96bebaab9c9e199013d80021b",
+    "workspace_revision":  4,
+    "task_state":  "candidate",
+    "delivery_state":  "committed"
+}

@@ -1,0 +1,18 @@
+{
+  "result": "passed",
+  "companyId": "browser-company-01",
+  "artifactId": "artifact-browser-01",
+  "unauthenticatedManifestStatus": 401,
+  "authenticatedManifestStatus": 200,
+  "downloadFilename": "polis-delivery.zip",
+  "downloadPackageSha256": "f35b9f1cf6de64335a6c019512459ce638dc07dcfb13cb424a247f4e363465cb",
+  "manifestSha256": "9372537a553a00db9f5a427f99cdc0f365d78260c60ad5d00164826f74ceb1db",
+  "artifactSha256": "89d2ebe11fc34e85969c76319128ebf71f1ea219bfb9aeced3c9f568a9087783",
+  "zipEntries": [
+    "SHA256SUMS",
+    "artifact.bin",
+    "manifest.json"
+  ],
+  "browserErrors": [],
+  "realModelOrExternalProvider": "not-run"
+}

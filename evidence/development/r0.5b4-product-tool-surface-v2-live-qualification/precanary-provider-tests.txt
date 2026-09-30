@@ -1,0 +1,3 @@
+?   	polis/cmd/polis-r05b4	[no test files]
+ok  	polis/internal/provider	0.177s
+ok  	polis/internal/codex	0.749s

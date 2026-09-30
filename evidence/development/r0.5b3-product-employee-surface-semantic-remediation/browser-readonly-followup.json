@@ -1,0 +1,18 @@
+{
+  "r0_5b3_offline_real_worker_product_e2e": "PASSED",
+  "browser_mission_submit": "PASS",
+  "browser_start": "PASS",
+  "verification_only_existing_mission": true,
+  "mission_id": "a3600a7d816717f93f11768cbbd63abc",
+  "task_id": "994631fb7d09274a010dd46337d9ea19",
+  "acceptance_contract_visible": true,
+  "candidate_task_visible": true,
+  "artifact_visible": true,
+  "provider_transport": "fake",
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "provider_turn_completed_event": true,
+  "employee_stopped_event": true,
+  "ui_stream": "deferred; verified by HTTP refetch"
+}

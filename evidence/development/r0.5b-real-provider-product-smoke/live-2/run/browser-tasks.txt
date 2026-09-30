@@ -1,0 +1,58 @@
+跳到主要内容
+P
+polis
+R1 WORKBENCH
+r05b-live-2
+作用域公司
+公司
+公司总览
+使命
+任务
+员工
+组织关系
+活动
+资源
+证据
+待决事项
+反馈
+Bot提醒
+设置
+浅色主题
+Polis
+/
+r05b-live-2
+
+公司 / 任务
+
+任务
+任务概览
+作业
+测试与预览
+任务筛选
+全部
+进行中
+等待
+已停止
+bootstrap_plan
+489ea9fbe65d359327bd9bc979461138 · emp-planning
+completed
+compat
+5b39875f8dc6463f36395b04e4504407 · emp-backend
+working
+ISSUE / WORK
+bootstrap_plan
+completed
+TASK ID
+489ea9fbe65d359327bd9bc979461138
+负责人
+emp-planning
+GENERATION
+0
+CONTRACTREVISION
+不可得
+WORKSPACE REVISION
+不可得
+ACCEPTANCE
+not_started
+DEPENDENCY
+无已声明依赖

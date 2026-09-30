@@ -1,0 +1,78 @@
+{
+    "schema_version":  "r03a-frontend-runtime-envelope-diff@1",
+    "classification":  "EXECUTION_FINGERPRINT_COVERAGE_DEFECT",
+    "secondary_runtime_finding":  "WSL_BWRAP_WINDOWS_INTEROP_INCOMPATIBLE",
+    "historical_execution_fingerprint":  "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+    "provider_tool_surface_changed":  false,
+    "execution_fingerprint_coverage_changed":  true,
+    "coverage":  {
+                     "covered":  [
+                                     "binary_sha256",
+                                     "code_mode_host_sha256",
+                                     "model",
+                                     "effort",
+                                     "tool_manifest",
+                                     "schema_digest",
+                                     "schema_bytes"
+                                 ],
+                     "not_bound":  [
+                                       "launch_mode",
+                                       "process_executable",
+                                       "argv",
+                                       "runtime_os",
+                                       "working_directory",
+                                       "HOME",
+                                       "CODEX_HOME",
+                                       "stdio_boundary",
+                                       "process_stop_semantics"
+                                   ]
+                 },
+    "comparison":  {
+                       "codex_binary_sha256":  true,
+                       "code_mode_host_sha256":  true,
+                       "model":  "SAME:gpt-5.6-luna",
+                       "effort":  "SAME:medium",
+                       "tool_count":  true,
+                       "tool_manifest":  "SAME:91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+                       "aggregate_schema_bytes":  "SAME:2217",
+                       "launch_mode":  "DIFFERENT",
+                       "process_executable":  "DIFFERENT:bwrap vs codex.exe",
+                       "argv":  "DIFFERENT:bwrap namespace argv vs app-server --stdio",
+                       "runtime_os":  "DIFFERENT:linux WSL vs windows",
+                       "working_directory":  "DIFFERENT",
+                       "home_codex_home":  "DIFFERENT",
+                       "stdio_framing":  "SAME:stdin_stdout_jsonl;stderr_separate_bounded",
+                       "process_boundary":  "DIFFERENT:WSL process group/bubblewrap vs Windows process handle"
+                   },
+    "old_failure":  {
+                        "status":  "FRONTEND_RUNTIME_ACTIVATION_PREFLIGHT_FAILED",
+                        "launch_mode":  "wsl_bwrap_isolated_windows_interop",
+                        "process":  "bwrap",
+                        "initialize":  false,
+                        "error":  "outcome_unknown: transport: EOF",
+                        "stderr_classification":  "WSL_BWRAP_EXECVP_FAILURE",
+                        "provider_egress":  false
+                    },
+    "hardened_local_probe":  {
+                                 "status":  "FRONTEND_RUNTIME_ACTIVATION_PREFLIGHT_PASSED",
+                                 "launch_mode":  "windows_native_direct",
+                                 "process":  "codex.exe",
+                                 "initialize":  true,
+                                 "local_protocol_ready":  true,
+                                 "turn_started":  false,
+                                 "provider_egress":  false,
+                                 "business_mutation":  false,
+                                 "stop_confirmed":  true,
+                                 "process_exit":  "intentional_stop"
+                             },
+    "historical_l2":  {
+                          "execution_fingerprint":  "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+                          "runtime_profile":  "windows-native",
+                          "invocation":  "app-server --stdio",
+                          "registered_tool_count":  12,
+                          "aggregate_schema_bytes":  2217,
+                          "first_valid_output":  true,
+                          "provider_egress":  1
+                      },
+    "historical_evidence_modified":  false
+}

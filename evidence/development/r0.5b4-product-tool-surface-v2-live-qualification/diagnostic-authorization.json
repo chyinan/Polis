@@ -1,0 +1,88 @@
+{
+  "schema_version": "polis-product-surface-diagnostic-authorization@1",
+  "authorization_id": "r0.5b4-live-canary-1",
+  "purpose": "PRODUCT_SURFACE_V2_LIVE_QUALIFICATION",
+  "provider_session_id": "r05b4-product-surface-v2-canary",
+  "execution_identity": {
+    "schema_version": "polis-product-exact-surface-execution@1",
+    "surface_id": "polis-product-tool-surface@2",
+    "tool_count": 7,
+    "manifest_digest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+    "aggregate_schema_bytes": 1470,
+    "aggregate_schema_digest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "profile": "gpt-5.6-luna/medium",
+    "provider_mode": "real",
+    "provider_runtime": {
+      "native_version": "0.154.0-alpha.6.2",
+      "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+      "helper_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e"
+    },
+    "launch_runtime_envelope": {
+      "schema_version": "r03a-native-launch-envelope@1",
+      "launch_mode": "windows_native_direct",
+      "runtime_os": "windows",
+      "process_executable": "codex.exe",
+      "binary_path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+      "helper_path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex-code-mode-host.exe",
+      "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+      "helper_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+      "argv": [
+        "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+        "app-server",
+        "--stdio"
+      ],
+      "working_directory": "",
+      "home": ".runtime\\windows\\r0.5b4-product-tool-surface-v2\\r05b4-product-surface-v2-canary\\home",
+      "codex_home": ".runtime\\windows\\r0.5b4-product-tool-surface-v2\\r05b4-product-surface-v2-canary\\home",
+      "stdio": "stdin_stdout_jsonl;stderr_separate_bounded",
+      "boundary": "Windows native process handle",
+      "transport_policy": {
+        "revision": "r03a-transport-policy@1",
+        "initialize_timeout_ms": 30000,
+        "start_acknowledgement_ms": 30000,
+        "first_output_deadline_ms": 90000,
+        "reconnect_grace_ms": 30000,
+        "streaming_idle_ms": 90000,
+        "total_turn_deadline_ms": 600000,
+        "reconciliation_ms": 5000
+      },
+      "fingerprint": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51"
+    },
+    "runtime_policy": {
+      "native_config_sha256": "5f19db0423ae35448778088c0ec951ac9615f9f9e79bfd1e1c6c62daca157440",
+      "native_transport_policy": "native_default",
+      "approval_policy": "never",
+      "sandbox_policy": "read-only",
+      "thread_working_directory": "/work",
+      "thread_ephemeral": true,
+      "model_fallback_allowed": false
+    },
+    "transport_policy": {
+      "transport_policy_revision": "r03a-transport-policy@1",
+      "initialize_timeout_ms": 30000,
+      "start_acknowledgement_ms": 30000,
+      "first_output_deadline_ms": 90000,
+      "reconnect_grace_ms": 30000,
+      "streaming_idle_ms": 90000,
+      "total_turn_deadline_ms": 600000,
+      "reconciliation_ms": 5000
+    },
+    "diagnostic_instruction_revision": "product-surface-v2-diagnostic-instructions@1"
+  },
+  "product_exact_surface_execution_fingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08",
+  "offline_qualification_status": "PASSED",
+  "offline_qualification_digest": "f5a2775864a98d2d78f4bbdb5364d573a0de10195c40cd512e5cf43a615ff30a",
+  "diagnostic_reservation_limit": 1,
+  "provider_attempt_limit": 1,
+  "provider_egress_limit": 1,
+  "medium_limit": 1,
+  "business_allowance": 0,
+  "high_limit": 0,
+  "retry_limit": 0,
+  "expected_tool_calls": 0,
+  "maximum_tool_call_events": 1,
+  "business_objects_allowed": false,
+  "issued_at": "2026-09-17T04:48:09.7365983Z"
+}

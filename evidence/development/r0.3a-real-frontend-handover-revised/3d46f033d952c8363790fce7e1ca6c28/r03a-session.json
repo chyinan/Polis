@@ -1,0 +1,53 @@
+{
+  "number": 1,
+  "employee": "emp-frontend",
+  "purpose": "frontend initial employee: observe and apply recovered peer responsibility",
+  "profile": "gpt-5.6-luna/medium",
+  "status": "passed",
+  "started": "2026-09-12T17:00:25.8114284Z",
+  "finished": "2026-09-12T17:01:12.1227781Z",
+  "duration_ms": 46311,
+  "native_duration_ms": 42,
+  "thread_id": "01a09690-30ed-7f41-a54a-ee723ee83ea7",
+  "session_id": "3d46f033d952c8363790fce7e1ca6c28",
+  "tool_events": [
+    "work_current",
+    "collab_inbox",
+    "collab_ack",
+    "contract_read",
+    "workspace_read",
+    "workspace_replace",
+    "workspace_read",
+    "collab_apply",
+    "workspace_check",
+    "work_checkpoint"
+  ],
+  "receipts": [
+    "aae3482ff7442125965ac24a884b1b5527a0d7a880f6d0c33d3f7b4c5e42a9e1",
+    "7d027b5a8fd2267a68b364e47f4635ca",
+    "f28c1113240ca9f73b67832fe83ea2ba",
+    "ac7919e43360fbe4395490751840ec4e"
+  ],
+  "stop_receipt": "windows-process-handle:55124:waited",
+  "stop_confirmed": true,
+  "checkpoint_id": "ac7919e43360fbe4395490751840ec4e",
+  "token_usage": {
+    "total": {
+      "totalTokens": 90284,
+      "inputTokens": 89300,
+      "cachedInputTokens": 66048,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 984,
+      "reasoningOutputTokens": 330
+    },
+    "last": {
+      "totalTokens": 13770,
+      "inputTokens": 13731,
+      "cachedInputTokens": 12032,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 39,
+      "reasoningOutputTokens": 12
+    }
+  },
+  "native_usage_updates": 7
+}

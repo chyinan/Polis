@@ -1,0 +1,1 @@
+stopped_and_removed=/tmp/polis-r05b5-task-role-pg.4PZXjL

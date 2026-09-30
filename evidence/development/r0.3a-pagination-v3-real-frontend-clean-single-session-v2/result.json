@@ -1,0 +1,27 @@
+{
+  "allowance_binding": {
+    "execution_fingerprint": "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+    "employee_id": "emp-frontend",
+    "problem_key": "r03a-real-peer-collaboration-v1",
+    "purpose": "real_backend_peer_collaboration",
+    "model": "gpt-5.6-luna",
+    "profile": "gpt-5.6-luna/medium",
+    "effort": "medium",
+    "allowance_limits": {
+      "medium_limit": 1,
+      "high_limit": 0,
+      "concurrency": 1,
+      "tool_call_limit": 48
+    }
+  },
+  "allowance_created": true,
+  "employee_id": "emp-frontend",
+  "high_started": 0,
+  "historical_evidence_modified": false,
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "provider_egress": 0,
+  "qualification": "R0.3A-PAGINATION-V3-FRONTEND-SINGLE-SESSION",
+  "status": "NOT_STARTED",
+  "successor": "NOT_NEEDED",
+  "tool_call_limit": 48
+}

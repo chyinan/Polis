@@ -1,0 +1,10 @@
+{
+  "schema_version": "r03a-database-access-view@1",
+  "consumer_os": "windows",
+  "transport": "tcp",
+  "host": "127.0.0.1",
+  "port": 55432,
+  "endpoint_source": "v7-qualified-localhost-forwarding",
+  "access_strategy_revision": "r03a-windows-localhost-forwarding@1",
+  "runtime_database_binding_fingerprint": "10f5b1f2d9dc6b739c74926f178786df1c3c4e4a52b743ced41977e3304f172c"
+}

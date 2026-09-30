@@ -1,0 +1,180 @@
+{
+    "record_type":  "polis-r0.5b15-b14-live3-execution-context-diff@1",
+    "historical_precise_failure_cause":  "NOT_DETERMINABLE_FROM_FROZEN_EVIDENCE",
+    "b14":  {
+                "surface_id":  "polis-product-tool-surface@4",
+                "execution_fingerprint":  "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+                "launch_envelope":  "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d",
+                "runtime_version":  "0.154.0-alpha.6.2",
+                "binary_sha256":  "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+                "helper_sha256":  "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e"
+            },
+    "live3":  {
+                  "surface_id":  "polis-product-tool-surface@4",
+                  "execution_fingerprint":  "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+                  "launch_envelope":  "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d",
+                  "runtime_version":  "0.154.0-alpha.6.2",
+                  "binary_sha256":  "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+                  "helper_sha256":  "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+                  "process_attached":  "True",
+                  "initialize":  "NOT_OBSERVED",
+                  "thread_start":  "NOT_OBSERVED",
+                  "turn_start":  "0",
+                  "provider_egress":  "0"
+              },
+    "differences":  [
+                        {
+                            "field":  "surface_id",
+                            "b14":  "polis-product-tool-surface@4",
+                            "live3":  "polis-product-tool-surface@4",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same exact surface"
+                        },
+                        {
+                            "field":  "tool_count",
+                            "b14":  "7",
+                            "live3":  "",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same exact surface"
+                        },
+                        {
+                            "field":  "manifest_digest",
+                            "b14":  "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+                            "live3":  "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same exact surface"
+                        },
+                        {
+                            "field":  "aggregate_schema_bytes",
+                            "b14":  "2206",
+                            "live3":  "2206",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same exact surface"
+                        },
+                        {
+                            "field":  "aggregate_schema_digest",
+                            "b14":  "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+                            "live3":  "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same exact surface"
+                        },
+                        {
+                            "field":  "exact_surface_execution_fingerprint",
+                            "b14":  "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+                            "live3":  "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same exact surface execution binding"
+                        },
+                        {
+                            "field":  "runtime_version",
+                            "b14":  "0.154.0-alpha.6.2",
+                            "live3":  "0.154.0-alpha.6.2",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same verified runtime version"
+                        },
+                        {
+                            "field":  "binary_sha256",
+                            "b14":  "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+                            "live3":  "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same verified binary"
+                        },
+                        {
+                            "field":  "helper_sha256",
+                            "b14":  "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+                            "live3":  "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same verified helper"
+                        },
+                        {
+                            "field":  "launch_envelope_fingerprint",
+                            "b14":  "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d",
+                            "live3":  "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "same canonical envelope fingerprint"
+                        },
+                        {
+                            "field":  "argv",
+                            "b14":  "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe | app-server | --stdio",
+                            "live3":  "",
+                            "classification":  "UNEXPECTED_LAUNCH_DIVERGENCE",
+                            "basis":  "LIVE_3 did not persist resolved argv"
+                        },
+                        {
+                            "field":  "working_directory",
+                            "b14":  "",
+                            "live3":  "",
+                            "classification":  "UNEXPECTED_LAUNCH_DIVERGENCE",
+                            "basis":  "LIVE_3 did not persist resolved cwd"
+                        },
+                        {
+                            "field":  "controlled_environment",
+                            "b14":  "CODEX_HOME:c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9 | HOME:c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9 | PATH:1b91f4b91201ea57e2f68cb79bff702dd35f24771d40ec884b2cdb8b706f5f95 | SystemRoot:efd19b4dfb7bcf968b9e605369281ebb13f245f89588e5ad58f3ae6ed2f6b691 | TEMP:17757088824240d12392821de2e5b2e6f233ec446ed691d79e27605e6eed0a0f | TMP:17757088824240d12392821de2e5b2e6f233ec446ed691d79e27605e6eed0a0f | USERPROFILE:c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9 | WINDIR:efd19b4dfb7bcf968b9e605369281ebb13f245f89588e5ad58f3ae6ed2f6b691",
+                            "live3":  "",
+                            "classification":  "UNEXPECTED_LAUNCH_DIVERGENCE",
+                            "basis":  "LIVE_3 did not persist safe environment fingerprint"
+                        },
+                        {
+                            "field":  "home_codex_home_userprofile",
+                            "b14":  ".runtime\\windows\\r0.5b14-product-surface-v4\\r05b14-product-surface-v4-canary\\home / .runtime\\windows\\r0.5b14-product-surface-v4\\r05b14-product-surface-v4-canary\\home",
+                            "live3":  "",
+                            "classification":  "UNEXPECTED_LAUNCH_DIVERGENCE",
+                            "basis":  "LIVE_3 session-home semantics unavailable"
+                        },
+                        {
+                            "field":  "temp_tmp",
+                            "b14":  ".runtime\\windows\\r0.5b14-product-surface-v4\\r05b14-product-surface-v4-canary\\home\\tmp",
+                            "live3":  "",
+                            "classification":  "UNEXPECTED_LAUNCH_DIVERGENCE",
+                            "basis":  "LIVE_3 temp semantics unavailable"
+                        },
+                        {
+                            "field":  "stdio_pipe_flags",
+                            "b14":  "stdin_stdout_jsonl;stderr_separate_bounded / stdin_stdout_stderr_separate_pipes / windows_hide_window",
+                            "live3":  "",
+                            "classification":  "UNEXPECTED_LAUNCH_DIVERGENCE",
+                            "basis":  "LIVE_3 launch spec unavailable"
+                        },
+                        {
+                            "field":  "runtime_evidence_root",
+                            "b14":  "evidence\\development\\r0.5b14-product-tool-surface-v4-live-qualification-attempt-3\\provider\\r05b14-product-surface-v4-canary",
+                            "live3":  "",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "distinct business session evidence root not persisted"
+                        },
+                        {
+                            "field":  "business_identity",
+                            "b14":  "",
+                            "live3":  "r05b-live-3 / 6aa57fa09302eb45ed815a02e027da4e / 619d622792dc299042baae4a99cb6787 / emp-backend / e3aab47b7169ebfa3b8072a82575a9ec",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "diagnostic has no business identity"
+                        },
+                        {
+                            "field":  "task_validation_binding",
+                            "b14":  "",
+                            "live3":  "cac795731684c89e7b07a5874c38723f8c2ee820d28f4d59f19b66a8f9b47fe7",
+                            "classification":  "POSSIBLE_INITIALIZE_INPUT",
+                            "basis":  "business binding outside diagnostic path"
+                        },
+                        {
+                            "field":  "workspace_digest_revision",
+                            "b14":  "",
+                            "live3":  "7d95f41316731397a7e5230e8e88a3c415caebc0d0dc3b59e50e53bce6bdce9f / 1",
+                            "classification":  "POSSIBLE_INITIALIZE_INPUT",
+                            "basis":  "business workspace binding outside diagnostic path"
+                        },
+                        {
+                            "field":  "business_authorization_reservation",
+                            "b14":  "",
+                            "live3":  "1 / 1",
+                            "classification":  "EXPECTED_BUSINESS_CONTEXT_DIFFERENCE",
+                            "basis":  "business-only accounting path"
+                        }
+                    ],
+    "missing_business_path_observability":  [
+                                                "resolved ProcessLaunchSpec/argv/cwd/environment safe fingerprint",
+                                                "initialize request/ack lifecycle evidence",
+                                                "child exit code/safe stderr category",
+                                                "full terminal phase/reason code"
+                                            ]
+}

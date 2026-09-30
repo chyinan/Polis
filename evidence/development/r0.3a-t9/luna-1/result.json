@@ -1,0 +1,62 @@
+{
+  "status": "inconclusive",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "model": "gpt-5.6-luna",
+  "profile": "gpt-5.6-luna/medium",
+  "started": "2026-09-09T07:38:03.818890938Z",
+  "finished": "2026-09-09T07:39:50.610691186Z",
+  "medium_started": 1,
+  "high_started": 0,
+  "dynamic_tool_count": 0,
+  "readiness": {
+    "binary_sha256": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+    "callback_host": "not_applicable_no_dynamic_tools",
+    "capability_digest": "04a855290926ed2b6a21d9f95798fb655f1f6e96125fbe575b8327054a605e95",
+    "code_mode_host_sha256": "a9adcea47799d8caaec5fbf073966fef2869f754bc7b463e30783880dfb12913",
+    "cwd": "/work",
+    "dynamic_tool_count": 0,
+    "effort": "medium",
+    "employee_binding": "not_applicable_transport_canary",
+    "model": "gpt-5.6-luna",
+    "native_version": "codex-cli 0.151.0",
+    "proxy_category": "not_configured",
+    "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+    "sandbox": "read-only",
+    "schema_bytes": 0
+  },
+  "turn_state": "first_valid_output_deadline_exceeded",
+  "transport": "inconclusive",
+  "sentinel_match": "failed",
+  "first_valid_output": false,
+  "reconnect_count": 3,
+  "reconnect_phases": [
+    "pre_first_output_reconnecting",
+    "pre_first_output_reconnecting",
+    "pre_first_output_reconnecting"
+  ],
+  "first_disconnect_delta_ms": 35333,
+  "total_elapsed_ms": 106788,
+  "native_usage_updates": 0,
+  "token_usage": {
+    "total": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    },
+    "last": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    }
+  },
+  "stop_receipt": "process-group:192234:waited",
+  "stop_confirmed": true,
+  "tool_events": null,
+  "error": "first_valid_output_deadline_exceeded: elapsed=1m30.003185659s"
+}

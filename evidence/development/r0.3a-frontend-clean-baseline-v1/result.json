@@ -1,0 +1,19 @@
+{
+  "qualification": "R0.3A-FRONTEND-CLEAN-BASELINE-MATERIALIZATION",
+  "status": "PASSED",
+  "clean_restore": "PASSED",
+  "semantic_closure": "PASSED",
+  "FrontendStartingStateProbe": "PASSED",
+  "frontend_sessions": 0,
+  "live_writer": 0,
+  "obligation": "pending",
+  "planner_relay": 0,
+  "baseline_manifest": "PASSED",
+  "baseline_probe_mutation": 0,
+  "frontend_business": "NOT_STARTED",
+  "allowance": 0,
+  "Worker": 0,
+  "Medium": 0,
+  "provider_egress": 0,
+  "historical_evidence_modified": false
+}

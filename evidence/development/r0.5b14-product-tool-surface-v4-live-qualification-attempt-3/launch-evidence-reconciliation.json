@@ -1,0 +1,17 @@
+{
+  "record_type": "polis-r0.5b14-launch-evidence-reconciliation@1",
+  "status": "PASSED",
+  "authorization_id": "r0.5b14-live-canary-1",
+  "process_created": true,
+  "pid_present": true,
+  "process_id": 71336,
+  "process_started_at": "2026-09-20T11:20:21.6751821Z",
+  "process_identity": "r05b14-product-surface-v4-canary",
+  "evidence_basis": "process_started_at_and_process_id_present_in_provider-transport-terminal.json",
+  "provider_egress": 1,
+  "turn_terminal": "completed",
+  "clean_stop": true,
+  "protocol_evidence_ok": true,
+  "business_side_effects": 0,
+  "reconciled_at": "2026-09-20T11:22:22.0654328Z"
+}

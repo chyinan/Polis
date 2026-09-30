@@ -1,0 +1,29 @@
+{
+  "status": "PASSED",
+  "dump_path": "/mnt/d/Programs/Polis/.tools/pg/usr/lib/postgresql/18/bin/pg_dump",
+  "dump_version": "18.6",
+  "pg_dump": {
+    "executable_path": "/mnt/d/Programs/Polis/.tools/pg/usr/lib/postgresql/18/bin/pg_dump",
+    "raw_version": "pg_dump (PostgreSQL) 18.6 (Ubuntu 18.6-1.pgdg22.04+2)",
+    "product": "PostgreSQL",
+    "version": "18.6",
+    "major": 18,
+    "minor": 6,
+    "distribution_suffix": "Ubuntu 18.6-1.pgdg22.04+2",
+    "compatibility": "PASS"
+  },
+  "restore_path": "/mnt/d/Programs/Polis/.tools/pg/usr/lib/postgresql/18/bin/pg_restore",
+  "pg_restore": {
+    "executable_path": "/mnt/d/Programs/Polis/.tools/pg/usr/lib/postgresql/18/bin/pg_restore",
+    "raw_version": "pg_restore (PostgreSQL) 18.6 (Ubuntu 18.6-1.pgdg22.04+2)",
+    "product": "PostgreSQL",
+    "version": "18.6",
+    "major": 18,
+    "minor": 6,
+    "distribution_suffix": "Ubuntu 18.6-1.pgdg22.04+2",
+    "compatibility": "PASS"
+  },
+  "recovery_root": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6-final-recovery-continuation-v5",
+  "postgres_client_major": "18",
+  "preservation_machinery": "r0.3a-preserved-postgres-access@1"
+}

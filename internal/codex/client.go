@@ -25,20 +25,57 @@ type Message struct {
 	Error  json.RawMessage `json:"error,omitempty"`
 }
 type Client struct {
-	process  *runner.Process
-	nextID   int
-	pending  []Message
-	incoming chan Message
-	readErr  chan error
-	log      *os.File
-	logMu    sync.Mutex
-	wg       sync.WaitGroup
-	closed   chan struct{}
-	model    string
+	process               *runner.Process
+	nextID                int
+	pending               []Message
+	incoming              chan Message
+	readErr               chan error
+	log                   *os.File
+	logMu                 sync.Mutex
+	wg                    sync.WaitGroup
+	closed                chan struct{}
+	model                 string
+	expectedNativeVersion string
+	lifecycleMu           sync.Mutex
+	initializeEvidence    InitializeLifecycleEvidence
 }
 type TurnResult struct {
-	State    string
-	Boundary bool
+	State                    string
+	Boundary                 bool
+	Usage                    TokenUsage
+	UsageUpdates             int
+	NativeDurationMS         int64
+	Lifecycle                []TurnLifecycleEvent
+	StopAcknowledged         bool
+	TerminationConfirmed     bool
+	ReconciliationRequired   bool
+	TransportPolicy          TransportPolicy         `json:"transport_policy"`
+	TransportPolicySnapshot  TransportPolicySnapshot `json:"transport_policy_snapshot"`
+	Phase                    TransportPhase          `json:"phase"`
+	ReconnectWindowStartedAt *time.Time              `json:"reconnect_window_started_at,omitempty"`
+	ReconnectWindowExpiredAt *time.Time              `json:"reconnect_window_expired_at,omitempty"`
+	ReconnectAttemptCount    int                     `json:"reconnect_attempt_count"`
+	ReconnectRecovered       bool                    `json:"reconnect_recovered"`
+	OutcomeClassification    string                  `json:"outcome_classification,omitempty"`
+}
+
+type TokenUsage struct {
+	Total struct {
+		TotalTokens           int64 `json:"totalTokens"`
+		InputTokens           int64 `json:"inputTokens"`
+		CachedInputTokens     int64 `json:"cachedInputTokens"`
+		CacheWriteInputTokens int64 `json:"cacheWriteInputTokens"`
+		OutputTokens          int64 `json:"outputTokens"`
+		ReasoningOutputTokens int64 `json:"reasoningOutputTokens"`
+	} `json:"total"`
+	Last struct {
+		TotalTokens           int64 `json:"totalTokens"`
+		InputTokens           int64 `json:"inputTokens"`
+		CachedInputTokens     int64 `json:"cachedInputTokens"`
+		CacheWriteInputTokens int64 `json:"cacheWriteInputTokens"`
+		OutputTokens          int64 `json:"outputTokens"`
+		ReasoningOutputTokens int64 `json:"reasoningOutputTokens"`
+	} `json:"last"`
 }
 
 func New(p *runner.Process, evidence string) (*Client, error) {
@@ -46,8 +83,25 @@ func New(p *runner.Process, evidence string) (*Client, error) {
 }
 
 func NewWithModel(p *runner.Process, evidence, model string) (*Client, error) {
+	return NewWithModelAndVersion(p, evidence, model, runner.NativeVersionNumber)
+}
+
+func NewWithModelAndVersion(p *runner.Process, evidence, model, expectedNativeVersion string) (*Client, error) {
 	if model == "" {
 		return nil, errors.New("model profile required")
+	}
+	return newClient(p, evidence, model, expectedNativeVersion)
+}
+
+// NewForModelCatalog creates an app-server client that can list model metadata
+// but cannot start a model thread because it has no selected model.
+func NewForModelCatalog(p *runner.Process, evidence, expectedNativeVersion string) (*Client, error) {
+	return newClient(p, evidence, "", expectedNativeVersion)
+}
+
+func newClient(p *runner.Process, evidence, model, expectedNativeVersion string) (*Client, error) {
+	if expectedNativeVersion == "" {
+		return nil, errors.New("native version required")
 	}
 	if e := os.MkdirAll(evidence, 0700); e != nil {
 		return nil, e
@@ -56,7 +110,7 @@ func NewWithModel(p *runner.Process, evidence, model string) (*Client, error) {
 	if e != nil {
 		return nil, e
 	}
-	c := &Client{process: p, incoming: make(chan Message, 64), readErr: make(chan error, 2), log: f, closed: make(chan struct{}), model: model}
+	c := &Client{process: p, incoming: make(chan Message, 64), readErr: make(chan error, 2), log: f, closed: make(chan struct{}), model: model, expectedNativeVersion: expectedNativeVersion, initializeEvidence: InitializeLifecycleEvidence{Phase: "initialize", ProcessCreated: p != nil, PIDPresent: p != nil && p.PID() > 0, StdoutPipeState: "open", StderrCategory: "unavailable"}}
 	c.wg.Add(2)
 	go func() {
 		defer c.wg.Done()
@@ -68,7 +122,7 @@ func NewWithModel(p *runner.Process, evidence, model string) (*Client, error) {
 				c.readErr <- e
 				return
 			}
-			if e := c.record("receive", json.RawMessage(append([]byte(nil), scan.Bytes()...))); e != nil {
+			if e := c.record("receive", redactInboundProtocolMessageForLog(m, scan.Bytes())); e != nil {
 				c.readErr <- e
 				return
 			}
@@ -79,8 +133,15 @@ func NewWithModel(p *runner.Process, evidence, model string) (*Client, error) {
 			}
 		}
 		if e := scan.Err(); e != nil {
+			c.lifecycleMu.Lock()
+			c.initializeEvidence.StdoutPipeState = "read_error"
+			c.lifecycleMu.Unlock()
 			c.readErr <- e
 		} else {
+			c.lifecycleMu.Lock()
+			c.initializeEvidence.StdoutPipeState = "closed"
+			c.initializeEvidence.ChildExitObserved = c.process.HasExited()
+			c.lifecycleMu.Unlock()
 			c.readErr <- io.EOF
 		}
 	}()
@@ -92,7 +153,10 @@ func NewWithModel(p *runner.Process, evidence, model string) (*Client, error) {
 			data = data[:32768]
 		}
 		if len(data) > 0 {
-			_ = c.record("stderr", string(data))
+			c.lifecycleMu.Lock()
+			c.initializeEvidence.StderrCategory = safeStderrCategory(data)
+			c.lifecycleMu.Unlock()
+			_ = c.record("stderr", map[string]any{"category": safeStderrCategory(data), "bytes": len(data)})
 		}
 		if e != nil {
 			select {
@@ -134,8 +198,113 @@ func (c *Client) record(direction string, v any) error {
 	}
 	return c.log.Sync()
 }
+
+func (c *Client) InitializationEvidence() InitializeLifecycleEvidence {
+	c.lifecycleMu.Lock()
+	defer c.lifecycleMu.Unlock()
+	evidence := c.initializeEvidence
+	if c.process != nil {
+		evidence.ProcessCreated = true
+		evidence.PIDPresent = c.process.PID() > 0
+		evidence.ChildExitObserved = evidence.ChildExitObserved || c.process.HasExited()
+	}
+	return evidence
+}
+
+func (c *Client) recordLifecycle(phase string) error {
+	if phase == "" {
+		return errors.New("initialize lifecycle phase is required")
+	}
+	if err := c.record("lifecycle", InitializeLifecycleEvent{Phase: phase}); err != nil {
+		return err
+	}
+	c.lifecycleMu.Lock()
+	c.initializeEvidence.Lifecycle = append(c.initializeEvidence.Lifecycle, InitializeLifecycleEvent{Phase: phase})
+	c.lifecycleMu.Unlock()
+	return nil
+}
+
+func (c *Client) wrapInitializationError(err error) error {
+	evidence := c.InitializationEvidence()
+	evidence.Phase = "initialize"
+	evidence.SafeMessage = safeInitializationMessage(err, evidence)
+	evidence.ReasonCode = classifyInitializationReason(err, evidence)
+	evidence.FailureCategory = ClassifyInitializationFailureCategory(err, evidence)
+	return &InitializationFailure{InitializeLifecycleEvidence: evidence, Cause: err}
+}
+
+func classifyInitializationReason(err error, evidence InitializeLifecycleEvidence) string {
+	if evidence.ChildExitObserved && !evidence.InitializeRequestSent {
+		return "child_exited_before_initialize"
+	}
+	if evidence.ChildExitObserved {
+		return "child_exited_during_initialize"
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "initialize_timeout"
+	}
+	if errors.Is(err, io.EOF) || strings.Contains(err.Error(), "transport: EOF") {
+		return "pipe_closed_before_initialize"
+	}
+	if strings.Contains(err.Error(), "native request rejected") {
+		return "initialize_response_rejected"
+	}
+	if strings.Contains(err.Error(), "json") || strings.Contains(err.Error(), "JSON") {
+		return "initialize_response_malformed"
+	}
+	if strings.Contains(err.Error(), "write") || strings.Contains(err.Error(), "closed") {
+		return "initialize_request_write_failed"
+	}
+	if evidence.InitializeRequestSent {
+		return "initialize_failed"
+	}
+	return "initialize_request_not_sent"
+}
+
+func safeInitializationMessage(err error, evidence InitializeLifecycleEvidence) string {
+	if evidence.ChildExitObserved {
+		if evidence.InitializeRequestSent {
+			return "child exited during initialize"
+		}
+		return "child exited before initialize"
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "initialize timeout"
+	}
+	if errors.Is(err, io.EOF) || strings.Contains(err.Error(), "transport: EOF") {
+		return "protocol pipe closed before initialize acknowledgement"
+	}
+	if strings.Contains(err.Error(), "native request rejected") {
+		return "provider rejected initialize request"
+	}
+	if strings.Contains(err.Error(), "write") || strings.Contains(err.Error(), "closed") {
+		return "initialize request write failed"
+	}
+	return "provider initialize failed"
+}
+
+func safeStderrCategory(data []byte) string {
+	text := strings.ToLower(string(data))
+	switch {
+	case strings.Contains(text, "code-mode host"), strings.Contains(text, "helper"):
+		return "helper_failure"
+	case strings.Contains(text, "access is denied"), strings.Contains(text, "permission"):
+		return "access_denied"
+	case strings.Contains(text, "not found"), strings.Contains(text, "no such file"):
+		return "executable_or_file_missing"
+	default:
+		return "stderr_present_unclassified"
+	}
+}
+
 func (c *Client) send(m Message) error {
-	if e := c.record("send", m); e != nil {
+	initializeWrite := m.Method == "initialize"
+	if initializeWrite {
+		if err := c.recordLifecycle("initialize_write_started"); err != nil {
+			return err
+		}
+	}
+	if e := c.record("send", redactImageInputMessage(m)); e != nil {
 		return e
 	}
 	raw, e := json.Marshal(m)
@@ -143,18 +312,18 @@ func (c *Client) send(m Message) error {
 		return e
 	}
 	_, e = c.process.In.Write(append(raw, '\n'))
+	if e == nil && initializeWrite {
+		if lifecycleErr := c.recordLifecycle("initialize_write_completed"); lifecycleErr != nil {
+			return lifecycleErr
+		}
+	}
 	return e
 }
 func (c *Client) receive(ctx context.Context) (Message, error) {
 	select {
 	case m := <-c.incoming:
-		if m.Method == "warning" {
-			var p struct {
-				Message string `json:"message"`
-			}
-			if json.Unmarshal(m.Params, &p) == nil && strings.Contains(p.Message, "Code Mode is unavailable") {
-				return Message{}, errors.New("native tool capability unavailable: " + p.Message)
-			}
+		if e := warningError(m); e != nil {
+			return Message{}, e
 		}
 		return m, nil
 	case e := <-c.readErr:
@@ -176,6 +345,11 @@ func (c *Client) Request(ctx context.Context, method string, params any) (json.R
 	if e = c.send(Message{ID: id, Method: method, Params: raw}); e != nil {
 		return nil, e
 	}
+	if method == "initialize" {
+		c.lifecycleMu.Lock()
+		c.initializeEvidence.InitializeRequestSent = true
+		c.lifecycleMu.Unlock()
+	}
 	for {
 		m, e := c.receive(ctx)
 		if e != nil {
@@ -184,6 +358,14 @@ func (c *Client) Request(ctx context.Context, method string, params any) (json.R
 		if m.Method == "" && bytes.Equal(m.ID, id) {
 			if len(m.Error) > 0 {
 				return nil, fmt.Errorf("native request rejected: %s", m.Error)
+			}
+			if method == "initialize" {
+				if err := c.recordLifecycle("initialize_ack_received"); err != nil {
+					return nil, err
+				}
+				c.lifecycleMu.Lock()
+				c.initializeEvidence.InitializeAckReceived = true
+				c.lifecycleMu.Unlock()
 			}
 			return m.Result, nil
 		}
@@ -194,23 +376,59 @@ func (c *Client) Request(ctx context.Context, method string, params any) (json.R
 	}
 }
 func (c *Client) Initialize(ctx context.Context) error {
-	raw, e := c.Request(ctx, "initialize", map[string]any{"clientInfo": map[string]any{"name": "polis", "version": "0.1.0"}, "capabilities": map[string]any{"experimentalApi": true}})
+	return c.InitializeWithPolicy(ctx, DefaultTransportPolicy())
+}
+
+func (c *Client) InitializeWithPolicy(ctx context.Context, policy TransportPolicy) error {
+	c.lifecycleMu.Lock()
+	c.initializeEvidence.Phase = "initialize"
+	c.lifecycleMu.Unlock()
+	if err := policy.Validate(); err != nil {
+		return c.wrapInitializationError(err)
+	}
+	initializeCtx, cancel := context.WithTimeout(ctx, policy.InitializeTimeout)
+	defer cancel()
+	if err := c.recordLifecycle("initialize_prepare_started"); err != nil {
+		return c.wrapInitializationError(err)
+	}
+	payload := map[string]any{"clientInfo": map[string]any{"name": "polis", "version": "0.1.0"}, "capabilities": map[string]any{"experimentalApi": true}}
+	if err := c.recordLifecycle("initialize_payload_ready"); err != nil {
+		return c.wrapInitializationError(err)
+	}
+	raw, e := c.Request(initializeCtx, "initialize", payload)
 	if e != nil {
-		return e
+		return c.wrapInitializationError(e)
 	}
 	var result struct {
 		UserAgent string `json:"userAgent"`
 	}
 	if e = json.Unmarshal(raw, &result); e != nil {
-		return e
+		return c.wrapInitializationError(e)
 	}
-	if !strings.Contains(result.UserAgent, "0.151.0") {
-		return errors.New("Codex version mismatch")
+	if !strings.Contains(result.UserAgent, c.expectedNativeVersion) {
+		return c.wrapInitializationError(errors.New("Codex version mismatch"))
 	}
-	return c.send(Message{Method: "initialized"})
+	if e = c.send(Message{Method: "initialized"}); e != nil {
+		return c.wrapInitializationError(e)
+	}
+	c.lifecycleMu.Lock()
+	c.initializeEvidence.InitializedNotificationSent = true
+	c.lifecycleMu.Unlock()
+	return nil
 }
 func (c *Client) StartThread(ctx context.Context, effort string) (string, error) {
-	params := map[string]any{"model": c.model, "allowProviderModelFallback": false, "approvalPolicy": "never", "sandbox": "read-only", "cwd": "/work", "environments": []any{}, "ephemeral": true, "dynamicTools": Tools(), "config": map[string]any{"model_reasoning_effort": effort}, "developerInstructions": "You are one fixed Polis employee. Use only polis_* dynamic tools for company context and changes. Native thread IDs are not task authority. Do not use shell, apply_patch, web, external MCP, delegation or account tools. Tool receipts, not natural-language completion, determine progress."}
+	return c.StartThreadWithTools(ctx, effort, Tools(), "You are one fixed Polis employee. Use only polis_* dynamic tools for company context and changes. Native thread IDs are not task authority. Do not use shell, apply_patch, web, external MCP, delegation or account tools. Tool receipts, not natural-language completion, determine progress.")
+}
+
+func (c *Client) StartReviewerThread(ctx context.Context, effort string) (string, error) {
+	return c.StartThreadWithTools(ctx, effort, ReviewerTools(), "You are an independent Polis reviewer. Use only the supplied read-only reviewer tools. Do not use shell, apply_patch, web, external MCP, delegation or account tools. Do not modify or submit the candidate. Give an explicit review verdict through the review tool.")
+}
+
+func (c *Client) StartThreadWithTools(ctx context.Context, effort string, tools []any, developerInstructions string) (string, error) {
+	if c.model == "" {
+		return "", errors.New("model profile required to start a thread")
+	}
+	params := map[string]any{"model": c.model, "allowProviderModelFallback": false, "approvalPolicy": "never", "sandbox": "read-only", "cwd": "/work", "environments": []any{}, "ephemeral": true, "dynamicTools": tools, "config": map[string]any{"model_reasoning_effort": effort}, "developerInstructions": developerInstructions}
 	raw, e := c.Request(ctx, "thread/start", params)
 	if e != nil {
 		return "", e
@@ -234,7 +452,7 @@ func (c *Client) StartThread(ctx context.Context, effort string) (string, error)
 	}
 	return r.Thread.ID, nil
 }
-func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handler func(string, string, json.RawMessage) (json.RawMessage, bool)) (TurnResult, error) {
+func (c *Client) legacyTurn(ctx context.Context, thread, effort, prompt string, handler func(string, string, json.RawMessage) (json.RawMessage, bool)) (TurnResult, error) {
 	raw, e := c.Request(ctx, "turn/start", map[string]any{"threadId": thread, "model": c.model, "effort": effort, "input": []any{map[string]any{"type": "text", "text": prompt}}})
 	if e != nil {
 		return TurnResult{}, e
@@ -251,6 +469,8 @@ func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handle
 		return TurnResult{}, errors.New("missing turn ID")
 	}
 	calls := 0
+	var usage TokenUsage
+	usageUpdates := 0
 	for {
 		var m Message
 		if len(c.pending) > 0 {
@@ -264,8 +484,8 @@ func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handle
 		}
 		if m.Method == "item/tool/call" {
 			calls++
-			if calls > 32 {
-				return TurnResult{}, errors.New("tool-call limit exceeded")
+			if calls > RuntimeToolCallSafetyCap {
+				return TurnResult{}, fmt.Errorf("runtime tool-call safety cap exhausted: used=%d limit=%d", calls-1, RuntimeToolCallSafetyCap)
 			}
 			var p struct {
 				Thread    string          `json:"threadId"`
@@ -289,7 +509,7 @@ func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handle
 				return TurnResult{}, e
 			}
 			if boundary {
-				return TurnResult{State: "interrupted_after_checkpoint", Boundary: true}, nil
+				return TurnResult{State: "interrupted_after_checkpoint", Boundary: true, Usage: usage, UsageUpdates: usageUpdates}, nil
 			}
 			var status struct {
 				Error string `json:"error"`
@@ -304,6 +524,15 @@ func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handle
 			if e = c.send(Message{ID: m.ID, Result: body}); e != nil {
 				return TurnResult{}, e
 			}
+		} else if m.Method == "thread/tokenUsage/updated" {
+			var params struct {
+				TokenUsage TokenUsage `json:"tokenUsage"`
+			}
+			if e = json.Unmarshal(m.Params, &params); e != nil {
+				return TurnResult{}, e
+			}
+			usage = params.TokenUsage
+			usageUpdates++
 		} else if m.Method == "turn/completed" {
 			var p struct {
 				Thread string `json:"threadId"`
@@ -321,7 +550,7 @@ func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handle
 			if p.Turn.Status != "completed" {
 				return TurnResult{State: p.Turn.Status}, fmt.Errorf("native turn failed: %v", p.Turn.Error)
 			}
-			return TurnResult{State: "completed"}, nil
+			return TurnResult{State: "completed", Usage: usage, UsageUpdates: usageUpdates}, nil
 		} else if len(m.ID) > 0 && m.Method != "" {
 			return TurnResult{}, fmt.Errorf("unapproved server request: %s", m.Method)
 		}

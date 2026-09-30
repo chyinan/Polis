@@ -4,3 +4,15 @@ bin/
 *.test
 *.exe
 
+# Local build and dependency artifacts.
+target/
+node_modules/
+.vite/
+/polis
+
+# Stray local PowerShell runtime output; never part of the project.
+/System.Collections.Specialized.OrderedDictionary/
+
+# Evidence sometimes captures a host runtime home; keep auth and installed skills local.
+evidence/**/home/
+**/frontend-runtime-preflight-home/

@@ -1,0 +1,14 @@
+{
+  "high_consumed": 0,
+  "historical_evidence_modified": false,
+  "localhost_proxy_reachable_from_guest": "YES",
+  "medium_consumed": 0,
+  "network_namespace_policy": "shared_host_network",
+  "network_namespace_relation": "SAME",
+  "passed": true,
+  "provider_model_egress": 0,
+  "route_relation": "SAME",
+  "status": "offline_preflight_passed",
+  "t14c_fingerprint": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "t16_v4_fingerprint": "31aadd40f1d198406c403b9c09fc2f50170e2fde0efd09f91f571b56318dfc68"
+}

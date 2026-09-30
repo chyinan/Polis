@@ -1,0 +1,10 @@
+{
+    "record_type":  "r0.7-windows-runtime-smoke@1",
+    "status":  "failed",
+    "provider_business_egress":  0,
+    "external_notifications":  0,
+    "postgres_port":  61579,
+    "backend_port":  61580,
+    "database":  "polis_r0_smoke_b7924a065daa",
+    "failure":  "ERROR:  CREATE DATABASE cannot run inside a transaction block"
+}

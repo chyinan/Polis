@@ -1,0 +1,9 @@
+{
+  "error": "preflight_failed: Windows/WSL local protocol subset digest differs",
+  "high_consumed": 0,
+  "medium_consumed": 0,
+  "passed": false,
+  "provider_egress": 0,
+  "status": "preflight_failed",
+  "t19_live_comparison": "NOT_ELIGIBLE"
+}

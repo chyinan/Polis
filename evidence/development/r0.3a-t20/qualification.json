@@ -1,0 +1,13 @@
+{
+  "canonical_manifest_digest": "b653e94bf2adfd4caa7f9982774f8d1143bdc55c0c64d50d620afdad3c8bfb7d",
+  "evidence_result": "PASSED",
+  "failure_mode": "none",
+  "historical_evidence_modified": false,
+  "medium_allowance_created": true,
+  "medium_consumed": 1,
+  "provider_egress": 1,
+  "qualification": "R0.3A-T20",
+  "runtime_execution_envelope_factor": "STRONG_DIAGNOSTIC_EVIDENCE",
+  "status": "PASSED",
+  "windows_native_l1": "qualified"
+}

@@ -1,0 +1,9 @@
+{
+  "configured_directory": "/tmp/polis-pg-r03a-v9-frontend-single",
+  "resolved_directory": "/tmp/polis-pg-r03a-v9-frontend-single",
+  "port": 55432,
+  "effective_socket_path": "/tmp/polis-pg-r03a-v9-frontend-single/.s.PGSQL.55432",
+  "path_bytes": 52,
+  "maximum_bytes": 107,
+  "compatibility": "PASS"
+}

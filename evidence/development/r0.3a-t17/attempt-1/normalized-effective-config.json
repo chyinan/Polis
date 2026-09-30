@@ -1,0 +1,1150 @@
+{
+  "comparison": {
+    "approval_policy": {
+      "name": "approval_policy",
+      "a_classification": "confirmed_same",
+      "b_classification": "confirmed_same",
+      "a_value": "never",
+      "b_value": "never",
+      "comparison": "confirmed_same"
+    },
+    "cli_auth_credentials_store": {
+      "name": "cli_auth_credentials_store",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "file",
+      "comparison": "unknown"
+    },
+    "enabled_plugin_count": {
+      "name": "enabled_plugin_count",
+      "a_classification": "confirmed_different",
+      "b_classification": "confirmed_different",
+      "a_value": "13",
+      "b_value": "0",
+      "comparison": "confirmed_different"
+    },
+    "features.apps": {
+      "name": "features.apps",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "false",
+      "comparison": "unknown"
+    },
+    "features.code_mode_host": {
+      "name": "features.code_mode_host",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "true",
+      "comparison": "unknown"
+    },
+    "features.goals": {
+      "name": "features.goals",
+      "a_classification": "confirmed_different",
+      "b_classification": "confirmed_different",
+      "a_value": "true",
+      "b_value": "false",
+      "comparison": "confirmed_different"
+    },
+    "features.js_repl": {
+      "name": "features.js_repl",
+      "a_classification": "confirmed_same",
+      "b_classification": "confirmed_same",
+      "a_value": "false",
+      "b_value": "false",
+      "comparison": "confirmed_same"
+    },
+    "features.multi_agent": {
+      "name": "features.multi_agent",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "false",
+      "comparison": "unknown"
+    },
+    "features.multi_agent_v2": {
+      "name": "features.multi_agent_v2",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "false",
+      "comparison": "unknown"
+    },
+    "features.shell_tool": {
+      "name": "features.shell_tool",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "false",
+      "comparison": "unknown"
+    },
+    "features.skill_search": {
+      "name": "features.skill_search",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "false",
+      "comparison": "unknown"
+    },
+    "features.tool_search": {
+      "name": "features.tool_search",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "false",
+      "comparison": "unknown"
+    },
+    "features.unified_exec": {
+      "name": "features.unified_exec",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "false",
+      "comparison": "unknown"
+    },
+    "mcp_server_count": {
+      "name": "mcp_server_count",
+      "a_classification": "confirmed_same",
+      "b_classification": "confirmed_same",
+      "a_value": "0",
+      "b_value": "0",
+      "comparison": "confirmed_same"
+    },
+    "model": {
+      "name": "model",
+      "a_classification": "confirmed_different",
+      "b_classification": "absent",
+      "a_value": "gpt-5.6-luna",
+      "comparison": "unknown"
+    },
+    "model_provider": {
+      "name": "model_provider",
+      "a_classification": "absent",
+      "b_classification": "confirmed_different",
+      "b_value": "polis-openai",
+      "comparison": "unknown"
+    },
+    "model_providers.polis-openai.supports_websockets": {
+      "name": "model_providers.polis-openai.supports_websockets",
+      "a_classification": "unknown",
+      "b_classification": "default_in_B",
+      "b_value": "default_in_B",
+      "comparison": "unknown"
+    },
+    "model_reasoning_effort": {
+      "name": "model_reasoning_effort",
+      "a_classification": "confirmed_different",
+      "b_classification": "confirmed_different",
+      "a_value": "xhigh",
+      "b_value": "medium",
+      "comparison": "confirmed_different"
+    },
+    "network_access": {
+      "name": "network_access",
+      "a_classification": "confirmed_different",
+      "b_classification": "absent",
+      "a_value": "enabled",
+      "comparison": "unknown"
+    },
+    "request_max_retries": {
+      "name": "request_max_retries",
+      "a_classification": "absent",
+      "b_classification": "absent",
+      "comparison": "absent"
+    },
+    "responses_websockets": {
+      "name": "responses_websockets",
+      "a_classification": "unknown",
+      "b_classification": "default_in_B",
+      "b_value": "default_in_B",
+      "comparison": "unknown"
+    },
+    "responses_websockets_v2": {
+      "name": "responses_websockets_v2",
+      "a_classification": "unknown",
+      "b_classification": "default_in_B",
+      "b_value": "default_in_B",
+      "comparison": "unknown"
+    },
+    "sandbox_mode": {
+      "name": "sandbox_mode",
+      "a_classification": "confirmed_different",
+      "b_classification": "confirmed_different",
+      "a_value": "danger-full-access",
+      "b_value": "read-only",
+      "comparison": "confirmed_different"
+    },
+    "shell_environment_policy.inherit": {
+      "name": "shell_environment_policy.inherit",
+      "a_classification": "confirmed_different",
+      "b_classification": "absent",
+      "a_value": "core",
+      "comparison": "unknown"
+    },
+    "shell_environment_policy.set.ANTHROPIC_BASE_URL": {
+      "name": "shell_environment_policy.set.ANTHROPIC_BASE_URL",
+      "a_classification": "sensitive_redacted",
+      "b_classification": "absent",
+      "a_value": "sensitive_redacted",
+      "comparison": "unknown"
+    },
+    "stream_max_retries": {
+      "name": "stream_max_retries",
+      "a_classification": "absent",
+      "b_classification": "absent",
+      "comparison": "absent"
+    }
+  },
+  "historical_evidence_modified": false,
+  "native_default_context_note": "Both sides omit or do not expose the same WebSocket keys, but version/runtime/config-home/default resolution was not proven equivalent.",
+  "negative_tests": {
+    "sensitive_config_values_redacted": "passed",
+    "v4_cannot_express_codex_home_or_effective_config": "passed",
+    "v5_config_digest_change_stales_l1_gate": "passed",
+    "v5_effective_config_fields_validate": "passed",
+    "whole_codex_directory_not_copied": "passed"
+  },
+  "polis": {
+    "profile": "polis_wsl_bwrap_isolated",
+    "home": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+    "codex_home": "/home/codex",
+    "home_resolution": "recorded_without_secret_values",
+    "auth_source_class": "mounted_codex_auth_file",
+    "auth_effective_role": "external_ro_bind_to_guest_auth_json",
+    "files": [
+      {
+        "name": ".sandbox_migration",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 3
+      },
+      {
+        "name": "auth.json",
+        "class": "credentials",
+        "role": "external_ro_bind_to_guest_auth_json",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 0
+      },
+      {
+        "name": "config.toml",
+        "class": "configuration",
+        "role": "configuration",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 932,
+        "normalized_config_digest": "c0e4b6546dd8fe1c2992f3f6aba8b7dfe43d77e1d6f3b07889866ef76450858f"
+      },
+      {
+        "name": "goals_1.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "goals_1.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "goals_1.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 74192
+      },
+      {
+        "name": "installation_id",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 36
+      },
+      {
+        "name": "logs_2.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 49152
+      },
+      {
+        "name": "logs_2.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "logs_2.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 210152
+      },
+      {
+        "name": "memories_1.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "memories_1.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "memories_1.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 61832
+      },
+      {
+        "name": "queue_1.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "queue_1.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "queue_1.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 82432
+      },
+      {
+        "name": "skills",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "state_5.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "state_5.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "state_5.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 1825192
+      },
+      {
+        "name": "tmp",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      }
+    ],
+    "config_file_present": true,
+    "config_file_normalized_digest": "c0e4b6546dd8fe1c2992f3f6aba8b7dfe43d77e1d6f3b07889866ef76450858f",
+    "config_field_count": 38,
+    "selected_config_fields": {
+      "approval_policy": "never",
+      "cli_auth_credentials_store": "file",
+      "enabled_plugin_count": "0",
+      "features.apps": "false",
+      "features.code_mode_host": "true",
+      "features.goals": "false",
+      "features.js_repl": "false",
+      "features.multi_agent": "false",
+      "features.multi_agent_v2": "false",
+      "features.shell_tool": "false",
+      "features.skill_search": "false",
+      "features.tool_search": "false",
+      "features.unified_exec": "false",
+      "mcp_server_count": "0",
+      "model_provider": "polis-openai",
+      "model_providers.polis-openai.supports_websockets": "default_in_B",
+      "model_reasoning_effort": "medium",
+      "responses_websockets": "default_in_B",
+      "responses_websockets_v2": "default_in_B",
+      "sandbox_mode": "read-only"
+    },
+    "effective_config_digest": "0ce492712ba02279716ed5ba16f53b014b41498612b84ad3d53fd96d9b9185e9",
+    "effective_transport_config_digest": "e5e78e023210da320fdf86f3c8504a3c97d535d11fb0a732d6e36229f2a57eb3",
+    "config_loading": {
+      "profile": "polis_wsl_bwrap_isolated",
+      "config_file_readable": true,
+      "local_version_observed": false,
+      "local_help_observed": false,
+      "t14c_initialize_observed": true,
+      "t14c_guest_home_observed": true,
+      "effective_config_dump_support": "not_observed; initialization/readiness proves selected loading boundary only",
+      "mechanism": "T14C sealed launcher binding plus prior local initialize/thread evidence; no provider call"
+    },
+    "ephemeral_state_observation": "present files are classified but not treated as effective config without direct loading evidence"
+  },
+  "same_native_default": "UNPROVEN",
+  "windows": {
+    "profile": "windows_working_user",
+    "home": "/mnt/c/Users/chyinan/.codex",
+    "codex_home": "C:\\Users\\chyinan\\.codex",
+    "home_resolution": "recorded_without_secret_values",
+    "auth_source_class": "windows_user_auth_file",
+    "auth_effective_role": "effective_auth_file",
+    "files": [
+      {
+        "name": "..codex-global-state.json.bak.tmp-1788136217857-29e950d1-2a6b-41aa-b57b-c539b85a2b23",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 524288
+      },
+      {
+        "name": "..codex-global-state.json.bak.tmp-1788586412720-c4b3eeb2-ccdc-4279-8781-581a8e2963f2",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 0
+      },
+      {
+        "name": "..codex-global-state.json.tmp-1788490831581-989e665a-cb0e-4f98-8738-3085b5019b3e",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 1193762
+      },
+      {
+        "name": "..codex-global-state.json.tmp-1788971800415-4751de16-7a5d-4bb7-bc7b-af2f337af760",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 0
+      },
+      {
+        "name": ".codex-global-state.json",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 1517455
+      },
+      {
+        "name": ".codex-global-state.json.bak",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 1517455
+      },
+      {
+        "name": ".personality_migration",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 3
+      },
+      {
+        "name": ".sandbox",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": ".sandbox-bin",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": ".sandbox_migration",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 3
+      },
+      {
+        "name": ".tmp",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "AGENTS.md",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 166
+      },
+      {
+        "name": "RTK.md",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 514
+      },
+      {
+        "name": "ambient-suggestions",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "attachments",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "auth.json",
+        "class": "credentials",
+        "role": "effective_auth_file",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4012
+      },
+      {
+        "name": "browser",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "cache",
+        "class": "cache",
+        "role": "cache",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "cap_sid",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 1733
+      },
+      {
+        "name": "chrome-native-hosts-v2.json",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 25546
+      },
+      {
+        "name": "computer-use",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "config.toml",
+        "class": "configuration",
+        "role": "configuration",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 9759,
+        "normalized_config_digest": "08d41b1784b75d94cdd28b9bd9487db7b3cba1cfa52bb691208a42af15b50128"
+      },
+      {
+        "name": "dictation-history",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "goals_1.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "goals_1.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "goals_1.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 8272
+      },
+      {
+        "name": "history.jsonl",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 616810
+      },
+      {
+        "name": "hooks.json",
+        "class": "configuration",
+        "role": "configuration",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 947
+      },
+      {
+        "name": "installation_id",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 36
+      },
+      {
+        "name": "log",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "logs_2.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 2236796928
+      },
+      {
+        "name": "logs_2.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "logs_2.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4540272
+      },
+      {
+        "name": "mcp-oauth-locks",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "memories",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "memories_1.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 40960
+      },
+      {
+        "name": "models_cache.json",
+        "class": "cache",
+        "role": "cache",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 248621
+      },
+      {
+        "name": "node_repl",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "pets",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "plugins",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "process_manager",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "queue_1.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "queue_1.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "queue_1.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 2027072
+      },
+      {
+        "name": "rollout-migrations",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "rules",
+        "class": "configuration",
+        "role": "configuration",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "sandbox.2026-05-28.log",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 14413
+      },
+      {
+        "name": "sandbox.2026-07-10.log",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 14160
+      },
+      {
+        "name": "sandbox.log",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 218330
+      },
+      {
+        "name": "session_index.jsonl",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 24475
+      },
+      {
+        "name": "sessions",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4096
+      },
+      {
+        "name": "skills",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "sqlite",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "state_5.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 9437184
+      },
+      {
+        "name": "state_5.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "state_5.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4264232
+      },
+      {
+        "name": "thread-writer-locks",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "thread_history_1.sqlite",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 702742528
+      },
+      {
+        "name": "thread_history_1.sqlite-shm",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 32768
+      },
+      {
+        "name": "thread_history_1.sqlite-wal",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 4144752
+      },
+      {
+        "name": "tmp",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "transcription-history.jsonl",
+        "class": "ephemeral_session_state",
+        "role": "ephemeral_session_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": false,
+        "size_bytes": 0
+      },
+      {
+        "name": "vendor_imports",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      },
+      {
+        "name": "version.json",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "file",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 105
+      },
+      {
+        "name": "visualizations",
+        "class": "other_state",
+        "role": "other_state",
+        "kind": "directory",
+        "present": true,
+        "readable": true,
+        "effective": true,
+        "size_bytes": 4096
+      }
+    ],
+    "config_file_present": true,
+    "config_file_normalized_digest": "08d41b1784b75d94cdd28b9bd9487db7b3cba1cfa52bb691208a42af15b50128",
+    "config_field_count": 135,
+    "selected_config_fields": {
+      "approval_policy": "never",
+      "enabled_plugin_count": "13",
+      "features.goals": "true",
+      "features.js_repl": "false",
+      "mcp_server_count": "0",
+      "model": "gpt-5.6-luna",
+      "model_reasoning_effort": "xhigh",
+      "network_access": "enabled",
+      "sandbox_mode": "danger-full-access",
+      "shell_environment_policy.inherit": "core",
+      "shell_environment_policy.set.ANTHROPIC_BASE_URL": "sensitive_redacted"
+    },
+    "effective_config_digest": "a60171211e6e89b6d4857d648603a667cc736e8519844e2a2e9cd983f04ca04e",
+    "effective_transport_config_digest": "fb58b9e3f4ea84e3d261c460ea9f892e437bf552d99ce56241819dff8cc5dee9",
+    "config_loading": {
+      "profile": "windows_working_user",
+      "config_file_readable": true,
+      "local_version_observed": false,
+      "local_help_observed": false,
+      "t14c_initialize_observed": false,
+      "t14c_guest_home_observed": false,
+      "effective_config_dump_support": "not_observed_without_provider_or_app_server_introspection",
+      "mechanism": "config.toml plus local --version/--help only; no provider call"
+    },
+    "ephemeral_state_observation": "present files are classified but not treated as effective config without direct loading evidence"
+  }
+}

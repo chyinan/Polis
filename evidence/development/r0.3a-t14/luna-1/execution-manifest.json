@@ -1,0 +1,12 @@
+{
+  "status": "preflight_failed",
+  "accepted": false,
+  "fingerprint_schema_version": "canonical-manifest-v3",
+  "attempted_candidate_fingerprint": "899f760993417c52a9fffccf109f8fcf6c7b1d6cf3f00150e710952b712a37fe",
+  "corrected_candidate_fingerprint_not_accepted": "d0ea7e7594aac7ca19677220956563e77991a5b30d40b00628a74f805249cf38",
+  "reason_code": "t14_manifest_capability_digest_mismatch",
+  "attempted_manifest_capability_digest": "105552b04a3e7379adf28dd266c1c5108fedbef824173a6455003af20647affb",
+  "effective_native_default_capability_digest": "33eda3b9b9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+  "provider_egress": "not_started",
+  "medium_consumed": 0
+}

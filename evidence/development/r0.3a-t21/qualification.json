@@ -1,0 +1,14 @@
+{
+  "business_side_effect_isolation": "failed",
+  "canonical_manifest_digest": "f3f4e0f8dc64ed373bea7716237ad14932cf98c887acead7e6b5d193216b90af",
+  "eligible_for_real_backend": false,
+  "failure_mode": "preflight_failed",
+  "historical_evidence_modified": false,
+  "medium_consumed": 0,
+  "provider_egress": 0,
+  "qualification": "R0.3A-T21",
+  "sentinel_instruction_following": "failed",
+  "status": "NOT_STARTED",
+  "tool_registration_transport": "failed",
+  "windows_native_l2_11_tool_surface": "UNQUALIFIED"
+}

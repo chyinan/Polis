@@ -1,0 +1,325 @@
+{
+  "binding": {
+    "schema_version": "r03a-current-binary-revised-11-tool-l2-binding-v1",
+    "l1_fingerprint": "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+    "controlled_runtime_manifest_digest": "12d8b4813c999a1c1343adcdaea893b03e38b2b6a6a3689c312bea8044346abb",
+    "codex_version": "codex-cli 0.154.0-alpha.6.2",
+    "codex_binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+    "code_mode_host_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+    "tool_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+    "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+    "aggregate_schema_bytes": 2038,
+    "tool_count": 11,
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2",
+    "acceptance_checker_revision": "peer-semantic-checker@2"
+  },
+  "canonical_manifest": {
+    "fingerprint_schema_version": "canonical-manifest-v7",
+    "base_manifest": {
+      "fingerprint_schema_version": "canonical-manifest-v6",
+      "combination": {
+        "codex_version": "0.154.0-alpha.6.2",
+        "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+        "model": "gpt-5.6-luna",
+        "effort": "medium",
+        "runtime_profile": "windows-native",
+        "sandbox_class": "read-only",
+        "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+        "auth_source_class": "controlled_diagnostic_auth_material",
+        "code_mode_host_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+        "capability_digest": "6c06daf905d34a8dd1bc439cf1383122253711b49d10de2c00d38cf8f77aab83",
+        "native_protocol_digest": "72be57296b90ea62baa6b0e1841cd1d0a16d665288e47c426bcdc7a51d62bc8b"
+      },
+      "auth": {
+        "auth_source_class": "controlled_diagnostic_auth_material",
+        "auth_identity_fingerprint_schema_version": "auth-identity-v1",
+        "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+        "auth_identity_fingerprint_status": "available",
+        "auth_credential_revision_fingerprint_schema_version": "auth-credential-revision-v1",
+        "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+        "auth_credential_revision_fingerprint_status": "available"
+      },
+      "transport": {
+        "provider_transport_policy": "native_default",
+        "websocket_policy": "native_default"
+      },
+      "runtime": {
+        "platform": "windows",
+        "architecture": "amd64",
+        "runtime_profile": "windows-native",
+        "filesystem_isolation": "diagnostic_home_only",
+        "process_isolation": "windows_process_handle_no_job_object",
+        "network_policy": "native_os_network",
+        "cwd_role": "diagnostic_workspace",
+        "launch_mechanism": "CreateProcess",
+        "stdio_mode": "redirected_standard_pipes"
+      },
+      "codex_home_profile": "windows_native_diagnostic",
+      "effective_config_digest": "c0e4b6546dd8fe1c2992f3f6aba8b7dfe43d77e1d6f3b07889866ef76450858f",
+      "effective_transport_config_digest": "e5e78e023210da320fdf86f3c8504a3c97d535d11fb0a732d6e36229f2a57eb3"
+    },
+    "tool_surface": {
+      "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+      "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+      "contract_supersession_policy_revision": "peer-contract-supersession@2",
+      "acceptance_checker_revision": "peer-semantic-checker@2",
+      "surface_id": "peer_backend",
+      "tool_count": 11,
+      "aggregate_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+      "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+      "aggregate_schema_bytes": 2038,
+      "thread_start_payload_digest": "059c3eeba08bc0052386e7b7b1de26912c41077a2c9b42d7b2bdb280798cfc20",
+      "thread_start_payload_bytes": 4032,
+      "tools": [
+        {
+          "name": "polis_work_current",
+          "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+          "schema_bytes": 76,
+          "description_digest": "5732d1b2759cdbf59ea729c95dc3c28807a9a398a607b701bb6f78b7e9b33f5f",
+          "binding_identity": "PeerEmployeeTools.call-\u003eHandover",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 1
+        },
+        {
+          "name": "polis_context_read",
+          "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+          "schema_bytes": 76,
+          "description_digest": "1b308d0e3c15b87dadc9dc43816cac42ec18037be3bcd9511c48017bb4f46e34",
+          "binding_identity": "PeerEmployeeTools.call-\u003eHandover",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 2
+        },
+        {
+          "name": "polis_workspace_read",
+          "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+          "schema_bytes": 76,
+          "description_digest": "6c0db78530af7ca6afe62f5bb0162773f1a51c5cb614a9b4bab429de435a6bc1",
+          "binding_identity": "PeerEmployeeTools.call-\u003eWorkspace",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 3
+        },
+        {
+          "name": "polis_workspace_replace",
+          "schema_digest": "80e7634d8bea5be0a65de9b6f2cc0aa609dda591c085b6df8dfb85da143927e3",
+          "schema_bytes": 183,
+          "description_digest": "e3a79ace42e3abac73dfec23618b1f011c637b127b170bc77dc1909b2595e57e",
+          "binding_identity": "PeerEmployeeTools.call-\u003eTXReplace",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 4
+        },
+        {
+          "name": "polis_contract_propose",
+          "schema_digest": "76d4b529294c78d6247848e3d195afa2b61937c11699f535a16efc7e9c4a188f",
+          "schema_bytes": 183,
+          "description_digest": "fed466791d9ab845d4777f515806d017259ba40ed9f44383ab11999230a7ae92",
+          "binding_identity": "PeerEmployeeTools.call-\u003eTXProposePeerContract",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 5
+        },
+        {
+          "name": "polis_contract_accept",
+          "schema_digest": "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+          "schema_bytes": 120,
+          "description_digest": "a8a4b6977d3bc6d1c449b628896ea50dd15aa76fd5dc05e611c6a7102aba7d1e",
+          "binding_identity": "PeerEmployeeTools.call-\u003eTXAcceptPeerContract",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 6
+        },
+        {
+          "name": "polis_contract_read",
+          "schema_digest": "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+          "schema_bytes": 120,
+          "description_digest": "b34544694d3dedcd5c0b4d71b350805b854daca79dc5b6cc4c92d466e18fd878",
+          "binding_identity": "PeerEmployeeTools.call-\u003ePeerContractRead",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 7
+        },
+        {
+          "name": "polis_collab_send",
+          "schema_digest": "3506df54159d11c3f0a061deeea8662fbdc0276476517bfa1692b1ea33422a98",
+          "schema_bytes": 270,
+          "description_digest": "278343ef2020fe5d52685362585da0a685a57c8aad05b210519a08bbeba5fdc9",
+          "binding_identity": "PeerEmployeeTools.call-\u003eTXPeerSend",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 8
+        },
+        {
+          "name": "polis_workspace_check",
+          "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+          "schema_bytes": 76,
+          "description_digest": "8b8235f2612d5943ad3462a14b5f744d67df496a3271e3ce673b0db38174ed98",
+          "binding_identity": "PeerEmployeeTools.call-\u003eworkspace.check",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 9
+        },
+        {
+          "name": "polis_work_checkpoint",
+          "schema_digest": "a4cf2665a854ecd92084b3b6f33f6175809fa8ce8c1fd2288da116a2d5b89655",
+          "schema_bytes": 782,
+          "description_digest": "d4f62907e1dd62589d31af207cac4314db9f08a92725a4b151b54b3b5eff9225",
+          "binding_identity": "PeerEmployeeTools.call-\u003eTXCheckpoint",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 10
+        },
+        {
+          "name": "polis_artifact_submit",
+          "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+          "schema_bytes": 76,
+          "description_digest": "f1b7ff79b704b8c8a85bc26941ac04446640f9a6bb3604da3fb8df2f18e5f7a8",
+          "binding_identity": "PeerEmployeeTools.call-\u003eTXSubmit",
+          "authorization_class": "peer_backend",
+          "registration_ordinal": 11
+        }
+      ],
+      "business_write_policy": "diagnostic_denied"
+    }
+  },
+  "canonical_manifest_digest": "e67967c05b21e0cf6038f05b0ecce1743966d41393ed8d8d3ecb788a6c9639d2",
+  "controlled_runtime_manifest_digest": "12d8b4813c999a1c1343adcdaea893b03e38b2b6a6a3689c312bea8044346abb",
+  "execution_fingerprint": "1ecbe56408ce5aee5c680f6db8cb85bba0b24d05183b3992350e813c1c5f280d",
+  "fingerprint_schema_version": "canonical-manifest-v7",
+  "historical_t21d_modified": false,
+  "l1_fingerprint": "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "qualification": "R0.3A-CURRENT-BINARY-REVISED-11-TOOL-L2",
+  "schema_version": "r03a-current-binary-revised-11-tool-l2-manifest-v1",
+  "thread_start_payload_bytes": 4032,
+  "thread_start_payload_canonical_json": "{\"allowProviderModelFallback\":false,\"approvalPolicy\":\"never\",\"config\":{\"model_reasoning_effort\":\"medium\"},\"cwd\":\"/work\",\"developerInstructions\":\"Do not call tools.\\nReply only with the transport sentinel.\",\"dynamicTools\":[{\"description\":\"Read your backend task, v1 starting contract, assigned peer task, and observable tool-call budget.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{},\"required\":[],\"type\":\"object\"},\"name\":\"polis_work_current\",\"type\":\"function\"},{\"description\":\"Read the approved v1 task context and observable tool-call budget only.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{},\"required\":[],\"type\":\"object\"},\"name\":\"polis_context_read\",\"type\":\"function\"},{\"description\":\"Read the backend workspace and current digest.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{},\"required\":[],\"type\":\"object\"},\"name\":\"polis_workspace_read\",\"type\":\"function\"},{\"description\":\"Replace your own backend workspace using its expected digest.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{\"content\":{\"maxLength\":4096,\"type\":\"string\"},\"expected_digest\":{\"type\":\"string\"}},\"required\":[\"content\",\"expected_digest\"],\"type\":\"object\"},\"name\":\"polis_workspace_replace\",\"type\":\"function\"},{\"description\":\"Propose the next contract revision for the peer task.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{\"endpoint\":{\"maxLength\":512,\"type\":\"string\"},\"schema\":{\"maxLength\":2048,\"type\":\"string\"}},\"required\":[\"endpoint\",\"schema\"],\"type\":\"object\"},\"name\":\"polis_contract_propose\",\"type\":\"function\"},{\"description\":\"Accept a contract revision you proposed.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{\"revision_id\":{\"type\":\"string\"}},\"required\":[\"revision_id\"],\"type\":\"object\"},\"name\":\"polis_contract_accept\",\"type\":\"function\"},{\"description\":\"Read an exact contract revision by its persisted id.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{\"revision_id\":{\"type\":\"string\"}},\"required\":[\"revision_id\"],\"type\":\"object\"},\"name\":\"polis_contract_read\",\"type\":\"function\"},{\"description\":\"Send a direct actionable collaboration message to the peer task.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{\"actionable\":{\"type\":\"boolean\"},\"body\":{\"maxLength\":4096,\"type\":\"string\"},\"contract_revision_id\":{\"type\":\"string\"},\"to_task\":{\"type\":\"string\"}},\"required\":[\"actionable\",\"body\",\"contract_revision_id\",\"to_task\"],\"type\":\"object\"},\"name\":\"polis_collab_send\",\"type\":\"function\"},{\"description\":\"Run the mediated peer candidate check and receive an evidence receipt.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{},\"required\":[],\"type\":\"object\"},\"name\":\"polis_workspace_check\",\"type\":\"function\"},{\"description\":\"Persist a progress or qualified peer checkpoint. Progress checkpoints preserve incomplete work; qualified checkpoints require passed check evidence and are eligible for final artifact submission.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{\"decisions\":{\"items\":{\"maxLength\":512,\"type\":\"string\"},\"maxItems\":8,\"minItems\":1,\"type\":\"array\"},\"evidence\":{\"items\":{\"maxLength\":512,\"type\":\"string\"},\"maxItems\":8,\"minItems\":1,\"type\":\"array\"},\"facts\":{\"items\":{\"maxLength\":512,\"type\":\"string\"},\"maxItems\":8,\"minItems\":1,\"type\":\"array\"},\"failed_checks\":{\"items\":{\"maxLength\":512,\"type\":\"string\"},\"maxItems\":8,\"type\":\"array\"},\"kind\":{\"enum\":[\"progress\",\"qualified\"],\"type\":\"string\"},\"next_action\":{\"maxLength\":512,\"type\":\"string\"},\"rejected\":{\"items\":{\"maxLength\":512,\"type\":\"string\"},\"maxItems\":8,\"minItems\":1,\"type\":\"array\"},\"summary\":{\"maxLength\":512,\"type\":\"string\"}},\"required\":[\"decisions\",\"evidence\",\"facts\",\"failed_checks\",\"kind\",\"next_action\",\"rejected\",\"summary\"],\"type\":\"object\"},\"name\":\"polis_work_checkpoint\",\"type\":\"function\"},{\"description\":\"Submit your checked backend candidate.\",\"inputSchema\":{\"additionalProperties\":false,\"properties\":{},\"required\":[],\"type\":\"object\"},\"name\":\"polis_artifact_submit\",\"type\":\"function\"}],\"environments\":[],\"ephemeral\":true,\"model\":\"gpt-5.6-luna\",\"sandbox\":\"read-only\"}",
+  "thread_start_payload_digest": "059c3eeba08bc0052386e7b7b1de26912c41077a2c9b42d7b2bdb280798cfc20",
+  "tool_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+  "tool_names": [
+    "polis_work_current",
+    "polis_context_read",
+    "polis_workspace_read",
+    "polis_workspace_replace",
+    "polis_contract_propose",
+    "polis_contract_accept",
+    "polis_contract_read",
+    "polis_collab_send",
+    "polis_workspace_check",
+    "polis_work_checkpoint",
+    "polis_artifact_submit"
+  ],
+  "tool_surface": {
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2",
+    "acceptance_checker_revision": "peer-semantic-checker@2",
+    "surface_id": "peer_backend",
+    "tool_count": 11,
+    "aggregate_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+    "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+    "aggregate_schema_bytes": 2038,
+    "thread_start_payload_digest": "059c3eeba08bc0052386e7b7b1de26912c41077a2c9b42d7b2bdb280798cfc20",
+    "thread_start_payload_bytes": 4032,
+    "tools": [
+      {
+        "name": "polis_work_current",
+        "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+        "schema_bytes": 76,
+        "description_digest": "5732d1b2759cdbf59ea729c95dc3c28807a9a398a607b701bb6f78b7e9b33f5f",
+        "binding_identity": "PeerEmployeeTools.call-\u003eHandover",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 1
+      },
+      {
+        "name": "polis_context_read",
+        "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+        "schema_bytes": 76,
+        "description_digest": "1b308d0e3c15b87dadc9dc43816cac42ec18037be3bcd9511c48017bb4f46e34",
+        "binding_identity": "PeerEmployeeTools.call-\u003eHandover",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 2
+      },
+      {
+        "name": "polis_workspace_read",
+        "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+        "schema_bytes": 76,
+        "description_digest": "6c0db78530af7ca6afe62f5bb0162773f1a51c5cb614a9b4bab429de435a6bc1",
+        "binding_identity": "PeerEmployeeTools.call-\u003eWorkspace",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 3
+      },
+      {
+        "name": "polis_workspace_replace",
+        "schema_digest": "80e7634d8bea5be0a65de9b6f2cc0aa609dda591c085b6df8dfb85da143927e3",
+        "schema_bytes": 183,
+        "description_digest": "e3a79ace42e3abac73dfec23618b1f011c637b127b170bc77dc1909b2595e57e",
+        "binding_identity": "PeerEmployeeTools.call-\u003eTXReplace",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 4
+      },
+      {
+        "name": "polis_contract_propose",
+        "schema_digest": "76d4b529294c78d6247848e3d195afa2b61937c11699f535a16efc7e9c4a188f",
+        "schema_bytes": 183,
+        "description_digest": "fed466791d9ab845d4777f515806d017259ba40ed9f44383ab11999230a7ae92",
+        "binding_identity": "PeerEmployeeTools.call-\u003eTXProposePeerContract",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 5
+      },
+      {
+        "name": "polis_contract_accept",
+        "schema_digest": "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+        "schema_bytes": 120,
+        "description_digest": "a8a4b6977d3bc6d1c449b628896ea50dd15aa76fd5dc05e611c6a7102aba7d1e",
+        "binding_identity": "PeerEmployeeTools.call-\u003eTXAcceptPeerContract",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 6
+      },
+      {
+        "name": "polis_contract_read",
+        "schema_digest": "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+        "schema_bytes": 120,
+        "description_digest": "b34544694d3dedcd5c0b4d71b350805b854daca79dc5b6cc4c92d466e18fd878",
+        "binding_identity": "PeerEmployeeTools.call-\u003ePeerContractRead",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 7
+      },
+      {
+        "name": "polis_collab_send",
+        "schema_digest": "3506df54159d11c3f0a061deeea8662fbdc0276476517bfa1692b1ea33422a98",
+        "schema_bytes": 270,
+        "description_digest": "278343ef2020fe5d52685362585da0a685a57c8aad05b210519a08bbeba5fdc9",
+        "binding_identity": "PeerEmployeeTools.call-\u003eTXPeerSend",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 8
+      },
+      {
+        "name": "polis_workspace_check",
+        "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+        "schema_bytes": 76,
+        "description_digest": "8b8235f2612d5943ad3462a14b5f744d67df496a3271e3ce673b0db38174ed98",
+        "binding_identity": "PeerEmployeeTools.call-\u003eworkspace.check",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 9
+      },
+      {
+        "name": "polis_work_checkpoint",
+        "schema_digest": "a4cf2665a854ecd92084b3b6f33f6175809fa8ce8c1fd2288da116a2d5b89655",
+        "schema_bytes": 782,
+        "description_digest": "d4f62907e1dd62589d31af207cac4314db9f08a92725a4b151b54b3b5eff9225",
+        "binding_identity": "PeerEmployeeTools.call-\u003eTXCheckpoint",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 10
+      },
+      {
+        "name": "polis_artifact_submit",
+        "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+        "schema_bytes": 76,
+        "description_digest": "f1b7ff79b704b8c8a85bc26941ac04446640f9a6bb3604da3fb8df2f18e5f7a8",
+        "binding_identity": "PeerEmployeeTools.call-\u003eTXSubmit",
+        "authorization_class": "peer_backend",
+        "registration_ordinal": 11
+      }
+    ],
+    "business_write_policy": "diagnostic_denied"
+  }
+}

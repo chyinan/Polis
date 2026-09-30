@@ -1,0 +1,13 @@
+{
+  "status": "preflight_failed",
+  "accepted": false,
+  "fingerprint_schema_version": "canonical-manifest-v3",
+  "candidate_fingerprint": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "source_execution_config_binding": "invalid_for_live_launch",
+  "reason_code": "host_guest_home_path_conflation",
+  "guest_home": "/home/codex",
+  "host_bind_source_expected": ".runtime/linux/r03a-t14b/home",
+  "host_bind_source_used": "/home/codex",
+  "medium_consumed": 0,
+  "provider_egress": "not_started"
+}

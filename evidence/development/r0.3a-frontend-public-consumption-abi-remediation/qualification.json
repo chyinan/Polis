@@ -1,0 +1,177 @@
+{
+  "behavior_verifier_revision": "r03a-frontend-pagination-behavior@1",
+  "binding_contract": {
+    "revision": "r03a-frontend-binding@1",
+    "package": "frontend",
+    "entrypoint": "ConsumeItems",
+    "parameter_name": "step_json",
+    "parameter_type": "string",
+    "return_type": "string",
+    "return_representation": "utf8_json",
+    "input_schema_ref": "r03a-frontend-consumption-contract@1#step_input",
+    "output_schema_ref": "r03a-frontend-consumption-contract@1#step_output",
+    "allowed_top_level_declarations": [
+      "type",
+      "func ConsumeItems"
+    ],
+    "allowed_imports": [
+      "encoding/json"
+    ]
+  },
+  "binding_revision": "r03a-frontend-binding@1",
+  "contract_revision": "r03a-frontend-consumption-contract@1",
+  "correct_reference": {
+    "report": {
+      "passed": true,
+      "contract_revision": "r03a-frontend-consumption-contract@1",
+      "binding_revision": "r03a-frontend-binding@1",
+      "verifier_revision": "r03a-frontend-pagination-behavior@1",
+      "criteria": [
+        {
+          "criterion_id": "items_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "render every response item id",
+          "actual_observed_behavior": "[{\"id\":\"i1\",\"name\":\"one\"},{\"id\":\"i2\",\"name\":\"two\"}]",
+          "failing_step": "step-1"
+        },
+        {
+          "criterion_id": "names_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "preserve every response item name",
+          "actual_observed_behavior": "[{\"id\":\"i1\",\"name\":\"one\"},{\"id\":\"i2\",\"name\":\"two\"}]",
+          "failing_step": "step-1"
+        },
+        {
+          "criterion_id": "next_cursor_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "consume non-null next_cursor as a request action",
+          "actual_observed_behavior": "request",
+          "failing_step": "step-1"
+        },
+        {
+          "criterion_id": "cursor_propagated",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "request cursor equals response.next_cursor exactly",
+          "actual_observed_behavior": "cursor-2",
+          "failing_step": "step-1"
+        },
+        {
+          "criterion_id": "limit_propagated",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "request limit equals requested_limit",
+          "actual_observed_behavior": "2",
+          "failing_step": "step-1"
+        },
+        {
+          "criterion_id": "items_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "render every response item id",
+          "actual_observed_behavior": "[{\"id\":\"i3\",\"name\":\"three\"}]",
+          "failing_step": "step-2"
+        },
+        {
+          "criterion_id": "names_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "preserve every response item name",
+          "actual_observed_behavior": "[{\"id\":\"i3\",\"name\":\"three\"}]",
+          "failing_step": "step-2"
+        },
+        {
+          "criterion_id": "termination_observed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "null next_cursor produces stop with no further request",
+          "actual_observed_behavior": "kind=stop cursor=null limit=0",
+          "failing_step": "step-2"
+        },
+        {
+          "criterion_id": "items_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "render every response item id",
+          "actual_observed_behavior": "[{\"id\":\"x7\",\"name\":\"seven\"},{\"id\":\"x8\",\"name\":\"eight\"}]",
+          "failing_step": "step-3"
+        },
+        {
+          "criterion_id": "names_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "preserve every response item name",
+          "actual_observed_behavior": "[{\"id\":\"x7\",\"name\":\"seven\"},{\"id\":\"x8\",\"name\":\"eight\"}]",
+          "failing_step": "step-3"
+        },
+        {
+          "criterion_id": "next_cursor_consumed",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "consume non-null next_cursor as a request action",
+          "actual_observed_behavior": "request",
+          "failing_step": "step-3"
+        },
+        {
+          "criterion_id": "cursor_propagated",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "request cursor equals response.next_cursor exactly",
+          "actual_observed_behavior": "next-x",
+          "failing_step": "step-3"
+        },
+        {
+          "criterion_id": "limit_propagated",
+          "passed": true,
+          "reason_code": "",
+          "expected_public_behavior": "request limit equals requested_limit",
+          "actual_observed_behavior": "7",
+          "failing_step": "step-3"
+        }
+      ]
+    },
+    "status": "PASS"
+  },
+  "frontend_behavior_observability": "PASSED",
+  "frontend_checker_public_coherence": "PASSED",
+  "frontend_public_consumption_abi": "PASSED",
+  "frozen_v6_bad_candidate": {
+    "public_reason_codes": [
+      "response_items_not_consumed",
+      "response_name_not_consumed",
+      "next_cursor_not_consumed",
+      "cursor_not_propagated",
+      "limit_not_propagated",
+      "termination_not_observed"
+    ],
+    "status": "FAIL"
+  },
+  "high": 0,
+  "historical_evidence_modified": false,
+  "medium": 0,
+  "negative_regressions": "PASS",
+  "postgres_deterministic_suite": "PASSED",
+  "postgres_race_suite": "PASSED",
+  "listener_orchestration_root_cause": "WSL_DISTRO_STOPPED_AND_DRVFS_SOCKET_PERMISSION_REJECTION",
+  "disposable_pg_fixture_readiness": "PASSED",
+  "disposable_pg_fixture_cleanup": "PASSED",
+  "provider_egress": 0,
+  "provider_surface": {
+    "aggregate_schema_bytes": 2217,
+    "live_l2_status": "passed",
+    "manifest_digest": "65a5f56535c6a87f7a6213883d2cf3be300849ad1233a9e3a357046eb4f667e6",
+    "provider_visible_surface_changed": false,
+    "registration_surface_basis": "tool schema, description, registration and callback identity",
+    "surface_exact_match": true,
+    "tool_count": 12
+  },
+  "frontend_consumption_abi_remediation": "PASSED_COMPLETE",
+  "frontend_pg_deterministic_qualification": "PASSED",
+  "frontend_l2_status": "QUALIFIED_REUSABLE",
+  "eligible_for_clean_frontend_baseline_v7": "YES",
+  "qualification": "R0.3A-FRONTEND-PUBLIC-CONSUMPTION-ABI",
+  "status": "PASSED"
+}

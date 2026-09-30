@@ -1,0 +1,58 @@
+{
+  "qualification": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE",
+  "status": "INCONCLUSIVE",
+  "reason": "LIVE_PROVIDER_SURFACE_QUALIFICATION_REQUIRED",
+  "phase": "provider_before_preflight",
+  "business_started": false,
+  "browser_submit": "NOT_STARTED",
+  "browser_start": "NOT_STARTED",
+  "company_created": 0,
+  "missions_created": 0,
+  "worker_sessions_created": 0,
+  "provider_reservation": 0,
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "retry": 0,
+  "successor": 0,
+  "current_product_surface": {
+    "source": "provider.ProductToolSurface -> codex.Tools",
+    "tool_count": 7,
+    "manifest_digest": "730b9b2aba9de7ca015e800b1a597de37a22bd0c299dc7ad10e022c8399388d9",
+    "qualification_identity": "polis-product-tool-surface@1",
+    "qualification_scope": "R0.5B1 offline only",
+    "tools": [
+      "polis_work_current",
+      "polis_context_read",
+      "polis_workspace_read",
+      "polis_workspace_replace",
+      "polis_workspace_check",
+      "polis_work_checkpoint",
+      "polis_artifact_submit"
+    ]
+  },
+  "reusable_live_surface": {
+    "qualification": "R0.3A-T21B",
+    "runtime_scope": "Windows-native / Codex 0.153.4",
+    "tool_count": 11,
+    "manifest_digest": "b36063bf6b136b8116a1b744042e5f0228f46d559ba711e080e82b271e59645a",
+    "aggregate_schema_digest": "f2fed5d1c86ce1cddc2c609bb31567fdced409b4eb12010f70b93456a72dc338",
+    "tools": [
+      "polis_work_current",
+      "polis_context_read",
+      "polis_workspace_read",
+      "polis_workspace_replace",
+      "polis_contract_propose",
+      "polis_contract_accept",
+      "polis_contract_read",
+      "polis_collab_send",
+      "polis_workspace_check",
+      "polis_work_checkpoint",
+      "polis_artifact_submit"
+    ]
+  },
+  "surface_exact_match": false,
+  "historical_evidence_modified": false,
+  "raw_credentials_recorded": false,
+  "stopped_before_allowance_or_reservation": true
+}

@@ -1,0 +1,26 @@
+2026-09-17 13:34:30.585 CST [396] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-09-17 13:34:30.585 CST [396] LOG:  listening on IPv4 address "172.24.72.52", port 55481
+2026-09-17 13:34:30.588 CST [396] LOG:  listening on Unix socket "/tmp/polis-r05b-live-1-pg.G1MubB/socket/.s.PGSQL.55481"
+2026-09-17 13:34:30.593 CST [402] LOG:  database system was shut down at 2026-09-17 13:34:30 CST
+2026-09-17 13:34:30.596 CST [396] LOG:  database system is ready to accept connections
+2026-09-17 13:34:36.515 CST [475] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-09-17 13:34:36.515 CST [475] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-09-17 13:34:36.733 CST [482] ERROR:  column "version" does not exist at character 145
+2026-09-17 13:34:36.733 CST [482] HINT:  Perhaps you meant to reference the column "goose_db_version.version_id".
+2026-09-17 13:34:36.733 CST [482] STATEMENT:  SELECT current_setting('server_version_num'), current_setting('port'), current_setting('fsync'), current_setting('synchronous_commit'), (SELECT version FROM goose_db_version ORDER BY id DESC LIMIT 1)
+2026-09-17 13:39:53.921 CST [400] LOG:  checkpoint starting: time
+2026-09-17 13:41:51.949 CST [400] LOG:  checkpoint complete: wrote 1079 buffers (6.6%), wrote 3 SLRU buffers; 1 WAL file(s) added, 0 removed, 0 recycled; write=117.941 s, sync=0.071 s, total=118.028 s; sync files=437, longest=0.005 s, average=0.001 s; distance=5784 kB, estimate=5784 kB; lsn=0/1CFC830, redo lsn=0/1CFC7A0
+2026-09-17 13:45:11.668 CST [400] LOG:  checkpoint starting: time
+2026-09-17 13:45:12.692 CST [400] LOG:  checkpoint complete: wrote 10 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=1.003 s, sync=0.008 s, total=1.024 s; sync files=9, longest=0.007 s, average=0.001 s; distance=22 kB, estimate=5208 kB; lsn=0/1D02160, redo lsn=0/1D02108
+2026-09-17 13:50:39.572 CST [400] LOG:  checkpoint starting: time
+2026-09-17 13:50:41.490 CST [400] LOG:  checkpoint complete: wrote 19 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=1.904 s, sync=0.005 s, total=1.919 s; sync files=16, longest=0.002 s, average=0.001 s; distance=42 kB, estimate=4691 kB; lsn=0/1D0CA50, redo lsn=0/1D0C9F8
+2026-09-17 14:00:12.576 CST [625] LOG:  could not receive data from client: Connection reset by peer
+2026-09-17 14:00:12.576 CST [626] LOG:  could not receive data from client: Connection reset by peer
+2026-09-17 14:00:12.576 CST [627] LOG:  could not receive data from client: Connection reset by peer
+2026-09-17 14:00:36.368 CST [396] LOG:  received fast shutdown request
+2026-09-17 14:00:36.370 CST [396] LOG:  aborting any active transactions
+2026-09-17 14:00:36.371 CST [396] LOG:  background worker "logical replication launcher" (PID 405) exited with exit code 1
+2026-09-17 14:00:36.372 CST [400] LOG:  shutting down
+2026-09-17 14:00:36.373 CST [400] LOG:  checkpoint starting: shutdown immediate
+2026-09-17 14:00:36.381 CST [400] LOG:  checkpoint complete: wrote 3 buffers (0.0%), wrote 0 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.002 s, total=0.009 s; sync files=3, longest=0.002 s, average=0.001 s; distance=18 kB, estimate=4224 kB; lsn=0/1D11548, redo lsn=0/1D11548
+2026-09-17 14:00:36.389 CST [396] LOG:  database system is shut down

@@ -1,0 +1,17 @@
+{
+  "approved_factors": [
+    "current_binary_l1_fingerprint",
+    "controlled_runtime_manifest_digest",
+    "current_codex_binary_sha256",
+    "current_code_mode_host_sha256",
+    "current_codex_version"
+  ],
+  "historical_t21d_modified": false,
+  "policy_revisions_bound_explicitly": true,
+  "reference": "R0.3A-T21D",
+  "surface_exact_match": true,
+  "unexplained_binding_drift": [],
+  "unexplained_handler_drift": [],
+  "unexplained_policy_drift": [],
+  "unexplained_schema_drift": []
+}

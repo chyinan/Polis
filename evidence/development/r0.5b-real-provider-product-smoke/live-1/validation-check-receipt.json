@@ -1,0 +1,9 @@
+{
+  "record_type": "polis-product-validation-check@1",
+  "status": "NOT_RUN",
+  "task_id": null,
+  "workspace_digest": null,
+  "workspace_revision": null,
+  "validation_status": null,
+  "reason": "No Task workspace was created."
+}

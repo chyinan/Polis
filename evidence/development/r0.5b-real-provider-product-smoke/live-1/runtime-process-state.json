@@ -1,0 +1,10 @@
+{
+  "record_type": "polis-r0-5b-live-1-process-state@1",
+  "captured_before_cleanup": true,
+  "polis_server": {"pid": 15896, "running": true, "worker_mode": "real"},
+  "frontend": {"pid": 27188, "running": true, "mode": "real"},
+  "qualified_provider_process_count": 0,
+  "business_allowance_exists": false,
+  "worker_session_count": 0,
+  "cleanup_pending": true
+}

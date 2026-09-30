@@ -1,0 +1,31 @@
+{
+  "approved_change_count": 2,
+  "approved_changes": [
+    {
+      "approved_scope": "behavioral_contract_hardening",
+      "current_description_digest": "d7935e6816f5ad6b81eb98595939413d06f03cdd66953ccf6860bb4807fd324b",
+      "current_schema_bytes": 378,
+      "current_schema_digest": "15a85be77b9615b8f7e344b9d0ad8b36bf043251d4ceb4e747a5bf4263edf416",
+      "old_description_digest": "9dd8a24e45ef37e910b6bb7e706a8302b1bca6c138aeb9fdd8bdd57616b0f5d6",
+      "old_schema_bytes": 173,
+      "old_schema_digest": "d1a74e599a6a18528fc16b8e95b8a86918a57ec5cbc3b1793bc11ec29e32eb40",
+      "tool": "polis_collab_apply"
+    },
+    {
+      "approved_scope": "behavioral_contract_hardening",
+      "current_description_digest": "d4f62907e1dd62589d31af207cac4314db9f08a92725a4b151b54b3b5eff9225",
+      "current_schema_bytes": 792,
+      "current_schema_digest": "0c73d093198628bd378633a85209c4445e2bc94b1ded4a2d6e38779fd96d1ecc",
+      "old_description_digest": "d4f62907e1dd62589d31af207cac4314db9f08a92725a4b151b54b3b5eff9225",
+      "old_schema_bytes": 782,
+      "old_schema_digest": "a4cf2665a854ecd92084b3b6f33f6175809fa8ce8c1fd2288da116a2d5b89655",
+      "tool": "polis_work_checkpoint"
+    }
+  ],
+  "current_surface_id": "peer_frontend",
+  "current_tool_count": 12,
+  "old_surface_id": "peer_frontend",
+  "old_tool_count": 12,
+  "surface_exact_names": true,
+  "unexplained_drift": []
+}

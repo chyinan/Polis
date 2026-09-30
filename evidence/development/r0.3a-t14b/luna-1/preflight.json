@@ -1,0 +1,16 @@
+{
+  "passed": false,
+  "status": "preflight_failed",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "model_calls": 0,
+  "medium_calls": 0,
+  "medium_consumed": 0,
+  "stage": "before_native_process_initialization",
+  "reason_code": "host_guest_home_path_conflation",
+  "candidate_fingerprint": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "effective_guest_home": "/home/codex",
+  "incorrect_host_bind_source_used": "/home/codex",
+  "expected_host_bind_source": ".runtime/linux/r03a-t14b/home",
+  "allowance_created": true,
+  "historical_evidence_recomputed_or_overwritten": false
+}

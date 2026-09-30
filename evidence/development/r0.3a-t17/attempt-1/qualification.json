@@ -1,0 +1,18 @@
+{
+  "historical_t6_t9_t12_t13_t14c_modified": false,
+  "isolated_home_config_hypothesis": "SUPPORTED",
+  "native_execution_environment_qualified": false,
+  "negative_tests": {
+    "sensitive_config_values_redacted": "passed",
+    "v4_cannot_express_codex_home_or_effective_config": "passed",
+    "v5_config_digest_change_stales_l1_gate": "passed",
+    "v5_effective_config_fields_validate": "passed",
+    "whole_codex_directory_not_copied": "passed"
+  },
+  "next_step": "config-only minimal live canary",
+  "provider_transport_recovery": "NOT_YET_VERIFIED",
+  "qualification": "R0.3A-T17",
+  "same_native_default": "UNPROVEN",
+  "status": "PASSED",
+  "t17_v5_fingerprint": "0b034bd600e5552dc4de6c827eb72ff6a5a09e8af019fc2aaaab80495ea70b8a"
+}

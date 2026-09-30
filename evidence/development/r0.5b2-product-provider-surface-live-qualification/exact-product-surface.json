@@ -1,0 +1,79 @@
+{
+  "schema_version": "r05b2-product-tool-surface@1",
+  "recorded_at": "2026-09-16T18:24:00Z",
+  "source": "provider.ProductToolSurface -> codex.Tools",
+  "tool_count": 7,
+  "tool_manifest_digest": "730b9b2aba9de7ca015e800b1a597de37a22bd0c299dc7ad10e022c8399388d9",
+  "tool_manifest_bytes": 2718,
+  "aggregate_schema_digest": "12008e917b4b5a71dc5fa70e8c2388450205bc08fce1bddc84bae3742e155717",
+  "aggregate_schema_bytes": 1318,
+  "aggregate_schema_digest_method": "SHA256(json.Marshal(ordered []json.RawMessage(inputSchema))); aggregate_schema_bytes=sum(len(json.Marshal(each inputSchema)))",
+  "surface_exact_match": true,
+  "expected_manifest_digest": "730b9b2aba9de7ca015e800b1a597de37a22bd0c299dc7ad10e022c8399388d9",
+  "tools": [
+    {
+      "registration_ordinal": 1,
+      "name": "polis_work_current",
+      "description": "Read your authoritative task, responsibility and neutral handover context.",
+      "description_digest": "376c2c1a7c3085063fadf1d6e038fa4346c63caf41d0d7cba6a6aa38a0bfd286",
+      "schema_bytes": 76,
+      "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+      "input_schema": {"additionalProperties": false, "properties": {}, "required": [], "type": "object"}
+    },
+    {
+      "registration_ordinal": 2,
+      "name": "polis_context_read",
+      "description": "Read approved context, facts and decisions.",
+      "description_digest": "851a7524c0293a0b34652351716ce51e3ea51523f5f0c14e097b7747be227bf1",
+      "schema_bytes": 76,
+      "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+      "input_schema": {"additionalProperties": false, "properties": {}, "required": [], "type": "object"}
+    },
+    {
+      "registration_ordinal": 3,
+      "name": "polis_workspace_read",
+      "description": "Read the sole allowed file formatter.go and its current digest.",
+      "description_digest": "44d01b6ee84b5c60dd04d35880410caad9a606c4780aae7d8ac59775c25d5d82",
+      "schema_bytes": 76,
+      "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+      "input_schema": {"additionalProperties": false, "properties": {}, "required": [], "type": "object"}
+    },
+    {
+      "registration_ordinal": 4,
+      "name": "polis_workspace_replace",
+      "description": "Replace formatter.go with complete content using its expected digest. Only pure formatting functions and unaliased math/strconv imports are allowed; no init, globals or test-lifecycle hooks. No other file path is accepted.",
+      "description_digest": "9eaa25ba67bb9d48df5ec61242eefbf4797faddda3861b17d1b8c89835a03817",
+      "schema_bytes": 183,
+      "schema_digest": "b9456af0a1c8481c548051c40bb621dfff8fa6637daf5a9912504a40ac71b138",
+      "input_schema": {"additionalProperties": false, "properties": {"content": {"maxLength": 4096, "type": "string"}, "expected_digest": {"type": "string"}}, "required": ["expected_digest", "content"], "type": "object"}
+    },
+    {
+      "registration_ordinal": 5,
+      "name": "polis_workspace_check",
+      "description": "Compile and run the frozen task checks against the current file; returns an evidence receipt.",
+      "description_digest": "1f5f72472c4e94c464c6ff6009d53a09ebfdafbd08737b9ac06ec27f23d9400f",
+      "schema_bytes": 76,
+      "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+      "input_schema": {"additionalProperties": false, "properties": {}, "required": [], "type": "object"}
+    },
+    {
+      "registration_ordinal": 6,
+      "name": "polis_work_checkpoint",
+      "description": "Persist a progress or qualified checkpoint. Progress checkpoints may record incomplete work with failed check evidence; qualified checkpoints require passed check evidence and are eligible for final artifact submission.",
+      "description_digest": "7183ca036346fb827d996eb98df3ece57a4cfc84eda4202056cf7f8f61c0a1ac",
+      "schema_bytes": 755,
+      "schema_digest": "9afeb7e0169b6059408e4fd6812a77f651468acee3faa12c3010c01d84369c34",
+      "input_schema": {"additionalProperties": false, "properties": {"decisions": {"items": {"maxLength": 512, "type": "string"}, "maxItems": 8, "minItems": 1, "type": "array"}, "evidence_refs": {"items": {"maxLength": 512, "type": "string"}, "maxItems": 8, "minItems": 1, "type": "array"}, "facts": {"items": {"maxLength": 512, "type": "string"}, "maxItems": 8, "minItems": 1, "type": "array"}, "failed_checks": {"items": {"maxLength": 512, "type": "string"}, "maxItems": 8, "type": "array"}, "kind": {"enum": ["progress", "qualified"], "type": "string"}, "next_action": {"maxLength": 512, "type": "string"}, "rejected": {"items": {"maxLength": 512, "type": "string"}, "maxItems": 8, "minItems": 1, "type": "array"}, "summary": {"maxLength": 512, "type": "string"}}, "required": ["summary", "facts", "decisions", "rejected", "evidence_refs"], "type": "object"}
+    },
+    {
+      "registration_ordinal": 7,
+      "name": "polis_artifact_submit",
+      "description": "Submit the current fixed file as a candidate. Independent acceptance is performed by the controller, not you.",
+      "description_digest": "f699465373b0062b8db4ee512ed1d44b0ed393daf6335c39971766d6f6246cbe",
+      "schema_bytes": 76,
+      "schema_digest": "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+      "input_schema": {"additionalProperties": false, "properties": {}, "required": [], "type": "object"}
+    }
+  ],
+  "original_b1_evidence_modified": false
+}

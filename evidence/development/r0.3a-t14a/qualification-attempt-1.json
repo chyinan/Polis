@@ -1,0 +1,87 @@
+{
+  "derived_artifacts": {
+    "explicitly_disabled": {
+      "capability_binding": {
+        "source_execution_config_digest": "60a7cb6151571dc6e1d7d73573360fca1257ce890d9b2df85e1d03e524ecdcb6",
+        "derivation_schema_version": "effective-execution-config-v1"
+      },
+      "capability_digest": "105552b04a3e7379adf28dd266c1c5108fedbef824173a6455003af20647affb",
+      "derivation_schema_version": "effective-execution-config-v1",
+      "fingerprint_binding": {
+        "source_execution_config_digest": "60a7cb6151571dc6e1d7d73573360fca1257ce890d9b2df85e1d03e524ecdcb6",
+        "derivation_schema_version": "effective-execution-config-v1"
+      },
+      "launch_args_and_env_derived": true,
+      "launch_binding": {
+        "source_execution_config_digest": "60a7cb6151571dc6e1d7d73573360fca1257ce890d9b2df85e1d03e524ecdcb6",
+        "derivation_schema_version": "effective-execution-config-v1",
+        "launch_config_digest": "6c66b5a2c3d767c7e2722180430009e8dfe665225ba8405d745414e8e0403003"
+      },
+      "launch_config_bytes_derived": true,
+      "launch_config_digest": "6c66b5a2c3d767c7e2722180430009e8dfe665225ba8405d745414e8e0403003",
+      "manifest_binding": {
+        "source_execution_config_digest": "60a7cb6151571dc6e1d7d73573360fca1257ce890d9b2df85e1d03e524ecdcb6",
+        "derivation_schema_version": "effective-execution-config-v1"
+      },
+      "manifest_digest": "ea49b5df52d7923a520cd80f053ba3f6a055698121e3985cdd51eb58b2d9cbd3",
+      "qualification_fingerprint": {
+        "fingerprint_schema_version": "canonical-manifest-v3",
+        "canonical_manifest_digest": "ea49b5df52d7923a520cd80f053ba3f6a055698121e3985cdd51eb58b2d9cbd3"
+      },
+      "source_execution_config_digest": "60a7cb6151571dc6e1d7d73573360fca1257ce890d9b2df85e1d03e524ecdcb6"
+    },
+    "native_default": {
+      "capability_binding": {
+        "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+        "derivation_schema_version": "effective-execution-config-v1"
+      },
+      "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+      "derivation_schema_version": "effective-execution-config-v1",
+      "fingerprint_binding": {
+        "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+        "derivation_schema_version": "effective-execution-config-v1"
+      },
+      "launch_args_and_env_derived": true,
+      "launch_binding": {
+        "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+        "derivation_schema_version": "effective-execution-config-v1",
+        "launch_config_digest": "7a181704f0acfa4da6302288e894075edc3e8bcbd1fb19eeb9208ce29bc751c8"
+      },
+      "launch_config_bytes_derived": true,
+      "launch_config_digest": "7a181704f0acfa4da6302288e894075edc3e8bcbd1fb19eeb9208ce29bc751c8",
+      "manifest_binding": {
+        "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+        "derivation_schema_version": "effective-execution-config-v1"
+      },
+      "manifest_digest": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+      "qualification_fingerprint": {
+        "fingerprint_schema_version": "canonical-manifest-v3",
+        "canonical_manifest_digest": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75"
+      },
+      "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea"
+    }
+  },
+  "historical_t14_preserved": true,
+  "medium_consumed": 0,
+  "negative_tests": {
+    "canonical_serialization_deterministic": "passed",
+    "capability_tampered": "passed",
+    "concurrent_read_after_freeze": "passed",
+    "manifest_policy_launcher_policy_mismatch": "passed",
+    "policy_changed_but_old_capability_reused": "passed",
+    "unrelated_prompt_changes_transport_capability": "passed"
+  },
+  "offline_verification": {
+    "build": "passed",
+    "diff_check": "passed",
+    "race": "passed",
+    "tests": "passed",
+    "vet": "passed"
+  },
+  "original_t14_fingerprint": "899f760993417c52a9fffccf109f8fcf6c7b1d6cf3f00150e710952b712a37fe",
+  "provider_egress": 0,
+  "qualification": "R0.3A-T14A",
+  "single_immutable_execution_config_source": "T14AEffectiveExecutionConfig",
+  "status": "PASSED",
+  "uncertain_candidate_not_accepted": "d0ea7e7594aac7ca19677220956563e77991a5b30d40b00628a74f805249cf38"
+}

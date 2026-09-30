@@ -1,0 +1,62 @@
+{
+  "number": 1,
+  "employee": "emp-frontend",
+  "purpose": "frontend initial employee: observe and apply recovered peer responsibility",
+  "profile": "gpt-5.6-luna/medium",
+  "status": "passed",
+  "started": "2026-09-13T11:50:51.0449393Z",
+  "finished": "2026-09-13T11:51:33.5108719Z",
+  "duration_ms": 42465,
+  "native_duration_ms": 45,
+  "process_started": true,
+  "initialize_completed": true,
+  "thread_started": true,
+  "turn_started": true,
+  "provider_egress": true,
+  "turn_completed": true,
+  "epoch": 3,
+  "incarnation": "5fda8dfb9339917c1deaf409b22ad425",
+  "tool_calls_used": 9,
+  "tool_calls_remaining": 39,
+  "thread_id": "01a09a9b-2072-7502-bca0-815ec39f6be7",
+  "session_id": "a300088a9d514a9c85e7beff5399ace9",
+  "tool_events": [
+    "collab_inbox",
+    "work_current",
+    "collab_ack",
+    "contract_read",
+    "workspace_read",
+    "workspace_replace",
+    "collab_apply",
+    "workspace_check",
+    "work_checkpoint"
+  ],
+  "receipts": [
+    "c9f13d62fc208dfe2152af28891ef782f566a9fbb4ffdf171422bfedb242980c",
+    "7d027b5a8fd2267a68b364e47f4635ca",
+    "1562cf1670d108167fd7974fc3244a3e",
+    "a2fd6529630de256e4fc459ede45d2fe"
+  ],
+  "stop_receipt": "windows-process-handle:2372:waited",
+  "stop_confirmed": true,
+  "checkpoint_id": "a2fd6529630de256e4fc459ede45d2fe",
+  "token_usage": {
+    "total": {
+      "totalTokens": 75565,
+      "inputTokens": 74849,
+      "cachedInputTokens": 59136,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 716,
+      "reasoningOutputTokens": 286
+    },
+    "last": {
+      "totalTokens": 13201,
+      "inputTokens": 13167,
+      "cachedInputTokens": 12032,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 34,
+      "reasoningOutputTokens": 7
+    }
+  },
+  "native_usage_updates": 6
+}

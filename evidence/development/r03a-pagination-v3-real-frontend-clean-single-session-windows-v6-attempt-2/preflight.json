@@ -1,0 +1,18 @@
+{
+  "behavior_verifier": "r03a-pagination-behavior@2",
+  "contract_revision": "r03a-pagination-contract@3",
+  "execution_fingerprint": "4683d1be44f96b3589442145e8e1d961d2a49a032ae2857c7625c9165768a3c1",
+  "frontend_l2_status": "QUALIFIED_REUSABLE",
+  "high": 0,
+  "historical_evidence_modified": false,
+  "medium": 0,
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "passed": true,
+  "provider_egress": 0,
+  "purpose": "real_backend_peer_collaboration",
+  "qualification": "R0.3A-PAGINATION-V3-FRONTEND-SINGLE-SESSION",
+  "status": "preflight_passed",
+  "subject_revision": "r03a-pagination-v3-business-subject@1",
+  "tool_count": 12,
+  "tool_manifest_digest": "65a5f56535c6a87f7a6213883d2cf3be300849ad1233a9e3a357046eb4f667e6"
+}

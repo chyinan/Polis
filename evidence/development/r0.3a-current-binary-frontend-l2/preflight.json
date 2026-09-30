@@ -1,0 +1,26 @@
+{
+  "aggregate_schema_bytes": 2217,
+  "aggregate_schema_digest": "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+  "approved_hardening_diff": true,
+  "current_binary_l1": "QUALIFIED",
+  "execution_fingerprint": "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+  "handler_binding_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+  "high": 0,
+  "historical_evidence_modified": false,
+  "l1_fingerprint": "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+  "medium": 0,
+  "passed": true,
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "provider_egress": 0,
+  "qualification": "R0.3A-CURRENT-BINARY-REVISED-FRONTEND-L2",
+  "status": "offline_preflight_passed",
+  "surface_role": "peer_frontend",
+  "tool_count": 12,
+  "tool_manifest_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+  "unexplained_drift": false
+}

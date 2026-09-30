@@ -1,0 +1,42 @@
+/* pattern: Imperative Shell */
+
+.loadingIcon {
+  color: var(--accent-hover);
+  animation: spin 1.1s linear infinite;
+}
+
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: -1px;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingIcon {
+    animation: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .paginationBar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .paginationBar .commandButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

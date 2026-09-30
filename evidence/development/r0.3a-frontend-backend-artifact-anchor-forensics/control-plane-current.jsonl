@@ -1,0 +1,12 @@
+{"id":"r03a-pagination-v3-company-1789379324974307400","company_seq":64,"frontend_sessions":0,"live_frontend_writers":0,"event_tail":[{"company_seq":53,"kind":"worker.historical","payload":{"id": "e452b83737475260331adf69773670a7", "status": "historical_only"}}, 
+ {"company_seq":54,"kind":"worker.tool_call","payload":{"id": "1bb014b85129c72da4e720fe67115df5", "status": "tool_call"}}, 
+ {"company_seq":55,"kind":"worker.tool_call","payload":{"id": "1bb014b85129c72da4e720fe67115df5", "status": "tool_call"}}, 
+ {"company_seq":56,"kind":"worker.tool_call","payload":{"id": "1bb014b85129c72da4e720fe67115df5", "status": "tool_call"}}, 
+ {"company_seq":57,"kind":"work.checkpoint","payload":{"id": "13164a801bac0760050c5f456bfd3f82", "status": "persisted"}}, 
+ {"company_seq":58,"kind":"worker.tool_call","payload":{"id": "1bb014b85129c72da4e720fe67115df5", "status": "tool_call"}}, 
+ {"company_seq":59,"kind":"artifact.submit","payload":{"id": "f73981340227622e9c16dbf45e961a3f", "status": "candidate"}}, 
+ {"company_seq":60,"kind":"worker.stopping","payload":{"id": "1bb014b85129c72da4e720fe67115df5", "status": "stopping"}}, 
+ {"company_seq":61,"kind":"worker.stopped","payload":{"id": "1bb014b85129c72da4e720fe67115df5", "status": "stopped"}}, 
+ {"company_seq":62,"kind":"controller.recovered","payload":{"id": "a6b554d464dd71bd5dc1afdec8f95854", "status": "fake_only"}}, 
+ {"company_seq":63,"kind":"controller.recovered","payload":{"id": "2b26cd41eccb5913822392c6797ca40f", "status": "fake_only"}}, 
+ {"company_seq":64,"kind":"artifact.invalidated","payload":{"id": "f73981340227622e9c16dbf45e961a3f", "status": "missing"}}]}

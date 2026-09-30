@@ -1,0 +1,13 @@
+{
+    "schema_version":  "r0.3a-continuation-7-recovery-package-evidence-v1",
+    "snapshot_sha256":  "02ef513bfc83d9069a229cfe7ce18e5d79cf837bc59d57fe0d7b262217edf2da",
+    "snapshot_size":  69408,
+    "snapshot_manifest_sha256":  "6a6f7852a991e71adf180a50c0945efb9161d45ed76d36d5a31b4c5c4ad3d826",
+    "blob_manifest_sha256":  "0fa1cce2205e07e167aa173b652780774c8c02468b3c48bbf857b93e52c7fbf3",
+    "source_database_semantic_identity":  "continuation-7:r03a-t2-company-1789221294871371900/r03a-t2-mission-1789221294871371900",
+    "restored_state_equal":  true,
+    "old_worker_fenced":  true,
+    "no_synthesized_rows":  true,
+    "credentials_included":  false,
+    "historical_evidence_modified":  false
+}

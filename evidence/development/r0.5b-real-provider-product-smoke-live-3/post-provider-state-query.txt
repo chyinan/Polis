@@ -1,0 +1,166 @@
+--- worker_sessions schema ---
+                                          Table "public.worker_sessions"
+      Column       |  Type  | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+-------------------+--------+-----------+----------+---------+----------+-------------+--------------+-------------
+ company_id        | text   |           | not null |         | extended |             |              | 
+ id                | text   |           | not null |         | extended |             |              | 
+ employee_id       | text   |           | not null |         | extended |             |              | 
+ task_id           | text   |           | not null |         | extended |             |              | 
+ generation        | bigint |           | not null |         | plain    |             |              | 
+ epoch             | bigint |           | not null |         | plain    |             |              | 
+ incarnation       | text   |           | not null |         | extended |             |              | 
+ profile           | text   |           | not null |         | extended |             |              | 
+ state             | text   |           | not null |         | extended |             |              | 
+ capability_digest | text   |           |          |         | extended |             |              | 
+ process_pid       | bigint |           |          |         | plain    |             |              | 
+ stop_receipt      | text   |           |          |         | extended |             |              | 
+ tool_call_limit   | bigint |           | not null | 0       | plain    |             |              | 
+ tool_calls_used   | bigint |           | not null | 0       | plain    |             |              | 
+Indexes:
+    "worker_sessions_pkey" PRIMARY KEY, btree (company_id, id)
+    "one_live_worker" UNIQUE, btree (company_id, employee_id) WHERE state <> 'stopped'::text
+Check constraints:
+    "worker_sessions_check" CHECK (state <> 'stopped'::text OR stop_receipt IS NOT NULL)
+    "worker_sessions_state_check" CHECK (state = ANY (ARRAY['restoring'::text, 'validating'::text, 'activation_pending_environment'::text, 'active'::text, 'stopping'::text, 'stopped'::text, 'reconcile_required'::text]))
+    "worker_sessions_tool_call_limit_check" CHECK (tool_call_limit >= 0)
+    "worker_sessions_tool_calls_used_check" CHECK (tool_calls_used >= 0)
+    "worker_tool_calls_within_limit" CHECK (tool_call_limit = 0 OR tool_calls_used <= tool_call_limit)
+Foreign-key constraints:
+    "worker_sessions_company_id_employee_id_fkey" FOREIGN KEY (company_id, employee_id) REFERENCES employees(company_id, id)
+    "worker_sessions_company_id_task_id_fkey" FOREIGN KEY (company_id, task_id) REFERENCES tasks(company_id, id)
+Referenced by:
+    TABLE "task_validation_artifact_qualifications" CONSTRAINT "task_validation_artifact_qualificati_company_id_session_id_fkey" FOREIGN KEY (company_id, session_id) REFERENCES worker_sessions(company_id, id)
+    TABLE "worker_checkpoints" CONSTRAINT "worker_checkpoints_company_id_session_id_fkey" FOREIGN KEY (company_id, session_id) REFERENCES worker_sessions(company_id, id)
+    TABLE "worker_checks" CONSTRAINT "worker_checks_company_id_session_id_fkey" FOREIGN KEY (company_id, session_id) REFERENCES worker_sessions(company_id, id)
+    TABLE "worker_observations" CONSTRAINT "worker_observations_company_id_session_id_fkey" FOREIGN KEY (company_id, session_id) REFERENCES worker_sessions(company_id, id)
+Not-null constraints:
+    "worker_sessions_company_id_not_null" NOT NULL "company_id"
+    "worker_sessions_id_not_null" NOT NULL "id"
+    "worker_sessions_employee_id_not_null" NOT NULL "employee_id"
+    "worker_sessions_task_id_not_null" NOT NULL "task_id"
+    "worker_sessions_generation_not_null" NOT NULL "generation"
+    "worker_sessions_epoch_not_null" NOT NULL "epoch"
+    "worker_sessions_incarnation_not_null" NOT NULL "incarnation"
+    "worker_sessions_profile_not_null" NOT NULL "profile"
+    "worker_sessions_state_not_null" NOT NULL "state"
+    "worker_sessions_tool_call_limit_not_null" NOT NULL "tool_call_limit"
+    "worker_sessions_tool_calls_used_not_null" NOT NULL "tool_calls_used"
+Access method: heap
+
+--- worker_sessions rows ---
+ company_id  |                id                | employee_id |             task_id              | generation | epoch |           incarnation            |       profile       |  state  |  capability_digest  | process_pid |            stop_receipt             | tool_call_limit | tool_calls_used 
+-------------+----------------------------------+-------------+----------------------------------+------------+-------+----------------------------------+---------------------+---------+---------------------+-------------+-------------------------------------+-----------------+-----------------
+ r05b-live-3 | e3aab47b7169ebfa3b8072a82575a9ec | emp-backend | 619d622792dc299042baae4a99cb6787 |          1 |     3 | 59697d90356d1117cfea3e56987f73e0 | gpt-5.6-luna/medium | stopped | gpt-5.6-luna/medium |       50492 | windows-process-handle:50492:waited |              16 |               0
+(1 row)
+
+--- activity rows ---
+                                            Table "public.events"
+   Column    |  Type   | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+-------------+---------+-----------+----------+---------+----------+-------------+--------------+-------------
+ company_id  | text    |           | not null |         | extended |             |              | 
+ company_seq | bigint  |           | not null |         | plain    |             |              | 
+ kind        | text    |           | not null |         | extended |             |              | 
+ payload     | jsonb   |           | not null |         | extended |             |              | 
+ observed    | boolean |           | not null | false   | plain    |             |              | 
+Indexes:
+    "events_pkey" PRIMARY KEY, btree (company_id, company_seq)
+    "events_pending" btree (company_id, company_seq) WHERE NOT observed
+Foreign-key constraints:
+    "events_company_id_fkey" FOREIGN KEY (company_id) REFERENCES companies(id)
+Not-null constraints:
+    "events_company_id_not_null" NOT NULL "company_id"
+    "events_company_seq_not_null" NOT NULL "company_seq"
+    "events_kind_not_null" NOT NULL "kind"
+    "events_payload_not_null" NOT NULL "payload"
+    "events_observed_not_null" NOT NULL "observed"
+Access method: heap
+
+ company_id  | company_seq |                 kind                  |                                                                payload                                                                | observed 
+-------------+-------------+---------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------+----------
+ r05b-live-3 |           1 | controller.recovered                  | {"id": "59697d90356d1117cfea3e56987f73e0", "status": "fake_only", "occurred_at": "2026-09-20T12:03:59.4004417Z"}                      | f
+ r05b-live-3 |           2 | mission.create                        | {"id": "6aa57fa09302eb45ed815a02e027da4e", "status": "draft", "occurred_at": "2026-09-20T12:07:07.3769578Z"}                          | f
+ r05b-live-3 |           3 | mission.start                         | {"id": "6aa57fa09302eb45ed815a02e027da4e", "status": "active", "occurred_at": "2026-09-20T12:07:42.9877728Z"}                         | f
+ r05b-live-3 |           4 | mission.task.prepare                  | {"id": "619d622792dc299042baae4a99cb6787", "status": "ready", "occurred_at": "2026-09-20T12:07:43.2579115Z"}                          | f
+ r05b-live-3 |           5 | worker.restore                        | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "restoring", "occurred_at": "2026-09-20T12:07:43.2695959Z"}                      | f
+ r05b-live-3 |           6 | worker.process_attached               | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "attached", "occurred_at": "2026-09-20T12:07:43.6225828Z"}                       | f
+ r05b-live-3 |           7 | worker.validating                     | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "validating", "occurred_at": "2026-09-20T12:07:43.6286534Z"}                     | f
+ r05b-live-3 |           8 | worker.activation_pending_environment | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "activation_pending_environment", "occurred_at": "2026-09-20T12:07:43.6355025Z"} | f
+ r05b-live-3 |           9 | worker.active                         | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "active", "occurred_at": "2026-09-20T12:07:43.6418203Z"}                         | f
+ r05b-live-3 |          10 | provider.turn.inconclusive            | {"id": "6eeec6cbf4b7adb00f8cd22d91c874b1", "status": "inconclusive", "occurred_at": "2026-09-20T12:07:43.6493263Z"}                   | f
+ r05b-live-3 |          11 | worker.stopping                       | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "stopping", "occurred_at": "2026-09-20T12:07:43.6570804Z"}                       | f
+ r05b-live-3 |          12 | worker.stopped                        | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "stopped", "occurred_at": "2026-09-20T12:07:43.6696409Z"}                        | f
+(12 rows)
+
+--- provider terminal observations ---
+            session_id            |      reason       |                                  data                                  
+----------------------------------+-------------------+------------------------------------------------------------------------
+ e3aab47b7169ebfa3b8072a82575a9ec | provider_terminal | {"state": "inconclusive", "usage": null, "outcome": "runtime_failure"}
+(1 row)
+
+--- authoritative product rows ---
+### missions
+ company_id  |                id                | state  |          activation_id           |    contract     |                  title                   |                                                                                           goal                                                                                            |                                                                                                                                 acceptance_contract                                                                                                                                 
+-------------+----------------------------------+--------+----------------------------------+-----------------+------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ r05b-live-3 | 6aa57fa09302eb45ed815a02e027da4e | active | ac10ce10df7fbaf01e42fff5457cc745 | r0-arithmetic@1 | R0.5B LIVE_3 real provider product smoke | Produce one small Markdown deliverable named product-smoke.md containing the Mission ID, Task ID, the Polis real-provider acknowledgement, and one-sentence summary of the assigned Task. | {"revision": "text-acceptance@1", "required_text": ["Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement: This artifact was produced through the Polis real-provider product path.", "Task summary: This artifact records one small product integration smoke."]}
+(1 row)
+
+### tasks
+ company_id  |                id                |            mission_id            |    owner     |      kind      |   state   | generation |                                             plan                                              
+-------------+----------------------------------+----------------------------------+--------------+----------------+-----------+------------+-----------------------------------------------------------------------------------------------
+ r05b-live-3 | 8dfef79fdf857555cf683c2dafc3aad8 | 6aa57fa09302eb45ed815a02e027da4e | emp-planning | bootstrap_plan | completed |          0 | {"owner": "emp-backend", "template": "product-task@2", "ambiguities": [], "dependencies": []}
+ r05b-live-3 | 619d622792dc299042baae4a99cb6787 | 6aa57fa09302eb45ed815a02e027da4e | emp-backend  | compat         | working   |          1 | 
+(2 rows)
+
+### task_validation_bindings
+ company_id  |             task_id              |            mission_id            | acceptance_revision |    runner_kind    |   runner_revision   |                       configuration_digest                       |                                                                                                                                                          contract                                                                                                                                                          |          created_at           
+-------------+----------------------------------+----------------------------------+---------------------+-------------------+---------------------+------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------
+ r05b-live-3 | 619d622792dc299042baae4a99cb6787 | 6aa57fa09302eb45ed815a02e027da4e | text-acceptance@1   | text_contains_all | text-contains-all@1 | cac795731684c89e7b07a5874c38723f8c2ee820d28f4d59f19b66a8f9b47fe7 | {"revision": "text-acceptance@1", "required_text": ["Mission ID: 6aa57fa09302eb45ed815a02e027da4e", "Task ID: 619d622792dc299042baae4a99cb6787", "Acknowledgement: This artifact was produced through the Polis real-provider product path.", "Task summary: This artifact records one small product integration smoke."]} | 2026-09-20 20:08:41.406758+08
+(1 row)
+
+### worker_workspaces
+ company_id  |             task_id              |                              digest                              | revision 
+-------------+----------------------------------+------------------------------------------------------------------+----------
+ r05b-live-3 | 619d622792dc299042baae4a99cb6787 | 7d95f41316731397a7e5230e8e88a3c415caebc0d0dc3b59e50e53bce6bdce9f |        1
+(1 row)
+
+### worker_checks
+ company_id | id | session_id | digest | phase | passed | report 
+------------+----+------------+--------+-------+--------+--------
+(0 rows)
+
+### worker_checkpoints
+ company_id | id | session_id | digest | data 
+------------+----+------------+--------+------
+(0 rows)
+
+### artifacts
+ company_id | id | task_id | author | digest | bytes | state | verdict | verifier | contract 
+------------+----+---------+--------+--------+-------+-------+---------+----------+----------
+(0 rows)
+
+### artifact_staging
+ company_id | id | task_id | digest 
+------------+----+---------+--------
+(0 rows)
+
+### task_validation_artifact_qualifications
+ company_id | task_id | artifact_id | checkpoint_id | check_id | session_id | validation_binding_digest | workspace_digest | workspace_revision | runner_revision | created_at 
+------------+---------+-------------+---------------+----------+------------+---------------------------+------------------+--------------------+-----------------+------------
+(0 rows)
+
+### receipts
+ company_id  |    actor    |                        key                         |                           fingerprint                            |                                         result                                         
+-------------+-------------+----------------------------------------------------+------------------------------------------------------------------+----------------------------------------------------------------------------------------
+ r05b-live-3 | local-owner | dc589000-9b39-4d23-bad2-968a14debaf1               | aaaec833f79a8109715dcaa15b111e7641ac16186e039426a54da8ce36cd536a | {"id": "6aa57fa09302eb45ed815a02e027da4e", "status": "draft"}
+ r05b-live-3 | local-owner | 4db9c640-29a7-4774-9678-9ecac1b03967               | 19ce608a838171e2cea59ede783e09da394f94ce1e8ff1ad4a63ed2ebf2e4e04 | {"id": "6aa57fa09302eb45ed815a02e027da4e", "status": "active"}
+ r05b-live-3 | local-owner | product-task-6aa57fa09302eb45ed815a02e027da4e      | 2060a1db3bae5b8c26ad24e60b0c2ba0852f275d56c06f3952a344e2ac2b4d77 | {"id": "619d622792dc299042baae4a99cb6787", "status": "ready"}
+ r05b-live-3 | local-owner | 4c6823e3163c2b0799d50f5aa89fe2f0                   | 0b6c5f70655bb05e0c4b00a8869a9186d1790a33a901a85987b7a3ae3e3dc657 | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "restoring"}
+ r05b-live-3 | local-owner | abc2dadc4b4531a67e3ccb3dd378acac                   | efcf8c2372fbeb878d2cfd9b33323a1e1992d3af53f14d3e5b27bdb3371cffb0 | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "attached"}
+ r05b-live-3 | local-owner | 52b12c91b401d276445f2416d7da7f17                   | 235ae078fbd5685cee15b69c1103356f0b49bce17dc2a20d07442674b3a618e7 | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "validating"}
+ r05b-live-3 | local-owner | aa830586aa1d744bbc1c8a8ee8c63039                   | 43df7b238eca28d76e367e4b45833382e133e8181d23efebc289cda143f7a10a | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "activation_pending_environment"}
+ r05b-live-3 | local-owner | cceb847a7840c2d428fe25946144f796                   | 40ce27a59a431912a8dcf60038de83f8fb1c052cab20e739ffda884436ffeb77 | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "active"}
+ r05b-live-3 | emp-backend | provider-terminal-e3aab47b7169ebfa3b8072a82575a9ec | fd0fad478971bdcb56eb5d93487e171b7e0c55c7a2c8c95bce35a0810fda78ec | {"id": "6eeec6cbf4b7adb00f8cd22d91c874b1", "status": "inconclusive"}
+ r05b-live-3 | local-owner | 60e4af4b5673c1f1a57fa36e9a37b36f                   | ec4875a7f667542599d4639a1408cc1f5f192d0e65cf03f4a384d9dcf7b7ad81 | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "stopping"}
+ r05b-live-3 | local-owner | f335e41093b3c62788ebcb4caa28fecb                   | e508629c3764cf8ca3dbdbcc61ad432868cb6927ced8953def1ef32fe9a1cb96 | {"id": "e3aab47b7169ebfa3b8072a82575a9ec", "status": "stopped"}
+(11 rows)
+

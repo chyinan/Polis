@@ -1,0 +1,12 @@
+{
+  "source": "direct Windows PowerShell local check",
+  "executable_class": "Windows Codex CLI",
+  "version_observed": "codex-cli 0.153.4",
+  "app_server_subcommand_observed": true,
+  "config_file_option_observed": true,
+  "codex_home_profile_option_observed": true,
+  "effective_config_dump_observed": false,
+  "provider_or_internet_accessed": false,
+  "auth_material_read": false,
+  "sensitive_output_recorded": false
+}

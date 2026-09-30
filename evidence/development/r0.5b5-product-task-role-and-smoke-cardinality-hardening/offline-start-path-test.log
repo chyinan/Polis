@@ -1,0 +1,5 @@
+=== RUN   TestRealProductStartHasOneProviderExecutableTaskAndOneBoundWorker
+    task_execution_test.go:167: offline product Start: company=r05b5-control-18d60b78939d27bd mission=02609d71a40d0bc1a7047355260e41a6 mission_state=active task_rows=2 bootstrap_plan=1/completed compat=1/candidate provider_executable_tasks=1 worker_sessions=1 worker_task=7c10833c9dd513625e551b841141c19d worker_employee=emp-backend task_validation_binding=8c2794c1c354f950170807b7199c56292b7c3d56b3720041ee005f29c10c390d fake_reserve_calls=1 fake_start_calls=1 fake_turn_calls=1 real_provider_reservations=0 provider_egress=0 live_medium=0 live_high=0
+--- PASS: TestRealProductStartHasOneProviderExecutableTaskAndOneBoundWorker (0.26s)
+PASS
+ok  	polis/internal/control	0.298s

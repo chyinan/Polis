@@ -1,0 +1,10 @@
+{
+  "status": "COMPLETE",
+  "package_generation_id": "r03a-sample-6-recovery-20260914T150111Z-307",
+  "dump_path": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6-final-recovery-continuation-v5/package/sample-6-authoritative.dump",
+  "dump_hash": "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+  "cas_manifest_path": "/mnt/d/Programs/Polis/evidence/development/r0.3a-sample-6-final-recovery-continuation-v5/cas-manifest.json",
+  "cas_manifest_hash": "9a7d103f56f9dd7300ba10bd88d337cafd286dbcd09177c483f4129125a7ff0f",
+  "continuation_manifest_hash": "c9dd09e74d0f21214253ed704d9bb3b1b25ef2c6fa5902f2743d20c17133a4b8",
+  "historical_evidence_modified": false
+}

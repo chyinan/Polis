@@ -1,0 +1,33 @@
+{
+  "status": "WINDOWS_DATABASE_ACCESS_PREFLIGHT_PASSED",
+  "consumer_os": "windows",
+  "configured_dsn_redacted": "host=172.24.72.52 port=55432 dbname=polis_r0_3a_frontend_clean_baseline_v7 user=polis_runtime",
+  "access_view": {
+    "schema_version": "r03a-database-access-view@2",
+    "consumer_os": "windows",
+    "transport": "tcp",
+    "host": "172.24.72.52",
+    "port": 55432,
+    "endpoint_source": "v7-business-wsl-direct-tcp",
+    "access_strategy_revision": "r03a-windows-wsl-direct-tcp@1",
+    "runtime_database_binding_fingerprint": "10f5b1f2d9dc6b739c74926f178786df1c3c4e4a52b743ced41977e3304f172c",
+    "target_wsl_distribution": "Ubuntu-22.04",
+    "resolution_method": "wsl.exe -d Ubuntu-22.04 -- hostname -I",
+    "hba_source_address": "172.24.64.1/32"
+  },
+  "runtime_database_binding": {
+    "schema_version": "r03a-runtime-database-binding@1",
+    "postgres_major": 18,
+    "cluster_system_identifier": "7685979471005729323",
+    "database_name": "polis_r0_3a_frontend_clean_baseline_v7",
+    "database_oid": "16384",
+    "schema_migration_identity": "5",
+    "fingerprint": "10f5b1f2d9dc6b739c74926f178786df1c3c4e4a52b743ced41977e3304f172c"
+  },
+  "observed_postgres_major": 18,
+  "observed_cluster_system_identifier": "7685979471005729323",
+  "observed_database_name": "polis_r0_3a_frontend_clean_baseline_v7",
+  "observed_database_oid": "16384",
+  "observed_schema_migration_identity": "5",
+  "mutation": false
+}

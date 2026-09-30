@@ -1,0 +1,9 @@
+{
+    "qualification":  "R0.3A-POSTGRES-PRESERVATION-CONTRACT",
+    "status":  "FAILED",
+    "error":  "preservation qualification evidence path is not fresh",
+    "medium":  0,
+    "high":  0,
+    "provider_egress":  0,
+    "historical_evidence_modified":  false
+}

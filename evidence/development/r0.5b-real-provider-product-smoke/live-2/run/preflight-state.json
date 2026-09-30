@@ -1,0 +1,10 @@
+{
+    "tasks": 0,
+    "missions": 0,
+    "companies": 1,
+    "employees": 4,
+    "schema_version": 7,
+    "worker_sessions": 0,
+    "postgres_version": "18.6 (Ubuntu 18.6-1.pgdg22.04+2)",
+    "provider_allowance_present": false
+}

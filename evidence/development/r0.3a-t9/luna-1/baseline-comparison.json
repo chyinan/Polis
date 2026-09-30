@@ -1,0 +1,16 @@
+{
+  "argv_equal_after_removing_proxy_setenv": true,
+  "binary_code_host_auth_model_effort_runtime_sandbox_home_invocation_ws_tools_prompt_equal": true,
+  "capability_change_is_expected_derivative_of_proxy": true,
+  "native_config_bytes_equal": true,
+  "new_capability_digest": "04a855290926ed2b6a21d9f95798fb655f1f6e96125fbe575b8327054a605e95",
+  "new_l1_fingerprint": "ca04fb2fe5004a7c14b8ccbae7bc7b043d010ad517c571c1c04136415c20b782",
+  "new_proxy_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+  "old_capability_digest": "9f009fe3b4ffb8041aae0a0ae85161a1596fdba5def4104183b56eac43b01724",
+  "old_l1_fingerprint": "58c8d49d9545d179820f03a4505163970bcaf461d6720fd3541640a5113cba45",
+  "old_proxy_digest": "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78777475af7ca51704",
+  "only_intended_variable": "HTTP_PROXY_and_HTTPS_PROXY_injection_removed",
+  "passed": true,
+  "t7_embedded_combination_matches_declared_key": false,
+  "t7_key_source_for_T9": "declared_execution_key_reproduced_from_T6_readiness"
+}

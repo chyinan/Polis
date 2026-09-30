@@ -1,0 +1,19 @@
+{
+  "record_type": "polis-product-provider-terminal@1",
+  "status": "NOT_STARTED",
+  "model": "gpt-5.6-luna",
+  "effort": "medium",
+  "authorization_count": 0,
+  "reservation_count": 0,
+  "provider_egress": 0,
+  "turn_count": 0,
+  "first_output_latency_ms": null,
+  "elapsed_ms": null,
+  "total_tokens": null,
+  "tool_calls": 0,
+  "reconnect_count": 0,
+  "turn_terminal": null,
+  "clean_stop": "NOT_APPLICABLE_PROVIDER_NOT_STARTED",
+  "orphan_provider_process_count": 0,
+  "reason": "Pre-provider Task cardinality gate failed; no real provider process was launched."
+}

@@ -1,0 +1,28 @@
+{
+  "auth_identity_fingerprint": "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4",
+  "combination": {
+    "codex_version": "0.151.0",
+    "binary_sha256": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "runtime_profile": "wsl-linux-amd64",
+    "sandbox_class": "read-only",
+    "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+    "auth_source_class": "local_codex_auth_file",
+    "code_mode_host_sha256": "a9adcea47799d8caaec5fbf073966fef2869f754bc7b463e30783880dfb12913",
+    "capability_digest": "04a855290926ed2b6a21d9f95798fb655f1f6e96125fbe575b8327054a605e95",
+    "native_protocol_digest": "passed_without_inference"
+  },
+  "developer_instruction_digest": "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f",
+  "dynamic_tool_count": 0,
+  "prompt_digest": "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f",
+  "proxy_environment": {
+    "ALL_PROXY": "absent",
+    "HTTPS_PROXY": "absent",
+    "HTTP_PROXY": "absent",
+    "NO_PROXY": "absent",
+    "POLIS_NATIVE_PROXY": "absent"
+  },
+  "qualification": "unverified",
+  "tool_schema_bytes": 0
+}

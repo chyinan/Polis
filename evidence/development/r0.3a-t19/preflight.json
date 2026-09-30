@@ -1,0 +1,203 @@
+{
+  "controlled_same_factors": [
+    {
+      "field": "architecture",
+      "classification": "confirmed_same",
+      "a": "amd64",
+      "b": "amd64"
+    },
+    {
+      "field": "invocation",
+      "classification": "confirmed_same",
+      "a": "app-server --stdio",
+      "b": "app-server --stdio"
+    },
+    {
+      "field": "effective_config_digest",
+      "classification": "confirmed_same",
+      "a": "c0e4b6546dd8fe1c2992f3f6aba8b7dfe43d77e1d6f3b07889866ef76450858f",
+      "b": "c0e4b6546dd8fe1c2992f3f6aba8b7dfe43d77e1d6f3b07889866ef76450858f"
+    },
+    {
+      "field": "auth_credential_revision",
+      "classification": "confirmed_same",
+      "a": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+      "b": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7"
+    },
+    {
+      "field": "proxy_policy",
+      "classification": "confirmed_same",
+      "a": "no_injected_proxy",
+      "b": "no_injected_proxy"
+    },
+    {
+      "field": "effective_transport_config_digest",
+      "classification": "confirmed_same",
+      "a": "e5e78e023210da320fdf86f3c8504a3c97d535d11fb0a732d6e36229f2a57eb3",
+      "b": "e5e78e023210da320fdf86f3c8504a3c97d535d11fb0a732d6e36229f2a57eb3"
+    },
+    {
+      "field": "developer_instruction_digest",
+      "classification": "confirmed_same",
+      "a": "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f",
+      "b": "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f"
+    },
+    {
+      "field": "model",
+      "classification": "confirmed_same",
+      "a": "gpt-5.6-luna",
+      "b": "gpt-5.6-luna"
+    },
+    {
+      "field": "auth_source_class",
+      "classification": "confirmed_same",
+      "a": "controlled_diagnostic_auth_material",
+      "b": "controlled_diagnostic_auth_material"
+    },
+    {
+      "field": "auth_identity",
+      "classification": "confirmed_same",
+      "a": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+      "b": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58"
+    },
+    {
+      "field": "provider_transport_policy",
+      "classification": "confirmed_same",
+      "a": "native_default",
+      "b": "native_default"
+    },
+    {
+      "field": "dynamic_tool_count",
+      "classification": "confirmed_same",
+      "a": "0",
+      "b": "0"
+    },
+    {
+      "field": "sandbox_profile",
+      "classification": "confirmed_same",
+      "a": "read-only",
+      "b": "read-only"
+    },
+    {
+      "field": "cwd_role",
+      "classification": "confirmed_same",
+      "a": "diagnostic_workspace",
+      "b": "diagnostic_workspace"
+    },
+    {
+      "field": "prompt_digest",
+      "classification": "confirmed_same",
+      "a": "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f",
+      "b": "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f"
+    },
+    {
+      "field": "codex_version",
+      "classification": "confirmed_same",
+      "a": "0.153.4",
+      "b": "0.153.4"
+    },
+    {
+      "field": "effort",
+      "classification": "confirmed_same",
+      "a": "medium",
+      "b": "medium"
+    },
+    {
+      "field": "native_protocol_schema_digest",
+      "classification": "confirmed_same",
+      "a": "72be57296b90ea62baa6b0e1841cd1d0a16d665288e47c426bcdc7a51d62bc8b",
+      "b": "72be57296b90ea62baa6b0e1841cd1d0a16d665288e47c426bcdc7a51d62bc8b"
+    },
+    {
+      "field": "native_protocol_compatibility",
+      "classification": "confirmed_same",
+      "a": "passed",
+      "b": "passed"
+    },
+    {
+      "field": "stdio_output_line_ending",
+      "classification": "confirmed_same",
+      "a": "LF",
+      "b": "LF"
+    }
+  ],
+  "high_consumed": 0,
+  "historical_evidence_modified": false,
+  "medium_consumed": 0,
+  "not_comparable": null,
+  "not_recorded": null,
+  "passed": true,
+  "provider_egress": 0,
+  "runtime_derived_differences": [
+    {
+      "field": "capability_digest",
+      "classification": "runtime-derived-different",
+      "a": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+      "b": "360807ca722a760c1fcb2afd743f276b962f1aeaa89cabeb4fb0859263a08f33"
+    },
+    {
+      "field": "stdio_input_line_ending",
+      "classification": "runtime-derived-different",
+      "a": "LF",
+      "b": "CRLF"
+    },
+    {
+      "field": "pipe_semantics",
+      "classification": "runtime-derived-different",
+      "a": "Go_pipes",
+      "b": "redirected_standard_pipes"
+    },
+    {
+      "field": "binary_sha256",
+      "classification": "runtime-derived-different",
+      "a": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+      "b": "ccdc9eb9dd71fbcfb03ad42c4eca2b0d6ff6fbd32ebe9416550e6244561e559b"
+    },
+    {
+      "field": "filesystem_isolation",
+      "classification": "runtime-derived-different",
+      "a": "bwrap_user_mount_isolation",
+      "b": "diagnostic_home_only"
+    },
+    {
+      "field": "process_isolation",
+      "classification": "runtime-derived-different",
+      "a": "bwrap_die_with_parent_process_group",
+      "b": "windows_process_handle_no_job_object"
+    },
+    {
+      "field": "network_policy",
+      "classification": "runtime-derived-different",
+      "a": "shared_host_network",
+      "b": "native_os_network"
+    },
+    {
+      "field": "launch_mechanism",
+      "classification": "runtime-derived-different",
+      "a": "bwrap",
+      "b": "CreateProcess"
+    },
+    {
+      "field": "platform",
+      "classification": "runtime-derived-different",
+      "a": "linux",
+      "b": "windows"
+    },
+    {
+      "field": "code_mode_host_sha256",
+      "classification": "runtime-derived-different",
+      "a": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+      "b": "11a2ca7db48ee292f177584768657e7488ce8ef1e851b065b2f4d5f37f89a71d"
+    },
+    {
+      "field": "codex_home_profile",
+      "classification": "runtime-derived-different",
+      "a": "polis_wsl_bwrap_isolated",
+      "b": "windows_native_diagnostic"
+    }
+  ],
+  "status": "offline_preflight_passed",
+  "unexpected_differences": null,
+  "windows_local_protocol_ready": true,
+  "windows_process_stop_confirmed": true
+}

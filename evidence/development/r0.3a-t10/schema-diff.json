@@ -1,0 +1,412 @@
+{
+  "comparison": "Codex app-server generated JSON schema",
+  "old_version": "0.151.0",
+  "new_version": "0.153.4",
+  "old_root": ".tools\\r01-linux-schema",
+  "new_root": "evidence\\development\\r0.3a-t10\\native-schema-0.153.4",
+  "old_file_count": 413,
+  "new_file_count": 304,
+  "added_files": [
+    "v2/AuthRecoveryNotification.json",
+    "v2/PluginReconcileParams.json",
+    "v2/PluginReconcileResponse.json"
+  ],
+  "removed_files": [
+    "CurrentTimeReadParams.json",
+    "CurrentTimeReadResponse.json",
+    "FuzzyFileSearchSessionStartParams.json",
+    "FuzzyFileSearchSessionStartResponse.json",
+    "FuzzyFileSearchSessionStopParams.json",
+    "FuzzyFileSearchSessionStopResponse.json",
+    "FuzzyFileSearchSessionUpdateParams.json",
+    "FuzzyFileSearchSessionUpdateResponse.json",
+    "v2/BedrockDiscoverParams.json",
+    "v2/BedrockDiscoverResponse.json",
+    "v2/BedrockSetupParams.json",
+    "v2/BedrockSetupResponse.json",
+    "v2/CollaborationModeListParams.json",
+    "v2/CollaborationModeListResponse.json",
+    "v2/EnvironmentAddParams.json",
+    "v2/EnvironmentAddResponse.json",
+    "v2/EnvironmentInfoParams.json",
+    "v2/EnvironmentInfoResponse.json",
+    "v2/EnvironmentStatusParams.json",
+    "v2/EnvironmentStatusResponse.json",
+    "v2/McpServerEventStreamStartParams.json",
+    "v2/McpServerEventStreamStartResponse.json",
+    "v2/McpServerEventStreamStopParams.json",
+    "v2/McpServerEventStreamStopResponse.json",
+    "v2/MemoryResetResponse.json",
+    "v2/MockExperimentalMethodParams.json",
+    "v2/MockExperimentalMethodResponse.json",
+    "v2/NullableRemoteControlDisableParams.json",
+    "v2/NullableRemoteControlEnableParams.json",
+    "v2/PluginSearchParams.json",
+    "v2/PluginSearchResponse.json",
+    "v2/ProcessKillParams.json",
+    "v2/ProcessKillResponse.json",
+    "v2/ProcessResizePtyParams.json",
+    "v2/ProcessResizePtyResponse.json",
+    "v2/ProcessSpawnParams.json",
+    "v2/ProcessSpawnResponse.json",
+    "v2/ProcessWriteStdinParams.json",
+    "v2/ProcessWriteStdinResponse.json",
+    "v2/ProjectCreateParams.json",
+    "v2/ProjectCreateResponse.json",
+    "v2/ProjectDeleteParams.json",
+    "v2/ProjectDeleteResponse.json",
+    "v2/ProjectImportParams.json",
+    "v2/ProjectImportResponse.json",
+    "v2/ProjectListParams.json",
+    "v2/ProjectListResponse.json",
+    "v2/ProjectMoveParams.json",
+    "v2/ProjectMoveResponse.json",
+    "v2/ProjectReadParams.json",
+    "v2/ProjectReadResponse.json",
+    "v2/ProjectUpdateParams.json",
+    "v2/ProjectUpdateResponse.json",
+    "v2/RemoteControlClientsListParams.json",
+    "v2/RemoteControlClientsListResponse.json",
+    "v2/RemoteControlClientsRevokeParams.json",
+    "v2/RemoteControlClientsRevokeResponse.json",
+    "v2/RemoteControlDisableResponse.json",
+    "v2/RemoteControlEnableResponse.json",
+    "v2/RemoteControlPairingStartParams.json",
+    "v2/RemoteControlPairingStartResponse.json",
+    "v2/RemoteControlPairingStatusParams.json",
+    "v2/RemoteControlPairingStatusResponse.json",
+    "v2/RemoteControlStatusReadResponse.json",
+    "v2/ServerDiagnosticsParams.json",
+    "v2/ServerDiagnosticsResponse.json",
+    "v2/ThreadBackgroundTerminalsCleanParams.json",
+    "v2/ThreadBackgroundTerminalsCleanResponse.json",
+    "v2/ThreadBackgroundTerminalsListParams.json",
+    "v2/ThreadBackgroundTerminalsListResponse.json",
+    "v2/ThreadBackgroundTerminalsTerminateParams.json",
+    "v2/ThreadBackgroundTerminalsTerminateResponse.json",
+    "v2/ThreadDecrementElicitationParams.json",
+    "v2/ThreadDecrementElicitationResponse.json",
+    "v2/ThreadIncrementElicitationParams.json",
+    "v2/ThreadIncrementElicitationResponse.json",
+    "v2/ThreadMemoryModeSetParams.json",
+    "v2/ThreadMemoryModeSetResponse.json",
+    "v2/ThreadQueueAddParams.json",
+    "v2/ThreadQueueAddResponse.json",
+    "v2/ThreadQueueDeleteParams.json",
+    "v2/ThreadQueueDeleteResponse.json",
+    "v2/ThreadQueueListParams.json",
+    "v2/ThreadQueueListResponse.json",
+    "v2/ThreadQueueReorderParams.json",
+    "v2/ThreadQueueReorderResponse.json",
+    "v2/ThreadQueueStartParams.json",
+    "v2/ThreadQueueStartResponse.json",
+    "v2/ThreadQueueUpdateParams.json",
+    "v2/ThreadQueueUpdateResponse.json",
+    "v2/ThreadRealtimeAppendAudioParams.json",
+    "v2/ThreadRealtimeAppendAudioResponse.json",
+    "v2/ThreadRealtimeAppendSpeechParams.json",
+    "v2/ThreadRealtimeAppendSpeechResponse.json",
+    "v2/ThreadRealtimeAppendTextParams.json",
+    "v2/ThreadRealtimeAppendTextResponse.json",
+    "v2/ThreadRealtimeListVoicesParams.json",
+    "v2/ThreadRealtimeListVoicesResponse.json",
+    "v2/ThreadRealtimeStartParams.json",
+    "v2/ThreadRealtimeStartResponse.json",
+    "v2/ThreadRealtimeStopParams.json",
+    "v2/ThreadRealtimeStopResponse.json",
+    "v2/ThreadSearchOccurrencesParams.json",
+    "v2/ThreadSearchOccurrencesResponse.json",
+    "v2/ThreadSearchParams.json",
+    "v2/ThreadSearchResponse.json",
+    "v2/ThreadSettingsUpdateParams.json",
+    "v2/ThreadSettingsUpdateResponse.json",
+    "v2/ThreadTimelineListParams.json",
+    "v2/ThreadTimelineListResponse.json",
+    "v2/TurnSettingsUpdateParams.json",
+    "v2/TurnSettingsUpdateResponse.json"
+  ],
+  "changed_files": [
+    {
+      "path": "ClientRequest.json",
+      "old_bytes": 273534,
+      "new_bytes": 196747,
+      "old_sha256": "22d8039094586f0c957ab1b17825c9233942c1b18abcd9d3c9e9e97c47a35d9e",
+      "new_sha256": "25bc001b5dfe3b35785597b8f9ad9e5aaf7e437331fa9921f041c9e0e03fc9f3"
+    },
+    {
+      "path": "CommandExecutionRequestApprovalParams.json",
+      "old_bytes": 16106,
+      "new_bytes": 15559,
+      "old_sha256": "c9728280b8f3204fd729d0fb3d1ca7bb05b1150de26b3653f7163e6a9bd941e7",
+      "new_sha256": "16a71816c2d66e319c2c4aa83dd636dfdc43c61e72b6d5475e421ce08d8e6558"
+    },
+    {
+      "path": "McpServerElicitationRequestParams.json",
+      "old_bytes": 13251,
+      "new_bytes": 13636,
+      "old_sha256": "d056440b1c92d660364b671a39156b87dac4ab6537178499289d4b7204743c61",
+      "new_sha256": "5cbeb6bc702d2efa076da4c1dfb00672c970c1bad747031eb880b9ab907815c0"
+    },
+    {
+      "path": "ServerNotification.json",
+      "old_bytes": 198399,
+      "new_bytes": 200298,
+      "old_sha256": "6c0dbcf9da4ad2561a77adf69000390f5c1319896db329d16ac544025f716cb1",
+      "new_sha256": "b3e76cf11842f3e8b3270c05e000212b56eabafb0152fc38e8f920e2ef902991"
+    },
+    {
+      "path": "ServerRequest.json",
+      "old_bytes": 51289,
+      "new_bytes": 50320,
+      "old_sha256": "5f0d59338bd620480c52e112a1b3edc3f24f2dc74172b3f4e166732c867e1fc1",
+      "new_sha256": "31f580ad468fbd18766eb7adb12744be4e3790e3357b58bd4413c0108c4f65d0"
+    },
+    {
+      "path": "codex_app_server_protocol.schemas.json",
+      "old_bytes": 804400,
+      "new_bytes": 683139,
+      "old_sha256": "31ae67beb2c94cc9509f6a71968600062dc8c6d7fe45437ed3a9129838f4d2d9",
+      "new_sha256": "e8284c5cb8157554a3dd1e035aadbd4325aea501af56887e9c2e12eb1b9b9448"
+    },
+    {
+      "path": "codex_app_server_protocol.v2.schemas.json",
+      "old_bytes": 696802,
+      "new_bytes": 583707,
+      "old_sha256": "a586cdc50f84c56c7654387e869b470a689796fa1c57678dcafb5921bb2d5255",
+      "new_sha256": "d3eace08be5dca386bfd1f1e8df650058b4113f1e10870a284d775d75517576a"
+    },
+    {
+      "path": "v2/CommandExecParams.json",
+      "old_bytes": 7673,
+      "new_bytes": 7397,
+      "old_sha256": "fd034b4c85d7b6f466e30a3cbb73db86be1263aca3f81b89b547f14817dfb62e",
+      "new_sha256": "e4f20080b92c6199cf132941840c4bd0fb9a90e3fec197ceb0e1ce9084346e18"
+    },
+    {
+      "path": "v2/ConfigReadResponse.json",
+      "old_bytes": 26699,
+      "new_bytes": 27473,
+      "old_sha256": "2de702bfaedcf8f4362b0122299ae412bdc0c244564a376a30fc9624c7df2514",
+      "new_sha256": "bd72c94e2c7d49ead6a20bcf54afedc8db11044bf8cadb387e42135dd5d1e342"
+    },
+    {
+      "path": "v2/ConfigRequirementsReadResponse.json",
+      "old_bytes": 24193,
+      "new_bytes": 23562,
+      "old_sha256": "14ae1953f5077a5d37399aa467f6e08c74601af5fa0c4ffc703b8a2858b0cc81",
+      "new_sha256": "7f3cd9856eeb581985a4dcd1acd90be8efa30a7929a96e4e74b6b9a3d878118f"
+    },
+    {
+      "path": "v2/GetAccountRateLimitsResponse.json",
+      "old_bytes": 7259,
+      "new_bytes": 7670,
+      "old_sha256": "c102f41b28ee782008b0fc98adb2cefe172bfe6c347770a0896453f23e3d812a",
+      "new_sha256": "a28d4d0e9181a498c58d4ae3b6b49aaa6ee7a33c0c9f81c1ad0bff223bfbbe3b"
+    },
+    {
+      "path": "v2/ItemCompletedNotification.json",
+      "old_bytes": 45304,
+      "new_bytes": 45968,
+      "old_sha256": "9958dce3bcab754e88323d233dff5f4c2ee04ce35f068a18d8f83f93528acf8b",
+      "new_sha256": "69aba3fe5f72f38bf5c541e7e2c09de40778abe65ff969d9fc73372037812091"
+    },
+    {
+      "path": "v2/ItemStartedNotification.json",
+      "old_bytes": 45296,
+      "new_bytes": 45960,
+      "old_sha256": "e30713dca6e8f6842a0c5350003ea433b6cbb4894209b4f871894450caa67b6f",
+      "new_sha256": "c4c34f47db6326cd4841bae428f23d08eb285077ffad35be9772b928c65bb912"
+    },
+    {
+      "path": "v2/RawResponseCompletedNotification.json",
+      "old_bytes": 1972,
+      "new_bytes": 1998,
+      "old_sha256": "ecb33556a2573cc3dddfe54e53067947767772357353dcb28f68a35f0a4415bb",
+      "new_sha256": "aba140e87952c900f96e0308a8849d3e313d985de1f1aa2b77f193884a76357c"
+    },
+    {
+      "path": "v2/ReviewStartResponse.json",
+      "old_bytes": 54318,
+      "new_bytes": 54982,
+      "old_sha256": "9b093b622c8cd392f48dd57196c6868bfd4ccb24a1dd616e67a743f94ef72e6e",
+      "new_sha256": "d6d5c99473b695fff0f58a896bee11ddcddca23304523fba878860324b7f07df"
+    },
+    {
+      "path": "v2/ThreadForkParams.json",
+      "old_bytes": 6584,
+      "new_bytes": 5385,
+      "old_sha256": "674134467796c011068b9dd5efc912de4560fa31f65c0fb2163f14e352be7a61",
+      "new_sha256": "60540b97d453ddbc5e12bfaa007a3718f31847d18dec0da59a5e4b89be4717ad"
+    },
+    {
+      "path": "v2/ThreadForkResponse.json",
+      "old_bytes": 74913,
+      "new_bytes": 74825,
+      "old_sha256": "5a808a8904201a7756045621012f2032fd5655bc6c4caab9b7251268d901a19d",
+      "new_sha256": "c15e43ec275b370df2d831cb5147f7ff399aab2e74d091c07cdb3de57db11f94"
+    },
+    {
+      "path": "v2/ThreadItemsListResponse.json",
+      "old_bytes": 45842,
+      "new_bytes": 46506,
+      "old_sha256": "a4c5047f1eecd3212fb818960b7a11bd2e25046739643d30d3c2b298c0269dff",
+      "new_sha256": "886369490fec07067597460301b3d5c1dc9aedc41ea42522cae397d8babe6156"
+    },
+    {
+      "path": "v2/ThreadListParams.json",
+      "old_bytes": 4322,
+      "new_bytes": 3628,
+      "old_sha256": "e321f00bbc81b7e65e8596b8c286deaf2f5c48e76fa179db3abc4ff337d85199",
+      "new_sha256": "b227bb78acf9b91060d03c56d3f2072cdd9f1bd08290c11e8869f1a663b16da2"
+    },
+    {
+      "path": "v2/ThreadListResponse.json",
+      "old_bytes": 67662,
+      "new_bytes": 68425,
+      "old_sha256": "dfbdc4fa15954d1b8fd0be9ce61b80dba3dd8ced9f6d4e267096eb3d484928e8",
+      "new_sha256": "351be50beed03976ddd63e8027e9ddeecb240d7611856b2dc19125c3f8eba400"
+    },
+    {
+      "path": "v2/ThreadMetadataUpdateParams.json",
+      "old_bytes": 1690,
+      "new_bytes": 1465,
+      "old_sha256": "4698633f92f107083311d0924cf730bc31cdd56ba4c2950a30f06ce30ba7fab8",
+      "new_sha256": "190da07d8c7c89c44b1e44b4e57fb5d803f356953534498a7a7f39fe29a8a6a4"
+    },
+    {
+      "path": "v2/ThreadMetadataUpdateResponse.json",
+      "old_bytes": 67008,
+      "new_bytes": 67771,
+      "old_sha256": "bc632d50d5fb57ae39544e49fd122bcb6846b201b4e83c45fe36421460081b25",
+      "new_sha256": "c1c1095f8ebb5a975c7cdd8b4fb36b81e3e2797e35209b2cf0a4597c6f418961"
+    },
+    {
+      "path": "v2/ThreadReadResponse.json",
+      "old_bytes": 66998,
+      "new_bytes": 67761,
+      "old_sha256": "4632758fd76056d99c81857e85df4de32f252d017d3abeb5224fe96ca149163f",
+      "new_sha256": "a76583d07f6096fee33045da2dc9caed84d858f8f2d39b37bb38528dbaf32511"
+    },
+    {
+      "path": "v2/ThreadResumeParams.json",
+      "old_bytes": 39470,
+      "new_bytes": 38018,
+      "old_sha256": "324e96004c49de35935cade3386958431c93a4fd3997a839f9796772ea4c8072",
+      "new_sha256": "8ac68582a81d60940b10b330be8546123f56bfe246b56f8a4f121da00f347cf2"
+    },
+    {
+      "path": "v2/ThreadResumeResponse.json",
+      "old_bytes": 76346,
+      "new_bytes": 75971,
+      "old_sha256": "41dac07e308dec848693c9451b07e7eaf89e2c58580d60605ff408e82d5fcf29",
+      "new_sha256": "a553d6b1eb66111ca556e22138017ec54fd07c3257dbd2d5ad97ad7660786345"
+    },
+    {
+      "path": "v2/ThreadRevertResponse.json",
+      "old_bytes": 67808,
+      "new_bytes": 68571,
+      "old_sha256": "cea58671289515338af4c694ca8b9f0b1eb8eb8b8567ac29085793b788e1a082",
+      "new_sha256": "de7206155e188cea30dfd81fb3295d6e2554a7cc7b58202c4b0a49e9623affe1"
+    },
+    {
+      "path": "v2/ThreadRollbackResponse.json",
+      "old_bytes": 67329,
+      "new_bytes": 68092,
+      "old_sha256": "48ed70b9698c7771b634127d7731780ac509c8d085c8167faab4497a53532f32",
+      "new_sha256": "c5e1d8f6845e0840068cc46422fcc986a7648487219a901f8a0f51ee9fbb6ca7"
+    },
+    {
+      "path": "v2/ThreadSettingsUpdatedNotification.json",
+      "old_bytes": 10618,
+      "new_bytes": 10318,
+      "old_sha256": "f7865eabaa34c7895a1ae345e51c1ba181a63c649237d36583b80f9d759b0f53",
+      "new_sha256": "e601ede3c6947f6df0aea6b1c091c01e38ef7909df939f5ef11c8f836fc8a2ed"
+    },
+    {
+      "path": "v2/ThreadShellCommandParams.json",
+      "old_bytes": 567,
+      "new_bytes": 917,
+      "old_sha256": "7f3e8b33d33c23746e07c1f173ddff03a6f04bfbd1cea1b27092139316fdc664",
+      "new_sha256": "dc646457ca36be601c8c3d15c44d14907d9a165ccf2b9635a8e9a878f0ca0727"
+    },
+    {
+      "path": "v2/ThreadStartParams.json",
+      "old_bytes": 12971,
+      "new_bytes": 10180,
+      "old_sha256": "25f490368ec6df52a2a3b82a5469d2413307eb93439121b309f415b5648eee7a",
+      "new_sha256": "792e2f32e37cece971bd616664ea2053741acbed4e9c92e9d1766427718f2ecd"
+    },
+    {
+      "path": "v2/ThreadStartResponse.json",
+      "old_bytes": 74914,
+      "new_bytes": 74826,
+      "old_sha256": "b9a37d1a1d9349a2f034a68a943635ea6aaaec0165e69c4380564752324158ef",
+      "new_sha256": "656f8fd0fe91f533126cbfdb9369cfab550927a229e48dd46460f6f015d2b186"
+    },
+    {
+      "path": "v2/ThreadStartedNotification.json",
+      "old_bytes": 67005,
+      "new_bytes": 67768,
+      "old_sha256": "2ac2a5ef8992ceaf44d5e34cadbb60b0443f7efb73e7c6f8e65d8590aab60e07",
+      "new_sha256": "d66a9b4563471c5fe99de18cb2bd3c83e7b6aac8deb0b0579406b3b7c74d7b35"
+    },
+    {
+      "path": "v2/ThreadTurnsListResponse.json",
+      "old_bytes": 54683,
+      "new_bytes": 55347,
+      "old_sha256": "704f171641cb7115c0df7fc78ba364a0ebb0a7dc2eba7089b6497f7b02465a4f",
+      "new_sha256": "45bffd91efc358859a1a54b8165c0a8b1c21ebc2a312da9f25d05ff27af798ee"
+    },
+    {
+      "path": "v2/ThreadUnarchiveResponse.json",
+      "old_bytes": 67003,
+      "new_bytes": 67766,
+      "old_sha256": "bf90c49a22adaff727da93c104b62facb445c08e16e00c9cf479a719ec8871bf",
+      "new_sha256": "1df1bd13818b3c22a2fb4a64c55b393778e0eaa65547744333d8df9bb40a29cd"
+    },
+    {
+      "path": "v2/TurnCompletedNotification.json",
+      "old_bytes": 54125,
+      "new_bytes": 54789,
+      "old_sha256": "b85470d9eadbcad52700bd1d5aae187a9cd995e50b7099ed05469b6d41d6b997",
+      "new_sha256": "78af2a37391e8e669a4020cb58593e4d3e378756ced79d5fec72374fa69fb94b"
+    },
+    {
+      "path": "v2/TurnStartParams.json",
+      "old_bytes": 23746,
+      "new_bytes": 20847,
+      "old_sha256": "b36fb37326b1cf69f75c8b306f1f886d53a57c4b1b985e08e298e2407ea2ad02",
+      "new_sha256": "a3835e8c1e942e4b358e1a670939b89918b16c4d13105a579899892b7ade6dea"
+    },
+    {
+      "path": "v2/TurnStartResponse.json",
+      "old_bytes": 54053,
+      "new_bytes": 54717,
+      "old_sha256": "7a817a98d78ac8e982c82c24bf8f7a2d2e61cca9fb91e5386e31cae0888e38e2",
+      "new_sha256": "6fc49c3e5d0ce11a3a109ae194619b04d6e3ff98fa29bac683fdb754608958be"
+    },
+    {
+      "path": "v2/TurnStartedNotification.json",
+      "old_bytes": 54123,
+      "new_bytes": 54787,
+      "old_sha256": "c6d039d1c0ebb5a77b6ab34d22f096f783cfdbfa5c251cdcf3dfdb4587a97127",
+      "new_sha256": "d4b59fd396cadfc2377f60c9f9f4c9367dca95362baadf7817c74e1b9c910c4d"
+    },
+    {
+      "path": "v2/TurnSteerParams.json",
+      "old_bytes": 7248,
+      "new_bytes": 6385,
+      "old_sha256": "2e0cdcea6a90d6c8bc584fdc2ff838e824754b1eef0d2d16aa71bec4276fef44",
+      "new_sha256": "4a52eb76e7a717bb388484ccd7538737fca0df35481fc30a21e259f1bfe96e37"
+    }
+  ],
+  "relevant_protocol_paths": {
+    "initialize": "present in both generated schemas",
+    "thread/start": "present in both generated schemas",
+    "thread/started": "present in both generated schemas",
+    "turn/start": "present in both generated schemas",
+    "turn/completed": "present in both generated schemas",
+    "item/tool/call": "present in both generated schemas",
+    "error.responseStreamDisconnected": "present in both generated schemas; structured reconnect parser fixture passed"
+  }
+}

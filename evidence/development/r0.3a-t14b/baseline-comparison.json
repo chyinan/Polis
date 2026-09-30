@@ -1,0 +1,22 @@
+{
+  "passed": false,
+  "status": "preflight_failed",
+  "control": "T13 current-auth 0.153.4 re-expressed as v3",
+  "candidate": "T14B current-auth 0.153.4 native-default policy",
+  "t13_v2_fingerprint": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+  "t13_control_reexpressed_v3_fingerprint": "ea49b5df52d7923a520cd80f053ba3f6a055698121e3985cdd51eb58b2d9cbd3",
+  "t14b_candidate_v3_fingerprint": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "intended_policy_change": "explicitly_disabled -> native_default",
+  "implementation_diagnostic": {
+    "reason_code": "host_guest_home_path_conflation",
+    "guest_home": "/home/codex",
+    "host_bind_source_used": "/home/codex",
+    "expected_host_bind_source": ".runtime/linux/r03a-t14b/home",
+    "native_stderr": "bwrap: Can't find source path /home/codex",
+    "process_launch_attempted": true,
+    "turn_started": false,
+    "medium_consumed": 0,
+    "provider_egress": "not_started"
+  },
+  "historical_evidence_recomputed_or_overwritten": false
+}

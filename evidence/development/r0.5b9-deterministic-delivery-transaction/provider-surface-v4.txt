@@ -1,0 +1,22 @@
+surface_id=polis-product-tool-surface@4
+status=STALE_NO_LIVE_QUALIFICATION
+tool_count=7
+manifest=60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4
+schema_bytes=2206
+schema_digest=5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc
+provider_reservation=0
+provider_egress=0
+
+tools_in_order:
+1. polis_work_current — no-argument object; returns current authorized Task, public validation binding, workspace metadata, handover and budget.
+2. polis_context_read — no-argument object; returns approved context and persisted facts/decisions for the current worker session.
+3. polis_workspace_read — no-argument object; returns current workspace content, digest and revision.
+4. polis_workspace_replace — required content:string[1..4096], expected_digest:string[64], expected_revision:integer>=1; revision-aware workspace CAS.
+5. polis_workspace_check — no-argument object; validates the current workspace against the bound public acceptance contract and returns a validation receipt.
+6. polis_work_checkpoint — required kind, summary, facts, decisions, rejected, evidence_refs; preserves progress/qualified checkpoint capability. Qualified evidence remains receipt-bound; final delivery no longer requires this tool call.
+7. polis_task_submit — no-argument object; explicit submit decision after validation PASS. The control plane creates the qualified checkpoint, publishes the validated Artifact and moves the Task to candidate.
+
+provider_surface_changed=true
+previous_surface_id=polis-product-tool-surface@3
+previous_surface_status=HISTORICAL_STALE
+live_canary=NOT_STARTED

@@ -1,0 +1,13 @@
+2026-09-22 01:37:45.339 CST [60012] LOG:  starting PostgreSQL 18.0 on x86_64-windows, compiled by msvc-19.44.35215, 64-bit
+2026-09-22 01:37:45.343 CST [60012] LOG:  listening on IPv4 address "127.0.0.1", port 61579
+2026-09-22 01:37:45.534 CST [84272] LOG:  database system was shut down at 2026-09-22 01:37:43 CST
+2026-09-22 01:37:45.543 CST [60012] LOG:  database system is ready to accept connections
+2026-09-22 01:37:45.734 CST [76688] ERROR:  CREATE DATABASE cannot run inside a transaction block
+2026-09-22 01:37:45.734 CST [76688] STATEMENT:  CREATE ROLE polis_runtime LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD 'cf62372756954ad5bdd6df6be64bf89e'; CREATE DATABASE polis_r0_smoke_b7924a065daa OWNER polis_runtime;
+2026-09-22 01:37:45.784 CST [60012] LOG:  received fast shutdown request
+2026-09-22 01:37:45.788 CST [60012] LOG:  aborting any active transactions
+2026-09-22 01:37:45.793 CST [60012] LOG:  background worker "logical replication launcher" (PID 19664) exited with exit code 1
+2026-09-22 01:37:45.800 CST [25464] LOG:  shutting down
+2026-09-22 01:37:45.805 CST [25464] LOG:  checkpoint starting: shutdown immediate
+2026-09-22 01:37:45.826 CST [25464] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.009 s, total=0.024 s; sync files=6, longest=0.002 s, average=0.002 s; distance=3 kB, estimate=3 kB; lsn=0/17F23E0, redo lsn=0/17F23E0
+2026-09-22 01:37:45.842 CST [60012] LOG:  database system is shut down

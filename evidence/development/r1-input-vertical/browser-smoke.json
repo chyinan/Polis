@@ -1,0 +1,35 @@
+{
+  "result": "passed",
+  "runId": "d3fa475f81a8",
+  "companyId": "r1-input-browser",
+  "missionId": "r1-input-browser-mission",
+  "inputName": "goal.md",
+  "inputRevision": "1",
+  "directorySnapshot": {
+    "name": "project",
+    "revision": 1,
+    "sourceKind": "directory_snapshot",
+    "digest": "59e334358c0d9614c57c787ccf4ffdd7d7514757bb3f93457518e3698db7c5aa",
+    "files": [
+      "project/README.md",
+      "project/src/main.go"
+    ]
+  },
+  "missionStateAfterUpload": "draft",
+  "qqRouteDraft": {
+    "adapter": "qq_official",
+    "enabled": false,
+    "qualificationStatus": "unverified",
+    "credentialRef": "default",
+    "targetMasked": true,
+    "externalTestSendEnabled": false
+  },
+  "missionLifecycle": {
+    "missionId": "caa680c4bc6cb120c4332adefa3e7484",
+    "pause": "paused",
+    "resume": "active",
+    "cancelled": "cancelled"
+  },
+  "externalProviderCalls": "not-run",
+  "generatedAt": "2026-09-23T15:35:41.655835+00:00"
+}

@@ -1,0 +1,366 @@
+{
+  "task": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_2",
+  "result": "FAILED",
+  "reason": "The provider turn completed normally and the public workspace check passed, but the employee stopped without a qualified checkpoint or Artifact.",
+  "company_id": "r05b-live-2",
+  "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+  "mission_state_before_cleanup": "active",
+  "task_roles": {
+    "task_count": 2,
+    "tasks": [
+      {
+        "id": "489ea9fbe65d359327bd9bc979461138",
+        "kind": "bootstrap_plan",
+        "owner": "emp-planning",
+        "state": "completed",
+        "generation": 0,
+        "mission_id": "fed04f193f1bc6afebf9c152832ccd76"
+      },
+      {
+        "id": "5b39875f8dc6463f36395b04e4504407",
+        "kind": "compat",
+        "owner": "emp-backend",
+        "state": "working",
+        "generation": 1,
+        "mission_id": "fed04f193f1bc6afebf9c152832ccd76"
+      }
+    ],
+    "provider_executable_task_count": 1,
+    "provider_executable_employee_count": 1,
+    "provider_bearing_worker_session_count": 1,
+    "planning_worker_session_count": 0
+  },
+  "task_validation_binding": {
+    "task_id": "5b39875f8dc6463f36395b04e4504407",
+    "contract": {
+      "revision": "text-acceptance@1",
+      "required_text": [
+        "Mission ID: fed04f193f1bc6afebf9c152832ccd76",
+        "Task ID: 5b39875f8dc6463f36395b04e4504407",
+        "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+        "Task summary: This artifact records one small product integration smoke."
+      ]
+    },
+    "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+    "runner_kind": "text_contains_all",
+    "runner_revision": "text-contains-all@1",
+    "acceptance_revision": "text-acceptance@1",
+    "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+  },
+  "provider_session": {
+    "id": "f3a7f944f2749750becda51ad9d0e5bb",
+    "epoch": 3,
+    "state": "stopped",
+    "profile": "gpt-5.6-luna/medium",
+    "task_id": "5b39875f8dc6463f36395b04e4504407",
+    "employee_id": "emp-backend",
+    "incarnation": "071de211c19356d584cc5546ed877289",
+    "process_pid": 19100,
+    "stop_receipt": "windows-process-handle:19100:waited",
+    "tool_call_limit": 16,
+    "tool_calls_used": 13
+  },
+  "provider": {
+    "authorization_count": 1,
+    "reservation_count": 1,
+    "medium_turns": 1,
+    "high_turns": 0,
+    "provider_egress": 1,
+    "turn_terminal": "completed",
+    "turn_outcome": "COMPLETED",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "purpose": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_2",
+    "surface_id": "polis-product-tool-surface@2",
+    "tool_count": 7,
+    "manifest_digest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+    "aggregate_schema_bytes": 1470,
+    "aggregate_schema_digest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+    "exact_surface_execution_fingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08",
+    "product_provider_l2_fingerprint": "4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532",
+    "task_validation_binding_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+    "initial_workspace_digest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+    "initial_workspace_revision": 1,
+    "elapsed_ms": 92336.433,
+    "time_to_first_output_ms": 9826.863,
+    "protocol_turn_start_count": 1,
+    "protocol_turn_completed_present": true,
+    "tool_calls": 13,
+    "reconnects_observed": 0,
+    "reconnect_evidence": "The terminal usage object did not persist the runtime reconnect counter; protocol.jsonl contains one turn/start and no reconnect/resume method markers.",
+    "token_usage": {
+      "last": {
+        "inputTokens": 15505,
+        "totalTokens": 15587,
+        "outputTokens": 82,
+        "cachedInputTokens": 13056,
+        "cacheWriteInputTokens": 0,
+        "reasoningOutputTokens": 41
+      },
+      "total": {
+        "inputTokens": 162336,
+        "totalTokens": 164811,
+        "outputTokens": 2475,
+        "cachedInputTokens": 124416,
+        "cacheWriteInputTokens": 0,
+        "reasoningOutputTokens": 1053
+      }
+    },
+    "terminal_observation": {
+      "state": "completed",
+      "usage": {
+        "started_at": "2026-09-17T10:50:57.1652362Z",
+        "tool_calls": 0,
+        "finished_at": "2026-09-17T10:52:29.5016692Z",
+        "token_usage": {
+          "last": {
+            "inputTokens": 15505,
+            "totalTokens": 15587,
+            "outputTokens": 82,
+            "cachedInputTokens": 13056,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 41
+          },
+          "total": {
+            "inputTokens": 162336,
+            "totalTokens": 164811,
+            "outputTokens": 2475,
+            "cachedInputTokens": 124416,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 1053
+          }
+        },
+        "authorization": {
+          "Epoch": 3,
+          "Model": "gpt-5.6-luna",
+          "Effort": "medium",
+          "TaskID": "5b39875f8dc6463f36395b04e4504407",
+          "Profile": "gpt-5.6-luna/medium",
+          "Purpose": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_2",
+          "TaskKind": "compat",
+          "CompanyID": "r05b-live-2",
+          "MissionID": "fed04f193f1bc6afebf9c152832ccd76",
+          "SessionID": "f3a7f944f2749750becda51ad9d0e5bb",
+          "ToolCount": 7,
+          "EmployeeID": "emp-backend",
+          "Incarnation": "071de211c19356d584cc5546ed877289",
+          "TaskOwnerID": "emp-backend",
+          "EmployeeRole": "backend",
+          "ProviderMode": "real",
+          "ToolCallLimit": 16,
+          "WorkspaceDigest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+          "ExecutionEnvelope": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+          "ToolSurfaceDigest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+          "WorkspaceRevision": 1,
+          "AggregateSchemaBytes": 1470,
+          "AggregateSchemaDigest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+          "TransportPolicyRevision": "r03a-transport-policy@1",
+          "ToolSurfaceQualification": "polis-product-tool-surface@2",
+          "TaskValidationBindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+          "ProductProviderL2Fingerprint": "4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532",
+          "ExactSurfaceExecutionFingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08"
+        },
+        "provider_egress": 1
+      },
+      "outcome": "COMPLETED"
+    },
+    "protocol_turn_start_at": "2026-09-17T10:50:57.1652362Z",
+    "protocol_first_output_at": "2026-09-17T10:51:06.9920993Z",
+    "protocol_turn_completed_at": "2026-09-17T10:52:29.5011489Z",
+    "protocol_tool_call_event_count": 13,
+    "worker_session_tool_calls_used": 13,
+    "codex_terminal_usage_tool_calls_field": 0,
+    "codex_terminal_usage_tool_calls_note": "The Codex usage field is not authoritative for mediated Polis tool calls; WorkerSession.tool_calls_used and protocol item/tool/call events both record 13.",
+    "reconnect_markers_in_protocol": 0,
+    "reconnect_count_note": "The runtime reconnect counter was not persisted. No reconnect/resume protocol markers were observed."
+  },
+  "workspace_check": {
+    "id": "5d571cd58e6dc80707aa66171a1aff5f",
+    "phase": "product",
+    "digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+    "passed": true,
+    "report": {
+      "epoch": 3,
+      "status": "PASS",
+      "task_id": "5b39875f8dc6463f36395b04e4504407",
+      "feedback": "All public required-text criteria are present in the current Task workspace.",
+      "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+      "session_id": "f3a7f944f2749750becda51ad9d0e5bb",
+      "reason_code": "all_required_text_present",
+      "runner_kind": "text_contains_all",
+      "runner_revision": "text-contains-all@1",
+      "workspace_digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+      "workspace_revision": 2,
+      "acceptance_revision": "text-acceptance@1",
+      "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+    },
+    "session_id": "f3a7f944f2749750becda51ad9d0e5bb"
+  },
+  "workspace_after_check": [
+    {
+      "digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+      "task_id": "5b39875f8dc6463f36395b04e4504407",
+      "revision": 2
+    }
+  ],
+  "qualified_checkpoint_count": 0,
+  "artifact_count": 0,
+  "artifact_qualification_count": 0,
+  "artifact_digest": null,
+  "artifact_cas_resolution": "NOT_REACHED_NO_ARTIFACT",
+  "frontend_observation": [
+    "overview",
+    "tasks",
+    "activity"
+  ],
+  "retries": 0,
+  "successors": 0,
+  "high_turns": 0,
+  "second_missions": 0,
+  "duplicate_reservations": 0,
+  "live_provider_sessions": 0,
+  "provider_process_count": 0,
+  "browser_start_click_count": 1,
+  "provider_terminal_record_count": 1,
+  "evidence_source": "current-state.json plus provider-evidence session protocol.jsonl",
+  "mission_state_final": "cancelled",
+  "task_final_states": [
+    {
+      "id": "489ea9fbe65d359327bd9bc979461138",
+      "kind": "bootstrap_plan",
+      "owner": "emp-planning",
+      "state": "completed",
+      "generation": 0
+    },
+    {
+      "id": "5b39875f8dc6463f36395b04e4504407",
+      "kind": "compat",
+      "owner": "emp-backend",
+      "state": "cancelled",
+      "generation": 1
+    }
+  ],
+  "worker_session_final_states": [
+    {
+      "id": "f3a7f944f2749750becda51ad9d0e5bb",
+      "task_id": "5b39875f8dc6463f36395b04e4504407",
+      "employee_id": "emp-backend",
+      "state": "stopped",
+      "epoch": 3,
+      "incarnation": "071de211c19356d584cc5546ed877289",
+      "process_pid": 19100,
+      "stop_receipt": "windows-process-handle:19100:waited",
+      "tool_call_limit": 16,
+      "tool_calls_used": 13
+    }
+  ],
+  "post_attempt_cleanup": {
+    "command": "mission.cancel",
+    "browser_response_status": 202,
+    "browser_command_count": 1,
+    "mission_state": "cancelled",
+    "provider_egress_after_terminal": 0,
+    "live_provider_sessions": 0,
+    "live_provider_processes": 0,
+    "activity_event_count": 29,
+    "final_event_kind": "mission.cancel"
+  },
+  "browser_e2e": {
+    "companyId": "r05b-live-2",
+    "missionId": "fed04f193f1bc6afebf9c152832ccd76",
+    "missionCreatePostCount": 1,
+    "missionStartPostCount": 1,
+    "missionCancelPostCount": 1,
+    "overview": {
+      "missionCancelledVisible": true,
+      "taskCountTwoVisible": true,
+      "workerStoppedVisible": true,
+      "checkpointAbsenceVisible": true,
+      "artifactAbsenceVisible": true,
+      "screenshot": "browser-final-overview.png"
+    },
+    "tasks": {
+      "bootstrapPlanningTaskVisible": true,
+      "bootstrapCompletedVisible": true,
+      "compatBackendTaskVisible": true,
+      "compatCancelledVisible": true,
+      "screenshot": "browser-final-tasks.png"
+    },
+    "activity": {
+      "missionCreateVisible": true,
+      "missionStartVisible": true,
+      "providerTurnCompletedVisible": true,
+      "workerStoppedVisible": true,
+      "missionCancelVisible": true,
+      "screenshot": "browser-final-activity.png"
+    },
+    "sseRequests": 0,
+    "pageErrors": [],
+    "apiTraffic": [
+      {
+        "method": "POST",
+        "path": "/api/workbench/companies/r05b-live-2/missions"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "POST",
+        "path": "/api/workbench/companies/r05b-live-2/missions/fed04f193f1bc6afebf9c152832ccd76/start"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/activity"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "POST",
+        "path": "/api/workbench/companies/r05b-live-2/missions/fed04f193f1bc6afebf9c152832ccd76/cancel"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/overview"
+      },
+      {
+        "method": "GET",
+        "path": "/api/workbench/companies/r05b-live-2/activity"
+      }
+    ]
+  },
+  "activity_event_count_before_cleanup": 28,
+  "activity_event_count": 29,
+  "final_activity_snapshot": "activity-snapshot-final.json",
+  "browser_e2e_file": "browser-e2e.json"
+}

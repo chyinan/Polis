@@ -1,0 +1,22 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-RECOVERY-CONTINUATION-V2",
+  "status": "STOPPED",
+  "reason_code": "PRESERVED_ACCESS_MANIFEST_MISSING",
+  "original_sample_6_evidence_modified": false,
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "frontend_started": false,
+  "reviewer_started": false,
+  "pgdata": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6/postgres/pgdata",
+  "postgres_version": "18",
+  "cluster_system_identifier": "7685325910591533502",
+  "cluster_state": "shut down",
+  "preserved_postgres_access_manifest": "NOT_FOUND",
+  "database_name": "NOT_INSPECTED",
+  "database_oid": "NOT_INSPECTED",
+  "role": "NOT_INSPECTED",
+  "source_state_mutated": false,
+  "destructive_boundary_entered": false,
+  "eligible_for_recovery_continuation": false
+}

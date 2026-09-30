@@ -1,0 +1,38 @@
+{
+  "auth_credential_revision_equal": true,
+  "auth_identity_equal": true,
+  "candidate": "T14 current-auth 0.153.4 native-default-policy",
+  "control": "T13 current-auth 0.153.4",
+  "factor_diff": {
+    "actual_transport": "not_observable_until_live_protocol",
+    "auth_comparison": {
+      "source_class": "SAME",
+      "identity": "SAME",
+      "credential_revision": "SAME",
+      "strict_experiment_comparable": true,
+      "incomparable_fingerprint_types": false
+    },
+    "changed_fields": [
+      "combination.capability_digest",
+      "transport.provider_transport_policy",
+      "transport.websocket_policy"
+    ],
+    "new_t14_canonical_manifest_v3_digest": "899f760993417c52a9fffccf109f8fcf6c7b1d6cf3f00150e710952b712a37fe",
+    "non_transport_divergence": null,
+    "old_t13_canonical_manifest_v2_digest": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+    "passed": true,
+    "transport_policy": {
+      "new_provider_transport_policy": "native_default",
+      "new_websocket_policy": "native_default",
+      "old_provider_transport_policy": "explicitly_disabled",
+      "old_websocket_policy": "explicitly_disabled"
+    }
+  },
+  "historical_evidence_recomputed_or_overwritten": false,
+  "new_t14_fingerprint": "899f760993417c52a9fffccf109f8fcf6c7b1d6cf3f00150e710952b712a37fe",
+  "old_t13_fingerprint": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+  "passed": true,
+  "proxy_environment_equal_and_absent": true,
+  "runtime_config_invocation_equal_after_policy_paths": true,
+  "websocket_policy_only_change": true
+}

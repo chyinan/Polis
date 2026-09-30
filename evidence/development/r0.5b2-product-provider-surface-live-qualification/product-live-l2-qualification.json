@@ -1,0 +1,12 @@
+{
+  "qualification": "product_provider_surface_live_L2",
+  "status": "NOT_QUALIFIED",
+  "product_provider_surface_status": "NOT_CURRENT_SEMANTICS",
+  "eligible_for_r0_5b_real_provider_smoke": false,
+  "product_provider_L2_fingerprint": null,
+  "reason": "PRODUCT_TOOL_SURFACE_SEMANTICS_NOT_CURRENT",
+  "provider_egress": 0,
+  "canary_count": 0,
+  "retry": 0,
+  "old_R03A_T21B_11_tool_qualification": "HISTORICALLY_VALID_BUT_NOT_REUSABLE"
+}

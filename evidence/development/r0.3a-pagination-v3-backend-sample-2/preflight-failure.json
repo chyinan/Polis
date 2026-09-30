@@ -1,0 +1,22 @@
+{
+  "qualification": "R0.3A-PAGINATION-V3-BACKEND-SAMPLE-2",
+  "status": "NOT_STARTED",
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "business_contract": "r03a-pagination-contract@3",
+  "implementation_binding_contract": "r03a-backend-binding@1",
+  "behavior_verifier": "r03a-pagination-behavior@1",
+  "contract_coherence": "FAILED",
+  "failure_reason_code": "public_return_encoding_unspecified",
+  "failure_detail": "contract@3 declares structured items/next_cursor response semantics; binding@1 declares string return type but does not publicly define serialized JSON or another response encoding",
+  "runtime_observation": "behavior verifier decodes the returned string as JSON, which is an implementation assumption not present in the model-readable binding/business contract",
+  "controlled_l1": "c3428c5a...72ff2b6",
+  "controlled_backend_l2": "d5e7e43d...cd0536",
+  "tool_manifest_digest": "f1a11278...8c0c16",
+  "allowance_created": false,
+  "worker_started": false,
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0,
+  "frontend_started": false,
+  "historical_evidence_modified": false
+}

@@ -1,0 +1,12 @@
+[
+    {
+        "pid":  76412,
+        "record":  "polis-server.pid",
+        "stopped":  true
+    },
+    {
+        "pid":  52700,
+        "record":  "frontend.pid",
+        "stopped":  true
+    }
+]

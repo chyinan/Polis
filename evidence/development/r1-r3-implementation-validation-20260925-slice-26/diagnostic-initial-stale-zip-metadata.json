@@ -1,0 +1,23 @@
+[
+  {
+    "name": "artifact.bin",
+    "flags": 0,
+    "method": 0,
+    "compressedSize": 41,
+    "size": 41
+  },
+  {
+    "name": "manifest.json",
+    "flags": 0,
+    "method": 0,
+    "compressedSize": 723,
+    "size": 723
+  },
+  {
+    "name": "SHA256SUMS",
+    "flags": 0,
+    "method": 0,
+    "compressedSize": 159,
+    "size": 159
+  }
+]

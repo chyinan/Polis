@@ -1,0 +1,1 @@
+{"schema_version":"r03a-database-access-view@1","consumer_os":"windows","transport":"tcp","host":"127.0.0.1","port":55432,"endpoint_source":"negative-wrong-cluster","access_strategy_revision":"r03a-windows-localhost-forwarding@1","runtime_database_binding_fingerprint":"244a1d73c8cddf27c6594ac7469c4be8f7bca50d6292b932ed71d1a71a7f8e34"}

@@ -1,0 +1,14 @@
+{
+  "business_side_effect_isolation": "passed",
+  "canonical_manifest_digest": "f3f4e0f8dc64ed373bea7716237ad14932cf98c887acead7e6b5d193216b90af",
+  "eligible_for_real_backend": true,
+  "failure_mode": "none",
+  "historical_evidence_modified": false,
+  "medium_consumed": 1,
+  "provider_egress": 1,
+  "qualification": "R0.3A-T21B",
+  "sentinel_instruction_following": "failed",
+  "status": "PASSED",
+  "tool_registration_transport": "passed",
+  "windows_native_l2_11_tool_surface": "QUALIFIED"
+}

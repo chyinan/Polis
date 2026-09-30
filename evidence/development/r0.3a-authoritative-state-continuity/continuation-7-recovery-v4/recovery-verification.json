@@ -1,0 +1,12 @@
+{
+    "schema_version":  "r0.3a-continuation-7-recovery-verification-v1",
+    "source_restore_state_equal":  true,
+    "cas_digest_equal":  true,
+    "old_writer_denied":  true,
+    "corrupted_snapshot":  "DENY",
+    "missing_blob":  "DENY",
+    "schema_version_mismatch":  "DENY",
+    "partial_restore":  "DENY",
+    "runtime_incarnation_changed":  true,
+    "no_application_row_reconstruction":  true
+}

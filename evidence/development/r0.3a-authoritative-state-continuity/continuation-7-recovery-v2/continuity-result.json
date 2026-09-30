@@ -1,0 +1,13 @@
+{
+    "qualification":  "R0.3A-AUTHORITATIVE-STATE-CONTINUITY",
+    "status":  "FAILED",
+    "backend_real_execution":  "PASSED",
+    "authoritative_state_continuity":  "FAILED",
+    "eligible_for_frontend_phase":  false,
+    "medium":  1,
+    "high":  0,
+    "provider_egress":  1,
+    "historical_evidence_modified":  false,
+    "error":  "authoritative source state export digest mismatch",
+    "generated_at":  "2026-09-12T14:02:16.9249790Z"
+}

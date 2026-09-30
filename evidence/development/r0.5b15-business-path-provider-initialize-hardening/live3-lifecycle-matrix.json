@@ -1,0 +1,51 @@
+{
+    "record_type":  "polis-r0.5b15-live3-lifecycle-boundary@1",
+    "historical_precise_failure_cause":  "NOT_DETERMINABLE_FROM_FROZEN_EVIDENCE",
+    "source":  "frozen LIVE_3 live-3-result.json, postgres-final-state.json, provider protocol.jsonl",
+    "process_create":  {
+                           "status":  "PASS",
+                           "basis":  "WorkerSession process_pid attached and stop proof exists"
+                       },
+    "process_attached":  {
+                             "status":  "PASS",
+                             "pid":  50492,
+                             "basis":  "worker_sessions.process_pid and worker.process_attached event"
+                         },
+    "initialize_sent":  {
+                            "status":  "NOT_OBSERVED",
+                            "basis":  "protocol.jsonl is empty; no initialize send event persisted"
+                        },
+    "initialize_ack":  {
+                           "status":  "NOT_OBSERVED",
+                           "basis":  "protocol.jsonl is empty; no initialize response persisted"
+                       },
+    "thread_start_sent":  {
+                              "status":  "NOT_OBSERVED",
+                              "basis":  "no thread/start event or protocol record"
+                          },
+    "thread_start_ack":  {
+                             "status":  "NOT_OBSERVED",
+                             "basis":  "no thread/start event or protocol record"
+                         },
+    "turn_start":  {
+                       "status":  "NOT_OBSERVED",
+                       "count":  0
+                   },
+    "provider_egress":  {
+                            "status":  "PASS_ZERO",
+                            "count":  0,
+                            "basis":  "frozen result and empty protocol; no TurnResult egress"
+                        },
+    "terminal":  {
+                     "status":  "inconclusive",
+                     "outcome":  "runtime_failure",
+                     "usage":  null
+                 },
+    "forbidden_inferences":  [
+                                 "access_denied",
+                                 "missing_executable",
+                                 "invalid_cwd",
+                                 "auth_failure",
+                                 "provider_rejection"
+                             ]
+}

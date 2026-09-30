@@ -1,0 +1,30 @@
+{
+  "qualification": "R0.3A-POSTGRES-PRESERVATION-CONTRACT",
+  "status": "PASSED",
+  "postgres_preservation_contract_hardening": "PASSED",
+  "durable_cluster_identity_qualification": "PASSED",
+  "preserved_state_reopen_qualification": "PASSED",
+  "eligible_for_new_backend_sample": true,
+  "provider_visible_surface_changed": false,
+  "identity": {
+    "server_version": "18.6 (Ubuntu 18.6-1.pgdg22.04+2)",
+    "cluster_system_identifier": "7685322483712803206",
+    "database_oid": "16384",
+    "reopen_system_identifier": "7685322483712803206",
+    "reopen_database_oid": "16384",
+    "database_name": "polis_r0_3a_preservation_qualification_v1",
+    "runtime_role": "polis_qualification_runtime"
+  },
+  "cases": {
+    "exact_reopen": true,
+    "missing_role_detected": true,
+    "access_plane_reprovisioned": true,
+    "exact_grants_after_reprovision": true,
+    "new_initdb_identity_mismatch": true,
+    "no_plaintext_credentials": true
+  },
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0,
+  "historical_evidence_modified": false
+}

@@ -1,0 +1,22 @@
+{
+  "auth_recheck_passed": true,
+  "auth_snapshot_required": true,
+  "binary_recheck_passed": true,
+  "controlled_factor_comparison": {
+    "passed": true,
+    "changed": null
+  },
+  "execution_config_digest": "70711c3894a1fd8c6bc8c3d0284c3f164915b9fd50be44955cc32795a470a169",
+  "high_consumed": 0,
+  "historical_evidence_modified": false,
+  "launch_binding_digest_verified": true,
+  "launch_config_digest": "711cb622329540cbf996902cfeaae8b13a54976318bdd0a423b684ca7bdba0ea",
+  "medium_consumed": 0,
+  "passed": true,
+  "provider_egress": 0,
+  "qualification": "R0.3A-T20",
+  "selected_config_recheck_passed": true,
+  "status": "offline_preflight_passed",
+  "t19_control_fingerprint": "b653e94bf2adfd4caa7f9982774f8d1143bdc55c0c64d50d620afdad3c8bfb7d",
+  "t20_windows_v6_fingerprint": "b653e94bf2adfd4caa7f9982774f8d1143bdc55c0c64d50d620afdad3c8bfb7d"
+}

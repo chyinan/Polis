@@ -1,0 +1,18 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-V9-CONTINUITY-ADJUDICATION",
+  "status": "PASSED",
+  "v9_specimen_identity": "PASSED",
+  "relational_identity_continuity": "PASSED",
+  "artifact_workspace_continuity": "PASSED",
+  "checkpoint_continuity": "PASSED",
+  "collaboration_continuity": "PASSED",
+  "event_continuity": "PASSED",
+  "CAS_continuity": "PASSED",
+  "semantic_closure_determinism": "PASSED",
+  "old_writer_fencing": "PASSED",
+  "post_fencing_state_unchanged": "PASSED",
+  "restore_database": "polis_r0_3a_sample6_v6_restore_20260914164615_305",
+  "raw_v9_result_preserved": true,
+  "provider_egress": 0,
+  "historical_evidence_modified": false
+}

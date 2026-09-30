@@ -1,0 +1,22 @@
+=== RUN   TestDeterministicWorkerRetainsOwnershipWhenStopPersistenceFails
+--- PASS: TestDeterministicWorkerRetainsOwnershipWhenStopPersistenceFails (0.10s)
+=== RUN   TestDeterministicStopRetriesProcessAttachmentBeforeConfirmation
+--- PASS: TestDeterministicStopRetriesProcessAttachmentBeforeConfirmation (0.07s)
+=== RUN   TestDeterministicStopReplaysConfirmationAfterAmbiguousCommit
+--- PASS: TestDeterministicStopReplaysConfirmationAfterAmbiguousCommit (0.07s)
+=== RUN   TestDeterministicStopRetainsWindowsHostReconciliationOwner
+--- PASS: TestDeterministicStopRetainsWindowsHostReconciliationOwner (0.06s)
+=== RUN   TestRealProviderWorkerRetainsOwnershipWhenStopPersistenceFails
+--- PASS: TestRealProviderWorkerRetainsOwnershipWhenStopPersistenceFails (0.08s)
+=== RUN   TestRealProviderStartRetainsSessionWhenUnactivatedCleanupFails
+--- PASS: TestRealProviderStartRetainsSessionWhenUnactivatedCleanupFails (0.10s)
+=== RUN   TestRealProviderStartRetainsReservationWhenNoProcessCleanupFails
+--- PASS: TestRealProviderStartRetainsReservationWhenNoProcessCleanupFails (0.09s)
+=== RUN   TestRealProviderStopReplaysConfirmationAfterAmbiguousCommit
+--- PASS: TestRealProviderStopReplaysConfirmationAfterAmbiguousCommit (0.07s)
+=== RUN   TestBusinessPreflightRetainsOwnerWhenProcessStopFails
+--- PASS: TestBusinessPreflightRetainsOwnerWhenProcessStopFails (0.08s)
+=== RUN   TestLocalLaunchQualificationRetainsSessionWhenStopFails
+--- PASS: TestLocalLaunchQualificationRetainsSessionWhenStopFails (0.00s)
+PASS
+ok  	polis/internal/control	0.765s

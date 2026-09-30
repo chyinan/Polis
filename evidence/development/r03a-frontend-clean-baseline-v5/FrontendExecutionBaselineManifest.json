@@ -1,0 +1,92 @@
+{
+  "baseline_generation_id": "r03a-frontend-clean-baseline-v5",
+  "baseline_manifest_revision": "r03a-frontend-execution-baseline-manifest@5",
+  "cas_inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+  "company_id": "r03a-pagination-v3-company-1789379324974307400",
+  "contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+  "effective_transport_policy": {
+    "first_output_deadline_ms": 90000,
+    "initialize_timeout_ms": 30000,
+    "reconciliation_ms": 5000,
+    "reconnect_grace_ms": 30000,
+    "start_acknowledgement_ms": 30000,
+    "streaming_idle_ms": 90000,
+    "total_turn_deadline_ms": 600000
+  },
+  "employee_epoch": 2,
+  "employee_id": "emp-frontend",
+  "execution_envelope_fingerprint": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+  "execution_envelope_revision": "r03a-native-launch-envelope@1",
+  "frontend_l2_binding": {
+    "aggregate_schema_bytes": 2217,
+    "aggregate_schema_digest": "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+    "execution_fingerprint": "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+    "tool_count": 12,
+    "tool_manifest_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615"
+  },
+  "frontend_sessions": 0,
+  "frontend_task_id": "629af90e4bc469dc3e961a9bdb7d555a",
+  "live_writer": 0,
+  "message_id": "45a77c6833518bd8fef1ddfe8d28b985",
+  "message_state": "persisted",
+  "mission_id": "r03a-pagination-v3-mission-1789379324974307400",
+  "obligation_id": "45a77c6833518bd8fef1ddfe8d28b985",
+  "obligation_state": "pending",
+  "package_mutated": false,
+  "pagination_runtime_binding": {
+    "inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+    "preflight": "PASSED",
+    "required_blob_count": 4,
+    "revision": "r03a-pagination-runtime-binding@1",
+    "runtime_os": "windows",
+    "windows_access_view_fingerprint": "7821e0bf0449da8be444a307067f72686f355354eaec0bf3a9c425cfbeb210fe"
+  },
+  "planner_relay": 0,
+  "postgres": {
+    "cluster_system_identifier": "7685761537008087570",
+    "database_name": "polis_r0_3a_frontend_clean_baseline_v5",
+    "database_oid": "16384"
+  },
+  "recovery_anchor_ids": {
+    "backend_artifact_id": "f73981340227622e9c16dbf45e961a3f",
+    "backend_checkpoint_id": "13164a801bac0760050c5f456bfd3f82",
+    "message_id": "45a77c6833518bd8fef1ddfe8d28b985",
+    "obligation_id": "45a77c6833518bd8fef1ddfe8d28b985"
+  },
+  "recovery_anchor_probe": "PASSED",
+  "recovery_anchor_probe_revision": "r03a-peer-recovery-anchors-read-only@1",
+  "required_cas_blobs": 4,
+  "runtime_cas_binding": {
+    "canonical_root": "/home/chyinan/.local/state/polis-recovery/r03a-frontend-clean-baseline-v5/blobs",
+    "company_namespace": "r03a-pagination-v3-company-1789379324974307400",
+    "layout_revision": "r03a-cas-layout@1",
+    "required_blob_count": 4,
+    "required_blob_inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf"
+  },
+  "runtime_incarnation": "a6b554d464dd71bd5dc1afdec8f95854",
+  "schema_version": "r03a-frontend-execution-baseline-manifest@1",
+  "semantic_closure_digest": "9b0720862316504709452ef414d349cf27c2561ef6f9b4c1fe845b7f0b38278f",
+  "source_recovery_package": {
+    "cas_manifest_sha256": "9a7d103f56f9dd7300ba10bd88d337cafd286dbcd09177c483f4129125a7ff0f",
+    "dump_sha256": "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+    "package_generation_id": "r03a-sample-6-recovery-20260914T150111Z-307",
+    "package_manifest_sha256": "acb19b8acd25e3f9230bafa9ed5cfeaf707d3a9bd07f036bfbb4e55fea555c5c",
+    "semantic_closure_revision": "r03a-semantic-closure@1"
+  },
+  "synthesized_blobs": 0,
+  "synthesized_rows": 0,
+  "transport_policy_revision": "r03a-transport-policy@1",
+  "verified_cas_blobs": 4,
+  "windows_cas_access_view": {
+    "access_path": "\\\\wsl.localhost\\Ubuntu-22.04\\home\\chyinan\\.local\\state\\polis-recovery\\r03a-frontend-clean-baseline-v5\\blobs",
+    "access_view_fingerprint": "7821e0bf0449da8be444a307067f72686f355354eaec0bf3a9c425cfbeb210fe",
+    "authoritative_inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+    "consumer_os": "windows",
+    "path_kind": "UNC",
+    "source_wsl_path": "/home/chyinan/.local/state/polis-recovery/r03a-frontend-clean-baseline-v5/blobs",
+    "translation_method": "wslpath -a -w"
+  },
+  "workspace_digest": "e2d27d8aa9187eb9ddd0a0ff547af31df440e9590ccdb313b242bda97b67ed8f",
+  "workspace_revision": 1,
+  "writer_authority": null
+}

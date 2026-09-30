@@ -1,0 +1,29 @@
+{
+    "schema_version":  "t19-windows-run-v1",
+    "status":  "failed",
+    "diagnostic_profile":  "windows_native_isolated",
+    "provider_or_internet_accessed":  false,
+    "auth_snapshot_used":  true,
+    "config_snapshot_used":  true,
+    "dynamic_tool_count":  0,
+    "model":  "gpt-5.6-luna",
+    "effort":  "medium",
+    "sandbox":  "read-only",
+    "provider_transport_policy":  "native_default",
+    "proxy_policy":  "no_injected_proxy",
+    "invocation":  "app-server --stdio",
+    "prompt_semantics":  "same_tiny_sentinel",
+    "process_started":  false,
+    "initialize_completed":  false,
+    "thread_started":  false,
+    "stdio_input_line_ending":  "CRLF",
+    "stdio_output_line_endings":  [
+
+                                  ],
+    "pipe_semantics":  "redirected_standard_pipes",
+    "job_object_used":  false,
+    "stop_confirmed":  false,
+    "code_mode_host_resolved":  false,
+    "structured_error_fixture":  "deferred_to_offline_go_tests",
+    "error_class":  "The term \u0027Get-FileHash\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+}

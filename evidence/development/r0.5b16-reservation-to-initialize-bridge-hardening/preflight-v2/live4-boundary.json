@@ -1,0 +1,17 @@
+{
+  "PID_attached": "PASS",
+  "WorkerSession_created": "PASS",
+  "business_authorization_created": "PASS",
+  "initialize_ack_received": "NOT_OBSERVED",
+  "initialize_preconditions_entered": "PASS",
+  "initialize_request_constructed": "NOT_DETERMINABLE_FROM_FROZEN_EVIDENCE",
+  "initialize_request_write_attempted": "NOT_OBSERVED",
+  "initialize_request_written": "NOT_OBSERVED",
+  "process_created": "PASS",
+  "provider_egress": 0,
+  "record_type": "polis-r0.5b16-live4-frozen-boundary@1",
+  "reservation_created": "PASS",
+  "runtime_process_create_attempted": "PASS",
+  "source": "D:\\Programs\\Polis\\evidence\\development\\r0.5b-real-provider-product-smoke-live-4\\live-4-result.json",
+  "turn_start": 0
+}

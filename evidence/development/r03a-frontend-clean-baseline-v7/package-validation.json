@@ -1,0 +1,16 @@
+{
+  "status": "PASSED",
+  "package_generation_id": "r03a-sample-6-recovery-20260914T150111Z-307",
+  "package_manifest_path": "/mnt/d/Programs/Polis/evidence/development/r0.3a-sample-6-final-recovery-continuation-v5/recovery-package-complete.json",
+  "package_manifest_sha256": "acb19b8acd25e3f9230bafa9ed5cfeaf707d3a9bd07f036bfbb4e55fea555c5c",
+  "dump_path": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6-final-recovery-continuation-v5/package/sample-6-authoritative.dump",
+  "dump_sha256": "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+  "cas_manifest_path": "/mnt/d/Programs/Polis/evidence/development/r0.3a-sample-6-final-recovery-continuation-v5/cas-manifest.json",
+  "cas_manifest_sha256": "9a7d103f56f9dd7300ba10bd88d337cafd286dbcd09177c483f4129125a7ff0f",
+  "cas_root": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6-final-recovery-continuation-v5/package/cas",
+  "required_blob_count": 4,
+  "verified_blob_count": 4,
+  "semantic_closure_status": "PASSED",
+  "package_mutated": false,
+  "cas_mutated": false
+}

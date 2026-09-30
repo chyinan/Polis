@@ -1,0 +1,32 @@
+{
+  "artifact_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+  "artifact_id": "f73981340227622e9c16dbf45e961a3f",
+  "artifact_state": "ready",
+  "artifact_verdict": "candidate",
+  "artifact_workspace_continuity": {
+    "artifact_identity": true,
+    "artifact_lifecycle_state": true,
+    "artifact_verdict": true,
+    "artifact_digest": true,
+    "artifact_workspace_binding": true,
+    "current_workspace_binding": true,
+    "checkpoint_workspace_binding": true,
+    "checkpoint_contract_binding": true,
+    "cas_artifact_binding": true,
+    "passed": true
+  },
+  "artifact_workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+  "artifact_workspace_revision": 3,
+  "cas_closure": "PASSED",
+  "cas_digest_match_count": 4,
+  "checkpoint_contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+  "checkpoint_id": "13164a801bac0760050c5f456bfd3f82",
+  "package_mutated": false,
+  "package_semantic_closure": "PASSED",
+  "required_cas_blob_count": 4,
+  "restored_specimen_mutated": false,
+  "source_restored_relational_closure": "PASSED",
+  "status": "PASSED",
+  "synthesized_blobs": 0,
+  "synthesized_rows": 0
+}

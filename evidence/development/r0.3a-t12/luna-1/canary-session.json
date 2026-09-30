@@ -1,0 +1,15 @@
+{
+  "allowance_start": "2026-09-10T06:24:16.470067281Z",
+  "derived_from_protocol_after_parser_fix": true,
+  "dynamic_tool_count": 0,
+  "first_valid_output": null,
+  "initialize": true,
+  "process_start": "2026-09-10T06:24:18.213206641Z",
+  "process_stop": "2026-09-10T06:26:02.323374833Z",
+  "stop_confirmed": true,
+  "stop_receipt": "process-group:423:waited",
+  "thread_started": true,
+  "turn_completed": null,
+  "turn_started": true,
+  "user_message_item": true
+}

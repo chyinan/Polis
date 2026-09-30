@@ -1,0 +1,6 @@
+{
+  "all_stale_epoch": true,
+  "checkpoint": "STALE_EPOCH",
+  "obligation_resolve": "STALE_EPOCH",
+  "workspace_apply": "STALE_EPOCH"
+}

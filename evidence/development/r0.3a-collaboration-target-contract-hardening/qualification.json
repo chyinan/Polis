@@ -1,0 +1,43 @@
+{
+  "qualification": "R0.3A-COLLABORATION-TARGET-CONTRACT-HARDENING",
+  "status": "PASSED_OFFLINE",
+  "target_contract": {
+    "revision": "r03a-collab-target@1",
+    "employee_field": "to_employee_id",
+    "task_field": "to_task_id",
+    "contract_revision_field": "contract_revision_id",
+    "provider_surface_changed": true
+  },
+  "backend_l2_offline": {
+    "status": "PASSED",
+    "evidence": "evidence/development/r0.3a-current-binary-backend-l2-v6",
+    "old_manifest": "f1a112788fb1c879a1e7e8e73b515e0ae560352d1f0ee8f5a6f19cf5fc8c0c16",
+    "new_manifest": "c93c4d7399c5ffe8c7f057e60231dd00fb542ad30938005b59b164f9134dc0e4",
+    "old_schema_bytes": 2038,
+    "new_schema_bytes": 2106,
+    "approved_collab_send_change": "to_task -> to_employee_id + to_task_id",
+    "unrelated_drift": false
+  },
+  "offline_regressions": {
+    "missing_task_target": "deterministic target_task_not_found; zero rows",
+    "candidate_state_send": "deterministic peer_send_not_allowed_in_candidate_state",
+    "transaction_preinsert_failure": "rolled_back_before_message_insert",
+    "idempotency_and_existing_peer_semantics": "PASS"
+  },
+  "verification": {
+    "full_tests": "PASS",
+    "race": "PASS",
+    "vet": "PASS",
+    "linux_build": "PASS",
+    "windows_build": "PASS",
+    "postgresql_deterministic_suite": "PASS",
+    "diff_check": "PASS",
+    "medium": 0,
+    "high": 0,
+    "provider_egress": 0,
+    "historical_evidence_modified": false
+  },
+  "live_l2_canary": "NOT_STARTED_IN_THIS_ZERO_EGRESS_PHASE",
+  "eligible_for_new_backend_sample": "CONDITIONAL_ON_NEW_BACKEND_L2",
+  "sample_3_historical_result": "FAILED_UNCHANGED"
+}

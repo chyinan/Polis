@@ -1,0 +1,18 @@
+{
+  "qualification": "R0.3A-T21A",
+  "status": "PASSED",
+  "offline_materialization_tests": "PASSED",
+  "windows_provider_before_preflight": "PASSED",
+  "eligible_for_new_t21b_live_canary": true,
+  "medium_consumed": 0,
+  "high_consumed": 0,
+  "provider_egress": 0,
+  "registered_tool_count": 11,
+  "materialization_validation": "passed",
+  "binding_metadata_count": 11,
+  "tool_manifest_digest": "b36063bf6b136b8116a1b744042e5f0228f46d559ba711e080e82b271e59645a",
+  "aggregate_schema_digest": "f2fed5d1c86ce1cddc2c609bb31567fdced409b4eb12010f70b93456a72dc338",
+  "aggregate_schema_bytes": 1792,
+  "process_stop_confirmed": true,
+  "t21_historical_evidence_modified": false
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "approved_scope": true,
+    "current": "checkpoint-effective-contract@2",
+    "field": "checkpoint_policy_revision",
+    "old": ""
+  },
+  {
+    "approved_scope": true,
+    "current": "artifact-commit-qualification@2",
+    "field": "artifact_eligibility_policy_revision",
+    "old": ""
+  },
+  {
+    "approved_scope": true,
+    "current": "peer-contract-supersession@2",
+    "field": "contract_supersession_policy_revision",
+    "old": ""
+  },
+  {
+    "approved_scope": true,
+    "current": "peer-semantic-checker@2",
+    "field": "acceptance_checker_revision",
+    "old": ""
+  }
+]

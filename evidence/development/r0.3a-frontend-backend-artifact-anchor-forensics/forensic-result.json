@@ -1,0 +1,77 @@
+{
+  "qualification": "R0.3A-FRONTEND-BACKEND-ARTIFACT-ANCHOR-FORENSICS",
+  "status": "PASSED",
+  "artifact_from_immutable_package": {
+    "id": "f73981340227622e9c16dbf45e961a3f",
+    "company_id": "r03a-pagination-v3-company-1789379324974307400",
+    "task_id": "dff11354ffe0afc1b93e8565dc5bb026",
+    "author": "emp-backend",
+    "digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "bytes": 789,
+    "state": "ready",
+    "verdict": "candidate",
+    "contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+    "workspace_revision": 3,
+    "workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "checkpoint_id": "13164a801bac0760050c5f456bfd3f82"
+  },
+  "artifact_current_specimen": {
+    "id": "f73981340227622e9c16dbf45e961a3f",
+    "company_id": "r03a-pagination-v3-company-1789379324974307400",
+    "task_id": "dff11354ffe0afc1b93e8565dc5bb026",
+    "author": "emp-backend",
+    "digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "bytes": 789,
+    "state": "missing",
+    "verdict": "invalidated",
+    "contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+    "workspace_revision": 3,
+    "workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "checkpoint_id": "13164a801bac0760050c5f456bfd3f82"
+  },
+  "peer_recovery_anchors_predicate": {
+    "sql_semantics": "company_id = ? AND task_id = ? AND author = emp-backend AND verdict = candidate ORDER BY id DESC LIMIT 1",
+    "company_id": "PASS",
+    "task_id": "PASS",
+    "author": "PASS",
+    "verdict": "FAIL: actual invalidated",
+    "state_predicate": "NOT_USED",
+    "checkpoint_predicate": "NOT_USED",
+    "failing_predicate": "verdict = candidate"
+  },
+  "control_plane_delta": {
+    "company_sequence": "62 -> 64",
+    "event_delta": "controller.recovered + artifact.invalidated",
+    "employee_epoch": "2 -> 3",
+    "runtime_incarnation": "a6b554d464dd71bd5dc1afdec8f95854 -> 2b26cd41eccb5913822392c6797ca40f",
+    "allowance_created": true,
+    "medium_reserved": 0,
+    "worker_created": false,
+    "provider_reservation": 0,
+    "provider_egress": 0
+  },
+  "business_payload_delta": {
+    "workspace": "unchanged",
+    "message": "unchanged",
+    "obligation": "unchanged",
+    "contract_revision": "unchanged",
+    "checkpoint": "unchanged",
+    "cas": "unchanged",
+    "artifact_lifecycle": "ready/candidate -> missing/invalidated"
+  },
+  "classification": "MIXED",
+  "classification_components": [
+    "CLEAN_BASELINE_RESTORE_DEFECT",
+    "KERNEL_OPEN_RECOVERY_MUTATION_DEFECT"
+  ],
+  "backend_artifact_physically_present": true,
+  "backend_artifact_semantically_valid": false,
+  "peer_recovery_anchor_predicate_valid": true,
+  "clean_baseline_business_payload_changed": true,
+  "clean_baseline_control_plane_changed": true,
+  "current_specimen_reusable": false,
+  "immutable_package_still_sufficient": true,
+  "recommended_hardening": "Bind the materialized CAS root to the exact kernel runtime binding before activation, then require read-only CAS and anchor probes before allowance or kernel.Open; make txRecover fail atomic before artifact invalidation.",
+  "eligible_for_new_clean_baseline_after_hardening": false,
+  "historical_evidence_modified": false
+}

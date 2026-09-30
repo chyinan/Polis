@@ -1,0 +1,79 @@
+Output format is unaligned.
+{
+    "tasks": [
+    ],
+    "checks": [
+    ],
+    "company": {
+        "id": "r05b-live-2",
+        "employees": [
+            {
+                "id": "emp-backend",
+                "epoch": 2
+            },
+            {
+                "id": "emp-frontend",
+                "epoch": 2
+            },
+            {
+                "id": "emp-planning",
+                "epoch": 2
+            },
+            {
+                "id": "emp-review",
+                "epoch": 2
+            }
+        ],
+        "company_seq": 2
+    },
+    "mission": {
+        "id": "fed04f193f1bc6afebf9c152832ccd76",
+        "goal": "Create one small product integration smoke artifact through the Polis real-provider product path.",
+        "state": "draft",
+        "title": "R0.5B LIVE_2 real-provider product smoke",
+        "contract": "r0-arithmetic@1",
+        "acceptance_contract": {
+            "revision": "text-acceptance@1",
+            "required_text": [
+                "Mission ID: {{mission_id}}",
+                "Task ID: {{task_id}}",
+                "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+                "Task summary: This artifact records one small product integration smoke."
+            ]
+        }
+    },
+    "activity": [
+        {
+            "kind": "controller.recovered",
+            "payload": {
+                "id": "071de211c19356d584cc5546ed877289",
+                "status": "fake_only",
+                "occurred_at": "2026-09-17T10:41:05.6591782Z"
+            },
+            "company_seq": 1
+        },
+        {
+            "kind": "mission.create",
+            "payload": {
+                "id": "fed04f193f1bc6afebf9c152832ccd76",
+                "status": "draft",
+                "occurred_at": "2026-09-17T10:44:24.5647643Z"
+            },
+            "company_seq": 2
+        }
+    ],
+    "artifacts": [
+    ],
+    "workspaces": [
+    ],
+    "checkpoints": [
+    ],
+    "worker_sessions": [
+    ],
+    "artifact_qualifications": [
+    ],
+    "task_validation_bindings": [
+    ],
+    "provider_terminal_observations": [
+    ]
+}

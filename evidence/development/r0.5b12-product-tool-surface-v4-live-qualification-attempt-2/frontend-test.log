@@ -1,0 +1,16 @@
+
+> polis-workbench@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 D:/Programs/Polis/frontend
+
+ ✓ src/domain/workbench-validation.test.ts (8 tests) 2ms
+ ✓ src/data/fixture-workbench-api.test.ts (4 tests) 4ms
+ ✓ src/data/real-workbench-api.test.ts (7 tests) 6ms
+
+ Test Files  3 passed (3)
+      Tests  19 passed (19)
+   Start at  15:55:04
+   Duration  782ms (transform 111ms, setup 0ms, collect 179ms, tests 13ms, environment 0ms, prepare 472ms)
+

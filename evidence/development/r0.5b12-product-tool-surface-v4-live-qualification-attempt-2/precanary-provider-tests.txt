@@ -1,0 +1,3 @@
+ok  	polis/internal/provider	1.031s
+ok  	polis/internal/codex	0.882s
+ok  	polis/cmd/polis-r05b10	0.036s

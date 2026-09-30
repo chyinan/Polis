@@ -1,0 +1,44 @@
+/* pattern: Imperative Shell */
+
+.badge {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.compact {
+  min-height: 21px;
+  padding: 3px 7px;
+}
+
+.info {
+  border-color: color-mix(in oklab, var(--accent-hover) 35%, var(--border));
+  color: var(--accent-hover);
+}
+
+.neutral {
+  color: var(--meta);
+}
+
+.success {
+  border-color: color-mix(in oklab, var(--success) 35%, var(--border));
+  color: var(--success);
+}
+
+.warning {
+  border-color: color-mix(in oklab, var(--warn) 38%, var(--border));
+  color: var(--warn);
+}
+
+.danger {
+  border-color: color-mix(in oklab, var(--danger) 38%, var(--border));
+  color: var(--danger);
+}

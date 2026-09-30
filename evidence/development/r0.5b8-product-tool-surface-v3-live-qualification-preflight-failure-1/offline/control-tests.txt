@@ -1,0 +1,11 @@
+--- FAIL: TestRealProviderWorkerAdapterMissingBindingCannotQualifyOrSubmit (0.09s)
+    real_provider_worker_test.go:131: prepared product Task is not provider-executable for this Mission
+--- FAIL: TestRealProviderWorkerAdapterCancelsOfflineTurnWithoutOrphan (0.08s)
+    real_provider_worker_test.go:193: prepared product Task is not provider-executable for this Mission
+--- FAIL: TestRealProviderWorkerAdapterProcessStartFailureFinalizesSession (0.08s)
+    real_provider_worker_test.go:254: failed provider start left invalid session state: live=0 stopped=0
+--- FAIL: TestRealProviderWorkerAdapterDisconnectIsInconclusiveAndStopped (0.09s)
+    real_provider_worker_test.go:284: prepared product Task is not provider-executable for this Mission
+FAIL
+FAIL	polis/internal/control	0.670s
+FAIL

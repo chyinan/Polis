@@ -1,0 +1,502 @@
+{
+  "record_type": "polis-product-surface-live-l2-result@1",
+  "product_surface_v4_live_l2": "PASSED",
+  "product_provider_surface_status": "QUALIFIED",
+  "eligible_for_future_product_sample": "YES",
+  "product_provider_L2_fingerprint": "59a4ac003fb0f49360382a707f7057edc03e0574ba328d0cf3a59eeab2726781",
+  "product_provider_v4_L2_fingerprint": "59a4ac003fb0f49360382a707f7057edc03e0574ba328d0cf3a59eeab2726781",
+  "product_exact_surface_execution_fingerprint": "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+  "surface_before": {
+    "record_type": "polis-product-tool-surface@4",
+    "surface_id": "polis-product-tool-surface@4",
+    "tool_count": 7,
+    "tools": [
+      {
+        "description": "Read the currently authorized Task, its public validation binding, current workspace metadata, handover context and tool budget.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_work_current",
+        "type": "function"
+      },
+      {
+        "description": "Read approved context and persisted facts and decisions available to the current worker session.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_context_read",
+        "type": "function"
+      },
+      {
+        "description": "Read the full content, digest and revision of the current authorized Task workspace.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_workspace_read",
+        "type": "function"
+      },
+      {
+        "description": "Replace the full content of the current authorized Task workspace using its expected digest and revision. The current worker session is the only writer; stale digest or revision returns a conflict and success returns the persisted receipt and new revision.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "content": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            "expected_digest": {
+              "maxLength": 64,
+              "minLength": 64,
+              "type": "string"
+            },
+            "expected_revision": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "content",
+            "expected_digest",
+            "expected_revision"
+          ],
+          "type": "object"
+        },
+        "name": "polis_workspace_replace",
+        "type": "function"
+      },
+      {
+        "description": "Validate the current authorized Task workspace against the public acceptance contract bound to this Task. A PASS receipt proves only that the current workspace meets the public criteria; use task_submit to explicitly deliver it. Returns structured PASS, FAIL, VALIDATION_NOT_CONFIGURED, VALIDATOR_UNAVAILABLE or INFRASTRUCTURE_ERROR feedback.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_workspace_check",
+        "type": "function"
+      },
+      {
+        "description": "Persist progress or qualified state for the current Task. For a qualified checkpoint, use rejected: [] when no evidence was rejected and set evidence_refs to one or more typed {receipt_id, proves} objects for current workspace_check PASS receipts. task_submit deterministically creates the final qualified checkpoint; progress checkpoints require next_action.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "decisions": {
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
+            },
+            "evidence_refs": {
+              "description": "Each reference must be a current workspace_check PASS receipt for this Task/session/workspace.",
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "proves": {
+                    "description": "This receipt proves the current workspace passed the public Task validation.",
+                    "enum": [
+                      "workspace_check_pass"
+                    ],
+                    "type": "string"
+                  },
+                  "receipt_id": {
+                    "description": "Receipt ID returned by workspace_check in the current worker session.",
+                    "maxLength": 80,
+                    "minLength": 1,
+                    "pattern": "^[a-zA-Z0-9_-]+$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "receipt_id",
+                  "proves"
+                ],
+                "type": "object"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
+            },
+            "facts": {
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
+            },
+            "failed_checks": {
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "type": "array"
+            },
+            "kind": {
+              "description": "qualified publishes after validation; progress preserves incomplete work",
+              "enum": [
+                "progress",
+                "qualified"
+              ],
+              "type": "string"
+            },
+            "next_action": {
+              "description": "Required and non-empty for progress checkpoints.",
+              "maxLength": 512,
+              "type": "string"
+            },
+            "rejected": {
+              "description": "Use [] when no evidence was rejected.",
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "type": "array"
+            },
+            "summary": {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "decisions",
+            "evidence_refs",
+            "facts",
+            "kind",
+            "rejected",
+            "summary"
+          ],
+          "type": "object"
+        },
+        "name": "polis_work_checkpoint",
+        "type": "function"
+      },
+      {
+        "description": "Explicitly submit the current authorized workspace after validation PASS. The control plane deterministically creates the qualified checkpoint, publishes the validated Artifact, and moves the Task to candidate; do not assemble checkpoint or Artifact fields yourself.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_task_submit",
+        "type": "function"
+      }
+    ],
+    "manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+    "aggregate_schema_bytes": 2206,
+    "aggregate_schema_digest": "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+    "historical_b2_surface_status": "HISTORICAL",
+    "historical_r03a_surfaces_status": "HISTORICAL / NOT_REUSABLE"
+  },
+  "surface_after": {
+    "record_type": "polis-product-tool-surface@4",
+    "surface_id": "polis-product-tool-surface@4",
+    "tool_count": 7,
+    "tools": [
+      {
+        "description": "Read the currently authorized Task, its public validation binding, current workspace metadata, handover context and tool budget.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_work_current",
+        "type": "function"
+      },
+      {
+        "description": "Read approved context and persisted facts and decisions available to the current worker session.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_context_read",
+        "type": "function"
+      },
+      {
+        "description": "Read the full content, digest and revision of the current authorized Task workspace.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_workspace_read",
+        "type": "function"
+      },
+      {
+        "description": "Replace the full content of the current authorized Task workspace using its expected digest and revision. The current worker session is the only writer; stale digest or revision returns a conflict and success returns the persisted receipt and new revision.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "content": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            "expected_digest": {
+              "maxLength": 64,
+              "minLength": 64,
+              "type": "string"
+            },
+            "expected_revision": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "content",
+            "expected_digest",
+            "expected_revision"
+          ],
+          "type": "object"
+        },
+        "name": "polis_workspace_replace",
+        "type": "function"
+      },
+      {
+        "description": "Validate the current authorized Task workspace against the public acceptance contract bound to this Task. A PASS receipt proves only that the current workspace meets the public criteria; use task_submit to explicitly deliver it. Returns structured PASS, FAIL, VALIDATION_NOT_CONFIGURED, VALIDATOR_UNAVAILABLE or INFRASTRUCTURE_ERROR feedback.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_workspace_check",
+        "type": "function"
+      },
+      {
+        "description": "Persist progress or qualified state for the current Task. For a qualified checkpoint, use rejected: [] when no evidence was rejected and set evidence_refs to one or more typed {receipt_id, proves} objects for current workspace_check PASS receipts. task_submit deterministically creates the final qualified checkpoint; progress checkpoints require next_action.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "decisions": {
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
+            },
+            "evidence_refs": {
+              "description": "Each reference must be a current workspace_check PASS receipt for this Task/session/workspace.",
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "proves": {
+                    "description": "This receipt proves the current workspace passed the public Task validation.",
+                    "enum": [
+                      "workspace_check_pass"
+                    ],
+                    "type": "string"
+                  },
+                  "receipt_id": {
+                    "description": "Receipt ID returned by workspace_check in the current worker session.",
+                    "maxLength": 80,
+                    "minLength": 1,
+                    "pattern": "^[a-zA-Z0-9_-]+$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "receipt_id",
+                  "proves"
+                ],
+                "type": "object"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
+            },
+            "facts": {
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
+            },
+            "failed_checks": {
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "type": "array"
+            },
+            "kind": {
+              "description": "qualified publishes after validation; progress preserves incomplete work",
+              "enum": [
+                "progress",
+                "qualified"
+              ],
+              "type": "string"
+            },
+            "next_action": {
+              "description": "Required and non-empty for progress checkpoints.",
+              "maxLength": 512,
+              "type": "string"
+            },
+            "rejected": {
+              "description": "Use [] when no evidence was rejected.",
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 8,
+              "type": "array"
+            },
+            "summary": {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "decisions",
+            "evidence_refs",
+            "facts",
+            "kind",
+            "rejected",
+            "summary"
+          ],
+          "type": "object"
+        },
+        "name": "polis_work_checkpoint",
+        "type": "function"
+      },
+      {
+        "description": "Explicitly submit the current authorized workspace after validation PASS. The control plane deterministically creates the qualified checkpoint, publishes the validated Artifact, and moves the Task to candidate; do not assemble checkpoint or Artifact fields yourself.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "name": "polis_task_submit",
+        "type": "function"
+      }
+    ],
+    "manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+    "aggregate_schema_bytes": 2206,
+    "aggregate_schema_digest": "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+    "historical_b2_surface_status": "HISTORICAL",
+    "historical_r03a_surfaces_status": "HISTORICAL / NOT_REUSABLE"
+  },
+  "surface_fresh": true,
+  "provider_terminal": {
+    "record_type": "polis-product-provider-terminal@1",
+    "authorization_id": "r0.5b14-live-canary-1",
+    "product_exact_surface_execution_fingerprint": "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+    "diagnostic_reservation_count": 1,
+    "provider_egress": 1,
+    "registered_tool_count": 7,
+    "process_start_requested_at": "2026-09-20T11:20:21.0494959Z",
+    "process_started_at": "2026-09-20T11:20:21.6751821Z",
+    "process_identity": "r05b14-product-surface-v4-canary",
+    "process_id": 71336,
+    "process_created": false,
+    "pid_present": false,
+    "initialize_started_at": "2026-09-20T11:20:21.6751821Z",
+    "initialize_finished_at": "2026-09-20T11:20:22.1313098Z",
+    "thread_start_started_at": "2026-09-20T11:20:22.1313098Z",
+    "thread_start_finished_at": "2026-09-20T11:20:26.823509Z",
+    "turn_call_started_at": "2026-09-20T11:20:26.823509Z",
+    "turn_call_finished_at": "2026-09-20T11:20:32.1823965Z",
+    "turn_start_at": "2026-09-20T11:20:26.8250754Z",
+    "first_output_at": "2026-09-20T11:20:32.0127832Z",
+    "first_output_latency_ms": 5187,
+    "first_output": "POLIS_PRODUCT_SURFACE_V4_CANARY_OK",
+    "turn_completed_count": 1,
+    "turn_completed_at": "2026-09-20T11:20:32.1808107Z",
+    "token_usage": {
+      "total": {
+        "totalTokens": 11214,
+        "inputTokens": 11200,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 14,
+        "reasoningOutputTokens": 0
+      },
+      "last": {
+        "totalTokens": 11214,
+        "inputTokens": 11200,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 14,
+        "reasoningOutputTokens": 0
+      }
+    },
+    "tool_calls": 0,
+    "reconnect_count": 0,
+    "turn_terminal": "completed",
+    "clean_stop": true,
+    "second_reservation_denied": true,
+    "stop_completed_at": "2026-09-20T11:20:32.1967903Z",
+    "credential_snapshot_removed": true,
+    "credential_snapshot_cleanup_failed": false,
+    "elapsed_ms": 11148,
+    "company_count": 0,
+    "mission_count": 0,
+    "task_count": 0,
+    "worker_session_count": 0,
+    "successor_count": 0,
+    "business_mutation_count": 0,
+    "initialization_failed": false,
+    "thread_start_failed": false,
+    "turn_failed": false,
+    "protocol_evidence_error": false,
+    "stop_error": false,
+    "protocol": {
+      "initialize_request_count": 1,
+      "initialize_response_count": 1,
+      "initialize_sent_at": "2026-09-20T11:20:21.6751821Z",
+      "initialize_received_at": "2026-09-20T11:20:22.1190033Z",
+      "thread_start_request_count": 1,
+      "thread_start_response_count": 1,
+      "thread_start_sent_at": "2026-09-20T11:20:22.1313098Z",
+      "thread_start_received_at": "2026-09-20T11:20:26.8218559Z",
+      "registered_tool_count": 7,
+      "registered_tools_manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+      "turn_start_count": 1,
+      "turn_start_at": "2026-09-20T11:20:26.8250754Z",
+      "first_output_at": "2026-09-20T11:20:32.0127832Z",
+      "first_output": "POLIS_PRODUCT_SURFACE_V4_CANARY_OK",
+      "turn_completed_count": 1,
+      "turn_completed_at": "2026-09-20T11:20:32.1808107Z",
+      "tool_call_event_count": 0
+    }
+  },
+  "historical_b2_surface_status": "HISTORICAL",
+  "historical_r03a_surfaces_status": "HISTORICAL / NOT_REUSABLE",
+  "recorded_at": "2026-09-20T11:20:32.2042658Z"
+}

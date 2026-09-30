@@ -1,0 +1,13 @@
+{
+  "id": "f3a7f944f2749750becda51ad9d0e5bb",
+  "epoch": 3,
+  "state": "stopped",
+  "profile": "gpt-5.6-luna/medium",
+  "task_id": "5b39875f8dc6463f36395b04e4504407",
+  "employee_id": "emp-backend",
+  "incarnation": "071de211c19356d584cc5546ed877289",
+  "process_pid": 19100,
+  "stop_receipt": "windows-process-handle:19100:waited",
+  "tool_call_limit": 16,
+  "tool_calls_used": 13
+}

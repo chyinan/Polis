@@ -1,0 +1,64 @@
+{
+  "number": 1,
+  "employee": "emp-frontend",
+  "purpose": "frontend initial employee: observe and apply recovered peer responsibility",
+  "profile": "gpt-5.6-luna/medium",
+  "status": "failed",
+  "started": "2026-09-12T14:46:42.8321553Z",
+  "finished": "2026-09-12T14:48:47.6354272Z",
+  "duration_ms": 124803,
+  "native_duration_ms": 41,
+  "thread_id": "01a09615-c495-7e20-a5e9-096bd7b8b725",
+  "session_id": "2b7a6fd917d335459b0dbf32dda34158",
+  "tool_events": [
+    "work_current",
+    "collab_inbox",
+    "collab_ack",
+    "contract_read",
+    "collab_apply",
+    "collab_inbox",
+    "collab_apply",
+    "collab_inbox",
+    "collab_apply",
+    "contract_read",
+    "collab_apply",
+    "collab_inbox",
+    "collab_inbox",
+    "collab_inbox",
+    "collab_apply",
+    "collab_inbox",
+    "collab_inbox",
+    "collab_apply",
+    "collab_apply",
+    "contract_read",
+    "collab_apply",
+    "workspace_check",
+    "work_checkpoint",
+    "work_checkpoint"
+  ],
+  "receipts": [
+    "d1b356aa81f8d44478df8823f3df2888"
+  ],
+  "stop_receipt": "windows-process-handle:7708:waited",
+  "stop_confirmed": true,
+  "token_usage": {
+    "total": {
+      "totalTokens": 295863,
+      "inputTokens": 292129,
+      "cachedInputTokens": 264448,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 3734,
+      "reasoningOutputTokens": 1539
+    },
+    "last": {
+      "totalTokens": 17846,
+      "inputTokens": 17668,
+      "cachedInputTokens": 17152,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 178,
+      "reasoningOutputTokens": 62
+    }
+  },
+  "native_usage_updates": 20,
+  "error": "frontend initial turn completed without the required checkpoint boundary"
+}

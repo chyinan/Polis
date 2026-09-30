@@ -19,9 +19,29 @@ import (
 )
 
 type Config struct {
-	DSN, Binary, AuthFile, Root, Evidence, GoRoot, SchemaDigest, ProxyURL string
-	MediumLimit, HighLimit                                                int
-	Model                                                                 string
+	DSN, Binary, CodeModeHost, AuthFile, SelectedConfigPath, ExecutionConfigPath string
+	Root, Evidence, GoRoot, SchemaDigest, ProxyURL, ExpectedNativeVersion        string
+	CapabilityDigest                                                             string
+	BlobDurabilityQualificationPath                                              string
+	BehavioralContractQualificationPath                                          string
+	CheckerFeedbackQualificationPath                                             string
+	CurrentL1EvidencePath                                                        string
+	PostgresDumpPath                                                             string
+	PostgresSnapshotDSN                                                          string
+	RecoveryRoot                                                                 string
+	MediumLimit, HighLimit, ToolCallLimit                                        int
+	Model                                                                        string
+	QualificationPath, ExecutionManifestPath                                     string
+	RuntimeCASBinding                                                            kernel.RuntimeCASBinding
+	TransportPolicy                                                              codex.TransportPolicy
+	RuntimeDatabaseBindingPath                                                   string
+	DatabaseAccessViewPath                                                       string
+	RuntimeDatabaseBindingFingerprint                                            string
+	DatabaseAccessStrategyRevision                                               string
+	FrontendConsumptionQualificationPath                                          string
+	FrontendConsumptionContractRevision                                          string
+	FrontendBindingContractRevision                                               string
+	FrontendBehaviorVerifierRevision                                              string
 }
 type Result struct {
 	Status                                                string `json:"status"`

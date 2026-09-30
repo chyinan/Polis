@@ -1,0 +1,45 @@
+{
+  "canonical_manifest": {
+    "fingerprint_schema_version": "canonical-manifest-v5",
+    "combination": {
+      "codex_version": "0.153.4",
+      "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+      "model": "gpt-5.6-luna",
+      "effort": "medium",
+      "runtime_profile": "wsl-linux-amd64",
+      "sandbox_class": "read-only",
+      "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+      "auth_source_class": "mounted_codex_auth_file",
+      "code_mode_host_sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+      "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+      "native_protocol_digest": "d052a9f423be59cd61cffb9dd8bf65b4e1a161b49800706c136c2f8862976244"
+    },
+    "auth": {
+      "auth_source_class": "mounted_codex_auth_file",
+      "auth_identity_fingerprint_schema_version": "auth-identity-v1",
+      "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+      "auth_identity_fingerprint_status": "available",
+      "auth_credential_revision_fingerprint_schema_version": "auth-credential-revision-v1",
+      "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+      "auth_credential_revision_fingerprint_status": "available"
+    },
+    "transport": {
+      "provider_transport_policy": "native_default",
+      "websocket_policy": "native_default"
+    },
+    "network_namespace_policy": "shared_host_network",
+    "codex_home_profile": "polis_wsl_bwrap_isolated",
+    "effective_config_digest": "0ce492712ba02279716ed5ba16f53b014b41498612b84ad3d53fd96d9b9185e9",
+    "effective_transport_config_digest": "e5e78e023210da320fdf86f3c8504a3c97d535d11fb0a732d6e36229f2a57eb3"
+  },
+  "effective_config_digest_a": "a60171211e6e89b6d4857d648603a667cc736e8519844e2a2e9cd983f04ca04e",
+  "effective_config_digest_b": "0ce492712ba02279716ed5ba16f53b014b41498612b84ad3d53fd96d9b9185e9",
+  "effective_transport_config_digest_a": "fb58b9e3f4ea84e3d261c460ea9f892e437bf552d99ce56241819dff8cc5dee9",
+  "effective_transport_config_digest_b": "e5e78e023210da320fdf86f3c8504a3c97d535d11fb0a732d6e36229f2a57eb3",
+  "fingerprint_schema_version": "canonical-manifest-v5",
+  "historical_v3_v4_recomputed_or_overwritten": false,
+  "qualification_fingerprint": {
+    "fingerprint_schema_version": "canonical-manifest-v5",
+    "canonical_manifest_digest": "0b034bd600e5552dc4de6c827eb72ff6a5a09e8af019fc2aaaab80495ea70b8a"
+  }
+}

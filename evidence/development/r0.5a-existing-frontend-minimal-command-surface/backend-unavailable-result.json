@@ -1,0 +1,5 @@
+{
+  "backend_unavailable": true,
+  "ui_error_visible": true,
+  "message": "公司快照读取失败\n\nfailed to read workbench API: http 500"
+}

@@ -4,12 +4,46 @@ package runner
 import (
 	"context"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strconv"
+	"strings"
 	"testing"
+	"time"
 )
 
+func TestMain(m *testing.M) {
+	switch os.Getenv("POLIS_RUNNER_HELPER") {
+	case "child":
+		time.Sleep(5 * time.Minute)
+		os.Exit(0)
+	case "host-reconcile":
+		time.Sleep(5 * time.Minute)
+		os.Exit(0)
+	case "parent":
+		pidFile := os.Getenv("POLIS_RUNNER_CHILD_PID_FILE")
+		child := exec.Command(os.Args[0])
+		child.Env = []string{"POLIS_RUNNER_HELPER=child"}
+		if err := child.Start(); err != nil {
+			os.Exit(2)
+		}
+		if err := os.WriteFile(pidFile, []byte(strconv.Itoa(child.Process.Pid)), 0600); err != nil {
+			os.Exit(3)
+		}
+		time.Sleep(100 * time.Millisecond)
+		os.Exit(0)
+	default:
+		os.Exit(m.Run())
+	}
+}
+
 func TestStopProofBindsSessionAndWaitsForExit(t *testing.T) {
-	p, e := Start("attempt-test", []string{"/bin/sleep", "60"}, nil)
+	argv := []string{"/bin/sleep", "60"}
+	if runtime.GOOS == "windows" {
+		argv = []string{"cmd.exe", "/c", "ping -n 61 127.0.0.1 >NUL"}
+	}
+	p, e := Start("attempt-test", argv, nil)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -39,6 +73,44 @@ func TestNativeBundleRequiresCodeModeHost(t *testing.T) {
 	}
 	if _, _, e := NativeArgs(binary, filepath.Join(root, "home"), ""); e == nil {
 		t.Fatal("incomplete native package admitted")
+	}
+}
+
+func TestNativeArgsTransportPoliciesAreExplicitlyDistinct(t *testing.T) {
+	root := t.TempDir()
+	binary := filepath.Join(root, "codex")
+	helper := filepath.Join(root, "codex-code-mode-host")
+	if e := os.WriteFile(binary, []byte("binary"), 0700); e != nil {
+		t.Fatal(e)
+	}
+	if e := os.WriteFile(helper, []byte("helper"), 0700); e != nil {
+		t.Fatal(e)
+	}
+	_, disabledCapability, e := NativeArgsWithTransportPolicy(binary, filepath.Join(root, "disabled"), "", "", NativeTransportPolicyExplicitlyDisabled)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defaultArgs, defaultCapability, e := NativeArgsWithTransportPolicy(binary, filepath.Join(root, "default"), "", "", NativeTransportPolicyNativeDefault)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if disabledCapability == defaultCapability {
+		t.Fatal("explicitly disabled and native default policies share a capability digest")
+	}
+	defaultLaunch := strings.Join(defaultArgs, " ")
+	if strings.Contains(defaultLaunch, "--unshare-cgroup") || strings.Contains(defaultLaunch, "/sys/fs/cgroup") {
+		t.Fatalf("legacy native launch profile changed unexpectedly: %s", defaultLaunch)
+	}
+	disabled, e := os.ReadFile(filepath.Join(root, "disabled", "config.toml"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	nativeDefault, e := os.ReadFile(filepath.Join(root, "default", "config.toml"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	if !strings.Contains(string(disabled), "supports_websockets = false") || strings.Contains(string(nativeDefault), "supports_websockets = false") || !strings.Contains(string(disabled), "responses_websockets = false") || strings.Contains(string(nativeDefault), "responses_websockets = false") {
+		t.Fatalf("transport policy config mismatch: disabled=%s default=%s", disabled, nativeDefault)
 	}
 }
 func TestIsolatedVerifierRejectsBaselineAndAcceptsValidNeighbor(t *testing.T) {

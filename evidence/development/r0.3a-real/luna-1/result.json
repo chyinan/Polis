@@ -1,0 +1,51 @@
+{
+  "status": "inconclusive",
+  "reason": "provider_runtime_unknown",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "model": "gpt-5.6-luna",
+  "subject_revision": "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+  "preflight": "passed",
+  "medium_started": 1,
+  "high_started": 0,
+  "allowance": {
+    "medium_turns": 1,
+    "high_turns": 0,
+    "medium_limit": 3,
+    "high_limit": 1
+  },
+  "turns": [
+    {
+      "number": 1,
+      "employee": "emp-backend",
+      "purpose": "real backend employee: contract proposal and direct collaboration",
+      "profile": "gpt-5.6-luna/medium",
+      "status": "inconclusive",
+      "started": "2026-09-08T13:26:21.563596Z",
+      "last_provider_event": "2026-09-08T13:28:51.458393Z",
+      "native_duration_ms": null,
+      "tool_events": [],
+      "receipts": [],
+      "token_usage": null,
+      "native_usage_updates": 0,
+      "error": "responseStreamDisconnected; provider emitted Reconnecting... waiting for network"
+    }
+  ],
+  "backend_real_execution": "inconclusive",
+  "peer_message_delivery": "not_run",
+  "frontend_observed_v2": "not_run",
+  "obligation_applied": "not_run",
+  "frontend_handover": "not_run",
+  "successor_behavior": "not_run",
+  "obligation_resolution": "not_run",
+  "old_writer_rejection": "not_run",
+  "integration_verifier": "not_run",
+  "negative_control": "not_run",
+  "reviewer_verdict": "not_run",
+  "hidden_verifier": "not_run",
+  "review_isolation": "not_run",
+  "reviewer_quality": "not_run",
+  "real_peer_collaboration": "inconclusive",
+  "manual_intervention": "interrupt_after_unknown_provider_outcome",
+  "no_retry": true,
+  "no_high_started": true
+}

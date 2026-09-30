@@ -1,0 +1,161 @@
+{
+  "acceptance_qualification": {
+    "acceptance_remediation": "PASSED",
+    "behavioral_verifier": {
+      "independent_correct_reference": "PASS",
+      "neighboring_negative_cases": "PASS",
+      "old_h1_candidate": "FAIL",
+      "revision": "r03a-pagination-behavior@1",
+      "runtime_execution": "bounded isolated candidate process; candidate imports rejected before execution",
+      "source_digest": "59eb2a6986eb08fd2d0e093d7d8e45921b5b124c4193e361399ceeddc73e76a3",
+      "source_files": [
+        "internal/fixture/pagination_behavior.go",
+        "internal/kernel/pagination_runtime.go",
+        "internal/kernel/peer_employee_ops.go",
+        "internal/kernel/peer_collaboration.go"
+      ]
+    },
+    "candidate_mutations": 0,
+    "eligible_for_new_peer_collaboration_run": "YES",
+    "future_public_contract": {
+      "bytes": 938,
+      "next_page": "string next_cursor becomes the exact next request cursor",
+      "probe_cases_are": "public deterministic verifier inputs, not employee prompt implementation instructions",
+      "request": "GET /items; cursor string|null with explicit initial/subsequent semantics; limit integer \u003e= 1",
+      "response": "items array\u003cobject\u003e with id/name; required next_cursor string|null",
+      "revision": "r03a-pagination-contract@3",
+      "sha256": "5bc44edeec9b490cf142fa2310f51d8257437f282dd1264e643de24ad57ce12a",
+      "source": "internal/fixture/pagination_behavior.go:PeerPaginationContractV3",
+      "termination": "null next_cursor ends pagination with no further request"
+    },
+    "high": 0,
+    "historical_evidence_modified": false,
+    "historical_h1": {
+      "result": "FAILED_UNCHANGED",
+      "result_sha256": "4b6000866c2ad75b03d325c3bd943b804cc8f8e1a719a76d3dd056f624a2b683",
+      "review_package_sha256": "18ee02fc240242a0a7e6cc68b58eb0a9874980c75205ff33632840310c512310",
+      "review_record_sha256": "534602462ffffcb99acea30c7383080b3b53544a853204c6a3fb4a786a035054"
+    },
+    "integration_coverage": {
+      "collaboration_causality": "separate report dimension",
+      "frozen_h1_regression": "old static verifier PASS; new behavioral verifier FAIL",
+      "lifecycle_binding": "separate report dimension",
+      "old_static_contract_path": "retained for historical compatibility and explicitly reports static_only",
+      "pagination_runtime_behavior": "executed for explicit pagination contract",
+      "positive_runtime_reference": "PASS",
+      "response_shape_compatibility": "executed from public response contract"
+    },
+    "medium": 0,
+    "next_run_requirements": [
+      "new independent business run",
+      "new public pagination contract revision",
+      "new backend and frontend candidates",
+      "same parent ProblemKey",
+      "independent High review remains separately authorized"
+    ],
+    "parent_problem_key": "r03a-real-peer-collaboration-v1",
+    "provider_egress": 0,
+    "provider_surface": {
+      "changed": false,
+      "existing_frontend_aggregate_schema_bytes": 2217,
+      "existing_frontend_aggregate_schema_digest": "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+      "existing_frontend_manifest_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+      "qualification_action": "business/acceptance qualification only; no L1/L2 live canary"
+    },
+    "qualification": "R0.3A-PAGINATION-ACCEPTANCE-REMEDIATION",
+    "reviewer_protocol_friction": {
+      "action": "record_only; reviewer semantics and provider-visible surface unchanged",
+      "rejected_submissions": 10,
+      "status": "CONFIRMED",
+      "substantive_verdict_drift": false
+    },
+    "status": "PASSED",
+    "tx_peer_send_regression": {
+      "candidate_task_after_artifact_still_denied": true,
+      "production_order": "collab.send before artifact.submit",
+      "production_path_affected": false,
+      "root_cause": "TXPeerSend requires peer_backend task state=working; qualified artifact publication transitions task state to candidate",
+      "snapshot_fixture_order_corrected": true
+    },
+    "verification": {
+      "diff_check": "PASS",
+      "full_tests": "PASS",
+      "linux_build": "PASS",
+      "pg_cleanup": "database_dropped_and_server_stopped",
+      "pg_database": "polis_r0_pagination_full_20260913_2200",
+      "postgresql_deterministic_suite": "PASS",
+      "race": "PASS",
+      "vet": "PASS",
+      "windows_build": "PASS"
+    }
+  },
+  "allowance_created": false,
+  "backend_binding": {
+    "execution_fingerprint": "d5e7e43d9a8d0b7f2cd2e0337ae0649d3ab9755c56380af41a68f994a6cd0536",
+    "employee_id": "emp-backend",
+    "problem_key": "r03a-real-peer-collaboration-v1",
+    "purpose": "real_backend_peer_collaboration",
+    "model": "gpt-5.6-luna",
+    "profile": "gpt-5.6-luna/medium",
+    "effort": "medium",
+    "allowance_limits": {
+      "medium_limit": 1,
+      "high_limit": 0,
+      "concurrency": 1,
+      "tool_call_limit": 48
+    }
+  },
+  "backend_l2": {
+    "qualification": "R0.3A-CURRENT-BINARY-REVISED-11-TOOL-L2",
+    "execution_fingerprint": "d5e7e43d9a8d0b7f2cd2e0337ae0649d3ab9755c56380af41a68f994a6cd0536",
+    "codex_version": "0.154.0-alpha.6.2",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "capability_digest": "34027a28c99138327e3658460e22b684bab387912d4a63fd20b377c8a587e182",
+    "tool_manifest_digest": "f1a112788fb1c879a1e7e8e73b515e0ae560352d1f0ee8f5a6f19cf5fc8c0c16",
+    "tool_count": 11,
+    "auth_source_class": "controlled_diagnostic_auth_material",
+    "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+    "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+    "behavioral_contract_qualification": "passed",
+    "revalidated_at": "2026-09-13T16:23:15.3122467Z"
+  },
+  "behavior_verifier": "r03a-pagination-behavior@1",
+  "blob_durability": {
+    "loader_schema_version": "r0.3a-blob-durability-consumer-v2",
+    "source_qualification_path": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-blob-durability\\qualification.json",
+    "source_qualification_id": "R0.3A Blob Durability Windows Qualification",
+    "source_qualification_content_digest": "eb30f9ea18652be45232eb3b1d327e71ee4d2f8072fae4fb3ffb3da321659d9a",
+    "normalized_contract_digest": "5e390a59d40bd8d307b1b4b2280a6c1021980c07be62e4c3e0c1851db997b294",
+    "qualification": "R0.3A Blob Durability Windows Qualification",
+    "status": "PASSED",
+    "medium_consumed": 0,
+    "high_consumed": 0,
+    "provider_egress": 0,
+    "eligible_for_backend_continuation_3": true,
+    "file_content_sync": "forced_on_windows_and_linux_failure_is_fatal",
+    "atomic_finalize": "rename_failure_is_fatal",
+    "linux_parent_directory_sync": "strong_file_sync_atomic_rename_parent_directory_fsync",
+    "windows_parent_directory_sync": "explicitly_classified_unsupported_after_file_sync_and_atomic_rename; weaker_than_unix_and_not_equivalent",
+    "windows_smoke_status": "PASSED",
+    "windows_content_hash_correct": true,
+    "windows_final_blob_present": true,
+    "windows_atomic_finalization": "final_digest_present_no_stage_file",
+    "windows_parent_sync_outcome": "explicitly_unsupported",
+    "windows_stage_files": 0,
+    "windows_cleanup": "owned_company_directory_removed",
+    "os_root_traversal": "PASSED",
+    "design_pack_modified": false,
+    "transport_forensics_continued": false
+  },
+  "contract_revision": "r03a-pagination-contract@3",
+  "historical_evidence_modified": false,
+  "orchestration_revision": "r03a-pagination-v3-orchestration@1",
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "provider_egress": 0,
+  "purpose": "real_backend_peer_collaboration",
+  "record_type": "r0.3a-pagination-v3-backend-freshness-v1",
+  "recorded_at": "2026-09-13T16:23:15.3122467Z",
+  "subject_revision": "r03a-pagination-v3-business-subject@1",
+  "worker_started": false
+}

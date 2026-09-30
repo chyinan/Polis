@@ -1,0 +1,34 @@
+{
+  "frontend": "existing frontend reused",
+  "company_id": "r04-workbench-company",
+  "api_responses": [
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r04-workbench-company/overview",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r04-workbench-company/overview",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r04-workbench-company/overview",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r04-workbench-company/overview",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r04-workbench-company/overview",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r04-workbench-company/activity?limit=50&snapshot_cursor=company-seq%3A8",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "D:\\Programs\\Polis\\evidence\\development\\r0.4-existing-frontend-real-backend-integration\\company-overview-real.png",
+    "D:\\Programs\\Polis\\evidence\\development\\r0.4-existing-frontend-real-backend-integration\\activity-real-terminal-page.png"
+  ]
+}

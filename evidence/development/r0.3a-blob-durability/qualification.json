@@ -1,0 +1,47 @@
+{
+  "qualification": "R0.3A Blob Durability Windows Qualification",
+  "status": "PASSED",
+  "medium_consumed": 0,
+  "high_consumed": 0,
+  "provider_egress": 0,
+  "durability_contract": {
+    "file_content_sync": "forced_on_windows_and_linux_failure_is_fatal",
+    "atomic_finalize": "rename_failure_is_fatal",
+    "linux_parent_directory_sync": "strong_file_sync_atomic_rename_parent_directory_fsync",
+    "windows_parent_directory_sync": "explicitly_classified_unsupported_after_file_sync_and_atomic_rename; weaker_than_unix_and_not_equivalent"
+  },
+  "regressions": {
+    "file_sync_injected_failure": "PASSED",
+    "rename_injected_failure": "PASSED",
+    "parent_directory_sync_injected_failure": "PASSED",
+    "linux_parent_directory_sync_failure_remains_fatal": "PASSED",
+    "os_root_traversal": "PASSED",
+    "stage_partial_cleanup": "PASSED",
+    "linux_real_filesystem_smoke": "PASSED"
+  },
+  "windows_native_filesystem_smoke": {
+    "evidence": "evidence/development/r0.3a-blob-durability/windows-smoke-v3.json",
+    "status": "PASSED",
+    "content_hash_correct": true,
+    "final_blob_present": true,
+    "stage_files": 0,
+    "atomic_finalization": "final_digest_present_no_stage_file",
+    "parent_directory_sync_outcome": "explicitly_unsupported",
+    "cleanup": "owned_company_directory_removed"
+  },
+  "offline_validation": {
+    "tests": "PASSED",
+    "race": "PASSED",
+    "vet": "PASSED",
+    "build": "PASSED",
+    "windows_test_binary_cross_compile": "PASSED",
+    "windows_cross_build": "PASSED",
+    "diff_check": "PASSED"
+  },
+  "continuation_2_disposable_blob_cleanup": "PASSED",
+  "design_pack_modified": false,
+  "transport_forensics_continued": false,
+  "eligible_for_backend_continuation_3": true,
+  "frontend_started": false,
+  "reviewer_started": false
+}

@@ -1,0 +1,28 @@
+{
+  "apiResponses": [
+    {
+      "url": "http://127.0.0.1:8082/api/workbench/companies/browser-company-01/overview",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8082/api/workbench/companies/browser-company-01/tasks/task-browser-01/workspace",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8082/api/workbench/companies/browser-company-01/artifacts/artifact-browser-01/detail",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8082/api/workbench/companies/browser-company-01/artifacts/artifact-browser-01/manifest",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8082/api/workbench/companies/browser-company-01/artifacts/artifact-browser-01/download",
+      "status": 200
+    }
+  ],
+  "browserErrors": [],
+  "visibleAlerts": [
+    "artifact delivery ZIP entry uses an unsupported encoding"
+  ]
+}

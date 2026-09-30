@@ -1,0 +1,95 @@
+{
+  "record_type": "polis-r0-5b-live-1-pre-provider-freshness@1",
+  "status": "PASS_FOR_SURFACE_RUNTIME_AND_DATABASE_FRESHNESS",
+  "scope_note": "This record covers the fresh product surface/runtime/database gates. The separate total-Task cardinality gate failed and stopped execution before Start.",
+  "start_action_not_yet_performed": true,
+  "company": {
+    "company_id": "r05b-live-1",
+    "company_count": 1,
+    "logical_employee_identity_count": 4,
+    "bootstrap": "dedicated temporary database setup only; existing New Company UI has no create API"
+  },
+  "browser_mission_creation": {
+    "status": "PASS",
+    "frontend_mode": "real",
+    "read_model": "PostgreSQL runtime read model",
+    "mission_id": "4f000865902ec201d528c8ce3a039798",
+    "mission_count": 1,
+    "mission_state": "draft",
+    "task_count": 0,
+    "worker_session_count": 0,
+    "public_contract_visible": true
+  },
+  "product_surface": {
+    "surface_id": "polis-product-tool-surface@2",
+    "tool_count": 7,
+    "manifest_digest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+    "aggregate_schema_bytes": 1470,
+    "aggregate_schema_digest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+    "current_offline_identity_test": "PASS",
+    "product_live_l2": "CURRENT / QUALIFIED",
+    "surface_fresh": true,
+    "product_provider_l2_fingerprint": "4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532",
+    "exact_surface_execution_fingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08",
+    "qualification_evidence": "evidence/development/r0.5b4-product-tool-surface-v2-live-qualification/product-live-l2-qualification.json"
+  },
+  "provider_runtime": {
+    "status": "READY",
+    "worker_mode": "real",
+    "transport": "codex",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "native_version": "0.154.0-alpha.6.2",
+    "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+    "helper_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+    "auth_source_present": true,
+    "auth_contents_recorded": false,
+    "execution_fingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08",
+    "transport_policy_revision": "r03a-transport-policy@1",
+    "transport_policy_defaults_unchanged": true,
+    "medium_limit": 1,
+    "high_limit": 0,
+    "tool_call_limit": 16
+  },
+  "postgresql": {
+    "status": "READY",
+    "version": "18.6",
+    "database": "polis_r0_5b_live_1",
+    "schema_version": 7,
+    "fsync": "on",
+    "synchronous_commit": "on",
+    "initial_company_mission_task_session_counts": [0, 0, 0, 0],
+    "current_company_mission_task_session_counts": [1, 1, 0, 0]
+  },
+  "task_validation": {
+    "public_contract_revision": "text-acceptance@1",
+    "runner_kind": "text_contains_all",
+    "runner_revision": "text-contains-all@1",
+    "contract_equals_mission_row": true,
+    "contract_equals_visible_frontend_criteria": true,
+    "concrete_binding_status": "NOT_CREATED",
+    "binding_generation_order_verified": "TXPrepareProductTask persists the task-scoped binding before worker provider reservation",
+    "coherence_evidence": "current taskvalidation.Bind/Registry implementation and frozen B4 offline taskvalidation/control/kernel tests"
+  },
+  "workspace_cas": {
+    "blob_root": "fresh LIVE_1 temporary directory",
+    "status": "READY_BY_EXISTING_INTEGRATION_EVIDENCE",
+    "task_workspace_created": false,
+    "creation_order_if_started": "TXPrepareProductTask creates the task workspace before provider reservation",
+    "revision_and_digest_cas": "qualified B3 product semantics"
+  },
+  "worker_lifecycle": {
+    "worker_session": "READY",
+    "duplicate_guard": "READY",
+    "fencing": "READY",
+    "cancellation_cleanup": "READY",
+    "evidence": "evidence/development/r0.5b4-product-tool-surface-v2-live-qualification/post-canary-offline"
+  },
+  "provider_authorizations": 0,
+  "provider_reservations": 0,
+  "provider_egress": 0,
+  "provider_processes": 0,
+  "retry": 0,
+  "successor": 0,
+  "high_turns": 0
+}

@@ -1,0 +1,10 @@
+=== RUN   TestWindowsWorkerHostStopReceiptReplayRequiresExactEvidence
+--- PASS: TestWindowsWorkerHostStopReceiptReplayRequiresExactEvidence (0.00s)
+=== RUN   TestWorkerHostContainmentBindingScopesRecoveryCandidates
+--- PASS: TestWorkerHostContainmentBindingScopesRecoveryCandidates (0.08s)
+=== RUN   TestTXFinalizeWorkerBeforeProcessIsIdempotentForSameFailure
+--- PASS: TestTXFinalizeWorkerBeforeProcessIsIdempotentForSameFailure (0.05s)
+=== RUN   TestWorkerLifecycleAndMediation
+--- PASS: TestWorkerLifecycleAndMediation (0.18s)
+PASS
+ok  	polis/internal/kernel	0.362s

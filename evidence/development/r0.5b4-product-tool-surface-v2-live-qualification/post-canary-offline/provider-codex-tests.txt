@@ -1,0 +1,2 @@
+ok  	polis/internal/provider	0.196s
+ok  	polis/internal/codex	0.998s

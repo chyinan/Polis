@@ -1,0 +1,9 @@
+{
+  "configured_directory": "/tmp/polis-pg-v9-adjudication-v1",
+  "resolved_directory": "/tmp/polis-pg-v9-adjudication-v1",
+  "port": 55432,
+  "effective_socket_path": "/tmp/polis-pg-v9-adjudication-v1/.s.PGSQL.55432",
+  "path_bytes": 47,
+  "maximum_bytes": 107,
+  "compatibility": "PASS"
+}

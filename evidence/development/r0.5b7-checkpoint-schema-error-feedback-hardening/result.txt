@@ -1,0 +1,5 @@
+status=PASSED
+provider_egress=0
+medium=0
+high=0
+database=polis_r0_r05b7_21992

@@ -1,0 +1,40 @@
+{
+  "task": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_2",
+  "browser": "Microsoft Edge via Playwright",
+  "url": "http://127.0.0.1:4174/companies/r05b-live-2/overview",
+  "companyId": "r05b-live-2",
+  "mission": {
+    "id": "fed04f193f1bc6afebf9c152832ccd76",
+    "title": "R0.5B LIVE_2 real-provider product smoke",
+    "goal": "Create one small product integration smoke artifact through the Polis real-provider product path.",
+    "state": "draft",
+    "publicAcceptanceCriteria": [
+      "Mission ID: {{mission_id}}",
+      "Task ID: {{task_id}}",
+      "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+      "Task summary: This artifact records one small product integration smoke."
+    ]
+  },
+  "createCommand": {
+    "status": 202,
+    "accepted": true,
+    "commandType": "mission.create",
+    "requestId": "878f0ccd-fa83-4c01-9fdb-e8669a692607"
+  },
+  "apiTraffic": [
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    }
+  ],
+  "preStartDatabaseCounts": "company=1 employees=4 missions=1 mission_state=draft tasks=0 worker_sessions=0",
+  "preStartAllowancePresent": false,
+  "preStartProviderEgress": 0,
+  "pageErrors": [],
+  "startClicked": false,
+  "screenshot": "browser-mission-draft.png"
+}

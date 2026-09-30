@@ -1,0 +1,23 @@
+{
+  "passed": false,
+  "status": "preflight_failed",
+  "control": "T13 current-auth 0.153.4 explicitly-disabled policy",
+  "candidate": "T14 current-auth 0.153.4 native-default policy",
+  "old_t13_fingerprint": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+  "intended_policy_change": {
+    "old_provider_transport_policy": "explicitly_disabled",
+    "new_provider_transport_policy": "native_default",
+    "old_websocket_policy": "explicitly_disabled",
+    "new_websocket_policy": "native_default"
+  },
+  "implementation_diagnostic": {
+    "attempted_manifest_capability_digest": "105552b04a3e7379adf28dd266c1c5108fedbef824173a6455003af20647affb",
+    "effective_native_default_capability_digest": "33eda3b9b9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+    "attempted_candidate_fingerprint": "899f760993417c52a9fffccf109f8fcf6c7b1d6cf3f00150e710952b712a37fe",
+    "corrected_candidate_fingerprint_not_accepted": "d0ea7e7594aac7ca19677220956563e77991a5b30d40b00628a74f805249cf38",
+    "stage": "before_process_start",
+    "medium_consumed": 0,
+    "provider_egress": "not_started"
+  },
+  "historical_evidence_recomputed_or_overwritten": false
+}

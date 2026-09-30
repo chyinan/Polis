@@ -1,0 +1,160 @@
+{
+  "aggregate_schema_bytes": 2048,
+  "aggregate_schema_digest": "ad2d5e53c585ba3eea65614432e05fb8ad3056c234faee57ac43eb2d125b8763",
+  "business_acceptance": {
+    "behavior_verifier_revision": "r03a-pagination-behavior@1",
+    "factor_boundary": "business_acceptance_separate_from_provider_tool_surface",
+    "public_contract_revision": "r03a-pagination-contract@3",
+    "qualification": {
+      "acceptance_remediation": "PASSED",
+      "behavioral_verifier": {
+        "independent_correct_reference": "PASS",
+        "neighboring_negative_cases": "PASS",
+        "old_h1_candidate": "FAIL",
+        "revision": "r03a-pagination-behavior@1",
+        "runtime_execution": "bounded isolated candidate process; candidate imports rejected before execution",
+        "source_digest": "59eb2a6986eb08fd2d0e093d7d8e45921b5b124c4193e361399ceeddc73e76a3",
+        "source_files": [
+          "internal/fixture/pagination_behavior.go",
+          "internal/kernel/pagination_runtime.go",
+          "internal/kernel/peer_employee_ops.go",
+          "internal/kernel/peer_collaboration.go"
+        ]
+      },
+      "candidate_mutations": 0,
+      "eligible_for_new_peer_collaboration_run": "YES",
+      "future_public_contract": {
+        "bytes": 938,
+        "next_page": "string next_cursor becomes the exact next request cursor",
+        "probe_cases_are": "public deterministic verifier inputs, not employee prompt implementation instructions",
+        "request": "GET /items; cursor string|null with explicit initial/subsequent semantics; limit integer \u003e= 1",
+        "response": "items array\u003cobject\u003e with id/name; required next_cursor string|null",
+        "revision": "r03a-pagination-contract@3",
+        "sha256": "5bc44edeec9b490cf142fa2310f51d8257437f282dd1264e643de24ad57ce12a",
+        "source": "internal/fixture/pagination_behavior.go:PeerPaginationContractV3",
+        "termination": "null next_cursor ends pagination with no further request"
+      },
+      "high": 0,
+      "historical_evidence_modified": false,
+      "historical_h1": {
+        "result": "FAILED_UNCHANGED",
+        "result_sha256": "4b6000866c2ad75b03d325c3bd943b804cc8f8e1a719a76d3dd056f624a2b683",
+        "review_package_sha256": "18ee02fc240242a0a7e6cc68b58eb0a9874980c75205ff33632840310c512310",
+        "review_record_sha256": "534602462ffffcb99acea30c7383080b3b53544a853204c6a3fb4a786a035054"
+      },
+      "integration_coverage": {
+        "collaboration_causality": "separate report dimension",
+        "frozen_h1_regression": "old static verifier PASS; new behavioral verifier FAIL",
+        "lifecycle_binding": "separate report dimension",
+        "old_static_contract_path": "retained for historical compatibility and explicitly reports static_only",
+        "pagination_runtime_behavior": "executed for explicit pagination contract",
+        "positive_runtime_reference": "PASS",
+        "response_shape_compatibility": "executed from public response contract"
+      },
+      "medium": 0,
+      "next_run_requirements": [
+        "new independent business run",
+        "new public pagination contract revision",
+        "new backend and frontend candidates",
+        "same parent ProblemKey",
+        "independent High review remains separately authorized"
+      ],
+      "parent_problem_key": "r03a-real-peer-collaboration-v1",
+      "provider_egress": 0,
+      "provider_surface": {
+        "changed": false,
+        "existing_frontend_aggregate_schema_bytes": 2217,
+        "existing_frontend_aggregate_schema_digest": "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+        "existing_frontend_manifest_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+        "qualification_action": "business/acceptance qualification only; no L1/L2 live canary"
+      },
+      "qualification": "R0.3A-PAGINATION-ACCEPTANCE-REMEDIATION",
+      "reviewer_protocol_friction": {
+        "action": "record_only; reviewer semantics and provider-visible surface unchanged",
+        "rejected_submissions": 10,
+        "status": "CONFIRMED",
+        "substantive_verdict_drift": false
+      },
+      "status": "PASSED",
+      "tx_peer_send_regression": {
+        "candidate_task_after_artifact_still_denied": true,
+        "production_order": "collab.send before artifact.submit",
+        "production_path_affected": false,
+        "root_cause": "TXPeerSend requires peer_backend task state=working; qualified artifact publication transitions task state to candidate",
+        "snapshot_fixture_order_corrected": true
+      },
+      "verification": {
+        "diff_check": "PASS",
+        "full_tests": "PASS",
+        "linux_build": "PASS",
+        "pg_cleanup": "database_dropped_and_server_stopped",
+        "pg_database": "polis_r0_pagination_full_20260913_2200",
+        "postgresql_deterministic_suite": "PASS",
+        "race": "PASS",
+        "vet": "PASS",
+        "windows_build": "PASS"
+      }
+    }
+  },
+  "business_write_policy": "diagnostic_denied",
+  "canonical_manifest_digest": "4ed08d285faa10bf4c5400f9e5b72ab65661a4a79c8e5496a8b45181b76d9b2c",
+  "code_mode_host_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+  "codex_binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+  "codex_version": "codex-cli 0.154.0-alpha.6.2",
+  "controlled_runtime_manifest_digest": "12d8b4813c999a1c1343adcdaea893b03e38b2b6a6a3689c312bea8044346abb",
+  "current_binary_l1": "QUALIFIED",
+  "dynamic_tool_count": 11,
+  "effort": "medium",
+  "execution_fingerprint": "d5e7e43d9a8d0b7f2cd2e0337ae0649d3ab9755c56380af41a68f994a6cd0536",
+  "generated_at": "2026-09-13T15:45:09.4932511Z",
+  "handler_binding_digest": "f1a112788fb1c879a1e7e8e73b515e0ae560352d1f0ee8f5a6f19cf5fc8c0c16",
+  "high": 0,
+  "historical_evidence_modified": false,
+  "l1_fingerprint": "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+  "medium": 0,
+  "model": "gpt-5.6-luna",
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@3",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "provider_egress": 0,
+  "qualification": "R0.3A-CURRENT-BINARY-REVISED-11-TOOL-L2",
+  "unrelated_drift": false,
+  "semantic_diff": {
+    "explained": true,
+    "old_tool_count": 11,
+    "current_tool_count": 11,
+    "approved_changes": [
+      {
+        "tool": "polis_work_checkpoint",
+        "path": "polis_work_checkpoint.inputSchema.properties.evidence -\u003e evidence_refs",
+        "old_required": "evidence",
+        "new_required": "evidence_refs",
+        "old_schema_bytes": 782,
+        "new_schema_bytes": 792,
+        "reason": "approved checkpoint/behavioral hardening: receipt references replace free-text evidence"
+      }
+    ],
+    "unexplained_changes": null
+  },
+  "status": "PASSED",
+  "thread_start_payload_bytes": 4042,
+  "thread_start_payload_digest": "8f4d8d37ca7ec5440828657bbfd2160e28c61428a757c4ce3aa3b0be3bdd97ab",
+  "tool_count": 11,
+  "tool_manifest_digest": "f1a112788fb1c879a1e7e8e73b515e0ae560352d1f0ee8f5a6f19cf5fc8c0c16",
+  "tool_names": [
+    "polis_work_current",
+    "polis_context_read",
+    "polis_workspace_read",
+    "polis_workspace_replace",
+    "polis_contract_propose",
+    "polis_contract_accept",
+    "polis_contract_read",
+    "polis_collab_send",
+    "polis_workspace_check",
+    "polis_work_checkpoint",
+    "polis_artifact_submit"
+  ]
+}

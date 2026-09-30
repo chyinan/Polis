@@ -1,0 +1,24 @@
+{
+  "layer": "L1_base_provider_transport",
+  "status": "unqualified",
+  "evidence_result": "inconclusive",
+  "execution_key": "58c8d49d9545d179820f03a4505163970bcaf461d6720fd3541640a5113cba45",
+  "combination": {
+    "codex_version": "0.151.0",
+    "binary_sha256": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "runtime_profile": "wsl-linux-amd64",
+    "sandbox_class": "read-only",
+    "proxy_config_digest": "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78775af7ca51704",
+    "auth_source_class": "local_codex_auth_file",
+    "code_mode_host_sha256": "a9adcea47799d8caaec5fbf073966fef2869f754bc7b463e30783880dfb12913",
+    "capability_digest": "9f009fe3b4ffb8041aae0a0ae85161a1596fdba5def4104183b56ec43b01724",
+    "native_protocol_digest": "passed_without_inference"
+  },
+  "tool_surface_digest": "",
+  "evidence_ref": "evidence/development/r0.3a-t6/luna-1/result.json",
+  "reason": "no_first_valid_output_after_structured_reconnects",
+  "created_at": "2026-09-09T00:00:00Z",
+  "expires_at": "2026-09-16T00:00:00Z"
+}

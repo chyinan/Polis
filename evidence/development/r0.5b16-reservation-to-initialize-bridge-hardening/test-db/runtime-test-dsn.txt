@@ -1,0 +1,1 @@
+host=/tmp/polis-r05b16.nH36He/socket port=55487 dbname=polis_r0_5b16_bridge user=polis_runtime

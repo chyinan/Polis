@@ -1,0 +1,125 @@
+{
+  "browser": "Microsoft Edge via Playwright",
+  "ui_mode": "RealWorkbenchApi",
+  "company_id": "r05b-live-2",
+  "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+  "acceptance_contract": [
+    "Mission ID: {{mission_id}}",
+    "Task ID: {{task_id}}",
+    "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+    "Task summary: This artifact records one small product integration smoke."
+  ],
+  "mission_create": {
+    "post_count": 1,
+    "http_status": 202,
+    "accepted": true,
+    "state": "draft",
+    "request_id": "878f0ccd-fa83-4c01-9fdb-e8669a692607"
+  },
+  "mission_start": {
+    "click_count": 1,
+    "post_count": 1,
+    "http_status": 202,
+    "accepted": true,
+    "resulting_state": "active",
+    "request_id": "e1cf07c2-0dbf-412e-8520-1ce27fd9b337"
+  },
+  "provider_terminal": {
+    "egress": 1,
+    "terminal": "completed",
+    "artifact_count": 0,
+    "qualified_checkpoint_count": 0,
+    "smoke_result": "FAILED"
+  },
+  "mission_cancel": {
+    "click_count": 1,
+    "post_count": 1,
+    "http_status": 202,
+    "accepted": true,
+    "resulting_state": "cancelled",
+    "request_id": "a3ab9a23-8e8c-481c-b743-d07f9e657c53"
+  },
+  "final_workbench": {
+    "mission_cancelled_visible": true,
+    "bootstrap_plan_completed_visible": true,
+    "compat_cancelled_visible": true,
+    "provider_turn_completed_in_activity": true,
+    "worker_stopped_in_activity": true,
+    "sse_requests": 0,
+    "page_errors": 0
+  },
+  "screenshots": [
+    "browser-before-mission.png",
+    "browser-mission-draft.png",
+    "browser-after-start-click.png",
+    "browser-post-attempt-overview.png",
+    "browser-post-attempt-tasks.png",
+    "browser-post-attempt-activity.png",
+    "browser-after-cancel.png",
+    "browser-final-overview.png",
+    "browser-final-tasks.png",
+    "browser-final-activity.png"
+  ],
+  "api_traffic": [
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions/fed04f193f1bc6afebf9c152832ccd76/start"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/activity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions/fed04f193f1bc6afebf9c152832ccd76/cancel"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/activity"
+    }
+  ]
+}

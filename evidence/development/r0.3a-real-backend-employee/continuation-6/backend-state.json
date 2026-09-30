@@ -1,0 +1,33 @@
+{
+  "artifact": {
+    "ID": "8b2c8235487ecf33a537dbe0929be728",
+    "Digest": "d68fc722eb7a4f12fd2488583dc48be5ff6be1638a388840d33b57623b5dd17a",
+    "State": "ready",
+    "Verdict": "candidate"
+  },
+  "contract": {
+    "id": "dd49107c44fd4d39cf8a374b4ccf2594",
+    "mission": "r03a-t2-mission-1789214827350547800",
+    "endpoint": "GET /items?cursor={cursor}",
+    "schema": "{\"items\": [\"id\", \"name\"], \"next_cursor\": \"string\"}",
+    "digest": "6b7c4dfcb9a8a27c89964b4bd5caf1fbac16c249246444abdd4887141a47fa1c",
+    "state": "accepted",
+    "revision": 4,
+    "base_revision": 3
+  },
+  "message": {
+    "id": "a8db16bb8102d2652402ccca55763167",
+    "task_id": "3f4b338493e0c988fee3017e91cc27e1",
+    "obligation_id": "a8db16bb8102d2652402ccca55763167",
+    "contract_revision_id": "dd49107c44fd4d39cf8a374b4ccf2594",
+    "delivery_state": "persisted"
+  },
+  "obligation_state": "pending",
+  "planner_path": 0,
+  "stop_confirmed": true,
+  "workspace": {
+    "Digest": "d68fc722eb7a4f12fd2488583dc48be5ff6be1638a388840d33b57623b5dd17a",
+    "Content": "package backend\n\nconst Endpoint = \"GET /items?cursor={cursor}\"\n\nfunc FetchItems() string {\n\treturn \"items,id,name,next_cursor\"\n}\n",
+    "Revision": 10
+  }
+}

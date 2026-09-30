@@ -1,0 +1,25 @@
+{
+  "task_count": 2,
+  "tasks": [
+    {
+      "id": "489ea9fbe65d359327bd9bc979461138",
+      "kind": "bootstrap_plan",
+      "owner": "emp-planning",
+      "state": "completed",
+      "generation": 0,
+      "mission_id": "fed04f193f1bc6afebf9c152832ccd76"
+    },
+    {
+      "id": "5b39875f8dc6463f36395b04e4504407",
+      "kind": "compat",
+      "owner": "emp-backend",
+      "state": "working",
+      "generation": 1,
+      "mission_id": "fed04f193f1bc6afebf9c152832ccd76"
+    }
+  ],
+  "provider_executable_task_count": 1,
+  "provider_executable_employee_count": 1,
+  "provider_bearing_worker_session_count": 1,
+  "planning_worker_session_count": 0
+}

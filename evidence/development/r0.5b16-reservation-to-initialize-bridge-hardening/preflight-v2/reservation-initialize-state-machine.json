@@ -1,0 +1,83 @@
+{
+  "b15_vs_live4": [
+    {
+      "B15": "none; zero-budget local qualification",
+      "LIVE_4": "business ExecutionAuthorization",
+      "classification": "EXPECTED",
+      "field": "authorization_type"
+    },
+    {
+      "B15": "Task/WorkerSession business identity without budget reservation",
+      "LIVE_4": "Company/Mission/compat Task/Employee/WorkerSession/CAS binding plus reservation",
+      "classification": "EXPECTED",
+      "field": "authorization_binding"
+    },
+    {
+      "B15": "not created",
+      "LIVE_4": "one business reservation created",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE",
+      "field": "reservation_object_state"
+    },
+    {
+      "B15": "active",
+      "LIVE_4": "active after attach/validate/activate",
+      "classification": "EXPECTED",
+      "field": "WorkerSession_state_before_initialize"
+    },
+    {
+      "B15": "qualification call context",
+      "LIVE_4": "owned background worker context after Start returns",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE",
+      "field": "context_ancestry"
+    },
+    {
+      "B15": "local qualification adapter",
+      "LIVE_4": "providerWorker owns session, cancel, cleanupOnce and reservation",
+      "classification": "EXPECTED",
+      "field": "runtime_ownership"
+    },
+    {
+      "B15": "session owns protocol pipes",
+      "LIVE_4": "providerWorker retains session through async run/cleanup",
+      "classification": "EXPECTED",
+      "field": "pipe_ownership"
+    },
+    {
+      "B15": "none",
+      "LIVE_4": "Reserve/one-use Start/CloseReservation",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE",
+      "field": "reservation_callbacks"
+    }
+  ],
+  "post_pid_attach_branches": [
+    {
+      "branch": "TXValidateWorker",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE"
+    },
+    {
+      "branch": "TXActivateWorker",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE"
+    },
+    {
+      "branch": "context cancellation or deadline in synchronous start",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE"
+    },
+    {
+      "branch": "duplicate worker map guard",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE"
+    },
+    {
+      "branch": "goroutine scheduling before run.Initialize",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE"
+    },
+    {
+      "branch": "initialize prepare/payload/write/ack",
+      "classification": "EXPECTED"
+    },
+    {
+      "branch": "cleanup/finalizer and reservation close",
+      "classification": "POSSIBLE_PRE_INITIALIZE_CAUSE"
+    }
+  ],
+  "record_type": "polis-r0.5b16-reservation-initialize-state-machine@1"
+}

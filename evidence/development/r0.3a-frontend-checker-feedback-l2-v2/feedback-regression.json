@@ -1,0 +1,37 @@
+[
+  {
+    "name": "invalid_syntax_public_diagnostic",
+    "passed": true,
+    "detail": "candidate_syntax has bounded parser diagnostics"
+  },
+  {
+    "name": "missing_required_public_field",
+    "passed": true,
+    "detail": "response_shape identifies next_cursor"
+  },
+  {
+    "name": "wrong_public_type",
+    "passed": true,
+    "detail": "response_shape identifies expected and actual types"
+  },
+  {
+    "name": "public_unexpected_field_policy",
+    "passed": true,
+    "detail": "unexpected fields are reported only when the public contract forbids them"
+  },
+  {
+    "name": "valid_candidate_passes",
+    "passed": true,
+    "detail": "valid public contract candidate remains accepted"
+  },
+  {
+    "name": "deterministic_bounded_feedback",
+    "passed": true,
+    "detail": "stable ordering and bounded public payload"
+  },
+  {
+    "name": "hidden_oracle_isolated",
+    "passed": true,
+    "detail": "only public parser and contract facts are exposed"
+  }
+]

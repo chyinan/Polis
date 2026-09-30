@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "root": ".runtime/linux/r0.3a-blob-durability-smoke",
+  "content_digest": "d9db1f8c10f9002cf4dd17d067f332ece8218ba48e5d845ea7d74cd3be826d17",
+  "read_back_digest": "d9db1f8c10f9002cf4dd17d067f332ece8218ba48e5d845ea7d74cd3be826d17",
+  "final_blob_present": true,
+  "content_hash_correct": true,
+  "stage_files": 0,
+  "atomic_finalization": "final_digest_present_no_stage_file",
+  "parent_directory_sync_contract": "strong_file_sync_atomic_rename_parent_directory_fsync",
+  "parent_directory_sync_outcome": "strong",
+  "cleanup": "owned_company_directory_removed"
+}

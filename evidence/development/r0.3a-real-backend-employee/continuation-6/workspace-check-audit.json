@@ -1,0 +1,22 @@
+{
+  "record_type": "r0.3a-continuation-6-workspace-check-derived-audit-v1",
+  "raw_protocol_preserved": true,
+  "attempt_count": 11,
+  "passed_count": 1,
+  "failed_count": 10,
+  "checks": [
+    {"ordinal": 1, "passed": false, "contract_revision_id": "47694cfbca07e19ed0da52e8f4ab42ce", "workspace_revision": 2, "public_reason_codes": ["candidate_syntax_invalid", "endpoint_mismatch", "response_shape_mismatch"]},
+    {"ordinal": 2, "passed": false, "contract_revision_id": "47694cfbca07e19ed0da52e8f4ab42ce", "workspace_revision": 3, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 3, "passed": false, "contract_revision_id": "47694cfbca07e19ed0da52e8f4ab42ce", "workspace_revision": 4, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 4, "passed": false, "contract_revision_id": "bac1697f2df271665b61d652bb38a493", "workspace_revision": 4, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 5, "passed": false, "contract_revision_id": "bac1697f2df271665b61d652bb38a493", "workspace_revision": 5, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 6, "passed": false, "contract_revision_id": "bac1697f2df271665b61d652bb38a493", "workspace_revision": 6, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 7, "passed": false, "contract_revision_id": "bac1697f2df271665b61d652bb38a493", "workspace_revision": 7, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 8, "passed": false, "contract_revision_id": "dd49107c44fd4d39cf8a374b4ccf2594", "workspace_revision": 7, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 9, "passed": false, "contract_revision_id": "dd49107c44fd4d39cf8a374b4ccf2594", "workspace_revision": 8, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 10, "passed": false, "contract_revision_id": "dd49107c44fd4d39cf8a374b4ccf2594", "workspace_revision": 9, "public_reason_codes": ["response_shape_mismatch"]},
+    {"ordinal": 11, "passed": true, "contract_revision_id": "dd49107c44fd4d39cf8a374b4ccf2594", "workspace_revision": 10, "public_reason_codes": []}
+  ],
+  "convergence_assessment": "model used explicit public feedback and eventually converged; it also performed contract churn from rev2 through rev4 and made several malformed checkpoint requests",
+  "generated_from": "505a8c76690115ec5de6f965ba9bab72/protocol.jsonl"
+}

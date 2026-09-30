@@ -1,0 +1,6 @@
+{
+  "error": "preflight_failed: T9 prompt digest does not match the frozen canary prompt",
+  "model_calls": 0,
+  "passed": false,
+  "status": "preflight_failed"
+}

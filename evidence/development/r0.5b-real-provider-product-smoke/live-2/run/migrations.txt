@@ -1,0 +1,8 @@
+2026/09/17 18:39:30 OK   00001_r0.sql (13.33ms)
+2026/09/17 18:39:30 OK   00002_workers.sql (7.02ms)
+2026/09/17 18:39:30 OK   00003_r03a_peer_collab.sql (10.4ms)
+2026/09/17 18:39:30 OK   00004_behavioral_contract_hardening.sql (1.35ms)
+2026/09/17 18:39:30 OK   00005_artifact_qualification.sql (1.82ms)
+2026/09/17 18:39:30 OK   00006_r05a_command_surface.sql (3.11ms)
+2026/09/17 18:39:31 OK   00007_task_validation_bindings.sql (9.84ms)
+2026/09/17 18:39:31 goose: successfully migrated database to version: 7

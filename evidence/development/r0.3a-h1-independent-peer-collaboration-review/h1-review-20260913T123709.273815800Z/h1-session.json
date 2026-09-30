@@ -1,0 +1,59 @@
+{
+  "session_id": "h1-review-20260913T123709.273815800Z",
+  "thread_id": "01a09ac5-85a0-7b81-bc29-befd34219541",
+  "status": "passed",
+  "started": "2026-09-13T12:37:09.2738158Z",
+  "finished": "2026-09-13T12:39:28.5793594Z",
+  "duration_ms": 139305,
+  "native_duration_ms": 10,
+  "process_started": true,
+  "initialize_completed": true,
+  "thread_started": true,
+  "turn_started": true,
+  "provider_egress": true,
+  "first_valid_output": true,
+  "turn_completed": true,
+  "reconnect_count": 0,
+  "tool_events": [
+    "context_read",
+    "work_current",
+    "workspace_read",
+    "context_read",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit",
+    "review_submit"
+  ],
+  "receipts": [
+    "review-20260913T123920.807156200Z"
+  ],
+  "review_receipt_id": "review-20260913T123920.807156200Z",
+  "stop_receipt": "windows-process-handle:33124:waited",
+  "stop_confirmed": true,
+  "token_usage": {
+    "total": {
+      "totalTokens": 250116,
+      "inputTokens": 244594,
+      "cachedInputTokens": 216576,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 5522,
+      "reasoningOutputTokens": 2461
+    },
+    "last": {
+      "totalTokens": 19733,
+      "inputTokens": 19435,
+      "cachedInputTokens": 18176,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 298,
+      "reasoningOutputTokens": 235
+    }
+  },
+  "native_usage_updates": 15
+}

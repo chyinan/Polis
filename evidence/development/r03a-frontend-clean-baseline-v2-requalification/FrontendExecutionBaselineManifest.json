@@ -1,0 +1,47 @@
+{
+  "baseline_generation_id": "r03a-frontend-clean-baseline-v2-requalification",
+  "cas_inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+  "company_id": "r03a-pagination-v3-company-1789379324974307400",
+  "contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+  "employee_epoch": 2,
+  "employee_id": "emp-frontend",
+  "frontend_sessions": 0,
+  "frontend_task_id": "629af90e4bc469dc3e961a9bdb7d555a",
+  "live_writer": 0,
+  "message_id": "45a77c6833518bd8fef1ddfe8d28b985",
+  "message_state": "persisted",
+  "mission_id": "r03a-pagination-v3-mission-1789379324974307400",
+  "obligation_id": "45a77c6833518bd8fef1ddfe8d28b985",
+  "obligation_state": "pending",
+  "package_mutated": false,
+  "planner_relay": 0,
+  "postgres": {
+    "cluster_system_identifier": "7685659130076484148",
+    "database_name": "polis_r0_3a_frontend_clean_baseline_v2_requalification",
+    "database_oid": "16384"
+  },
+  "required_cas_blobs": 4,
+  "runtime_cas_binding": {
+    "canonical_root": "/home/chyinan/.local/state/polis-recovery/r03a-frontend-clean-baseline-v2-requalification/blobs",
+    "company_namespace": "r03a-pagination-v3-company-1789379324974307400",
+    "layout_revision": "r03a-cas-layout@1",
+    "required_blob_count": 4,
+    "required_blob_inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf"
+  },
+  "runtime_incarnation": "a6b554d464dd71bd5dc1afdec8f95854",
+  "schema_version": "r03a-frontend-execution-baseline-manifest@1",
+  "semantic_closure_digest": "9b0720862316504709452ef414d349cf27c2561ef6f9b4c1fe845b7f0b38278f",
+  "source_recovery_package": {
+    "cas_manifest_sha256": "9a7d103f56f9dd7300ba10bd88d337cafd286dbcd09177c483f4129125a7ff0f",
+    "dump_sha256": "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+    "package_generation_id": "r03a-sample-6-recovery-20260914T150111Z-307",
+    "package_manifest_sha256": "acb19b8acd25e3f9230bafa9ed5cfeaf707d3a9bd07f036bfbb4e55fea555c5c",
+    "semantic_closure_revision": "r03a-semantic-closure@1"
+  },
+  "synthesized_blobs": 0,
+  "synthesized_rows": 0,
+  "verified_cas_blobs": 4,
+  "workspace_digest": "e2d27d8aa9187eb9ddd0a0ff547af31df440e9590ccdb313b242bda97b67ed8f",
+  "workspace_revision": 1,
+  "writer_authority": null
+}

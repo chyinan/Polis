@@ -1,0 +1,82 @@
+{
+  "aggregate_schema_bytes": 2217,
+  "aggregate_schema_digest": "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+  "checker_feedback_regression": [
+    {
+      "name": "invalid_syntax_public_diagnostic",
+      "passed": true,
+      "detail": "candidate_syntax has bounded parser diagnostics"
+    },
+    {
+      "name": "missing_required_public_field",
+      "passed": true,
+      "detail": "response_shape identifies next_cursor"
+    },
+    {
+      "name": "wrong_public_type",
+      "passed": true,
+      "detail": "response_shape identifies expected and actual types"
+    },
+    {
+      "name": "valid_candidate_passes",
+      "passed": true,
+      "detail": "valid public contract candidate remains accepted"
+    },
+    {
+      "name": "deterministic_bounded_feedback",
+      "passed": true,
+      "detail": "stable ordering and bounded public payload"
+    },
+    {
+      "name": "hidden_oracle_isolated",
+      "passed": true,
+      "detail": "only public parser and contract facts are exposed"
+    }
+  ],
+  "frozen_successor_old_failed_checks": 7,
+  "frozen_successor_old_feedback_detail": false,
+  "authoritative_handover_snapshot_path": "evidence/development/r0.3a-real-frontend-handover-revised/successor-handover.json",
+  "authoritative_handover_snapshot_available": true,
+  "authoritative_database_available": false,
+  "eligible_for_successor_only_revised_run": false,
+  "requires_new_frontend_initial_and_handover": true,
+  "frozen_successor_protocol": "evidence/development/r0.3a-real-frontend-handover-revised/115be34ae3cf91e1a760d8dd8034e3e9/protocol.jsonl",
+  "generated_at": "2026-09-13T11:06:30.856528132Z",
+  "handler_binding_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+  "high": 0,
+  "historical_evidence_modified": false,
+  "live_canary": "NOT_STARTED",
+  "medium": 0,
+  "offline_only": true,
+  "old_frontend_business_qualification_stale": true,
+  "policy_diff": {
+    "only_checker_revision_changed": true,
+    "changes": [
+      {
+        "field": "acceptance_checker_revision",
+        "old": "peer-semantic-checker@2",
+        "current": "peer-semantic-checker@3"
+      }
+    ]
+  },
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@3",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "previous_manifest_path": "evidence/development/r0.3a-current-binary-frontend-l2/execution-manifest.json",
+  "provider_egress": 0,
+  "provider_visible_description_changed": false,
+  "provider_visible_handler_binding_changed": false,
+  "provider_visible_registration_changed": false,
+  "provider_visible_schema_changed": false,
+  "qualification": "R0.3A-FRONTEND-CHECKER-FEEDBACK-L2",
+  "registration_diff": {
+    "equivalent": true,
+    "changes": null
+  },
+  "status": "PASSED",
+  "tool_count": 12,
+  "tool_manifest_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615"
+}

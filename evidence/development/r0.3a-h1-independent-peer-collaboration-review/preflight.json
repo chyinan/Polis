@@ -1,0 +1,30 @@
+{
+  "backend_artifact_id": "5bf77f15ee867b857f116faad0312c4f",
+  "binary": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+  "code_mode_host": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex-code-mode-host.exe",
+  "contract_revision_id": "4f57c71061c10ab5a78f632d8db59321",
+  "current_l1_fingerprint": "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+  "effort": "high",
+  "frontend_artifact_id": "a0191e5ce29a56eb347b421df39fb86e",
+  "high": 0,
+  "historical_evidence_modified": false,
+  "medium": 0,
+  "message_id": "7d027b5a8fd2267a68b364e47f4635ca",
+  "model": "gpt-5.6-luna",
+  "obligation_id": "7d027b5a8fd2267a68b364e47f4635ca",
+  "passed": true,
+  "profile": "gpt-5.6-luna/high",
+  "provider_egress": 0,
+  "qualification": "R0.3A-H1-INDEPENDENT-PEER-COLLABORATION-REVIEW",
+  "reviewer_contamination": false,
+  "status": "review_preflight_passed",
+  "subject_digest": "46fc53b6c15f91dbfe0915badee92869aca72dbfed9c170f0baedd52739e918a",
+  "subject_revision": "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+  "tool_count": 4,
+  "tool_names": [
+    "polis_work_current",
+    "polis_context_read",
+    "polis_workspace_read",
+    "polis_review_submit"
+  ]
+}

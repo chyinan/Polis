@@ -1,0 +1,26 @@
+{
+    "browser_engine":  "Codex in-app browser via CUA",
+    "company_id":  "r05b-live-5",
+    "mission_id":  "81ee562d602a059ed8a4ce2f5be80803",
+    "mission_create_post_count":  1,
+    "mission_start_post_count":  1,
+    "mission_cancel_post_count":  0,
+    "routes_observed":  [
+                            "/companies/r05b-live-5/overview",
+                            "/companies/r05b-live-5/activity",
+                            "/companies/r05b-live-5/tasks"
+                        ],
+    "real_mode_visible":  true,
+    "mission_state_visible":  "active",
+    "task_count_visible":  2,
+    "provider_task_visible":  true,
+    "provider_employee_count_visible":  1,
+    "provider_worker_stopped_visible":  true,
+    "checkpoint_visible":  false,
+    "checkpoint_activity_event_visible":  true,
+    "artifact_visible":  true,
+    "candidate_task_visible":  true,
+    "activity_count":  37,
+    "sse_requests":  0,
+    "screenshot_capture":  "CUA accessibility observations captured; no screenshot file generated"
+}

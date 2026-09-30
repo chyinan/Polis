@@ -1,0 +1,12 @@
+{
+  "status": "NOT_STARTED",
+  "reason_code": "FRONTEND_STARTING_STATE_MISMATCH",
+  "frontend_sessions_observed": 1,
+  "frontend_sessions_expected": 0,
+  "allowance_created": false,
+  "worker_started": 0,
+  "medium_started": 0,
+  "provider_egress": 0,
+  "destructive_or_business_mutation": false,
+  "historical_evidence_modified": false
+}

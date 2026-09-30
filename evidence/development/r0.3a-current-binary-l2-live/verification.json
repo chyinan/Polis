@@ -1,0 +1,28 @@
+{
+  "qualification": "R0.3A-CURRENT-BINARY-REVISED-11-TOOL-L2",
+  "status": "PASSED",
+  "derived_from": [
+    "offline-result.json",
+    "tool-surface.json",
+    "tool-registry.json",
+    "thread-start-request.json",
+    "windows-live-run.json",
+    "provider-events.jsonl"
+  ],
+  "raw_live_evidence_preserved": true,
+  "exact_surface_preflight_passed": true,
+  "exact_surface_basis": {
+    "formal_source": "codex.PeerBackendTools()",
+    "registered_tool_count": 11,
+    "offline_tool_count": 11,
+    "offline_surface_exact_match_to_t21d": true,
+    "tool_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+    "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+    "aggregate_schema_bytes": 2038,
+    "handler_binding_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+    "thread_start_request_contains_exact_surface": true,
+    "attempted_tool_calls": 0,
+    "business_side_effects": 0
+  },
+  "instrumentation_note": "The raw runner field exact_surface_preflight_passed was left at its initialization value; all underlying preflight and live registration receipts pass. The launcher assignment is corrected for future runs; no provider rerun was performed."
+}

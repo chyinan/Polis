@@ -50,7 +50,7 @@ func (k *Kernel) TXRestoreCandidateForReview(ctx context.Context, s Scope, missi
 		if !exists {
 			return Receipt{}, core.Conflict
 		}
-		return Receipt{artifactID, "candidate_recovered"}, nil
+		return Receipt{ID: artifactID, Status: "candidate_recovered"}, nil
 	})
 }
 
@@ -72,6 +72,6 @@ func (k *Kernel) TXFinishReview(ctx context.Context, b Binding) (Receipt, error)
 			return Receipt{}, core.Denied
 		}
 		_, e = tx.Exec(ctx, "UPDATE tasks SET state='completed' WHERE company_id=$1 AND id=$2", b.scope.company, task)
-		return Receipt{task, "completed"}, e
+		return Receipt{ID: task, Status: "completed"}, e
 	})
 }

@@ -1,0 +1,2 @@
+{"time":"2026-09-15T09:26:05.172594287Z","direction":"send","data":{"id":1,"method":"initialize","params":{"capabilities":{"experimentalApi":true},"clientInfo":{"name":"polis","version":"0.1.0"}}}}
+{"time":"2026-09-15T09:26:05.230707232Z","direction":"stderr","data":"bwrap: execvp /codex: No such file or directory\n"}

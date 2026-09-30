@@ -1,0 +1,90 @@
+{
+  "qualification": "R0.3A-PAGINATION-ACCEPTANCE-REMEDIATION",
+  "status": "PASSED",
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "candidate_mutations": 0,
+  "historical_evidence_modified": false,
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "historical_h1": {
+    "result": "FAILED_UNCHANGED",
+    "result_sha256": "4b6000866c2ad75b03d325c3bd943b804cc8f8e1a719a76d3dd056f624a2b683",
+    "review_package_sha256": "18ee02fc240242a0a7e6cc68b58eb0a9874980c75205ff33632840310c512310",
+    "review_record_sha256": "534602462ffffcb99acea30c7383080b3b53544a853204c6a3fb4a786a035054"
+  },
+  "future_public_contract": {
+    "revision": "r03a-pagination-contract@3",
+    "source": "internal/fixture/pagination_behavior.go:PeerPaginationContractV3",
+    "sha256": "5bc44edeec9b490cf142fa2310f51d8257437f282dd1264e643de24ad57ce12a",
+    "bytes": 938,
+    "request": "GET /items; cursor string|null with explicit initial/subsequent semantics; limit integer >= 1",
+    "response": "items array<object> with id/name; required next_cursor string|null",
+    "next_page": "string next_cursor becomes the exact next request cursor",
+    "termination": "null next_cursor ends pagination with no further request",
+    "probe_cases_are": "public deterministic verifier inputs, not employee prompt implementation instructions"
+  },
+  "behavioral_verifier": {
+    "revision": "r03a-pagination-behavior@1",
+    "source_digest": "59eb2a6986eb08fd2d0e093d7d8e45921b5b124c4193e361399ceeddc73e76a3",
+    "source_files": [
+      "internal/fixture/pagination_behavior.go",
+      "internal/kernel/pagination_runtime.go",
+      "internal/kernel/peer_employee_ops.go",
+      "internal/kernel/peer_collaboration.go"
+    ],
+    "old_h1_candidate": "FAIL",
+    "independent_correct_reference": "PASS",
+    "neighboring_negative_cases": "PASS",
+    "runtime_execution": "bounded isolated candidate process; candidate imports rejected before execution"
+  },
+  "integration_coverage": {
+    "lifecycle_binding": "separate report dimension",
+    "collaboration_causality": "separate report dimension",
+    "pagination_runtime_behavior": "executed for explicit pagination contract",
+    "response_shape_compatibility": "executed from public response contract",
+    "old_static_contract_path": "retained for historical compatibility and explicitly reports static_only",
+    "positive_runtime_reference": "PASS",
+    "frozen_h1_regression": "old static verifier PASS; new behavioral verifier FAIL"
+  },
+  "reviewer_protocol_friction": {
+    "status": "CONFIRMED",
+    "rejected_submissions": 10,
+    "substantive_verdict_drift": false,
+    "action": "record_only; reviewer semantics and provider-visible surface unchanged"
+  },
+  "provider_surface": {
+    "changed": false,
+    "qualification_action": "business/acceptance qualification only; no L1/L2 live canary",
+    "existing_frontend_manifest_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+    "existing_frontend_aggregate_schema_digest": "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+    "existing_frontend_aggregate_schema_bytes": 2217
+  },
+  "tx_peer_send_regression": {
+    "root_cause": "TXPeerSend requires peer_backend task state=working; qualified artifact publication transitions task state to candidate",
+    "production_order": "collab.send before artifact.submit",
+    "production_path_affected": false,
+    "snapshot_fixture_order_corrected": true,
+    "candidate_task_after_artifact_still_denied": true
+  },
+  "verification": {
+    "full_tests": "PASS",
+    "race": "PASS",
+    "vet": "PASS",
+    "linux_build": "PASS",
+    "windows_build": "PASS",
+    "postgresql_deterministic_suite": "PASS",
+    "diff_check": "PASS",
+    "pg_database": "polis_r0_pagination_full_20260913_2200",
+    "pg_cleanup": "database_dropped_and_server_stopped"
+  },
+  "acceptance_remediation": "PASSED",
+  "eligible_for_new_peer_collaboration_run": "YES",
+  "next_run_requirements": [
+    "new independent business run",
+    "new public pagination contract revision",
+    "new backend and frontend candidates",
+    "same parent ProblemKey",
+    "independent High review remains separately authorized"
+  ]
+}

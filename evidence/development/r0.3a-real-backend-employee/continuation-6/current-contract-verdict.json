@@ -1,0 +1,61 @@
+{
+  "record_type": "r0.3a-continuation-6-current-contract-derived-verdict-v1",
+  "raw_evidence_preserved": true,
+  "derived_from": [
+    "result.json",
+    "505a8c76690115ec5de6f965ba9bab72/r03a-session.json",
+    "backend-state.json",
+    "505a8c76690115ec5de6f965ba9bab72/protocol.jsonl"
+  ],
+  "raw_runner_status": "failed",
+  "raw_runner_failure": "backend-only qualification conditions failed",
+  "raw_runner_legacy_assertion": "contract.Revision == 2 && contract.State == accepted",
+  "observed_final_contract": {
+    "id": "dd49107c44fd4d39cf8a374b4ccf2594",
+    "revision": 4,
+    "state": "accepted",
+    "base_revision": 3,
+    "endpoint": "GET /items?cursor={cursor}",
+    "schema": "{\"items\": [\"id\", \"name\"], \"next_cursor\": \"string\"}"
+  },
+  "current_task_contract_assessment": {
+    "fixed_revision_number_required": false,
+    "final_contract_accepted_effective": true,
+    "semantic_workspace_check_passed": true,
+    "passed_workspace_revision": 10,
+    "final_message_persisted": true,
+    "final_message_id": "a8db16bb8102d2652402ccca55763167",
+    "final_message_contract_revision_id": "dd49107c44fd4d39cf8a374b4ccf2594",
+    "current_actionable_obligation_persisted": true,
+    "final_obligation_id": "a8db16bb8102d2652402ccca55763167",
+    "final_obligation_contract_revision_id": "dd49107c44fd4d39cf8a374b4ccf2594",
+    "qualified_checkpoint_persisted": true,
+    "qualified_checkpoint_id": "830b16c584da848942121a86ab166681",
+    "artifact_candidate_frozen": true,
+    "artifact_id": "8b2c8235487ecf33a537dbe0929be728",
+    "artifact_digest": "d68fc722eb7a4f12fd2488583dc48be5ff6be1638a388840d33b57623b5dd17a",
+    "workspace_revision": 10,
+    "workspace_digest": "d68fc722eb7a4f12fd2488583dc48be5ff6be1638a388840d33b57623b5dd17a",
+    "planner_relay_count": 0,
+    "unresolved_business_side_effects": 0
+  },
+  "contract_timeline": [
+    {"revision": 1, "state": "superseded", "role": "frozen API v1"},
+    {"revision": 2, "state": "superseded", "id": "47694cfbca07e19ed0da52e8f4ab42ce"},
+    {"revision": 3, "state": "superseded", "id": "bac1697f2df271665b61d652bb38a493"},
+    {"revision": 4, "state": "accepted", "id": "dd49107c44fd4d39cf8a374b4ccf2594", "current": true}
+  ],
+  "tool_budget": {
+    "configured_limit": 48,
+    "tool_calls_used": 41,
+    "tool_calls_remaining": 7,
+    "medium_started": 1,
+    "high_started": 0,
+    "provider_egress": 1
+  },
+  "derived_backend_real_execution": "PASSED",
+  "derived_eligible_for_frontend_phase": true,
+  "official_raw_result_must_remain": "status=failed; backend_real_execution=passed; contract_revision_v2=failed",
+  "db_final_state": "unknown_after_disposable_cleanup; pre-cleanup backend-state and receipts preserved",
+  "generated_reason": "The current continuation-6 contract requires a final accepted/effective revision and current Message/Obligation binding; it does not require the revision number to equal 2. The raw overall failure is therefore an evaluator compatibility defect, not a model transport failure. No provider retry or frontend start is authorized."
+}

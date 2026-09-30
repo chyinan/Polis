@@ -1,0 +1,82 @@
+{
+    "schema_version":  "t20-windows-live-run-v1",
+    "status":  "completed",
+    "preflight_passed":  true,
+    "diagnostic_profile":  "windows_native_isolated",
+    "provider_or_internet_accessed":  true,
+    "provider_egress":  1,
+    "medium_started":  1,
+    "auth_snapshot_used":  true,
+    "config_snapshot_used":  true,
+    "auth_source_role":  "read_only_external_auth_snapshot",
+    "config_source_role":  "exact_selected_non_secret_T14C_config_snapshot",
+    "model":  "gpt-5.6-luna",
+    "effort":  "medium",
+    "sandbox":  "read-only",
+    "provider_transport_policy":  "native_default",
+    "proxy_policy":  "no_injected_proxy",
+    "invocation":  "app-server --stdio",
+    "dynamic_tool_count":  0,
+    "process_started":  true,
+    "initialize_completed":  true,
+    "thread_started":  true,
+    "turn_started":  true,
+    "user_message_item":  true,
+    "first_valid_output":  true,
+    "first_valid_output_text":  "POLIS_TRANSPORT_CANARY_OKPOLIS_TRANSPORT_CANARY_OK",
+    "time_to_first_valid_output_ms":  4800,
+    "reconnect_count":  0,
+    "reconnect_phases":  [
+
+                         ],
+    "recovery_timestamps":  [
+
+                            ],
+    "first_disconnect_delta_ms":  0,
+    "recovery_delta_ms":  0,
+    "native_usage_updates":  1,
+    "token_usage":  {
+                        "total":  {
+                                      "totalTokens":  10534,
+                                      "inputTokens":  10523,
+                                      "cachedInputTokens":  4864,
+                                      "cacheWriteInputTokens":  0,
+                                      "outputTokens":  11,
+                                      "reasoningOutputTokens":  0
+                                  },
+                        "last":  {
+                                     "totalTokens":  10534,
+                                     "inputTokens":  10523,
+                                     "cachedInputTokens":  4864,
+                                     "cacheWriteInputTokens":  0,
+                                     "outputTokens":  11,
+                                     "reasoningOutputTokens":  0
+                                 },
+                        "modelContextWindow":  258400
+                    },
+    "turn_completed":  true,
+    "turn_state":  "completed",
+    "sentinel_match":  "mismatch",
+    "unresolved_transport_state":  false,
+    "failure_mode":  "",
+    "terminal_state":  "completed",
+    "stop_confirmed":  true,
+    "stop_mechanism":  "stdin close plus Windows Process handle WaitForExit",
+    "launch_config_digest":  "711cb622329540cbf996902cfeaae8b13a54976318bdd0a423b684ca7bdba0ea",
+    "execution_config_digest":  "70711c3894a1fd8c6bc8c3d0284c3f164915b9fd50be44955cc32795a470a169",
+    "process_start":  "2026-09-11T07:33:01.8600651Z",
+    "process_stop":  "2026-09-11T07:33:11.8589533Z",
+    "error":  "",
+    "thread_id":  "01a08f62-68b9-7133-b0c9-dbf12a5d70ab",
+    "first_valid_output_at":  "2026-09-11T07:33:11.2226633Z",
+    "exit_code":  0,
+    "stderr_bytes":  813,
+    "stderr_digest":  "6a9da832162aa1c16e829081397faf902a4c92248dc14977a7b85c0d05576639",
+    "stdio_output_line_endings":  [
+                                      "LF"
+                                  ],
+    "protocol_event_count":  26,
+    "sentinel":  "POLIS_TRANSPORT_CANARY_OK",
+    "prompt_digest":  "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f",
+    "developer_instruction_digest":  "63fc5b2ca6cc58faffb7192c4a12c6ac8bcc384337016bc6b53b9fa96887637f"
+}

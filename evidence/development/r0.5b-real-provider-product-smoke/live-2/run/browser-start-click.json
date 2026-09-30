@@ -1,0 +1,9 @@
+{
+  "clicked": true,
+  "requestCount": 1,
+  "responseStatus": 202,
+  "responseBody": "{\"commandId\":\"e1cf07c2-0dbf-412e-8520-1ce27fd9b337\",\"commandType\":\"mission.start\",\"targetType\":\"mission\",\"targetId\":\"fed04f193f1bc6afebf9c152832ccd76\",\"requestId\":\"e1cf07c2-0dbf-412e-8520-1ce27fd9b337\",\"accepted\":true,\"acceptedAt\":\"2026-09-17T10:50:53.6392271Z\",\"resultingState\":\"active\"}\n",
+  "hasStartButton": false,
+  "pageErrors": [],
+  "bodyTail": "dentity\nemp-planning\nWorkerSession\n未启动\nMODEL PROFILE\n不可得\nEPOCH\n2\nACTIVE REQUESTS\n不可得\nIN-FLIGHT TOOLS\n不可得\nCURRENT TASK · NONE\n当前无任务占用\nno active task\nQUALIFICATION\nunverified\nevidence 不可得\nHANDOVER / SUCCESSOR\n无接班\n\nREVIEW EMPLOYEE\n\nemp-review\n休眠\nEmployee logical identity\nemp-review\nWorkerSession\n未启动\nMODEL PROFILE\n不可得\nEPOCH\n2\nACTIVE REQUESTS\n不可得\nIN-FLIGHT TOOLS\n不可得\nCURRENT TASK · NONE\n当前无任务占用\nno active task\nQUALIFICATION\nunverified\nevidence 不可得\nHANDOVER / SUCCESSOR\n无接班\n证据边界\nCheckpoint、Artifact、Acceptance\n01\nWorkspace checkpoint\n\n暂无 checkpoint · 当前 worker 状态记录\n\nunknown\n02\nArtifact / evidence\n\n暂无 artifact · verdict 不可得\n\nunknown\n03\nFinal acceptance\n\n仍需验收\n\npending\n当前没有责任记录\n需要人决定\n待处理事项\n0 项\n当前没有待处理事项。"
+}

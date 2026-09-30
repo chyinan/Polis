@@ -1,0 +1,11 @@
+{
+    "qualification":  "R0.3A-AUTHORITATIVE-STATE-RECOVERY",
+    "status":  "FAILED",
+    "authoritative_state_recovery_qualification":  "FAILED",
+    "medium":  0,
+    "high":  0,
+    "provider_egress":  0,
+    "historical_evidence_modified":  false,
+    "error":  "historical worker fence command failed",
+    "generated_at":  "2026-09-12T13:20:10.3136989Z"
+}

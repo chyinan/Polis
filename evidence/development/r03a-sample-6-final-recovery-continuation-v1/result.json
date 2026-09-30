@@ -1,0 +1,14 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-FINAL-RECOVERY-CONTINUATION",
+  "status": "INCONCLUSIVE",
+  "sample_6_final_recovery_continuation": "INCONCLUSIVE",
+  "error": "pg_dump major incompatible",
+  "recovery_package_complete": false,
+  "destructive_boundary": false,
+  "source_database_destroyed": false,
+  "historical_preservation_manifest": "NOT_FOUND",
+  "historical_evidence_modified": false,
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0
+}
