@@ -1,6 +1,6 @@
 # Slice 101: Product Worker direct messaging
 
-Date: 2026-09-30
+Date: 2026-10-01 (Slice101 began 2026-09-30)
 
 Base commit: `d2ce452c1c139ab409df7b9885efff79228e41bf` (Slice 100)
 
@@ -15,13 +15,13 @@ No database migration was added. `core.TaskKind` still admits only `compat/emp-b
 ## Verification
 
 - `rtk bash scripts/go.sh test ./internal/codex ./internal/kernel ./internal/provider ./internal/control` — passed.
-- `rtk bash scripts/r1-employee-schedule-postgres-test.sh` — passed on a dedicated disposable PostgreSQL 18 instance through Schema 72. Covers actionable send/inbox/ack/apply/check/candidate/resolve, FYI ordering and no obligation/schedule wake, explicit target list, cross-Mission refusal, and existing peer regressions.
+- `rtk bash scripts/r1-employee-schedule-postgres-test.sh` — passed on a dedicated disposable PostgreSQL 18 instance through Schema 72. Covers actionable send/inbox/ack/apply/check/candidate/resolve, FYI ordering and no obligation/schedule wake, explicit target list, cross-Mission refusal, missing-actionable rejection, concurrent send/submission ordering, and existing peer regressions.
 - `rtk bash scripts/go.sh test ./...` — passed.
 - `rtk bash scripts/go.sh build ./cmd/...` — passed for Linux amd64.
 - `rtk bash -lc 'GOOS=windows GOARCH=amd64 ./scripts/go.sh build ./cmd/...'` — passed for Windows amd64.
-- `rtk git diff --check` — passed before evidence/documentation closeout; rerun after closeout.
+- `rtk git diff --check` — passed after source/evidence closeout; rerun after the cloud handoff document is final.
 
-Provider tests assert that exact @7 is accepted only under the Fake Runtime purpose/envelope/markers, while real mode, altered surface identity, and mixed Skill/direct profiles are denied. No model egress, QQ send, external MCP/GitHub call, business account, or production action was performed.
+Provider tests assert that exact @7 is accepted only under the Fake Runtime purpose/envelope/markers, while real mode, altered surface identity, and mixed Skill/direct profiles are denied. Review follow-up added stable ordered locks around the source/target Task checks and rejects a missing `actionable` field instead of converting it to FYI. No model egress, QQ send, external MCP/GitHub call, business account, or production action was performed.
 
 ## Remaining boundary
 

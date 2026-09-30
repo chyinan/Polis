@@ -4,7 +4,9 @@ package kernel
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"strings"
+	"sync"
 	"testing"
 
 	"polis/internal/core"
@@ -108,6 +110,62 @@ func TestProductWorkerDirectMessageToolSurfaceCompletesAnActionableRequest(t *te
 	}
 }
 
+func TestProductDirectSendRacingCandidateSubmissionNeverCommitsAfterSubmission(t *testing.T) {
+	env := newPeerHardeningEnv(t, 32)
+	checked, err := env.k.TXPeerCheck(env.ctx, env.frontend, "direct-submit-race-check")
+	must(t, err)
+	_, err = env.k.TXCheckpoint(env.ctx, env.frontend, "direct-submit-race-checkpoint", Checkpoint{
+		Kind: CheckpointQualified, Summary: "ready to submit before concurrent direct send",
+		Facts: []string{"the current frontend candidate was checked"}, Decisions: []string{"submit the current candidate"},
+		Rejected: []string{"submit unchecked content"}, EvidenceRefs: []string{checked.Receipt.ID},
+	})
+	must(t, err)
+	handover, err := env.k.Handover(env.ctx, env.frontend)
+	must(t, err)
+	start := make(chan struct{})
+	var wait sync.WaitGroup
+	var message ProductDirectMessage
+	var messageErr error
+	var artifact Receipt
+	var submitErr error
+	wait.Add(2)
+	go func() {
+		defer wait.Done()
+		<-start
+		message, messageErr = env.k.TXProductDirectMessage(env.ctx, env.backend, ProductDirectMessageInput{
+			ToEmployeeID: "emp-frontend", ToTaskID: env.fixture.Frontend.ID, Body: "concurrent actionable request", Actionable: true,
+		}, "direct-submit-race-send")
+	}()
+	go func() {
+		defer wait.Done()
+		<-start
+		artifact, submitErr = env.k.TXSubmit(env.ctx, env.frontend, handover.Task, "direct-submit-race-submit", []byte(fixture.PeerFrontendV2))
+	}()
+	close(start)
+	wait.Wait()
+	if messageErr != nil && !errors.Is(messageErr, core.Denied) {
+		t.Fatalf("concurrent direct send error=%v, want success or target-state denial", messageErr)
+	}
+	if submitErr != nil && !errors.Is(submitErr, core.Denied) {
+		t.Fatalf("concurrent candidate submission error=%v, want success or lifecycle denial", submitErr)
+	}
+	if messageErr != nil && submitErr != nil {
+		t.Fatalf("both operations were denied: send=%v submit=%v", messageErr, submitErr)
+	}
+	if messageErr == nil && submitErr == nil {
+		var sendSeq, submitSeq int64
+		if err = env.k.pool.QueryRow(env.ctx, `SELECT company_seq FROM events WHERE company_id=$1 AND kind='product.collab.send' AND payload->>'id'=$2`, env.scope.company, message.ID).Scan(&sendSeq); err != nil {
+			t.Fatal(err)
+		}
+		if err = env.k.pool.QueryRow(env.ctx, `SELECT company_seq FROM events WHERE company_id=$1 AND kind='artifact.submit' AND payload->>'id'=$2`, env.scope.company, artifact.ID).Scan(&submitSeq); err != nil {
+			t.Fatal(err)
+		}
+		if sendSeq >= submitSeq {
+			t.Fatalf("send event sequence %d followed candidate submission sequence %d", sendSeq, submitSeq)
+		}
+	}
+}
+
 func TestProductDirectFYIsHaveNoObligationAndAdvanceInEventOrder(t *testing.T) {
 	env := newPeerHardeningEnv(t, 24)
 	scheduleBefore, err := env.k.EmployeeSchedule(env.ctx, env.scope, "emp-frontend")
@@ -171,6 +229,11 @@ func TestProductDirectMessageSurfaceIsExplicitAndReadOnlyCannotWrite(t *testing.
 	withoutSurface := (EmployeeTools{Kernel: env.k, Binding: env.backend, ProductSurface: true}).Call(env.ctx, "collab_send", "direct-disabled", args)
 	if withoutSurface.Error != string(core.Denied) {
 		t.Fatalf("collab_send without the explicit surface error=%q, want %q", withoutSurface.Error, core.Denied)
+	}
+	missingActionable := []byte(`{"to_employee_id":"emp-frontend","to_task_id":"` + env.fixture.Frontend.ID + `","body":"actionable must be explicit"}`)
+	missingFieldResult := (EmployeeTools{Kernel: env.k, Binding: env.backend, ProductSurface: true, DirectMessagingSurface: true}).Call(env.ctx, "collab_send", "direct-missing-actionable", missingActionable)
+	if missingFieldResult.Error != string(core.Malformed) {
+		t.Fatalf("collab_send without actionable error=%q, want %q", missingFieldResult.Error, core.Malformed)
 	}
 	readOnly := (EmployeeTools{Kernel: env.k, Binding: env.backend, ProductSurface: true, DirectMessagingSurface: true, ReadOnly: true}).Call(env.ctx, "collab_send", "direct-read-only", args)
 	if readOnly.Error != string(core.Denied) {

@@ -109,19 +109,38 @@ func (k *Kernel) TXProductDirectMessage(ctx context.Context, b Binding, input Pr
 		return out, core.Denied
 	}
 	receipt, err := k.TXWrite(ctx, b.scope, &b, key, "product.collab.send", input, func(tx pgx.Tx) (Receipt, error) {
-		var sourceOwner, sourceMission, sourceState string
-		if err := tx.QueryRow(ctx, `SELECT owner,mission_id,state FROM tasks WHERE company_id=$1 AND id=$2`, b.scope.company, b.task).Scan(&sourceOwner, &sourceMission, &sourceState); err != nil {
+		// Lock both Task rows in stable ID order so a concurrent submission
+		// cannot make a ready/working target terminal between validation and send.
+		type taskState struct{ owner, mission, state string }
+		lockedTasks := make(map[string]taskState, 2)
+		rows, err := tx.Query(ctx, `SELECT id,owner,mission_id,state FROM tasks
+WHERE company_id=$1 AND id=ANY($2::text[]) ORDER BY id FOR UPDATE`, b.scope.company, []string{b.task, input.ToTaskID})
+		if err != nil {
 			return Receipt{}, err
 		}
+		for rows.Next() {
+			var id string
+			var task taskState
+			if err = rows.Scan(&id, &task.owner, &task.mission, &task.state); err != nil {
+				rows.Close()
+				return Receipt{}, err
+			}
+			lockedTasks[id] = task
+		}
+		rows.Close()
+		if err = rows.Err(); err != nil {
+			return Receipt{}, err
+		}
+		source, sourceFound := lockedTasks[b.task]
+		target, targetFound := lockedTasks[input.ToTaskID]
+		if !sourceFound || !targetFound {
+			return Receipt{}, core.Denied
+		}
+		sourceOwner, sourceMission, sourceState := source.owner, source.mission, source.state
 		if sourceOwner != b.employee || sourceState != "working" {
 			return Receipt{}, core.Denied
 		}
-		var targetOwner, targetMission, targetState string
-		if err := tx.QueryRow(ctx, `SELECT owner,mission_id,state FROM tasks WHERE company_id=$1 AND id=$2`, b.scope.company, input.ToTaskID).Scan(&targetOwner, &targetMission, &targetState); errors.Is(err, pgx.ErrNoRows) {
-			return Receipt{}, core.Denied
-		} else if err != nil {
-			return Receipt{}, err
-		}
+		targetOwner, targetMission, targetState := target.owner, target.mission, target.state
 		if targetOwner != input.ToEmployeeID || !fixedDirectMessageEmployee(targetOwner) || targetMission != sourceMission ||
 			(targetState != "ready" && targetState != "working") {
 			return Receipt{}, core.Denied

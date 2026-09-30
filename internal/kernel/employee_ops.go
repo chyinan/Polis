@@ -128,11 +128,21 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		if !t.ProductSurface || !t.DirectMessagingSurface || t.ReadOnly {
 			return ToolResult{}, core.Denied
 		}
-		var args ProductDirectMessageInput
+		var args struct {
+			ToEmployeeID string `json:"to_employee_id"`
+			ToTaskID     string `json:"to_task_id"`
+			Body         string `json:"body"`
+			Actionable   *bool  `json:"actionable"`
+		}
 		if e := strictArgs(raw, &args); e != nil {
 			return ToolResult{}, e
 		}
-		message, e := k.TXProductDirectMessage(ctx, b, args, key)
+		if args.Actionable == nil {
+			return ToolResult{}, core.Malformed
+		}
+		message, e := k.TXProductDirectMessage(ctx, b, ProductDirectMessageInput{
+			ToEmployeeID: args.ToEmployeeID, ToTaskID: args.ToTaskID, Body: args.Body, Actionable: *args.Actionable,
+		}, key)
 		return ToolResult{Data: message}, e
 	case "collab_inbox":
 		if !t.ProductSurface || !t.DirectMessagingSurface {
