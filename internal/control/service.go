@@ -47,6 +47,7 @@ type Service struct {
 	qqSender                         QQNotificationSender
 	qqRetryCancel                    context.CancelFunc
 	qqRetryDone                      chan struct{}
+	automaticProductDispatchCursor   string
 }
 
 type mcpObserverShutdownWorker interface {

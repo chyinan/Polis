@@ -199,6 +199,22 @@ func (a *RealProviderWorkerAdapter) Readiness(ctx context.Context) error {
 	return nil
 }
 
+// AutomaticProductDispatchReadiness is a strict opt-in gate for the
+// unqualified, zero-egress Fake @7 simulation. Automatic admission is not
+// available to the real provider, other fake surfaces, or launch-only adapters.
+func (a *RealProviderWorkerAdapter) AutomaticProductDispatchReadiness(ctx context.Context) error {
+	if a == nil || a.kernel == nil || a.runtime == nil {
+		return errors.New("automatic product dispatch requires a business Worker adapter")
+	}
+	if err := a.runtime.Readiness(ctx); err != nil {
+		return fmt.Errorf("automatic product dispatch runtime is unavailable: %w", err)
+	}
+	if a.runtime.Mode() != "fake" {
+		return errors.New("automatic product dispatch requires the zero-egress Fake @7 runtime")
+	}
+	return provider.ValidateOfflineFakeProductDirectMessagingSurface(a.runtime.Mode(), a.runtime.ExecutionProfile(), a.runtime.ToolSurface())
+}
+
 func (a *RealProviderWorkerAdapter) bindWorkerContainment(ctx context.Context, binding kernel.Binding) (runner.WorkerProcessCgroup, error) {
 	requiresLinuxCgroup, declaredLinuxCgroupRequirement := a.runtime.(provider.LinuxWorkerCgroupRequirement)
 	requiresCgroup := runtime.GOOS == "linux" && a.runtime.Mode() == "real"

@@ -6,6 +6,9 @@ import (
 	"os"
 	"sync"
 	"testing"
+	"time"
+
+	"polis/internal/taskvalidation"
 )
 
 func TestNewCompanyCreatesSleepingEmployeeSchedules(t *testing.T) {
@@ -284,6 +287,69 @@ VALUES($1,$2,$3,'emp-review','review','ready')`, scope.company, newID(), mission
 	reviewer, err = k.EmployeeSchedule(ctx, scope, "emp-review")
 	if err != nil || reviewer.State != "wake_pending" || reviewer.WorkGeneration != 1 {
 		t.Fatalf("resumed paused-period Task schedule=(%+v,%v), want wake_pending generation 1", reviewer, err)
+	}
+}
+
+func TestNextProductWorkerDispatchCandidateIsAgeOrderedAndHonorsBarriers(t *testing.T) {
+	dsn := os.Getenv("POLIS_TEST_DSN")
+	if dsn == "" {
+		t.Skip("dedicated PostgreSQL required")
+	}
+	ctx := context.Background()
+	k, err := Open(ctx, dsn, t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer k.Close()
+
+	createCandidate := func(name string) (Scope, string) {
+		t.Helper()
+		scope, createErr := k.TXCreateCompany(ctx, "dispatch-fairness-"+name+"-"+newID())
+		if createErr != nil {
+			t.Fatal(createErr)
+		}
+		contract := &taskvalidation.AcceptanceContract{
+			Revision:     taskvalidation.AcceptanceContractRevision,
+			RequiredText: []string{"Task summary:"},
+		}
+		goal := "verify oldest eligible product work is selected"
+		mission, createErr := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "Dispatch fairness", goal, contract, "dispatch-mission-create-"+newID())
+		if createErr != nil {
+			t.Fatal(createErr)
+		}
+		if _, createErr = k.TXStartMissionCommand(ctx, scope, mission.ID, "dispatch-mission-start-"+newID()); createErr != nil {
+			t.Fatal(createErr)
+		}
+		if _, createErr = k.TXPrepareProductTask(ctx, scope, mission.ID, goal, "dispatch-task-create-"+newID()); createErr != nil {
+			t.Fatal(createErr)
+		}
+		return scope, mission.ID
+	}
+	oldestScope, oldestMission := createCandidate("oldest")
+	nextScope, _ := createCandidate("next")
+	if _, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET updated_at=$3 WHERE company_id=$1 AND employee_id='emp-backend'`, oldestScope.company, "emp-backend", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET updated_at=$3 WHERE company_id=$1 AND employee_id='emp-backend'`, nextScope.company, "emp-backend", time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)); err != nil {
+		t.Fatal(err)
+	}
+	candidate, found, err := k.NextProductWorkerDispatchCandidate(ctx, "")
+	if err != nil || !found || candidate.CompanyID != oldestScope.company || candidate.MissionID != oldestMission {
+		t.Fatalf("oldest dispatch candidate=(%+v,%t,%v), want oldest company mission %q", candidate, found, err, oldestMission)
+	}
+	if _, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET state='waiting_quota' WHERE company_id=$1 AND employee_id='emp-backend'`, oldestScope.company); err != nil {
+		t.Fatal(err)
+	}
+	candidate, found, err = k.NextProductWorkerDispatchCandidate(ctx, "")
+	if err != nil || !found || candidate.CompanyID != nextScope.company {
+		t.Fatalf("quota-barrier candidate=(%+v,%t,%v), want next company %q", candidate, found, err, nextScope.company)
+	}
+	if _, err = k.TXSetMissionPausedCommand(ctx, k.LocalScope(nextScope.company), candidate.MissionID, true, "dispatch-pause-"+newID()); err != nil {
+		t.Fatal(err)
+	}
+	candidate, found, err = k.NextProductWorkerDispatchCandidate(ctx, "")
+	if err != nil || found {
+		t.Fatalf("paused-only dispatch candidate=(%+v,%t,%v), want no candidate", candidate, found, err)
 	}
 }
 

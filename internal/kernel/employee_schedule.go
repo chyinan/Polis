@@ -3,6 +3,7 @@ package kernel
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"polis/internal/core"
@@ -15,6 +16,49 @@ type EmployeeScheduleSnapshot struct {
 	WorkGeneration    int64                      `json:"workGeneration"`
 	CheckedGeneration int64                      `json:"checkedGeneration"`
 	PauseReason       string                     `json:"pauseReason,omitempty"`
+}
+
+// ProductWorkerDispatchCandidate is the oldest eligible, never-attempted
+// product Task currently waiting for admission. It deliberately contains only
+// identifiers; the Worker adapter re-reads all Task and authorization facts
+// under the existing admission transaction before creating a WorkerSession.
+type ProductWorkerDispatchCandidate struct {
+	CompanyID string
+	MissionID string
+	TaskID    string
+}
+
+// NextProductWorkerDispatchCandidate returns one eligible product Task after
+// the optional Company-ID cursor. It prioritizes older EmployeeSchedule rows
+// within that keyset page. A quota-blocked or paused schedule is never eligible;
+// any prior WorkerSession remains a durable one-shot fence.
+func (k *Kernel) NextProductWorkerDispatchCandidate(ctx context.Context, afterCompanyID string) (ProductWorkerDispatchCandidate, bool, error) {
+	var candidate ProductWorkerDispatchCandidate
+	err := k.pool.QueryRow(ctx, `SELECT t.company_id,t.mission_id,t.id
+FROM tasks t
+JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
+JOIN companies c ON c.id=t.company_id
+JOIN employee_schedules s ON s.company_id=t.company_id AND s.employee_id=t.owner
+WHERE c.state='active' AND m.state='active'
+  AND t.owner=$1 AND t.kind=$2 AND t.state='ready'
+  AND ($3='' OR t.company_id>$3)
+  AND s.state='wake_pending'
+  AND EXISTS(SELECT 1 FROM worker_workspaces w WHERE w.company_id=t.company_id AND w.task_id=t.id)
+  AND EXISTS(SELECT 1 FROM task_validation_bindings v WHERE v.company_id=t.company_id AND v.task_id=t.id)
+  AND NOT EXISTS(SELECT 1 FROM worker_sessions w WHERE w.company_id=t.company_id AND w.task_id=t.id)
+  AND NOT EXISTS(SELECT 1 FROM worker_sessions w WHERE w.company_id=t.company_id AND w.employee_id=t.owner AND w.state<>'stopped')
+  AND (SELECT count(*) FROM tasks executable
+       WHERE executable.company_id=t.company_id AND executable.mission_id=t.mission_id
+         AND executable.owner=$1 AND executable.kind=$2) = 1
+ORDER BY s.updated_at ASC,t.company_id ASC,t.mission_id ASC,t.id ASC
+LIMIT 1`, core.EmployeeBackendID, core.TaskKindCompat, afterCompanyID).Scan(&candidate.CompanyID, &candidate.MissionID, &candidate.TaskID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ProductWorkerDispatchCandidate{}, false, nil
+	}
+	if err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	return candidate, true, nil
 }
 
 func (k *Kernel) EmployeeSchedule(ctx context.Context, scope Scope, employeeID string) (EmployeeScheduleSnapshot, error) {

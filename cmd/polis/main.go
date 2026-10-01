@@ -549,6 +549,24 @@ func serveWorkbench() (returnErr error) {
 		cancelScheduleReconciler()
 		stopScheduleReconciler()
 	}()
+	automaticProductDispatchEnabled, err := environmentFlag("POLIS_AUTO_WORKER_DISPATCH_ENABLED")
+	if err != nil {
+		return err
+	}
+	if automaticProductDispatchEnabled {
+		dispatchCtx, cancelDispatch := context.WithCancel(context.Background())
+		stopDispatch, dispatchErr := commandService.StartAutomaticProductWorkerDispatcher(dispatchCtx, func(error) {
+			fmt.Fprintln(os.Stderr, "automatic product Worker dispatch iteration failed")
+		})
+		if dispatchErr != nil {
+			cancelDispatch()
+			return dispatchErr
+		}
+		defer func() {
+			cancelDispatch()
+			stopDispatch()
+		}()
+	}
 	schedulerCtx, cancelGitHubScheduler := context.WithCancel(context.Background())
 	schedulerDone := make(chan struct{})
 	if githubSchedulerRequested {
@@ -674,6 +692,20 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 	if mode == "" {
 		mode = "deterministic"
 	}
+	offlineDirectMessaging, err := environmentFlag("POLIS_OFFLINE_DIRECT_MESSAGING_ENABLED")
+	if err != nil {
+		return nil, err
+	}
+	automaticDispatch, err := environmentFlag("POLIS_AUTO_WORKER_DISPATCH_ENABLED")
+	if err != nil {
+		return nil, err
+	}
+	if automaticDispatch && !offlineDirectMessaging {
+		return nil, fmt.Errorf("POLIS_AUTO_WORKER_DISPATCH_ENABLED=1 requires POLIS_OFFLINE_DIRECT_MESSAGING_ENABLED=1")
+	}
+	if offlineDirectMessaging && (mode != "real" || os.Getenv("POLIS_PROVIDER_TRANSPORT") != "fake") {
+		return nil, fmt.Errorf("POLIS_OFFLINE_DIRECT_MESSAGING_ENABLED=1 requires POLIS_WORKER_MODE=real and POLIS_PROVIDER_TRANSPORT=fake")
+	}
 	switch mode {
 	case "deterministic":
 		return control.NewDeterministicWorkerAdapter(kernelRuntime), nil
@@ -685,9 +717,12 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 			return nil, fmt.Errorf("select only one versioned controlled MCP tool surface")
 		}
 		controlledMCP := controlledMCPV1 || controlledMCPV2
+		if controlledMCP && offlineDirectMessaging {
+			return nil, fmt.Errorf("offline direct messaging requires its isolated Fake @7 tool surface")
+		}
 		var providerRuntime provider.Runtime
 		if transport == "fake" {
-			providerRuntime = provider.NewFakeRuntime(provider.FakeRuntimeConfig{Model: os.Getenv("POLIS_PROVIDER_MODEL"), Effort: os.Getenv("POLIS_PROVIDER_EFFORT"), Profile: os.Getenv("POLIS_PROVIDER_PROFILE"), Purpose: os.Getenv("POLIS_PROVIDER_PURPOSE"), ToolCallLimit: envIntOrDefault("POLIS_PROVIDER_TOOL_CALL_LIMIT", 16), TurnDelay: 100 * time.Millisecond, ControlledMCPToolSurface: controlledMCPV1, ControlledMCPToolSurfaceV2: controlledMCPV2})
+			providerRuntime = provider.NewFakeRuntime(provider.FakeRuntimeConfig{Model: os.Getenv("POLIS_PROVIDER_MODEL"), Effort: os.Getenv("POLIS_PROVIDER_EFFORT"), Profile: os.Getenv("POLIS_PROVIDER_PROFILE"), Purpose: os.Getenv("POLIS_PROVIDER_PURPOSE"), ToolCallLimit: envIntOrDefault("POLIS_PROVIDER_TOOL_CALL_LIMIT", 16), TurnDelay: 100 * time.Millisecond, DirectMessagingSurface: offlineDirectMessaging, ControlledMCPToolSurface: controlledMCPV1, ControlledMCPToolSurfaceV2: controlledMCPV2})
 		} else if transport == "codex" {
 			if controlledMCP {
 				return nil, fmt.Errorf("real-provider controlled MCP surfaces are not qualified")
@@ -769,4 +804,15 @@ func envIntOrDefault(name string, fallback int) int {
 		return 0
 	}
 	return parsed
+}
+
+func environmentFlag(name string) (bool, error) {
+	switch strings.TrimSpace(os.Getenv(name)) {
+	case "", "0":
+		return false, nil
+	case "1":
+		return true, nil
+	default:
+		return false, fmt.Errorf("%s must be unset, 0, or 1", name)
+	}
 }
