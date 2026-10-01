@@ -617,6 +617,14 @@ func (k *Kernel) Handover(ctx context.Context, b Binding) (HandoverBundle, error
 	if e != nil {
 		return out, e
 	}
+	out.MemoryStatus, e = memoryTaskImpactContextTX(ctx, tx, b, out.MemoryStatus)
+	if e != nil {
+		return out, e
+	}
+	out.MemoryContext, _, e = memoryTaskDependenciesTX(ctx, tx, b)
+	if e != nil {
+		return out, e
+	}
 	e = tx.QueryRow(ctx, "SELECT digest,revision FROM worker_workspaces WHERE company_id=$1 AND task_id=$2", b.scope.company, task).Scan(&out.Workspace.Digest, &out.Workspace.Revision)
 	if e != nil {
 		return out, e

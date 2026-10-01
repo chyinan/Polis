@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -100,20 +101,81 @@ type MemoryDependency struct {
 }
 
 type MemoryTaskImpact struct {
-	DependencyID        string `json:"dependencyId"`
-	RecordID            string `json:"recordId"`
-	RecordRevision      int64  `json:"recordRevision"`
-	ReplacementRevision int64  `json:"replacementRevision,omitempty"`
-	RiskLevel           string `json:"riskLevel"`
-	State               string `json:"state"`
-	CorrectionID        string `json:"correctionId"`
-	Reason              string `json:"reason"`
+	DependencyID             string `json:"dependencyId"`
+	RecordID                 string `json:"recordId"`
+	RecordRevision           int64  `json:"recordRevision"`
+	ReplacementRevision      int64  `json:"replacementRevision,omitempty"`
+	ReplacementContent       string `json:"replacementContent,omitempty"`
+	ReplacementContentSHA256 string `json:"replacementContentSha256,omitempty"`
+	RiskLevel                string `json:"riskLevel"`
+	State                    string `json:"state"`
+	CorrectionID             string `json:"correctionId"`
+	Reason                   string `json:"reason"`
 }
 
 type MemoryTaskStatus struct {
 	State   string             `json:"state"`
 	Impacts []MemoryTaskImpact `json:"impacts,omitempty"`
 }
+
+type MemoryTaskDependencyContext struct {
+	DependencyID   string                 `json:"dependencyId"`
+	RecordID       string                 `json:"recordId"`
+	RecordRevision int64                  `json:"recordRevision"`
+	RiskLevel      string                 `json:"riskLevel"`
+	TargetKind     string                 `json:"targetKind"`
+	TargetID       string                 `json:"targetId"`
+	TargetRevision int64                  `json:"targetRevision"`
+	TargetSHA256   string                 `json:"targetSha256"`
+	Content        string                 `json:"content"`
+	ContentSHA256  string                 `json:"contentSha256"`
+	ObservedAt     string                 `json:"observedAt"`
+	Source         *MemorySourceReference `json:"source,omitempty"`
+}
+
+type MemoryTaskRevalidationInput struct {
+	TaskID        string `json:"taskId"`
+	DependencyID  string `json:"dependencyId"`
+	CorrectionID  string `json:"correctionId"`
+	ContextSHA256 string `json:"contextSha256"`
+	Reason        string `json:"reason"`
+}
+
+type MemoryTaskRevalidationPreview struct {
+	TaskID                   string                `json:"taskId"`
+	TaskState                string                `json:"taskState"`
+	TaskGeneration           int64                 `json:"taskGeneration"`
+	TaskPlan                 json.RawMessage       `json:"taskPlan"`
+	TaskPlanSHA256           string                `json:"taskPlanSha256"`
+	MissionState             string                `json:"missionState"`
+	DependencyID             string                `json:"dependencyId"`
+	DependencyState          string                `json:"dependencyState"`
+	CorrectionID             string                `json:"correctionId"`
+	CorrectionSource         MemorySourceReference `json:"correctionSource"`
+	CorrectionObservedAt     string                `json:"correctionObservedAt"`
+	CorrectionProposerReason string                `json:"correctionProposerReason"`
+	CorrectionReviewReason   string                `json:"correctionReviewReason"`
+	PreviousRecordID         string                `json:"previousRecordId"`
+	PreviousRevision         int64                 `json:"previousRevision"`
+	ReplacementRevision      int64                 `json:"replacementRevision"`
+	ReplacementContent       string                `json:"replacementContent"`
+	ReplacementContentSHA256 string                `json:"replacementContentSha256"`
+	RiskLevel                string                `json:"riskLevel"`
+	TargetKind               string                `json:"targetKind"`
+	TargetID                 string                `json:"targetId"`
+	TargetRevision           int64                 `json:"targetRevision"`
+	TargetSHA256             string                `json:"targetSha256"`
+	StoppedSessionID         string                `json:"stoppedSessionId"`
+	WorkspaceDigest          string                `json:"workspaceDigest"`
+	WorkspaceRevision        int64                 `json:"workspaceRevision"`
+	OtherImpacts             []MemoryTaskImpact    `json:"otherImpacts,omitempty"`
+	ContextSHA256            string                `json:"contextSha256"`
+}
+
+const (
+	maxMemoryHandoverDependencies = 16
+	maxMemoryHandoverContentBytes = 128 * 1024
+)
 
 // TXCreateMemoryRecord stores an immutable, source-pinned first revision in
 // proposed state. Ordinary Worker bindings cannot create verified facts.
@@ -539,6 +601,363 @@ func requireMemoryTaskCleanTX(ctx context.Context, tx pgx.Tx, companyID, taskID 
 		return core.ConflictError{Reason: "memory dependencies must be revalidated before Task finalization", CurrentState: status.State}
 	}
 	return nil
+}
+
+func memoryTaskImpactContextTX(ctx context.Context, tx pgx.Tx, b Binding, status MemoryTaskStatus) (MemoryTaskStatus, error) {
+	for i := range status.Impacts {
+		if status.Impacts[i].ReplacementRevision < 1 {
+			continue
+		}
+		record, err := memoryRecordAccessTX(ctx, tx, b, status.Impacts[i].RecordID, status.Impacts[i].ReplacementRevision)
+		if err != nil {
+			return MemoryTaskStatus{}, err
+		}
+		status.Impacts[i].ReplacementContent = record.Content
+		status.Impacts[i].ReplacementContentSHA256 = record.ContentSHA
+	}
+	return status, nil
+}
+
+func memoryTaskDependenciesTX(ctx context.Context, tx pgx.Tx, b Binding) ([]MemoryTaskDependencyContext, bool, error) {
+	rows, err := tx.Query(ctx, `SELECT d.dependency_id,d.record_id,d.record_revision,d.risk_level,
+d.target_kind,d.target_id,d.target_revision,d.target_sha256
+FROM memory_dependencies d
+JOIN memory_records r ON r.company_id=d.company_id AND r.record_id=d.record_id
+JOIN LATERAL (SELECT state FROM memory_revision_state_events e
+ WHERE e.company_id=d.company_id AND e.record_id=d.record_id AND e.revision=d.record_revision
+ ORDER BY e.company_seq DESC LIMIT 1) rs ON rs.state='verified'
+LEFT JOIN LATERAL (SELECT state FROM memory_dependency_invalidation_events e
+ WHERE e.company_id=d.company_id AND e.dependency_id=d.dependency_id
+ ORDER BY e.company_seq DESC LIMIT 1) inv ON true
+WHERE d.company_id=$1 AND d.bound_task_id=$2 AND inv.state IS NULL
+ AND d.record_revision=(SELECT max(current_revision.revision) FROM memory_record_revisions current_revision
+  WHERE current_revision.company_id=d.company_id AND current_revision.record_id=d.record_id)
+ORDER BY d.company_seq,d.dependency_id LIMIT $3`, b.scope.company, b.task, maxMemoryHandoverDependencies+1)
+	if err != nil {
+		return nil, false, err
+	}
+	type dependencyRef struct {
+		id, recordID, risk, targetKind, targetID, targetSHA string
+		revision, targetRevision                            int64
+	}
+	refs := make([]dependencyRef, 0)
+	for rows.Next() {
+		var ref dependencyRef
+		if err = rows.Scan(&ref.id, &ref.recordID, &ref.revision, &ref.risk, &ref.targetKind, &ref.targetID, &ref.targetRevision, &ref.targetSHA); err != nil {
+			rows.Close()
+			return nil, false, err
+		}
+		refs = append(refs, ref)
+	}
+	if err = rows.Err(); err != nil {
+		rows.Close()
+		return nil, false, err
+	}
+	rows.Close()
+	truncated := len(refs) > maxMemoryHandoverDependencies
+	if truncated {
+		return nil, true, core.ConflictError{Reason: "Task memory dependencies exceed the bounded Handover context", CurrentState: "memory_context_truncated"}
+	}
+	contexts := make([]MemoryTaskDependencyContext, 0, len(refs))
+	contentBytes := 0
+	for _, ref := range refs {
+		record, accessErr := memoryRecordAccessTX(ctx, tx, b, ref.recordID, ref.revision)
+		if accessErr != nil {
+			return nil, false, accessErr
+		}
+		if contentBytes+len(record.Content) > maxMemoryHandoverContentBytes {
+			return nil, true, core.ConflictError{Reason: "Task memory content exceeds the bounded Handover context", CurrentState: "memory_context_truncated"}
+		}
+		contentBytes += len(record.Content)
+		contexts = append(contexts, MemoryTaskDependencyContext{
+			DependencyID: ref.id, RecordID: ref.recordID, RecordRevision: ref.revision, RiskLevel: ref.risk,
+			TargetKind: ref.targetKind, TargetID: ref.targetID, TargetRevision: ref.targetRevision, TargetSHA256: ref.targetSHA,
+			Content: record.Content, ContentSHA256: record.ContentSHA, ObservedAt: record.ObservedAt, Source: record.Source,
+		})
+	}
+	return contexts, truncated, nil
+}
+
+func memoryTaskRevalidationPreviewTX(ctx context.Context, tx pgx.Tx, scope Scope, taskID, dependencyID, correctionID string) (MemoryTaskRevalidationPreview, error) {
+	var preview MemoryTaskRevalidationPreview
+	preview.TaskID, preview.DependencyID, preview.CorrectionID = taskID, dependencyID, correctionID
+	var companyState string
+	var taskPlan string
+	if err := tx.QueryRow(ctx, `SELECT t.state,t.generation,COALESCE(t.plan::text,'null'),ws.digest,ws.revision,m.state,c.state
+FROM tasks t JOIN worker_workspaces ws ON ws.company_id=t.company_id AND ws.task_id=t.id
+JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
+JOIN companies c ON c.id=t.company_id
+WHERE t.company_id=$1 AND t.id=$2`, scope.company, taskID).Scan(&preview.TaskState, &preview.TaskGeneration, &taskPlan, &preview.WorkspaceDigest, &preview.WorkspaceRevision, &preview.MissionState, &companyState); errors.Is(err, pgx.ErrNoRows) {
+		return preview, core.OutOfScope
+	} else if err != nil {
+		return preview, err
+	}
+	if companyState != "active" || (preview.MissionState != "active" && preview.MissionState != "paused") {
+		return preview, core.ConflictError{Reason: "memory revalidation requires an active Company and a nonterminal Mission", CurrentState: preview.MissionState}
+	}
+	planSum := sha256.Sum256([]byte(taskPlan))
+	preview.TaskPlan = json.RawMessage(taskPlan)
+	preview.TaskPlanSHA256 = hex.EncodeToString(planSum[:])
+	if preview.TaskState != "ready" && preview.TaskState != "working" {
+		return preview, core.ConflictError{Reason: "only an unfinished Task can be revalidated", CurrentState: preview.TaskState}
+	}
+	var createdBy, sessionID, sessionState string
+	err := tx.QueryRow(ctx, `SELECT d.record_id,d.record_revision,d.target_kind,d.target_id,d.target_revision,d.target_sha256,d.risk_level,d.created_by,
+COALESCE(d.worker_session_id,'')
+FROM memory_dependencies d WHERE d.company_id=$1 AND d.dependency_id=$2 AND d.bound_task_id=$3`, scope.company, dependencyID, taskID).Scan(
+		&preview.PreviousRecordID, &preview.PreviousRevision, &preview.TargetKind, &preview.TargetID, &preview.TargetRevision,
+		&preview.TargetSHA256, &preview.RiskLevel, &createdBy, &sessionID,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return preview, core.OutOfScope
+	}
+	if err != nil {
+		return preview, err
+	}
+	status, err := memoryTaskStatusTX(ctx, tx, scope.company, taskID)
+	if err != nil {
+		return preview, err
+	}
+	impactFound := false
+	for _, impact := range status.Impacts {
+		if impact.DependencyID == dependencyID && impact.CorrectionID == correctionID {
+			preview.DependencyState = impact.State
+			impactFound = true
+		} else {
+			preview.OtherImpacts = append(preview.OtherImpacts, impact)
+		}
+	}
+	if !impactFound {
+		return preview, core.ConflictError{Reason: "this dependency has no current invalidation requiring revalidation", CurrentState: status.State}
+	}
+	if sessionID == "" {
+		return preview, core.Integrity
+	}
+	preview.StoppedSessionID = sessionID
+	if err = tx.QueryRow(ctx, "SELECT state FROM worker_sessions WHERE company_id=$1 AND id=$2 AND task_id=$3", scope.company, sessionID, taskID).Scan(&sessionState); errors.Is(err, pgx.ErrNoRows) {
+		return preview, core.Integrity
+	}
+	if err != nil {
+		return preview, err
+	}
+	if sessionState != "stopped" {
+		return preview, core.ConflictError{Reason: "the WorkerSession that consumed this memory must be stopped", CurrentState: sessionState}
+	}
+	var liveSession bool
+	if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM worker_sessions WHERE company_id=$1 AND task_id=$2 AND state!='stopped')", scope.company, taskID).Scan(&liveSession); err != nil {
+		return preview, err
+	}
+	if liveSession {
+		return preview, core.ConflictError{Reason: "all Task WorkerSessions must be stopped before clean-context revalidation", CurrentState: "worker_active"}
+	}
+	var baseRevision, sourceRevision int64
+	var sourceKind, sourceID, sourceSHA, recordMissionID string
+	err = tx.QueryRow(ctx, `SELECT c.base_revision,review.result_revision,v.content,v.content_sha256,
+c.source_kind,c.source_id,c.source_revision,c.source_sha256,c.observed_at::text,c.proposer_reason,review.reason,r.mission_id
+FROM memory_correction_requests c
+JOIN memory_correction_review_events review ON review.company_id=c.company_id AND review.correction_id=c.correction_id AND review.decision='approved'
+JOIN memory_record_revisions v ON v.company_id=c.company_id AND v.record_id=c.record_id AND v.revision=review.result_revision
+JOIN memory_records r ON r.company_id=c.company_id AND r.record_id=c.record_id
+WHERE c.company_id=$1 AND c.correction_id=$2 AND c.record_id=$3`, scope.company, correctionID, preview.PreviousRecordID).Scan(
+		&baseRevision, &preview.ReplacementRevision, &preview.ReplacementContent, &preview.ReplacementContentSHA256,
+		&sourceKind, &sourceID, &sourceRevision, &sourceSHA, &preview.CorrectionObservedAt, &preview.CorrectionProposerReason,
+		&preview.CorrectionReviewReason, &recordMissionID,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return preview, core.OutOfScope
+	}
+	if err != nil {
+		return preview, err
+	}
+	if baseRevision != preview.PreviousRevision {
+		return preview, core.Integrity
+	}
+	preview.CorrectionSource = MemorySourceReference{Kind: sourceKind, ID: sourceID, Revision: sourceRevision, SHA256: sourceSHA}
+	if _, err = validateMemorySourceTX(ctx, tx, scope, MemoryRecordInput{MissionID: recordMissionID}, preview.CorrectionSource); err != nil {
+		return preview, err
+	}
+	var currentRevision int64
+	var replacementState string
+	if err = tx.QueryRow(ctx, `SELECT v.revision,latest.state
+FROM memory_record_revisions v
+JOIN LATERAL (SELECT state FROM memory_revision_state_events state
+ WHERE state.company_id=v.company_id AND state.record_id=v.record_id AND state.revision=v.revision
+ ORDER BY state.company_seq DESC LIMIT 1) latest ON true
+WHERE v.company_id=$1 AND v.record_id=$2 ORDER BY v.revision DESC LIMIT 1`, scope.company, preview.PreviousRecordID).Scan(&currentRevision, &replacementState); err != nil {
+		return preview, err
+	}
+	if currentRevision != preview.ReplacementRevision || replacementState != "verified" {
+		return preview, core.ConflictError{Reason: "the approved correction is no longer the current verified memory revision", CurrentState: "stale_correction"}
+	}
+	sum := sha256.Sum256([]byte(preview.ReplacementContent))
+	if hex.EncodeToString(sum[:]) != preview.ReplacementContentSHA256 {
+		return preview, core.Integrity
+	}
+	preview.ContextSHA256 = fingerprint(struct {
+		TaskID, TaskState, TaskPlanSHA256, MissionState, WorkspaceDigest       string
+		TaskGeneration, WorkspaceRevision                                      int64
+		DependencyID, DependencyState                                          string
+		CorrectionID, RecordID                                                 string
+		PreviousRevision, ReplacementRevision                                  int64
+		ReplacementContentSHA256                                               string
+		CorrectionSource                                                       MemorySourceReference
+		CorrectionObservedAt, CorrectionProposerReason, CorrectionReviewReason string
+		RiskLevel, TargetKind, TargetID                                        string
+		TargetRevision                                                         int64
+		TargetSHA256, StoppedSessionID                                         string
+		OtherImpacts                                                           []MemoryTaskImpact
+	}{preview.TaskID, preview.TaskState, preview.TaskPlanSHA256, preview.MissionState, preview.WorkspaceDigest,
+		preview.TaskGeneration, preview.WorkspaceRevision,
+		preview.DependencyID, preview.DependencyState, preview.CorrectionID, preview.PreviousRecordID,
+		preview.PreviousRevision, preview.ReplacementRevision, preview.ReplacementContentSHA256,
+		preview.CorrectionSource, preview.CorrectionObservedAt, preview.CorrectionProposerReason, preview.CorrectionReviewReason,
+		preview.RiskLevel, preview.TargetKind, preview.TargetID, preview.TargetRevision, preview.TargetSHA256,
+		preview.StoppedSessionID, preview.OtherImpacts})
+	return preview, nil
+}
+
+// GetMemoryTaskRevalidationPreview returns the exact, digest-bound context an
+// operator must review before clearing one Task memory impact.
+func (k *Kernel) GetMemoryTaskRevalidationPreview(ctx context.Context, scope Scope, taskID, dependencyID, correctionID string) (MemoryTaskRevalidationPreview, error) {
+	if ctx == nil || !core.ValidID(taskID) || !core.ValidID(dependencyID) || !core.ValidID(correctionID) {
+		return MemoryTaskRevalidationPreview{}, core.Malformed
+	}
+	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return MemoryTaskRevalidationPreview{}, err
+	}
+	defer tx.Rollback(ctx)
+	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+		return MemoryTaskRevalidationPreview{}, err
+	}
+	preview, err := memoryTaskRevalidationPreviewTX(ctx, tx, scope, taskID, dependencyID, correctionID)
+	if err != nil {
+		return MemoryTaskRevalidationPreview{}, err
+	}
+	if _, err = readBlob(k.root, scope.company, preview.WorkspaceDigest); err != nil {
+		return MemoryTaskRevalidationPreview{}, core.Integrity
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return MemoryTaskRevalidationPreview{}, err
+	}
+	return preview, nil
+}
+
+// TXRevalidateMemoryTask records an explicit local-owner decision over a
+// stopped Task's exact workspace and approved replacement-memory revision.
+func (k *Kernel) TXRevalidateMemoryTask(ctx context.Context, scope Scope, input MemoryTaskRevalidationInput, key string) (Receipt, error) {
+	if ctx == nil || !core.ValidID(key) || !core.ValidID(input.TaskID) || !core.ValidID(input.DependencyID) ||
+		!core.ValidID(input.CorrectionID) || !validSHA256(input.ContextSHA256) || !validMemoryReason(input.Reason) {
+		return Receipt{}, core.Malformed
+	}
+	preview, err := k.GetMemoryTaskRevalidationPreview(ctx, scope, input.TaskID, input.DependencyID, input.CorrectionID)
+	if err != nil {
+		return Receipt{}, err
+	}
+	if preview.ContextSHA256 != input.ContextSHA256 {
+		return Receipt{}, core.ConflictError{Reason: "the reviewed memory revalidation context is stale", CurrentState: "context_changed"}
+	}
+	if _, err = readBlob(k.root, scope.company, preview.WorkspaceDigest); err != nil {
+		return Receipt{}, core.Integrity
+	}
+	revalidationID, replacementDependencyID := newID(), newID()
+	return k.TXWrite(ctx, scope, nil, key, "memory.task.revalidation.requested", input, func(tx pgx.Tx) (Receipt, error) {
+		current, checkErr := memoryTaskRevalidationPreviewTX(ctx, tx, scope, input.TaskID, input.DependencyID, input.CorrectionID)
+		if checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if current.ContextSHA256 != input.ContextSHA256 {
+			return Receipt{}, core.ConflictError{Reason: "the reviewed memory revalidation context is stale", CurrentState: "context_changed"}
+		}
+		target := MemoryDependencyInput{RecordID: current.PreviousRecordID, RecordRevision: current.ReplacementRevision,
+			TargetKind: current.TargetKind, TargetID: current.TargetID, TargetRevision: current.TargetRevision,
+			TargetSHA256: current.TargetSHA256, RiskLevel: current.RiskLevel}
+		if _, checkErr = validateMemoryDependencyTargetTX(ctx, tx, scope, target); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		var createdBy string
+		if checkErr = tx.QueryRow(ctx, "SELECT created_by FROM memory_dependencies WHERE company_id=$1 AND dependency_id=$2", scope.company, input.DependencyID).Scan(&createdBy); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if checkErr = appendEvent(ctx, tx, scope, "memory.dependency.revalidated", map[string]any{
+			"task_id": input.TaskID, "dependency_id": input.DependencyID, "replacement_dependency_id": replacementDependencyID,
+			"correction_id": input.CorrectionID, "replacement_revision": current.ReplacementRevision,
+		}); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		seq, checkErr := currentCompanySequenceTX(ctx, tx, scope.company)
+		if checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if _, checkErr = tx.Exec(ctx, `INSERT INTO memory_dependencies(company_id,dependency_id,record_id,record_revision,target_kind,target_id,target_revision,target_sha256,risk_level,company_seq,created_by,bound_task_id,worker_session_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,NULL)`, scope.company, replacementDependencyID, target.RecordID, target.RecordRevision,
+			target.TargetKind, target.TargetID, target.TargetRevision, target.TargetSHA256, target.RiskLevel, seq, createdBy, input.TaskID); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if checkErr = appendEvent(ctx, tx, scope, "memory.dependency.revalidated", map[string]any{
+			"dependency_id": input.DependencyID, "correction_id": input.CorrectionID, "revalidation_id": revalidationID,
+		}); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		seq, checkErr = currentCompanySequenceTX(ctx, tx, scope.company)
+		if checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if _, checkErr = tx.Exec(ctx, `INSERT INTO memory_dependency_invalidation_events(company_id,company_seq,dependency_id,state,cause_kind,cause_id,actor,reason)
+VALUES($1,$2,$3,'revalidated','revalidation',$4,'local-owner',$5)`, scope.company, seq, input.DependencyID, revalidationID, strings.TrimSpace(input.Reason)); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if checkErr = appendEvent(ctx, tx, scope, "memory.task.revalidated", map[string]any{
+			"task_id": input.TaskID, "dependency_id": input.DependencyID, "correction_id": input.CorrectionID,
+			"replacement_dependency_id": replacementDependencyID, "context_sha256": input.ContextSHA256,
+		}); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		seq, checkErr = currentCompanySequenceTX(ctx, tx, scope.company)
+		if checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if _, checkErr = tx.Exec(ctx, `INSERT INTO memory_task_state_events(company_id,company_seq,task_id,dependency_id,state,risk_level,cause_kind,cause_id,actor,reason)
+VALUES($1,$2,$3,$4,'revalidated',$5,'revalidation',$6,'local-owner',$7)`, scope.company, seq, input.TaskID, input.DependencyID,
+			current.DependencyState, revalidationID, strings.TrimSpace(input.Reason)); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if checkErr = appendEvent(ctx, tx, scope, "memory.task.revalidation.recorded", map[string]any{
+			"revalidation_id": revalidationID, "task_id": input.TaskID, "dependency_id": input.DependencyID,
+			"replacement_dependency_id": replacementDependencyID, "correction_id": input.CorrectionID,
+			"task_generation": current.TaskGeneration, "task_plan_sha256": current.TaskPlanSHA256,
+			"previous_revision": current.PreviousRevision, "replacement_revision": current.ReplacementRevision,
+			"target_sha256": current.TargetSHA256, "stopped_session_id": current.StoppedSessionID,
+			"workspace_digest": current.WorkspaceDigest, "workspace_revision": current.WorkspaceRevision,
+			"reviewed_context_sha256": input.ContextSHA256, "reason": strings.TrimSpace(input.Reason),
+		}); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		seq, checkErr = currentCompanySequenceTX(ctx, tx, scope.company)
+		if checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if _, checkErr = tx.Exec(ctx, `INSERT INTO memory_task_revalidation_events(company_id,company_seq,revalidation_id,task_id,task_generation,task_plan_sha256,dependency_id,replacement_dependency_id,correction_id,
+previous_record_id,previous_revision,replacement_revision,target_kind,target_id,target_revision,target_sha256,stopped_session_id,workspace_digest,workspace_revision,reviewed_context_sha256,actor,reason)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,'local-owner',$21)`, scope.company, seq, revalidationID,
+			input.TaskID, current.TaskGeneration, current.TaskPlanSHA256, input.DependencyID, replacementDependencyID, input.CorrectionID, current.PreviousRecordID, current.PreviousRevision,
+			current.ReplacementRevision, current.TargetKind, current.TargetID, current.TargetRevision, current.TargetSHA256,
+			current.StoppedSessionID, current.WorkspaceDigest, current.WorkspaceRevision, input.ContextSHA256, strings.TrimSpace(input.Reason)); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if current.TaskState == "working" {
+			if _, checkErr = tx.Exec(ctx, `UPDATE tasks SET state='ready',generation=generation+1
+WHERE company_id=$1 AND id=$2 AND state='working'`, scope.company, input.TaskID); checkErr != nil {
+				return Receipt{}, checkErr
+			}
+			if checkErr = appendEvent(ctx, tx, scope, "task.memory_revalidation_ready", map[string]any{
+				"task_id": input.TaskID, "revalidation_id": revalidationID, "generation_advanced": true,
+			}); checkErr != nil {
+				return Receipt{}, checkErr
+			}
+		}
+		return Receipt{ID: revalidationID, Status: "revalidated", Revision: current.ReplacementRevision}, nil
+	})
 }
 
 func (k *Kernel) GetMemoryRecordRevision(ctx context.Context, b Binding, recordID string, revision int64) (MemoryRecordRevision, error) {
