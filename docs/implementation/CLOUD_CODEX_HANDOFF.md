@@ -12,13 +12,28 @@ Explicit exclusions remain office/3D, dynamic hiring/firing, arbitrary MCP compa
 
 - GitHub repository: `https://github.com/chyinan/Polis`
 - Branch: `main`
-- Current code checkout used for this implementation: `C:\Users\chyinan\.codex\worktrees\polis-r1-r3-implementation\Polis`
+- Current code checkout used for this continuation: `/data/data/com.termux/files/home/polis` (Termux)
 - Slice101 feature commit: `998f425` (`feat: add fake-only product direct messaging`), followed by review-fix commits `aa0a53e` and `6df7d54`. They add ordered Task row locks, an active-Mission `FOR SHARE` lock, and explicit rejection of an omitted `actionable` field. Read-only re-review found zero remaining findings.
 - An older local checkout exists at `D:\Programs\Polis` on `master` with unrelated uncommitted/untracked files. Do not use that checkout as the current source of truth or copy its working-tree contents into `main`.
 
 Clone/pull `main` before continuing. Read this file, `AGENTS.md`, `docs/implementation/NEXT_SLICE.md`, `docs/implementation/PROGRESS.md`, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` first. The coverage ledger is authoritative for the finite remaining scope.
 
 ## Just-closed slice
+
+Slice102 adds an opt-in, bounded automatic dispatcher for the fixed product `compat/emp-backend` Task. It selects at most one eligible Task every 30 seconds, rotates by Company ID after each attempt, requires an active Company/Mission, a unique ready Task with validation binding and workspace, no prior WorkerSession, no other live session for the Employee, and `wake_pending` schedule state. WorkerSession admission remains the final authority, and the dispatcher shares the Mission lifecycle lock. It never clears `paused` or `waiting_quota`.
+
+The dispatcher is off by default and requires both `POLIS_AUTO_WORKER_DISPATCH_ENABLED=1` and the exact zero-egress Fake @7 surface. It does not dispatch Routine Tasks, retry a Task after a WorkerSession exists, or use real provider transport. The Company cursor is process-local; cross-instance fairness, global slot accounting, authoritative quota readiness/recovery, and safe production dispatch remain open. No schema migration or real Worker/model turn was used.
+
+Verification on this Termux host:
+
+- `go test ./internal/control ./cmd/polis` passes; `go test ./internal/kernel -run '^$'` compiles the package without running tests.
+- `go build ./cmd/...` passes for `android/arm64`; `GOOS=windows GOARCH=amd64 go build ./cmd/...` passes.
+- The combined Kernel/control/command test run hits the Termux seccomp denial of `fchmodat2` in the existing `TestUnixParentDirectorySyncUnsupportedSentinelRemainsFatal`; the dedicated PostgreSQL suite was not run because the bundled x86_64 `.tools/pg` runtime is absent. The persistent development database was left untouched.
+- `git diff --check` passes. `rtk` is unavailable in this Termux environment.
+
+Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-102-auto-worker-dispatch/verification.md`.
+
+Slice101 (below) remains the prior product direct-messaging slice.
 
 Slice101 connects direct messaging to the generic product Worker adapter through the separately versioned 12-tool `polis-product-tool-surface@7`. It provides bounded same-Mission target discovery, direct send, ordered inbox, acknowledgement, application evidence, and candidate-Artifact resolution. The Kernel locks the Mission row `FOR SHARE`, then locks source and target Tasks in stable ID order, then checks the current WorkerSession Task, explicit recipient, fixed employee roster, Mission, and Task states. The product API rejects missing or null `actionable`; `false` explicitly selects FYI. Actionable messages persist the Obligation, work signal, and schedule wake transactionally. FYIs create no Obligation or wake and advance in event order after acknowledgement.
 
@@ -37,9 +52,9 @@ Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-1
 
 ## Remaining work and next move
 
-Use the existing finite list in `R1_R3_IMPLEMENTATION_COVERAGE.md`. It still includes REQ-13 fairness/quota readiness and automatic Worker admission/dispatch; lifecycle safety for REQ-14/15/16/25/26/29/39; the qualified employee/runtime/continuity path for REQ-23/24/27/30–34; signing and clean Windows VM/package checks; one bounded FT/NT/CAP/UI/WF/PP traceability reconciliation; R2 Linux host/recovery and remote-workbench qualifications; and independent R3 content/research quality, cost, recovery, and organization-benefit evidence.
+Use the existing finite list in `R1_R3_IMPLEMENTATION_COVERAGE.md`. REQ-13 still needs authoritative quota readiness/recovery, cross-instance fairness/global slot accounting, and safe dispatch qualification; Slice102 adds only the bounded single-process Fake dispatcher. Other open software items include lifecycle safety for REQ-14/15/16/25/26/29/39; the qualified employee/runtime/continuity path for REQ-23/24/27/30–34; signing and clean Windows VM/package checks; and one bounded FT/NT/CAP/UI/WF/PP traceability reconciliation. R2 Linux host/recovery and remote-workbench qualifications, plus independent R3 content/research quality, cost, recovery, and organization-benefit evidence, remain separate qualification work.
 
-Recommended next slice: implement the REQ-13 fairness/quota admission and automatic Worker dispatch path for the current fixed product Task. First inspect the schedule reconciliation, `EmployeeSchedule`, and Routine/Task delivery tests; keep the dispatcher bounded and preserve pause/quota barriers. Qualification and real provider work stay separate. Update the coverage ledger and evidence at the end of that slice.
+Recommended next slice: take one bounded software item from the finite ledger, starting with REQ-14 capability revocation. Read `spec/design-v0.4.5/contracts/C-REVOKE.md` and map the revocation linearization point to the currently supported Worker paths. Preserve the distinctions between accepted, effective-for-new-dispatch, and quiesced; do not claim quiescence without stopping or isolating affected execution and accounting for in-flight work. Keep real provider, QQ, MCP, and production qualification separate.
 
 ## Working conventions
 
@@ -47,4 +62,4 @@ Recommended next slice: implement the REQ-13 fairness/quota admission and automa
 - Preserve exact provider-surface fingerprints and old probe registries. A new model-visible tool set needs a distinct versioned surface and independent qualification.
 - Use disposable PostgreSQL/file roots only. Full Go suite and both Linux/Windows command builds are appropriate after code slices; external qualification remains gated.
 - There is one principal code writer. Review is read-only. Wait for reviewers instead of terminating them early.
-- The reviewed Slice101 commits and this handoff are synchronized to this GitHub `main` for cloud pickup. This is source synchronization only; it does not authorize deployment or external provider actions.
+- Slice101 and Slice102, including this current handoff, are synchronized to GitHub `main` for cloud pickup. This is source synchronization only; it does not authorize deployment or external provider actions.
