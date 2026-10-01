@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 108 — REQ-15 memory record and dependency foundation (Schema 74)
+
+Added immutable source-pinned memory record revisions, separate append-only review state, explicit dependency pins, and invalidation-event storage. Kernel operations create proposed records, check company/Mission/employee scope, validate exact source digests and provenance timestamps, require independent fixed Planning/Review verification before a factual record can be used, and permit dependencies only from verified records to exact source/contract/task revisions. Memory reads enforce scope, sensitivity, state, and content digest checks. This slice does not yet create correction requests or replacement revisions, emit invalidations, dirty/freeze active Tasks, propagate deletion through restored backups, integrate memory into Handover, or bind CAS retention pins. `go build ./cmd/...` and `git diff --check` pass. Tests and PostgreSQL migration/runtime execution were not run. No model, provider, external endpoint, or production action was used. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-108-memory-record-dependency-foundation/verification.md`.
+
 ## Slice 107 — REQ-15 traceability disposition (no code or schema change)
 
 Audited the six FT/PP IDs mapped to REQ-15. FT-27 is implemented through authoritative Obligation readback in Worker Handover; FT-37, FT-40 and FT-41 are unimplemented; FT-74 and PP-07 are partial because adjacent proposal and handover foundations exist, while memory-specific correction/review and the behavioral handover experiment remain absent or unqualified. The frozen spec and test catalogs were not edited; their scenario execution statuses remain `not_run`. This closes only the REQ-15 traceability pass, not REQ-15 implementation. Details: `docs/implementation/REQ15_MEMORY_TRACEABILITY.md`.

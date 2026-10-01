@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-01)
 
-## Latest continuation status (Slice 107, REQ-15 traceability disposition)
+## Latest continuation status (Slice 108, REQ-15 memory record/dependency foundation; Schema 74)
+
+Added immutable, source-pinned memory record revisions, independent review state, and explicit dependency ledgers with append-only invalidation-event storage. The Kernel API creates proposed records, verifies source digests and scope, requires a different fixed Planning/Review employee to verify factual records, and pins dependencies only to verified revisions and exact target digests. The memory read path checks Mission/employee scope, review state, sensitivity, and content digest. This is only the storage/API foundation: correction-request workflows, new memory revisions, dependency invalidation, active-context dirty/freeze gates, backup deletion overlays, CAS retention pins, and Handover integration remain open. `go build ./cmd/...` and `git diff --check` pass. Tests and PostgreSQL migration execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-108-memory-record-dependency-foundation/verification.md`.
+
+## Previous continuation status (Slice 107, REQ-15 traceability disposition)
 
 Reconciled the six FT/PP IDs mapped to REQ-15 against the current code and evidence. FT-27 is implemented through authoritative Obligation readback in Worker Handover; FT-37, FT-40 and FT-41 remain unimplemented; FT-74 and PP-07 are partial because adjacent proposal and handover foundations exist while their memory-specific or behavioral requirements are absent or unqualified. The frozen design/test files remain unchanged, and all associated scenario execution statuses remain `not_run`. No tests or external actions were run. Evidence and code mapping: `docs/implementation/REQ15_MEMORY_TRACEABILITY.md`.
 
