@@ -8,16 +8,18 @@ import (
 	"os"
 	"sync"
 
+	"polis/internal/environment"
 	"polis/internal/kernel"
 	"polis/internal/provider"
 	"polis/internal/runner"
 )
 
 type DeterministicWorkerAdapter struct {
-	runtime    *kernel.Kernel
-	executable string
-	mu         sync.Mutex
-	workers    map[string]deterministicWorker
+	runtime             *kernel.Kernel
+	workerCgroupManager environment.LinuxWorkerCgroupManager
+	executable          string
+	mu                  sync.Mutex
+	workers             map[string]deterministicWorker
 }
 
 type deterministicWorker struct {
@@ -28,12 +30,16 @@ type deterministicWorker struct {
 	hostReconcileOnly bool
 }
 
-func NewDeterministicWorkerAdapter(runtime *kernel.Kernel) *DeterministicWorkerAdapter {
+func NewDeterministicWorkerAdapter(runtime *kernel.Kernel, workerCgroupManagers ...environment.LinuxWorkerCgroupManager) *DeterministicWorkerAdapter {
 	executable, err := os.Executable()
 	if err != nil {
 		executable = ""
 	}
-	return &DeterministicWorkerAdapter{runtime: runtime, executable: executable, workers: make(map[string]deterministicWorker)}
+	var workerCgroupManager environment.LinuxWorkerCgroupManager
+	if len(workerCgroupManagers) > 0 {
+		workerCgroupManager = workerCgroupManagers[0]
+	}
+	return &DeterministicWorkerAdapter{runtime: runtime, workerCgroupManager: workerCgroupManager, executable: executable, workers: make(map[string]deterministicWorker)}
 }
 
 func (a *DeterministicWorkerAdapter) Mode() string                    { return "deterministic" }
@@ -122,22 +128,47 @@ func (a *DeterministicWorkerAdapter) Start(ctx context.Context, companyID, missi
 func (a *DeterministicWorkerAdapter) Stop(ctx context.Context, companyID, missionID string) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	worker, exists := a.workers[companyID+"/"+missionID]
+	return a.stopWorkerLocked(ctx, companyID+"/"+missionID, "")
+}
+
+func (a *DeterministicWorkerAdapter) StopSession(ctx context.Context, companyID, sessionID string) error {
+	a.mu.Lock()
+	for key, worker := range a.workers {
+		workerCompany, _, ok := splitWorkerKey(key)
+		if ok && workerCompany == companyID && worker.binding.SessionID() == sessionID {
+			err := a.stopWorkerLocked(ctx, key, sessionID)
+			a.mu.Unlock()
+			return err
+		}
+	}
+	a.mu.Unlock()
+	return a.runtime.ReconcileWorkerSession(ctx, companyID, sessionID, a.workerCgroupManager)
+}
+
+func (a *DeterministicWorkerAdapter) stopWorkerLocked(ctx context.Context, key, expectedSessionID string) error {
+	worker, exists := a.workers[key]
 	if !exists {
 		return nil
 	}
+	if expectedSessionID != "" && worker.binding.SessionID() != expectedSessionID {
+		return errors.New("deterministic WorkerSession owner changed during stop")
+	}
 	if worker.hostReconcileOnly {
-		if err := a.runtime.ReconcileWorkerSession(ctx, companyID, worker.binding.SessionID()); err != nil {
+		companyID, _, ok := splitWorkerKey(key)
+		if !ok {
+			return errors.New("deterministic WorkerSession owner key is invalid")
+		}
+		if err := a.runtime.ReconcileWorkerSession(ctx, companyID, worker.binding.SessionID(), a.workerCgroupManager); err != nil {
 			return err
 		}
-		delete(a.workers, companyID+"/"+missionID)
+		delete(a.workers, key)
 		return nil
 	}
 	if worker.processStopped {
 		if err := a.runtime.TXConfirmStopped(ctx, worker.binding, worker.stopProof); err != nil {
 			return err
 		}
-		delete(a.workers, companyID+"/"+missionID)
+		delete(a.workers, key)
 		return nil
 	}
 	if err := a.runtime.TXAttachWorker(ctx, worker.binding, worker.process); err != nil {
@@ -152,11 +183,11 @@ func (a *DeterministicWorkerAdapter) Stop(ctx context.Context, companyID, missio
 	}
 	worker.processStopped = true
 	worker.stopProof = proof
-	a.workers[companyID+"/"+missionID] = worker
+	a.workers[key] = worker
 	if err = a.runtime.TXConfirmStopped(ctx, worker.binding, proof); err != nil {
 		return err
 	}
-	delete(a.workers, companyID+"/"+missionID)
+	delete(a.workers, key)
 	return nil
 }
 
@@ -185,3 +216,4 @@ func splitWorkerKey(key string) (string, string, bool) {
 }
 
 var _ WorkerAdapter = (*DeterministicWorkerAdapter)(nil)
+var _ WorkerSessionStopper = (*DeterministicWorkerAdapter)(nil)

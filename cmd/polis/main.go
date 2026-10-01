@@ -549,6 +549,18 @@ func serveWorkbench() (returnErr error) {
 		cancelScheduleReconciler()
 		stopScheduleReconciler()
 	}()
+	revocationStopCtx, cancelRevocationStop := context.WithCancel(context.Background())
+	stopRevocationStop, err := commandService.StartCapabilityRevocationWorkerStopper(revocationStopCtx, func(error) {
+		fmt.Fprintln(os.Stderr, "capability revocation Worker stop iteration failed")
+	})
+	if err != nil {
+		cancelRevocationStop()
+		return fmt.Errorf("failed to start capability revocation Worker stopper: %w", err)
+	}
+	defer func() {
+		cancelRevocationStop()
+		stopRevocationStop()
+	}()
 	automaticProductDispatchEnabled, err := environmentFlag("POLIS_AUTO_WORKER_DISPATCH_ENABLED")
 	if err != nil {
 		return err
@@ -708,7 +720,7 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 	}
 	switch mode {
 	case "deterministic":
-		return control.NewDeterministicWorkerAdapter(kernelRuntime), nil
+		return control.NewDeterministicWorkerAdapter(kernelRuntime, workerCgroupArgs...), nil
 	case "real":
 		transport := os.Getenv("POLIS_PROVIDER_TRANSPORT")
 		controlledMCPV1 := os.Getenv("POLIS_CONTROLLED_MCP_TOOL_SURFACE") == "1"

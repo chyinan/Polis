@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 105 — Capability revocation Worker stop and restart sweep (Schema 73, no migration)
+
+Added a bounded background coordinator that reads non-stopped WorkerSessions from the durable revoke-time snapshot ledger using a company/session keyset cursor. It starts immediately with the Workbench service, scans every 15 seconds, and receives wake hints when global capability revocation or employee unbind commits. Stop operations share the Mission lifecycle lock. Both Worker adapters support exact-session stop; if in-memory ownership is absent after restart, they delegate to the existing host process-tree reconciliation path. Snapshot rows remain the durable retry source, and confirmed stops update current MCP intents to `outcome_unknown`; already-stopped sessions with still-dispatching intents remain eligible for retry.
+
+Pre-Schema-73 revocations remain visible through the existing usage-ledger fallback but lack revoke-time snapshots and are not queued by this coordinator. No schema change was needed. `go build ./cmd/...` and `git diff --check` pass. Tests, PostgreSQL migration/runtime behavior, and the stop loop were not run. No Worker, provider, or external endpoint was used. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-105-revocation-worker-stop/verification.md`.
+
 ## Slice 104 — Revoke-time WorkerSession and MCP intent snapshot (Schema 73)
 
 The global capability-revoke and employee-unbind transactions now capture their affected WorkerSession set before releasing the company guard. The snapshot includes live sessions for employees previously bound to the revoked capability/version and stopped sessions with recorded use; employee-scoped unbind includes that employee's live sessions. It stores the session state and Skill-load count at revocation, and links exact MCP intent IDs with their initial statuses. The read projection uses the snapshot when present, so sessions and intents from a later rebind cannot be mistaken for work admitted under the old grant. Existing revocations from before Schema 73 retain the usage-ledger fallback.

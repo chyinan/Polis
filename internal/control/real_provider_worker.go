@@ -916,6 +916,35 @@ func (a *RealProviderWorkerAdapter) Stop(ctx context.Context, companyID, mission
 	return errors.Join(failures...)
 }
 
+func (a *RealProviderWorkerAdapter) StopSession(ctx context.Context, companyID, sessionID string) error {
+	var ownerKey string
+	var worker *providerWorker
+	a.mu.Lock()
+	for key, candidate := range a.workers {
+		if candidate.companyID == companyID && candidate.binding.SessionID() == sessionID {
+			ownerKey, worker = key, candidate
+			break
+		}
+	}
+	if worker == nil {
+		for key, candidate := range a.unresolvedWorkers {
+			if candidate.companyID == companyID && candidate.binding.SessionID() == sessionID {
+				ownerKey, worker = key, candidate
+				break
+			}
+		}
+	}
+	a.mu.Unlock()
+	if worker == nil {
+		if a.kernel == nil {
+			return errors.New("WorkerSession host reconciliation requires a business kernel")
+		}
+		return a.kernel.ReconcileWorkerSession(ctx, companyID, sessionID, a.workerCgroupManager)
+	}
+	worker.cancel()
+	return a.cleanup(ctx, ownerKey, worker)
+}
+
 func (a *RealProviderWorkerAdapter) cleanup(ctx context.Context, key string, worker *providerWorker) error {
 	worker.cleanupMu.Lock()
 	defer worker.cleanupMu.Unlock()
@@ -1158,3 +1187,4 @@ func lifecycleFailureCategory(err error, fallback string) string {
 }
 
 var _ WorkerAdapter = (*RealProviderWorkerAdapter)(nil)
+var _ WorkerSessionStopper = (*RealProviderWorkerAdapter)(nil)

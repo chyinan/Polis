@@ -1,6 +1,12 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-01, Slice 104 / Schema 73. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-01, Slice 105 / Schema 73. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 105: capability revocation Worker stop and restart sweep (no migration)
+
+A bounded background coordinator drains non-stopped WorkerSessions captured in Schema 73 revocation snapshots. It uses a company/session keyset cursor, runs immediately and every 15 seconds, receives wake hints from successful revoke commands, and shares the Mission lifecycle lock. Both adapters stop one exact WorkerSession; after Control restart the adapters use the existing host process-tree reconciliation path. A confirmed stop marks outstanding MCP intents `outcome_unknown`. Already-stopped sessions with lingering dispatching MCP calls remain in the queue until that status transition succeeds. Snapshot rows remain durable retry input; no process-local queue state is required for restart recovery.
+
+Pre-Schema-73 active revocations still use the projection's usage-ledger fallback, but do not have revoke-time snapshots and are not included in this stop queue. `go build ./cmd/...` and `git diff --check` pass. Tests, PostgreSQL runtime behavior, and actual stop execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-105-revocation-worker-stop/verification.md`.
 
 ## Slice 104: revoke-time WorkerSession and MCP intent snapshot (Schema 73)
 
@@ -108,14 +114,14 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 104
+## Finite remaining work at Slice 105
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
 Software closure, bounded to the current REQ ledger:
 
 - Finish REQ-02 across remaining fixed roles and qualification: the product Worker now exposes direct messaging only through the unqualified zero-egress Fake @7 surface; real-provider authorization remains @4 and other fixed roles are not product-provider executable. REQ-13 now has a bounded, opt-in Fake @7 dispatcher for eligible product Tasks; authoritative quota readiness/recovery, cross-instance fairness, global slot accounting, and safe production dispatch remain open. Routine occurrence→Task→Handover and Workbench Routine create/list/legacy repair are implemented. Routine persistence, due materialization, LISTEN/reconnect, bounded scans, startup reconciliation, and the schedule projection are implemented.
-- Complete lifecycle safety: finish REQ-14 with Worker stop coordination and restart reconciliation (Slices 103–104 add the status projection and revoke-time inventory), REQ-15 memory invalidation, REQ-16 retry/closeout budgets, REQ-25 continuing authorization, REQ-26 shared-write resource binding, REQ-29 shared-file workspace access, and REQ-39 remaining safe-change handling.
+- Complete lifecycle safety: REQ-14 stop/restart coordination now covers Schema 73 snapshots; migrate or reconcile any still-current pre-Schema-73 revocations if they require stop coverage. REQ-15 memory invalidation, REQ-16 retry/closeout budgets, REQ-25 continuing authorization, REQ-26 shared-write resource binding, REQ-29 shared-file workspace access, and REQ-39 remaining safe-change handling remain open.
 - Complete the formal employee/runtime and continuity path for REQ-23–24, REQ-27, and REQ-30–34: current command surfaces and capability state machines exist, but direct communication, selected Skill, controlled MCP, and successor workflows are not available on the qualified product Worker path.
 - Add signing integration. Verify existing first-run, tray/hide/reopen, packaged artifact download, install/uninstall, login-start behavior, and update rollback in a clean Windows VM; the opt-in startup code is implemented but not host-qualified.
 - Reconcile the existing traceability IDs to code/evidence once for FT, NT, CAP, UI, WF, and PP; mark each as implemented, partial, unimplemented, excluded, or not applicable. This is a bounded pass over the frozen traceability file, not permission to add requirements.

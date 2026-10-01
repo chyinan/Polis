@@ -38,6 +38,9 @@ type Service struct {
 	projectJobs                      map[string]*activeProjectJob
 	projectJobRunner                 ProjectJobExecutor
 	projectLifecycleMu               sync.RWMutex
+	capabilityRevocationStopMu       sync.Mutex
+	capabilityRevocationStopWake     chan struct{}
+	capabilityRevocationStopRunning  bool
 	mcpRuntimeObserver               StdioMCPRuntimeObserver
 	streamableHTTPMCPRuntimeObserver StreamableHTTPMCPRuntimeObserver
 	githubFeedback                   GitHubFeedbackProvider
@@ -214,7 +217,11 @@ func (s *Service) DecideCapability(ctx context.Context, companyID string, reques
 	if err := validateRequestID(request.RequestID); err != nil {
 		return kernel.Receipt{}, err
 	}
-	return s.runtime.TXDecideCapability(ctx, companyID, kernel.CapabilityDecisionInput{CapabilityKind: request.CapabilityKind, CapabilityID: request.CapabilityID, QualificationID: request.QualificationID, Decision: request.Decision, Rationale: request.Rationale, RequestID: request.RequestID})
+	receipt, err := s.runtime.TXDecideCapability(ctx, companyID, kernel.CapabilityDecisionInput{CapabilityKind: request.CapabilityKind, CapabilityID: request.CapabilityID, QualificationID: request.QualificationID, Decision: request.Decision, Rationale: request.Rationale, RequestID: request.RequestID})
+	if err == nil && request.Decision == "revoked" {
+		s.wakeCapabilityRevocationWorkerStopper()
+	}
+	return receipt, err
 }
 
 func (s *Service) ApproveStdioMCPRuntimeQualification(ctx context.Context, companyID string, request ApproveStdioMCPRuntimeQualificationRequest) (kernel.Receipt, error) {
@@ -240,7 +247,11 @@ func (s *Service) RevokeEmployeeCapability(ctx context.Context, companyID string
 	if err := validateRequestID(request.RequestID); err != nil {
 		return kernel.Receipt{}, err
 	}
-	return s.runtime.TXRevokeEmployeeCapability(ctx, companyID, kernel.EmployeeCapabilityBindingInput{EmployeeID: request.EmployeeID, CapabilityKind: request.CapabilityKind, CapabilityID: request.CapabilityID, QualificationID: request.QualificationID, Reason: request.Reason, RequestID: request.RequestID})
+	receipt, err := s.runtime.TXRevokeEmployeeCapability(ctx, companyID, kernel.EmployeeCapabilityBindingInput{EmployeeID: request.EmployeeID, CapabilityKind: request.CapabilityKind, CapabilityID: request.CapabilityID, QualificationID: request.QualificationID, Reason: request.Reason, RequestID: request.RequestID})
+	if err == nil {
+		s.wakeCapabilityRevocationWorkerStopper()
+	}
+	return receipt, err
 }
 
 func (s *Service) ListDomainEvidence(ctx context.Context, companyID string) (kernel.DomainEvidenceLedger, error) {
