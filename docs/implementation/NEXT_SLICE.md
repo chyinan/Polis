@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-01)
 
-## Latest continuation status (Slice 106, legacy active-revocation stop fallback; no migration)
+## Latest continuation status (Slice 107, REQ-15 traceability disposition)
+
+Reconciled the six FT/PP IDs mapped to REQ-15 against the current code and evidence. FT-27 is implemented through authoritative Obligation readback in Worker Handover; FT-37, FT-40 and FT-41 remain unimplemented; FT-74 and PP-07 are partial because adjacent proposal and handover foundations exist while their memory-specific or behavioral requirements are absent or unqualified. The frozen design/test files remain unchanged, and all associated scenario execution statuses remain `not_run`. No tests or external actions were run. Evidence and code mapping: `docs/implementation/REQ15_MEMORY_TRACEABILITY.md`.
+
+## Previous continuation status (Slice 106, legacy active-revocation stop fallback; no migration)
 
 The bounded stop coordinator now unions Schema 73 revoke-time snapshots with recorded Skill-load and MCP-intent sessions belonging to currently effective pre-Schema-73 revocations. This lets the existing retry loop stop sessions the older projection could identify without relying on process-local state. Current revocation semantics match the catalog projection; the union is deduplicated and keyset-paged. No schema change was needed. `go build ./cmd/...` and `git diff --check` pass; tests and PostgreSQL execution were not run. Pre-Schema-73 revocations that have since been superseded, and legacy sessions with a binding but no recorded use, still lack a trustworthy exact revoke-time session set. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-106-legacy-revocation-stop/verification.md`.
 

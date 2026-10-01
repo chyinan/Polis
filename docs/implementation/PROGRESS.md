@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 107 — REQ-15 traceability disposition (no code or schema change)
+
+Audited the six FT/PP IDs mapped to REQ-15. FT-27 is implemented through authoritative Obligation readback in Worker Handover; FT-37, FT-40 and FT-41 are unimplemented; FT-74 and PP-07 are partial because adjacent proposal and handover foundations exist, while memory-specific correction/review and the behavioral handover experiment remain absent or unqualified. The frozen spec and test catalogs were not edited; their scenario execution statuses remain `not_run`. This closes only the REQ-15 traceability pass, not REQ-15 implementation. Details: `docs/implementation/REQ15_MEMORY_TRACEABILITY.md`.
+
 ## Slice 106 — Legacy active-revocation Worker stop fallback (no migration)
 
 Extended the durable revoke-stop candidate query to include recorded Skill-use and MCP-intent sessions associated with currently effective pre-Schema-73 global or employee revocations. The selection reuses the active-revocation rules from the catalog projection, unions and deduplicates those sessions with Schema 73 snapshots, then applies the existing company/session keyset paging and stop retry behavior. This closes the legacy recorded-use stop gap without schema changes or process-local state.

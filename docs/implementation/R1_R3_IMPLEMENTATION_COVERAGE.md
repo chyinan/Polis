@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-01, Slice 106 / Schema 73. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-01, Slice 107 / Schema 73. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 107: REQ-15 traceability disposition (no code or schema change)
+
+The six FT/PP trace IDs mapped to REQ-15 are reconciled in `docs/implementation/REQ15_MEMORY_TRACEABILITY.md`. FT-27 is implemented by durable Obligation readback in Worker Handover; FT-37, FT-40 and FT-41 remain unimplemented; FT-74 and PP-07 are partial. The design package and catalogs remain frozen, and all six planned scenarios remain `not_run`. This closes only this family’s traceability pass; memory correction, explicit dependency invalidation, high-risk revalidation, and deletion propagation remain open.
 
 ## Slice 106: legacy active-revocation Worker stop fallback (no migration)
 
@@ -130,7 +134,7 @@ Software closure, bounded to the current REQ ledger:
 - Complete lifecycle safety: REQ-14 stop/restart coordination covers Schema 73 snapshots and recorded uses for currently active pre-Schema-73 revocations; superseded legacy revocations and bound-but-unused legacy sessions lack exact revoke-time snapshots. REQ-15 memory invalidation, REQ-16 retry/closeout budgets, REQ-25 continuing authorization, REQ-26 shared-write resource binding, REQ-29 shared-file workspace access, and REQ-39 remaining safe-change handling remain open.
 - Complete the formal employee/runtime and continuity path for REQ-23–24, REQ-27, and REQ-30–34: current command surfaces and capability state machines exist, but direct communication, selected Skill, controlled MCP, and successor workflows are not available on the qualified product Worker path.
 - Add signing integration. Verify existing first-run, tray/hide/reopen, packaged artifact download, install/uninstall, login-start behavior, and update rollback in a clean Windows VM; the opt-in startup code is implemented but not host-qualified.
-- Reconcile the existing traceability IDs to code/evidence once for FT, NT, CAP, UI, WF, and PP; mark each as implemented, partial, unimplemented, excluded, or not applicable. This is a bounded pass over the frozen traceability file, not permission to add requirements.
+- Reconcile the existing traceability IDs to code/evidence once for FT, NT, CAP, UI, WF, and PP; mark each as implemented, partial, unimplemented, excluded, or not applicable. REQ-15's six FT/PP IDs are complete in `docs/implementation/REQ15_MEMORY_TRACEABILITY.md`; the remaining IDs are still open. This is a bounded pass over the frozen traceability file, not permission to add requirements.
 
 Qualification closure, after the corresponding local paths are stable:
 
