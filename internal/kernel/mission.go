@@ -144,6 +144,9 @@ func (k *Kernel) TXPrepareProductTask(ctx context.Context, s Scope, missionID, g
 			}
 			return Receipt{}, err
 		}
+		if err := requireMemoryTaskCleanTX(ctx, tx, s.company, bootstrapID); err != nil {
+			return Receipt{}, err
+		}
 		plan := []byte(`{"template":"product-task@2","owner":"emp-backend","dependencies":[],"ambiguities":[]}`)
 		if _, err := tx.Exec(ctx, "UPDATE tasks SET state='completed',plan=$3 WHERE company_id=$1 AND id=$2", s.company, bootstrapID, plan); err != nil {
 			return Receipt{}, err
@@ -408,6 +411,9 @@ func checkWork(ctx context.Context, tx pgx.Tx, b Binding, w Task) (Task, error) 
 	}
 	if state != "active" {
 		return t, core.Denied
+	}
+	if e = requireMemoryTaskWritableTX(ctx, tx, b.scope.company, t.ID); e != nil {
+		return t, e
 	}
 	return t, nil
 }

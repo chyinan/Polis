@@ -158,6 +158,7 @@ type PeerHandoverBundle struct {
 	WorkspaceRevision                                       int64
 	Checkpoints                                             []Checkpoint
 	ToolBudget                                              ToolCallBudget
+	MemoryStatus                                            *MemoryTaskStatus `json:"memory_status,omitempty"`
 }
 
 type PeerHandoverCASBlob struct {
@@ -232,6 +233,9 @@ func (k *Kernel) PeerHandover(ctx context.Context, b Binding) (PeerHandoverBundl
 	out.WorkspaceDigest, out.WorkspaceRevision = h.Workspace.Digest, h.Workspace.Revision
 	out.Checkpoints = h.Checkpoints
 	out.ToolBudget = h.ToolBudget
+	if h.MemoryStatus.State != "clear" {
+		out.MemoryStatus = &h.MemoryStatus
+	}
 	if e := k.pool.QueryRow(ctx, `SELECT m.id,m.delivery_state,m.contract_revision_id,COALESCE(o.id,''),COALESCE(o.state,'')
 FROM messages m
 LEFT JOIN obligations o ON o.company_id=m.company_id AND o.id=m.id

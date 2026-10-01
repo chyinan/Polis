@@ -35,6 +35,7 @@ type HandoverBundle struct {
 	Workspace                     Workspace
 	Obligations                   []Obligation
 	Checkpoints                   []Checkpoint
+	MemoryStatus                  MemoryTaskStatus             `json:"memory_status,omitempty"`
 	DirectMessageTargets          []ProductDirectMessageTarget `json:"direct_message_targets,omitempty"`
 	DirectMessageTargetsTruncated bool                         `json:"direct_message_targets_truncated,omitempty"`
 	SkillCatalog                  []BoundSkillSummary          `json:"skill_catalog,omitempty"`

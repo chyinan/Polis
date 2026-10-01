@@ -178,6 +178,9 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		if e != nil {
 			return Receipt{}, e
 		}
+		if e = requireMemoryTaskWritableTX(ctx, tx, s.company, t.ID); e != nil {
+			return Receipt{}, e
+		}
 		if productProvider {
 			if !t.IsProductProviderExecutable() || t.State != "ready" {
 				return Receipt{}, core.Denied
@@ -272,7 +275,20 @@ func (k *Kernel) WorkerToolCallBudget(ctx context.Context, b Binding) (ToolCallB
 
 func (k *Kernel) TXConsumeToolCall(ctx context.Context, b Binding, key, name string) (ToolCallBudget, error) {
 	var budget ToolCallBudget
-	_, e := k.TXWrite(ctx, b.scope, &b, key, "worker.tool_call", name, func(tx pgx.Tx) (Receipt, error) {
+	sessionWrite := name != "work_current" && name != "context_read" && name != "workspace_read"
+	_, e := k.txWrite(ctx, b.scope, &b, key, "worker.tool_call", name, sessionWrite, func(tx pgx.Tx) (Receipt, error) {
+		if !sessionWrite {
+			var sessionState, missionState string
+			if err := tx.QueryRow(ctx, `SELECT s.state,m.state FROM worker_sessions s
+JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
+WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&sessionState, &missionState); err != nil {
+				return Receipt{}, err
+			}
+			if sessionState != "active" || missionState != "active" {
+				return Receipt{}, core.Denied
+			}
+		}
 		if e := tx.QueryRow(ctx, "SELECT tool_call_limit,tool_calls_used FROM worker_sessions WHERE company_id=$1 AND id=$2 FOR UPDATE", b.scope.company, b.session).Scan(&budget.Limit, &budget.Used); e != nil {
 			return Receipt{}, e
 		}
@@ -320,6 +336,11 @@ func (k *Kernel) checkSession(ctx context.Context, tx pgx.Tx, b Binding, write b
 	if write && (state != "active" || mission != "active") {
 		return state, core.Denied
 	}
+	if write {
+		if err := requireMemoryTaskWritableTX(ctx, tx, b.scope.company, taskID); err != nil {
+			return state, err
+		}
+	}
 	if !write && state != "restoring" && state != "validating" && state != "activation_pending_environment" && state != "active" && state != "stopping" {
 		return state, core.Denied
 	}
@@ -343,6 +364,9 @@ func (k *Kernel) workerTransition(ctx context.Context, b Binding, from, to, capa
 			}
 			if mission != "active" {
 				return Receipt{}, core.Denied
+			}
+			if e = requireMemoryTaskWritableTX(ctx, tx, b.scope.company, b.task); e != nil {
+				return Receipt{}, e
 			}
 		}
 		_, e = tx.Exec(ctx, "UPDATE worker_sessions SET state=$3,capability_digest=COALESCE(NULLIF($4,''),capability_digest) WHERE company_id=$1 AND id=$2", b.scope.company, b.session, to, capability)
@@ -586,6 +610,10 @@ func (k *Kernel) Handover(ctx context.Context, b Binding) (HandoverBundle, error
 		out.ToolBudget.Remaining = out.ToolBudget.Limit - out.ToolBudget.Used
 	}
 	out.Task, e = taskRow(ctx, tx, b.scope, task)
+	if e != nil {
+		return out, e
+	}
+	out.MemoryStatus, e = memoryTaskStatusTX(ctx, tx, b.scope.company, task)
 	if e != nil {
 		return out, e
 	}

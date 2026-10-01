@@ -144,6 +144,9 @@ func (t ReviewerTools) call(ctx context.Context, name, key string, raw []byte) (
 			if digest != t.Evidence.CandidateDigest || contract != t.Evidence.Contract {
 				return Receipt{}, core.Denied
 			}
+			if e := requireMemoryTaskCleanTX(ctx, tx, t.Binding.scope.company, task); e != nil {
+				return Receipt{}, e
+			}
 			_, e := tx.Exec(ctx, "UPDATE tasks SET state='completed' WHERE company_id=$1 AND id=$2", t.Binding.scope.company, task)
 			if e != nil {
 				return Receipt{}, e

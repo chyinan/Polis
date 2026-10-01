@@ -22,6 +22,9 @@ func (k *Kernel) TXSubmitQualifiedPeer(ctx context.Context, b Binding, w Task, k
 		if b.session == "" || task.State != "working" || (task.Kind != "peer_backend" && task.Kind != "peer_frontend") {
 			return Receipt{}, core.Denied
 		}
+		if err = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task.ID); err != nil {
+			return Receipt{}, err
+		}
 		var checkpointID, contractID string
 		var revision int64
 		err = tx.QueryRow(ctx, `SELECT cp.id,c.id,ws.revision

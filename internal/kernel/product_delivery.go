@@ -147,6 +147,9 @@ WHERE q.company_id=$1 AND q.task_id=$2`, b.scope.company, task.ID).Scan(&existin
 		if task.State != "working" {
 			return Receipt{}, productDeliveryDenied("task_state_disallows_delivery", "the current Task state does not allow final delivery.", "task_state", "working", task.State)
 		}
+		if checkErr = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task.ID); checkErr != nil {
+			return Receipt{}, checkErr
+		}
 		qualification, checkErr := k.currentProductValidation(ctx, tx, b, task, digest)
 		if checkErr != nil {
 			return Receipt{}, checkErr

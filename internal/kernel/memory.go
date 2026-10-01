@@ -99,6 +99,22 @@ type MemoryDependency struct {
 	CreatedAt      string `json:"createdAt"`
 }
 
+type MemoryTaskImpact struct {
+	DependencyID        string `json:"dependencyId"`
+	RecordID            string `json:"recordId"`
+	RecordRevision      int64  `json:"recordRevision"`
+	ReplacementRevision int64  `json:"replacementRevision,omitempty"`
+	RiskLevel           string `json:"riskLevel"`
+	State               string `json:"state"`
+	CorrectionID        string `json:"correctionId"`
+	Reason              string `json:"reason"`
+}
+
+type MemoryTaskStatus struct {
+	State   string             `json:"state"`
+	Impacts []MemoryTaskImpact `json:"impacts,omitempty"`
+}
+
 // TXCreateMemoryRecord stores an immutable, source-pinned first revision in
 // proposed state. Ordinary Worker bindings cannot create verified facts.
 func (k *Kernel) TXCreateMemoryRecord(ctx context.Context, b Binding, input MemoryRecordInput, key string) (MemoryRecordRevision, error) {
@@ -422,6 +438,9 @@ func (k *Kernel) TXCreateMemoryDependency(ctx context.Context, b Binding, input 
 	if ctx == nil || !validMemoryDependencyInput(input, key) {
 		return Receipt{}, core.Malformed
 	}
+	if b.session == "" || b.task == "" {
+		return Receipt{}, core.Denied
+	}
 	dependencyID := newID()
 	return k.TXWrite(ctx, b.scope, &b, key, "memory.dependency.created", input, func(tx pgx.Tx) (Receipt, error) {
 		record, err := memoryRecordAccessTX(ctx, tx, b, input.RecordID, input.RecordRevision)
@@ -444,7 +463,7 @@ func (k *Kernel) TXCreateMemoryDependency(ctx context.Context, b Binding, input 
 		if err = appendEvent(ctx, tx, b.scope, "memory.dependency.created", map[string]any{
 			"dependency_id": dependencyID, "record_id": input.RecordID, "record_revision": input.RecordRevision,
 			"target_kind": input.TargetKind, "target_id": input.TargetID, "target_revision": input.TargetRevision,
-			"target_sha256": input.TargetSHA256, "risk_level": input.RiskLevel,
+			"target_sha256": input.TargetSHA256, "risk_level": input.RiskLevel, "task_id": b.task, "session_id": b.session,
 		}); err != nil {
 			return Receipt{}, err
 		}
@@ -452,9 +471,9 @@ func (k *Kernel) TXCreateMemoryDependency(ctx context.Context, b Binding, input 
 		if err != nil {
 			return Receipt{}, err
 		}
-		_, err = tx.Exec(ctx, `INSERT INTO memory_dependencies(company_id,dependency_id,record_id,record_revision,target_kind,target_id,target_revision,target_sha256,risk_level,company_seq,created_by)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, b.scope.company, dependencyID, input.RecordID, input.RecordRevision,
-			input.TargetKind, input.TargetID, input.TargetRevision, input.TargetSHA256, input.RiskLevel, seq, b.employee)
+		_, err = tx.Exec(ctx, `INSERT INTO memory_dependencies(company_id,dependency_id,record_id,record_revision,target_kind,target_id,target_revision,target_sha256,risk_level,company_seq,created_by,bound_task_id,worker_session_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, b.scope.company, dependencyID, input.RecordID, input.RecordRevision,
+			input.TargetKind, input.TargetID, input.TargetRevision, input.TargetSHA256, input.RiskLevel, seq, b.employee, b.task, b.session)
 		if isUniqueViolation(err) {
 			return Receipt{}, core.Conflict
 		}
@@ -463,6 +482,63 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, b.scope.company, dependencyID, inpu
 		}
 		return Receipt{ID: dependencyID, Status: "active", Revision: input.TargetRevision}, nil
 	})
+}
+
+func memoryTaskStatusTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) (MemoryTaskStatus, error) {
+	status := MemoryTaskStatus{State: "clear"}
+	rows, err := tx.Query(ctx, `SELECT latest.dependency_id,d.record_id,d.record_revision,d.risk_level,latest.state,latest.cause_id,latest.reason,
+COALESCE(review.result_revision,0)
+FROM (
+ SELECT DISTINCT ON(dependency_id) dependency_id,state,cause_id,reason,company_seq
+ FROM memory_task_state_events WHERE company_id=$1 AND task_id=$2
+ ORDER BY dependency_id,company_seq DESC
+) latest
+JOIN memory_dependencies d ON d.company_id=$1 AND d.dependency_id=latest.dependency_id
+LEFT JOIN memory_correction_review_events review ON review.company_id=$1 AND review.correction_id=latest.cause_id AND review.decision='approved'
+WHERE latest.state IN ('dirty','frozen') ORDER BY latest.dependency_id`, companyID, taskID)
+	if err != nil {
+		return status, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var impact MemoryTaskImpact
+		if err = rows.Scan(&impact.DependencyID, &impact.RecordID, &impact.RecordRevision, &impact.RiskLevel,
+			&impact.State, &impact.CorrectionID, &impact.Reason, &impact.ReplacementRevision); err != nil {
+			return status, err
+		}
+		status.Impacts = append(status.Impacts, impact)
+		if impact.State == "frozen" {
+			status.State = "frozen"
+		} else if status.State == "clear" {
+			status.State = "dirty"
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return status, err
+	}
+	return status, nil
+}
+
+func requireMemoryTaskWritableTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) error {
+	status, err := memoryTaskStatusTX(ctx, tx, companyID, taskID)
+	if err != nil {
+		return err
+	}
+	if status.State == "frozen" {
+		return core.ConflictError{Reason: "a high-risk memory dependency froze this Task", CurrentState: status.State}
+	}
+	return nil
+}
+
+func requireMemoryTaskCleanTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) error {
+	status, err := memoryTaskStatusTX(ctx, tx, companyID, taskID)
+	if err != nil {
+		return err
+	}
+	if status.State != "clear" {
+		return core.ConflictError{Reason: "memory dependencies must be revalidated before Task finalization", CurrentState: status.State}
+	}
+	return nil
 }
 
 func (k *Kernel) GetMemoryRecordRevision(ctx context.Context, b Binding, recordID string, revision int64) (MemoryRecordRevision, error) {
@@ -638,9 +714,9 @@ VALUES($1,$2,$3,$4,$5,$6,$7)`, scope.company, seq, recordID, revision, state, ac
 
 func invalidateMemoryDependenciesTX(ctx context.Context, tx pgx.Tx, b Binding, recordID string, revision int64, correctionID, reason string) error {
 	type dependency struct {
-		id, risk string
+		id, risk, taskID string
 	}
-	rows, err := tx.Query(ctx, `SELECT dependency_id,risk_level FROM memory_dependencies
+	rows, err := tx.Query(ctx, `SELECT dependency_id,risk_level,COALESCE(bound_task_id,'') FROM memory_dependencies
 WHERE company_id=$1 AND record_id=$2 AND record_revision=$3 ORDER BY dependency_id`, b.scope.company, recordID, revision)
 	if err != nil {
 		return err
@@ -648,7 +724,7 @@ WHERE company_id=$1 AND record_id=$2 AND record_revision=$3 ORDER BY dependency_
 	dependencies := make([]dependency, 0)
 	for rows.Next() {
 		var d dependency
-		if err = rows.Scan(&d.id, &d.risk); err != nil {
+		if err = rows.Scan(&d.id, &d.risk, &d.taskID); err != nil {
 			rows.Close()
 			return err
 		}
@@ -677,6 +753,26 @@ WHERE company_id=$1 AND record_id=$2 AND record_revision=$3 ORDER BY dependency_
 		if _, err = tx.Exec(ctx, `INSERT INTO memory_dependency_invalidation_events(company_id,company_seq,dependency_id,state,cause_kind,cause_id,actor,reason)
 VALUES($1,$2,$3,$4,'memory_correction',$5,$6,$7)`, b.scope.company, seq, d.id, state, correctionID, b.employee, reason); err != nil {
 			return err
+		}
+		if d.taskID != "" {
+			taskState := "dirty"
+			if state == "frozen" {
+				taskState = "frozen"
+			}
+			if err = appendEvent(ctx, tx, b.scope, "memory.task."+taskState, map[string]any{
+				"task_id": d.taskID, "dependency_id": d.id, "record_id": recordID,
+				"record_revision": revision, "correction_id": correctionID, "risk_level": d.risk, "reason": reason,
+			}); err != nil {
+				return err
+			}
+			seq, seqErr = currentCompanySequenceTX(ctx, tx, b.scope.company)
+			if seqErr != nil {
+				return seqErr
+			}
+			if _, err = tx.Exec(ctx, `INSERT INTO memory_task_state_events(company_id,company_seq,task_id,dependency_id,state,risk_level,cause_kind,cause_id,actor,reason)
+VALUES($1,$2,$3,$4,$5,$6,'memory_correction',$7,$8,$9)`, b.scope.company, seq, d.taskID, d.id, taskState, d.risk, correctionID, b.employee, reason); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

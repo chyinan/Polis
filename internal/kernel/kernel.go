@@ -232,6 +232,10 @@ func fingerprint(v any) string {
 }
 
 func (k *Kernel) guard(ctx context.Context, tx pgx.Tx, s Scope, b *Binding) error {
+	return k.guardWithSessionMode(ctx, tx, s, b, true)
+}
+
+func (k *Kernel) guardWithSessionMode(ctx context.Context, tx pgx.Tx, s Scope, b *Binding, sessionWrite bool) error {
 	if !core.ValidID(s.company) {
 		return core.Malformed
 	}
@@ -244,7 +248,7 @@ func (k *Kernel) guard(ctx context.Context, tx pgx.Tx, s Scope, b *Binding) erro
 		return e
 	}
 	if b != nil {
-		if e := k.validateBindingGuard(ctx, tx, s, b); e != nil {
+		if e := k.validateBindingGuardWithSessionMode(ctx, tx, s, b, sessionWrite); e != nil {
 			return e
 		}
 	}
@@ -288,6 +292,10 @@ func (k *Kernel) checkRuntimeLease(ctx context.Context, tx pgx.Tx) error {
 }
 
 func (k *Kernel) validateBindingGuard(ctx context.Context, tx pgx.Tx, s Scope, b *Binding) error {
+	return k.validateBindingGuardWithSessionMode(ctx, tx, s, b, true)
+}
+
+func (k *Kernel) validateBindingGuardWithSessionMode(ctx context.Context, tx pgx.Tx, s Scope, b *Binding, sessionWrite bool) error {
 	if b.scope != s || b.incarnation != k.incarnation {
 		return core.StaleEpoch
 	}
@@ -303,7 +311,7 @@ func (k *Kernel) validateBindingGuard(ctx context.Context, tx pgx.Tx, s Scope, b
 		return core.StaleEpoch
 	}
 	if b.session != "" {
-		if _, err := k.checkSession(ctx, tx, *b, true); err != nil {
+		if _, err := k.checkSession(ctx, tx, *b, sessionWrite); err != nil {
 			return err
 		}
 	}
@@ -313,6 +321,10 @@ func (k *Kernel) validateBindingGuard(ctx context.Context, tx pgx.Tx, s Scope, b
 // TXWrite serializes this small slice at the company lifecycle guard. Its
 // callback only performs database operations. The event head is advanced last.
 func (k *Kernel) TXWrite(ctx context.Context, s Scope, b *Binding, key, op string, input any, fn func(pgx.Tx) (Receipt, error)) (Receipt, error) {
+	return k.txWrite(ctx, s, b, key, op, input, true, fn)
+}
+
+func (k *Kernel) txWrite(ctx context.Context, s Scope, b *Binding, key, op string, input any, sessionWrite bool, fn func(pgx.Tx) (Receipt, error)) (Receipt, error) {
 	if !core.ValidID(key) {
 		return Receipt{}, core.Malformed
 	}
@@ -355,7 +367,7 @@ func (k *Kernel) TXWrite(ctx context.Context, s Scope, b *Binding, key, op strin
 			return Receipt{}, replayErr
 		}
 	}
-	if e = k.guard(ctx, tx, s, b); e != nil {
+	if e = k.guardWithSessionMode(ctx, tx, s, b, sessionWrite); e != nil {
 		return Receipt{}, e
 	}
 	var old string

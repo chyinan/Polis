@@ -29,6 +29,9 @@ func (k *Kernel) TXSend(ctx context.Context, b Binding, w Task, key, body string
 		if b.employee != core.EmployeePlanningID || t.Kind != core.TaskKindBootstrapPlan || t.State != "working" {
 			return Receipt{}, core.Denied
 		}
+		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
+			return Receipt{}, e
+		}
 		work, message := newID(), newID()
 		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)", b.scope.company, work, t.Mission, core.EmployeeBackendID, core.TaskKindCompute)
 		if e != nil {
@@ -139,6 +142,9 @@ func (k *Kernel) txSubmit(ctx context.Context, b Binding, w Task, key string, co
 		if t.State != "working" || (t.Kind != core.TaskKindCompute && t.Kind != core.TaskKindCompat && t.Kind != core.TaskKindPeerBackend && t.Kind != core.TaskKindPeerFrontend) {
 			return Receipt{}, core.Denied
 		}
+		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
+			return Receipt{}, e
+		}
 		var qualification productQualification
 		if product {
 			if t.Kind != core.TaskKindCompat {
@@ -210,6 +216,9 @@ func (k *Kernel) TXResolve(ctx context.Context, b Binding, obligation, artifact,
 		if ms != "active" {
 			return Receipt{}, core.Denied
 		}
+		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
+			return Receipt{}, e
+		}
 		_, e = tx.Exec(ctx, "UPDATE obligations SET state='fulfilled',evidence_id=$3 WHERE company_id=$1 AND id=$2", b.scope.company, obligation, artifact)
 		if e != nil {
 			return Receipt{}, e
@@ -262,6 +271,11 @@ func (k *Kernel) TXVerify(ctx context.Context, b Binding, id, key string) (Recei
 		}
 		if ms != "active" {
 			return Receipt{}, core.Denied
+		}
+		if verdict == "passed" {
+			if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
+				return Receipt{}, e
+			}
 		}
 		_, e = tx.Exec(ctx, "UPDATE artifacts SET verdict=$3,verifier=$4 WHERE company_id=$1 AND id=$2", b.scope.company, id, verdict, b.employee)
 		if e != nil {

@@ -120,6 +120,9 @@ func (k *Kernel) TXPeerReviewSubmit(ctx context.Context, b Binding, evidence Pee
 		if e != nil {
 			return Receipt{}, e
 		}
+		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
+			return Receipt{}, e
+		}
 		id := newID()
 		if _, e = tx.Exec(ctx, "INSERT INTO review_records(company_id,id,task_id,integration_id,verdict,findings,evidence,confidence,limitations) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)", b.scope.company, id, task, evidence.IntegrationID, submission.Verdict, findings, evidenceRefs, submission.Confidence, limitations); e != nil {
 			return Receipt{}, e
