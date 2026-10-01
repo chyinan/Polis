@@ -1,6 +1,10 @@
-# Current handoff — approved R1–R3 implementation (2026-10-01)
+# Current handoff — approved R1–R3 implementation (2026-10-02)
 
-## Latest continuation status (Slice 108, REQ-15 memory record/dependency foundation; Schema 74)
+## Latest continuation status (Slice 109, REQ-15 correction and dependency invalidation; Schema 75)
+
+Added source-backed correction requests against an exact currently verified memory revision. Only a separate fixed Planning/Review employee can accept; the original author and proposer cannot review, and the Review employee is denied restricted records. Acceptance atomically validates the correction source, inserts a new verified revision, marks the prior revision superseded, records the immutable decision, and marks every explicit dependency of the prior revision `needs_revalidation` or `frozen` for high/critical risk. Rejection changes no effective memory or dependency state. Active Task dirty/freeze enforcement, clean-context reconstruction, Handover integration, retention pins, and deletion overlays remain open. Build/diff verification and PostgreSQL migration execution status are recorded in the Slice 109 evidence.
+
+## Previous continuation status (Slice 108, REQ-15 memory record/dependency foundation; Schema 74)
 
 Added immutable, source-pinned memory record revisions, independent review state, and explicit dependency ledgers with append-only invalidation-event storage. The Kernel API creates proposed records, verifies source digests and scope, requires a different fixed Planning/Review employee to verify factual records, and pins dependencies only to verified revisions and exact target digests. The memory read path checks Mission/employee scope, review state, sensitivity, and content digest. This is only the storage/API foundation: correction-request workflows, new memory revisions, dependency invalidation, active-context dirty/freeze gates, backup deletion overlays, CAS retention pins, and Handover integration remain open. `go build ./cmd/...` and `git diff --check` pass. Tests and PostgreSQL migration execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-108-memory-record-dependency-foundation/verification.md`.
 
