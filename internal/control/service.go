@@ -117,7 +117,7 @@ func (s *Service) ListCapabilityCatalog(ctx context.Context, companyID string) (
 			}
 		}
 	}
-	return CapabilityCatalog{Skills: catalog.Skills, MCPServers: catalog.MCPServers, MCPPackages: catalog.MCPPackages, Qualifications: catalog.Qualifications, Bindings: catalog.Bindings, Decisions: catalog.Decisions, RuntimeQualifications: catalog.RuntimeQualifications, RuntimeObservationAvailable: s.mcpRuntimeObserver != nil, StreamableHTTPRuntimeObservationAvailable: s.streamableHTTPMCPRuntimeObserver != nil}, nil
+	return CapabilityCatalog{Skills: catalog.Skills, MCPServers: catalog.MCPServers, MCPPackages: catalog.MCPPackages, Qualifications: catalog.Qualifications, Bindings: catalog.Bindings, Decisions: catalog.Decisions, RuntimeQualifications: catalog.RuntimeQualifications, Revocations: catalog.Revocations, RevocationsTruncated: catalog.RevocationsTruncated, RuntimeObservationAvailable: s.mcpRuntimeObserver != nil, StreamableHTTPRuntimeObservationAvailable: s.streamableHTTPMCPRuntimeObserver != nil}, nil
 }
 
 func (s *Service) SetStdioMCPRuntimeObserver(observer StdioMCPRuntimeObserver) {

@@ -604,6 +604,52 @@ export type CapabilityDecisionView = Readonly<{
   createdAt: string;
 }>;
 
+export type CapabilityRevocationSessionView = Readonly<{
+  sessionId: string;
+  employeeId: string;
+  taskId: string;
+  missionId: string;
+  state: string;
+  skillLoadCount: number;
+  mcpCallCount: number;
+  dispatchingMcpCallCount: number;
+}>;
+
+export type CapabilityRevocationMCPCallView = Readonly<{
+  intentId: string;
+  sessionId: string;
+  employeeId: string;
+  toolName: string;
+  status: 'dispatching' | 'completed' | 'outcome_unknown';
+  reasonCode?: string;
+  createdAt: string;
+}>;
+
+export type CapabilityRevocationStatusView = Readonly<{
+  companyId: string;
+  revocationId: string;
+  scope: 'capability' | 'employee';
+  capabilityKind: 'skill' | 'mcp';
+  capabilityId: string;
+  versionDigest: string;
+  qualificationId: string;
+  employeeId?: string;
+  reason: string;
+  actor: string;
+  acceptedAt: string;
+  revocationAccepted: boolean;
+  effectiveForNewDispatch: boolean;
+  quiesced: boolean;
+  affectedSessionCount: number;
+  liveSessionCount: number;
+  sessions: ReadonlyArray<CapabilityRevocationSessionView>;
+  sessionsTruncated: boolean;
+  mcpCallCount: number;
+  dispatchingMcpCallCount: number;
+  mcpCalls: ReadonlyArray<CapabilityRevocationMCPCallView>;
+  mcpCallsTruncated: boolean;
+}>;
+
 export type CapabilityCatalogView = Readonly<{
   skills: ReadonlyArray<SkillRevisionView>;
   mcpServers: ReadonlyArray<MCPServerDefinitionView>;
@@ -612,6 +658,8 @@ export type CapabilityCatalogView = Readonly<{
   bindings: ReadonlyArray<EmployeeCapabilityBindingView>;
   decisions: ReadonlyArray<CapabilityDecisionView>;
   runtimeQualifications: ReadonlyArray<StdioMCPRuntimeQualificationView>;
+  revocations: ReadonlyArray<CapabilityRevocationStatusView>;
+  revocationsTruncated: boolean;
   runtimeObservationAvailable: boolean;
   streamableHttpRuntimeObservationAvailable?: boolean;
 }>;

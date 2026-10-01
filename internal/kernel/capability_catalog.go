@@ -47,6 +47,8 @@ type CapabilityCatalog struct {
 	Bindings              []EmployeeCapabilityBinding    `json:"bindings"`
 	Decisions             []CapabilityDecisionRecord     `json:"decisions"`
 	RuntimeQualifications []StdioMCPRuntimeQualification `json:"runtimeQualifications"`
+	Revocations           []CapabilityRevocationStatus   `json:"revocations"`
+	RevocationsTruncated  bool                           `json:"revocationsTruncated"`
 }
 
 type SkillRevisionInput struct {
@@ -79,7 +81,7 @@ func (k *Kernel) ListCapabilityCatalog(ctx context.Context, companyID string) (C
 		return CapabilityCatalog{}, err
 	}
 	defer tx.Rollback(ctx)
-	catalog := CapabilityCatalog{Skills: []SkillRevision{}, MCPServers: []MCPServerDefinition{}, MCPPackages: []StdioMCPPackageRevision{}, Qualifications: []CapabilityQualification{}, Bindings: []EmployeeCapabilityBinding{}, Decisions: []CapabilityDecisionRecord{}, RuntimeQualifications: []StdioMCPRuntimeQualification{}}
+	catalog := CapabilityCatalog{Skills: []SkillRevision{}, MCPServers: []MCPServerDefinition{}, MCPPackages: []StdioMCPPackageRevision{}, Qualifications: []CapabilityQualification{}, Bindings: []EmployeeCapabilityBinding{}, Decisions: []CapabilityDecisionRecord{}, RuntimeQualifications: []StdioMCPRuntimeQualification{}, Revocations: []CapabilityRevocationStatus{}}
 	skillRows, err := tx.Query(ctx, `SELECT id,publisher_scope,package_id,revision,display_name,source_ref,content_digest,manifest,status,created_at::text
 FROM skill_revisions WHERE company_id=$1 ORDER BY created_at DESC,id`, companyID)
 	if err != nil {
@@ -125,6 +127,10 @@ FROM mcp_server_definitions WHERE company_id=$1 ORDER BY created_at DESC,id`, co
 		return CapabilityCatalog{}, err
 	}
 	catalog.RuntimeQualifications, err = listStdioMCPRuntimeQualifications(ctx, tx, companyID)
+	if err != nil {
+		return CapabilityCatalog{}, err
+	}
+	catalog.Revocations, catalog.RevocationsTruncated, err = listCapabilityRevocationStatuses(ctx, tx, companyID)
 	if err != nil {
 		return CapabilityCatalog{}, err
 	}

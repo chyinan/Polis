@@ -571,7 +571,7 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
   }
 
   async listCapabilityCatalog(_options: CompanyScopeOptions): Promise<CapabilityCatalogView> {
-    return {skills: [], mcpServers: [], mcpPackages: [], qualifications: [], bindings: [], decisions: [], runtimeQualifications: [], runtimeObservationAvailable: false};
+    return {skills: [], mcpServers: [], mcpPackages: [], qualifications: [], bindings: [], decisions: [], runtimeQualifications: [], revocations: [], revocationsTruncated: false, runtimeObservationAvailable: false};
   }
 
   async listDomainEvidence(options: CompanyScopeOptions): Promise<DomainEvidenceLedgerView> {

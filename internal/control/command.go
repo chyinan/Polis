@@ -295,6 +295,8 @@ type CapabilityCatalog struct {
 	Bindings                                  []kernel.EmployeeCapabilityBinding    `json:"bindings"`
 	Decisions                                 []kernel.CapabilityDecisionRecord     `json:"decisions"`
 	RuntimeQualifications                     []kernel.StdioMCPRuntimeQualification `json:"runtimeQualifications"`
+	Revocations                               []kernel.CapabilityRevocationStatus   `json:"revocations"`
+	RevocationsTruncated                      bool                                  `json:"revocationsTruncated"`
 	RuntimeObservationAvailable               bool                                  `json:"runtimeObservationAvailable"`
 	StreamableHTTPRuntimeObservationAvailable bool                                  `json:"streamableHttpRuntimeObservationAvailable"`
 }

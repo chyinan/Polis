@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 103 — Capability revocation status projection (Schema 72, no migration)
+
+The company capability catalog now projects active global and employee-scoped Skill/MCP revocations from durable governance rows and events. It separates accepted/effective gates from quiescence, inventories sessions with recorded Skill loads or MCP intents, and lists MCP intent outcomes. A revocation is quiesced only when all inventoried sessions are confirmed `stopped` and there are no `dispatching` MCP intents; `reconcile_required` does not count as stopped, and `outcome_unknown` remains visible. The Workbench capability page shows those facts. Projections rebuild on read in a repeatable-read transaction, so restarts do not lose status; detailed rows are capped at 64 with truncation flags while aggregate counts use the full ledger.
+
+This is read-only: it does not stop Workers, inventory sessions that only have a capability binding but no recorded use, or list superseded historical revocations. Worker stop coordination and its durable restart-reconciliation boundary remain open under REQ-14. Go command build, frontend production build, and `git diff --check` pass. Tests were not run. No migration or external provider/MCP/QQ/production action was used. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-103-capability-revocation-projection/verification.md`.
+
 ## Slice 102 — Bounded automatic product Worker admission (Schema 72, no migration)
 
 Added a disabled-by-default dispatcher for the unique ready `compat/emp-backend` Task in an already-active Mission. Each 30-second cycle examines one candidate, beginning with oldest `employee_schedules.updated_at`, then advances a Company-ID cursor after every attempt so a repeated failure cannot monopolize one process. Candidate selection requires an active Company/Mission, Task validation binding and workspace, no previous WorkerSession for that Task, no other live session for the Employee, and `wake_pending`. The dispatcher and Mission lifecycle commands share the lifecycle lock; final admission continues through the existing schedule-row lock and preserves `paused` / `waiting_quota`.

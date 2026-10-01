@@ -24,6 +24,10 @@ Slice102 adds an opt-in, bounded automatic dispatcher for the fixed product `com
 
 The dispatcher is off by default and requires both `POLIS_AUTO_WORKER_DISPATCH_ENABLED=1` and the exact zero-egress Fake @7 surface. It does not dispatch Routine Tasks, retry a Task after a WorkerSession exists, or use real provider transport. The Company cursor is process-local; cross-instance fairness, global slot accounting, authoritative quota readiness/recovery, and safe production dispatch remain open. No schema migration or real Worker/model turn was used.
 
+Slice103 adds the first REQ-14 capability-revocation status projection. The company capability catalog and Workbench show current global/employee Skill/MCP revocations, accepted/effective-for-new-dispatch flags, quiescence, recorded-use WorkerSessions, and MCP call outcomes. The projection rebuilds from durable rows in a repeatable-read transaction, needs no process-local restart state, and uses bounded detail with complete counts and truncation flags. `quiesced` requires every inventoried session to be `stopped` and zero `dispatching` MCP intents; `reconcile_required` remains live and `outcome_unknown` stays visible. Schema remains 72; no Worker stop is initiated.
+
+The projection only inventories sessions with recorded Skill loads or MCP intents; it does not capture a bound-but-unused session at revoke time, stop a Worker, or show superseded historical revocations. Next capture the affected-session set at the revoke linearization point, then implement idempotent stop/restart reconciliation before wiring a management action. Verification: Go command build, frontend production build, and diff check pass; tests were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-103-capability-revocation-projection/verification.md`.
+
 Verification on this Termux host:
 
 - `go test ./internal/control ./cmd/polis` passes; `go test ./internal/kernel -run '^$'` compiles the package without running tests.
@@ -54,7 +58,7 @@ Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-1
 
 Use the existing finite list in `R1_R3_IMPLEMENTATION_COVERAGE.md`. REQ-13 still needs authoritative quota readiness/recovery, cross-instance fairness/global slot accounting, and safe dispatch qualification; Slice102 adds only the bounded single-process Fake dispatcher. Other open software items include lifecycle safety for REQ-14/15/16/25/26/29/39; the qualified employee/runtime/continuity path for REQ-23/24/27/30–34; signing and clean Windows VM/package checks; and one bounded FT/NT/CAP/UI/WF/PP traceability reconciliation. R2 Linux host/recovery and remote-workbench qualifications, plus independent R3 content/research quality, cost, recovery, and organization-benefit evidence, remain separate qualification work.
 
-REQ-14 dispatch mapping is recorded in `docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md`. Next implement its first bounded step: a durable revocation-status projection and affected-session/in-flight inventory for capability-bound Skill/MCP use. Report `effective_for_new_dispatch` separately from `quiesced`; keep the latter unavailable until affected Workers are confirmed stopped and every in-flight intent is completed or retained as `outcome_unknown`. Make the operation idempotent and restart-reconcilable before connecting it to Worker stop. Keep real provider, QQ, MCP endpoint, and production qualification actions disabled unless separately authorized.
+REQ-14 dispatch mapping and the Slice103 projection are recorded in `docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md`. Next capture the exact affected-session set at revoke time, then add idempotent Worker stop and restart reconciliation. Keep `effective_for_new_dispatch` separate from `quiesced`; the latter remains unavailable until each affected Worker is confirmed stopped and each in-flight intent is completed or retained as `outcome_unknown`. Keep real provider, QQ, MCP endpoint, and production qualification actions disabled unless separately authorized.
 
 ## Working conventions
 
@@ -62,4 +66,4 @@ REQ-14 dispatch mapping is recorded in `docs/implementation/REQ14_REVOCATION_DIS
 - Preserve exact provider-surface fingerprints and old probe registries. A new model-visible tool set needs a distinct versioned surface and independent qualification.
 - Use disposable PostgreSQL/file roots only. Full Go suite and both Linux/Windows command builds are appropriate after code slices; external qualification remains gated.
 - There is one principal code writer. Review is read-only. Wait for reviewers instead of terminating them early.
-- Slice101 and Slice102, including this current handoff and the REQ-14 dispatch map, are synchronized to GitHub `main` for cloud pickup. This is source synchronization only; it does not authorize deployment or external provider actions.
+- Slice101 through Slice103, including this current handoff and the REQ-14 dispatch map, are synchronized to GitHub `main` for cloud pickup. This is source synchronization only; it does not authorize deployment or external provider actions.

@@ -12,6 +12,9 @@ import type {
   CompanySummaryView,
   CapabilityCatalogView,
   CapabilityDecisionView,
+  CapabilityRevocationMCPCallView,
+  CapabilityRevocationSessionView,
+  CapabilityRevocationStatusView,
   CapabilityQualificationView,
   StdioMCPPackageFileView,
   StdioMCPPackageManifestView,
@@ -1429,10 +1432,65 @@ function isCapabilityDecision(value: unknown, companyId: string): value is Capab
     && hasString(value, 'createdAt');
 }
 
+function isNonNegativeSafeInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function isCapabilityRevocationSession(value: unknown): value is CapabilityRevocationSessionView {
+  return isRecord(value)
+    && hasString(value, 'sessionId')
+    && hasString(value, 'employeeId')
+    && hasString(value, 'taskId')
+    && hasString(value, 'missionId')
+    && hasString(value, 'state')
+    && isNonNegativeSafeInteger(value.skillLoadCount)
+    && isNonNegativeSafeInteger(value.mcpCallCount)
+    && isNonNegativeSafeInteger(value.dispatchingMcpCallCount);
+}
+
+function isCapabilityRevocationMCPCall(value: unknown): value is CapabilityRevocationMCPCallView {
+  return isRecord(value)
+    && hasString(value, 'intentId')
+    && hasString(value, 'sessionId')
+    && hasString(value, 'employeeId')
+    && hasString(value, 'toolName')
+    && isOneOf(value.status, ['dispatching', 'completed', 'outcome_unknown'])
+    && (value.reasonCode === undefined || typeof value.reasonCode === 'string')
+    && hasString(value, 'createdAt');
+}
+
+function isCapabilityRevocationStatus(value: unknown, companyId: string): value is CapabilityRevocationStatusView {
+  return isRecord(value)
+    && value.companyId === companyId
+    && hasString(value, 'revocationId')
+    && isOneOf(value.scope, ['capability', 'employee'])
+    && isOneOf(value.capabilityKind, ['skill', 'mcp'])
+    && hasString(value, 'capabilityId')
+    && typeof value.versionDigest === 'string' && /^[0-9a-f]{64}$/.test(value.versionDigest)
+    && hasString(value, 'qualificationId')
+    && (value.employeeId === undefined || typeof value.employeeId === 'string')
+    && hasString(value, 'reason')
+    && hasString(value, 'actor')
+    && hasString(value, 'acceptedAt')
+    && typeof value.revocationAccepted === 'boolean'
+    && typeof value.effectiveForNewDispatch === 'boolean'
+    && typeof value.quiesced === 'boolean'
+    && isNonNegativeSafeInteger(value.affectedSessionCount)
+    && isNonNegativeSafeInteger(value.liveSessionCount)
+    && Array.isArray(value.sessions) && value.sessions.every(isCapabilityRevocationSession)
+    && typeof value.sessionsTruncated === 'boolean'
+    && isNonNegativeSafeInteger(value.mcpCallCount)
+    && isNonNegativeSafeInteger(value.dispatchingMcpCallCount)
+    && Array.isArray(value.mcpCalls) && value.mcpCalls.every(isCapabilityRevocationMCPCall)
+    && typeof value.mcpCallsTruncated === 'boolean';
+}
+
 export function validateCapabilityCatalog(value: unknown, companyId: string): ValidationResult<CapabilityCatalogView> {
   if (!isRecord(value) || !Array.isArray(value.skills) || !Array.isArray(value.mcpServers) || !Array.isArray(value.mcpPackages) || !Array.isArray(value.qualifications) || !Array.isArray(value.bindings) || !Array.isArray(value.decisions) || !Array.isArray(value.runtimeQualifications)
     || (value.runtimeObservationAvailable !== undefined && typeof value.runtimeObservationAvailable !== 'boolean')
     || (value.streamableHttpRuntimeObservationAvailable !== undefined && typeof value.streamableHttpRuntimeObservationAvailable !== 'boolean')
+    || (value.revocations !== undefined && (!Array.isArray(value.revocations) || !value.revocations.every(item => isCapabilityRevocationStatus(item, companyId))))
+    || (value.revocationsTruncated !== undefined && typeof value.revocationsTruncated !== 'boolean')
     || !value.skills.every(item => isSkillRevision(item, companyId)) || !value.mcpServers.every(item => isMCPServerDefinition(item, companyId))
     || !value.mcpPackages.every(item => isStdioMCPPackageRevision(item, companyId, value.mcpServers as ReadonlyArray<unknown>))
     || !value.qualifications.every(item => isCapabilityQualification(item, companyId))
@@ -1451,9 +1509,11 @@ export function validateCapabilityCatalog(value: unknown, companyId: string): Va
   }
   return {success: true, value: {
     ...value,
+    revocations: Array.isArray(value.revocations) ? value.revocations : [],
+    revocationsTruncated: value.revocationsTruncated === true,
     runtimeObservationAvailable: value.runtimeObservationAvailable === true,
     streamableHttpRuntimeObservationAvailable: value.streamableHttpRuntimeObservationAvailable === true,
-  } as CapabilityCatalogView};
+  } as unknown as CapabilityCatalogView};
 }
 
 export function validateStdioMCPPackageRevision(value: unknown, companyId: string): ValidationResult<StdioMCPPackageRevisionView> {
