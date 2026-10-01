@@ -181,6 +181,9 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,'local-owner',$9)`, companyID, decisionID, input.
 					return Receipt{}, err
 				}
 			}
+			if err = snapshotCapabilityRevocationSessions(ctx, tx, companyID, decisionID, input.CapabilityKind, input.CapabilityID, versionDigest, ""); err != nil {
+				return Receipt{}, err
+			}
 		}
 		return Receipt{ID: decisionID, Status: input.Decision}, nil
 	})
@@ -273,6 +276,9 @@ ORDER BY event_seq DESC LIMIT 1`, companyID, input.EmployeeID, input.CapabilityK
 		}
 		if _, err := tx.Exec(ctx, `INSERT INTO employee_capability_events(company_id,event_id,employee_id,capability_kind,capability_id,version_digest,qualification_id,event,reason,request_id)
 VALUES($1,$2,$3,$4,$5,$6,$7,'revoked',$8,$9)`, companyID, eventID, input.EmployeeID, input.CapabilityKind, input.CapabilityID, versionDigest, qualificationID, strings.TrimSpace(input.Reason), input.RequestID); err != nil {
+			return Receipt{}, err
+		}
+		if err := snapshotCapabilityRevocationSessions(ctx, tx, companyID, eventID, input.CapabilityKind, input.CapabilityID, versionDigest, input.EmployeeID); err != nil {
 			return Receipt{}, err
 		}
 		return Receipt{ID: eventID, Status: "revoked"}, nil
@@ -539,6 +545,56 @@ VALUES($1,$2,$3,$4,$5,$6,$7,'revoked',$8,$9)`, companyID, eventID, item.employee
 		}
 	}
 	return nil
+}
+
+// snapshotCapabilityRevocationSessions captures the sessions that existed at
+// the revoke linearization point. TXWrite holds the company row lock, so Worker
+// creation and new Skill/MCP admissions cannot cross this snapshot.
+func snapshotCapabilityRevocationSessions(ctx context.Context, tx pgx.Tx, companyID, revocationID, capabilityKind, capabilityID, versionDigest, employeeID string) error {
+	if _, err := tx.Exec(ctx, `INSERT INTO capability_revocation_sessions(
+company_id,revocation_id,session_id,employee_id,capability_kind,capability_id,version_digest,
+session_state_at_revocation,inclusion_reason,skill_load_count)
+SELECT $1,$2,s.id,s.employee_id,$3,$4,$5,s.state,
+ CASE WHEN s.state<>'stopped' THEN 'live_at_revocation' ELSE 'recorded_use' END,
+ CASE WHEN $3='skill' THEN (
+  SELECT count(DISTINCT e.payload->>'loadReference') FROM events e
+  WHERE e.company_id=s.company_id AND e.kind='capability.skill.loaded'
+   AND e.payload->>'sessionId'=s.id AND e.payload->>'employeeId'=s.employee_id AND e.payload->>'skillId'=$4
+ ) ELSE 0 END
+FROM worker_sessions s
+WHERE s.company_id=$1 AND ($6='' OR s.employee_id=$6)
+ AND (
+  (s.state<>'stopped' AND ($6<>'' OR EXISTS(
+   SELECT 1 FROM employee_capability_events b
+   WHERE b.company_id=s.company_id AND b.employee_id=s.employee_id AND b.capability_kind=$3
+    AND b.capability_id=$4 AND b.version_digest=$5 AND b.event='bound'
+  )))
+  OR ($3='skill' AND EXISTS(
+   SELECT 1 FROM events e WHERE e.company_id=s.company_id AND e.kind='capability.skill.loaded'
+    AND e.payload->>'sessionId'=s.id AND e.payload->>'employeeId'=s.employee_id AND e.payload->>'skillId'=$4
+  ))
+  OR ($3='mcp' AND EXISTS(
+   SELECT 1 FROM mcp_tool_call_intents i WHERE i.company_id=s.company_id AND i.session_id=s.id
+    AND i.employee_id=s.employee_id AND i.capability_id=$4
+  ))
+ )
+ON CONFLICT(company_id,revocation_id,session_id) DO NOTHING`, companyID, revocationID, capabilityKind, capabilityID, versionDigest, employeeID); err != nil {
+		return err
+	}
+	if capabilityKind != "mcp" {
+		return nil
+	}
+	_, err := tx.Exec(ctx, `INSERT INTO capability_revocation_mcp_calls(company_id,revocation_id,session_id,intent_id,status_at_revocation)
+SELECT i.company_id,$2,i.session_id,i.intent_id,current.status
+FROM mcp_tool_call_intents i
+JOIN capability_revocation_sessions s ON s.company_id=i.company_id AND s.revocation_id=$2 AND s.session_id=i.session_id
+JOIN LATERAL (
+ SELECT e.status FROM mcp_tool_call_events e
+ WHERE e.company_id=i.company_id AND e.intent_id=i.intent_id ORDER BY e.event_seq DESC LIMIT 1
+) current ON true
+WHERE i.company_id=$1 AND i.capability_id=$3 AND ($4='' OR i.employee_id=$4)
+ON CONFLICT(company_id,revocation_id,intent_id) DO NOTHING`, companyID, revocationID, capabilityID, employeeID)
+	return err
 }
 
 func validCapabilityKind(kind string) bool { return kind == "skill" || kind == "mcp" }

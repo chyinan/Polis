@@ -13,9 +13,9 @@ const (
 	maxRevocationInventoryItems     = 64
 )
 
-// CapabilityRevocationStatus is rebuilt from the durable governance, Skill-use,
-// WorkerSession, and MCP-intent ledgers on every catalog read. The projection
-// needs no process-local cursor or recovery state.
+// CapabilityRevocationStatus is rebuilt from durable governance records and
+// revoke-time session snapshots on every catalog read. It needs no
+// process-local cursor or recovery state.
 type CapabilityRevocationStatus struct {
 	CompanyID               string                        `json:"companyId"`
 	RevocationID            string                        `json:"revocationId"`
@@ -47,19 +47,21 @@ type CapabilityRevocationSession struct {
 	TaskID                  string `json:"taskId"`
 	MissionID               string `json:"missionId"`
 	State                   string `json:"state"`
+	StateAtRevocation       string `json:"stateAtRevocation,omitempty"`
 	SkillLoadCount          int64  `json:"skillLoadCount"`
 	MCPCallCount            int64  `json:"mcpCallCount"`
 	DispatchingMCPCallCount int64  `json:"dispatchingMcpCallCount"`
 }
 
 type CapabilityRevocationMCPCall struct {
-	IntentID   string `json:"intentId"`
-	SessionID  string `json:"sessionId"`
-	EmployeeID string `json:"employeeId"`
-	ToolName   string `json:"toolName"`
-	Status     string `json:"status"`
-	ReasonCode string `json:"reasonCode,omitempty"`
-	CreatedAt  string `json:"createdAt"`
+	IntentID           string `json:"intentId"`
+	SessionID          string `json:"sessionId"`
+	EmployeeID         string `json:"employeeId"`
+	ToolName           string `json:"toolName"`
+	Status             string `json:"status"`
+	StatusAtRevocation string `json:"statusAtRevocation,omitempty"`
+	ReasonCode         string `json:"reasonCode,omitempty"`
+	CreatedAt          string `json:"createdAt"`
 }
 
 type capabilityRevocationSource struct {
@@ -147,23 +149,57 @@ ORDER BY created_at DESC,revocation_id LIMIT $2`, companyID, maxCapabilityRevoca
 
 func populateCapabilityRevocationInventory(ctx context.Context, tx pgx.Tx, status *CapabilityRevocationStatus) error {
 	sessionUse := capabilityRevocationSessionUseSQL(status.CapabilityKind)
-	if err := tx.QueryRow(ctx, `WITH uses AS (`+sessionUse+`)
+	var snapshotRows int64
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM capability_revocation_sessions WHERE company_id=$1 AND revocation_id=$2`, status.CompanyID, status.RevocationID).Scan(&snapshotRows); err != nil {
+		return err
+	}
+	useSnapshot := snapshotRows > 0
+	var sessionCountQuery, sessionDetailQuery string
+	if useSnapshot {
+		sessionCountQuery = `SELECT count(*),count(*) FILTER (WHERE w.state<>'stopped')
+FROM capability_revocation_sessions r JOIN worker_sessions w ON w.company_id=r.company_id AND w.id=r.session_id
+WHERE r.company_id=$1 AND r.revocation_id=$2`
+		sessionDetailQuery = `SELECT w.id,w.employee_id,w.task_id,t.mission_id,w.state,r.session_state_at_revocation,r.skill_load_count,
+count(c.intent_id),count(c.intent_id) FILTER (WHERE current.status='dispatching')
+FROM capability_revocation_sessions r
+JOIN worker_sessions w ON w.company_id=r.company_id AND w.id=r.session_id
+JOIN tasks t ON t.company_id=w.company_id AND t.id=w.task_id
+LEFT JOIN capability_revocation_mcp_calls c ON c.company_id=r.company_id AND c.revocation_id=r.revocation_id AND c.session_id=r.session_id
+LEFT JOIN LATERAL (
+ SELECT e.status FROM mcp_tool_call_events e WHERE e.company_id=c.company_id AND e.intent_id=c.intent_id ORDER BY e.event_seq DESC LIMIT 1
+) current ON true
+WHERE r.company_id=$1 AND r.revocation_id=$2
+GROUP BY w.id,w.employee_id,w.task_id,t.mission_id,w.state,r.skill_load_count
+ORDER BY w.id LIMIT $3`
+	} else {
+		sessionCountQuery = `WITH uses AS (` + sessionUse + `)
 SELECT count(*),count(*) FILTER (WHERE s.state<>'stopped')
-FROM uses u JOIN worker_sessions s ON s.company_id=$1 AND s.id=u.session_id`, status.CompanyID, status.CapabilityID, status.EmployeeID).
+			FROM uses u JOIN worker_sessions s ON s.company_id=$1 AND s.id=u.session_id`
+		sessionDetailQuery = `WITH uses AS (` + sessionUse + `)
+SELECT s.id,s.employee_id,s.task_id,t.mission_id,s.state,''::text AS state_at_revocation,u.skill_load_count,u.mcp_call_count,u.dispatching_mcp_call_count
+FROM uses u JOIN worker_sessions s ON s.company_id=$1 AND s.id=u.session_id
+JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+ORDER BY s.id LIMIT $4`
+	}
+	sessionCountArgs := []any{status.CompanyID, status.RevocationID}
+	if !useSnapshot {
+		sessionCountArgs = []any{status.CompanyID, status.CapabilityID, status.EmployeeID}
+	}
+	if err := tx.QueryRow(ctx, sessionCountQuery, sessionCountArgs...).
 		Scan(&status.AffectedSessionCount, &status.LiveSessionCount); err != nil {
 		return err
 	}
-	rows, err := tx.Query(ctx, `WITH uses AS (`+sessionUse+`)
-SELECT s.id,s.employee_id,s.task_id,t.mission_id,s.state,u.skill_load_count,u.mcp_call_count,u.dispatching_mcp_call_count
-FROM uses u JOIN worker_sessions s ON s.company_id=$1 AND s.id=u.session_id
-JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
-ORDER BY s.id LIMIT $4`, status.CompanyID, status.CapabilityID, status.EmployeeID, maxRevocationInventoryItems+1)
+	detailArgs := []any{status.CompanyID, status.RevocationID, maxRevocationInventoryItems + 1}
+	if !useSnapshot {
+		detailArgs = []any{status.CompanyID, status.CapabilityID, status.EmployeeID, maxRevocationInventoryItems + 1}
+	}
+	rows, err := tx.Query(ctx, sessionDetailQuery, detailArgs...)
 	if err != nil {
 		return err
 	}
 	for rows.Next() {
 		var item CapabilityRevocationSession
-		if err = rows.Scan(&item.SessionID, &item.EmployeeID, &item.TaskID, &item.MissionID, &item.State,
+		if err = rows.Scan(&item.SessionID, &item.EmployeeID, &item.TaskID, &item.MissionID, &item.State, &item.StateAtRevocation,
 			&item.SkillLoadCount, &item.MCPCallCount, &item.DispatchingMCPCallCount); err != nil {
 			rows.Close()
 			return err
@@ -179,24 +215,44 @@ ORDER BY s.id LIMIT $4`, status.CompanyID, status.CapabilityID, status.EmployeeI
 		status.SessionsTruncated = true
 	}
 	if status.CapabilityKind == "mcp" {
-		if err = tx.QueryRow(ctx, `SELECT count(*),count(*) FILTER (WHERE current.status='dispatching')
+		var callsCountQuery, callsDetailQuery string
+		if useSnapshot {
+			callsCountQuery = `SELECT count(*),count(*) FILTER (WHERE current.status='dispatching')
+FROM capability_revocation_mcp_calls c
+JOIN LATERAL (SELECT status FROM mcp_tool_call_events e WHERE e.company_id=c.company_id AND e.intent_id=c.intent_id ORDER BY e.event_seq DESC LIMIT 1) current ON true
+WHERE c.company_id=$1 AND c.revocation_id=$2`
+			callsDetailQuery = `SELECT i.intent_id,i.session_id,i.employee_id,i.tool_name,current.status,c.status_at_revocation,COALESCE(current.reason_code,''),i.created_at::text
+FROM capability_revocation_mcp_calls c
+JOIN mcp_tool_call_intents i ON i.company_id=c.company_id AND i.intent_id=c.intent_id
+JOIN LATERAL (SELECT status,reason_code FROM mcp_tool_call_events e WHERE e.company_id=c.company_id AND e.intent_id=c.intent_id ORDER BY e.event_seq DESC LIMIT 1) current ON true
+WHERE c.company_id=$1 AND c.revocation_id=$2
+ORDER BY i.created_at DESC,i.intent_id LIMIT $3`
+		} else {
+			callsCountQuery = `SELECT count(*),count(*) FILTER (WHERE current.status='dispatching')
 FROM mcp_tool_call_intents i
 JOIN LATERAL (SELECT status FROM mcp_tool_call_events e WHERE e.company_id=i.company_id AND e.intent_id=i.intent_id ORDER BY e.event_seq DESC LIMIT 1) current ON true
-WHERE i.company_id=$1 AND i.capability_id=$2 AND ($3='' OR i.employee_id=$3)`, status.CompanyID, status.CapabilityID, status.EmployeeID).
-			Scan(&status.MCPCallCount, &status.DispatchingMCPCallCount); err != nil {
-			return err
-		}
-		callRows, queryErr := tx.Query(ctx, `SELECT i.intent_id,i.session_id,i.employee_id,i.tool_name,current.status,COALESCE(current.reason_code,''),i.created_at::text
+				WHERE i.company_id=$1 AND i.capability_id=$2 AND ($3='' OR i.employee_id=$3)`
+			callsDetailQuery = `SELECT i.intent_id,i.session_id,i.employee_id,i.tool_name,current.status,''::text AS status_at_revocation,COALESCE(current.reason_code,''),i.created_at::text
 FROM mcp_tool_call_intents i
 JOIN LATERAL (SELECT status,reason_code FROM mcp_tool_call_events e WHERE e.company_id=i.company_id AND e.intent_id=i.intent_id ORDER BY e.event_seq DESC LIMIT 1) current ON true
 WHERE i.company_id=$1 AND i.capability_id=$2 AND ($3='' OR i.employee_id=$3)
-ORDER BY i.created_at DESC,i.intent_id LIMIT $4`, status.CompanyID, status.CapabilityID, status.EmployeeID, maxRevocationInventoryItems+1)
+ORDER BY i.created_at DESC,i.intent_id LIMIT $4`
+		}
+		callArgs := []any{status.CompanyID, status.RevocationID}
+		if !useSnapshot {
+			callArgs = []any{status.CompanyID, status.CapabilityID, status.EmployeeID}
+		}
+		if err = tx.QueryRow(ctx, callsCountQuery, callArgs...).Scan(&status.MCPCallCount, &status.DispatchingMCPCallCount); err != nil {
+			return err
+		}
+		callDetailArgs := append(append([]any(nil), callArgs...), maxRevocationInventoryItems+1)
+		callRows, queryErr := tx.Query(ctx, callsDetailQuery, callDetailArgs...)
 		if queryErr != nil {
 			return queryErr
 		}
 		for callRows.Next() {
 			var item CapabilityRevocationMCPCall
-			if err = callRows.Scan(&item.IntentID, &item.SessionID, &item.EmployeeID, &item.ToolName, &item.Status, &item.ReasonCode, &item.CreatedAt); err != nil {
+			if err = callRows.Scan(&item.IntentID, &item.SessionID, &item.EmployeeID, &item.ToolName, &item.Status, &item.StatusAtRevocation, &item.ReasonCode, &item.CreatedAt); err != nil {
 				callRows.Close()
 				return err
 			}

@@ -1443,6 +1443,7 @@ function isCapabilityRevocationSession(value: unknown): value is CapabilityRevoc
     && hasString(value, 'taskId')
     && hasString(value, 'missionId')
     && hasString(value, 'state')
+    && (value.stateAtRevocation === undefined || typeof value.stateAtRevocation === 'string')
     && isNonNegativeSafeInteger(value.skillLoadCount)
     && isNonNegativeSafeInteger(value.mcpCallCount)
     && isNonNegativeSafeInteger(value.dispatchingMcpCallCount);
@@ -1455,6 +1456,7 @@ function isCapabilityRevocationMCPCall(value: unknown): value is CapabilityRevoc
     && hasString(value, 'employeeId')
     && hasString(value, 'toolName')
     && isOneOf(value.status, ['dispatching', 'completed', 'outcome_unknown'])
+    && (value.statusAtRevocation === undefined || isOneOf(value.statusAtRevocation, ['dispatching', 'completed', 'outcome_unknown']))
     && (value.reasonCode === undefined || typeof value.reasonCode === 'string')
     && hasString(value, 'createdAt');
 }

@@ -683,8 +683,8 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
           <strong>{item.scope === 'employee' ? `${item.employeeId} · ` : ''}{item.capabilityKind} / {item.capabilityId}</strong>
           <span>撤销已接受：{item.revocationAccepted ? '是' : '否'} · 对新派发生效：{item.effectiveForNewDispatch ? '是' : '否'} · {item.acceptedAt}</span>
           <span>WorkerSession：{item.liveSessionCount} 个未停止 / {item.affectedSessionCount} 个受影响 · MCP：{item.dispatchingMcpCallCount} 个派发中 / {item.mcpCallCount} 个意图</span>
-          {item.sessions.map(session => <span key={session.sessionId}>会话 {session.sessionId} · {session.employeeId} · {session.state} · Skill 加载 {session.skillLoadCount} · MCP 调用 {session.mcpCallCount}</span>)}
-          {item.mcpCalls.map(call => <span key={call.intentId}>MCP {call.intentId} · {call.toolName} · {call.status === 'dispatching' ? '派发中' : call.status === 'completed' ? '已完成' : `结果未知${call.reasonCode ? `（${call.reasonCode}）` : ''}`}</span>)}
+          {item.sessions.map(session => <span key={session.sessionId}>会话 {session.sessionId} · {session.employeeId} · 当前 {session.state}{session.stateAtRevocation ? ` / 撤销时 ${session.stateAtRevocation}` : ''} · Skill 加载 {session.skillLoadCount} · MCP 调用 {session.mcpCallCount}</span>)}
+          {item.mcpCalls.map(call => <span key={call.intentId}>MCP {call.intentId} · {call.toolName} · 当前 {call.status === 'dispatching' ? '派发中' : call.status === 'completed' ? '已完成' : `结果未知${call.reasonCode ? `（${call.reasonCode}）` : ''}`}{call.statusAtRevocation ? ` / 撤销时 ${call.statusAtRevocation}` : ''}</span>)}
           {item.sessionsTruncated || item.mcpCallsTruncated ? <span>明细已截断；汇总数量和静止判断仍按完整 ledger 计算。</span> : null}
         </div></div><StatusBadge label={item.quiesced ? '已静止' : '尚未静止'} tone={item.quiesced ? 'success' : 'warning'} />
       </div>)}</div> : <div className={styles.emptyState}>当前没有生效中的能力撤销。</div>}

@@ -610,6 +610,7 @@ export type CapabilityRevocationSessionView = Readonly<{
   taskId: string;
   missionId: string;
   state: string;
+  stateAtRevocation?: string;
   skillLoadCount: number;
   mcpCallCount: number;
   dispatchingMcpCallCount: number;
@@ -621,6 +622,7 @@ export type CapabilityRevocationMCPCallView = Readonly<{
   employeeId: string;
   toolName: string;
   status: 'dispatching' | 'completed' | 'outcome_unknown';
+  statusAtRevocation?: 'dispatching' | 'completed' | 'outcome_unknown';
   reasonCode?: string;
   createdAt: string;
 }>;

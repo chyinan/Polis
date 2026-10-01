@@ -28,6 +28,8 @@ Slice103 adds the first REQ-14 capability-revocation status projection. The comp
 
 The projection only inventories sessions with recorded Skill loads or MCP intents; it does not capture a bound-but-unused session at revoke time, stop a Worker, or show superseded historical revocations. Next capture the affected-session set at the revoke linearization point, then implement idempotent stop/restart reconciliation before wiring a management action. Verification: Go command build, frontend production build, and diff check pass; tests were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-103-capability-revocation-projection/verification.md`.
 
+Slice104 adds Schema 73 revoke-time snapshot ledgers. Both global capability revocation and employee unbind capture their affected WorkerSessions inside the guarded transaction; the snapshot stores each session's state and Skill-load count and pins exact matching MCP intent IDs plus their initial statuses. The catalog projection reads these snapshots for new revocations, so later sessions/intents after a rebind do not leak into the old revoke inventory. Pre-Schema-73 revocations retain the event-ledger fallback. This still does not stop Workers. Verification is build-only (Go command/frontend builds and diff check); no tests or PostgreSQL migration execution were run. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-104-revocation-session-snapshot/verification.md`.
+
 Verification on this Termux host:
 
 - `go test ./internal/control ./cmd/polis` passes; `go test ./internal/kernel -run '^$'` compiles the package without running tests.
@@ -58,7 +60,7 @@ Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-1
 
 Use the existing finite list in `R1_R3_IMPLEMENTATION_COVERAGE.md`. REQ-13 still needs authoritative quota readiness/recovery, cross-instance fairness/global slot accounting, and safe dispatch qualification; Slice102 adds only the bounded single-process Fake dispatcher. Other open software items include lifecycle safety for REQ-14/15/16/25/26/29/39; the qualified employee/runtime/continuity path for REQ-23/24/27/30–34; signing and clean Windows VM/package checks; and one bounded FT/NT/CAP/UI/WF/PP traceability reconciliation. R2 Linux host/recovery and remote-workbench qualifications, plus independent R3 content/research quality, cost, recovery, and organization-benefit evidence, remain separate qualification work.
 
-REQ-14 dispatch mapping and the Slice103 projection are recorded in `docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md`. Next capture the exact affected-session set at revoke time, then add idempotent Worker stop and restart reconciliation. Keep `effective_for_new_dispatch` separate from `quiesced`; the latter remains unavailable until each affected Worker is confirmed stopped and each in-flight intent is completed or retained as `outcome_unknown`. Keep real provider, QQ, MCP endpoint, and production qualification actions disabled unless separately authorized.
+REQ-14 dispatch mapping plus the Slice103 projection and Slice104 revoke-time snapshot are recorded in `docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md`. Next add idempotent Worker stop and restart reconciliation. Keep `effective_for_new_dispatch` separate from `quiesced`; the latter remains unavailable until each affected Worker is confirmed stopped and each in-flight intent is completed or retained as `outcome_unknown`. Keep real provider, QQ, MCP endpoint, and production qualification actions disabled unless separately authorized.
 
 ## Working conventions
 
@@ -66,4 +68,4 @@ REQ-14 dispatch mapping and the Slice103 projection are recorded in `docs/implem
 - Preserve exact provider-surface fingerprints and old probe registries. A new model-visible tool set needs a distinct versioned surface and independent qualification.
 - Use disposable PostgreSQL/file roots only. Full Go suite and both Linux/Windows command builds are appropriate after code slices; external qualification remains gated.
 - There is one principal code writer. Review is read-only. Wait for reviewers instead of terminating them early.
-- Slice101 through Slice103, including this current handoff and the REQ-14 dispatch map, are synchronized to GitHub `main` for cloud pickup. This is source synchronization only; it does not authorize deployment or external provider actions.
+- Slice101 through Slice104, including this current handoff and the REQ-14 dispatch map, are synchronized to GitHub `main` for cloud pickup. This is source synchronization only; it does not authorize deployment or external provider actions.

@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 104 — Revoke-time WorkerSession and MCP intent snapshot (Schema 73)
+
+The global capability-revoke and employee-unbind transactions now capture their affected WorkerSession set before releasing the company guard. The snapshot includes live sessions for employees previously bound to the revoked capability/version and stopped sessions with recorded use; employee-scoped unbind includes that employee's live sessions. It stores the session state and Skill-load count at revocation, and links exact MCP intent IDs with their initial statuses. The read projection uses the snapshot when present, so sessions and intents from a later rebind cannot be mistaken for work admitted under the old grant. Existing revocations from before Schema 73 retain the usage-ledger fallback.
+
+Schema 73 adds immutable, append-only snapshot ledgers. This stage does not stop Workers. Go command build, frontend production build, and diff check pass; tests and PostgreSQL migration execution were not run. No external action was used. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-104-revocation-session-snapshot/verification.md`.
+
 ## Slice 103 — Capability revocation status projection (Schema 72, no migration)
 
 The company capability catalog now projects active global and employee-scoped Skill/MCP revocations from durable governance rows and events. It separates accepted/effective gates from quiescence, inventories sessions with recorded Skill loads or MCP intents, and lists MCP intent outcomes. A revocation is quiesced only when all inventoried sessions are confirmed `stopped` and there are no `dispatching` MCP intents; `reconcile_required` does not count as stopped, and `outcome_unknown` remains visible. The Workbench capability page shows those facts. Projections rebuild on read in a repeatable-read transaction, so restarts do not lose status; detailed rows are capped at 64 with truncation flags while aggregate counts use the full ledger.

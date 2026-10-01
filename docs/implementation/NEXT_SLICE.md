@@ -1,5 +1,11 @@
 # Current handoff — approved R1–R3 implementation (2026-10-01)
 
+## Latest continuation status (Slice 104, revoke-time WorkerSession snapshot; Schema 73)
+
+Global capability approval revocation and employee binding revocation now snapshot affected WorkerSessions in the same company-guarded transaction that commits the revoke. The immutable snapshot includes every live session for employees historically bound to the revoked version (or the explicitly unbound employee), plus stopped sessions with recorded Skill/MCP use. It pins session state and Skill-load count at revoke time and stores exact matching MCP intent IDs with their initial statuses. Catalog reads use these snapshots for new revocations; pre-Schema-73 current revocations retain the durable usage-event fallback. This prevents later sessions and calls after a subsequent rebind from appearing in an earlier revoke's inventory.
+
+Schema 73 adds append-only snapshot tables. No Worker is stopped yet; idempotent stop and restart reconciliation remain the next REQ-14 slice. Go command build, frontend production build, and `git diff --check` pass; tests and PostgreSQL migration execution were not run. No real Worker, provider, MCP endpoint, QQ, or production action was used. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-104-revocation-session-snapshot/verification.md`.
+
 ## Latest continuation status (Slice 103, capability revocation status projection; Schema 72)
 
 The company capability catalog now exposes current global and employee-scoped Skill/MCP revocations, `revocationAccepted`, `effectiveForNewDispatch`, `quiesced`, and a bounded inventory of sessions with recorded Skill loads or MCP intents. The read-only projection is rebuilt in the same repeatable-read snapshot from durable governance events, Skill-use events, WorkerSession state, and current MCP-intent events; restart reconciliation needs no process-local state or migration. Quiescence requires every inventoried WorkerSession to be `stopped` and every MCP intent to leave `dispatching`; `reconcile_required` remains live, while `outcome_unknown` stays visible. The Workbench displays the status and ledger details. The catalog shows up to 64 revocations and 64 sessions/calls per revocation, with complete aggregate counts and explicit truncation markers.

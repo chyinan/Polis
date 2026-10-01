@@ -1,8 +1,8 @@
 # REQ-14 capability revocation dispatch map
 
 Updated: 2026-10-01  
-Status: mapping plus Slice 103 read-only projection; Worker stop behavior is not wired.
-Schema: 72.
+Status: mapping, Slice 103 projection, and Slice 104 revoke-time snapshot; Worker stop behavior is not wired.
+Schema: 73.
 
 ## Contract boundary
 
@@ -26,14 +26,16 @@ Schema: 72.
 - The MCP process/HTTP call occurs after that transaction commits. Revocation can block later calls but cannot retract a request already admitted at this point. A returned result may therefore be recorded after revocation; an interrupted call must remain unknown.
 - No path in this map justifies reporting `quiesced` from the capability event alone.
 
-## Slice 103 projection behavior
+## Slice 103–104 projection and snapshot behavior
 
-`Kernel.ListCapabilityCatalog` rebuilds current global and employee-scoped revocation rows in its repeatable-read transaction. The projection derives session use from durable Skill-load events or MCP intents and reads each Worker's current persisted state. It reports `revocationAccepted` and `effectiveForNewDispatch` independently from `quiesced`. Quiescence is true only when every inventoried session is `stopped` and the capability has no `dispatching` MCP intents; an `outcome_unknown` intent remains listed and does not block quiescence after its Worker is stopped. `reconcile_required` is still a live session. Output is bounded at 64 revocations and 64 session/call detail rows per revoke; complete aggregate counts and truncation markers remain available. This is computed from durable rows after restart and adds no schema migration.
+`Kernel.ListCapabilityCatalog` rebuilds current global and employee-scoped revocation rows in its repeatable-read transaction. Schema 73 adds append-only revoke-time session and MCP-intent snapshot tables. The global approval revoke and employee unbind commands capture affected sessions under the same company guard that serializes Worker creation and capability dispatch. The snapshot includes live sessions for employees bound to the revoked version (or the targeted employee for unbind) and stopped sessions with recorded Skill/MCP use. It freezes the session state and Skill-load count and links exact MCP intent IDs with their initial statuses. The projection reads this snapshot for new revocations; existing current revocations with no snapshot continue to use durable Skill-load/MCP-intent evidence.
 
-The projection reports currently effective revocations only. It does not stop Workers, include bound-but-unused sessions, or expose superseded historical revoke decisions. The Workbench displays the projection but performs no stop action. Tests were not run for Slice 103; Go command and frontend production builds plus `git diff --check` pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-103-capability-revocation-projection/verification.md`.
+The projection reports `revocationAccepted` and `effectiveForNewDispatch` independently from `quiesced`. Quiescence is true only when every inventoried session is `stopped` and no snapshotted MCP intent remains `dispatching`; an `outcome_unknown` intent remains listed and does not block quiescence after its Worker is stopped. `reconcile_required` is still a live session. Output is bounded at 64 revocations and 64 session/call detail rows per revoke; complete aggregate counts and truncation markers remain available. The data survives restart without process-local state.
+
+The projection reports currently effective revocations only. It does not stop Workers or expose superseded historical revoke decisions. The Workbench displays the projection but performs no stop action. Tests and PostgreSQL migration execution were not run for Slices 103–104; Go command and frontend production builds plus `git diff --check` pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261001-slice-103-capability-revocation-projection/verification.md` and `evidence/development/r1-r3-implementation-validation-20261001-slice-104-revocation-session-snapshot/verification.md`.
 
 ## Next implementation boundary
 
-Continue REQ-14 by capturing the exact affected WorkerSession set at the revoke linearization point, then add idempotent, restart-reconcilable stop coordination and outcome-unknown retention before exposing a management action. Keep provider, QQ, MCP endpoint, and production qualification actions disabled unless separately authorized.
+Continue REQ-14 by adding idempotent, restart-reconcilable Worker stop coordination and outcome-unknown retention, then expose a management action only after the stop path is reviewable. Keep provider, QQ, MCP endpoint, and production qualification actions disabled unless separately authorized.
 
 Relevant code: `internal/kernel/capability_governance.go`, `internal/kernel/capability_skill_runtime.go`, `internal/kernel/mcp_runtime_qualification.go`, `internal/kernel/mcp_tool_calls.go`, `internal/control/stdio_mcp_worker.go`, and `internal/control/real_provider_worker.go`.
