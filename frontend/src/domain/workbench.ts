@@ -1405,6 +1405,67 @@ export type DailyRoutineView = Readonly<{
   linkedTaskCount: number;
 }>;
 
+export type MemoryTaskImpactView = Readonly<{
+  dependencyId: string;
+  recordId: string;
+  recordRevision: number;
+  replacementRevision: number;
+  riskLevel: 'ordinary' | 'high' | 'critical';
+  state: 'dirty' | 'frozen';
+  correctionId: string;
+  reason: string;
+}>;
+
+export type MemoryTaskStatusView = Readonly<{
+  state: 'clear' | 'dirty' | 'frozen';
+  impacts: ReadonlyArray<MemoryTaskImpactView>;
+}>;
+
+export type MemorySourceReferenceView = Readonly<{
+  kind: string;
+  id: string;
+  revision: number;
+  sha256: string;
+}>;
+
+export type MemoryTaskRevalidationPreviewView = Readonly<{
+  taskId: string;
+  taskState: string;
+  taskGeneration: number;
+  taskPlan: unknown;
+  taskPlanSha256: string;
+  missionState: string;
+  dependencyId: string;
+  dependencyState: string;
+  correctionId: string;
+  correctionSource: MemorySourceReferenceView;
+  correctionObservedAt: string;
+  correctionProposerReason: string;
+  correctionReviewReason: string;
+  previousRecordId: string;
+  previousRevision: number;
+  replacementRevision: number;
+  replacementContent: string;
+  replacementContentSha256: string;
+  riskLevel: 'ordinary' | 'high' | 'critical';
+  targetKind: string;
+  targetId: string;
+  targetRevision: number;
+  targetSha256: string;
+  stoppedSessionId: string;
+  workspaceDigest: string;
+  workspaceRevision: number;
+  workspaceContent: string;
+  otherImpacts: ReadonlyArray<MemoryTaskImpactView>;
+  contextSha256: string;
+}>;
+
+export type MemoryTaskRevalidationReceipt = Readonly<{
+  id: string;
+  status: 'revalidated';
+  revision: number;
+}>;
+
 export type ActivityEventKind =
   | 'mission_created'
   | 'mission_started'

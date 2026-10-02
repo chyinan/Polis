@@ -4,8 +4,8 @@ import type {CreateProjectJobBrowserSessionOptions, ImportStdioMCPPackageOptions
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
-import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
-import type {DailyRoutineCommandReceipt, DailyRoutineView} from '../domain/workbench';
+import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView} from '../domain/workbench';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
 
@@ -723,6 +723,23 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
       throw new Error('failed to load fixture daily Routines: scope not found');
     }
     return [];
+  }
+
+  async getMemoryTaskStatus(options: MemoryTaskStatusQueryOptions): Promise<MemoryTaskStatusView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.taskId);
+    if (options.companyId !== FIXTURE_COMPANY_ID || !this.overview.tasks.some(task => task.taskId === options.taskId)) {
+      throw new Error('failed to load fixture task memory impact: scope not found');
+    }
+    return {state: 'clear', impacts: []};
+  }
+
+  async getMemoryTaskRevalidationPreview(_options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'memory revalidation previews are unavailable in fixture mode');
+  }
+
+  async revalidateMemoryTask(_options: RevalidateMemoryTaskOptions): Promise<MemoryTaskRevalidationReceipt> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'memory revalidation commands are unavailable in fixture mode');
   }
 
   async listActivityEvents(options: ActivityQueryOptions): Promise<ActivityView> {

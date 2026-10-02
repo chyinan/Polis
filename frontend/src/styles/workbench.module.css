@@ -2682,6 +2682,20 @@ button:disabled:hover {
   line-height: 1.5;
 }
 
+.reviewCheck {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: var(--fg);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.reviewCheck input {
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+
 .wizardGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

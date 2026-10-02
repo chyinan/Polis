@@ -1,9 +1,10 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, DailyRoutineView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
-import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
+import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
@@ -926,6 +927,53 @@ export class RealWorkbenchApi implements WorkbenchApi {
     if (!result.success) {
       throw new Error(`failed to parse daily Routine response: ${validationMessage(result.issues)}`);
     }
+    return result.value;
+  }
+
+  async getMemoryTaskStatus(options: MemoryTaskStatusQueryOptions): Promise<MemoryTaskStatusView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.taskId);
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/tasks/${encodeURIComponent(options.taskId)}/memory-impact`);
+    const result = validateMemoryTaskStatus(raw);
+    if (!result.success) throw new Error(`failed to parse task memory impact response: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async getMemoryTaskRevalidationPreview(options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.taskId);
+    assertCompanyScope(options.dependencyId);
+    assertCompanyScope(options.correctionId);
+    const query = new URLSearchParams({dependencyId: options.dependencyId, correctionId: options.correctionId});
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/tasks/${encodeURIComponent(options.taskId)}/memory-revalidation/preview?${query.toString()}`);
+    const result = validateMemoryTaskRevalidationPreview(raw, options.taskId, options.dependencyId, options.correctionId);
+    if (!result.success) throw new Error(`failed to parse memory revalidation preview: ${validationMessage(result.issues)}`);
+    const contentDigest = await sha256Hex(new TextEncoder().encode(result.value.replacementContent));
+    if (contentDigest !== result.value.replacementContentSha256) throw new Error('replacement memory content digest does not match preview');
+    const workspaceDigest = await sha256Hex(new TextEncoder().encode(result.value.workspaceContent));
+    if (workspaceDigest !== result.value.workspaceDigest) throw new Error('reviewed workspace content digest does not match preview');
+    return result.value;
+  }
+
+  async revalidateMemoryTask(options: RevalidateMemoryTaskOptions): Promise<MemoryTaskRevalidationReceipt> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.taskId);
+    assertCompanyScope(options.dependencyId);
+    assertCompanyScope(options.correctionId);
+    assertRequestID(options.requestId);
+    if (!/^[0-9a-f]{64}$/.test(options.contextSha256)) throw new Error('memory revalidation context digest is malformed');
+    const reason = options.reason.trim();
+    const reasonBytes = new TextEncoder().encode(reason).length;
+    if (reasonBytes < 1 || reasonBytes > 2048) throw new Error('memory revalidation reason must be 1–2048 bytes');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/tasks/${encodeURIComponent(options.taskId)}/memory-revalidation`, options.requestId, {
+      dependencyId: options.dependencyId,
+      correctionId: options.correctionId,
+      contextSha256: options.contextSha256,
+      reason,
+      requestId: options.requestId,
+    });
+    const result = validateMemoryTaskRevalidationReceipt(raw);
+    if (!result.success) throw new Error(`failed to parse memory revalidation receipt: ${validationMessage(result.issues)}`);
     return result.value;
   }
 

@@ -114,6 +114,39 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				return
 			}
 			writeJSON(response, http.StatusOK, manifest)
+		case "tasks.memory_impact":
+			response.Header().Set("Cache-Control", "no-store")
+			memoryService, ok := service.(control.MemoryRevalidationService)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "memory impact service is unavailable")
+				return
+			}
+			status, err := memoryService.GetMemoryTaskStatus(ctx, path.companyID, path.resourceID)
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, status)
+		case "tasks.memory_revalidation_preview":
+			response.Header().Set("Cache-Control", "no-store")
+			memoryService, ok := service.(control.MemoryRevalidationService)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "memory revalidation service is unavailable")
+				return
+			}
+			query := request.URL.Query()
+			dependencyIDs, correctionIDs := query["dependencyId"], query["correctionId"]
+			if len(query) != 2 || len(dependencyIDs) != 1 || len(correctionIDs) != 1 ||
+				!core.ValidID(dependencyIDs[0]) || !core.ValidID(correctionIDs[0]) {
+				writeError(response, http.StatusBadRequest, "one dependencyId and one correctionId are required")
+				return
+			}
+			preview, err := memoryService.GetMemoryTaskRevalidationPreview(ctx, path.companyID, path.resourceID, dependencyIDs[0], correctionIDs[0])
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, preview)
 		case "tasks.jobs":
 			jobReader, ok := model.(EnvironmentJobLifecycleReader)
 			if !ok {
@@ -1301,6 +1334,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, item)
+	case "tasks.memory_revalidation":
+		memoryService, ok := service.(control.MemoryRevalidationService)
+		if !ok {
+			writeCommandError(response, http.StatusNotImplemented, path.companyID, path.resourceID, errors.New("memory revalidation service is unavailable"))
+			return
+		}
+		var input control.RevalidateMemoryTaskRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandError(response, http.StatusBadRequest, path.companyID, path.resourceID, err)
+			return
+		}
+		receipt, err := memoryService.RevalidateMemoryTask(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandError(response, commandStatus(err), path.companyID, path.resourceID, err)
+			return
+		}
+		response.Header().Set("Cache-Control", "no-store")
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "takeover_leases.snapshot", "takeover_leases.release":
 		takeoverService, ok := service.(control.TaskTakeoverLeaseService)
 		if !ok {
@@ -1662,6 +1713,27 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.input_manifest"}, true
+	}
+	if len(parts) == 4 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "memory-impact" {
+		resourceID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.memory_impact"}, true
+	}
+	if len(parts) == 4 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "memory-revalidation" {
+		resourceID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.memory_revalidation"}, true
+	}
+	if len(parts) == 5 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "memory-revalidation" && parts[4] == "preview" {
+		resourceID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.memory_revalidation_preview"}, true
 	}
 	if len(parts) == 4 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "jobs" {
 		resourceID, err := url.PathUnescape(parts[2])

@@ -115,7 +115,7 @@ type MemoryTaskImpact struct {
 
 type MemoryTaskStatus struct {
 	State   string             `json:"state"`
-	Impacts []MemoryTaskImpact `json:"impacts,omitempty"`
+	Impacts []MemoryTaskImpact `json:"impacts"`
 }
 
 type MemoryTaskDependencyContext struct {
@@ -168,13 +168,15 @@ type MemoryTaskRevalidationPreview struct {
 	StoppedSessionID         string                `json:"stoppedSessionId"`
 	WorkspaceDigest          string                `json:"workspaceDigest"`
 	WorkspaceRevision        int64                 `json:"workspaceRevision"`
+	WorkspaceContent         string                `json:"workspaceContent"`
 	OtherImpacts             []MemoryTaskImpact    `json:"otherImpacts,omitempty"`
 	ContextSHA256            string                `json:"contextSha256"`
 }
 
 const (
-	maxMemoryHandoverDependencies = 16
-	maxMemoryHandoverContentBytes = 128 * 1024
+	maxMemoryHandoverDependencies  = 16
+	maxMemoryHandoverContentBytes  = 128 * 1024
+	maxMemoryRevalidationPlanBytes = 64 * 1024
 )
 
 // TXCreateMemoryRecord stores an immutable, source-pinned first revision in
@@ -547,7 +549,7 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, b.scope.company, dependency
 }
 
 func memoryTaskStatusTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) (MemoryTaskStatus, error) {
-	status := MemoryTaskStatus{State: "clear"}
+	status := MemoryTaskStatus{State: "clear", Impacts: []MemoryTaskImpact{}}
 	rows, err := tx.Query(ctx, `SELECT latest.dependency_id,d.record_id,d.record_revision,d.risk_level,latest.state,latest.cause_id,latest.reason,
 COALESCE(review.result_revision,0)
 FROM (
@@ -577,6 +579,36 @@ WHERE latest.state IN ('dirty','frozen') ORDER BY latest.dependency_id`, company
 	}
 	if err = rows.Err(); err != nil {
 		return status, err
+	}
+	return status, nil
+}
+
+// GetMemoryTaskStatus returns the durable dirty/frozen impacts recorded for a Task.
+func (k *Kernel) GetMemoryTaskStatus(ctx context.Context, scope Scope, taskID string) (MemoryTaskStatus, error) {
+	if ctx == nil || !core.ValidID(taskID) {
+		return MemoryTaskStatus{}, core.Malformed
+	}
+	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return MemoryTaskStatus{}, err
+	}
+	defer tx.Rollback(ctx)
+	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+		return MemoryTaskStatus{}, err
+	}
+	var exists bool
+	if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM tasks WHERE company_id=$1 AND id=$2)", scope.company, taskID).Scan(&exists); err != nil {
+		return MemoryTaskStatus{}, err
+	}
+	if !exists {
+		return MemoryTaskStatus{}, core.OutOfScope
+	}
+	status, err := memoryTaskStatusTX(ctx, tx, scope.company, taskID)
+	if err != nil {
+		return MemoryTaskStatus{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return MemoryTaskStatus{}, err
 	}
 	return status, nil
 }
@@ -697,6 +729,9 @@ WHERE t.company_id=$1 AND t.id=$2`, scope.company, taskID).Scan(&preview.TaskSta
 	}
 	planSum := sha256.Sum256([]byte(taskPlan))
 	preview.TaskPlan = json.RawMessage(taskPlan)
+	if len(preview.TaskPlan) > maxMemoryRevalidationPlanBytes {
+		return preview, core.TooLarge
+	}
 	preview.TaskPlanSHA256 = hex.EncodeToString(planSum[:])
 	if preview.TaskState != "ready" && preview.TaskState != "working" {
 		return preview, core.ConflictError{Reason: "only an unfinished Task can be revalidated", CurrentState: preview.TaskState}
@@ -726,6 +761,9 @@ FROM memory_dependencies d WHERE d.company_id=$1 AND d.dependency_id=$2 AND d.bo
 		} else {
 			preview.OtherImpacts = append(preview.OtherImpacts, impact)
 		}
+	}
+	if len(status.Impacts) > maxMemoryHandoverDependencies {
+		return preview, core.TooLarge
 	}
 	if !impactFound {
 		return preview, core.ConflictError{Reason: "this dependency has no current invalidation requiring revalidation", CurrentState: status.State}
@@ -834,9 +872,11 @@ func (k *Kernel) GetMemoryTaskRevalidationPreview(ctx context.Context, scope Sco
 	if err != nil {
 		return MemoryTaskRevalidationPreview{}, err
 	}
-	if _, err = readBlob(k.root, scope.company, preview.WorkspaceDigest); err != nil {
+	workspaceContent, err := readBlobBounded(k.root, scope.company, preview.WorkspaceDigest, 128*1024)
+	if err != nil {
 		return MemoryTaskRevalidationPreview{}, core.Integrity
 	}
+	preview.WorkspaceContent = string(workspaceContent)
 	if err = tx.Commit(ctx); err != nil {
 		return MemoryTaskRevalidationPreview{}, err
 	}
@@ -857,7 +897,7 @@ func (k *Kernel) TXRevalidateMemoryTask(ctx context.Context, scope Scope, input 
 	if preview.ContextSHA256 != input.ContextSHA256 {
 		return Receipt{}, core.ConflictError{Reason: "the reviewed memory revalidation context is stale", CurrentState: "context_changed"}
 	}
-	if _, err = readBlob(k.root, scope.company, preview.WorkspaceDigest); err != nil {
+	if _, err = readBlobBounded(k.root, scope.company, preview.WorkspaceDigest, 128*1024); err != nil {
 		return Receipt{}, core.Integrity
 	}
 	revalidationID, replacementDependencyID := newID(), newID()
@@ -868,6 +908,9 @@ func (k *Kernel) TXRevalidateMemoryTask(ctx context.Context, scope Scope, input 
 		}
 		if current.ContextSHA256 != input.ContextSHA256 {
 			return Receipt{}, core.ConflictError{Reason: "the reviewed memory revalidation context is stale", CurrentState: "context_changed"}
+		}
+		if _, checkErr = readBlobBounded(k.root, scope.company, current.WorkspaceDigest, 128*1024); checkErr != nil {
+			return Receipt{}, core.Integrity
 		}
 		target := MemoryDependencyInput{RecordID: current.PreviousRecordID, RecordRevision: current.ReplacementRevision,
 			TargetKind: current.TargetKind, TargetID: current.TargetID, TargetRevision: current.TargetRevision,

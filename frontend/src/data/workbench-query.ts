@@ -11,6 +11,7 @@ import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
 import type {CreateDailyRoutineOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import type {RevalidateMemoryTaskOptions} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
   return useQuery({
@@ -242,6 +243,28 @@ export function useSetDailyRoutineTaskInstruction(api: WorkbenchApi, companyId: 
     mutationFn: (options: Omit<SetDailyRoutineTaskInstructionOptions, 'companyId' | 'missionId'>) => api.setDailyRoutineTaskInstruction({...options, companyId, missionId}),
     onSuccess: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'daily-routines', companyId, missionId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
+    ]),
+  });
+}
+
+export function useMemoryTaskStatus(api: WorkbenchApi, companyId: string, taskId: string | null) {
+  return useQuery({
+    queryKey: ['workbench', api.mode, 'task-memory-impact', companyId, taskId],
+    queryFn: () => api.getMemoryTaskStatus({companyId, taskId: taskId ?? ''}),
+    enabled: taskId !== null && taskId.trim() !== '',
+    staleTime: 5_000,
+    refetchOnMount: 'always',
+  });
+}
+
+export function useRevalidateMemoryTask(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<RevalidateMemoryTaskOptions, 'companyId'>) => api.revalidateMemoryTask({...options, companyId}),
+    onSuccess: async (_receipt, options) => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-memory-impact', companyId, options.taskId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
     ]),
