@@ -225,6 +225,12 @@ VALUES($1,$2,1,$3,$4,$5,$6,$7,$8,$9,$10)`, b.scope.company, input.RecordID, inpu
 		if err != nil {
 			return Receipt{}, err
 		}
+		if input.Source != nil {
+			if err = appendMemoryCASRetentionPinTX(ctx, tx, b.scope, "memory_revision_source", input.RecordID, 1,
+				input.Source.Kind, input.Source.ID, input.Source.Revision, input.Source.SHA256); err != nil {
+				return Receipt{}, err
+			}
+		}
 		if err = appendEvent(ctx, tx, b.scope, "memory.revision.proposed", map[string]any{
 			"record_id": input.RecordID, "revision": 1, "kind": input.Kind, "content_sha256": contentSHA,
 			"source_kind": sourceKind, "source_id": sourceID, "source_revision": sourceRevision,
@@ -375,6 +381,10 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, b.scope.company, input.Corr
 		if err != nil {
 			return Receipt{}, err
 		}
+		if err = appendMemoryCASRetentionPinTX(ctx, tx, b.scope, "memory_correction_source", input.CorrectionID, 1,
+			input.Source.Kind, input.Source.ID, input.Source.Revision, input.Source.SHA256); err != nil {
+			return Receipt{}, err
+		}
 		if err = appendEvent(ctx, tx, b.scope, "memory.correction.proposed", map[string]any{
 			"correction_id": input.CorrectionID, "record_id": input.RecordID, "base_revision": input.BaseRevision,
 			"content_sha256": contentSHA, "source_kind": input.Source.Kind, "source_id": input.Source.ID,
@@ -462,6 +472,10 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, b.scope.company, recordID, resultRe
 				sourceKind, sourceID, sourceRevision, sourceSHA, observedAt, b.employee); err != nil {
 				return Receipt{}, err
 			}
+			if err = appendMemoryCASRetentionPinTX(ctx, tx, b.scope, "memory_revision_source", recordID, resultRevision,
+				sourceKind, sourceID, sourceRevision, sourceSHA); err != nil {
+				return Receipt{}, err
+			}
 			if err = appendMemoryRevisionStateEventTX(ctx, tx, b.scope, recordID, baseRevision, "superseded", b.employee, strings.TrimSpace(input.Reason)); err != nil {
 				return Receipt{}, err
 			}
@@ -543,6 +557,12 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, b.scope.company, dependency
 		}
 		if err != nil {
 			return Receipt{}, err
+		}
+		if input.TargetKind == "mission_input" || input.TargetKind == "artifact" {
+			if err = appendMemoryCASRetentionPinTX(ctx, tx, b.scope, "memory_dependency_target", dependencyID, 1,
+				input.TargetKind, input.TargetID, input.TargetRevision, input.TargetSHA256); err != nil {
+				return Receipt{}, err
+			}
 		}
 		return Receipt{ID: dependencyID, Status: "active", Revision: input.TargetRevision}, nil
 	})
@@ -937,6 +957,12 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,NULL)`, scope.company, replacement
 			target.TargetKind, target.TargetID, target.TargetRevision, target.TargetSHA256, target.RiskLevel, seq, createdBy, input.TaskID); checkErr != nil {
 			return Receipt{}, checkErr
 		}
+		if target.TargetKind == "mission_input" || target.TargetKind == "artifact" {
+			if checkErr = appendMemoryCASRetentionPinTX(ctx, tx, scope, "memory_dependency_target", replacementDependencyID, 1,
+				target.TargetKind, target.TargetID, target.TargetRevision, target.TargetSHA256); checkErr != nil {
+				return Receipt{}, checkErr
+			}
+		}
 		if checkErr = appendEvent(ctx, tx, scope, "memory.dependency.revalidated", map[string]any{
 			"dependency_id": input.DependencyID, "correction_id": input.CorrectionID, "revalidation_id": revalidationID,
 		}); checkErr != nil {
@@ -986,6 +1012,10 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,'l
 			input.TaskID, current.TaskGeneration, current.TaskPlanSHA256, input.DependencyID, replacementDependencyID, input.CorrectionID, current.PreviousRecordID, current.PreviousRevision,
 			current.ReplacementRevision, current.TargetKind, current.TargetID, current.TargetRevision, current.TargetSHA256,
 			current.StoppedSessionID, current.WorkspaceDigest, current.WorkspaceRevision, input.ContextSHA256, strings.TrimSpace(input.Reason)); checkErr != nil {
+			return Receipt{}, checkErr
+		}
+		if checkErr = appendMemoryCASRetentionPinTX(ctx, tx, scope, "memory_revalidation_workspace", revalidationID, 1,
+			"worker_workspace", input.TaskID, current.WorkspaceRevision, current.WorkspaceDigest); checkErr != nil {
 			return Receipt{}, checkErr
 		}
 		if current.TaskState == "working" {
@@ -1349,6 +1379,39 @@ func currentCompanySequenceTX(ctx context.Context, tx pgx.Tx, companyID string) 
 	var seq int64
 	err := tx.QueryRow(ctx, "SELECT company_seq FROM companies WHERE id=$1", companyID).Scan(&seq)
 	return seq, err
+}
+
+func appendMemoryCASRetentionPinTX(ctx context.Context, tx pgx.Tx, scope Scope, referenceKind, referenceID string, referenceRevision int64,
+	objectKind, objectID string, objectRevision int64, digest string) error {
+	if !core.ValidID(scope.company) || !core.ValidID(referenceID) || referenceRevision < 1 ||
+		!core.ValidID(objectID) || objectRevision < 1 || !validSHA256(digest) {
+		return core.Malformed
+	}
+	validReference := (referenceKind == "memory_revision_source" || referenceKind == "memory_correction_source" || referenceKind == "memory_dependency_target") &&
+		(objectKind == "mission_input" || objectKind == "artifact") ||
+		referenceKind == "memory_revalidation_workspace" && objectKind == "worker_workspace"
+	if !validReference || (objectKind == "artifact" && objectRevision != 1) {
+		return core.Malformed
+	}
+	tag, err := tx.Exec(ctx, `INSERT INTO memory_cas_retention_pins(company_id,reference_kind,reference_id,reference_revision,object_kind,object_id,object_revision,digest)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(company_id,reference_kind,reference_id,reference_revision) DO NOTHING`,
+		scope.company, referenceKind, referenceID, referenceRevision, objectKind, objectID, objectRevision, digest)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		var exact bool
+		if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM memory_cas_retention_pins
+WHERE company_id=$1 AND reference_kind=$2 AND reference_id=$3 AND reference_revision=$4
+AND object_kind=$5 AND object_id=$6 AND object_revision=$7 AND digest=$8)`,
+			scope.company, referenceKind, referenceID, referenceRevision, objectKind, objectID, objectRevision, digest).Scan(&exact); err != nil {
+			return err
+		}
+		if !exact {
+			return core.Integrity
+		}
+	}
+	return nil
 }
 
 func validMemoryRecordInput(b Binding, input MemoryRecordInput, key string) bool {

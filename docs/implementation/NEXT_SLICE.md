@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-02)
 
-## Latest continuation status (Slice 112, REQ-15 Workbench clean-context revalidation; Schema 77)
+## Latest continuation status (Slice 113, REQ-15 memory CAS retention pins; Schema 78)
+
+Schema 78 adds immutable, company-scoped retention pins for every memory revision source, correction evidence source (including rejected proposals), physical MissionInput/artifact dependency target, and exact workspace digest reviewed during revalidation. Existing history is backfilled. New pins are written in the same company-locked transaction as their memory reference, and the Kernel now requires Schema 78 or later; the previous hard-coded Schema 73 gate prevented the new Workbench memory path from opening on Schema 77. The repository has no production CAS collector, so actual deletion is not yet coordinated: any future collector must lock the same Company row, check every owner and pin, and perform deletion under that lock. `go build ./cmd/...`, `npm run build`, the migration hash check, and `git diff --check` pass. Tests and PostgreSQL migration/runtime execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-113-memory-cas-pins/verification.md`.
+
+Next bounded REQ-15 tasks: implement the reference-aware CAS collection lifecycle against all existing CAS owners while honoring the Company lock and memory pin ledger; then add deletion/revocation overlays that remain authoritative after restoring an older backup. Memory correction authoring/review in Workbench, product-provider successor WorkerSession admission, and the six frozen scenario records remain open. Do not claim REQ-15 completion until the remaining lifecycle, scenario qualification, and provider successor policy are closed.
+
+## Previous continuation status (Slice 112, REQ-15 Workbench clean-context revalidation; Schema 77)
 
 Workbench now exposes durable Task memory impact state, a no-store exact revalidation preview, and an idempotent owner command. The preview includes the changed memory text, approval/source references, Task plan, and the complete digest-verified workspace (bounded at 128 KiB); larger or unreadable workspaces fail closed. Confirmation binds to the preview context SHA and rechecks it plus the workspace CAS under the company transaction lock. The Task page requires an explicit review acknowledgement and reason; confirmation only resets eligibility and does not start a Worker. Fixture mode cannot preview or write. The Workbench read store now accepts Schema 77 or newer. Go command build, frontend production build, and `git diff --check` pass; tests and PostgreSQL migration/runtime execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-112-workbench-memory-revalidation/verification.md`.
-
-Next bounded REQ-15 tasks: protect source and memory CAS objects with durable, reference-aware retention pins and coordinate concurrent collection; then add deletion/revocation overlays that remain authoritative after restoring an older backup. The six frozen scenario records remain `not_run`. Product-provider successor WorkerSession admission remains blocked by its current one-session-per-Task rule. Do not claim REQ-15 completion until the remaining lifecycle, scenario qualification, and provider successor policy are closed.
 
 ## Previous continuation status (Slice 111, REQ-15 clean-context revalidation; Schema 77)
 
