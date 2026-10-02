@@ -29,6 +29,11 @@ type ProblemToolCallBudget struct {
 	LastAllocatedAt          string `json:"lastAllocatedAt,omitempty"`
 	LastClosingReserveReason string `json:"lastClosingReserveReason,omitempty"`
 	LastClosingReserveAt     string `json:"lastClosingReserveAt,omitempty"`
+	BudgetRejectionCount     int64  `json:"budgetRejectionCount"`
+	LastRejectionAt          string `json:"lastRejectionAt,omitempty"`
+	LastRejectionRoute       string `json:"lastRejectionRoute,omitempty"`
+	LastRejectionReason      string `json:"lastRejectionReason,omitempty"`
+	LastRejectionTaskID      string `json:"lastRejectionTaskId,omitempty"`
 }
 
 type ProblemToolCallBudgetList struct {
@@ -57,27 +62,64 @@ type problemBudgetQueryRower interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
+type problemToolCallBudgetRejection struct {
+	RequestID, ProblemKey, TaskID, SessionID string
+	Route, Reason, TaskKind                  string
+	SessionLimit, SessionUsed                int64
+	TaskLimit                                pgtype.Int8
+	TaskUsed                                 int64
+	ProblemLimit                             pgtype.Int8
+	ProblemUsed, ProblemRevision             int64
+	ClosingReserve, ClosingReserveRemaining  int64
+	ClosingReserveRevision                   int64
+}
+
+func recordProblemToolCallBudgetRejection(ctx context.Context, tx pgx.Tx, companyID string, rejection problemToolCallBudgetRejection) error {
+	var sessionID any
+	if rejection.SessionID != "" {
+		sessionID = rejection.SessionID
+	}
+	_, err := tx.Exec(ctx, `INSERT INTO problem_tool_call_budget_rejections(
+company_id,request_id,problem_key,task_id,worker_session_id,route,reason,task_kind,
+session_tool_call_limit,session_tool_calls_used,task_tool_call_limit,task_tool_calls_used,
+problem_tool_call_limit,problem_tool_calls_used,problem_budget_revision,
+closing_reserve_tool_calls,closing_reserve_remaining,closing_reserve_revision)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
+		companyID, rejection.RequestID, rejection.ProblemKey, rejection.TaskID, sessionID, rejection.Route, rejection.Reason, rejection.TaskKind,
+		rejection.SessionLimit, rejection.SessionUsed, rejection.TaskLimit, rejection.TaskUsed,
+		rejection.ProblemLimit, rejection.ProblemUsed, rejection.ProblemRevision,
+		rejection.ClosingReserve, rejection.ClosingReserveRemaining, rejection.ClosingReserveRevision)
+	return err
+}
+
+func problemToolCallClosingReserveSnapshot(ctx context.Context, q problemBudgetQueryRower, companyID, problemKey string) (int64, int64, int64, error) {
+	var reserved, revision, usedAtRevision, closeoutUsed int64
+	err := q.QueryRow(ctx, `SELECT
+ COALESCE((SELECT r.reserved_tool_calls FROM problem_tool_call_closing_reserves r WHERE r.company_id=$1 AND r.problem_key=$2 ORDER BY r.revision DESC LIMIT 1),0),
+ COALESCE((SELECT r.revision FROM problem_tool_call_closing_reserves r WHERE r.company_id=$1 AND r.problem_key=$2 ORDER BY r.revision DESC LIMIT 1),0),
+ COALESCE((SELECT r.closeout_tool_calls_used_at_revision FROM problem_tool_call_closing_reserves r WHERE r.company_id=$1 AND r.problem_key=$2 ORDER BY r.revision DESC LIMIT 1),0),
+ (SELECT COALESCE(sum(t.task_tool_calls_used),0)::bigint FROM tasks t WHERE t.company_id=$1 AND t.problem_key=$2 AND t.kind IN ('review','peer_review'))`, companyID, problemKey).Scan(&reserved, &revision, &usedAtRevision, &closeoutUsed)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	if closeoutUsed < usedAtRevision {
+		return 0, 0, 0, core.Integrity
+	}
+	spent := closeoutUsed - usedAtRevision
+	remaining := reserved - spent
+	if remaining < 0 {
+		remaining = 0
+	}
+	return reserved, remaining, revision, nil
+}
+
 func isProblemClosingTaskKind(kind string) bool {
 	return kind == "review" || kind == "peer_review"
 }
 
 func problemToolCallClosingReserveRemaining(ctx context.Context, q problemBudgetQueryRower, companyID, problemKey string) (int64, error) {
-	var reserved, usedAtRevision, closeoutUsed int64
-	err := q.QueryRow(ctx, `SELECT
- COALESCE((SELECT r.reserved_tool_calls FROM problem_tool_call_closing_reserves r WHERE r.company_id=$1 AND r.problem_key=$2 ORDER BY r.revision DESC LIMIT 1),0),
- COALESCE((SELECT r.closeout_tool_calls_used_at_revision FROM problem_tool_call_closing_reserves r WHERE r.company_id=$1 AND r.problem_key=$2 ORDER BY r.revision DESC LIMIT 1),0),
- (SELECT COALESCE(sum(t.task_tool_calls_used),0)::bigint FROM tasks t WHERE t.company_id=$1 AND t.problem_key=$2 AND t.kind IN ('review','peer_review'))`, companyID, problemKey).Scan(&reserved, &usedAtRevision, &closeoutUsed)
-	if err != nil {
-		return 0, err
-	}
-	if closeoutUsed < usedAtRevision {
-		return 0, core.Integrity
-	}
-	spent := closeoutUsed - usedAtRevision
-	if spent >= reserved {
-		return 0, nil
-	}
-	return reserved - spent, nil
+	_, remaining, _, err := problemToolCallClosingReserveSnapshot(ctx, q, companyID, problemKey)
+	return remaining, err
 }
 
 func ValidProblemKey(key string) bool {
@@ -106,9 +148,14 @@ func (k *Kernel) ListProblemToolCallBudgets(ctx context.Context, scope Scope, li
  COALESCE((SELECT r.closeout_tool_calls_used_at_revision FROM problem_tool_call_closing_reserves r WHERE r.company_id=pb.company_id AND r.problem_key=pb.problem_key ORDER BY r.revision DESC LIMIT 1),0),
  (SELECT COALESCE(sum(t.task_tool_calls_used),0)::bigint FROM tasks t WHERE t.company_id=pb.company_id AND t.problem_key=pb.problem_key AND t.kind IN ('review','peer_review')),
  COALESCE((SELECT a.reason FROM problem_tool_call_allocations a WHERE a.company_id=pb.company_id AND a.problem_key=pb.problem_key ORDER BY a.revision DESC LIMIT 1),''),
- COALESCE((SELECT a.created_at::text FROM problem_tool_call_allocations a WHERE a.company_id=pb.company_id AND a.problem_key=pb.problem_key ORDER BY a.revision DESC LIMIT 1),''),
- COALESCE((SELECT r.reason FROM problem_tool_call_closing_reserves r WHERE r.company_id=pb.company_id AND r.problem_key=pb.problem_key ORDER BY r.revision DESC LIMIT 1),''),
- COALESCE((SELECT r.created_at::text FROM problem_tool_call_closing_reserves r WHERE r.company_id=pb.company_id AND r.problem_key=pb.problem_key ORDER BY r.revision DESC LIMIT 1),'')
+			 COALESCE((SELECT a.created_at::text FROM problem_tool_call_allocations a WHERE a.company_id=pb.company_id AND a.problem_key=pb.problem_key ORDER BY a.revision DESC LIMIT 1),''),
+			 COALESCE((SELECT r.reason FROM problem_tool_call_closing_reserves r WHERE r.company_id=pb.company_id AND r.problem_key=pb.problem_key ORDER BY r.revision DESC LIMIT 1),''),
+			 COALESCE((SELECT r.created_at::text FROM problem_tool_call_closing_reserves r WHERE r.company_id=pb.company_id AND r.problem_key=pb.problem_key ORDER BY r.revision DESC LIMIT 1),''),
+			 (SELECT count(*) FROM problem_tool_call_budget_rejections d WHERE d.company_id=pb.company_id AND d.problem_key=pb.problem_key),
+			 COALESCE((SELECT d.occurred_at::text FROM problem_tool_call_budget_rejections d WHERE d.company_id=pb.company_id AND d.problem_key=pb.problem_key ORDER BY d.occurred_at DESC,d.request_id DESC LIMIT 1),''),
+			 COALESCE((SELECT d.route FROM problem_tool_call_budget_rejections d WHERE d.company_id=pb.company_id AND d.problem_key=pb.problem_key ORDER BY d.occurred_at DESC,d.request_id DESC LIMIT 1),''),
+			 COALESCE((SELECT d.reason FROM problem_tool_call_budget_rejections d WHERE d.company_id=pb.company_id AND d.problem_key=pb.problem_key ORDER BY d.occurred_at DESC,d.request_id DESC LIMIT 1),''),
+			 COALESCE((SELECT d.task_id FROM problem_tool_call_budget_rejections d WHERE d.company_id=pb.company_id AND d.problem_key=pb.problem_key ORDER BY d.occurred_at DESC,d.request_id DESC LIMIT 1),'')
 FROM problem_tool_call_budget_effective pb
 WHERE pb.company_id=$1 AND EXISTS(SELECT 1 FROM tasks t WHERE t.company_id=pb.company_id AND t.problem_key=pb.problem_key)
 ORDER BY pb.problem_key LIMIT $2`, scope.company, limit+1)
@@ -124,11 +171,16 @@ ORDER BY pb.problem_key LIMIT $2`, scope.company, limit+1)
 		if err = rows.Scan(&item.ProblemKey, &item.MissionID, &item.TaskCount, &item.WorkerSessionAttempts,
 			&toolCallLimit, &item.ToolCallsUsed, &item.AllocationRevision, &item.ClosingReserveToolCalls, &item.ClosingReserveRevision,
 			&closeoutUsedAtRevision, &closeoutUsed, &item.LastAllocationReason, &item.LastAllocatedAt,
-			&item.LastClosingReserveReason, &item.LastClosingReserveAt); err != nil {
+			&item.LastClosingReserveReason, &item.LastClosingReserveAt, &item.BudgetRejectionCount,
+			&item.LastRejectionAt, &item.LastRejectionRoute, &item.LastRejectionReason, &item.LastRejectionTaskID); err != nil {
 			return ProblemToolCallBudgetList{}, err
 		}
-		if item.ClosingReserveToolCalls > 0 && closeoutUsed > closeoutUsedAtRevision {
-			item.ClosingReserveRemaining = item.ClosingReserveToolCalls - (closeoutUsed - closeoutUsedAtRevision)
+		if item.ClosingReserveToolCalls > 0 {
+			spent := int64(0)
+			if closeoutUsed > closeoutUsedAtRevision {
+				spent = closeoutUsed - closeoutUsedAtRevision
+			}
+			item.ClosingReserveRemaining = item.ClosingReserveToolCalls - spent
 			if item.ClosingReserveRemaining < 0 {
 				item.ClosingReserveRemaining = 0
 			}

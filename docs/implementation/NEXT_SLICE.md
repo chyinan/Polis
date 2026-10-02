@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 124, REQ-16 protected ProblemKey closing reserve; Schema 85)
+## Latest continuation status (Slice 125, REQ-16 rejected ProblemKey budget routes; Schema 86)
+
+Schema 86 persists immutable rejected-route records for Worker admission and tool-call budget denials. A record binds the attempted Task/session, rejection route/reason, usage snapshot, ProblemKey allocation revision and closing-reserve policy/remaining amount. The insert trigger revalidates the locked counters and reason; a rejected first admission leaves both Task and ProblemKey caps uninitialized. Workbench shows each ProblemKey's rejection count and latest event. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all 86 migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-125-budget-rejection-audit/verification.md`.
+
+The next REQ-16 slice can address stable exhaustion closeout/recovery or a bounded outer-budget ledger. Token/money measurement and hidden CLI retries remain unaccounted; Mission/Company/Provider composition needs a defined authority and reservation model before enforcement.
+
+## Previous continuation status (Slice 124, REQ-16 protected ProblemKey closing reserve; Schema 85)
 
 Schema 85 adds append-only, revision-bound closeout reserve policies per ProblemKey. The Workbench can configure a pending ProblemKey before its first WorkerSession; that first admission must initialize a finite cap at least as large as the reserve or be denied. Only trusted Kernel-created `review` and `peer_review` Task kinds can consume protected calls; ordinary Task admission, provider turn limits and accepted-call accounting preserve the unspent reserve. Calls made by those closing classes burn down the reserve from the current policy revision. The local owner can set or release a reserve with a reason, confirmation, expected budget revision and expected reserve revision. The default remains zero. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-124-budget-closing-reserves/verification.md`.
 

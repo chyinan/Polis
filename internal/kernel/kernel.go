@@ -151,7 +151,7 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 	if err != nil {
 		return fail(err)
 	}
-	if schema < 85 {
+	if schema < 86 {
 		return fail(fmt.Errorf("incompatible schema: %d", schema))
 	}
 	if err = os.MkdirAll(root, 0700); err != nil {
@@ -406,7 +406,11 @@ func (k *Kernel) txWrite(ctx context.Context, s Scope, b *Binding, key, op strin
 	if _, e = tx.Exec(ctx, "INSERT INTO receipts VALUES($1,$2,$3,$4,$5)", s.company, actor, key, hash, raw); e != nil {
 		return Receipt{}, e
 	}
-	if e = appendEvent(ctx, tx, s, op, r); e != nil {
+	eventKind := op
+	if r.Status == "budget_rejected" {
+		eventKind = "problem.budget.route_rejected"
+	}
+	if e = appendEvent(ctx, tx, s, eventKind, r); e != nil {
 		return Receipt{}, e
 	}
 	if e = tx.Commit(ctx); e != nil {

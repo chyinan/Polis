@@ -26,6 +26,20 @@ function stateTone(state: ProblemToolCallBudgetView['state']): 'success' | 'warn
   return 'neutral';
 }
 
+function rejectionRouteLabel(route: NonNullable<ProblemToolCallBudgetView['lastRejectionRoute']>): string {
+  return route === 'worker_admission' ? 'Worker admission' : '工具调用';
+}
+
+function rejectionReasonLabel(reason: NonNullable<ProblemToolCallBudgetView['lastRejectionReason']>): string {
+  switch (reason) {
+    case 'session_limit': return 'WorkerSession 额度已耗尽';
+    case 'task_limit': return 'Task 额度已耗尽';
+    case 'problem_limit': return 'ProblemKey 额度已耗尽';
+    case 'closing_reserve': return '剩余额度受关闭预留保护';
+    case 'initial_closing_reserve': return '首个额度不能覆盖关闭预留';
+  }
+}
+
 export function ProblemToolBudgetPanel({api, companyId}: Props): ReactElement | null {
   const query = useProblemToolCallBudgets(api, companyId);
   if (api.mode !== 'real') return null;
@@ -102,6 +116,7 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
       <p>已用 {budget.toolCallsUsed.toLocaleString('zh-CN')} / 上限 {limitLabel} · 剩余 {remainingLabel} · 额度版本 {budget.allocationRevision}</p>
       {budget.lastAllocatedAt ? <p className={styles.formHint}>最近追加：{budget.lastAllocatedAt} · {budget.lastAllocationReason}</p> : null}
       {budget.closingReserveRevision > 0 ? <p className={styles.formHint}>关闭类预留：当前保护 {budget.closingReserveRemaining.toLocaleString('zh-CN')} 次（本次策略设为 {budget.closingReserveToolCalls.toLocaleString('zh-CN')}）· 版本 {budget.closingReserveRevision} · {budget.lastClosingReserveAt} · {budget.lastClosingReserveReason}</p> : <p className={styles.formHint}>尚未设置关闭类预留；当前按 0 次保护。</p>}
+      {budget.budgetRejectionCount > 0 && budget.lastRejectionRoute && budget.lastRejectionReason && budget.lastRejectionAt && budget.lastRejectionTaskId ? <p className={styles.formHint}>预算拒绝 {budget.budgetRejectionCount.toLocaleString('zh-CN')} 次 · 最近：{budget.lastRejectionAt} · {rejectionRouteLabel(budget.lastRejectionRoute)} · {rejectionReasonLabel(budget.lastRejectionReason)} · Task <code>{budget.lastRejectionTaskId}</code></p> : <p className={styles.formHint}>尚无预算拒绝记录。</p>}
       {finite ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
         <label className={styles.formLabel}>追加调用次数<input className={styles.formField} inputMode="numeric" min="1" step="1" type="number" value={additional} onChange={event => setAdditional(event.target.value)} /></label>
         <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>

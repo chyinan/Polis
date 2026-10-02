@@ -16,12 +16,19 @@ function isProblemBudget(value: unknown): value is ProblemToolCallBudgetView {
     || !Number.isSafeInteger(value.allocationRevision) || Number(value.allocationRevision) < 1
     || !isCount(value.closingReserveToolCalls) || !isCount(value.closingReserveRemaining)
     || !isCount(value.closingReserveRevision)
+    || !isCount(value.budgetRejectionCount)
     || !['pending', 'unbounded', 'available', 'closing_reserved', 'exhausted'].includes(String(value.state))) return false;
   if (value.toolCallLimit !== null && !isCount(value.toolCallLimit)) return false;
   if (value.lastAllocationReason !== undefined && typeof value.lastAllocationReason !== 'string') return false;
   if (value.lastAllocatedAt !== undefined && typeof value.lastAllocatedAt !== 'string') return false;
   if (value.lastClosingReserveReason !== undefined && typeof value.lastClosingReserveReason !== 'string') return false;
   if (value.lastClosingReserveAt !== undefined && typeof value.lastClosingReserveAt !== 'string') return false;
+  if (value.lastRejectionAt !== undefined && typeof value.lastRejectionAt !== 'string') return false;
+  if (value.lastRejectionRoute !== undefined && !['worker_admission', 'worker_tool_call'].includes(String(value.lastRejectionRoute))) return false;
+  if (value.lastRejectionReason !== undefined && !['session_limit', 'task_limit', 'problem_limit', 'closing_reserve', 'initial_closing_reserve'].includes(String(value.lastRejectionReason))) return false;
+  if (value.lastRejectionTaskId !== undefined && (typeof value.lastRejectionTaskId !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(value.lastRejectionTaskId))) return false;
+  if (Number(value.budgetRejectionCount) === 0 && (value.lastRejectionAt !== undefined || value.lastRejectionRoute !== undefined || value.lastRejectionReason !== undefined || value.lastRejectionTaskId !== undefined)) return false;
+  if (Number(value.budgetRejectionCount) > 0 && (typeof value.lastRejectionAt !== 'string' || value.lastRejectionRoute === undefined || value.lastRejectionReason === undefined || value.lastRejectionTaskId === undefined)) return false;
   if (Number(value.closingReserveRemaining) > Number(value.closingReserveToolCalls)) return false;
   if (value.state === 'pending') return value.toolCallLimit === null
     && value.toolCallsRemaining === 0;

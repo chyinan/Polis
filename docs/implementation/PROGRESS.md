@@ -1,10 +1,16 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 124 — REQ-16 protected ProblemKey closing reserve (Schema 85)
+## Slice 125 — REQ-16 rejected ProblemKey budget routes (Schema 86)
+
+Budget-gated Worker admissions and tool calls now append an immutable rejection row in the same transaction that returns `TOOL_CALL_BUDGET_EXHAUSTED`. Each row records the route and reason, Task/session identity, Task and ProblemKey usage, cap/allocation revision, and closing-reserve state/revision. The database validates that the snapshot matches the live locked rows and that the reason follows from the recorded limit; rejected admissions do not initialize a Task or ProblemKey cap. Workbench budget rows report the rejection count and latest route/reason/Task. Go package/command build, frontend production build, migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-125-budget-rejection-audit/verification.md`.
+
+Mission/Company/Provider composition, hidden retries, token/money accounting and stable exhaustion closeout/recovery remain open.
+
+## Previous continuation status (Slice 124 — REQ-16 protected ProblemKey closing reserve; Schema 85)
 
 Schema 85 adds append-only ProblemKey closing-reserve revisions bound to the current shared cap and usage by the fixed closing classes. The Workbench can set a pending reserve before first admission; that admission must initialize a finite cap at least as large as the reserve. Only Kernel-created `review` and `peer_review` Tasks may spend protected calls; ordinary Tasks preserve the unspent reserve through admission, accepted tool-call accounting, handover and provider turn clamping. Closing-class calls reduce the remaining reserve. A confirmed local-owner Workbench command sets or releases the reserve and records expected cap/revision, reserve revision, reason and request ID. Default reserve is zero. Go package/command build, frontend production build, all migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-124-budget-closing-reserves/verification.md`.
 
-Mission/Company/Provider composition, rejected-route records, hidden retries, token/money accounting and stable exhaustion closeout/recovery remain open.
+Mission/Company/Provider composition, hidden retries, token/money accounting and stable exhaustion closeout/recovery remain open.
 
 ## Previous continuation status (Slice 123 — REQ-16 authorized ProblemKey budget allocations; Schema 84)
 

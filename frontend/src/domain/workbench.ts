@@ -1442,6 +1442,8 @@ export type MemoryCorrectionQueueView = Readonly<{
 }>;
 
 export type ProblemToolCallBudgetState = 'pending' | 'unbounded' | 'available' | 'closing_reserved' | 'exhausted';
+export type ProblemToolCallBudgetRejectionRoute = 'worker_admission' | 'worker_tool_call';
+export type ProblemToolCallBudgetRejectionReason = 'session_limit' | 'task_limit' | 'problem_limit' | 'closing_reserve' | 'initial_closing_reserve';
 
 export type ProblemToolCallBudgetView = Readonly<{
   problemKey: string;
@@ -1460,6 +1462,11 @@ export type ProblemToolCallBudgetView = Readonly<{
   lastAllocatedAt?: string;
   lastClosingReserveReason?: string;
   lastClosingReserveAt?: string;
+  budgetRejectionCount: number;
+  lastRejectionAt?: string;
+  lastRejectionRoute?: ProblemToolCallBudgetRejectionRoute;
+  lastRejectionReason?: ProblemToolCallBudgetRejectionReason;
+  lastRejectionTaskId?: string;
 }>;
 
 export type ProblemToolCallBudgetListView = Readonly<{
