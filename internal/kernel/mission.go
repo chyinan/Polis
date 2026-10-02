@@ -113,7 +113,7 @@ func (k *Kernel) TXPrepareProductTask(ctx context.Context, s Scope, missionID, g
 		return Task{}, core.Malformed
 	}
 	content := "# Mission " + missionID + "\n\nGoal: " + goal + "\n"
-	digest, err := putBlob(k.root, s.company, []byte(content))
+	digest, err := k.putBlobWithClaim(ctx, s.company, []byte(content))
 	if err != nil {
 		return Task{}, err
 	}

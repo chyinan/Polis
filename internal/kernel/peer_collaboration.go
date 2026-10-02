@@ -611,10 +611,10 @@ func (k *Kernel) TXCreatePeerFixture(ctx context.Context, s Scope, mission strin
 		return out, core.Malformed
 	}
 	backendDigest, frontendDigest := digestPeerContent([]byte(fixture.PeerBackendV1)), digestPeerContent([]byte(fixture.PeerFrontendV1))
-	if _, e := putBlob(k.root, s.company, []byte(fixture.PeerBackendV1)); e != nil {
+	if _, e := k.putBlobWithClaim(ctx, s.company, []byte(fixture.PeerBackendV1)); e != nil {
 		return out, e
 	}
-	if _, e := putBlob(k.root, s.company, []byte(fixture.PeerFrontendV1)); e != nil {
+	if _, e := k.putBlobWithClaim(ctx, s.company, []byte(fixture.PeerFrontendV1)); e != nil {
 		return out, e
 	}
 	v1Schema := []byte(`{"items":["id","name"]}`)

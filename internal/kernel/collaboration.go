@@ -126,7 +126,7 @@ func (k *Kernel) txSubmit(ctx context.Context, b Binding, w Task, key string, co
 	if e != nil {
 		return Receipt{}, e
 	}
-	digest, e := putBlob(k.root, b.scope.company, content)
+	digest, e := k.putBlobWithClaim(ctx, b.scope.company, content)
 	if e != nil {
 		return Receipt{}, e
 	}

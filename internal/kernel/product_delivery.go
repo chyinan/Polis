@@ -105,7 +105,7 @@ func (k *Kernel) txSubmitTaskDelivery(ctx context.Context, b Binding, w Task, ke
 	if err = invokeProductDeliveryFault(fault, productDeliveryAfterStagePersist); err != nil {
 		return Receipt{}, ProductDeliveryResult{}, productDeliveryPhaseError{phase: "staging", err: err}
 	}
-	if _, err = putBlob(k.root, b.scope.company, content); err != nil {
+	if _, err = k.putBlobWithClaim(ctx, b.scope.company, content); err != nil {
 		return Receipt{}, ProductDeliveryResult{}, productDeliveryPhaseError{phase: "staging", err: err}
 	}
 	if err = invokeProductDeliveryFault(fault, productDeliveryAfterCASPublish); err != nil {

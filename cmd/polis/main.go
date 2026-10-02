@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -41,13 +42,16 @@ func run() error {
 		select {}
 	}
 	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: polis migrate | migrate-to VERSION | migration-status | migration-attempt-status | sidecar-info | serve | recovery-backup OUTPUT_DIRECTORY | recovery-backup-verify PACKAGE_DIRECTORY | recovery-backup-restore PACKAGE_DIRECTORY BLOB_ROOT | recovery-generation-verify PACKAGE_DIRECTORY BLOB_ROOT | linux-node-toolchain-sha256 | import-git COMPANY MISSION REPOSITORY_PATH COMMIT_ID REQUEST_ID [INPUT_ID] | create COMPANY MISSION | start COMPANY MISSION | status COMPANY MISSION")
+		return fmt.Errorf("usage: polis migrate | migrate-to VERSION | migration-status | migration-attempt-status | sidecar-info | serve | cas-collect [flags] | recovery-backup OUTPUT_DIRECTORY | recovery-backup-verify PACKAGE_DIRECTORY | recovery-backup-restore PACKAGE_DIRECTORY BLOB_ROOT | recovery-generation-verify PACKAGE_DIRECTORY BLOB_ROOT | linux-node-toolchain-sha256 | import-git COMPANY MISSION REPOSITORY_PATH COMMIT_ID REQUEST_ID [INPUT_ID] | create COMPANY MISSION | start COMPANY MISSION | status COMPANY MISSION")
 	}
 	if os.Args[1] == "sidecar-info" {
 		if len(os.Args) != 2 {
 			return fmt.Errorf("usage: polis sidecar-info")
 		}
 		return writeDesktopSidecarInfo(os.Stdout)
+	}
+	if os.Args[1] == "cas-collect" {
+		return runCASCollection()
 	}
 	if os.Args[1] == "recovery-backup" {
 		return createRecoveryBackup()
@@ -175,6 +179,36 @@ func run() error {
 		return fmt.Errorf("unknown command")
 	}
 	return nil
+}
+
+func runCASCollection() error {
+	flags := flag.NewFlagSet("cas-collect", flag.ContinueOnError)
+	companyID := flags.String("company", "", "company whose local CAS directory to inspect")
+	afterDigest := flags.String("after", "", "resume after this lowercase CAS SHA-256")
+	limit := flags.Int("limit", 32, "maximum CAS objects to inspect in this page (1-128)")
+	apply := flags.Bool("apply", false, "delete only objects proven unreferenced; omitted means dry-run")
+	if err := flags.Parse(os.Args[2:]); err != nil {
+		return err
+	}
+	if *companyID == "" || flags.NArg() != 0 {
+		return fmt.Errorf("usage: polis cas-collect --company COMPANY_ID [--after SHA256] [--limit 1-128] [--apply]")
+	}
+	dsn, root := os.Getenv("POLIS_DSN"), os.Getenv("POLIS_BLOB_ROOT")
+	if dsn == "" || root == "" {
+		return fmt.Errorf("POLIS_DSN and POLIS_BLOB_ROOT are required")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+	runtime, err := kernel.Open(ctx, dsn, root)
+	if err != nil {
+		return err
+	}
+	defer runtime.Close()
+	report, err := runtime.CollectOrphanCASBlobs(ctx, *companyID, *afterDigest, *limit, *apply)
+	if err != nil {
+		return err
+	}
+	return json.NewEncoder(os.Stdout).Encode(report)
 }
 
 func createRecoveryBackup() error {

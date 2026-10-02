@@ -88,7 +88,7 @@ func (k *Kernel) TXImportStdioMCPPackage(ctx context.Context, companyID string, 
 	}
 	verifiedFiles := make([]capabilitysource.StdioMCPBundleFile, 0, len(bundle.Files))
 	for _, file := range bundle.Files {
-		digest, storeErr := putBlob(k.root, companyID, file.Content)
+		digest, storeErr := k.putBlobWithClaim(ctx, companyID, file.Content)
 		if storeErr != nil {
 			return StdioMCPPackageRevision{}, storeErr
 		}

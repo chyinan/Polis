@@ -489,7 +489,7 @@ func (k *Kernel) StoreEnvironmentPreparationArtifact(ctx context.Context, compan
 	if _, err := k.GetEnvironmentPreparationRun(ctx, companyID, runID); err != nil {
 		return "", err
 	}
-	return putBlob(k.root, companyID, content)
+	return k.putBlobWithClaim(ctx, companyID, content)
 }
 
 func (k *Kernel) TXRecordEnvironmentPreparationEvent(ctx context.Context, companyID string, input EnvironmentPreparationEventInput) (Receipt, error) {

@@ -51,7 +51,7 @@ func (k *Kernel) TXAddMissionInput(ctx context.Context, scope Scope, missionID, 
 		return MissionInputRevision{}, core.Denied
 	}
 
-	digest, err := putBlob(k.root, scope.company, content)
+	digest, err := k.putBlobWithClaim(ctx, scope.company, content)
 	if err != nil {
 		return MissionInputRevision{}, err
 	}

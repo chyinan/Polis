@@ -113,7 +113,7 @@ func (k *Kernel) TXSubmitTaskTakeoverSnapshot(ctx context.Context, scope Scope, 
 	if err != nil {
 		return TaskTakeoverLease{}, err
 	}
-	digest, err := putBlob(k.root, scope.company, content)
+	digest, err := k.putBlobWithClaim(ctx, scope.company, content)
 	if err != nil {
 		return TaskTakeoverLease{}, err
 	}

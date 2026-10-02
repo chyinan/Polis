@@ -70,7 +70,7 @@ func (k *Kernel) TXImportReadOnlySkillPackage(ctx context.Context, companyID str
 
 	storedFiles := make([]capabilitysource.SkillBundleFile, 0, len(bundle.Files))
 	for _, file := range bundle.Files {
-		digest, storeErr := putBlob(k.root, companyID, file.Content)
+		digest, storeErr := k.putBlobWithClaim(ctx, companyID, file.Content)
 		if storeErr != nil {
 			return SkillRevision{}, storeErr
 		}

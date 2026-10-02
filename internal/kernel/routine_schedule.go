@@ -174,7 +174,7 @@ func (k *Kernel) createRoutineTaskTX(ctx context.Context, tx pgx.Tx, scope Scope
 		return "", err
 	}
 	workspace := fmt.Sprintf("# Scheduled routine\n\n%s\n\nOccurrence: %s\nScheduled at: %s\n", instruction, occurrence.OccurrenceKey, occurrence.ScheduledAt.Format(time.RFC3339))
-	digest, err := putBlob(k.root, scope.company, []byte(workspace))
+	digest, err := k.putBlobInTX(ctx, tx, scope.company, []byte(workspace))
 	if err != nil {
 		return "", err
 	}

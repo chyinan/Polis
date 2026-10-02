@@ -143,7 +143,7 @@ func (k *Kernel) StoreJobRunLogArtifact(ctx context.Context, companyID, jobID st
 	if _, err := k.GetJobRun(ctx, companyID, jobID); err != nil {
 		return "", err
 	}
-	return putBlob(k.root, companyID, content)
+	return k.putBlobWithClaim(ctx, companyID, content)
 }
 
 func (k *Kernel) GetJobRunLogArtifact(ctx context.Context, companyID, jobID string) (JobRunLogArtifact, error) {

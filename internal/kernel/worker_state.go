@@ -16,7 +16,7 @@ func (k *Kernel) TXCreateProbe(ctx context.Context, s Scope, mission string) (Ta
 	if !core.ValidID(mission) {
 		return Task{}, core.Malformed
 	}
-	digest, e := putBlob(k.root, s.company, []byte(fixture.Source))
+	digest, e := k.putBlobWithClaim(ctx, s.company, []byte(fixture.Source))
 	if e != nil {
 		return Task{}, e
 	}
@@ -718,7 +718,7 @@ func (k *Kernel) txReplace(ctx context.Context, b Binding, key, expected string,
 	if e != nil {
 		return Receipt{}, 0, e
 	}
-	digest, e := putBlob(k.root, b.scope.company, []byte(content))
+	digest, e := k.putBlobWithClaim(ctx, b.scope.company, []byte(content))
 	if e != nil {
 		return Receipt{}, 0, e
 	}

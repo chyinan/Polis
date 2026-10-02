@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-02)
 
-## Latest continuation status (Slice 113, REQ-15 memory CAS retention pins; Schema 78)
+## Latest continuation status (Slice 114, REQ-15 reference-aware CAS collection; Schema 79)
+
+Schema 79 adds expiring CAS write claims. Every production CAS-first writer now claims its digest before publishing bytes; claims cover the gap before its later database owner commits, while Routine workspace creation writes its claim and owner in one Company-locked transaction. `polis cas-collect --company ID` is dry-run by default; `--apply` is explicit. Collection takes a company-scoped advisory lock and Company row lock, scans every company-owned public table's serialized rows for each candidate digest, checks active write claims, and unlinks only unreferenced regular digest files. Pages are capped at 128 (default 32), unexpected/symlink entries fail closed, and directories over 4,096 entries are refused. Kernel startup requires Schema 79 or later. `go build ./cmd/...`, migration hash validation, and `git diff --check` pass. Tests, PostgreSQL migration/runtime, and actual `--apply` collection were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-114-cas-collection-protocol/verification.md`.
+
+Next bounded REQ-15 tasks: make memory deletion/revocation overlays authoritative after restoring an older backup; then add correction proposal/review authoring to Workbench. Product-provider successor WorkerSession admission and the six frozen scenario records also remain open. Keep real CAS deletion operator-triggered; do not claim qualification from a dry-run build.
+
+## Previous continuation status (Slice 113, REQ-15 memory CAS retention pins; Schema 78)
 
 Schema 78 adds immutable, company-scoped retention pins for every memory revision source, correction evidence source (including rejected proposals), physical MissionInput/artifact dependency target, and exact workspace digest reviewed during revalidation. Existing history is backfilled. New pins are written in the same company-locked transaction as their memory reference, and the Kernel now requires Schema 78 or later; the previous hard-coded Schema 73 gate prevented the new Workbench memory path from opening on Schema 77. The repository has no production CAS collector, so actual deletion is not yet coordinated: any future collector must lock the same Company row, check every owner and pin, and perform deletion under that lock. `go build ./cmd/...`, `npm run build`, the migration hash check, and `git diff --check` pass. Tests and PostgreSQL migration/runtime execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-113-memory-cas-pins/verification.md`.
 

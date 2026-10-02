@@ -17,7 +17,7 @@ func (k *Kernel) TXRestoreCandidateForReview(ctx context.Context, s Scope, missi
 	if len(artifactID) == 0 || len(content) == 0 {
 		return Receipt{}, core.Malformed
 	}
-	digest, e := putBlob(k.root, s.company, content)
+	digest, e := k.putBlobWithClaim(ctx, s.company, content)
 	if e != nil {
 		return Receipt{}, e
 	}
