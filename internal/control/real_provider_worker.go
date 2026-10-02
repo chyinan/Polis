@@ -50,6 +50,8 @@ type providerWorker struct {
 	noProcessFailure       bool
 	startFailureReason     string
 	startFailureRequestID  string
+	turnToolCallLimit      int
+	taskToolBudget         kernel.ToolCallBudget
 	stopProof              runner.StopProof
 	done                   chan struct{}
 	runDone                chan struct{}
@@ -563,6 +565,25 @@ func (a *RealProviderWorkerAdapter) startBusinessWorker(ctx context.Context, com
 		}
 		return nil, inputErr
 	}
+	taskToolBudget, err := a.kernel.WorkerToolCallBudget(ctx, binding)
+	if err != nil {
+		budgetErr := fmt.Errorf("product Task tool-call budget could not be verified: %w", err)
+		if cleanupErr := a.finalizeUnstartedOwned(context.Background(), companyID, missionID, binding, inputContext, provider.Reservation{}, "Task tool-call budget could not be verified", "task-tool-budget-failed-"+binding.SessionID(), ""); cleanupErr != nil {
+			return nil, errors.Join(budgetErr, fmt.Errorf("WorkerSession finalization is unresolved: %w", cleanupErr))
+		}
+		return nil, budgetErr
+	}
+	turnToolCallLimit := profile.ToolCallLimit
+	if taskToolBudget.Remaining >= 0 && (turnToolCallLimit <= 0 || int64(turnToolCallLimit) > taskToolBudget.Remaining) {
+		turnToolCallLimit = int(taskToolBudget.Remaining)
+	}
+	if allowTurn && turnToolCallLimit < 1 {
+		budgetErr := errors.New("product Task has no remaining tool-call budget")
+		if cleanupErr := a.finalizeUnstartedOwned(context.Background(), companyID, missionID, binding, inputContext, provider.Reservation{}, budgetErr.Error(), "task-tool-budget-exhausted-"+binding.SessionID(), ""); cleanupErr != nil {
+			return nil, errors.Join(budgetErr, fmt.Errorf("WorkerSession finalization is unresolved: %w", cleanupErr))
+		}
+		return nil, budgetErr
+	}
 	var reservation provider.Reservation
 	var workerCgroup runner.WorkerProcessCgroup
 	failStart := func(startErr error, session provider.Session) error {
@@ -660,6 +681,8 @@ func (a *RealProviderWorkerAdapter) startBusinessWorker(ctx context.Context, com
 	runCtx, cancel := context.WithCancel(context.Background())
 	worker := newStartupProviderWorker(companyID, missionID, binding, inputContext, reservation, session, false, "worker_cleanup", a.mcpOwnerLease)
 	worker.mcpState.allowStreamableHTTP = profile.ToolSurfaceQualification == provider.ProductControlledMCPToolSurfaceV2Qualification && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"
+	worker.turnToolCallLimit = turnToolCallLimit
+	worker.taskToolBudget = taskToolBudget
 	worker.authorization = authorization
 	worker.cancel = cancel
 	a.mu.Lock()
@@ -788,6 +811,9 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 	worker.signalReady(nil)
 	prompt := "Complete the assigned product task using only the registered Polis tools. Persist the requested artifact and checkpoint, then stop." + verifiedInputPrompt
 	turnOptions := codexTurnOptions(profile)
+	if worker.turnToolCallLimit > 0 && (turnOptions.ToolCallLimit <= 0 || worker.turnToolCallLimit < turnOptions.ToolCallLimit) {
+		turnOptions.ToolCallLimit = worker.turnToolCallLimit
+	}
 	turnOptions.Images = make([]codex.TurnImage, len(worker.inputContext.Payload.Images))
 	for index, image := range worker.inputContext.Payload.Images {
 		turnOptions.Images[index] = codex.TurnImage{MediaType: image.MediaType, Content: append([]byte(nil), image.Content...)}
@@ -829,7 +855,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 			turnErr = fmt.Errorf("provider turn completed but Task input delivery evidence could not be saved: %w", receiptErr)
 		}
 	}
-	usage = map[string]any{"authorization": worker.authorization, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
+	usage = map[string]any{"authorization": worker.authorization, "task_tool_call_budget_at_start": worker.taskToolBudget, "effective_turn_tool_call_limit": turnOptions.ToolCallLimit, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
 	if turnErr != nil {
 		state, outcome = "inconclusive", "transport_failure"
 		if ctx.Err() != nil {

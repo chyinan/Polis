@@ -6,9 +6,12 @@ type Workspace struct {
 	Revision        int64
 }
 type ToolCallBudget struct {
-	Limit     int64 `json:"tool_call_limit"`
-	Used      int64 `json:"tool_calls_used"`
-	Remaining int64 `json:"tool_calls_remaining"`
+	Limit         int64 `json:"tool_call_limit"`
+	Used          int64 `json:"tool_calls_used"`
+	Remaining     int64 `json:"tool_calls_remaining"`
+	TaskLimit     int64 `json:"task_tool_call_limit"`
+	TaskUsed      int64 `json:"task_tool_calls_used"`
+	TaskRemaining int64 `json:"task_tool_calls_remaining"`
 }
 
 type SkillReferenceSummary struct {

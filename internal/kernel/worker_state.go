@@ -230,7 +230,12 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 	if toolCallLimit < 0 {
 		return b, core.Malformed
 	}
-	r, e := k.TXWrite(ctx, s, nil, newID(), "worker.restore", []string{task, profile}, func(tx pgx.Tx) (Receipt, error) {
+	r, e := k.TXWrite(ctx, s, nil, newID(), "worker.restore", struct {
+		Task          string
+		Profile       string
+		ToolCallLimit int64
+		Product       bool
+	}{task, profile, toolCallLimit, productProvider}, func(tx pgx.Tx) (Receipt, error) {
 		var productWorkspaceDigest, productValidationBindingDigest string
 		var productWorkspaceRevision int64
 		t, e := taskRow(ctx, tx, s, task)
@@ -239,6 +244,22 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		}
 		if e = k.requireMemoryTaskWritableTX(ctx, tx, s.company, t.ID); e != nil {
 			return Receipt{}, e
+		}
+		var taskToolCallLimit pgtype.Int8
+		var taskToolCallsUsed int64
+		if e = tx.QueryRow(ctx, `SELECT task_tool_call_limit,task_tool_calls_used FROM tasks
+WHERE company_id=$1 AND id=$2 FOR UPDATE`, s.company, t.ID).Scan(&taskToolCallLimit, &taskToolCallsUsed); e != nil {
+			return Receipt{}, e
+		}
+		if !taskToolCallLimit.Valid {
+			if _, e = tx.Exec(ctx, `UPDATE tasks SET task_tool_call_limit=$3
+WHERE company_id=$1 AND id=$2 AND task_tool_call_limit IS NULL`, s.company, t.ID, toolCallLimit); e != nil {
+				return Receipt{}, e
+			}
+			taskToolCallLimit = pgtype.Int8{Int64: toolCallLimit, Valid: true}
+		}
+		if taskToolCallLimit.Int64 > 0 && taskToolCallsUsed >= taskToolCallLimit.Int64 {
+			return Receipt{}, core.ToolCallBudgetExceeded
 		}
 		if productProvider {
 			if !t.IsProductProviderExecutable() || t.State != "ready" {
@@ -321,14 +342,18 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 
 func (k *Kernel) WorkerToolCallBudget(ctx context.Context, b Binding) (ToolCallBudget, error) {
 	var budget ToolCallBudget
-	e := k.pool.QueryRow(ctx, "SELECT tool_call_limit,tool_calls_used FROM worker_sessions WHERE company_id=$1 AND id=$2", b.scope.company, b.session).Scan(&budget.Limit, &budget.Used)
+	var taskLimit pgtype.Int8
+	e := k.pool.QueryRow(ctx, `SELECT s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used
+FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed)
 	if e != nil {
 		return budget, e
 	}
-	budget.Remaining = -1
-	if budget.Limit > 0 {
-		budget.Remaining = budget.Limit - budget.Used
+	if !taskLimit.Valid {
+		return budget, core.Integrity
 	}
+	budget.TaskLimit = taskLimit.Int64
+	setEffectiveToolCallBudgetRemaining(&budget)
 	return budget, nil
 }
 
@@ -348,29 +373,56 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&sessionSta
 				return Receipt{}, core.Denied
 			}
 		}
-		if e := tx.QueryRow(ctx, "SELECT tool_call_limit,tool_calls_used FROM worker_sessions WHERE company_id=$1 AND id=$2 FOR UPDATE", b.scope.company, b.session).Scan(&budget.Limit, &budget.Used); e != nil {
+		var taskID string
+		var taskLimit pgtype.Int8
+		if e := tx.QueryRow(ctx, `SELECT s.task_id,s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used
+FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+WHERE s.company_id=$1 AND s.id=$2 FOR UPDATE OF s,t`, b.scope.company, b.session).Scan(&taskID, &budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed); e != nil {
 			return Receipt{}, e
 		}
-		budget.Remaining = -1
-		if budget.Limit > 0 {
-			budget.Remaining = budget.Limit - budget.Used
-			if budget.Remaining <= 0 {
-				return Receipt{}, core.ToolCallBudgetExceeded
-			}
+		if !taskLimit.Valid {
+			return Receipt{}, core.Integrity
+		}
+		budget.TaskLimit = taskLimit.Int64
+		setEffectiveToolCallBudgetRemaining(&budget)
+		if (budget.Limit > 0 && budget.Used >= budget.Limit) || (budget.TaskLimit > 0 && budget.TaskUsed >= budget.TaskLimit) {
+			return Receipt{}, core.ToolCallBudgetExceeded
 		}
 		budget.Used++
-		if budget.Limit > 0 {
-			budget.Remaining = budget.Limit - budget.Used
-		}
 		if _, e := tx.Exec(ctx, "UPDATE worker_sessions SET tool_calls_used=$3 WHERE company_id=$1 AND id=$2", b.scope.company, b.session, budget.Used); e != nil {
 			return Receipt{}, e
 		}
+		budget.TaskUsed++
+		tag, e := tx.Exec(ctx, `UPDATE tasks SET task_tool_calls_used=$3
+WHERE company_id=$1 AND id=$2 AND task_tool_call_limit IS NOT NULL
+AND (task_tool_call_limit=0 OR task_tool_calls_used<task_tool_call_limit)`, b.scope.company, taskID, budget.TaskUsed)
+		if e != nil {
+			return Receipt{}, e
+		}
+		if tag.RowsAffected() != 1 {
+			return Receipt{}, core.ToolCallBudgetExceeded
+		}
+		setEffectiveToolCallBudgetRemaining(&budget)
 		return Receipt{ID: b.session, Status: "tool_call"}, nil
 	})
-	if e == nil && budget.Limit == 0 && budget.Used == 0 {
+	if e == nil {
 		budget, e = k.WorkerToolCallBudget(ctx, b)
 	}
 	return budget, e
+}
+
+func setEffectiveToolCallBudgetRemaining(budget *ToolCallBudget) {
+	budget.Remaining = -1
+	if budget.Limit > 0 {
+		budget.Remaining = budget.Limit - budget.Used
+	}
+	budget.TaskRemaining = -1
+	if budget.TaskLimit > 0 {
+		budget.TaskRemaining = budget.TaskLimit - budget.TaskUsed
+		if budget.Remaining < 0 || budget.TaskRemaining < budget.Remaining {
+			budget.Remaining = budget.TaskRemaining
+		}
+	}
 }
 
 func (k *Kernel) checkSession(ctx context.Context, tx pgx.Tx, b Binding, write bool) (string, error) {
@@ -660,14 +712,18 @@ func (k *Kernel) Handover(ctx context.Context, b Binding) (HandoverBundle, error
 		return out, e
 	}
 	var task string
-	e = tx.QueryRow(ctx, "SELECT task_id,tool_call_limit,tool_calls_used FROM worker_sessions WHERE company_id=$1 AND id=$2", b.scope.company, b.session).Scan(&task, &out.ToolBudget.Limit, &out.ToolBudget.Used)
+	var taskLimit pgtype.Int8
+	e = tx.QueryRow(ctx, `SELECT s.task_id,s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used
+FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&task, &out.ToolBudget.Limit, &out.ToolBudget.Used, &taskLimit, &out.ToolBudget.TaskUsed)
 	if e != nil {
 		return out, e
 	}
-	out.ToolBudget.Remaining = -1
-	if out.ToolBudget.Limit > 0 {
-		out.ToolBudget.Remaining = out.ToolBudget.Limit - out.ToolBudget.Used
+	if !taskLimit.Valid {
+		return out, core.Integrity
 	}
+	out.ToolBudget.TaskLimit = taskLimit.Int64
+	setEffectiveToolCallBudgetRemaining(&out.ToolBudget)
 	out.Task, e = taskRow(ctx, tx, b.scope, task)
 	if e != nil {
 		return out, e
