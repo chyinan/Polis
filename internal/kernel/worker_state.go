@@ -267,6 +267,13 @@ WHERE company_id=$1 AND problem_key=$2 FOR UPDATE`, s.company, t.ProblemKey).Sca
 			return Receipt{}, core.Integrity
 		}
 		if !problemBaseLimit.Valid {
+			closingReserve, reserveErr := problemToolCallClosingReserveRemaining(ctx, tx, s.company, t.ProblemKey)
+			if reserveErr != nil {
+				return Receipt{}, reserveErr
+			}
+			if closingReserve > 0 && (taskToolCallLimit.Int64 == 0 || closingReserve > taskToolCallLimit.Int64) {
+				return Receipt{}, core.ToolCallBudgetExceeded
+			}
 			if _, e = tx.Exec(ctx, `UPDATE problem_tool_call_budgets SET tool_call_limit=$3
 WHERE company_id=$1 AND problem_key=$2 AND tool_call_limit IS NULL`, s.company, t.ProblemKey, taskToolCallLimit.Int64); e != nil {
 				return Receipt{}, e
@@ -282,8 +289,18 @@ WHERE company_id=$1 AND problem_key=$2`, s.company, t.ProblemKey).Scan(&problemT
 		if !problemToolCallLimit.Valid {
 			return Receipt{}, core.Integrity
 		}
-		if problemToolCallLimit.Int64 > 0 && problemToolCallsUsed >= problemToolCallLimit.Int64 {
-			return Receipt{}, core.ToolCallBudgetExceeded
+		if problemToolCallLimit.Int64 > 0 {
+			available := problemToolCallLimit.Int64 - problemToolCallsUsed
+			if !isProblemClosingTaskKind(string(t.Kind)) {
+				closingReserve, reserveErr := problemToolCallClosingReserveRemaining(ctx, tx, s.company, t.ProblemKey)
+				if reserveErr != nil {
+					return Receipt{}, reserveErr
+				}
+				available -= closingReserve
+			}
+			if available <= 0 {
+				return Receipt{}, core.ToolCallBudgetExceeded
+			}
 		}
 		if productProvider {
 			if !t.IsProductProviderExecutable() || t.State != "ready" {
@@ -367,11 +384,12 @@ WHERE company_id=$1 AND problem_key=$2`, s.company, t.ProblemKey).Scan(&problemT
 func (k *Kernel) WorkerToolCallBudget(ctx context.Context, b Binding) (ToolCallBudget, error) {
 	var budget ToolCallBudget
 	var taskLimit, problemLimit pgtype.Int8
+	var problemKey, taskKind string
 	e := k.pool.QueryRow(ctx, `SELECT s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used,
-pb.tool_call_limit,pb.tool_calls_used
+pb.tool_call_limit,pb.tool_calls_used,t.problem_key,t.kind
 FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
 JOIN problem_tool_call_budget_effective pb ON pb.company_id=t.company_id AND pb.problem_key=t.problem_key
-WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed, &problemLimit, &budget.ProblemUsed)
+WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed, &problemLimit, &budget.ProblemUsed, &problemKey, &taskKind)
 	if e != nil {
 		return budget, e
 	}
@@ -380,6 +398,11 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Lim
 	}
 	budget.TaskLimit = taskLimit.Int64
 	budget.ProblemLimit = problemLimit.Int64
+	budget.ProblemClosingClass = isProblemClosingTaskKind(taskKind)
+	budget.ProblemClosingReserve, e = problemToolCallClosingReserveRemaining(ctx, k.pool, b.scope.company, problemKey)
+	if e != nil {
+		return budget, e
+	}
 	setEffectiveToolCallBudgetRemaining(&budget)
 	return budget, nil
 }
@@ -400,11 +423,11 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&sessionSta
 				return Receipt{}, core.Denied
 			}
 		}
-		var taskID, problemKey string
+		var taskID, problemKey, taskKind string
 		var taskLimit, problemLimit, problemBaseLimit pgtype.Int8
-		if e := tx.QueryRow(ctx, `SELECT s.task_id,t.problem_key,s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used
+		if e := tx.QueryRow(ctx, `SELECT s.task_id,t.problem_key,s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used,t.kind
 FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
-WHERE s.company_id=$1 AND s.id=$2 FOR UPDATE OF s,t`, b.scope.company, b.session).Scan(&taskID, &problemKey, &budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed); e != nil {
+WHERE s.company_id=$1 AND s.id=$2 FOR UPDATE OF s,t`, b.scope.company, b.session).Scan(&taskID, &problemKey, &budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed, &taskKind); e != nil {
 			return Receipt{}, e
 		}
 		if !taskLimit.Valid {
@@ -423,8 +446,14 @@ WHERE company_id=$1 AND problem_key=$2`, b.scope.company, problemKey).Scan(&prob
 			return Receipt{}, core.Integrity
 		}
 		budget.ProblemLimit = problemLimit.Int64
+		budget.ProblemClosingClass = isProblemClosingTaskKind(taskKind)
+		closingReserve, reserveErr := problemToolCallClosingReserveRemaining(ctx, tx, b.scope.company, problemKey)
+		if reserveErr != nil {
+			return Receipt{}, reserveErr
+		}
+		budget.ProblemClosingReserve = closingReserve
 		setEffectiveToolCallBudgetRemaining(&budget)
-		if (budget.Limit > 0 && budget.Used >= budget.Limit) || (budget.TaskLimit > 0 && budget.TaskUsed >= budget.TaskLimit) || (budget.ProblemLimit > 0 && budget.ProblemUsed >= budget.ProblemLimit) {
+		if (budget.Limit > 0 && budget.Used >= budget.Limit) || (budget.TaskLimit > 0 && budget.TaskUsed >= budget.TaskLimit) || (budget.ProblemLimit > 0 && budget.ProblemAvailable == 0) {
 			return Receipt{}, core.ToolCallBudgetExceeded
 		}
 		budget.Used++
@@ -451,6 +480,9 @@ AND (tool_call_limit=0 OR tool_calls_used<tool_call_limit)`, b.scope.company, pr
 		if tag.RowsAffected() != 1 {
 			return Receipt{}, core.ToolCallBudgetExceeded
 		}
+		if budget.ProblemClosingClass && budget.ProblemClosingReserve > 0 {
+			budget.ProblemClosingReserve--
+		}
 		setEffectiveToolCallBudgetRemaining(&budget)
 		return Receipt{ID: b.session, Status: "tool_call"}, nil
 	})
@@ -473,10 +505,18 @@ func setEffectiveToolCallBudgetRemaining(budget *ToolCallBudget) {
 		}
 	}
 	budget.ProblemRemaining = -1
+	budget.ProblemAvailable = -1
 	if budget.ProblemLimit > 0 {
 		budget.ProblemRemaining = budget.ProblemLimit - budget.ProblemUsed
-		if budget.Remaining < 0 || budget.ProblemRemaining < budget.Remaining {
-			budget.Remaining = budget.ProblemRemaining
+		budget.ProblemAvailable = budget.ProblemRemaining
+		if !budget.ProblemClosingClass {
+			budget.ProblemAvailable -= budget.ProblemClosingReserve
+			if budget.ProblemAvailable < 0 {
+				budget.ProblemAvailable = 0
+			}
+		}
+		if budget.Remaining < 0 || budget.ProblemAvailable < budget.Remaining {
+			budget.Remaining = budget.ProblemAvailable
 		}
 	}
 }
@@ -782,11 +822,16 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&task, &out
 	}
 	out.ToolBudget.TaskLimit = taskLimit.Int64
 	out.ToolBudget.ProblemLimit = problemLimit.Int64
-	setEffectiveToolCallBudgetRemaining(&out.ToolBudget)
 	out.Task, e = taskRow(ctx, tx, b.scope, task)
 	if e != nil {
 		return out, e
 	}
+	out.ToolBudget.ProblemClosingClass = isProblemClosingTaskKind(string(out.Task.Kind))
+	out.ToolBudget.ProblemClosingReserve, e = problemToolCallClosingReserveRemaining(ctx, tx, b.scope.company, out.Task.ProblemKey)
+	if e != nil {
+		return out, e
+	}
+	setEffectiveToolCallBudgetRemaining(&out.ToolBudget)
 	out.ProblemLineage.ProblemKey = out.Task.ProblemKey
 	var problemLineageLimit pgtype.Int8
 	if err := tx.QueryRow(ctx, `SELECT
@@ -805,6 +850,13 @@ FROM problem_tool_call_budget_effective WHERE company_id=$1 AND problem_key=$2`,
 	if problemLineageLimit.Int64 > 0 {
 		out.ProblemLineage.ToolCallsRemaining = problemLineageLimit.Int64 - out.ProblemLineage.ToolCallsUsed
 	}
+	if err := tx.QueryRow(ctx, `SELECT
+ COALESCE((SELECT r.reserved_tool_calls FROM problem_tool_call_closing_reserves r WHERE r.company_id=$1 AND r.problem_key=$2 ORDER BY r.revision DESC LIMIT 1),0),
+ COALESCE((SELECT r.revision FROM problem_tool_call_closing_reserves r WHERE r.company_id=$1 AND r.problem_key=$2 ORDER BY r.revision DESC LIMIT 1),0)`,
+		b.scope.company, out.Task.ProblemKey).Scan(&out.ProblemLineage.ClosingReserveToolCalls, &out.ProblemLineage.ClosingReserveRevision); err != nil {
+		return out, err
+	}
+	out.ProblemLineage.ClosingReserveRemaining = out.ToolBudget.ProblemClosingReserve
 	out.MemoryStatus, e = k.memoryTaskStatusTX(ctx, tx, b.scope.company, task)
 	if e != nil {
 		return out, e

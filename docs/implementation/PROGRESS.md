@@ -1,6 +1,12 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 123 — REQ-16 authorized ProblemKey budget allocations (Schema 84)
+## Slice 124 — REQ-16 protected ProblemKey closing reserve (Schema 85)
+
+Schema 85 adds append-only ProblemKey closing-reserve revisions bound to the current shared cap and usage by the fixed closing classes. The Workbench can set a pending reserve before first admission; that admission must initialize a finite cap at least as large as the reserve. Only Kernel-created `review` and `peer_review` Tasks may spend protected calls; ordinary Tasks preserve the unspent reserve through admission, accepted tool-call accounting, handover and provider turn clamping. Closing-class calls reduce the remaining reserve. A confirmed local-owner Workbench command sets or releases the reserve and records expected cap/revision, reserve revision, reason and request ID. Default reserve is zero. Go package/command build, frontend production build, all migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-124-budget-closing-reserves/verification.md`.
+
+Mission/Company/Provider composition, rejected-route records, hidden retries, token/money accounting and stable exhaustion closeout/recovery remain open.
+
+## Previous continuation status (Slice 123 — REQ-16 authorized ProblemKey budget allocations; Schema 84)
 
 Schema 84 adds append-only allocations for finite ProblemKey tool-call budgets. A confirmed owner command records the additional calls, old/new cap, revision, reason, request ID and authority. Kernel enforces expected cap/revision under a budget-row lock; the database validates continuity and forbids allocation edits/deletes/truncation. Workbench provides a no-store budget list and an explicit allocation form. Added calls extend the shared ProblemKey envelope only; existing Task limits remain fixed. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-123-budget-allocations/verification.md`.
 

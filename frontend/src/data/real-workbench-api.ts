@@ -1,12 +1,12 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
 import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
-import {validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList} from '../domain/problem-budget-validation';
-import type {AllocateProblemToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import {validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt} from '../domain/problem-budget-validation';
+import type {AllocateProblemToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
@@ -974,6 +974,31 @@ export class RealWorkbenchApi implements WorkbenchApi {
       confirm: true,
     });
     return validateProblemToolCallAllocationReceipt(raw, options.problemKey, options.expectedRevision + 1);
+  }
+
+  async setProblemToolCallClosingReserve(options: SetProblemToolCallClosingReserveOptions): Promise<ProblemToolCallClosingReserveReceiptView> {
+    assertCompanyScope(options.companyId);
+    if (!/^problem:[A-Za-z0-9_-]{1,80}$/.test(options.problemKey)) throw new Error('ProblemKey is malformed');
+    assertRequestID(options.requestId);
+    if (!Number.isSafeInteger(options.reservedToolCalls) || options.reservedToolCalls < 0
+      || !Number.isSafeInteger(options.expectedToolCallLimit) || options.expectedToolCallLimit < 0
+      || !Number.isSafeInteger(options.expectedBudgetRevision) || options.expectedBudgetRevision < 1
+      || !Number.isSafeInteger(options.expectedReserveRevision) || options.expectedReserveRevision < 0) {
+      throw new Error('ProblemKey closing reserve values must be safe integers');
+    }
+    const reason = options.reason.trim();
+    const reasonLength = Array.from(reason).length;
+    if (reasonLength < 1 || reasonLength > 500) throw new Error('closing reserve reason must contain 1–500 characters');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/problem-budgets/${encodeURIComponent(options.problemKey)}/closing-reserve`, options.requestId, {
+      reservedToolCalls: options.reservedToolCalls,
+      expectedToolCallLimit: options.expectedToolCallLimit,
+      expectedBudgetRevision: options.expectedBudgetRevision,
+      expectedReserveRevision: options.expectedReserveRevision,
+      reason,
+      requestId: options.requestId,
+      confirm: true,
+    });
+    return validateProblemToolCallClosingReserveReceipt(raw, options.problemKey, options.expectedReserveRevision + 1);
   }
 
   async getMemoryTaskRevalidationPreview(options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView> {

@@ -10,7 +10,7 @@ import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
-import type {AllocateProblemToolCallsOptions, CreateDailyRoutineOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import type {AllocateProblemToolCallsOptions, CreateDailyRoutineOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {RevalidateMemoryTaskOptions} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
@@ -283,6 +283,18 @@ export function useAllocateProblemToolCalls(api: WorkbenchApi, companyId: string
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<AllocateProblemToolCallsOptions, 'companyId'>) => api.allocateProblemToolCalls({...options, companyId}),
+    onSuccess: async () => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
+    ]),
+  });
+}
+
+export function useSetProblemToolCallClosingReserve(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<SetProblemToolCallClosingReserveOptions, 'companyId'>) => api.setProblemToolCallClosingReserve({...options, companyId}),
     onSuccess: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),

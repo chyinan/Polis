@@ -1441,7 +1441,7 @@ export type MemoryCorrectionQueueView = Readonly<{
   truncated: boolean;
 }>;
 
-export type ProblemToolCallBudgetState = 'pending' | 'unbounded' | 'available' | 'exhausted';
+export type ProblemToolCallBudgetState = 'pending' | 'unbounded' | 'available' | 'closing_reserved' | 'exhausted';
 
 export type ProblemToolCallBudgetView = Readonly<{
   problemKey: string;
@@ -1452,9 +1452,14 @@ export type ProblemToolCallBudgetView = Readonly<{
   toolCallsUsed: number;
   toolCallsRemaining: number;
   allocationRevision: number;
+  closingReserveToolCalls: number;
+  closingReserveRemaining: number;
+  closingReserveRevision: number;
   state: ProblemToolCallBudgetState;
   lastAllocationReason?: string;
   lastAllocatedAt?: string;
+  lastClosingReserveReason?: string;
+  lastClosingReserveAt?: string;
 }>;
 
 export type ProblemToolCallBudgetListView = Readonly<{
@@ -1465,6 +1470,12 @@ export type ProblemToolCallBudgetListView = Readonly<{
 export type ProblemToolCallAllocationReceiptView = Readonly<{
   id: string;
   status: 'allocated';
+  revision: number;
+}>;
+
+export type ProblemToolCallClosingReserveReceiptView = Readonly<{
+  id: string;
+  status: 'reserve_updated';
   revision: number;
 }>;
 

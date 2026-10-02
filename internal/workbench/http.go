@@ -527,6 +527,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "problem.budget.closing_reserve":
+		response.Header().Set("Cache-Control", "no-store")
+		budgetService, ok := service.(control.ProblemToolBudgetService)
+		if !ok {
+			writeError(response, http.StatusNotImplemented, "ProblemKey budget service is unavailable")
+			return
+		}
+		var input control.ProblemToolCallClosingReserveRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "budget", err)
+			return
+		}
+		receipt, err := budgetService.SetProblemToolCallClosingReserve(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "budget", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "tasks.handovers":
 		handoverService, ok := service.(control.ProjectEnvironmentHandoverCommandService)
 		if !ok {
@@ -1658,6 +1676,13 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: problemKey, endpoint: "problem.budget.allocate"}, true
+	}
+	if len(parts) == 4 && parts[1] == "problem-budgets" && parts[3] == "closing-reserve" {
+		problemKey, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: problemKey, endpoint: "problem.budget.closing_reserve"}, true
 	}
 	if len(parts) == 2 && (parts[1] == "overview" || parts[1] == "activity" || parts[1] == "stream" || parts[1] == "missions" || parts[1] == "organization" || parts[1] == "archive" || parts[1] == "settings" || parts[1] == "instructions" || parts[1] == "collaboration" || parts[1] == "operations" || parts[1] == "notifications" || parts[1] == "capabilities" || parts[1] == "environments" || parts[1] == "feedback" || parts[1] == "domain-workflows") {
 		if parts[1] == "missions" {

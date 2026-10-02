@@ -16,9 +16,33 @@ type ProblemToolCallAllocationRequest struct {
 	Confirm          bool   `json:"confirm"`
 }
 
+type ProblemToolCallClosingReserveRequest struct {
+	RequestID               string `json:"requestId"`
+	ReservedToolCalls       int64  `json:"reservedToolCalls"`
+	ExpectedToolCallLimit   int64  `json:"expectedToolCallLimit"`
+	ExpectedBudgetRevision  int64  `json:"expectedBudgetRevision"`
+	ExpectedReserveRevision int64  `json:"expectedReserveRevision"`
+	Reason                  string `json:"reason"`
+	Confirm                 bool   `json:"confirm"`
+}
+
 type ProblemToolBudgetService interface {
 	ListProblemToolCallBudgets(ctx context.Context, companyID string) (kernel.ProblemToolCallBudgetList, error)
 	AllocateProblemToolCalls(ctx context.Context, companyID, problemKey string, request ProblemToolCallAllocationRequest) (kernel.Receipt, error)
+	SetProblemToolCallClosingReserve(ctx context.Context, companyID, problemKey string, request ProblemToolCallClosingReserveRequest) (kernel.Receipt, error)
+}
+
+func (s *Service) SetProblemToolCallClosingReserve(ctx context.Context, companyID, problemKey string, request ProblemToolCallClosingReserveRequest) (kernel.Receipt, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || !kernel.ValidProblemKey(problemKey) ||
+		validateRequestID(request.RequestID) != nil || request.ReservedToolCalls < 0 || request.ExpectedToolCallLimit < 0 ||
+		request.ExpectedBudgetRevision < 1 || request.ExpectedReserveRevision < 0 || !request.Confirm {
+		return kernel.Receipt{}, core.Malformed
+	}
+	return s.runtime.TXSetProblemToolCallClosingReserve(ctx, s.runtime.LocalScope(companyID), problemKey, kernel.ProblemToolCallClosingReserveInput{
+		RequestID: request.RequestID, ReservedCalls: request.ReservedToolCalls,
+		ExpectedLimit: request.ExpectedToolCallLimit, ExpectedBudgetRevision: request.ExpectedBudgetRevision,
+		ExpectedReserveRevision: request.ExpectedReserveRevision, Reason: request.Reason,
+	})
 }
 
 func (s *Service) ListProblemToolCallBudgets(ctx context.Context, companyID string) (kernel.ProblemToolCallBudgetList, error) {
