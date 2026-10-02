@@ -52,6 +52,7 @@ type providerWorker struct {
 	startFailureRequestID  string
 	turnToolCallLimit      int
 	taskToolBudget         kernel.ToolCallBudget
+	problemKey             string
 	stopProof              runner.StopProof
 	done                   chan struct{}
 	runDone                chan struct{}
@@ -683,6 +684,7 @@ func (a *RealProviderWorkerAdapter) startBusinessWorker(ctx context.Context, com
 	worker.mcpState.allowStreamableHTTP = profile.ToolSurfaceQualification == provider.ProductControlledMCPToolSurfaceV2Qualification && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"
 	worker.turnToolCallLimit = turnToolCallLimit
 	worker.taskToolBudget = taskToolBudget
+	worker.problemKey = task.ProblemKey
 	worker.authorization = authorization
 	worker.cancel = cancel
 	a.mu.Lock()
@@ -855,7 +857,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 			turnErr = fmt.Errorf("provider turn completed but Task input delivery evidence could not be saved: %w", receiptErr)
 		}
 	}
-	usage = map[string]any{"authorization": worker.authorization, "task_tool_call_budget_at_start": worker.taskToolBudget, "effective_turn_tool_call_limit": turnOptions.ToolCallLimit, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
+	usage = map[string]any{"authorization": worker.authorization, "problem_key": worker.problemKey, "task_tool_call_budget_at_start": worker.taskToolBudget, "effective_turn_tool_call_limit": turnOptions.ToolCallLimit, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
 	if turnErr != nil {
 		state, outcome = "inconclusive", "transport_failure"
 		if ctx.Err() != nil {

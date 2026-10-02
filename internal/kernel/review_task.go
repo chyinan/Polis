@@ -39,7 +39,7 @@ func (k *Kernel) TXCreateReviewProbe(ctx context.Context, s Scope, mission, arti
 		if e != nil {
 			return Receipt{}, e
 		}
-		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind,state,plan) VALUES($1,$2,$3,'emp-review','review','ready',$4)", s.company, id, mission, plan)
+		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind,state,plan,parent_task_id) VALUES($1,$2,$3,'emp-review','review','ready',$4,$5)", s.company, id, mission, plan, sourceTask)
 		if e != nil {
 			return Receipt{}, e
 		}

@@ -152,7 +152,7 @@ func (k *Kernel) TXPrepareProductTask(ctx context.Context, s Scope, missionID, g
 			return Receipt{}, err
 		}
 		taskID := newID()
-		if _, err := tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)", s.company, taskID, missionID, core.EmployeeBackendID, core.TaskKindCompat); err != nil {
+		if _, err := tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind,parent_task_id) VALUES($1,$2,$3,$4,$5,$6)", s.company, taskID, missionID, core.EmployeeBackendID, core.TaskKindCompat, bootstrapID); err != nil {
 			return Receipt{}, err
 		}
 		validationBinding, err := taskvalidation.Bind(taskID, missionID, acceptance)
@@ -368,7 +368,8 @@ func (k *Kernel) BindFake(ctx context.Context, s Scope, employee string) (Bindin
 func taskRow(ctx context.Context, tx pgx.Tx, s Scope, id string) (Task, error) {
 	var t Task
 	var plan []byte
-	e := tx.QueryRow(ctx, "SELECT id,mission_id,owner,kind,state,generation,plan FROM tasks WHERE company_id=$1 AND id=$2", s.company, id).Scan(&t.ID, &t.Mission, &t.Owner, &t.Kind, &t.State, &t.Generation, &plan)
+	e := tx.QueryRow(ctx, `SELECT id,mission_id,owner,kind,state,generation,plan,COALESCE(parent_task_id,''),problem_key
+FROM tasks WHERE company_id=$1 AND id=$2`, s.company, id).Scan(&t.ID, &t.Mission, &t.Owner, &t.Kind, &t.State, &t.Generation, &plan, &t.ParentTaskID, &t.ProblemKey)
 	if errors.Is(e, pgx.ErrNoRows) {
 		e = core.OutOfScope
 	}

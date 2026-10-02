@@ -33,7 +33,7 @@ func (k *Kernel) TXSend(ctx context.Context, b Binding, w Task, key, body string
 			return Receipt{}, e
 		}
 		work, message := newID(), newID()
-		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)", b.scope.company, work, t.Mission, core.EmployeeBackendID, core.TaskKindCompute)
+		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind,parent_task_id) VALUES($1,$2,$3,$4,$5,$6)", b.scope.company, work, t.Mission, core.EmployeeBackendID, core.TaskKindCompute, t.ID)
 		if e != nil {
 			return Receipt{}, e
 		}

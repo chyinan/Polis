@@ -41,6 +41,8 @@ type Receipt struct {
 }
 type Task struct {
 	ID, Mission, Owner, State string
+	ParentTaskID              string `json:"parent_task_id,omitempty"`
+	ProblemKey                string `json:"problem_key"`
 	Kind                      core.TaskKind
 	Generation                int64
 	Plan                      json.RawMessage
@@ -149,7 +151,7 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 	if err != nil {
 		return fail(err)
 	}
-	if schema < 81 {
+	if schema < 82 {
 		return fail(fmt.Errorf("incompatible schema: %d", schema))
 	}
 	if err = os.MkdirAll(root, 0700); err != nil {

@@ -38,7 +38,7 @@ func (k *Kernel) TXCreateProbe(ctx context.Context, s Scope, mission string) (Ta
 		if e != nil {
 			return Receipt{}, e
 		}
-		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,'emp-backend','compat')", s.company, id, mission)
+		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind,parent_task_id) VALUES($1,$2,$3,'emp-backend','compat',$4)", s.company, id, mission, bootstrap)
 		if e != nil {
 			return Receipt{}, e
 		}
@@ -727,6 +727,14 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&task, &out
 	out.Task, e = taskRow(ctx, tx, b.scope, task)
 	if e != nil {
 		return out, e
+	}
+	out.ProblemLineage.ProblemKey = out.Task.ProblemKey
+	if err := tx.QueryRow(ctx, `SELECT
+ (SELECT count(*) FROM tasks WHERE company_id=$1 AND problem_key=$2),
+ (SELECT count(*) FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id WHERE t.company_id=$1 AND t.problem_key=$2),
+ (SELECT COALESCE(sum(task_tool_calls_used),0) FROM tasks WHERE company_id=$1 AND problem_key=$2)`,
+		b.scope.company, out.Task.ProblemKey).Scan(&out.ProblemLineage.TaskCount, &out.ProblemLineage.WorkerSessionAttempts, &out.ProblemLineage.ToolCallsUsed); err != nil {
+		return out, err
 	}
 	out.MemoryStatus, e = k.memoryTaskStatusTX(ctx, tx, b.scope.company, task)
 	if e != nil {

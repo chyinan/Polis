@@ -14,6 +14,13 @@ type ToolCallBudget struct {
 	TaskRemaining int64 `json:"task_tool_calls_remaining"`
 }
 
+type ProblemLineage struct {
+	ProblemKey            string `json:"problem_key"`
+	TaskCount             int64  `json:"task_count"`
+	WorkerSessionAttempts int64  `json:"worker_session_attempts"`
+	ToolCallsUsed         int64  `json:"tool_calls_used"`
+}
+
 type SkillReferenceSummary struct {
 	RelativePath  string `json:"relativePath"`
 	MediaType     string `json:"mediaType"`
@@ -50,6 +57,7 @@ type HandoverBundle struct {
 	CompanySeq                    int64
 	Contract                      string
 	ToolBudget                    ToolCallBudget
+	ProblemLineage                ProblemLineage `json:"problem_lineage"`
 }
 type Checkpoint struct {
 	AcceptanceCheckerRevision          string   `json:"acceptance_checker_revision,omitempty"`
