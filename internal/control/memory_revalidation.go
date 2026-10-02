@@ -35,6 +35,17 @@ type MemoryRevocationService interface {
 	RevokeMemoryRecord(ctx context.Context, companyID, recordID string, request RevokeMemoryRecordRequest) (kernel.Receipt, error)
 }
 
+type MemoryCorrectionQueueService interface {
+	ListMemoryCorrections(ctx context.Context, companyID string) (kernel.MemoryCorrectionQueue, error)
+}
+
+func (s *Service) ListMemoryCorrections(ctx context.Context, companyID string) (kernel.MemoryCorrectionQueue, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) {
+		return kernel.MemoryCorrectionQueue{}, core.Malformed
+	}
+	return s.runtime.ListMemoryCorrections(ctx, s.runtime.LocalScope(companyID), 100)
+}
+
 func (s *Service) GetMemoryTaskStatus(ctx context.Context, companyID, taskID string) (kernel.MemoryTaskStatus, error) {
 	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || !core.ValidID(taskID) {
 		return kernel.MemoryTaskStatus{}, core.Malformed
@@ -83,3 +94,4 @@ func (s *Service) GetMemoryRecordRevocationPreview(ctx context.Context, companyI
 
 var _ MemoryRevalidationService = (*Service)(nil)
 var _ MemoryRevocationService = (*Service)(nil)
+var _ MemoryCorrectionQueueService = (*Service)(nil)

@@ -54,6 +54,19 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 	ctx := request.Context()
 	if request.Method == http.MethodGet {
 		switch path.endpoint {
+		case "memory.corrections":
+			response.Header().Set("Cache-Control", "no-store")
+			memoryService, ok := service.(control.MemoryCorrectionQueueService)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "memory correction queue is unavailable")
+				return
+			}
+			queue, err := memoryService.ListMemoryCorrections(ctx, path.companyID)
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, "corrections", "memory", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, queue)
 		case "missions.routines":
 			routineReader, ok := model.(DailyRoutineReader)
 			if !ok {
@@ -1601,6 +1614,9 @@ func parsePath(path string) (parsedPath, bool) {
 	}
 	if len(parts) == 3 && parts[1] == "settings" && parts[2] == "models" {
 		return parsedPath{companyID: companyID, endpoint: "settings.models"}, true
+	}
+	if len(parts) == 3 && parts[1] == "memory" && parts[2] == "corrections" {
+		return parsedPath{companyID: companyID, endpoint: "memory.corrections"}, true
 	}
 	if len(parts) == 2 && (parts[1] == "overview" || parts[1] == "activity" || parts[1] == "stream" || parts[1] == "missions" || parts[1] == "organization" || parts[1] == "archive" || parts[1] == "settings" || parts[1] == "instructions" || parts[1] == "collaboration" || parts[1] == "operations" || parts[1] == "notifications" || parts[1] == "capabilities" || parts[1] == "environments" || parts[1] == "feedback" || parts[1] == "domain-workflows") {
 		if parts[1] == "missions" {

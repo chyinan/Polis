@@ -83,6 +83,34 @@ type MemoryCorrectionReviewInput struct {
 	Reason       string `json:"reason"`
 }
 
+// MemoryCorrectionQueueItem is a bounded owner-facing metadata projection.
+// Memory text is never returned without an employee-bound read identity;
+// command decisions still go through employee-bound Kernel bindings.
+type MemoryCorrectionQueueItem struct {
+	CorrectionID    string                `json:"correctionId"`
+	RecordID        string                `json:"recordId"`
+	RecordKind      string                `json:"recordKind"`
+	RecordScope     string                `json:"recordScope"`
+	MissionID       string                `json:"missionId,omitempty"`
+	Sensitivity     string                `json:"sensitivity"`
+	BaseRevision    int64                 `json:"baseRevision"`
+	CurrentRevision int64                 `json:"currentRevision"`
+	CurrentState    string                `json:"currentState"`
+	Source          MemorySourceReference `json:"source"`
+	ObservedAt      string                `json:"observedAt"`
+	ProposedBy      string                `json:"proposedBy"`
+	ProposedAt      string                `json:"proposedAt"`
+	State           string                `json:"state"`
+	ReviewDecision  string                `json:"reviewDecision,omitempty"`
+	ReviewActor     string                `json:"reviewActor,omitempty"`
+	ReviewSequence  int64                 `json:"reviewSequence,omitempty"`
+}
+
+type MemoryCorrectionQueue struct {
+	Items     []MemoryCorrectionQueueItem `json:"items"`
+	Truncated bool                        `json:"truncated"`
+}
+
 type MemoryDependencyInput struct {
 	RecordID       string `json:"recordId"`
 	RecordRevision int64  `json:"recordRevision"`
@@ -536,6 +564,95 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, b.scope.company, seq, input.CorrectionID, reco
 		}
 		return Receipt{ID: input.CorrectionID, Status: input.Decision, Revision: resultRevision}, nil
 	})
+}
+
+// ListMemoryCorrections returns the newest correction requests for a company.
+// It is an owner-facing no-store projection, not a substitute for the
+// employee-bound proposal and review commands.
+func (k *Kernel) ListMemoryCorrections(ctx context.Context, scope Scope, limit int) (MemoryCorrectionQueue, error) {
+	if k == nil || ctx == nil || !core.ValidID(scope.company) || limit < 1 || limit > 100 {
+		return MemoryCorrectionQueue{}, core.Malformed
+	}
+	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return MemoryCorrectionQueue{}, err
+	}
+	defer tx.Rollback(ctx)
+	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+		return MemoryCorrectionQueue{}, err
+	}
+	rows, err := tx.Query(ctx, `SELECT c.correction_id,c.record_id,r.record_kind,r.scope_kind,COALESCE(r.mission_id,''),r.sensitivity,
+c.base_revision,c.proposed_content,c.content_sha256,b.content,b.content_sha256,c.source_kind,c.source_id,c.source_revision,c.source_sha256,
+c.observed_at::text,c.proposer_reason,c.proposed_by,c.created_at::text,
+cur.revision,cur.state,COALESCE(rv.decision,''),COALESCE(rv.actor,''),COALESCE(rv.reason,''),COALESCE(rv.company_seq,0)
+FROM memory_correction_requests c
+JOIN memory_records r ON r.company_id=c.company_id AND r.record_id=c.record_id
+JOIN memory_record_revisions b ON b.company_id=c.company_id AND b.record_id=c.record_id AND b.revision=c.base_revision
+JOIN LATERAL (SELECT v.revision,e.state FROM memory_record_revisions v
+ JOIN LATERAL (SELECT state FROM memory_revision_state_events se WHERE se.company_id=v.company_id AND se.record_id=v.record_id AND se.revision=v.revision ORDER BY se.company_seq DESC LIMIT 1) e ON true
+ WHERE v.company_id=c.company_id AND v.record_id=c.record_id ORDER BY v.revision DESC LIMIT 1) cur ON true
+LEFT JOIN LATERAL (SELECT decision,actor,reason,company_seq FROM memory_correction_review_events re
+ WHERE re.company_id=c.company_id AND re.correction_id=c.correction_id LIMIT 1) rv ON true
+WHERE c.company_id=$1 ORDER BY c.created_at DESC,c.correction_id DESC LIMIT $2`, scope.company, limit+1)
+	if err != nil {
+		return MemoryCorrectionQueue{}, err
+	}
+	defer rows.Close()
+	result := MemoryCorrectionQueue{Items: make([]MemoryCorrectionQueueItem, 0, limit)}
+	for rows.Next() {
+		var item MemoryCorrectionQueueItem
+		var proposedContent, proposedSHA, baseContent, baseSHA string
+		var proposerReason, reviewReason string
+		var sourceKind, sourceID, sourceSHA string
+		var sourceRevision int64
+		var reviewSequence int64
+		if err = rows.Scan(&item.CorrectionID, &item.RecordID, &item.RecordKind, &item.RecordScope, &item.MissionID, &item.Sensitivity,
+			&item.BaseRevision, &proposedContent, &proposedSHA, &baseContent, &baseSHA, &sourceKind, &sourceID, &sourceRevision, &sourceSHA,
+			&item.ObservedAt, &proposerReason, &item.ProposedBy, &item.ProposedAt, &item.CurrentRevision, &item.CurrentState,
+			&item.ReviewDecision, &item.ReviewActor, &reviewReason, &reviewSequence); err != nil {
+			return MemoryCorrectionQueue{}, err
+		}
+		if len(result.Items) == limit {
+			result.Truncated = true
+			break
+		}
+		proposedSum := sha256.Sum256([]byte(proposedContent))
+		baseSum := sha256.Sum256([]byte(baseContent))
+		if hex.EncodeToString(proposedSum[:]) != proposedSHA || hex.EncodeToString(baseSum[:]) != baseSHA {
+			return MemoryCorrectionQueue{}, core.Integrity
+		}
+		item.Source = MemorySourceReference{Kind: sourceKind, ID: sourceID, Revision: sourceRevision, SHA256: sourceSHA}
+		item.ReviewSequence = reviewSequence
+		revoked, revokeErr := k.memoryRecordRevokedTX(ctx, tx, scope.company, item.RecordID)
+		if revokeErr != nil {
+			return MemoryCorrectionQueue{}, revokeErr
+		}
+		switch {
+		case revoked:
+			item.State = "revoked"
+		case item.ReviewDecision != "":
+			item.State = item.ReviewDecision
+		case item.CurrentRevision != item.BaseRevision || item.CurrentState != "verified":
+			item.State = "stale"
+		default:
+			item.State = "proposed"
+		}
+		result.Items = append(result.Items, item)
+	}
+	if err = rows.Err(); err != nil {
+		return MemoryCorrectionQueue{}, err
+	}
+	// A revocation may publish its durable overlay while this snapshot is being
+	// read. Recheck immediately before returning the queue state.
+	for index := range result.Items {
+		if _, revoked := k.memoryRecordRevocation(scope.company, result.Items[index].RecordID); revoked {
+			result.Items[index].State = "revoked"
+		}
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return MemoryCorrectionQueue{}, err
+	}
+	return result, nil
 }
 
 // TXCreateMemoryDependency pins one verified memory revision to an exact

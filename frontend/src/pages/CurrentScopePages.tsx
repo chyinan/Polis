@@ -10,6 +10,7 @@ import {labelActivityKind, labelActivityText, labelDisplayValue, labelErrorMessa
 import {activateStagedGeneration, activateStagedSidecar, getDesktopRuntime, getWindowsStartupStatus, isDesktopHost, rollbackPreviousGeneration, rollbackPreviousSidecar, setWindowsStartupEnabled, stageRecoveryGeneration, stageSidecarUpdate, type DesktopRuntimeSnapshot, type RecoveryGenerationStageReceipt, type WindowsStartupStatus} from '../lib/desktop-bridge';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import {DomainEvidencePanel} from './DomainEvidencePanel';
+import {MemoryCorrectionQueuePanel} from './MemoryCorrectionQueuePanel';
 import styles from '../styles/workbench.module.css';
 
 type ScopePageProps = Readonly<{api: WorkbenchApi; companyId: string}>;
@@ -260,14 +261,14 @@ export function GroupResourcesPage({api, companyId}: ScopePageProps): ReactEleme
 export function GroupSettingsPage({api, companyId}: ScopePageProps): ReactElement {
   const query = useRuntimeSettings(api, companyId);
   const catalogQuery = useCapabilityCatalog(api, companyId);
-  const [tab, setTab] = useState<'runtime' | 'capabilities' | 'domains' | 'safety'>('runtime');
+  const [tab, setTab] = useState<'runtime' | 'capabilities' | 'domains' | 'memory' | 'safety'>('runtime');
   if (query.isPending) return <ScopeLoading title="集团设置" label="正在读取当前 runtime readiness" />;
   if (query.isError) return <ScopeError title="集团设置" message={query.error.message} />;
   const runtime = query.data;
   return <div className={styles.viewStack} data-od-id="group-settings-view">
     <ScopeHeader eyebrow="集团 / 设置" title="集团设置" action={<StatusBadge label={readinessLabel(runtime.runtimeReadiness)} tone={runtime.runtimeReadiness === 'ready' ? 'success' : 'warning'} />} />
-    <div className={styles.tabBar} role="tablist"><button aria-selected={tab === 'runtime'} className={`${styles.tabButton} ${tab === 'runtime' ? styles.tabButtonActive : ''}`} onClick={() => setTab('runtime')} role="tab" type="button">运行时就绪</button><button aria-selected={tab === 'capabilities'} className={`${styles.tabButton} ${tab === 'capabilities' ? styles.tabButtonActive : ''}`} onClick={() => setTab('capabilities')} role="tab" type="button">技能 / MCP</button><button aria-selected={tab === 'domains'} className={`${styles.tabButton} ${tab === 'domains' ? styles.tabButtonActive : ''}`} onClick={() => setTab('domains')} role="tab" type="button">领域验收</button><button aria-selected={tab === 'safety'} className={`${styles.tabButton} ${tab === 'safety' ? styles.tabButtonActive : ''}`} onClick={() => setTab('safety')} role="tab" type="button">安全边界</button></div>
-    {tab === 'runtime' ? <RuntimeReadinessPanel runtime={runtime} /> : tab === 'capabilities' ? <CapabilityCatalogPanel api={api} companyId={companyId} query={catalogQuery} /> : tab === 'domains' ? <DomainEvidencePanel api={api} companyId={companyId} /> : <SafetyPanel runtime={runtime} />}
+    <div className={styles.tabBar} role="tablist"><button aria-selected={tab === 'runtime'} className={`${styles.tabButton} ${tab === 'runtime' ? styles.tabButtonActive : ''}`} onClick={() => setTab('runtime')} role="tab" type="button">运行时就绪</button><button aria-selected={tab === 'capabilities'} className={`${styles.tabButton} ${tab === 'capabilities' ? styles.tabButtonActive : ''}`} onClick={() => setTab('capabilities')} role="tab" type="button">技能 / MCP</button><button aria-selected={tab === 'domains'} className={`${styles.tabButton} ${tab === 'domains' ? styles.tabButtonActive : ''}`} onClick={() => setTab('domains')} role="tab" type="button">领域验收</button><button aria-selected={tab === 'memory'} className={`${styles.tabButton} ${tab === 'memory' ? styles.tabButtonActive : ''}`} onClick={() => setTab('memory')} role="tab" type="button">记忆更正</button><button aria-selected={tab === 'safety'} className={`${styles.tabButton} ${tab === 'safety' ? styles.tabButtonActive : ''}`} onClick={() => setTab('safety')} role="tab" type="button">安全边界</button></div>
+    {tab === 'runtime' ? <RuntimeReadinessPanel runtime={runtime} /> : tab === 'capabilities' ? <CapabilityCatalogPanel api={api} companyId={companyId} query={catalogQuery} /> : tab === 'domains' ? <DomainEvidencePanel api={api} companyId={companyId} /> : tab === 'memory' ? <MemoryCorrectionQueuePanel api={api} companyId={companyId} /> : <SafetyPanel runtime={runtime} />}
     <WindowsStartupPanel />
     <DesktopRecoveryPanel />
     <DesktopSidecarUpdatePanel />

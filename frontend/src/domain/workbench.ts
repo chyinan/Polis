@@ -1416,6 +1416,31 @@ export type MemoryTaskImpactView = Readonly<{
   reason: string;
 }>;
 
+export type MemoryCorrectionQueueItemView = Readonly<{
+  correctionId: string;
+  recordId: string;
+  recordKind: string;
+  recordScope: string;
+  missionId?: string;
+  sensitivity: string;
+  baseRevision: number;
+  currentRevision: number;
+  currentState: string;
+  source: MemorySourceReferenceView;
+  observedAt: string;
+  proposedBy: string;
+  proposedAt: string;
+  state: 'proposed' | 'approved' | 'rejected' | 'stale' | 'revoked';
+  reviewDecision?: string;
+  reviewActor?: string;
+  reviewSequence?: number;
+}>;
+
+export type MemoryCorrectionQueueView = Readonly<{
+  items: ReadonlyArray<MemoryCorrectionQueueItemView>;
+  truncated: boolean;
+}>;
+
 export type MemoryTaskStatusView = Readonly<{
   state: 'clear' | 'dirty' | 'frozen';
   impacts: ReadonlyArray<MemoryTaskImpactView>;

@@ -1,10 +1,11 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
-import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
+import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
@@ -937,6 +938,12 @@ export class RealWorkbenchApi implements WorkbenchApi {
     const result = validateMemoryTaskStatus(raw);
     if (!result.success) throw new Error(`failed to parse task memory impact response: ${validationMessage(result.issues)}`);
     return result.value;
+  }
+
+  async listMemoryCorrections(options: MemoryCorrectionQueueQueryOptions): Promise<MemoryCorrectionQueueView> {
+    assertCompanyScope(options.companyId);
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/memory/corrections`);
+    return validateMemoryCorrectionQueue(raw);
   }
 
   async getMemoryTaskRevalidationPreview(options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView> {

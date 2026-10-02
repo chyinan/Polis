@@ -259,6 +259,16 @@ export function useMemoryTaskStatus(api: WorkbenchApi, companyId: string, taskId
   });
 }
 
+export function useMemoryCorrectionQueue(api: WorkbenchApi, companyId: string) {
+  return useQuery({
+    queryKey: ['workbench', api.mode, 'memory-corrections', companyId],
+    queryFn: () => api.listMemoryCorrections({companyId}),
+    enabled: api.mode === 'real' && companyId.trim() !== '',
+    staleTime: 0,
+    refetchOnMount: 'always',
+  });
+}
+
 export function useRevalidateMemoryTask(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
