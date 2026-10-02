@@ -4,8 +4,8 @@ import type {CreateProjectJobBrowserSessionOptions, ImportStdioMCPPackageOptions
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
-import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView} from '../domain/workbench';
+import type {AllocateProblemToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView} from '../domain/workbench';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
 
@@ -738,6 +738,16 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.companyId);
     if (options.companyId !== FIXTURE_COMPANY_ID) throw new Error('failed to load fixture memory corrections: scope not found');
     return {items: [], truncated: false};
+  }
+
+  async listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView> {
+    assertCompanyScope(options.companyId);
+    if (options.companyId !== FIXTURE_COMPANY_ID) throw new Error('failed to load fixture ProblemKey budgets: scope not found');
+    return {items: [], truncated: false};
+  }
+
+  async allocateProblemToolCalls(_options: AllocateProblemToolCallsOptions): Promise<ProblemToolCallAllocationReceiptView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'ProblemKey budget allocations are unavailable in fixture mode');
   }
 
   async getMemoryTaskRevalidationPreview(_options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView> {

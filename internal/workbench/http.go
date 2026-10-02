@@ -67,6 +67,19 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				return
 			}
 			writeJSON(response, http.StatusOK, queue)
+		case "problem.budgets":
+			response.Header().Set("Cache-Control", "no-store")
+			budgetService, ok := service.(control.ProblemToolBudgetService)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "ProblemKey budget service is unavailable")
+				return
+			}
+			budgets, err := budgetService.ListProblemToolCallBudgets(ctx, path.companyID)
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, "budgets", "company", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, budgets)
 		case "missions.routines":
 			routineReader, ok := model.(DailyRoutineReader)
 			if !ok {
@@ -496,6 +509,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		return
 	}
 	switch path.endpoint {
+	case "problem.budget.allocate":
+		response.Header().Set("Cache-Control", "no-store")
+		budgetService, ok := service.(control.ProblemToolBudgetService)
+		if !ok {
+			writeError(response, http.StatusNotImplemented, "ProblemKey budget service is unavailable")
+			return
+		}
+		var input control.ProblemToolCallAllocationRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "budget", err)
+			return
+		}
+		receipt, err := budgetService.AllocateProblemToolCalls(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "budget", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "tasks.handovers":
 		handoverService, ok := service.(control.ProjectEnvironmentHandoverCommandService)
 		if !ok {
@@ -1617,6 +1648,16 @@ func parsePath(path string) (parsedPath, bool) {
 	}
 	if len(parts) == 3 && parts[1] == "memory" && parts[2] == "corrections" {
 		return parsedPath{companyID: companyID, endpoint: "memory.corrections"}, true
+	}
+	if len(parts) == 2 && parts[1] == "problem-budgets" {
+		return parsedPath{companyID: companyID, endpoint: "problem.budgets"}, true
+	}
+	if len(parts) == 4 && parts[1] == "problem-budgets" && parts[3] == "allocations" {
+		problemKey, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: problemKey, endpoint: "problem.budget.allocate"}, true
 	}
 	if len(parts) == 2 && (parts[1] == "overview" || parts[1] == "activity" || parts[1] == "stream" || parts[1] == "missions" || parts[1] == "organization" || parts[1] == "archive" || parts[1] == "settings" || parts[1] == "instructions" || parts[1] == "collaboration" || parts[1] == "operations" || parts[1] == "notifications" || parts[1] == "capabilities" || parts[1] == "environments" || parts[1] == "feedback" || parts[1] == "domain-workflows") {
 		if parts[1] == "missions" {

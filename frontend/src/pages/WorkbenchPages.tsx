@@ -14,6 +14,7 @@ import {CapabilitiesSubpage, EmployeeSubpage, MissionSubpage, TaskSubpage} from 
 import {MissionChangeRequestPanel} from './MissionChangeRequestPanel';
 import {MissionTakeoverPanel} from './MissionTakeoverPanel';
 import {TaskMemoryImpactPanel} from './TaskMemoryImpactPanel';
+import {ProblemToolBudgetPanel} from './ProblemToolBudgetPanel';
 import styles from '../styles/workbench.module.css';
 
 type PageProps = Readonly<{api: WorkbenchApi; companyId: string}>;
@@ -308,16 +309,18 @@ export function SettingsPage({api, companyId}: PageProps) {
   const query = useCompanyOverview(api, companyId);
   const companiesQuery = useCompanyList(api);
   const runtimeQuery = useRuntimeSettings(api, companyId);
-  const [tab, setTab] = useState<'workspace' | 'capabilities'>('workspace');
+  const [tab, setTab] = useState<'workspace' | 'capabilities' | 'budgets'>('workspace');
+  const tabs = [{id: 'workspace' as const, label: '工作区'}, {id: 'capabilities' as const, label: '能力'}, {id: 'budgets' as const, label: '预算'}];
   const state = renderOverviewState(query, '正在读取工作台设置');
   if (state) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" />{state}</div>;
   const overview = getOverview(query);
   const company = companiesQuery.data?.find(item => item.id === companyId) ?? null;
-  if (tab === 'capabilities') return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={[{id: 'workspace' as const, label: '工作区'}, {id: 'capabilities' as const, label: '能力'}]} /><CapabilitiesSubpage overview={overview} /></div>;
-  if (runtimeQuery.isPending) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><div className={styles.emptyState} role="status"><Radio aria-hidden="true" size={18} /><span>正在读取运行时就绪状态</span></div></div>;
-  if (runtimeQuery.isError) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><ErrorPanel message={runtimeQuery.error.message} /></div>;
+  if (tab === 'capabilities') return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={tabs} /><CapabilitiesSubpage overview={overview} /></div>;
+  if (tab === 'budgets') return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={tabs} /><ProblemToolBudgetPanel api={api} companyId={companyId} /></div>;
+  if (runtimeQuery.isPending) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={tabs} /><div className={styles.emptyState} role="status"><Radio aria-hidden="true" size={18} /><span>正在读取运行时就绪状态</span></div></div>;
+  if (runtimeQuery.isError) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={tabs} /><ErrorPanel message={runtimeQuery.error.message} /></div>;
   const runtime = runtimeQuery.data;
-  return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={[{id: 'workspace' as const, label: '工作区'}, {id: 'capabilities' as const, label: '能力'}]} /><section className={styles.detailGrid}><article className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>工作区</span><h2 className={styles.sectionTitle}>组织配置</h2></div><Settings2 aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.detailRows}><DataRow label="公司作用域" value={companyId} mono /><DataRow label="数据模式" value={labelDataMode(overview.meta.dataMode)} /><DataRow label="数据来源" value={overview.meta.sourceLabel} /><DataRow label="数据新鲜度" value={labelFreshness(overview.meta.freshness)} /></div></article><RuntimeSettingsPanel api={api} runtime={runtime} /><article className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>安全边界</span><h2 className={styles.sectionTitle}>当前限制</h2></div><ShieldAlert aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.checkList}><div><Check aria-hidden="true" size={15} /><span>浏览不会唤醒员工</span></div><div><Check aria-hidden="true" size={15} /><span>浏览不会发送命令</span></div><div><ShieldAlert aria-hidden="true" size={15} /><span>凭据只显示就绪状态，不返回内容</span></div></div></article></section>{company === null ? <UnavailablePanel detail="公司目录尚未返回当前作用域；不会用总览名称伪造可编辑配置。" title="组织配置不可用" /> : <OrganizationSettings api={api} company={company} />}</div>;
+  return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={tabs} /><section className={styles.detailGrid}><article className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>工作区</span><h2 className={styles.sectionTitle}>组织配置</h2></div><Settings2 aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.detailRows}><DataRow label="公司作用域" value={companyId} mono /><DataRow label="数据模式" value={labelDataMode(overview.meta.dataMode)} /><DataRow label="数据来源" value={overview.meta.sourceLabel} /><DataRow label="数据新鲜度" value={labelFreshness(overview.meta.freshness)} /></div></article><RuntimeSettingsPanel api={api} runtime={runtime} /><article className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>安全边界</span><h2 className={styles.sectionTitle}>当前限制</h2></div><ShieldAlert aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.checkList}><div><Check aria-hidden="true" size={15} /><span>浏览不会唤醒员工</span></div><div><Check aria-hidden="true" size={15} /><span>浏览不会发送命令</span></div><div><ShieldAlert aria-hidden="true" size={15} /><span>凭据只显示就绪状态，不返回内容</span></div></div></article></section>{company === null ? <UnavailablePanel detail="公司目录尚未返回当前作用域；不会用总览名称伪造可编辑配置。" title="组织配置不可用" /> : <OrganizationSettings api={api} company={company} />}</div>;
 }
 
 function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runtime: RuntimeSettingsView}>): ReactElement {

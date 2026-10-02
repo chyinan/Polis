@@ -1,11 +1,12 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
 import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
-import type {CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
+import {validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList} from '../domain/problem-budget-validation';
+import type {AllocateProblemToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
@@ -944,6 +945,35 @@ export class RealWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.companyId);
     const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/memory/corrections`);
     return validateMemoryCorrectionQueue(raw);
+  }
+
+  async listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView> {
+    assertCompanyScope(options.companyId);
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/problem-budgets`);
+    return validateProblemToolCallBudgetList(raw);
+  }
+
+  async allocateProblemToolCalls(options: AllocateProblemToolCallsOptions): Promise<ProblemToolCallAllocationReceiptView> {
+    assertCompanyScope(options.companyId);
+    if (!/^problem:[A-Za-z0-9_-]{1,80}$/.test(options.problemKey)) throw new Error('ProblemKey is malformed');
+    assertRequestID(options.requestId);
+    if (!Number.isSafeInteger(options.additionalToolCalls) || options.additionalToolCalls < 1
+      || !Number.isSafeInteger(options.expectedToolCallLimit) || options.expectedToolCallLimit < 1
+      || !Number.isSafeInteger(options.expectedRevision) || options.expectedRevision < 1) {
+      throw new Error('ProblemKey allocation values must be positive safe integers');
+    }
+    const reason = options.reason.trim();
+    const reasonLength = Array.from(reason).length;
+    if (reasonLength < 1 || reasonLength > 500) throw new Error('allocation reason must contain 1–500 characters');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/problem-budgets/${encodeURIComponent(options.problemKey)}/allocations`, options.requestId, {
+      additionalToolCalls: options.additionalToolCalls,
+      expectedToolCallLimit: options.expectedToolCallLimit,
+      expectedRevision: options.expectedRevision,
+      reason,
+      requestId: options.requestId,
+      confirm: true,
+    });
+    return validateProblemToolCallAllocationReceipt(raw, options.problemKey, options.expectedRevision + 1);
   }
 
   async getMemoryTaskRevalidationPreview(options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView> {

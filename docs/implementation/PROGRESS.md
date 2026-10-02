@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 123 — REQ-16 authorized ProblemKey budget allocations (Schema 84)
+
+Schema 84 adds append-only allocations for finite ProblemKey tool-call budgets. A confirmed owner command records the additional calls, old/new cap, revision, reason, request ID and authority. Kernel enforces expected cap/revision under a budget-row lock; the database validates continuity and forbids allocation edits/deletes/truncation. Workbench provides a no-store budget list and an explicit allocation form. Added calls extend the shared ProblemKey envelope only; existing Task limits remain fixed. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-123-budget-allocations/verification.md`.
+
+Mission/Company/Provider composition, protected closing reserves/task classes, rejected-route/policy-revision events, hidden retries, token/money accounting and stable exhaustion closeout remain open.
+
 ## Slice 122 — REQ-16 shared ProblemKey tool budget (Schema 83)
 
 Schema 83 persists a ProblemKey tool-call cap and cumulative usage. Existing lineages backfill from the sum of already admitted bounded Task envelopes; a historical unbounded Task keeps the lineage unbounded. A new lineage fixes its cap from the first WorkerSession's explicit Task limit, and later Tasks cannot expand it. Admission and every accepted tool call now check/update WorkerSession, Task and ProblemKey counters atomically. Handover exposes the lineage cap/remaining amount, and product-provider turns clamp to the minimum remaining envelope. `0` remains explicitly unbounded. `go build ./internal/kernel ./internal/control ./cmd/polis`, all migration hashes and `git diff --check` pass. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-122-problem-budget/verification.md`.

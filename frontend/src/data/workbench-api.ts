@@ -1,7 +1,7 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView} from '../domain/workbench';
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentCorrectionView, DomainContentPublicationView} from '../domain/workbench';
 import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DailyRoutineView, DataMode, DomainContentDraftView, DomainContentReviewView, DomainContentReviewSubmissionView, DomainContentSampleEvidenceView, DomainContentSourceEventView, DomainContentSourceStateView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceAreaAssessmentView, DomainEvidenceAreaView, DomainEvidenceItemView, DomainEvidenceLedgerView, DomainEvidencePreviewAttestationView, DomainEvidenceRecordView, DomainEvidenceReviewOutcomeView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, EmployeeDraft, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatus, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackCollectionPolicyReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, HumanInterventionState, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, ServiceBrowserSessionView, StdioMCPPackageRevisionView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
@@ -308,6 +308,16 @@ export type DailyRoutineQueryOptions = Readonly<{
 
 export type MemoryTaskStatusQueryOptions = Readonly<{companyId: string; taskId: string}>;
 export type MemoryCorrectionQueueQueryOptions = Readonly<{companyId: string}>;
+export type ProblemToolCallBudgetQueryOptions = Readonly<{companyId: string}>;
+export type AllocateProblemToolCallsOptions = Readonly<{
+  companyId: string;
+  problemKey: string;
+  additionalToolCalls: number;
+  expectedToolCallLimit: number;
+  expectedRevision: number;
+  reason: string;
+  requestId: string;
+}>;
 export type MemoryTaskRevalidationPreviewOptions = Readonly<{companyId: string; taskId: string; dependencyId: string; correctionId: string}>;
 export type RevalidateMemoryTaskOptions = Readonly<{
   companyId: string;
@@ -612,6 +622,8 @@ export type WorkbenchApi = Readonly<{
   listDailyRoutines(options: DailyRoutineQueryOptions): Promise<ReadonlyArray<DailyRoutineView>>;
   getMemoryTaskStatus(options: MemoryTaskStatusQueryOptions): Promise<MemoryTaskStatusView>;
   listMemoryCorrections(options: MemoryCorrectionQueueQueryOptions): Promise<MemoryCorrectionQueueView>;
+  listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView>;
+  allocateProblemToolCalls(options: AllocateProblemToolCallsOptions): Promise<ProblemToolCallAllocationReceiptView>;
   getMemoryTaskRevalidationPreview(options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView>;
   revalidateMemoryTask(options: RevalidateMemoryTaskOptions): Promise<MemoryTaskRevalidationReceipt>;
   listActivityEvents(options: ActivityQueryOptions): Promise<ActivityView>;

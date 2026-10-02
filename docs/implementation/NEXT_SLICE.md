@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-02)
 
-## Latest continuation status (Slice 122, REQ-16 shared ProblemKey tool budget; Schema 83)
+## Latest continuation status (Slice 123, REQ-16 authorized ProblemKey allocations; Schema 84)
+
+Schema 84 adds an append-only owner allocation ledger for finite ProblemKey tool-call caps. Each addition records the previous/resulting limits, revision, local-owner authority, request ID, reason and timestamp. Kernel checks the expected revision and cap under a ProblemKey budget-row lock; a database trigger validates a continuous allocation chain. Workbench now lists budgets and supports explicit confirmed allocations with stale-revision protection. Allocations extend only the shared ProblemKey cap; they do not rewrite any existing Task's fixed envelope. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-123-budget-allocations/verification.md`.
+
+Mission/Company/Provider budget composition, protected closeout reserves/classes, rejected-route and policy-revision records, hidden CLI retry accounting, token/money accounting, and stable budget-exhaustion closeout/recovery remain open. An allocation is an explicit additional tool-call authorization; it does not imply a provider turn, restart or Mission action.
+
+## Previous continuation status (Slice 122, REQ-16 shared ProblemKey tool budget; Schema 83)
 
 Schema 83 adds a durable tool-call cap and usage counter for each ProblemKey. Existing ProblemKeys preserve the sum of their previously admitted bounded Task envelopes; any historical unlimited Task preserves an unlimited ProblemKey. A new ProblemKey's cap is fixed from the first WorkerSession's explicit Task tool-call limit, and later Tasks/sessions share the remaining calls without enlarging it. The database prevents changing an allocated cap or decreasing usage. Kernel admission and every tool-call charge account for Session, Task, and ProblemKey limits in one transaction; Worker Handover and provider turn clamping report/use the minimum remaining allowance. `0` retains the existing unbounded meaning. `go build ./internal/kernel ./internal/control ./cmd/polis`, all migration hashes and `git diff --check` pass. Tests, PostgreSQL migration/runtime, provider execution and any live cost measurement were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-122-problem-budget/verification.md`.
 

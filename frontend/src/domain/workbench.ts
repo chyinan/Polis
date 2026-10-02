@@ -1441,6 +1441,33 @@ export type MemoryCorrectionQueueView = Readonly<{
   truncated: boolean;
 }>;
 
+export type ProblemToolCallBudgetState = 'pending' | 'unbounded' | 'available' | 'exhausted';
+
+export type ProblemToolCallBudgetView = Readonly<{
+  problemKey: string;
+  missionId: string;
+  taskCount: number;
+  workerSessionAttempts: number;
+  toolCallLimit: number | null;
+  toolCallsUsed: number;
+  toolCallsRemaining: number;
+  allocationRevision: number;
+  state: ProblemToolCallBudgetState;
+  lastAllocationReason?: string;
+  lastAllocatedAt?: string;
+}>;
+
+export type ProblemToolCallBudgetListView = Readonly<{
+  items: ReadonlyArray<ProblemToolCallBudgetView>;
+  truncated: boolean;
+}>;
+
+export type ProblemToolCallAllocationReceiptView = Readonly<{
+  id: string;
+  status: 'allocated';
+  revision: number;
+}>;
+
 export type MemoryTaskStatusView = Readonly<{
   state: 'clear' | 'dirty' | 'frozen';
   impacts: ReadonlyArray<MemoryTaskImpactView>;
