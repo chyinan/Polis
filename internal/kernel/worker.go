@@ -6,19 +6,24 @@ type Workspace struct {
 	Revision        int64
 }
 type ToolCallBudget struct {
-	Limit         int64 `json:"tool_call_limit"`
-	Used          int64 `json:"tool_calls_used"`
-	Remaining     int64 `json:"tool_calls_remaining"`
-	TaskLimit     int64 `json:"task_tool_call_limit"`
-	TaskUsed      int64 `json:"task_tool_calls_used"`
-	TaskRemaining int64 `json:"task_tool_calls_remaining"`
+	Limit            int64 `json:"tool_call_limit"`
+	Used             int64 `json:"tool_calls_used"`
+	Remaining        int64 `json:"tool_calls_remaining"`
+	TaskLimit        int64 `json:"task_tool_call_limit"`
+	TaskUsed         int64 `json:"task_tool_calls_used"`
+	TaskRemaining    int64 `json:"task_tool_calls_remaining"`
+	ProblemLimit     int64 `json:"problem_tool_call_limit"`
+	ProblemUsed      int64 `json:"problem_tool_calls_used"`
+	ProblemRemaining int64 `json:"problem_tool_calls_remaining"`
 }
 
 type ProblemLineage struct {
 	ProblemKey            string `json:"problem_key"`
 	TaskCount             int64  `json:"task_count"`
 	WorkerSessionAttempts int64  `json:"worker_session_attempts"`
+	ToolCallLimit         int64  `json:"problem_tool_call_limit"`
 	ToolCallsUsed         int64  `json:"tool_calls_used"`
+	ToolCallsRemaining    int64  `json:"problem_tool_calls_remaining"`
 }
 
 type SkillReferenceSummary struct {

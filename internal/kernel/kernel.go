@@ -151,7 +151,7 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 	if err != nil {
 		return fail(err)
 	}
-	if schema < 82 {
+	if schema < 83 {
 		return fail(fmt.Errorf("incompatible schema: %d", schema))
 	}
 	if err = os.MkdirAll(root, 0700); err != nil {
