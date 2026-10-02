@@ -829,7 +829,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 			turnErr = fmt.Errorf("provider turn completed but Task input delivery evidence could not be saved: %w", receiptErr)
 		}
 	}
-	usage = map[string]any{"authorization": worker.authorization, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
+	usage = map[string]any{"authorization": worker.authorization, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
 	if turnErr != nil {
 		state, outcome = "inconclusive", "transport_failure"
 		if ctx.Err() != nil {

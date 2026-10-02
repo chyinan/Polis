@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 118 — REQ-16 provider retry accounting (no migration)
+
+Provider terminal observations now retain the Codex protocol tool-call count, observed reconnect count, whether the same turn recovered, and `retry_visibility=limited`. The last value makes explicit that retries hidden inside the CLI/provider harness are not fully observable. This fixes the prior zero tool-call count in terminal records and does not claim a hard cap across hidden retries or a billable cost total. `go build ./cmd/...` and `git diff --check` pass; tests, database runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-118-provider-retry-accounting/verification.md`.
+
+REQ-16 still needs the durable ProblemKey/task lineage, outer budget composition and protected closing reserve model, plus stable budget-exhaustion closeout/recovery. No retry policy or mission state is inferred from the new observation fields.
+
 ## Slice 117 — frozen traceability disposition (no code change)
 
 Added a 232-row requirement-level crosswalk for every frozen FT/NT/CAP/UI/WF/PP ID in `docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json`. Each row joins the traceability requirement mapping, its scenario catalog and the release-applicability entry. Disposition is inherited from the live software-closure ledger: any row mapped to an open REQ is `partial`; otherwise it is `implemented` at requirement scope. Exact scenario execution remains `not_run` for all 232 IDs; this does not claim scenario qualification. Frozen catalogs and applicability data were not edited. No tests were added or run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-117-traceability-disposition/verification.md`.

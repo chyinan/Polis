@@ -231,10 +231,14 @@ type TurnResult struct {
 	ToolCalls             int
 	ProviderEgress        int
 	ReconnectAttemptCount int
-	TurnCompleted         bool
-	Usage                 codex.TokenUsage
-	StartedAt             time.Time
-	FinishedAt            time.Time
+	ReconnectRecovered    bool
+	// RetryVisibility is limited when the provider process can retry internally
+	// without exposing those attempts through the Worker protocol.
+	RetryVisibility string
+	TurnCompleted   bool
+	Usage           codex.TokenUsage
+	StartedAt       time.Time
+	FinishedAt      time.Time
 }
 
 type RuntimeStats struct {

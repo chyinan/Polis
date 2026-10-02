@@ -42,6 +42,7 @@ type Client struct {
 type TurnResult struct {
 	State                    string
 	Boundary                 bool
+	ToolCalls                int `json:"tool_calls"`
 	Usage                    TokenUsage
 	UsageUpdates             int
 	NativeDurationMS         int64

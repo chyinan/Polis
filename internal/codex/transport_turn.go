@@ -29,7 +29,9 @@ func (c *Client) Turn(ctx context.Context, thread, effort, prompt string, handle
 }
 
 func (c *Client) TurnWithOptions(ctx context.Context, thread, effort, prompt string, options TurnOptions, handler func(string, string, json.RawMessage) (json.RawMessage, bool)) (result TurnResult, err error) {
+	calls := 0
 	defer func() {
+		result.ToolCalls = calls
 		result.OutcomeClassification = ClassifyTurnOutcome(result, err)
 	}()
 	if options.ToolCallLimit < 0 || options.ToolCallLimit > RuntimeToolCallSafetyCap {
@@ -92,8 +94,6 @@ func (c *Client) TurnWithOptions(ctx context.Context, thread, effort, prompt str
 	firstOutput := false
 	stopRequested := false
 	replays := map[string]replayedToolCall{}
-	calls := 0
-
 	for {
 		if !stopRequested && options.Stop != nil {
 			select {
