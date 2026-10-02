@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 117 — frozen traceability disposition (no code change)
+
+Added a 232-row requirement-level crosswalk for every frozen FT/NT/CAP/UI/WF/PP ID in `docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json`. Each row joins the traceability requirement mapping, its scenario catalog and the release-applicability entry. Disposition is inherited from the live software-closure ledger: any row mapped to an open REQ is `partial`; otherwise it is `implemented` at requirement scope. Exact scenario execution remains `not_run` for all 232 IDs; this does not claim scenario qualification. Frozen catalogs and applicability data were not edited. No tests were added or run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-117-traceability-disposition/verification.md`.
+
 ## Slice 116 — REQ-15 memory correction queue (no migration)
 
 Added a bounded company-scoped correction queue projection, an authenticated no-store Workbench GET route and a read-only Settings panel. The repeatable-read Kernel snapshot includes correction state, base/current revision and review metadata, verifies proposal/base content digests, and never returns memory text without an employee-bound read identity. Proposal and review write controls remain closed: Workbench's owner token has no fixed employee identity or WorkerSession binding, and accepting caller-selected employee IDs through `BindFake` would falsify the immutable audit actor. `go build ./cmd/...`, frontend production build and `git diff --check` pass. Tests, PostgreSQL runtime and independent review execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-116-memory-correction-queue/verification.md`.

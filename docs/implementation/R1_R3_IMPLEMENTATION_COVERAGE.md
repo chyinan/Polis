@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-02, Slice 116 / Schema 80. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-02, Slice 117 / Schema 80. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 117: frozen traceability disposition (no code change)
+
+`docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json` cross-references all 232 IDs in the frozen FT/NT/CAP/UI/WF/PP catalogs with `traceability.json` and `TEST_RELEASE_APPLICABILITY.json`. The disposition is inherited from the finite software-closure list in this ledger: any ID mapped to one of 18 open REQs is `partial`; otherwise its mapped REQs are treated as `implemented` at requirement scope. This avoids treating an implementation disposition as a test result. All 232 exact scenario execution states remain `not_run`, and the frozen design catalogs were not changed. See the evidence note for counts and validation. This is a requirement-level reconciliation, not proof that any exact scenario passed.
 
 ## Slice 116: REQ-15 memory correction queue (no migration)
 
@@ -162,7 +166,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 116
+## Finite remaining work at Slice 117
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
@@ -172,7 +176,7 @@ Software closure, bounded to the current REQ ledger:
 - Complete lifecycle safety: REQ-14 stop/restart coordination covers Schema 73 snapshots and recorded uses for currently active pre-Schema-73 revocations; superseded legacy revocations and bound-but-unused legacy sessions lack exact revoke-time snapshots. REQ-15 now has Schema 74–80 correction, dirty/freeze gates, digest-bound clean-context revalidation, Handover memory context, Workbench revalidation and read-only correction queue, immutable CAS retention pins, dry-run-first reference-aware collection and a restore-resistant memory revocation overlay. The overlay's PostgreSQL/Desktop restore path still needs runtime qualification; immutable history is suppressed, not physically erased. Employee-session-bound memory proposal/review commands in Workbench, product-provider successor admission and FT-37/40/41 scenario qualification remain open. REQ-16 retry/closeout budgets, REQ-25 continuing authorization, REQ-26 shared-write resource binding, REQ-29 shared-file workspace access, and REQ-39 remaining safe-change handling remain open.
 - Complete the formal employee/runtime and continuity path for REQ-23–24, REQ-27, and REQ-30–34: current command surfaces and capability state machines exist, but direct communication, selected Skill, controlled MCP, and successor workflows are not available on the qualified product Worker path.
 - Add signing integration. Verify existing first-run, tray/hide/reopen, packaged artifact download, install/uninstall, login-start behavior, and update rollback in a clean Windows VM; the opt-in startup code is implemented but not host-qualified.
-- Reconcile the existing traceability IDs to code/evidence once for FT, NT, CAP, UI, WF, and PP; mark each as implemented, partial, unimplemented, excluded, or not applicable. REQ-15's six FT/PP IDs are complete in `docs/implementation/REQ15_MEMORY_TRACEABILITY.md`; the remaining IDs are still open. This is a bounded pass over the frozen traceability file, not permission to add requirements.
+- Refresh `R1_R3_TRACEABILITY_DISPOSITION.json` when the live REQ ledger changes. It now covers every existing FT, NT, CAP, UI, WF, and PP ID and keeps exact execution state separate; this does not authorize changes to the frozen catalogs or new requirements.
 
 Qualification closure, after the corresponding local paths are stable:
 

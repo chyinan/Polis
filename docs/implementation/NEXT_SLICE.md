@@ -1,5 +1,11 @@
 # Current handoff — approved R1–R3 implementation (2026-10-02)
 
+## Latest continuation status (Slice 117, frozen traceability disposition; no code change)
+
+Added `docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json`, a 232-row crosswalk joining every FT/NT/CAP/UI/WF/PP ID to its frozen requirement mapping, scenario catalog and release applicability. Disposition is inherited from the live REQ software-closure ledger: IDs touching one of the 18 open REQs are `partial`; the rest are `implemented` at requirement scope. This is not an exact-scenario pass: all 232 frozen execution statuses remain `not_run`. No frozen catalog was changed and no tests were added or run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-117-traceability-disposition/verification.md`.
+
+Next bounded REQ-15 task remains a verifiable employee-session-bound Workbench command path for memory correction proposal/review. Do not accept a client-selected employee ID through `BindFake`; the Workbench owner token has no fixed employee identity or WorkerSession binding. Product-provider successor admission, restored-backup/CAS runtime qualification, the frozen scenarios, and host/account/signing qualification remain open.
+
 ## Latest continuation status (Slice 116, REQ-15 memory correction queue; no migration)
 
 Workbench now has a bounded, company-scoped, no-store correction queue. The repeatable-read Kernel projection reports proposal/base/current revision metadata and decision state, verifies both stored text digests, and never returns memory text without an employee-bound read identity. The Settings page displays that queue. `go build ./cmd/...`, the frontend production build and `git diff --check` pass; tests, PostgreSQL migration/runtime and behavioral review execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-116-memory-correction-queue/verification.md`.
