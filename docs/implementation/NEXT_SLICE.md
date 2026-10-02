@@ -1,5 +1,11 @@
 # Current handoff — approved R1–R3 implementation (2026-10-02)
 
+## Latest continuation status (Slice 119, REQ-15 revalidated successor Worker admission; no migration)
+
+Product-provider admission now permits a successor WorkerSession only after every earlier Task session is stopped, every earlier session has owner-reviewed clean-context revalidation history, the latest stopped session is tied to the Task's current or immediately preceding generation, and the memory impact gate is clear. Revalidation always increments the Task generation, including Tasks already in `ready`, so the authorization cannot be replayed for another successor. First-session admission and the default one-attempt fence remain in place. `go build ./internal/kernel`, `go build ./cmd/polis`, and `git diff --check` pass. Full `go build ./cmd/...` hit an Android/Termux clang tagged-pointer linker crash in an unrelated command; the serial full sweep was stopped as impractically slow. No tests, DB runtime or provider session were run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-119-memory-successor-admission/verification.md`.
+
+The employee-session-bound Workbench proposal/review path remains open because its owner token does not identify a fixed employee or carry a WorkerSession binding. Restored-backup runtime, the six frozen REQ-15 scenarios, and host/account/signing qualification also remain open. Do not accept a client-selected employee ID through `BindFake`.
+
 ## Latest continuation status (Slice 118, REQ-16 provider retry accounting; no migration)
 
 Provider terminal observations now persist the protocol tool-call count, reconnect count/recovery, and `retry_visibility=limited` for the Codex CLI path. This fixes the prior zero tool-call count in terminal usage and records that CLI/harness-internal retries are not fully visible. The count is protocol-observed activity, not a bill or a hard cap across hidden retries. `go build ./cmd/...` and `git diff --check` pass; tests, DB runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-118-provider-retry-accounting/verification.md`.
@@ -10,7 +16,7 @@ REQ-16 remains open for durable cross-Task ProblemKey budgets, Mission/Company/P
 
 Added `docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json`, a 232-row crosswalk joining every FT/NT/CAP/UI/WF/PP ID to its frozen requirement mapping, scenario catalog and release applicability. Disposition is inherited from the live REQ software-closure ledger: IDs touching one of the 18 open REQs are `partial`; the rest are `implemented` at requirement scope. This is not an exact-scenario pass: all 232 frozen execution statuses remain `not_run`. No frozen catalog was changed and no tests were added or run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-117-traceability-disposition/verification.md`.
 
-Next bounded REQ-15 task remains a verifiable employee-session-bound Workbench command path for memory correction proposal/review. Do not accept a client-selected employee ID through `BindFake`; the Workbench owner token has no fixed employee identity or WorkerSession binding. Product-provider successor admission, restored-backup/CAS runtime qualification, the frozen scenarios, and host/account/signing qualification remain open.
+Next bounded REQ-15 task remains a verifiable employee-session-bound Workbench command path for memory correction proposal/review. Do not accept a client-selected employee ID through `BindFake`; the Workbench owner token has no fixed employee identity or WorkerSession binding. The owner-reviewed product-provider successor gate is implemented; restored-backup/CAS runtime qualification, the frozen scenarios, and host/account/signing qualification remain open.
 
 ## Latest continuation status (Slice 116, REQ-15 memory correction queue; no migration)
 

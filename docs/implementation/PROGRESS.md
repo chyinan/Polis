@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 119 — REQ-15 revalidated successor Worker admission (no migration)
+
+The product-provider Task's one-session fence now allows another WorkerSession only when the prior session chain is stopped and linked to immutable owner-reviewed memory revalidation records. The latest revalidation must advance the Task to the current generation (or be the immediately preceding generation for legacy `ready` state), and the memory impact gate must be clear at both reservation and pre-provider authorization. Revalidation always advances Task generation, whether the Task was `ready` or `working`; the new admission cannot be replayed without a fresh revalidation. The initial Worker and default single-attempt behavior remain unchanged. `go build ./internal/kernel`, `go build ./cmd/polis`, and `git diff --check` pass. Full `go build ./cmd/...` hit an Android/Termux clang tagged-pointer linker crash in `cmd/polis-r03a-t14c`; the serial full sweep was stopped for excessive runtime. Tests, DB runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-119-memory-successor-admission/verification.md`.
+
+Employee-session-bound Workbench correction authoring/review and REQ-15 runtime/scenario qualification remain open.
+
 ## Slice 118 — REQ-16 provider retry accounting (no migration)
 
 Provider terminal observations now retain the Codex protocol tool-call count, observed reconnect count, whether the same turn recovered, and `retry_visibility=limited`. The last value makes explicit that retries hidden inside the CLI/provider harness are not fully observable. This fixes the prior zero tool-call count in terminal records and does not claim a hard cap across hidden retries or a billable cost total. `go build ./cmd/...` and `git diff --check` pass; tests, database runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261002-slice-118-provider-retry-accounting/verification.md`.

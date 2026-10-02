@@ -1211,16 +1211,18 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,'l
 			"worker_workspace", input.TaskID, current.WorkspaceRevision, current.WorkspaceDigest); checkErr != nil {
 			return Receipt{}, checkErr
 		}
-		if current.TaskState == "working" {
-			if _, checkErr = tx.Exec(ctx, `UPDATE tasks SET state='ready',generation=generation+1
-WHERE company_id=$1 AND id=$2 AND state='working'`, scope.company, input.TaskID); checkErr != nil {
-				return Receipt{}, checkErr
-			}
-			if checkErr = appendEvent(ctx, tx, scope, "task.memory_revalidation_ready", map[string]any{
-				"task_id": input.TaskID, "revalidation_id": revalidationID, "generation_advanced": true,
-			}); checkErr != nil {
-				return Receipt{}, checkErr
-			}
+		taskUpdate, updateErr := tx.Exec(ctx, `UPDATE tasks SET state='ready',generation=generation+1
+WHERE company_id=$1 AND id=$2 AND state IN ('ready','working')`, scope.company, input.TaskID)
+		if updateErr != nil {
+			return Receipt{}, updateErr
+		}
+		if taskUpdate.RowsAffected() != 1 {
+			return Receipt{}, core.Conflict
+		}
+		if checkErr = appendEvent(ctx, tx, scope, "task.memory_revalidation_ready", map[string]any{
+			"task_id": input.TaskID, "revalidation_id": revalidationID, "generation_advanced": true,
+		}); checkErr != nil {
+			return Receipt{}, checkErr
 		}
 		return Receipt{ID: revalidationID, Status: "revalidated", Revision: current.ReplacementRevision}, nil
 	})

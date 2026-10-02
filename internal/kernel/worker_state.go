@@ -73,10 +73,60 @@ func (k *Kernel) TXNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 }
 
 // TXNewProductProviderWorkerWithToolBudget creates a WorkerSession only for
-// the single provider-executable product Task in the active Mission. It also
-// fences a second provider attempt for a Task that already has a session.
+// the single provider-executable product Task in the active Mission. A stopped
+// prior session permits one successor only after explicit memory revalidation
+// advanced the Task generation.
 func (k *Kernel) TXNewProductProviderWorkerWithToolBudget(ctx context.Context, s Scope, task, profile string, toolCallLimit int64) (Binding, error) {
 	return k.txNewWorkerWithToolBudget(ctx, s, task, profile, toolCallLimit, true)
+}
+
+// productProviderSuccessorReadyTX keeps product Tasks single-attempt by
+// default. It permits a successor generation only when every earlier session
+// is stopped and every prior session has an owner-reviewed memory revalidation
+// in its history. The immediately preceding session must be bound to this Task
+// generation or the generation immediately before it, covering ready-state
+// revalidations recorded before generation advancement was enforced.
+func productProviderSuccessorReadyTX(ctx context.Context, tx pgx.Tx, scope Scope, taskID string, taskGeneration int64, excludedSessionID string) (bool, error) {
+	var live bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_sessions
+WHERE company_id=$1 AND task_id=$2 AND ($3='' OR id<>$3) AND state!='stopped')`, scope.company, taskID, excludedSessionID).Scan(&live); err != nil {
+		return false, err
+	}
+	if live {
+		return false, nil
+	}
+	var unreviewedPriorSession bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(
+SELECT 1 FROM worker_sessions s
+WHERE s.company_id=$1 AND s.task_id=$2 AND ($3='' OR s.id<>$3)
+AND NOT EXISTS(SELECT 1 FROM memory_task_revalidation_events r
+ WHERE r.company_id=s.company_id AND r.task_id=s.task_id AND r.stopped_session_id=s.id
+ AND r.task_generation>=s.generation AND r.task_generation<=$4))`,
+		scope.company, taskID, excludedSessionID, taskGeneration).Scan(&unreviewedPriorSession); err != nil {
+		return false, err
+	}
+	if unreviewedPriorSession {
+		return false, nil
+	}
+	var priorID, priorState string
+	var priorGeneration int64
+	err := tx.QueryRow(ctx, `SELECT id,state,generation FROM worker_sessions
+WHERE company_id=$1 AND task_id=$2 AND ($3='' OR id<>$3)
+ORDER BY generation DESC,id DESC LIMIT 1`, scope.company, taskID, excludedSessionID).Scan(&priorID, &priorState, &priorGeneration)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return true, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if priorState != "stopped" || taskGeneration < priorGeneration {
+		return false, nil
+	}
+	var revalidated bool
+	err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM memory_task_revalidation_events
+WHERE company_id=$1 AND task_id=$2 AND stopped_session_id=$3 AND task_generation IN ($4,$4-1))`,
+		scope.company, taskID, priorID, taskGeneration).Scan(&revalidated)
+	return revalidated, err
 }
 
 // ValidateProductProviderAuthorizationBinding rereads the persisted product
@@ -100,11 +150,11 @@ func (k *Kernel) ValidateProductProviderAuthorizationBinding(ctx context.Context
 		return core.StaleEpoch
 	}
 	var state, employee, taskID, sessionIncarnation, sessionProfile string
-	var sessionEpoch, employeeEpoch, sessionToolCallLimit int64
-	err = tx.QueryRow(ctx, `SELECT s.state,s.employee_id,s.task_id,s.epoch,s.incarnation,s.profile,s.tool_call_limit,e.epoch
+	var sessionEpoch, employeeEpoch, sessionToolCallLimit, sessionGeneration int64
+	err = tx.QueryRow(ctx, `SELECT s.state,s.employee_id,s.task_id,s.epoch,s.incarnation,s.profile,s.tool_call_limit,s.generation,e.epoch
 FROM worker_sessions s JOIN employees e ON e.company_id=s.company_id AND e.id=s.employee_id
 WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(
-		&state, &employee, &taskID, &sessionEpoch, &sessionIncarnation, &sessionProfile, &sessionToolCallLimit, &employeeEpoch,
+		&state, &employee, &taskID, &sessionEpoch, &sessionIncarnation, &sessionProfile, &sessionToolCallLimit, &sessionGeneration, &employeeEpoch,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return core.OutOfScope
@@ -123,8 +173,11 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(
 		return err
 	}
 	if task.Mission == "" || task.State != "ready" || task.Owner != b.employee || !task.IsProductProviderExecutable() ||
-		!task.HasValidProductValidationBinding() || task.ValidationBinding.ConfigurationDigest != b.taskValidationBindingDigest {
+		!task.HasValidProductValidationBinding() || task.ValidationBinding.ConfigurationDigest != b.taskValidationBindingDigest || sessionGeneration != task.Generation+1 {
 		return core.Conflict
+	}
+	if err = k.requireMemoryTaskWritableTX(ctx, tx, b.scope.company, task.ID); err != nil {
+		return err
 	}
 	mission, err := missionState(ctx, tx, b.scope, task.Mission)
 	if err != nil {
@@ -141,14 +194,20 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(
 	if err != nil || selected.ID != task.ID {
 		return core.Conflict
 	}
-	var providerSessions, currentSession int64
-	err = tx.QueryRow(ctx, `SELECT count(*),count(*) FILTER (WHERE s.id=$3)
-FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
-WHERE s.company_id=$1 AND t.mission_id=$2 AND t.kind='compat' AND t.owner='emp-backend'`, b.scope.company, task.Mission, b.session).Scan(&providerSessions, &currentSession)
+	var latestSessionID string
+	err = tx.QueryRow(ctx, `SELECT id FROM worker_sessions
+WHERE company_id=$1 AND task_id=$2 ORDER BY generation DESC,id DESC LIMIT 1`, b.scope.company, task.ID).Scan(&latestSessionID)
 	if err != nil {
 		return err
 	}
-	if providerSessions != 1 || currentSession != 1 {
+	if latestSessionID != b.session {
+		return core.Conflict
+	}
+	successorReady, err := productProviderSuccessorReadyTX(ctx, tx, b.scope, task.ID, task.Generation, b.session)
+	if err != nil {
+		return err
+	}
+	if !successorReady {
 		return core.Conflict
 	}
 	var workspaceDigest string
@@ -196,11 +255,11 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 			if selectedTask.ID != t.ID {
 				return Receipt{}, core.Conflict
 			}
-			var previousAttempt bool
-			if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM worker_sessions WHERE company_id=$1 AND task_id=$2)", s.company, t.ID).Scan(&previousAttempt); err != nil {
+			successorReady, err := productProviderSuccessorReadyTX(ctx, tx, s, t.ID, t.Generation, "")
+			if err != nil {
 				return Receipt{}, err
 			}
-			if previousAttempt {
+			if !successorReady {
 				return Receipt{}, core.Denied
 			}
 			if !t.HasValidProductValidationBinding() {
