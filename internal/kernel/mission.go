@@ -144,7 +144,7 @@ func (k *Kernel) TXPrepareProductTask(ctx context.Context, s Scope, missionID, g
 			}
 			return Receipt{}, err
 		}
-		if err := requireMemoryTaskCleanTX(ctx, tx, s.company, bootstrapID); err != nil {
+		if err := k.requireMemoryTaskCleanTX(ctx, tx, s.company, bootstrapID); err != nil {
 			return Receipt{}, err
 		}
 		plan := []byte(`{"template":"product-task@2","owner":"emp-backend","dependencies":[],"ambiguities":[]}`)
@@ -394,7 +394,7 @@ FROM task_validation_bindings WHERE company_id=$1 AND task_id=$2`, s.company, id
 	t.ValidationBinding = &binding
 	return t, e
 }
-func checkWork(ctx context.Context, tx pgx.Tx, b Binding, w Task) (Task, error) {
+func (k *Kernel) checkWork(ctx context.Context, tx pgx.Tx, b Binding, w Task) (Task, error) {
 	t, e := taskRow(ctx, tx, b.scope, w.ID)
 	if e != nil {
 		return t, e
@@ -412,7 +412,7 @@ func checkWork(ctx context.Context, tx pgx.Tx, b Binding, w Task) (Task, error) 
 	if state != "active" {
 		return t, core.Denied
 	}
-	if e = requireMemoryTaskWritableTX(ctx, tx, b.scope.company, t.ID); e != nil {
+	if e = k.requireMemoryTaskWritableTX(ctx, tx, b.scope.company, t.ID); e != nil {
 		return t, e
 	}
 	return t, nil

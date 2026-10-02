@@ -649,7 +649,7 @@ func (k *Kernel) TXProposePeerContract(ctx context.Context, b Binding, task Task
 		return out, core.Malformed
 	}
 	_, e := k.TXWrite(ctx, b.scope, &b, key, "contract.propose", proposal, func(tx pgx.Tx) (Receipt, error) {
-		t, e := checkWork(ctx, tx, b, task)
+		t, e := k.checkWork(ctx, tx, b, task)
 		if e != nil || t.Kind != "peer_backend" || t.State != "working" || b.employee != "emp-backend" {
 			if e != nil {
 				return Receipt{}, e

@@ -120,7 +120,7 @@ func (k *Kernel) TXPeerReviewSubmit(ctx context.Context, b Binding, evidence Pee
 		if e != nil {
 			return Receipt{}, e
 		}
-		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
+		if e = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
 			return Receipt{}, e
 		}
 		id := newID()

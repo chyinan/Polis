@@ -22,14 +22,14 @@ func (k *Kernel) TXSend(ctx context.Context, b Binding, w Task, key, body string
 		Generation int64
 		Body       string
 	}{w.ID, w.Generation, body}, func(tx pgx.Tx) (Receipt, error) {
-		t, e := checkWork(ctx, tx, b, w)
+		t, e := k.checkWork(ctx, tx, b, w)
 		if e != nil {
 			return Receipt{}, e
 		}
 		if b.employee != core.EmployeePlanningID || t.Kind != core.TaskKindBootstrapPlan || t.State != "working" {
 			return Receipt{}, core.Denied
 		}
-		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
+		if e = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
 			return Receipt{}, e
 		}
 		work, message := newID(), newID()
@@ -84,7 +84,7 @@ func (k *Kernel) txSubmit(ctx context.Context, b Binding, w Task, key string, co
 		return Receipt{}, e
 	}
 	if e = k.guard(ctx, tx, b.scope, &b); e == nil {
-		_, e = checkWork(ctx, tx, b, w)
+		_, e = k.checkWork(ctx, tx, b, w)
 	}
 	_ = tx.Rollback(ctx)
 	if e != nil {
@@ -93,7 +93,7 @@ func (k *Kernel) txSubmit(ctx context.Context, b Binding, w Task, key string, co
 	hash := sha256.Sum256(content)
 	expectedDigest := hex.EncodeToString(hash[:])
 	stage, e := k.TXWrite(ctx, b.scope, &b, "stage-"+fingerprint(key)[:48], "artifact.stage", []string{w.ID, expectedDigest}, func(tx pgx.Tx) (Receipt, error) {
-		t, e := checkWork(ctx, tx, b, w)
+		t, e := k.checkWork(ctx, tx, b, w)
 		if e != nil {
 			return Receipt{}, e
 		}
@@ -135,14 +135,14 @@ func (k *Kernel) txSubmit(ctx context.Context, b Binding, w Task, key string, co
 		Generation int64
 		Digest     string
 	}{w.ID, w.Generation, digest}, func(tx pgx.Tx) (Receipt, error) {
-		t, e := checkWork(ctx, tx, b, w)
+		t, e := k.checkWork(ctx, tx, b, w)
 		if e != nil {
 			return Receipt{}, e
 		}
 		if t.State != "working" || (t.Kind != core.TaskKindCompute && t.Kind != core.TaskKindCompat && t.Kind != core.TaskKindPeerBackend && t.Kind != core.TaskKindPeerFrontend) {
 			return Receipt{}, core.Denied
 		}
-		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
+		if e = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
 			return Receipt{}, e
 		}
 		var qualification productQualification
@@ -216,7 +216,7 @@ func (k *Kernel) TXResolve(ctx context.Context, b Binding, obligation, artifact,
 		if ms != "active" {
 			return Receipt{}, core.Denied
 		}
-		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
+		if e = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, t.ID); e != nil {
 			return Receipt{}, e
 		}
 		_, e = tx.Exec(ctx, "UPDATE obligations SET state='fulfilled',evidence_id=$3 WHERE company_id=$1 AND id=$2", b.scope.company, obligation, artifact)
@@ -273,7 +273,7 @@ func (k *Kernel) TXVerify(ctx context.Context, b Binding, id, key string) (Recei
 			return Receipt{}, core.Denied
 		}
 		if verdict == "passed" {
-			if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
+			if e = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
 				return Receipt{}, e
 			}
 		}

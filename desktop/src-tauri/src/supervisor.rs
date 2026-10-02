@@ -1471,6 +1471,10 @@ impl Supervisor {
             .arg("serve")
             .env("POLIS_DSN", dsn)
             .env("POLIS_BLOB_ROOT", blob_root)
+            .env(
+                "POLIS_MEMORY_REVOCATION_ROOT",
+                self.root.join("memory-revocations"),
+            )
             .env("POLIS_WORKBENCH_ADDR", format!("127.0.0.1:{port}"))
             .env("POLIS_WORKER_MODE", "deterministic")
             .env("POLIS_DESKTOP_SESSION_TOKEN", &token)

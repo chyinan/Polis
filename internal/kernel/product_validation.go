@@ -27,7 +27,7 @@ WHERE s.company_id=$1 AND s.id=$2 AND s.state='active'`, b.scope.company, b.sess
 	if taskState != "working" || missionState != "active" {
 		return "", core.Denied
 	}
-	if err = requireMemoryTaskWritableTX(ctx, tx, b.scope.company, taskID); err != nil {
+	if err = k.requireMemoryTaskWritableTX(ctx, tx, b.scope.company, taskID); err != nil {
 		return "", err
 	}
 	return taskID, nil

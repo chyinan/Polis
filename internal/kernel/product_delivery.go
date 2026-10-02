@@ -72,7 +72,7 @@ func (k *Kernel) txSubmitTaskDelivery(ctx context.Context, b Binding, w Task, ke
 		Digest     string
 	}{w.ID, w.Generation, digest})[:48]
 	stage, err := k.TXWrite(ctx, b.scope, &b, stageKey, "artifact.stage", []string{w.ID, digest}, func(tx pgx.Tx) (Receipt, error) {
-		task, checkErr := checkWork(ctx, tx, b, w)
+		task, checkErr := k.checkWork(ctx, tx, b, w)
 		if checkErr != nil {
 			return Receipt{}, checkErr
 		}
@@ -118,7 +118,7 @@ func (k *Kernel) txSubmitTaskDelivery(ctx context.Context, b Binding, w Task, ke
 		Digest     string
 		StageID    string
 	}{w.ID, w.Generation, digest, stage.ID}, func(tx pgx.Tx) (Receipt, error) {
-		task, checkErr := checkWork(ctx, tx, b, w)
+		task, checkErr := k.checkWork(ctx, tx, b, w)
 		if checkErr != nil {
 			return Receipt{}, checkErr
 		}
@@ -147,7 +147,7 @@ WHERE q.company_id=$1 AND q.task_id=$2`, b.scope.company, task.ID).Scan(&existin
 		if task.State != "working" {
 			return Receipt{}, productDeliveryDenied("task_state_disallows_delivery", "the current Task state does not allow final delivery.", "task_state", "working", task.State)
 		}
-		if checkErr = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task.ID); checkErr != nil {
+		if checkErr = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task.ID); checkErr != nil {
 			return Receipt{}, checkErr
 		}
 		qualification, checkErr := k.currentProductValidation(ctx, tx, b, task, digest)

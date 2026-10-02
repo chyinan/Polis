@@ -34,7 +34,7 @@ func (k *Kernel) TXRestoreCandidateForReview(ctx context.Context, s Scope, missi
 		if e != nil {
 			return Receipt{}, e
 		}
-		if e = requireMemoryTaskCleanTX(ctx, tx, s.company, taskID); e != nil {
+		if e = k.requireMemoryTaskCleanTX(ctx, tx, s.company, taskID); e != nil {
 			return Receipt{}, e
 		}
 		_, e = tx.Exec(ctx, "UPDATE tasks SET state='candidate' WHERE company_id=$1 AND id=$2", s.company, taskID)
@@ -74,7 +74,7 @@ func (k *Kernel) TXFinishReview(ctx context.Context, b Binding) (Receipt, error)
 		if !passed {
 			return Receipt{}, core.Denied
 		}
-		if e = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
+		if e = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task); e != nil {
 			return Receipt{}, e
 		}
 		_, e = tx.Exec(ctx, "UPDATE tasks SET state='completed' WHERE company_id=$1 AND id=$2", b.scope.company, task)

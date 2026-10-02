@@ -178,7 +178,7 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		if e != nil {
 			return Receipt{}, e
 		}
-		if e = requireMemoryTaskWritableTX(ctx, tx, s.company, t.ID); e != nil {
+		if e = k.requireMemoryTaskWritableTX(ctx, tx, s.company, t.ID); e != nil {
 			return Receipt{}, e
 		}
 		if productProvider {
@@ -337,7 +337,7 @@ func (k *Kernel) checkSession(ctx context.Context, tx pgx.Tx, b Binding, write b
 		return state, core.Denied
 	}
 	if write {
-		if err := requireMemoryTaskWritableTX(ctx, tx, b.scope.company, taskID); err != nil {
+		if err := k.requireMemoryTaskWritableTX(ctx, tx, b.scope.company, taskID); err != nil {
 			return state, err
 		}
 	}
@@ -365,7 +365,7 @@ func (k *Kernel) workerTransition(ctx context.Context, b Binding, from, to, capa
 			if mission != "active" {
 				return Receipt{}, core.Denied
 			}
-			if e = requireMemoryTaskWritableTX(ctx, tx, b.scope.company, b.task); e != nil {
+			if e = k.requireMemoryTaskWritableTX(ctx, tx, b.scope.company, b.task); e != nil {
 				return Receipt{}, e
 			}
 		}
@@ -613,15 +613,15 @@ func (k *Kernel) Handover(ctx context.Context, b Binding) (HandoverBundle, error
 	if e != nil {
 		return out, e
 	}
-	out.MemoryStatus, e = memoryTaskStatusTX(ctx, tx, b.scope.company, task)
+	out.MemoryStatus, e = k.memoryTaskStatusTX(ctx, tx, b.scope.company, task)
 	if e != nil {
 		return out, e
 	}
-	out.MemoryStatus, e = memoryTaskImpactContextTX(ctx, tx, b, out.MemoryStatus)
+	out.MemoryStatus, e = k.memoryTaskImpactContextTX(ctx, tx, b, out.MemoryStatus)
 	if e != nil {
 		return out, e
 	}
-	out.MemoryContext, _, e = memoryTaskDependenciesTX(ctx, tx, b)
+	out.MemoryContext, _, e = k.memoryTaskDependenciesTX(ctx, tx, b)
 	if e != nil {
 		return out, e
 	}

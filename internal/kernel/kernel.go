@@ -66,6 +66,9 @@ type Kernel struct {
 	incarnation              string
 	sourceIncarnation        string
 	root                     string
+	memoryRevocationRoot     string
+	memoryRevocationMu       sync.RWMutex
+	memoryRevocations        map[string]MemoryRecordRevocationOverlay
 	windowsNodeWorkspaceRoot string
 	runtimeCASBinding        *RuntimeCASBinding
 	executorFingerprints     map[string]environment.EnvironmentExecutorFingerprint
@@ -146,11 +149,14 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 	if err != nil {
 		return fail(err)
 	}
-	if schema < 79 {
+	if schema < 80 {
 		return fail(fmt.Errorf("incompatible schema: %d", schema))
 	}
 	if err = os.MkdirAll(root, 0700); err != nil {
 		return fail(err)
+	}
+	if err = k.initializeMemoryRevocationOverlays(); err != nil {
+		return fail(fmt.Errorf("initialize memory revocation overlays: %w", err))
 	}
 	if binding != nil {
 		err = k.txRecoverWithRuntimeCASBinding(ctx)
@@ -159,6 +165,9 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 	}
 	if err != nil {
 		return fail(err)
+	}
+	if err = k.reconcileMemoryRevocationOverlays(ctx); err != nil {
+		return fail(fmt.Errorf("apply memory revocation overlays: %w", err))
 	}
 	if err = k.reconcileEmployeeSchedulesOnStartup(ctx); err != nil {
 		return fail(fmt.Errorf("reconcile employee schedules after restart: %w", err))

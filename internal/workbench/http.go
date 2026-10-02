@@ -127,6 +127,19 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				return
 			}
 			writeJSON(response, http.StatusOK, status)
+		case "memory.record_revocation_preview":
+			response.Header().Set("Cache-Control", "no-store")
+			memoryService, ok := service.(control.MemoryRevocationService)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "memory revocation service is unavailable")
+				return
+			}
+			preview, err := memoryService.GetMemoryRecordRevocationPreview(ctx, path.companyID, path.resourceID)
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "memory", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, preview)
 		case "tasks.memory_revalidation_preview":
 			response.Header().Set("Cache-Control", "no-store")
 			memoryService, ok := service.(control.MemoryRevalidationService)
@@ -1352,6 +1365,25 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		}
 		response.Header().Set("Cache-Control", "no-store")
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "memory.record_revoke":
+		response.Header().Set("Cache-Control", "no-store")
+		memoryService, ok := service.(control.MemoryRevocationService)
+		if !ok {
+			writeCommandError(response, http.StatusNotImplemented, path.companyID, path.resourceID, errors.New("memory revocation service is unavailable"))
+			return
+		}
+		var input control.RevokeMemoryRecordRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandError(response, http.StatusBadRequest, path.companyID, path.resourceID, err)
+			return
+		}
+		receipt, err := memoryService.RevokeMemoryRecord(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandError(response, commandStatus(err), path.companyID, path.resourceID, err)
+			return
+		}
+		response.Header().Set("Cache-Control", "no-store")
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "takeover_leases.snapshot", "takeover_leases.release":
 		takeoverService, ok := service.(control.TaskTakeoverLeaseService)
 		if !ok {
@@ -1720,6 +1752,20 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.memory_impact"}, true
+	}
+	if len(parts) == 4 && parts[1] == "memory" && parts[2] != "" && parts[3] == "revoke" {
+		recordID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: recordID, endpoint: "memory.record_revoke"}, true
+	}
+	if len(parts) == 4 && parts[1] == "memory" && parts[2] != "" && parts[3] == "revocation" {
+		recordID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: recordID, endpoint: "memory.record_revocation_preview"}, true
 	}
 	if len(parts) == 4 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "memory-revalidation" {
 		resourceID, err := url.PathUnescape(parts[2])

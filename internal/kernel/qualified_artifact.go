@@ -15,14 +15,14 @@ import (
 func (k *Kernel) TXSubmitQualifiedPeer(ctx context.Context, b Binding, w Task, key string, content []byte) (Receipt, error) {
 	digest := digestPeerContent(content)
 	return k.TXWrite(ctx, b.scope, &b, key, "artifact.submit", []string{w.ID, digest}, func(tx pgx.Tx) (Receipt, error) {
-		task, err := checkWork(ctx, tx, b, w)
+		task, err := k.checkWork(ctx, tx, b, w)
 		if err != nil {
 			return Receipt{}, err
 		}
 		if b.session == "" || task.State != "working" || (task.Kind != "peer_backend" && task.Kind != "peer_frontend") {
 			return Receipt{}, core.Denied
 		}
-		if err = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task.ID); err != nil {
+		if err = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, task.ID); err != nil {
 			return Receipt{}, err
 		}
 		var checkpointID, contractID string

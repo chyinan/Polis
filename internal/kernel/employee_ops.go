@@ -443,7 +443,7 @@ func (k *Kernel) txCheckpoint(ctx context.Context, b Binding, key string, c Chec
 				return Receipt{}, core.Denied
 			}
 			if c.Kind == CheckpointQualified {
-				if stateErr = requireMemoryTaskCleanTX(ctx, tx, b.scope.company, currentTaskID); stateErr != nil {
+				if stateErr = k.requireMemoryTaskCleanTX(ctx, tx, b.scope.company, currentTaskID); stateErr != nil {
 					return Receipt{}, stateErr
 				}
 			}
@@ -609,7 +609,7 @@ func (k *Kernel) VerifyProbe(ctx context.Context, s Scope, artifact, phase strin
 			return Receipt{}, e
 		}
 		if report.Passed {
-			if e = requireMemoryTaskCleanTX(ctx, tx, s.company, task); e != nil {
+			if e = k.requireMemoryTaskCleanTX(ctx, tx, s.company, task); e != nil {
 				return Receipt{}, e
 			}
 			_, e = tx.Exec(ctx, "UPDATE tasks SET state='completed' WHERE company_id=$1 AND id=$2", s.company, task)

@@ -35,6 +35,13 @@ type MemoryRecordInput struct {
 	Source      *MemorySourceReference `json:"source,omitempty"`
 }
 
+type MemoryRecordRevocationInput struct {
+	RecordID              string `json:"recordId"`
+	ExpectedRevision      int64  `json:"expectedRevision"`
+	ExpectedContentSHA256 string `json:"expectedContentSha256"`
+	ReasonCode            string `json:"reasonCode"`
+}
+
 type MemoryRecordRevision struct {
 	CompanyID   string                 `json:"companyId"`
 	RecordID    string                 `json:"recordId"`
@@ -188,6 +195,13 @@ func (k *Kernel) TXCreateMemoryRecord(ctx context.Context, b Binding, input Memo
 	contentSum := sha256.Sum256([]byte(input.Content))
 	contentSHA := hex.EncodeToString(contentSum[:])
 	_, err := k.TXWrite(ctx, b.scope, &b, key, "memory.record.proposed", input, func(tx pgx.Tx) (Receipt, error) {
+		revoked, revokeErr := k.memoryRecordRevokedTX(ctx, tx, b.scope.company, input.RecordID)
+		if revokeErr != nil {
+			return Receipt{}, revokeErr
+		}
+		if revoked {
+			return Receipt{}, core.Denied
+		}
 		if err := memoryScopeAllowedTX(ctx, tx, b, input.Scope, input.MissionID, input.EmployeeID); err != nil {
 			return Receipt{}, err
 		}
@@ -282,6 +296,13 @@ WHERE r.company_id=$1 AND r.record_id=$2 AND v.revision=$3`, b.scope.company, in
 		if err != nil {
 			return Receipt{}, err
 		}
+		revoked, revokeErr := k.memoryRecordRevokedTX(ctx, tx, b.scope.company, input.RecordID)
+		if revokeErr != nil {
+			return Receipt{}, revokeErr
+		}
+		if revoked {
+			return Receipt{}, core.Denied
+		}
 		if author == b.employee || !memoryRoleMayReview(kind, b.employee) {
 			return Receipt{}, core.Denied
 		}
@@ -349,7 +370,7 @@ func (k *Kernel) TXProposeMemoryCorrection(ctx context.Context, b Binding, input
 		Source                                              MemorySourceReference
 	}{input.CorrectionID, input.RecordID, input.Content, contentSHA, strings.TrimSpace(input.Reason), input.BaseRevision, input.ObservedAt, input.Source}
 	return k.TXWrite(ctx, b.scope, &b, key, "memory.correction.proposed", payload, func(tx pgx.Tx) (Receipt, error) {
-		record, err := memoryRecordAccessTX(ctx, tx, b, input.RecordID, input.BaseRevision)
+		record, err := memoryRecordAccessTX(k, ctx, tx, b, input.RecordID, input.BaseRevision)
 		if err != nil {
 			return Receipt{}, err
 		}
@@ -423,6 +444,13 @@ WHERE c.company_id=$1 AND c.correction_id=$2`, b.scope.company, input.Correction
 		}
 		if err != nil {
 			return Receipt{}, err
+		}
+		revoked, revokeErr := k.memoryRecordRevokedTX(ctx, tx, b.scope.company, recordID)
+		if revokeErr != nil {
+			return Receipt{}, revokeErr
+		}
+		if revoked {
+			return Receipt{}, core.Denied
 		}
 		contentSum := sha256.Sum256([]byte(content))
 		if hex.EncodeToString(contentSum[:]) != contentSHA {
@@ -521,7 +549,7 @@ func (k *Kernel) TXCreateMemoryDependency(ctx context.Context, b Binding, input 
 	}
 	dependencyID := newID()
 	return k.TXWrite(ctx, b.scope, &b, key, "memory.dependency.created", input, func(tx pgx.Tx) (Receipt, error) {
-		record, err := memoryRecordAccessTX(ctx, tx, b, input.RecordID, input.RecordRevision)
+		record, err := memoryRecordAccessTX(k, ctx, tx, b, input.RecordID, input.RecordRevision)
 		if err != nil {
 			return Receipt{}, err
 		}
@@ -568,7 +596,7 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, b.scope.company, dependency
 	})
 }
 
-func memoryTaskStatusTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) (MemoryTaskStatus, error) {
+func (k *Kernel) memoryTaskStatusTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) (MemoryTaskStatus, error) {
 	status := MemoryTaskStatus{State: "clear", Impacts: []MemoryTaskImpact{}}
 	rows, err := tx.Query(ctx, `SELECT latest.dependency_id,d.record_id,d.record_revision,d.risk_level,latest.state,latest.cause_id,latest.reason,
 COALESCE(review.result_revision,0)
@@ -583,7 +611,6 @@ WHERE latest.state IN ('dirty','frozen') ORDER BY latest.dependency_id`, company
 	if err != nil {
 		return status, err
 	}
-	defer rows.Close()
 	for rows.Next() {
 		var impact MemoryTaskImpact
 		if err = rows.Scan(&impact.DependencyID, &impact.RecordID, &impact.RecordRevision, &impact.RiskLevel,
@@ -598,8 +625,50 @@ WHERE latest.state IN ('dirty','frozen') ORDER BY latest.dependency_id`, company
 		}
 	}
 	if err = rows.Err(); err != nil {
+		rows.Close()
 		return status, err
 	}
+	rows.Close()
+	revokedRows, err := tx.Query(ctx, `SELECT d.dependency_id,d.record_id,d.record_revision,d.risk_level,COALESCE(o.operation_id,'')
+FROM memory_dependencies d LEFT JOIN memory_record_revocation_overlays o
+ ON o.company_id=d.company_id AND o.record_id=d.record_id
+WHERE d.company_id=$1 AND d.bound_task_id=$2 ORDER BY d.dependency_id`, companyID, taskID)
+	if err != nil {
+		return status, err
+	}
+	for revokedRows.Next() {
+		var impact MemoryTaskImpact
+		var operationID string
+		if err = revokedRows.Scan(&impact.DependencyID, &impact.RecordID, &impact.RecordRevision, &impact.RiskLevel, &operationID); err != nil {
+			revokedRows.Close()
+			return status, err
+		}
+		if overlay, revoked := k.memoryRecordRevocation(companyID, impact.RecordID); revoked {
+			operationID = overlay.OperationID
+		}
+		if operationID == "" {
+			continue
+		}
+		impact.CorrectionID, impact.State = operationID, "frozen"
+		impact.Reason = "memory record revoked; establish a new dependency before resuming work"
+		found := false
+		for index := range status.Impacts {
+			if status.Impacts[index].DependencyID == impact.DependencyID {
+				status.Impacts[index] = impact
+				found = true
+				break
+			}
+		}
+		if !found {
+			status.Impacts = append(status.Impacts, impact)
+		}
+		status.State = "frozen"
+	}
+	if err = revokedRows.Err(); err != nil {
+		revokedRows.Close()
+		return status, err
+	}
+	revokedRows.Close()
 	return status, nil
 }
 
@@ -623,7 +692,7 @@ func (k *Kernel) GetMemoryTaskStatus(ctx context.Context, scope Scope, taskID st
 	if !exists {
 		return MemoryTaskStatus{}, core.OutOfScope
 	}
-	status, err := memoryTaskStatusTX(ctx, tx, scope.company, taskID)
+	status, err := k.memoryTaskStatusTX(ctx, tx, scope.company, taskID)
 	if err != nil {
 		return MemoryTaskStatus{}, err
 	}
@@ -633,8 +702,8 @@ func (k *Kernel) GetMemoryTaskStatus(ctx context.Context, scope Scope, taskID st
 	return status, nil
 }
 
-func requireMemoryTaskWritableTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) error {
-	status, err := memoryTaskStatusTX(ctx, tx, companyID, taskID)
+func (k *Kernel) requireMemoryTaskWritableTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) error {
+	status, err := k.memoryTaskStatusTX(ctx, tx, companyID, taskID)
 	if err != nil {
 		return err
 	}
@@ -644,8 +713,8 @@ func requireMemoryTaskWritableTX(ctx context.Context, tx pgx.Tx, companyID, task
 	return nil
 }
 
-func requireMemoryTaskCleanTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) error {
-	status, err := memoryTaskStatusTX(ctx, tx, companyID, taskID)
+func (k *Kernel) requireMemoryTaskCleanTX(ctx context.Context, tx pgx.Tx, companyID, taskID string) error {
+	status, err := k.memoryTaskStatusTX(ctx, tx, companyID, taskID)
 	if err != nil {
 		return err
 	}
@@ -655,12 +724,12 @@ func requireMemoryTaskCleanTX(ctx context.Context, tx pgx.Tx, companyID, taskID 
 	return nil
 }
 
-func memoryTaskImpactContextTX(ctx context.Context, tx pgx.Tx, b Binding, status MemoryTaskStatus) (MemoryTaskStatus, error) {
+func (k *Kernel) memoryTaskImpactContextTX(ctx context.Context, tx pgx.Tx, b Binding, status MemoryTaskStatus) (MemoryTaskStatus, error) {
 	for i := range status.Impacts {
 		if status.Impacts[i].ReplacementRevision < 1 {
 			continue
 		}
-		record, err := memoryRecordAccessTX(ctx, tx, b, status.Impacts[i].RecordID, status.Impacts[i].ReplacementRevision)
+		record, err := memoryRecordAccessTX(k, ctx, tx, b, status.Impacts[i].RecordID, status.Impacts[i].ReplacementRevision)
 		if err != nil {
 			return MemoryTaskStatus{}, err
 		}
@@ -670,7 +739,7 @@ func memoryTaskImpactContextTX(ctx context.Context, tx pgx.Tx, b Binding, status
 	return status, nil
 }
 
-func memoryTaskDependenciesTX(ctx context.Context, tx pgx.Tx, b Binding) ([]MemoryTaskDependencyContext, bool, error) {
+func (k *Kernel) memoryTaskDependenciesTX(ctx context.Context, tx pgx.Tx, b Binding) ([]MemoryTaskDependencyContext, bool, error) {
 	rows, err := tx.Query(ctx, `SELECT d.dependency_id,d.record_id,d.record_revision,d.risk_level,
 d.target_kind,d.target_id,d.target_revision,d.target_sha256
 FROM memory_dependencies d
@@ -713,7 +782,7 @@ ORDER BY d.company_seq,d.dependency_id LIMIT $3`, b.scope.company, b.task, maxMe
 	contexts := make([]MemoryTaskDependencyContext, 0, len(refs))
 	contentBytes := 0
 	for _, ref := range refs {
-		record, accessErr := memoryRecordAccessTX(ctx, tx, b, ref.recordID, ref.revision)
+		record, accessErr := memoryRecordAccessTX(k, ctx, tx, b, ref.recordID, ref.revision)
 		if accessErr != nil {
 			return nil, false, accessErr
 		}
@@ -730,7 +799,7 @@ ORDER BY d.company_seq,d.dependency_id LIMIT $3`, b.scope.company, b.task, maxMe
 	return contexts, truncated, nil
 }
 
-func memoryTaskRevalidationPreviewTX(ctx context.Context, tx pgx.Tx, scope Scope, taskID, dependencyID, correctionID string) (MemoryTaskRevalidationPreview, error) {
+func (k *Kernel) memoryTaskRevalidationPreviewTX(ctx context.Context, tx pgx.Tx, scope Scope, taskID, dependencyID, correctionID string) (MemoryTaskRevalidationPreview, error) {
 	var preview MemoryTaskRevalidationPreview
 	preview.TaskID, preview.DependencyID, preview.CorrectionID = taskID, dependencyID, correctionID
 	var companyState string
@@ -769,7 +838,14 @@ FROM memory_dependencies d WHERE d.company_id=$1 AND d.dependency_id=$2 AND d.bo
 	if err != nil {
 		return preview, err
 	}
-	status, err := memoryTaskStatusTX(ctx, tx, scope.company, taskID)
+	revoked, err := k.memoryRecordRevokedTX(ctx, tx, scope.company, preview.PreviousRecordID)
+	if err != nil {
+		return preview, err
+	}
+	if revoked {
+		return preview, core.Denied
+	}
+	status, err := k.memoryTaskStatusTX(ctx, tx, scope.company, taskID)
 	if err != nil {
 		return preview, err
 	}
@@ -888,7 +964,7 @@ func (k *Kernel) GetMemoryTaskRevalidationPreview(ctx context.Context, scope Sco
 	if err = k.checkRuntimeLease(ctx, tx); err != nil {
 		return MemoryTaskRevalidationPreview{}, err
 	}
-	preview, err := memoryTaskRevalidationPreviewTX(ctx, tx, scope, taskID, dependencyID, correctionID)
+	preview, err := k.memoryTaskRevalidationPreviewTX(ctx, tx, scope, taskID, dependencyID, correctionID)
 	if err != nil {
 		return MemoryTaskRevalidationPreview{}, err
 	}
@@ -922,7 +998,7 @@ func (k *Kernel) TXRevalidateMemoryTask(ctx context.Context, scope Scope, input 
 	}
 	revalidationID, replacementDependencyID := newID(), newID()
 	return k.TXWrite(ctx, scope, nil, key, "memory.task.revalidation.requested", input, func(tx pgx.Tx) (Receipt, error) {
-		current, checkErr := memoryTaskRevalidationPreviewTX(ctx, tx, scope, input.TaskID, input.DependencyID, input.CorrectionID)
+		current, checkErr := k.memoryTaskRevalidationPreviewTX(ctx, tx, scope, input.TaskID, input.DependencyID, input.CorrectionID)
 		if checkErr != nil {
 			return Receipt{}, checkErr
 		}
@@ -1033,6 +1109,64 @@ WHERE company_id=$1 AND id=$2 AND state='working'`, scope.company, input.TaskID)
 	})
 }
 
+// TXRevokeMemoryRecord makes the external overlay durable before committing
+// its database mirror. A failed SQL commit therefore remains fail-closed in
+// this process and is replayed at the next Kernel.Open.
+func (k *Kernel) TXRevokeMemoryRecord(ctx context.Context, scope Scope, input MemoryRecordRevocationInput, key string) (Receipt, error) {
+	if k == nil || ctx == nil || !core.ValidID(scope.company) || !core.ValidID(input.RecordID) || !core.ValidID(key) ||
+		input.ExpectedRevision < 1 || !validSHA256(input.ExpectedContentSHA256) ||
+		(input.ReasonCode != "incorrect" && input.ReasonCode != "sensitive" && input.ReasonCode != "requested" && input.ReasonCode != "other") {
+		return Receipt{}, core.Malformed
+	}
+	return k.TXWrite(ctx, scope, nil, key, "memory.record.revoked", input, func(tx pgx.Tx) (Receipt, error) {
+		var revision int64
+		var contentSHA string
+		err := tx.QueryRow(ctx, `SELECT revision,content_sha256 FROM memory_record_revisions
+WHERE company_id=$1 AND record_id=$2 ORDER BY revision DESC LIMIT 1`, scope.company, input.RecordID).Scan(&revision, &contentSHA)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		}
+		if err != nil {
+			return Receipt{}, err
+		}
+		if revision != input.ExpectedRevision || contentSHA != input.ExpectedContentSHA256 {
+			return Receipt{}, core.Conflict
+		}
+		var liveWorker bool
+		if err = tx.QueryRow(ctx, `SELECT EXISTS(
+SELECT 1 FROM memory_dependencies d JOIN worker_sessions s
+ ON s.company_id=d.company_id AND s.task_id=d.bound_task_id
+WHERE d.company_id=$1 AND d.record_id=$2 AND s.state!='stopped')`, scope.company, input.RecordID).Scan(&liveWorker); err != nil {
+			return Receipt{}, err
+		}
+		if liveWorker {
+			return Receipt{}, core.ConflictError{Reason: "stop every WorkerSession that consumed this memory before revoking it", CurrentState: "worker_active"}
+		}
+		if existing, ok := k.memoryRecordRevocation(scope.company, input.RecordID); ok {
+			if existing.OperationID != key || existing.ContentSHA256 != contentSHA || existing.SourceRevision != revision || existing.ReasonCode != input.ReasonCode {
+				return Receipt{}, core.Conflict
+			}
+		} else {
+			overlay := MemoryRecordRevocationOverlay{
+				SchemaVersion: memoryRevocationOverlaySchema, CompanyID: scope.company, RecordID: input.RecordID,
+				OperationID: key, ContentSHA256: contentSHA, SourceRevision: revision, ReasonCode: input.ReasonCode,
+				CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
+			}
+			if err = k.persistMemoryRevocationOverlay(overlay); err != nil {
+				return Receipt{}, err
+			}
+		}
+		overlay, ok := k.memoryRecordRevocation(scope.company, input.RecordID)
+		if !ok {
+			return Receipt{}, core.Integrity
+		}
+		if err = k.applyMemoryRevocationOverlayTX(ctx, tx, overlay, false); err != nil {
+			return Receipt{}, err
+		}
+		return Receipt{ID: key, Status: "revoked", Revision: revision}, nil
+	})
+}
+
 func (k *Kernel) GetMemoryRecordRevision(ctx context.Context, b Binding, recordID string, revision int64) (MemoryRecordRevision, error) {
 	if ctx == nil || !core.ValidID(recordID) || revision < 1 {
 		return MemoryRecordRevision{}, core.Malformed
@@ -1045,7 +1179,7 @@ func (k *Kernel) GetMemoryRecordRevision(ctx context.Context, b Binding, recordI
 	if _, err = k.checkSession(ctx, tx, b, false); err != nil {
 		return MemoryRecordRevision{}, err
 	}
-	record, err := memoryRecordAccessTX(ctx, tx, b, recordID, revision)
+	record, err := memoryRecordAccessTX(k, ctx, tx, b, recordID, revision)
 	if err != nil {
 		return MemoryRecordRevision{}, err
 	}
@@ -1055,12 +1189,19 @@ func (k *Kernel) GetMemoryRecordRevision(ctx context.Context, b Binding, recordI
 	return record, nil
 }
 
-func memoryRecordAccessTX(ctx context.Context, tx pgx.Tx, b Binding, recordID string, revision int64) (MemoryRecordRevision, error) {
+func memoryRecordAccessTX(k *Kernel, ctx context.Context, tx pgx.Tx, b Binding, recordID string, revision int64) (MemoryRecordRevision, error) {
+	revoked, err := k.memoryRecordRevokedTX(ctx, tx, b.scope.company, recordID)
+	if err != nil {
+		return MemoryRecordRevision{}, err
+	}
+	if revoked {
+		return MemoryRecordRevision{}, core.Denied
+	}
 	var record MemoryRecordRevision
 	var source MemorySourceReference
 	var sourceKind, sourceID, sourceSHA, missionID, employeeID string
 	var sourceRevision *int64
-	err := tx.QueryRow(ctx, `SELECT r.record_id,v.revision,r.record_kind,r.scope_kind,COALESCE(r.mission_id,''),COALESCE(r.employee_id,''),r.sensitivity,
+	err = tx.QueryRow(ctx, `SELECT r.record_id,v.revision,r.record_kind,r.scope_kind,COALESCE(r.mission_id,''),COALESCE(r.employee_id,''),r.sensitivity,
 v.content,v.content_sha256,v.observed_at::text,COALESCE(v.source_kind,''),COALESCE(v.source_id,''),v.source_revision,COALESCE(v.source_sha256,''),
 s.state,r.created_by,v.created_at::text
 FROM memory_records r JOIN memory_record_revisions v ON v.company_id=r.company_id AND v.record_id=r.record_id
@@ -1095,6 +1236,12 @@ WHERE r.company_id=$1 AND r.record_id=$2 AND v.revision=$3`, b.scope.company, re
 	sum := sha256.Sum256([]byte(record.Content))
 	if hex.EncodeToString(sum[:]) != record.ContentSHA {
 		return MemoryRecordRevision{}, core.Integrity
+	}
+	// A revoke can publish its external overlay while this read transaction is
+	// in progress. Recheck immediately before returning content so the file
+	// publication is the read path's linearization barrier.
+	if _, revoked := k.memoryRecordRevocation(b.scope.company, recordID); revoked {
+		return MemoryRecordRevision{}, core.Denied
 	}
 	return record, nil
 }
