@@ -1,6 +1,6 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 139
+Updated: 2026-10-03, Slice 140
 
 ## Decision
 
@@ -66,13 +66,15 @@ Schema 89 adds Mission usage and cap/revision columns, backfills usage by summin
 
 ## Remaining bounded sequence
 
-1. Implement an installation-owner authority boundary and global observed-account registry before shared cross-Company ProviderAccount mutations; Company-scoped ownership alone is insufficient.
-2. Do not claim ProviderAccount financial enforcement until the selected account locator is bound to the owner-confirmed billable liability scope and runtime admissions can reserve, settle and retain unknown liabilities.
+1. Replace the shared desktop service token as the installation-owner identity with the approved FT-63 first-owner initialization and durable authenticated owner sessions before adding cross-Company mutations.
+2. Keep the observed-account registry read-only until an owner confirms a billing mode and source. Do not claim ProviderAccount financial enforcement until the selected locator is bound to that billable liability scope and runtime admissions can reserve, settle and retain unknown liabilities.
 3. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them.
 4. Keep FT-42–45 and broader qualification separate from implementation evidence; they remain `not_run`.
+
+Slice 140 adds Schema 95's immutable observed-account registry and a token-protected, no-store Workbench projection. The fingerprint is still a routing/identity observation; registry membership is not financial authorization. The local endpoint requires `POLIS_DESKTOP_SESSION_TOKEN`, but that shared credential is not the distinct bootstrap, password login, revocable per-person session and CSRF design in FT-63. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-140-provider-account-registry/verification.md`.
 
 ProviderAccount registry/caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer remain open requirements; none can be derived from this call counter or the account locator alone.
 
 ## Qualification status
 
-Slices 131–139 are implementation/source-audit evidence, not runtime qualification. Slices 131, 133, 134, 136, 137 and 138 Go builds, frontend production builds where relevant, migration hash validation and diff checks passed; Slices 132, 135 and 139 are read-only source/design inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
+Slices 131–140 are implementation/source-audit evidence, not runtime qualification. Slices 131, 133, 134, 136, 137, 138 and 140 Go builds, frontend production builds where relevant, migration hash validation and diff checks passed; Slices 132, 135 and 139 are read-only source/design inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.

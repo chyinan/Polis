@@ -23,6 +23,11 @@ import (
 )
 
 type Scope struct{ company string }
+
+// InstallationOwnerScope marks trusted installation-management reads that
+// cross Company boundaries. It is bound to this Kernel incarnation and is
+// never created from Worker input.
+type InstallationOwnerScope struct{ incarnation string }
 type Binding struct {
 	scope                       Scope
 	task                        string
@@ -216,6 +221,16 @@ func (k *Kernel) Close() {
 
 // LocalScope is a trusted local OS management entry, never offered to workers.
 func (k *Kernel) LocalScope(id string) Scope { return Scope{id} }
+
+// LocalInstallationOwnerScope is for authenticated local installation-owner
+// services. HTTP handlers must require the desktop session token before using
+// this scope; it is not a Worker capability.
+func (k *Kernel) LocalInstallationOwnerScope() InstallationOwnerScope {
+	if k == nil {
+		return InstallationOwnerScope{}
+	}
+	return InstallationOwnerScope{incarnation: k.incarnation}
+}
 
 // Incarnation returns the runtime incarnation bound to this kernel instance.
 // Callers use it for evidence identity; worker authorization still validates

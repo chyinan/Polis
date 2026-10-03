@@ -15,6 +15,7 @@ import (
 
 	"polis/internal/control"
 	"polis/internal/core"
+	"polis/internal/desktop"
 	"polis/internal/domainworkflow"
 	"polis/internal/kernel"
 )
@@ -39,6 +40,10 @@ type parsedPath struct {
 }
 
 func serveRequest(model ReadModel, service control.CommandService, response http.ResponseWriter, request *http.Request) {
+	if request.URL.Path == "/api/workbench/installation/provider-accounts" {
+		serveObservedProviderAccounts(response, request, service)
+		return
+	}
 	if request.URL.Path == "/api/workbench/companies" {
 		serveCompanyCollection(service, response, request)
 		return
@@ -1725,6 +1730,30 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 	default:
 		writeError(response, http.StatusNotFound, "workbench route not found")
 	}
+}
+
+func serveObservedProviderAccounts(response http.ResponseWriter, request *http.Request, service control.CommandService) {
+	if !desktop.IsInstallationOwnerAuthenticated(request.Context()) {
+		writeError(response, http.StatusUnauthorized, "installation owner authentication is required")
+		return
+	}
+	if request.Method != http.MethodGet {
+		response.Header().Set("Allow", http.MethodGet)
+		writeError(response, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	response.Header().Set("Cache-Control", "no-store")
+	ownerService, ok := service.(control.InstallationOwnerService)
+	if !ok {
+		writeError(response, http.StatusNotImplemented, "installation owner service is unavailable")
+		return
+	}
+	accounts, err := ownerService.ListObservedProviderAccounts(request.Context())
+	if err != nil {
+		writeModelError(response, err)
+		return
+	}
+	writeJSON(response, http.StatusOK, accounts)
 }
 
 func serveActivityStream(model ReadModel, response http.ResponseWriter, request *http.Request, companyID string) {

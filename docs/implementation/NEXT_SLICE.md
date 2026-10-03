@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 139, REQ-16 ProviderAccount billing-scope audit; no migration)
+## Latest continuation status (Slice 140, REQ-16 observed ProviderAccount registry; Schema 95)
+
+Schema 95 backfills available WorkerSession account-locator observations into an immutable installation-wide registry and observation ledger. New snapshots add registry associations in the same pre-execution Company-guarded transaction. A read-only Workbench endpoint returns aggregate account fingerprints and observation counts only after the configured desktop management token is validated; `InstallationOwnerScope` is bound to the current Kernel incarnation. This is not billing-scope proof and enables no shared budget. The current shared desktop token is not the dedicated first-owner bootstrap and per-person login required by FT-63. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-140-provider-account-registry/verification.md`.
+
+Next local step: implement the approved FT-63 first-owner initialization and durable owner-session boundary using a reviewed password/session library. Keep the registry read-only until that boundary can authorize cross-Company changes. Do not enable financial settlement until the owner confirms a billable mode and the selected source supports scoped, retained liability observations.
+
+## Previous continuation status (Slice 139, REQ-16 ProviderAccount billing-scope audit; no migration)
 
 The source audit confirms that an observed Codex account locator is not enough to pick a billable budget unit: ChatGPT plans may use shared allowances/credits, Enterprise can use token-based USD billing, and API Platform usage is organization/project-scoped. Codex Enterprise Analytics requires a workspace-scoped Admin key with `codex.enterprise.analytics.read`; no Admin key is configured in this environment. The Kernel has only Company scope, so no Company owner can safely configure a shared cross-Company ProviderAccount budget yet. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-139-provider-account-billing-scope-audit/verification.md`.
 
-Next local step: add an installation-owner authorization boundary and a global observed-account registry before exposing any cross-Company ProviderAccount budget. Keep financial settlement gated on an owner-confirmed billing mode and a permitted usage source; document external key/workspace qualification separately.
+Slice 140 adds a read-only installation-wide registry, but no budget mutation or billing reconciliation. Slice 139's billing mode and workspace prerequisites remain in force.
 
 ## Previous continuation status (Slice 138, REQ-16 Codex account locator snapshot; Schema 94)
 

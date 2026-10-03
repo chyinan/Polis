@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 139. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 140. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 140: REQ-16 observed ProviderAccount registry (Schema 95)
+
+Schema 95 adds an immutable installation-wide registry keyed by provider class and the existing account-locator fingerprint, plus immutable WorkerSession observations; existing available snapshots are backfilled. The Kernel's `InstallationOwnerScope` is bound to its active incarnation, and the token-protected Workbench read route returns fingerprints and aggregate company/session counts with `Cache-Control: no-store`. Registry inserts occur after the Company lifecycle lock; future transactions touching both scopes must follow Company-before-global lock order. The shared desktop token is not an individual owner identity or the FT-63 first-owner bootstrap/login flow. This observation registry does not confirm billable scope or authorize budgets. PostgreSQL migration/runtime, tests and provider/account activity were not run. See `evidence/development/r1-r3-implementation-validation-20261003-slice-140-provider-account-registry/verification.md`.
 
 ## Slice 139: REQ-16 ProviderAccount billing-scope audit (no migration)
 

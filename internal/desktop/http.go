@@ -2,6 +2,7 @@
 package desktop
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 )
@@ -43,6 +44,9 @@ func MiddlewareWithRemoteOrigin(token, remoteOrigin string, next http.Handler) h
 		if (token != "" && !TokenMatches(token, presented)) || (token == "" && RequiresSessionTokenPath(request.URL.Path)) {
 			writeError(response, http.StatusUnauthorized, "desktop session token is missing or invalid")
 			return
+		}
+		if token != "" && TokenMatches(token, presented) {
+			request = request.WithContext(context.WithValue(request.Context(), installationOwnerContextKey{}, true))
 		}
 		next.ServeHTTP(response, request)
 	})

@@ -2,11 +2,24 @@
 package desktop
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/url"
 	"strings"
 )
+
+type installationOwnerContextKey struct{}
+
+// IsInstallationOwnerAuthenticated reports whether desktop middleware
+// validated the configured local management token for this request.
+func IsInstallationOwnerAuthenticated(ctx context.Context) bool {
+	if ctx == nil {
+		return false
+	}
+	authorized, _ := ctx.Value(installationOwnerContextKey{}).(bool)
+	return authorized
+}
 
 // TokenMatches performs the desktop-local authentication comparison without
 // reading environment variables or touching the network. The caller owns the
@@ -44,6 +57,9 @@ func PresentedToken(header, authorization, query string) string {
 // or trigger project execution side effects. They stay closed in tokenless
 // browser mode even when the listener is loopback-only.
 func RequiresSessionTokenPath(path string) bool {
+	if strings.HasPrefix(path, "/api/workbench/installation/") {
+		return true
+	}
 	if !strings.HasPrefix(path, "/api/workbench/companies/") {
 		return false
 	}
