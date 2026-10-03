@@ -70,6 +70,16 @@ type CompanyToolCallBudgetChangeRequest struct {
 	Confirm                bool   `json:"confirm"`
 }
 
+type CompanyToolCallClosingReserveRequest struct {
+	RequestID                     string `json:"requestId"`
+	ReservedToolCalls             int64  `json:"reservedToolCalls"`
+	ExpectedCompanyToolCallLimit  *int64 `json:"expectedCompanyToolCallLimit"`
+	ExpectedCompanyBudgetRevision int64  `json:"expectedCompanyBudgetRevision"`
+	ExpectedReserveRevision       int64  `json:"expectedReserveRevision"`
+	Reason                        string `json:"reason"`
+	Confirm                       bool   `json:"confirm"`
+}
+
 type MissionToolCallClosingReserveRequest struct {
 	RequestID                     string `json:"requestId"`
 	ReservedToolCalls             int64  `json:"reservedToolCalls"`
@@ -83,6 +93,7 @@ type MissionToolCallClosingReserveRequest struct {
 type ProblemToolBudgetService interface {
 	GetCompanyToolCallBudget(ctx context.Context, companyID string) (kernel.CompanyToolCallBudget, error)
 	ChangeCompanyToolCallBudget(ctx context.Context, companyID string, request CompanyToolCallBudgetChangeRequest) (kernel.Receipt, error)
+	SetCompanyToolCallClosingReserve(ctx context.Context, companyID string, request CompanyToolCallClosingReserveRequest) (kernel.Receipt, error)
 	ListProblemToolCallBudgets(ctx context.Context, companyID string) (kernel.ProblemToolCallBudgetList, error)
 	ListMissionToolCallBudgets(ctx context.Context, companyID string) (kernel.MissionToolCallBudgetList, error)
 	ChangeMissionToolCallBudget(ctx context.Context, companyID, missionID string, request MissionToolCallBudgetChangeRequest) (kernel.Receipt, error)
@@ -111,6 +122,21 @@ func (s *Service) ChangeCompanyToolCallBudget(ctx context.Context, companyID str
 	return s.runtime.TXChangeCompanyToolCallBudget(ctx, s.runtime.LocalScope(companyID), kernel.CompanyToolCallBudgetChangeInput{
 		RequestID: request.RequestID, ExpectedLimit: request.ExpectedToolCallLimit, ExpectedRevision: request.ExpectedRevision,
 		ResultingLimit: request.ResultingToolCallLimit, Reason: request.Reason,
+	})
+}
+
+func (s *Service) SetCompanyToolCallClosingReserve(ctx context.Context, companyID string, request CompanyToolCallClosingReserveRequest) (kernel.Receipt, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) ||
+		validateRequestID(request.RequestID) != nil || request.ReservedToolCalls < 0 ||
+		request.ExpectedCompanyBudgetRevision < 0 || request.ExpectedReserveRevision < 0 || !request.Confirm ||
+		(request.ExpectedCompanyToolCallLimit == nil && request.ExpectedCompanyBudgetRevision != 0) ||
+		(request.ExpectedCompanyToolCallLimit != nil && (*request.ExpectedCompanyToolCallLimit < 1 || request.ExpectedCompanyBudgetRevision < 1)) {
+		return kernel.Receipt{}, core.Malformed
+	}
+	return s.runtime.TXSetCompanyToolCallClosingReserve(ctx, s.runtime.LocalScope(companyID), kernel.CompanyToolCallClosingReserveInput{
+		RequestID: request.RequestID, ReservedCalls: request.ReservedToolCalls,
+		ExpectedLimit: request.ExpectedCompanyToolCallLimit, ExpectedBudgetRevision: request.ExpectedCompanyBudgetRevision,
+		ExpectedReserveRevision: request.ExpectedReserveRevision, Reason: request.Reason,
 	})
 }
 

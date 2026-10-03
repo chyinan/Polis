@@ -247,8 +247,13 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		if e != nil {
 			return Receipt{}, e
 		}
-		if reason := companyToolCallBudgetRejectionReason(companyBudget); reason != "" {
-			if err := recordCompanyToolCallBudgetRejection(ctx, tx, s.company, t.ID, "", requestID, "worker_admission", reason, companyBudget); err != nil {
+		companyReserve, companyReserveRemaining, companyReserveRevision, err := companyToolCallClosingReserveSnapshot(ctx, tx, s.company)
+		if err != nil {
+			return Receipt{}, err
+		}
+		closingTask := isProblemClosingTaskKind(string(t.Kind))
+		if reason := companyToolCallBudgetRejectionReason(companyBudget, closingTask, companyReserveRemaining); reason != "" {
+			if err := recordCompanyToolCallBudgetRejection(ctx, tx, s.company, t.ID, "", requestID, "worker_admission", reason, companyBudget, companyReserve, companyReserveRemaining, companyReserveRevision); err != nil {
 				return Receipt{}, err
 			}
 			return Receipt{ID: t.ID, Status: "company_budget_rejected"}, nil
@@ -264,7 +269,6 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		if err != nil {
 			return Receipt{}, err
 		}
-		closingTask := isProblemClosingTaskKind(string(t.Kind))
 		if reason := missionToolCallBudgetRejectionReason(missionBudget, closingTask, missionReserveRemaining); reason != "" {
 			if err := recordMissionToolCallBudgetRejection(ctx, tx, s.company, t.Mission, t.ID, "", requestID, "worker_admission", reason, missionBudget, missionReserve, missionReserveRemaining, missionReserveRevision); err != nil {
 				return Receipt{}, err
@@ -454,6 +458,11 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Lim
 	if companyLimit.Valid {
 		budget.CompanyLimit = companyLimit.Int64
 	}
+	budget.CompanyClosingClass = isProblemClosingTaskKind(taskKind)
+	budget.CompanyClosingReserve, budget.CompanyClosingReserveRemaining, budget.CompanyClosingReserveRevision, e = companyToolCallClosingReserveSnapshot(ctx, k.pool, b.scope.company)
+	if e != nil {
+		return budget, e
+	}
 	budget.MissionLimitConfigured = missionLimit.Valid
 	if missionLimit.Valid {
 		budget.MissionLimit = missionLimit.Int64
@@ -488,8 +497,13 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&taskID, &m
 		if err != nil {
 			return Receipt{}, err
 		}
-		if reason := companyToolCallBudgetRejectionReason(companyBudget); reason != "" {
-			if err := recordCompanyToolCallBudgetRejection(ctx, tx, b.scope.company, taskID, b.session, key, "worker_tool_call", reason, companyBudget); err != nil {
+		companyReserve, companyReserveRemaining, companyReserveRevision, err := companyToolCallClosingReserveSnapshot(ctx, tx, b.scope.company)
+		if err != nil {
+			return Receipt{}, err
+		}
+		closingTask := isProblemClosingTaskKind(taskKind)
+		if reason := companyToolCallBudgetRejectionReason(companyBudget, closingTask, companyReserveRemaining); reason != "" {
+			if err := recordCompanyToolCallBudgetRejection(ctx, tx, b.scope.company, taskID, b.session, key, "worker_tool_call", reason, companyBudget, companyReserve, companyReserveRemaining, companyReserveRevision); err != nil {
 				return Receipt{}, err
 			}
 			return Receipt{ID: b.session, Status: "company_budget_rejected"}, nil
@@ -505,7 +519,6 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&taskID, &m
 		if err != nil {
 			return Receipt{}, err
 		}
-		closingTask := isProblemClosingTaskKind(taskKind)
 		if reason := missionToolCallBudgetRejectionReason(missionBudget, closingTask, missionReserveRemaining); reason != "" {
 			if err := recordMissionToolCallBudgetRejection(ctx, tx, b.scope.company, missionID, taskID, b.session, key, "worker_tool_call", reason, missionBudget, missionReserve, missionReserveRemaining, missionReserveRevision); err != nil {
 				return Receipt{}, err
@@ -537,6 +550,10 @@ WHERE s.company_id=$1 AND s.id=$2 FOR UPDATE OF s,t`, b.scope.company, b.session
 		budget.CompanyLimitConfigured = companyBudget.Limit.Valid
 		budget.CompanyUsed = companyBudget.Used
 		budget.CompanyBudgetRevision = companyBudget.Revision
+		budget.CompanyClosingReserve = companyReserve
+		budget.CompanyClosingReserveRemaining = companyReserveRemaining
+		budget.CompanyClosingReserveRevision = companyReserveRevision
+		budget.CompanyClosingClass = closingTask
 		if companyBudget.Limit.Valid {
 			budget.CompanyLimit = companyBudget.Limit.Int64
 		}
@@ -646,6 +663,9 @@ AND mission_tool_calls_used<mission_tool_call_limit`, b.scope.company, missionID
 		if budget.MissionClosingClass && budget.MissionClosingReserveRemaining > 0 {
 			budget.MissionClosingReserveRemaining--
 		}
+		if budget.CompanyClosingClass && budget.CompanyClosingReserveRemaining > 0 {
+			budget.CompanyClosingReserveRemaining--
+		}
 		if budget.ProblemClosingClass && budget.ProblemClosingReserve > 0 {
 			budget.ProblemClosingReserve--
 		}
@@ -676,8 +696,15 @@ func setEffectiveToolCallBudgetRemaining(budget *ToolCallBudget) {
 			budget.CompanyRemaining = 0
 		}
 	}
-	if budget.Remaining < 0 || budget.CompanyRemaining < budget.Remaining {
-		budget.Remaining = budget.CompanyRemaining
+	budget.CompanyAvailable = budget.CompanyRemaining
+	if !budget.CompanyClosingClass {
+		budget.CompanyAvailable -= budget.CompanyClosingReserveRemaining
+		if budget.CompanyAvailable < 0 {
+			budget.CompanyAvailable = 0
+		}
+	}
+	if budget.Remaining < 0 || budget.CompanyAvailable < budget.Remaining {
+		budget.Remaining = budget.CompanyAvailable
 	}
 	budget.MissionRemaining = 0
 	if budget.MissionLimitConfigured {
@@ -1040,6 +1067,11 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&task, &out
 	}
 	out.ToolBudget.ProblemClosingClass = isProblemClosingTaskKind(string(out.Task.Kind))
 	out.ToolBudget.MissionClosingClass = out.ToolBudget.ProblemClosingClass
+	out.ToolBudget.CompanyClosingClass = out.ToolBudget.ProblemClosingClass
+	out.ToolBudget.CompanyClosingReserve, out.ToolBudget.CompanyClosingReserveRemaining, out.ToolBudget.CompanyClosingReserveRevision, e = companyToolCallClosingReserveSnapshot(ctx, tx, b.scope.company)
+	if e != nil {
+		return out, e
+	}
 	out.ToolBudget.MissionClosingReserve, out.ToolBudget.MissionClosingReserveRemaining, out.ToolBudget.MissionClosingReserveRevision, e = missionToolCallClosingReserveSnapshot(ctx, tx, b.scope.company, out.Task.Mission)
 	if e != nil {
 		return out, e

@@ -554,6 +554,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "company.budget.closing_reserve":
+		response.Header().Set("Cache-Control", "no-store")
+		budgetService, ok := service.(control.ProblemToolBudgetService)
+		if !ok {
+			writeError(response, http.StatusNotImplemented, "Company tool-call budget service is unavailable")
+			return
+		}
+		var input control.CompanyToolCallClosingReserveRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company_budget", err)
+			return
+		}
+		receipt, err := budgetService.SetCompanyToolCallClosingReserve(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company_budget", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "mission.budget.allocate":
 		response.Header().Set("Cache-Control", "no-store")
 		budgetService, ok := service.(control.ProblemToolBudgetService)
@@ -1792,6 +1810,9 @@ func parsePath(path string) (parsedPath, bool) {
 	}
 	if len(parts) == 2 && parts[1] == "company-tool-call-budget" {
 		return parsedPath{companyID: companyID, endpoint: "company.tool_call_budget"}, true
+	}
+	if len(parts) == 3 && parts[1] == "company-tool-call-budget" && parts[2] == "closing-reserve" {
+		return parsedPath{companyID: companyID, endpoint: "company.budget.closing_reserve"}, true
 	}
 	if len(parts) == 4 && parts[1] == "mission-budgets" && parts[3] == "allocations" {
 		missionID, err := url.PathUnescape(parts[2])

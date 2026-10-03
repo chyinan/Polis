@@ -1,7 +1,7 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView} from '../domain/workbench';
+import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, CompanyToolCallClosingReserveReceiptView} from '../domain/workbench';
 import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentCorrectionView, DomainContentPublicationView} from '../domain/workbench';
@@ -316,6 +316,15 @@ export type ChangeCompanyToolCallBudgetOptions = Readonly<{
   expectedToolCallLimit: number | null;
   expectedRevision: number;
   resultingToolCallLimit: number;
+  reason: string;
+  requestId: string;
+}>;
+export type SetCompanyToolCallClosingReserveOptions = Readonly<{
+  companyId: string;
+  reservedToolCalls: number;
+  expectedCompanyToolCallLimit: number | null;
+  expectedCompanyBudgetRevision: number;
+  expectedReserveRevision: number;
   reason: string;
   requestId: string;
 }>;
@@ -692,6 +701,7 @@ export type WorkbenchApi = Readonly<{
   listMemoryCorrections(options: MemoryCorrectionQueueQueryOptions): Promise<MemoryCorrectionQueueView>;
   getCompanyToolCallBudget(options: CompanyScopeOptions): Promise<CompanyToolCallBudgetView>;
   changeCompanyToolCallBudget(options: ChangeCompanyToolCallBudgetOptions): Promise<CompanyToolCallBudgetChangeReceiptView>;
+  setCompanyToolCallClosingReserve(options: SetCompanyToolCallClosingReserveOptions): Promise<CompanyToolCallClosingReserveReceiptView>;
   listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView>;
   listMissionToolCallBudgets(options: MissionToolCallBudgetQueryOptions): Promise<MissionToolCallBudgetListView>;
   changeMissionToolCallBudget(options: ChangeMissionToolCallBudgetOptions): Promise<MissionToolCallBudgetChangeReceiptView>;

@@ -15,6 +15,7 @@ import type {RevalidateMemoryTaskOptions} from './workbench-api';
 import type {ChangeMissionToolCallBudgetOptions, MissionToolCallBudgetQueryOptions} from './workbench-api';
 import type {SetMissionToolCallClosingReserveOptions} from './workbench-api';
 import type {ChangeCompanyToolCallBudgetOptions} from './workbench-api';
+import type {SetCompanyToolCallClosingReserveOptions} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
   return useQuery({
@@ -296,6 +297,20 @@ export function useChangeCompanyToolCallBudget(api: WorkbenchApi, companyId: str
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ChangeCompanyToolCallBudgetOptions, 'companyId'>) => api.changeCompanyToolCallBudget({...options, companyId}),
+    onSuccess: async () => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-tool-call-budget', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-tool-budgets', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
+    ]),
+  });
+}
+
+export function useSetCompanyToolCallClosingReserve(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<SetCompanyToolCallClosingReserveOptions, 'companyId'>) => api.setCompanyToolCallClosingReserve({...options, companyId}),
     onSuccess: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-tool-call-budget', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-tool-budgets', companyId]}),

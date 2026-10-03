@@ -1,15 +1,15 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView} from '../domain/workbench';
-import type {ChangeCompanyToolCallBudgetOptions} from './workbench-api';
+import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, CompanyToolCallClosingReserveReceiptView} from '../domain/workbench';
+import type {ChangeCompanyToolCallBudgetOptions, SetCompanyToolCallClosingReserveOptions} from './workbench-api';
 import type {MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView} from '../domain/workbench';
 import type {ChangeMissionToolCallBudgetOptions, MissionToolCallBudgetQueryOptions, SetMissionToolCallClosingReserveOptions} from './workbench-api';
 import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
 import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
-import {validateCompanyToolCallBudget, validateCompanyToolCallBudgetChangeReceipt, validateMissionToolCallBudgetChangeReceipt, validateMissionToolCallBudgetList, validateMissionToolCallClosingReserveReceipt, validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
+import {validateCompanyToolCallBudget, validateCompanyToolCallBudgetChangeReceipt, validateCompanyToolCallClosingReserveReceipt, validateMissionToolCallBudgetChangeReceipt, validateMissionToolCallBudgetList, validateMissionToolCallClosingReserveReceipt, validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
 import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
@@ -979,6 +979,32 @@ export class RealWorkbenchApi implements WorkbenchApi {
       confirm: true,
     });
     return validateCompanyToolCallBudgetChangeReceipt(raw, options.companyId, options.expectedRevision + 1, options.expectedToolCallLimit === null);
+  }
+
+  async setCompanyToolCallClosingReserve(options: SetCompanyToolCallClosingReserveOptions): Promise<CompanyToolCallClosingReserveReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertRequestID(options.requestId);
+    if (!Number.isSafeInteger(options.reservedToolCalls) || options.reservedToolCalls < 0
+      || !Number.isSafeInteger(options.expectedCompanyBudgetRevision) || options.expectedCompanyBudgetRevision < 0
+      || !Number.isSafeInteger(options.expectedReserveRevision) || options.expectedReserveRevision < 0
+      || (options.expectedCompanyToolCallLimit !== null && (!Number.isSafeInteger(options.expectedCompanyToolCallLimit) || options.expectedCompanyToolCallLimit < 1))
+      || (options.expectedCompanyToolCallLimit === null && options.expectedCompanyBudgetRevision !== 0)
+      || (options.expectedCompanyToolCallLimit !== null && options.expectedCompanyBudgetRevision < 1)) {
+      throw new Error('Company closing reserve values must be safe integers');
+    }
+    const reason = options.reason.trim();
+    const reasonLength = Array.from(reason).length;
+    if (reasonLength < 1 || reasonLength > 500) throw new Error('closing reserve reason must contain 1–500 characters');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/company-tool-call-budget/closing-reserve`, options.requestId, {
+      reservedToolCalls: options.reservedToolCalls,
+      expectedCompanyToolCallLimit: options.expectedCompanyToolCallLimit,
+      expectedCompanyBudgetRevision: options.expectedCompanyBudgetRevision,
+      expectedReserveRevision: options.expectedReserveRevision,
+      reason,
+      requestId: options.requestId,
+      confirm: true,
+    });
+    return validateCompanyToolCallClosingReserveReceipt(raw, options.companyId, options.expectedReserveRevision + 1);
   }
 
   async listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView> {

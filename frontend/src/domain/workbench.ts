@@ -1534,15 +1534,20 @@ export type MissionToolCallBudgetChangeReceiptView = Readonly<{
   revision: number;
 }>;
 
-export type CompanyToolCallBudgetState = 'pending' | 'available' | 'exhausted';
+export type CompanyToolCallBudgetState = 'pending' | 'available' | 'closing_reserved' | 'exhausted';
 export type CompanyToolCallBudgetRejectionRoute = 'worker_admission' | 'worker_tool_call';
-export type CompanyToolCallBudgetRejectionReason = 'company_budget_pending' | 'company_limit';
+export type CompanyToolCallBudgetRejectionReason = 'company_budget_pending' | 'company_limit' | 'company_closing_reserve';
 
 export type CompanyToolCallBudgetView = Readonly<{
   companyId: string;
   toolCallLimit: number | null;
   toolCallsUsed: number;
   toolCallsRemaining: number;
+  closingReserveToolCalls: number;
+  closingReserveRemaining: number;
+  closingReserveRevision: number;
+  lastClosingReserveReason?: string;
+  lastClosingReserveAt?: string;
   revision: number;
   state: CompanyToolCallBudgetState;
   allocationCount: number;
@@ -1558,6 +1563,12 @@ export type CompanyToolCallBudgetView = Readonly<{
 export type CompanyToolCallBudgetChangeReceiptView = Readonly<{
   id: string;
   status: 'company_budget_configured' | 'company_budget_allocated';
+  revision: number;
+}>;
+
+export type CompanyToolCallClosingReserveReceiptView = Readonly<{
+  id: string;
+  status: 'company_closing_reserve_updated';
   revision: number;
 }>;
 

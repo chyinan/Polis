@@ -12,8 +12,13 @@ type ToolCallBudget struct {
 	CompanyLimit                   int64 `json:"company_tool_call_limit"`
 	CompanyUsed                    int64 `json:"company_tool_calls_used"`
 	CompanyRemaining               int64 `json:"company_tool_calls_remaining"`
+	CompanyAvailable               int64 `json:"company_tool_calls_available"`
 	CompanyLimitConfigured         bool  `json:"company_tool_call_limit_configured"`
 	CompanyBudgetRevision          int64 `json:"company_tool_call_budget_revision"`
+	CompanyClosingReserve          int64 `json:"company_tool_calls_reserved_for_closing"`
+	CompanyClosingReserveRemaining int64 `json:"company_tool_calls_closing_reserve_remaining"`
+	CompanyClosingReserveRevision  int64 `json:"company_tool_call_closing_reserve_revision"`
+	CompanyClosingClass            bool  `json:"company_closing_task_class"`
 	MissionLimit                   int64 `json:"mission_tool_call_limit"`
 	MissionUsed                    int64 `json:"mission_tool_calls_used"`
 	MissionRemaining               int64 `json:"mission_tool_calls_remaining"`

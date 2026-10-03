@@ -1,4 +1,4 @@
-import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallBudgetView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallBudgetView, TaskToolCallIncompleteClosureReceiptView} from './workbench';
+import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, CompanyToolCallClosingReserveReceiptView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallBudgetView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallBudgetView, TaskToolCallIncompleteClosureReceiptView} from './workbench';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -10,21 +10,27 @@ function isCount(value: unknown): value is number {
 
 export function validateCompanyToolCallBudget(value: unknown, companyId: string): CompanyToolCallBudgetView {
   if (!isRecord(value) || value.companyId !== companyId || !isCount(value.toolCallsUsed)
-    || !isCount(value.toolCallsRemaining) || !isCount(value.revision) || !isCount(value.allocationCount)
-    || !isCount(value.rejectionCount) || !['pending', 'available', 'exhausted'].includes(String(value.state))) {
+    || !isCount(value.toolCallsRemaining) || !isCount(value.closingReserveToolCalls) || !isCount(value.closingReserveRemaining)
+    || !isCount(value.closingReserveRevision) || !isCount(value.revision) || !isCount(value.allocationCount)
+    || !isCount(value.rejectionCount) || !['pending', 'available', 'closing_reserved', 'exhausted'].includes(String(value.state))) {
     throw new Error('failed to parse Company tool-call budget response');
   }
   if (value.toolCallLimit !== null && (!isCount(value.toolCallLimit) || Number(value.toolCallLimit) < 1)) return failCompanyBudget();
   if (value.lastReason !== undefined && typeof value.lastReason !== 'string') return failCompanyBudget();
   if (value.lastAllocatedAt !== undefined && typeof value.lastAllocatedAt !== 'string') return failCompanyBudget();
+  if (value.lastClosingReserveReason !== undefined && typeof value.lastClosingReserveReason !== 'string') return failCompanyBudget();
+  if (value.lastClosingReserveAt !== undefined && typeof value.lastClosingReserveAt !== 'string') return failCompanyBudget();
   if (value.lastRejectionAt !== undefined && typeof value.lastRejectionAt !== 'string') return failCompanyBudget();
   if (value.lastRejectionRoute !== undefined && !['worker_admission', 'worker_tool_call'].includes(String(value.lastRejectionRoute))) return failCompanyBudget();
-  if (value.lastRejectionReason !== undefined && !['company_budget_pending', 'company_limit'].includes(String(value.lastRejectionReason))) return failCompanyBudget();
+  if (value.lastRejectionReason !== undefined && !['company_budget_pending', 'company_limit', 'company_closing_reserve'].includes(String(value.lastRejectionReason))) return failCompanyBudget();
   if (value.lastRejectionTaskId !== undefined && (typeof value.lastRejectionTaskId !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(value.lastRejectionTaskId))) return failCompanyBudget();
   if (value.allocationCount !== value.revision || (value.revision === 0 && (value.lastReason !== undefined || value.lastAllocatedAt !== undefined))
     || (value.revision > 0 && (typeof value.lastReason !== 'string' || typeof value.lastAllocatedAt !== 'string'))) return failCompanyBudget();
   if (value.rejectionCount === 0 && (value.lastRejectionAt !== undefined || value.lastRejectionRoute !== undefined || value.lastRejectionReason !== undefined || value.lastRejectionTaskId !== undefined)) return failCompanyBudget();
   if (value.rejectionCount > 0 && (typeof value.lastRejectionAt !== 'string' || value.lastRejectionRoute === undefined || value.lastRejectionReason === undefined || value.lastRejectionTaskId === undefined)) return failCompanyBudget();
+  if (value.closingReserveRemaining > value.closingReserveToolCalls
+    || (value.closingReserveRevision === 0 && (value.lastClosingReserveReason !== undefined || value.lastClosingReserveAt !== undefined))
+    || (value.closingReserveRevision > 0 && (typeof value.lastClosingReserveReason !== 'string' || typeof value.lastClosingReserveAt !== 'string'))) return failCompanyBudget();
   if (value.toolCallLimit === null) {
     if (value.state !== 'pending' || value.toolCallsRemaining !== 0 || value.revision !== 0) return failCompanyBudget();
   } else {
@@ -32,6 +38,8 @@ export function validateCompanyToolCallBudget(value: unknown, companyId: string)
     if (value.toolCallsUsed > limit || value.toolCallsRemaining !== limit - Number(value.toolCallsUsed)
       || (value.state === 'available' && value.toolCallsRemaining <= 0)
       || (value.state === 'exhausted' && value.toolCallsRemaining !== 0)
+      || (value.state === 'closing_reserved' && (value.toolCallsRemaining <= 0 || value.toolCallsRemaining > value.closingReserveRemaining))
+      || (value.state === 'available' && value.toolCallsRemaining <= value.closingReserveRemaining)
       || value.state === 'pending') return failCompanyBudget();
   }
   return value as unknown as CompanyToolCallBudgetView;
@@ -47,6 +55,13 @@ export function validateCompanyToolCallBudgetChangeReceipt(value: unknown, compa
     throw new Error('failed to parse Company tool-call budget receipt');
   }
   return value as unknown as CompanyToolCallBudgetChangeReceiptView;
+}
+
+export function validateCompanyToolCallClosingReserveReceipt(value: unknown, companyId: string, revision: number): CompanyToolCallClosingReserveReceiptView {
+  if (!isRecord(value) || value.id !== companyId || value.status !== 'company_closing_reserve_updated' || value.revision !== revision) {
+    throw new Error('failed to parse Company closing reserve receipt');
+  }
+  return value as unknown as CompanyToolCallClosingReserveReceiptView;
 }
 
 function isTaskBudget(value: unknown): value is TaskToolCallBudgetView {

@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import type {ReactElement} from 'react';
-import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useChangeCompanyToolCallBudget, useChangeMissionToolCallBudget, useCloseTaskToolBudgetIncomplete, useCompanyToolCallBudget, useMissionToolCallBudgets, useProblemToolCallBudgets, useSetMissionToolCallClosingReserve, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
+import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useChangeCompanyToolCallBudget, useChangeMissionToolCallBudget, useCloseTaskToolBudgetIncomplete, useCompanyToolCallBudget, useMissionToolCallBudgets, useProblemToolCallBudgets, useSetCompanyToolCallClosingReserve, useSetMissionToolCallClosingReserve, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
 import type {WorkbenchApi} from '../data/workbench-api';
 import type {CompanyToolCallBudgetView, MissionToolCallBudgetView, ProblemToolCallBudgetView, TaskToolCallBudgetView} from '../domain/workbench';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
@@ -95,18 +95,29 @@ export function ProblemToolBudgetPanel({api, companyId}: Props): ReactElement | 
 
 function companyBudgetStateLabel(state: CompanyToolCallBudgetView['state']): string {
   if (state === 'pending') return '待配置上限';
+  if (state === 'closing_reserved') return '仅关闭类可用';
   return state === 'exhausted' ? '已耗尽' : '可用';
 }
 
 function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi; budget: CompanyToolCallBudgetView; companyId: string}>): ReactElement {
   const change = useChangeCompanyToolCallBudget(api, companyId);
+  const reserveMutation = useSetCompanyToolCallClosingReserve(api, companyId);
   const [resultingLimit, setResultingLimit] = useState('');
   const [reason, setReason] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const [reserveValue, setReserveValue] = useState('');
+  const [reserveReason, setReserveReason] = useState('');
+  const [reserveConfirmed, setReserveConfirmed] = useState(false);
   const proposed = Number(resultingLimit);
   const canSubmit = confirmed && Number.isSafeInteger(proposed) && proposed > 0 && proposed >= budget.toolCallsUsed
+    && proposed - budget.toolCallsUsed >= budget.closingReserveRemaining
     && (budget.toolCallLimit === null || proposed > budget.toolCallLimit)
     && reason.trim().length > 0 && Array.from(reason.trim()).length <= 500 && !change.isPending;
+  const reservedCalls = Number(reserveValue);
+  const canSetReserve = reserveValue.trim() !== '' && Number.isSafeInteger(reservedCalls) && reservedCalls >= 0
+    && (budget.toolCallLimit === null || reservedCalls <= budget.toolCallsRemaining)
+    && reserveConfirmed && reserveReason.trim().length > 0 && Array.from(reserveReason.trim()).length <= 500
+    && !reserveMutation.isPending;
 
   async function submit(): Promise<void> {
     if (!canSubmit) return;
@@ -122,14 +133,32 @@ function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
     setConfirmed(false);
   }
 
+  async function submitReserve(): Promise<void> {
+    if (!canSetReserve) return;
+    await reserveMutation.mutateAsync({
+      reservedToolCalls: reservedCalls,
+      expectedCompanyToolCallLimit: budget.toolCallLimit,
+      expectedCompanyBudgetRevision: budget.revision,
+      expectedReserveRevision: budget.closingReserveRevision,
+      reason: reserveReason,
+      requestId: `company-reserve-${crypto.randomUUID()}`,
+    });
+    setReserveValue('');
+    setReserveReason('');
+    setReserveConfirmed(false);
+  }
+
   const limitLabel = budget.toolCallLimit === null ? '待配置' : budget.toolCallLimit.toLocaleString('zh-CN');
   return <article className={styles.boundaryItem}>
     <div className={styles.viewStack}>
       <div><strong>Company <code>{budget.companyId}</code></strong></div>
       <p>已用 {budget.toolCallsUsed.toLocaleString('zh-CN')} / 上限 {limitLabel} · 剩余 {budget.toolCallsRemaining.toLocaleString('zh-CN')} · 额度版本 {budget.revision}</p>
       {budget.lastAllocatedAt ? <p className={styles.formHint}>最近配置或追加：{budget.lastAllocatedAt} · {budget.lastReason}</p> : null}
+      {budget.closingReserveRevision > 0
+        ? <p className={styles.formHint}>Company 关闭类预留：保护 {budget.closingReserveRemaining.toLocaleString('zh-CN')} 次（策略为 {budget.closingReserveToolCalls.toLocaleString('zh-CN')}）· 版本 {budget.closingReserveRevision} · {budget.lastClosingReserveAt} · {budget.lastClosingReserveReason}</p>
+        : <p className={styles.formHint}>Company 尚未设置关闭类预留；当前按 0 次保护。</p>}
       {budget.rejectionCount > 0 && budget.lastRejectionAt && budget.lastRejectionRoute && budget.lastRejectionReason && budget.lastRejectionTaskId
-        ? <p className={styles.formHint}>准入或调用拒绝 {budget.rejectionCount.toLocaleString('zh-CN')} 次 · 最近：{budget.lastRejectionAt} · {budget.lastRejectionRoute === 'worker_admission' ? 'Worker 准入' : '工具调用'} · {budget.lastRejectionReason === 'company_budget_pending' ? 'Company 尚未配置上限' : 'Company 上限已耗尽'} · Task <code>{budget.lastRejectionTaskId}</code></p>
+        ? <p className={styles.formHint}>准入或调用拒绝 {budget.rejectionCount.toLocaleString('zh-CN')} 次 · 最近：{budget.lastRejectionAt} · {budget.lastRejectionRoute === 'worker_admission' ? 'Worker 准入' : '工具调用'} · {budget.lastRejectionReason === 'company_budget_pending' ? 'Company 尚未配置上限' : budget.lastRejectionReason === 'company_closing_reserve' ? '剩余 Company 额度受关闭预留保护' : 'Company 上限已耗尽'} · Task <code>{budget.lastRejectionTaskId}</code></p>
         : <p className={styles.formHint}>尚无 Company 上限拒绝记录。</p>}
       <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
         <label className={styles.formLabel}>{budget.toolCallLimit === null ? '配置 Company 协议工具调用上限' : '提高 Company 协议工具调用上限'}<input className={styles.formField} inputMode="numeric" min={Math.max(1, budget.toolCallsUsed, budget.toolCallLimit === null ? 1 : budget.toolCallLimit + 1)} step="1" type="number" value={resultingLimit} onChange={event => setResultingLimit(event.target.value)} /></label>
@@ -137,6 +166,13 @@ function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
         <label className={styles.formLabel}><input checked={confirmed} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认设置或追加此 Company 的总协议工具调用额度；授权记录不可撤回</label>
         <button className={styles.commandButton} disabled={!canSubmit} type="submit">{change.isPending ? '正在记录…' : budget.toolCallLimit === null ? '配置 Company 上限' : '追加 Company 额度'}</button>
         {change.isError ? <p className={styles.errorText} role="alert">Company 额度变更失败：{change.error.message}；如版本已变化，请刷新后重新确认。</p> : null}
+      </form>
+      <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submitReserve().catch(() => undefined); }}>
+        <label className={styles.formLabel}>保护 Company 总额度内供关闭类任务使用的调用数<input className={styles.formField} inputMode="numeric" min="0" max={budget.toolCallLimit === null ? undefined : budget.toolCallsRemaining} step="1" type="number" value={reserveValue} onChange={event => setReserveValue(event.target.value)} /></label>
+        <label className={styles.formLabel}>Company 关闭预留理由<textarea className={styles.formField} maxLength={500} rows={2} value={reserveReason} onChange={event => setReserveReason(event.target.value)} /></label>
+        <label className={styles.formLabel}><input checked={reserveConfirmed} onChange={event => setReserveConfirmed(event.target.checked)} type="checkbox" /> 我确认此预留只供 Kernel 创建的 review 与 peer_review Task 使用</label>
+        <button className={styles.commandButton} disabled={!canSetReserve} type="submit">{reserveMutation.isPending ? '正在记录…' : '更新 Company 关闭预留'}</button>
+        {reserveMutation.isError ? <p className={styles.errorText} role="alert">Company 关闭预留更新失败：{reserveMutation.error.message}；如预算或版本已变化，请刷新后重新确认。</p> : null}
       </form>
     </div>
     <StatusBadge label={companyBudgetStateLabel(budget.state)} tone={budget.state === 'available' ? 'success' : budget.state === 'exhausted' ? 'danger' : 'warning'} />

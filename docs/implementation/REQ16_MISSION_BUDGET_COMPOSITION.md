@@ -1,6 +1,6 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 133
+Updated: 2026-10-03, Slice 134
 
 ## Decision
 
@@ -9,6 +9,8 @@ The implemented outer scopes are an explicitly configured Mission-level and Comp
 Each accepted tool-call usage fact advances the Company, Mission, Session, Task and ProblemKey counters atomically when those scopes apply. These are projections of one accepted call; a summary must not add those projections together. A Company or ProblemKey cap remains a separate constraint and does not create or reserve capacity in another scope. Company and Mission caps must be explicitly set by the local owner; do not derive them by summing profile defaults, Task limits, or ProblemKey limits. Existing Company and Mission usage can be conservatively backfilled from durable Task call counters, but the cap itself remains pending where no explicit finite ceiling exists.
 
 The Mission closing reserve is a policy inside that total cap. Only fixed, Kernel-authorized closing Task classes may consume it; a closing call still advances the same Mission usage counter and remains inside the cap. The ProblemKey reserve remains an additional child-level admission constraint and does not stand in for Mission reserve policy.
+
+The Company closing reserve follows the same rule inside the Company total. Schema 92 binds each reserve revision to the Company budget revision/limit and the closing-Task usage baseline. Ordinary Company work cannot spend the remaining protected portion; only Kernel-created `review` and `peer_review` Tasks can, and their calls still increment Company total usage. Company and Mission reserves are independent policies at their own scopes.
 
 ## Source basis
 
@@ -24,7 +26,11 @@ Current Workbench writes obtain the Company lifecycle row lock before callback-l
 
 The budget lock order is Company → Mission → WorkerSession/Task → ProblemKey where each row applies. Read-only projections remain snapshot reads. ProblemKey-only allocation paths must not acquire Mission after holding the ProblemKey row.
 
-## Slice 133 implementation state
+## Slice 134 implementation state
+
+Schema 92 adds append-only Company reserve revisions and expands immutable Company budget rejection snapshots. The fixed closing classes may use protected calls; ordinary admission and accepted calls preserve the reserve. Closing calls decrement remaining reserve while incrementing Company total in the same transaction. The first finite Company cap must cover current usage plus remaining reserve. Workbench lets the local owner update the reserve with explicit confirmation and a reason. Handover and provider turn clamping report/enforce effective Company availability. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-134-company-closing-reserve/verification.md`.
+
+## Previous Slice 133 implementation state
 
 Schema 91 conservatively backfills Company usage from the durable Task counters. Existing caps remain pending until explicit local-owner configuration. An append-only allocation ledger records initial configuration/increases, and immutable rejection rows bind the route, Task/session, cap, usage and budget revision. Admission and each accepted tool call enforce the Company cap before lower scopes; accepted calls increment Company in the same transaction as Mission, Session, Task and ProblemKey. Handover/provider turn clamping uses the minimum Company and lower-scope remaining allowance. Workbench exposes a no-store Company projection and a reasoned, confirmed configuration/increase action. All migrated Companies require explicit configuration before new Worker admission or calls are allowed. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-133-company-tool-call-budget/verification.md`.
 
@@ -46,4 +52,4 @@ ProviderAccount caps, true USD/token accounting, unknown external liabilities, a
 
 ## Qualification status
 
-Slices 131–133 are implementation/source-audit evidence, not runtime qualification. Slice 131 and 133 Go package/command builds, frontend production builds, migration hash validation and diff checks passed; Slice 132 is read-only design/source inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
+Slices 131–134 are implementation/source-audit evidence, not runtime qualification. Slices 131, 133 and 134 Go package/command builds, frontend production builds, migration hash validation and diff checks passed; Slice 132 is read-only design/source inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
