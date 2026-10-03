@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 149. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 150. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 150: REQ-29 shared-file access audit
+
+Task inputs use immutable Mission-bound manifests and Worker writes are fenced to the current Task workspace by digest+revision. There is no Worker tool to discover/read another Task's published Artifact; bounded peer messages and recovery snapshots do not provide that access. Slice 151 will add a separate fake-only surface for same-Company+Mission ready candidate/passed Artifacts, selected by Artifact ID with CAS digest/size verification. REQ-29 remains partial; see `docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md` and the Slice 150 evidence.
 
 ## Slice 149: REQ-26 C-RESOURCE shared-write audit
 
@@ -595,7 +599,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | 26 | Company isolation covers shared write targets | R1 | partial; CAS/workspace fencing exists, resource binding remains | R1 |
 | 27 | Handover preserves facts and published artifacts | R1 | partial; checkpoint/recovery foundations exist; E-HANDOVER remains | R1 |
 | 28 | QQ Bot takeover notification | R1 | partial; redacted C2C transport, DPAPI credential storage, one-shot HMAC IPC, revocation gate, qualified-route DB gate, event-path dispatcher, persisted receipt/outcome, crash-to-unknown recovery, bounded restart-safe retry and visible intervention/delivery status exist; live qualification and real delivery remain | R1 C2C |
-| 29 | Authorized workspace and shared-file access | R1 | partial; current runtime models a bounded blob, not a full tree | R1 |
+| 29 | Authorized workspace and shared-file access | R1 | partial; Task input manifests and current-Task digest/revision workspace access exist, but Worker cannot discover/read same-Mission published Artifacts; CAP-01–06 remain open | R1 |
 | 30 | Public and company Skills | R1 | partial; a fixed read-only ZIP profile validates `SKILL.md`, a restricted set of references/assets and exact file bytes in company CAS; digest-pinned revisions can be locally qualified, manually approved/revoked and bound to an employee. Slice 47 connects the exact v5 load tool through the fake Worker to the permission-checked Kernel. Real provider v5 remains unqualified; scripts and all Skill code execution stay unavailable. | R1 selected read-only Skill |
 | 31 | Controlled MCP tools/resources | R1 | partial; stdio descriptor registration, approval/binding, persisted runtime qualification and a concrete AppContainer process owner exist; Slices 53–54 add the one-shot call ledger and fake-only `@mcp-v1` Worker dispatch; Slice 55 adds token-gated local package import and immutable CAS revisions; Slice 59 adds default-off authenticated discovery/list observation; Slice 60 adds pre-launch idempotency fencing, per-server package/approval/call serialization, stale-workspace revocation and retryable shared-sandbox cleanup. Real-provider qualification, actual WFP policy, detached-owner recovery and R2 Streamable HTTP endpoint/Worker qualification remain open. | R1 controlled stdio; R2 Streamable HTTP |
 | 32 | Capability environment follows employee identity through handover | R1 | partial; append-only bindings pin Employee ID, capability ID, version digest and qualification record; successor execution remains unavailable | R1 |

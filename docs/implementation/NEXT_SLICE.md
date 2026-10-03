@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 149, REQ-26 ResourceKey shared-write audit)
+## Latest continuation status (Slice 150, REQ-29 shared-file access audit)
+
+The source map confirmed that Mission inputs reach a Task through an immutable manifest and a Worker can read/write only its current Task workspace with digest+revision compare-and-swap. No Worker tool can discover/read another Task's published Artifact, so cross-Task file sharing still depends on someone copying content into a message or input. Recovery snapshots do not grant Worker file access. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-150-req29-shared-file-access-audit/verification.md`.
+
+Next Slice151: add a bounded read-only shared Mission Artifact surface. Listing and exact-ID reads must derive Company/Mission from the active database WorkerSession, admit only same-Mission ready candidate/passed Artifacts, verify CAS digest and size, preserve current-Task digest+revision write fencing, and use a new fake-only versioned tool surface. Keep @4/@7 fingerprints and arbitrary host paths out of scope.
+
+## Previous continuation status (Slice 149, REQ-26 ResourceKey shared-write audit)
 
 The source audit found no production ResourceBinding/ResourceKey model or shared branch/deploy/publish writer. `companies.workspace_root` is configuration metadata rather than an enforced filesystem boundary; Task workspaces are company/task digest rows, while Linux/Windows preparation uses random exclusive application-managed roots. Git import is read-only. REQ-26 remains open until a real shared write action is connected to a canonical ResourceKey admission fence and old-writer stop evidence. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-149-req26-resource-binding-audit/verification.md`.
 
-Next Slice150: map REQ-29 authorized shared-file access across Task input manifests, CAS-backed reads, Worker Handover and workspace snapshots. Identify one concrete read/write/snapshot gap and its access boundary before changing code; do not add arbitrary host-path access.
+Slice 150's source map found the bounded shared-Artifact read gap. Continue with Slice 151; do not add arbitrary host-path access.
 
 ## Previous continuation status (Slice 148, REQ-15 WorkerSession-bound memory correction)
 

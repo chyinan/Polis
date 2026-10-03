@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 150 — REQ-29 shared-file access audit (no code/schema change)
+
+Task inputs are immutable Mission-bound manifests, and a Worker reads/writes only its current Task workspace using digest+revision fencing. The Worker has no way to discover/read another Task's published Artifact; peer messages are bounded text, while recovery snapshots do not grant file permissions. Slice 151 is bounded to read-only listing and exact-ID reads of ready candidate/passed Artifacts from the same Company+Mission, with database-derived active WorkerSession scope and CAS digest/size verification. New Worker tools require a distinct fake-only surface; arbitrary host paths and real-provider qualification remain out of scope. See `docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md` and `evidence/development/r1-r3-implementation-validation-20261003-slice-150-req29-shared-file-access-audit/verification.md`.
+
 ## Slice 149 — REQ-26 C-RESOURCE shared-write audit (no code/schema change)
 
 The production source map found no ResourceBinding/ResourceKey model or current shared branch/deploy/publish writer. `companies.workspace_root` is stored/displayed configuration, not a runtime filesystem authorization root; `worker_workspaces` is per-Company/Task digest metadata; local project preparation uses fresh random application-managed workspaces; and Git import is read-only. REQ-26 remains open for any future shared writer until actual targets are canonicalized and fenced by Company ownership/resource epochs with old-writer stop evidence. No external action ran. See `docs/implementation/REQ26_RESOURCE_BINDING_AUDIT.md` and `evidence/development/r1-r3-implementation-validation-20261003-slice-149-req26-resource-binding-audit/verification.md`.
