@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 128, REQ-16 scoped provider retry observation; no migration)
+## Latest continuation status (Slice 129, REQ-16 Mission budget composition and lock-order audit; no migration)
+
+The v0.4.5 budget contract authorizes separately dimensioned limits and says one usage fact is projected into each applicable scope. The next bounded enforcement target is an explicitly configured Mission cap for admitted protocol tool calls; it must not be inferred by summing default Task/ProblemKey limits or described as a token, USD, or complete provider-request cap. Mission closing reserve belongs inside that total. Hidden CLI/service retries remain unobservable at this boundary and must keep `retry_visibility=limited`.
+
+The lock audit found that Mission cancellation updates the Mission row before its Tasks, while Worker charge currently locks the WorkerSession/Task and then the ProblemKey budget. Adding a Mission lock after the Task lock would create an inverse order. Before enforcement, admission and charge paths must acquire locks in a consistent Mission → WorkerSession/Task → ProblemKey order, with lifecycle transitions audited against it. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md` and `evidence/development/r1-r3-implementation-validation-20261003-slice-129-mission-budget-composition/verification.md`.
+
+Next implement the explicit Mission protocol-tool-call ceiling and owner configuration path, migrate legacy usage conservatively, and persist Mission-level rejections. Keep the Mission reserve as a separately revisioned policy inside the total ceiling; the existing ProblemKey reserve does not substitute for it. Token/money accounting, Company/Provider caps, hidden retries and behavioral qualification remain open.
+
+## Previous continuation status (Slice 128, REQ-16 scoped provider retry observation; no migration)
 
 The real Codex runtime now records the source and scope of its retry observation: `responseStreamDisconnected` with `willRetry` from the app-server protocol. The existing reconnect count and recovered flag refer only to those observable same-turn signals. `unobserved_provider_retry_count` is explicitly `null`; the CLI/service may retry internally without exposing attempt counts here. No hidden retry count is inferred or charged. Go package/command build, frontend build, migration hashes and `git diff --check` pass; tests and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
-
-Next, continue a bounded design review of REQ-16's outer budget authority and composition. Do not derive Mission/Company/Provider limits from tool-call counts or token counts; select a source-backed composition rule before enforcing it. Token/money accounting also remains open.
 
 ## Previous continuation status (Slice 127, REQ-16 explicit incomplete budget closeout; Schema 88)
 
