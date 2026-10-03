@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 157. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 158. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 158: CAP-25–32 Worker continuity and recovery audit
+
+Model changes within the native Codex harness start a fresh ephemeral thread with an exact selected model and fixed versioned Polis tool surface; provider fallback is disabled. New WorkerSessions advance Employee epoch and re-read exact Skill/MCP bindings. No second native business harness or cross-harness capability conversion is implemented. Current active-session/epoch/incarnation gates plus memory `frozen`/`dirty` policy deny writes or collaboration on invalidated Tasks, and scripts are not exposed as a Worker tool. MCP revocation is serialized with the server lock; if an in-flight call owns it, the revoke attempt returns conflict without accepting and must be retried. Accepted revocations snapshot sessions and pending tool calls for exact stop/reconciliation. Sleeping schedules exclude active/admitted Workers; MCP owners are per session, and no inbound MCP notification subscription or fanout exists. Recovery refuses active work, restores exact DB/CAS content to a new generation, omits credentials, advances Employee epochs and marks old live sessions `reconcile_required`. Exact Skills and schemas avoid name-based fallback; stdio runtime state is requalified for its sandbox. The restored DB still retains prior global approvals and Employee capability-binding events, so a new owner receipt requirement after restore is unresolved. The four-role scenario, host/account evidence and total settled cost remain unqualified. This source audit did not run CAP scenarios or tests; CAP-25–32 remain `not_run`. `git diff --check` passes. See `evidence/development/r1-r3-implementation-validation-20261003-slice-158-cap25-32-worker-recovery-audit/verification.md`.
 
 ## Slice 157: CAP-20–24 state, result, outcome and cost audit
 
