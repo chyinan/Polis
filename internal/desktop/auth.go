@@ -57,6 +57,9 @@ func PresentedToken(header, authorization, query string) string {
 // or trigger project execution side effects. They stay closed in tokenless
 // browser mode even when the listener is loopback-only.
 func RequiresSessionTokenPath(path string) bool {
+	if strings.HasPrefix(path, "/api/installation/owner/") {
+		return path == "/api/installation/owner/logout"
+	}
 	if strings.HasPrefix(path, "/api/workbench/installation/") {
 		return true
 	}

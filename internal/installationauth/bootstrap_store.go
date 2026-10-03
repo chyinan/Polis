@@ -112,7 +112,7 @@ VALUES(true,clock_timestamp(),0,NULL)
 ON CONFLICT(singleton) DO UPDATE SET window_started_at=clock_timestamp(),failure_count=0,blocked_until=NULL`); err != nil {
 		return "", time.Time{}, err
 	}
-	if err = appendOwnerAuthEvent(ctx, tx, "bootstrap_issued", &revision, digestText); err != nil {
+	if err = appendOwnerAuthEvent(ctx, tx, "bootstrap_issued", &revision, &digestText); err != nil {
 		return "", time.Time{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
@@ -187,7 +187,7 @@ VALUES(true,$1,$2,1)`, PasswordHashScheme, passwordHash); err != nil {
 	if _, err = tx.Exec(ctx, `UPDATE installation_owner_bootstrap_attempts SET window_started_at=clock_timestamp(),failure_count=0,blocked_until=NULL WHERE singleton`); err != nil {
 		return err
 	}
-	if err = appendOwnerAuthEvent(ctx, tx, "owner_initialized", &revision, digestText); err != nil {
+	if err = appendOwnerAuthEvent(ctx, tx, "owner_initialized", &revision, &digestText); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)
@@ -240,7 +240,7 @@ func (s *Store) validateBootstrapAttempt(ctx context.Context, digestText string)
 SET failure_count=$1,blocked_until=$2 WHERE singleton`, nextFailures, blocked); err != nil {
 			return false, 0, err
 		}
-		if err = appendOwnerAuthEvent(ctx, tx, "bootstrap_failed", nil, digestText); err != nil {
+		if err = appendOwnerAuthEvent(ctx, tx, "bootstrap_failed", nil, &digestText); err != nil {
 			return false, 0, err
 		}
 	}
@@ -288,7 +288,7 @@ func lockOwnerBootstrap(ctx context.Context, tx pgx.Tx) error {
 	return err
 }
 
-func appendOwnerAuthEvent(ctx context.Context, tx pgx.Tx, eventType string, revision *int64, subjectSHA256 string) error {
+func appendOwnerAuthEvent(ctx context.Context, tx pgx.Tx, eventType string, revision *int64, subjectSHA256 *string) error {
 	_, err := tx.Exec(ctx, `INSERT INTO installation_owner_auth_events(event_type,bootstrap_revision,subject_sha256)
 VALUES($1,$2,$3)`, eventType, revision, subjectSHA256)
 	return err

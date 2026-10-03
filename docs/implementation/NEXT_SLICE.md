@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 142, FT-63 first-owner bootstrap; Schema 96)
+## Latest continuation status (Slice 143, FT-63 owner sessions; Schema 97)
+
+Schema 97 adds durable owner sessions with SHA-256 token/CSRF digests, fixed 12-hour expiry, append-only login events and one-time revocation, plus a persisted five-failure/15-minute login throttle. Owner login sets HttpOnly, SameSite=Strict cookies; the session cookie is Secure for configured HTTPS remote Workbench mode. Unsafe cookie-authenticated requests require a session-bound double-submit token in `X-Polis-CSRF-Token`. The desktop middleware accepts a valid owner session for protected Workbench routes, while static desktop-token access remains supported; the installation-wide observed-account route now accepts either authenticated owner. Focused installationauth/desktop/workbench tests, `go build ./cmd/polis`, migration hashes 1–97 and `git diff --check` pass. PostgreSQL migration/runtime and browser E2E were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-143-owner-sessions/verification.md`.
+
+Next local step: connect first-owner setup, login, session refresh and logout to the Workbench UI and gate installation-wide account views on the owner session. FT-63 and all installation-wide mutations remain incomplete until that browser flow is usable and independently qualified.
+
+## Previous continuation status (Slice 142, FT-63 first-owner bootstrap; Schema 96)
 
 Schema 96 stores a single installation owner, one active bootstrap digest, bounded failed-attempt state and append-only auth events. `polis owner-bootstrap` requires `POLIS_DSN`, a non-superuser Polis database role, and an interactive terminal; it emits a random code once, never stores the raw code and expires it after 10 minutes. `POST /api/installation/owner/bootstrap` accepts the code/password only from a loopback peer with an allowed local Origin, enforces a 14–1024-byte password policy and five-failure/15-minute throttle, and consumes the code atomically while storing the Argon2id hash. Setup status and bootstrap requests do not require the shared desktop token; the setup handler independently restricts them to the local Workbench. Focused desktop/installationauth tests, `go build ./cmd/polis`, migration hashes 1–96 and `git diff --check` pass. PostgreSQL migration/runtime was not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-142-first-owner-bootstrap/verification.md`.
 
-Next local step: add durable revocable owner sessions, password login/logout, HttpOnly/SameSite cookies and CSRF validation, then connect the owner login/setup states to the Workbench UI. Until then, stored owner credentials do not authenticate browser sessions and cross-Company mutations remain unavailable.
+Slice 143 adds the durable owner session and CSRF backend. The browser setup/login flow and cross-Company mutations remain unavailable.
 
 ## Previous continuation status (Slice 141, FT-63 password hashing foundation; no migration)
 

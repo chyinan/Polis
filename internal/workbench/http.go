@@ -17,6 +17,7 @@ import (
 	"polis/internal/core"
 	"polis/internal/desktop"
 	"polis/internal/domainworkflow"
+	"polis/internal/installationauth"
 	"polis/internal/kernel"
 )
 
@@ -1733,7 +1734,7 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 }
 
 func serveObservedProviderAccounts(response http.ResponseWriter, request *http.Request, service control.CommandService) {
-	if !desktop.IsInstallationOwnerAuthenticated(request.Context()) {
+	if !desktop.IsInstallationOwnerAuthenticated(request.Context()) && !installationauth.IsAuthenticated(request.Context()) {
 		writeError(response, http.StatusUnauthorized, "installation owner authentication is required")
 		return
 	}

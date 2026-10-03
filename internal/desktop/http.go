@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+
+	"polis/internal/installationauth"
 )
 
 // Middleware applies the ephemeral desktop token and the local Origin policy.
@@ -27,8 +29,9 @@ func MiddlewareWithRemoteOrigin(token, remoteOrigin string, next http.Handler) h
 		}
 		if origin != "" {
 			response.Header().Set("Access-Control-Allow-Origin", origin)
+			response.Header().Set("Access-Control-Allow-Credentials", "true")
 			response.Header().Set("Vary", "Origin")
-			response.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, X-Request-ID, X-Polis-Desktop-Token, Authorization")
+			response.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, X-Request-ID, X-Polis-Desktop-Token, X-Polis-CSRF-Token, Authorization")
 			response.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 			response.Header().Set("Access-Control-Expose-Headers", "Content-Disposition, Content-Length, X-Content-SHA256, X-Polis-Manifest-SHA256, X-Source-SHA256, X-Polis-Input-ID, X-Polis-Input-Revision, X-Polis-Preview-Filename")
 		}
@@ -36,18 +39,34 @@ func MiddlewareWithRemoteOrigin(token, remoteOrigin string, next http.Handler) h
 			response.WriteHeader(http.StatusNoContent)
 			return
 		}
-		ownerSetupRequest := request.URL.Path == "/api/installation/owner/status" || request.URL.Path == "/api/installation/owner/bootstrap"
+		ownerPublicRequest := request.URL.Path == "/api/installation/owner/status" ||
+			request.URL.Path == "/api/installation/owner/bootstrap" ||
+			request.URL.Path == "/api/installation/owner/login" ||
+			request.URL.Path == "/api/installation/owner/session"
 		queryToken := request.URL.Query().Get("desktop_token")
 		if remoteConfigured && !localOriginRequest {
 			queryToken = ""
 		}
 		presented := PresentedToken(request.Header.Get("X-Polis-Desktop-Token"), request.Header.Get("Authorization"), queryToken)
-		if (token != "" && !TokenMatches(token, presented) && !ownerSetupRequest) ||
-			(token == "" && RequiresSessionTokenPath(request.URL.Path) && !ownerSetupRequest) {
+		desktopTokenAuthenticated := token != "" && TokenMatches(token, presented)
+		ownerSessionAuthenticated := installationauth.IsAuthenticated(request.Context())
+		if !ownerPublicRequest && !desktopTokenAuthenticated && !ownerSessionAuthenticated &&
+			(token != "" || RequiresSessionTokenPath(request.URL.Path)) {
 			writeError(response, http.StatusUnauthorized, "desktop session token is missing or invalid")
 			return
 		}
-		if token != "" && TokenMatches(token, presented) {
+		if ownerSessionAuthenticated && !desktopTokenAuthenticated && request.Method != http.MethodGet && request.Method != http.MethodHead {
+			csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+			csrfValue := ""
+			if csrfCookie != nil {
+				csrfValue = csrfCookie.Value
+			}
+			if origin == "" || !installationauth.CSRFValid(request.Context(), csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+				writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+				return
+			}
+		}
+		if desktopTokenAuthenticated {
 			request = request.WithContext(context.WithValue(request.Context(), installationOwnerContextKey{}, true))
 		}
 		next.ServeHTTP(response, request)

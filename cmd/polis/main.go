@@ -517,7 +517,7 @@ func serveWorkbench() (returnErr error) {
 		return fmt.Errorf("failed to start installation owner setup store: %w", err)
 	}
 	defer ownerAuthStore.Close()
-	router.Handle("/api/installation/owner/", desktop.OwnerSetupHandler(ownerAuthStore))
+	router.Handle("/api/installation/owner/", desktop.OwnerSetupHandler(ownerAuthStore, remoteOrigin != ""))
 	router.Handle("/api/workbench/", workbench.NewHandler(store, commandService))
 	router.HandleFunc("/healthz", func(response http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodGet {
@@ -576,7 +576,7 @@ func serveWorkbench() (returnErr error) {
 	})
 	server := &http.Server{
 		Addr:              address,
-		Handler:           desktop.MiddlewareWithRemoteOrigin(sessionToken, remoteOrigin, maintenance.Middleware(router)),
+		Handler:           ownerAuthStore.SessionMiddleware(desktop.MiddlewareWithRemoteOrigin(sessionToken, remoteOrigin, maintenance.Middleware(router))),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		MaxHeaderBytes:    64 * 1024,

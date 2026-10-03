@@ -1,10 +1,14 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 142. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 143. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 143: FT-63 revocable owner sessions and CSRF boundary (Schema 97)
+
+Schema 97 persists session-token and CSRF-token digests, 12-hour expiry, immutable session facts with one-time revocation, login events and a five-failure/15-minute throttle. Password login returns an HttpOnly, SameSite=Strict session cookie and a readable CSRF cookie; configured HTTPS remote mode marks both Secure. Unsafe cookie-authenticated requests require the CSRF cookie plus `X-Polis-CSRF-Token`, validated against the digest bound to that session. Owner sessions now pass protected Workbench middleware and can read the observed installation ProviderAccount projection; the existing desktop token remains supported. Focused Go tests, command build and migration hashes 1–97 pass; PostgreSQL migration/runtime and browser E2E were not run. Workbench setup/login/session/logout UI remains open, and FT-63 is not complete. See `evidence/development/r1-r3-implementation-validation-20261003-slice-143-owner-sessions/verification.md`.
 
 ## Slice 142: FT-63 first-owner bootstrap (Schema 96)
 
-Schema 96 adds the one-owner credential row, one-time bootstrap state, a failure throttle and append-only authentication events. The local OS command `polis owner-bootstrap` requires an interactive terminal and issues a 10-minute random code while storing only its SHA-256 digest. The local-only setup endpoint checks loopback peer and local Origin, rejects tokenless remote registration, throttles five failures for 15 minutes, and consumes the code atomically with the Argon2id password hash. Focused boundary tests, command build and migration hash checks through 96 pass; no PostgreSQL runtime was available/run. Durable owner sessions, login/logout, cookies, CSRF and frontend setup/login states remain open, so FT-63 is not complete. See `evidence/development/r1-r3-implementation-validation-20261003-slice-142-first-owner-bootstrap/verification.md`.
+Schema 96 adds the one-owner credential row, one-time bootstrap state, a failure throttle and append-only authentication events. The local OS command `polis owner-bootstrap` requires an interactive terminal and issues a 10-minute random code while storing only its SHA-256 digest. The local-only setup endpoint checks loopback peer and local Origin, rejects tokenless remote registration, throttles five failures for 15 minutes, and consumes the code atomically with the Argon2id password hash. Focused boundary tests, command build and migration hash checks through 96 pass; no PostgreSQL runtime was available/run. Durable owner session infrastructure is implemented in Slice 143; frontend setup/login states remain open, so FT-63 is not complete. See `evidence/development/r1-r3-implementation-validation-20261003-slice-142-first-owner-bootstrap/verification.md`.
 
 ## Slice 141: FT-63 bounded owner password hashing (no migration)
 
