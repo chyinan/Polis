@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 159. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 160. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 160: REQ-25 restored installation-owner session revocation
+
+Restoration now holds the control-plane and installation-owner auth advisory locks through completion-marker write. In one finalization transaction, Schema 97+ backups revoke every unrevoked owner session and append immutable `session_revoked` auth events with token digests, alongside the Slice159 MCP Employee-binding revocations. The marker records both completed gates; old Slice159 markers are upgraded through the staged retry path. Old browser tokens cannot resume after a restore, while the owner password remains configured for a fresh login. No migration was added. Go build and diff check pass; no tests, restore, browser, WorkerSession or frozen CAP/FT scenarios ran. FT-77/CAP-31 remain `not_run`; REQ-25 remains partial. See `evidence/development/r1-r3-implementation-validation-20261003-slice-160-req25-restore-owner-session-revocation/verification.md`.
 
 ## Slice 159: CAP-31 recovery-generation MCP authorization gate
 

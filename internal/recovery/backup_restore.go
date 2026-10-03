@@ -49,10 +49,11 @@ type VerifyRestoredRecoveryGenerationResult struct {
 }
 
 type recoveryRestoreMarker struct {
-	SchemaVersion      string `json:"schemaVersion"`
-	GenerationID       string `json:"generationId"`
-	ManifestSHA256     string `json:"manifestSha256"`
-	MCPBindingsRevoked bool   `json:"mcpBindingsRevoked,omitempty"`
+	SchemaVersion        string `json:"schemaVersion"`
+	GenerationID         string `json:"generationId"`
+	ManifestSHA256       string `json:"manifestSha256"`
+	MCPBindingsRevoked   bool   `json:"mcpBindingsRevoked,omitempty"`
+	OwnerSessionsRevoked bool   `json:"ownerSessionsRevoked,omitempty"`
 }
 
 func RestoreRecoveryBackupPackage(ctx context.Context, options RestoreRecoveryBackupOptions) (RestoreRecoveryBackupResult, error) {
@@ -110,11 +111,23 @@ func RestoreRecoveryBackupPackage(ctx context.Context, options RestoreRecoveryBa
 		defer cancel()
 		_, _ = controlConnection.Exec(unlockCtx, "SELECT pg_advisory_unlock(714209831)")
 	}()
+	var ownerAuthLockHeld bool
+	if err = controlConnection.QueryRow(ctx, "SELECT pg_try_advisory_lock(714209843)").Scan(&ownerAuthLockHeld); err != nil {
+		return result, err
+	}
+	if !ownerAuthLockHeld {
+		return result, fmt.Errorf("%w: an installation-owner authentication update is in progress", ErrRecoveryBackupMaintenanceBusy)
+	}
+	defer func() {
+		unlockCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_, _ = controlConnection.Exec(unlockCtx, "SELECT pg_advisory_unlock(714209843)")
+	}()
 	markerKind, databaseMarker, err := readRecoveryDatabaseMarker(ctx, options.TargetDatabaseDSN, report)
 	if err != nil {
 		return result, err
 	}
-	alreadyRestored := markerKind == "complete" && databaseMarker.MCPBindingsRevoked
+	alreadyRestored := markerKind == "complete" && databaseMarker.MCPBindingsRevoked && databaseMarker.OwnerSessionsRevoked
 	if !targetEmpty && markerKind == "none" {
 		return result, fmt.Errorf("%w: target database is non-empty and has no matching restore marker", ErrRecoveryBackupInvalid)
 	}
@@ -182,7 +195,7 @@ func RestoreRecoveryBackupPackage(ctx context.Context, options RestoreRecoveryBa
 	}
 	if !alreadyRestored {
 		if err = finalizeRecoveryRestore(ctx, controlConnection, report); err != nil {
-			return result, fmt.Errorf("restored database remains staged until MCP Employee bindings are revoked: %w", err)
+			return result, fmt.Errorf("restored database remains staged until restored authorization is revoked: %w", err)
 		}
 	}
 	if err = grantRecoveryRuntimeAccess(ctx, options.TargetDatabaseDSN, options.RuntimeRoleName); err != nil {
@@ -446,7 +459,7 @@ func checkRestoreMarker(ctx context.Context, dsn string, report RecoveryBackupVe
 	if err != nil {
 		return false, err
 	}
-	return kind == "complete" && marker.MCPBindingsRevoked, nil
+	return kind == "complete" && marker.MCPBindingsRevoked && marker.OwnerSessionsRevoked, nil
 }
 
 func readRecoveryDatabaseMarker(ctx context.Context, dsn string, report RecoveryBackupVerificationReport) (string, recoveryRestoreMarker, error) {
@@ -481,6 +494,8 @@ func readRecoveryDatabaseMarker(ctx context.Context, dsn string, report Recovery
 	return kind, actual, nil
 }
 
+// finalizeRecoveryRestore requires the caller to hold both the control-plane
+// and installation-owner advisory locks through the completion marker write.
 func finalizeRecoveryRestore(ctx context.Context, connection *pgxpool.Conn, report RecoveryBackupVerificationReport) error {
 	tx, err := connection.Begin(ctx)
 	if err != nil {
@@ -555,12 +570,22 @@ VALUES($1,$2,$3,'mcp',$4,$5,$6,'revoked',$7,$8)`, companyID, eventID, item.emplo
 			}
 		}
 	}
+	if report.SchemaVersion >= 97 {
+		if _, queryErr := tx.Exec(ctx, `WITH revoked_sessions AS (
+ UPDATE installation_owner_sessions SET revoked_at=clock_timestamp() WHERE revoked_at IS NULL
+ RETURNING token_sha256
+)
+INSERT INTO installation_owner_auth_events(event_type,subject_sha256)
+SELECT 'session_revoked',token_sha256 FROM revoked_sessions`); queryErr != nil {
+			return queryErr
+		}
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return err
 	}
 	marker := recoveryRestoreMarker{
 		SchemaVersion: RecoveryBackupPackageSchema, GenerationID: report.GenerationID,
-		ManifestSHA256: report.ManifestSHA256, MCPBindingsRevoked: true,
+		ManifestSHA256: report.ManifestSHA256, MCPBindingsRevoked: true, OwnerSessionsRevoked: true,
 	}
 	markerRaw, err := json.Marshal(marker)
 	if err != nil {
