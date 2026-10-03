@@ -36,7 +36,10 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        {companyId === null ? <RealModeSetupPage /> : <WorkbenchRuntime api={browserApi} apiBaseUrl={browserApiBaseUrl} companyId={companyId} />}
+        {companyId === null ? <Routes>
+          <Route element={<BrowserInstallationPage apiBaseUrl={browserApiBaseUrl} />} path="/group/installation" />
+          <Route element={<RealModeSetupPage />} path="*" />
+        </Routes> : <WorkbenchRuntime api={browserApi} apiBaseUrl={browserApiBaseUrl} companyId={companyId} />}
       </BrowserRouter>
     </QueryClientProvider>
   );
@@ -157,6 +160,12 @@ function DesktopCompanyResolver({api, runtime}: Readonly<{api: WorkbenchApi; run
   return <QueryClientProvider client={queryClient}><BrowserRouter><WorkbenchRuntime api={api} apiBaseUrl={`${runtime.api_base_url}/api/workbench`} companyId={companyId} /></BrowserRouter></QueryClientProvider>;
 }
 
+function BrowserInstallationPage({apiBaseUrl}: Readonly<{apiBaseUrl: string}>) {
+  return <AppShell apiBaseUrl={apiBaseUrl} companyId="" companyName="Polis" dataMode="real" freshness="unknown" observedAt={null} recoveryState="unknown" streamStatus="closed">
+    <InstallationOwnerPage workbenchApiBaseUrl={apiBaseUrl} />
+  </AppShell>;
+}
+
 function DesktopStartupPage({runtime}: Readonly<{runtime: DesktopRuntimeSnapshot | null}>) {
   const rows = runtime === null ? [] : [
     ['数据库', runtime.database.state],
@@ -226,5 +235,5 @@ function freshnessFromStream(freshness: Freshness, streamStatus: ActivityStreamS
 }
 
 function RealModeSetupPage() {
-    return <div className={styles.notAvailable}><div className={styles.notAvailableCode}>实时数据模式 / 需要作用域</div><h1>尚未配置公司作用域</h1><p>实时工作台需要通过 VITE_WORKBENCH_COMPANY_ID 明确指定公司；不会把示例公司的 ID 冒充成实时作用域。</p></div>;
+    return <div className={styles.notAvailable}><div className={styles.notAvailableCode}>实时数据模式 / 需要作用域</div><h1>尚未配置公司作用域</h1><p>实时工作台需要通过 VITE_WORKBENCH_COMPANY_ID 明确指定公司；不会把示例公司的 ID 冒充成实时作用域。</p><a className={styles.notAvailableLink} href="/group/installation">打开安装账户设置</a></div>;
 }

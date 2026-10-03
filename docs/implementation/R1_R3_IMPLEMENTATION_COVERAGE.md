@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 145. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 146. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 146: FT-63 owner-session integration and no-scope UI entry
+
+The Installation Accounts route is available from the browser real-mode setup screen even when a Company ID is not configured. A disposable PostgreSQL 18 database was migrated to Schema 97 and exercised through the actual HTTP handlers: terminal bootstrap code issue, first-owner creation, Argon2id login, session status, protected installation-account read, CSRF denial, valid logout and server-side revocation of the old session all passed. The disposable database was dropped, and no owner credential was created in the main development database. Frontend typecheck/lint/build pass. This verifies database-backed API behavior but not a real browser or Tauri WebView. See `evidence/development/r1-r3-implementation-validation-20261003-slice-146-owner-session-integration/verification.md`.
 
 ## Slice 145: PostgreSQL migration compatibility; Schema 97 applied locally
 

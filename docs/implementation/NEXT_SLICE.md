@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 145, PostgreSQL migration compatibility; Schema 97 applied locally)
+## Latest continuation status (Slice 146, owner-session API integration and unscoped UI entry)
+
+The owner page is now reachable from the local real-mode setup screen even before a Company scope exists. A disposable PostgreSQL 18 database was migrated through 97; the terminal bootstrap command issued a temporary code; HTTP bootstrap/login/session, authenticated installation-account read, missing-CSRF rejection (403), valid logout and old-session revocation all passed. The disposable database was dropped afterward; the main Termux dev database remains at Schema 97 with no owner credential and no Company data. Frontend typecheck/lint/build pass. This verifies the API and cookies through HTTP clients, not an actual browser. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-146-owner-session-integration/verification.md`.
+
+Next: the human owner must create their own credential in the local Installation Accounts page, then qualify browser cookies, login/logout and Tauri WebView behavior. Continue the remaining finite R1–R3 work in `R1_R3_IMPLEMENTATION_COVERAGE.md`; high-impact qualification, external host/account evidence and financial controls remain open.
+
+## Previous continuation status (Slice 145, PostgreSQL migration compatibility; Schema 97 applied locally)
 
 The checked-in migrations 78 and 79 lacked `-- +goose Up`; Goose rejected 78 on the existing Termux development database, which was at schema 77 with no partial table. The migration loader now adds the missing marker only in the stream Goose parses while migration hashes and execution evidence continue to use the unchanged source bytes. Schema 97's trigger function now has Goose `StatementBegin/End` boundaries. Updated migration hash validation and `go test ./db` pass. On the local `polis_r0_termux` database (previously schema 72, no Companies/Missions), migration completed to schema 97; migration execution evidence 78–97 is present. Backend `/healthz`, owner status/session routes and Vite root return successfully, and the CSRF preflight returns 204. The owner is intentionally not initialized because no owner-chosen password has been supplied. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-145-postgres-migration-compat/verification.md`.
 
-Next: the owner can run the local bootstrap command and choose a password in the Installation Accounts page. Then complete browser-based login/logout/CSRF qualification, including Tauri WebView cookie behavior. Continue the remaining approved R1–R3 coverage; financial settlement remains closed pending owner-confirmed billing scope.
+Slice 146 verified the owner-session endpoints against a disposable database and made the page reachable before a Company exists. Real browser and Tauri WebView qualification remain open. The owner must choose the initial password before persistent account use. Continue the remaining approved R1–R3 coverage; financial settlement remains closed pending owner-confirmed billing scope.
 
 ## Previous continuation status (Slice 144, FT-63 Workbench owner UI)
 
