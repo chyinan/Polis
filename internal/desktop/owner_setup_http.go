@@ -168,7 +168,7 @@ func serveOwnerLogin(store *installationauth.Store, response http.ResponseWriter
 		Expires: result.ExpiresAt, MaxAge: maxAge, HttpOnly: true, Secure: secureCookies, SameSite: http.SameSiteStrictMode,
 	})
 	http.SetCookie(response, &http.Cookie{
-		Name: installationauth.OwnerCSRFCookieName, Value: result.CSRFToken, Path: "/api",
+		Name: installationauth.OwnerCSRFCookieName, Value: result.CSRFToken, Path: "/",
 		Expires: result.ExpiresAt, MaxAge: maxAge, Secure: secureCookies, SameSite: http.SameSiteStrictMode,
 	})
 	writeOwnerSetupJSON(response, http.StatusOK, map[string]any{"authenticated": true, "expiresAt": result.ExpiresAt})
@@ -212,7 +212,11 @@ func serveOwnerLogout(store *installationauth.Store, response http.ResponseWrite
 		}
 	}
 	for _, name := range []string{installationauth.OwnerSessionCookieName, installationauth.OwnerCSRFCookieName} {
-		http.SetCookie(response, &http.Cookie{Name: name, Value: "", Path: "/api", MaxAge: -1, Expires: time.Unix(1, 0), HttpOnly: name == installationauth.OwnerSessionCookieName, Secure: secureCookies, SameSite: http.SameSiteStrictMode})
+		path := "/api"
+		if name == installationauth.OwnerCSRFCookieName {
+			path = "/"
+		}
+		http.SetCookie(response, &http.Cookie{Name: name, Value: "", Path: path, MaxAge: -1, Expires: time.Unix(1, 0), HttpOnly: name == installationauth.OwnerSessionCookieName, Secure: secureCookies, SameSite: http.SameSiteStrictMode})
 	}
 	writeOwnerSetupJSON(response, http.StatusOK, map[string]bool{"authenticated": false})
 }
