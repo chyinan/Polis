@@ -1,6 +1,6 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 131
+Updated: 2026-10-03, Slice 132
 
 ## Decision
 
@@ -34,12 +34,12 @@ Schema 89 adds Mission usage and cap/revision columns, backfills usage by summin
 
 ## Remaining bounded sequence
 
-1. Resolve Company and ProviderAccount budget semantics against the frozen design and the reliable usage identities available at those boundaries before implementing either cap.
-2. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them. Do not infer those from tool-call counters.
-3. Keep exact FT-42–45 execution and broader R1–R3 qualification separate from build-only implementation evidence. They remain `not_run` here.
+1. Implement a Company cap for admitted protocol tool calls, with explicit owner-set limits and a conservative backfill from immutable/durable Task usage. Label this unit precisely; it does not bound provider egress, hidden retries, tokens or USD.
+2. Do not claim ProviderAccount financial enforcement until a stable account identity is bound to general WorkerSessions and runtime admissions can reserve, settle and retain unknown liabilities.
+3. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them. Keep FT-42–45 and broader qualification separate from implementation evidence; they remain `not_run`.
 
 Company and ProviderAccount caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer are separate open requirements; none can be derived from this call counter.
 
 ## Qualification status
 
-Slice 131 is implementation evidence, not runtime qualification. Go package/command builds, frontend production build, migration hash validation and diff checks passed. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
+Slices 131–132 are implementation/source-audit evidence, not runtime qualification. Slice 131 Go package/command builds, frontend production build, migration hash validation and diff checks passed; Slice 132 is read-only design/source inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.

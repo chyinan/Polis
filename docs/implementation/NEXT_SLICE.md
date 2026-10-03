@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 131, REQ-16 Mission closing reserve; Schema 90)
+## Latest continuation status (Slice 132, REQ-16 Company/Provider budget identity audit; no migration)
+
+The frozen design permits Company and ProviderAccount caps, but their units and identities must remain explicit. Company can safely enforce an owner-configured cap on admitted protocol tool calls: `companies.id` is stable, every write transaction locks the Company before Mission/Task, and accepted calls are idempotently keyed from WorkerSession plus provider call ID. Existing Task counters provide a conservative Company usage backfill. This count does not represent model requests, hidden CLI retries, tokens, provider egress or USD. The runtime has no ProviderAccount ID bound to general WorkerSessions; the available auth identity fingerprint is only used by a specific diagnostic path, and terminal token observations do not provide settled account spend. Do not implement a strict ProviderAccount cost cap from those fields. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-132-budget-scope-audit/verification.md`.
+
+Next: add an explicit Company protocol-tool-call cap, owner configuration/increase history, durable rejection evidence, atomic charging and Handover/provider remaining-budget visibility. Leave ProviderAccount financial limits open until an account identity and reliable settled/reserved/unknown liability model are bound through runtime admission.
+
+## Previous continuation status (Slice 131, REQ-16 Mission closing reserve; Schema 90)
 
 Schema 90 adds append-only Mission closing-reserve revisions inside the explicit total cap. Only fixed Kernel-created `review` and `peer_review` Tasks may spend protected calls; ordinary admission, accepted-call accounting, Handover and provider turn clamping preserve the remaining reserve. Closing calls reduce reserve and Mission total atomically. A pending Mission may record a reserve, but its first finite cap must cover recorded usage plus unspent reserve. Immutable Mission rejection evidence records reserve snapshots/revision and distinguishes calls blocked by protected capacity. Settings exposes confirmed, reasoned reserve changes. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 90 migration hashes and `git diff --check` pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-131-mission-closing-reserve/verification.md`.
 
-Next: resolve Company and ProviderAccount budget semantics against the frozen design and reliable usage identities before implementing either cap. Hidden retries, token/money accounting and frozen scenario qualification remain open. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md`.
+Slice 132's source audit selects an explicit Company protocol-tool-call cap as the next implementation. ProviderAccount identity/liability, hidden retries, token/money accounting and frozen scenario qualification remain open. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md`.
 
 ## Previous continuation status (Slice 130, REQ-16 explicit Mission tool-call cap; Schema 89)
 

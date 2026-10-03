@@ -1,12 +1,16 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 131 / Schema 90. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 132. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
-## Slice 131: REQ-16 Mission closing reserve (Schema 90)
+## Slice 132: REQ-16 Company/Provider budget identity audit (no migration)
+
+The design/source audit identifies admitted protocol tool calls as a reliable Company-level unit: a stable Company ID and pre-callback Company lock already exist, tool-call commands are idempotently bound to WorkerSession/provider call ID, and Task counters give a conservative legacy backfill. The resulting cap must be labeled as protocol tool calls and must not claim to cover hidden retries, token spend, all provider egress or USD. ProviderAccount identity is not bound to general WorkerSessions; the existing auth fingerprint is confined to a diagnostic path and terminal token usage is not settled account cost. ProviderAccount financial enforcement remains open until that identity/liability path exists. See `evidence/development/r1-r3-implementation-validation-20261003-slice-132-budget-scope-audit/verification.md`.
+
+## Previous Slice 131: REQ-16 Mission closing reserve (Schema 90)
 
 Schema 90 adds a revisioned reserve inside the explicit Mission tool-call cap. Only Kernel-created `review` and `peer_review` Tasks can spend it; ordinary admission, tool-call charging, Handover and provider turn clamping preserve remaining protected calls. Closing-class calls burn reserve and total Mission capacity in the same accounting transaction. Pending Missions may set reserve first, and initial cap configuration must cover existing usage plus unspent reserve. Immutable Mission rejection evidence binds total-budget and reserve snapshots. Settings exposes owner-confirmed reserve revisions with a reason and expected Mission/reserve revisions. Go package/command build, frontend production build, all 90 migration hashes and `git diff --check` pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. See `evidence/development/r1-r3-implementation-validation-20261003-slice-131-mission-closing-reserve/verification.md`.
 
-Company/ProviderAccount limits, hidden retries, token/money accounting and exact FT-42–45 qualification remain open.
+Company protocol-call cap implementation, ProviderAccount identity/liability, hidden retries, token/money accounting and exact FT-42–45 qualification remain open.
 
 ## Previous Slice 130: REQ-16 explicit Mission tool-call cap (Schema 89)
 

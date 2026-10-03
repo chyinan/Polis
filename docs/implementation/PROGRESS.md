@@ -1,10 +1,14 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 131 — REQ-16 Mission closing reserve (Schema 90)
+## Slice 132 — REQ-16 Company/Provider budget identity audit (no migration)
+
+The source audit found a reliable Company-scope dimension: explicitly configured admitted protocol tool calls. Company ID is stable, `txWrite` obtains the Company row lock before callback-level budget locks, accepted tool calls have idempotency keys derived from session plus provider call ID, and persisted Task counters support a conservative legacy backfill. This unit excludes model requests without tool calls, hidden CLI retries, tokens, raw egress and USD. General WorkerSessions have no bound ProviderAccount identity; the auth identity fingerprint is currently scoped to a diagnostic path, and terminal token observations do not provide a settled account-billing amount. Do not present a strict ProviderAccount cost cap from those signals. Next implement the Company call cap, then separately revisit ProviderAccount identity/liability binding. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-132-budget-scope-audit/verification.md`.
+
+## Previous continuation status (Slice 131 — REQ-16 Mission closing reserve; Schema 90)
 
 Schema 90 adds an append-only Mission closing-reserve policy inside the explicit total cap. Only Kernel-created `review` and `peer_review` Tasks spend protected calls. Ordinary Task admission and accepted-call accounting preserve unspent reserve; closing calls decrement reserve while also incrementing Mission, ProblemKey, Task and Session usage atomically. Pending Missions can configure reserve first, but initial cap configuration must cover usage plus unspent reserve. Mission rejection records bind the reserve amount, remaining count and revision. Handover and provider budgets expose the reserve revision and clamp ordinary work to unreserved Mission availability. Settings supports confirmed, reasoned reserve policy changes. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 90 migration hashes and `git diff --check` pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-131-mission-closing-reserve/verification.md`.
 
-REQ-16 remains partial. Company/ProviderAccount caps, hidden retries, token/money accounting, stable exhaustion qualification and frozen FT-42–45 execution remain open. Next resolve Company and Provider budget semantics against the design and reliable usage identities before implementing either cap.
+REQ-16 remains partial. Slice 132 selects a Company admitted-protocol-tool-call cap for the next implementation. ProviderAccount identity/liability, hidden retries, token/money accounting, stable exhaustion qualification and frozen FT-42–45 execution remain open.
 
 ## Previous continuation status (Slice 130 — REQ-16 explicit Mission tool-call cap; Schema 89)
 
