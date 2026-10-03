@@ -17,9 +17,8 @@ const (
 	maxStreamableHTTPResultContentCount = 64
 )
 
-// PrepareStreamableHTTPToolList validates the fixed-profile tools/list result,
-// rejects paginated catalogs that would otherwise be incomplete, and returns a
-// deterministic schema digest bound to the Streamable HTTP profile.
+// PrepareStreamableHTTPToolList validates the fully collected fixed-profile
+// tools/list catalog and returns a deterministic schema digest.
 func PrepareStreamableHTTPToolList(result json.RawMessage) ([]StdioToolDefinition, string, error) {
 	if len(result) == 0 || len(result) > MaxStdioToolListBytes {
 		return nil, "", errors.New("Streamable HTTP MCP tool list is empty or exceeds its bound")
@@ -36,7 +35,7 @@ func PrepareStreamableHTTPToolList(result json.RawMessage) ([]StdioToolDefinitio
 		return nil, "", errors.New("Streamable HTTP MCP tools/list result has trailing JSON")
 	}
 	if response.NextCursor != "" {
-		return nil, "", errors.New("Streamable HTTP MCP tool pagination is outside the fixed profile")
+		return nil, "", errors.New("Streamable HTTP MCP tool-list input must be a complete catalog")
 	}
 	tools, _, _, err := prepareStdioToolDefinitions(response.Tools)
 	if err != nil || len(tools) == 0 {
@@ -60,6 +59,32 @@ func PrepareStreamableHTTPToolList(result json.RawMessage) ([]StdioToolDefinitio
 	}
 	digest := sha256.Sum256(manifest)
 	return tools, hex.EncodeToString(digest[:]), nil
+}
+
+func decodeStreamableHTTPToolListPage(result json.RawMessage) ([]json.RawMessage, string, error) {
+	if len(result) == 0 || len(result) > MaxStdioMessageBytes || !utf8.Valid(result) || !json.Valid(result) {
+		return nil, "", errors.New("Streamable HTTP MCP tools/list page is invalid or oversized")
+	}
+	var response struct {
+		Tools      json.RawMessage `json:"tools"`
+		NextCursor *string         `json:"nextCursor"`
+	}
+	decoder := json.NewDecoder(bytes.NewReader(result))
+	if err := decoder.Decode(&response); err != nil {
+		return nil, "", errors.New("Streamable HTTP MCP tools/list page is invalid")
+	}
+	if err := decoder.Decode(new(any)); err != io.EOF {
+		return nil, "", errors.New("Streamable HTTP MCP tools/list page has trailing JSON")
+	}
+	tools, err := decodeMCPToolDefinitionsPage(response.Tools)
+	if err != nil {
+		return nil, "", err
+	}
+	cursor := ""
+	if response.NextCursor != nil {
+		cursor = *response.NextCursor
+	}
+	return tools, cursor, nil
 }
 
 // PrepareStreamableHTTPToolResult accepts only a bounded MCP text result. It

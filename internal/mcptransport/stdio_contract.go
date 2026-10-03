@@ -24,6 +24,8 @@ const (
 	MaxStdioToolSchemaBytes     = 32 << 10
 	MaxStdioCallArgumentsBytes  = 64 << 10
 	MaxStdioToolCount           = 64
+	MaxMCPToolListPages         = 64
+	MaxMCPToolListCursorBytes   = 2 << 10
 	MaxStdioToolNameBytes       = 128
 	MaxStdioToolDescriptionSize = 4 << 10
 	MaxStdioToolResultBytes     = 64 << 10
@@ -69,6 +71,36 @@ type stdioSchemaProperty struct {
 type stdioInputSchema struct {
 	properties map[string]stdioSchemaProperty
 	required   map[string]struct{}
+}
+
+func decodeMCPToolDefinitionsPage(raw json.RawMessage) ([]json.RawMessage, error) {
+	if len(raw) == 0 || len(raw) > MaxStdioMessageBytes || !utf8.Valid(raw) || !json.Valid(raw) {
+		return nil, errors.New("MCP tool-list page is invalid or oversized")
+	}
+	var tools []json.RawMessage
+	if err := json.Unmarshal(raw, &tools); err != nil || tools == nil {
+		return nil, errors.Join(errors.New("MCP tool-list page must contain a tools array"), err)
+	}
+	return tools, nil
+}
+
+func appendBoundedMCPToolDefinitions(all *[]json.RawMessage, page []json.RawMessage) error {
+	if all == nil || len(*all)+len(page) > MaxStdioToolCount {
+		return errors.New("MCP tool catalog exceeds its tool-count bound")
+	}
+	*all = append(*all, page...)
+	encoded, err := json.Marshal(*all)
+	if err != nil || len(encoded) > MaxStdioToolListBytes {
+		return errors.Join(errors.New("MCP tool catalog exceeds its aggregate-byte bound"), err)
+	}
+	return nil
+}
+
+func validateMCPToolListCursor(cursor string) error {
+	if cursor == "" || len(cursor) > MaxMCPToolListCursorBytes || !utf8.ValidString(cursor) {
+		return errors.New("MCP tool-list cursor is empty or outside its bound")
+	}
+	return nil
 }
 
 func prepareStdioToolDefinitions(raw json.RawMessage) ([]StdioToolDefinition, map[string]stdioInputSchema, string, error) {

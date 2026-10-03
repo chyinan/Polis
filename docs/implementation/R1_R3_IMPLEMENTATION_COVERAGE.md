@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 155. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 156. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 156: CAP-17 complete bounded MCP tool discovery
+
+Both stdio and Streamable HTTP discovery now follow MCP `tools/list` cursors to completion. The collectors enforce 64 pages, 64 tools, 2 KiB per cursor and 256 KiB of aggregate definitions; their overall deadlines are 30 seconds and two minutes, respectively. Repeated cursors, malformed or incomplete pages and all limit overflows fail closed before qualification or dispatch. Duplicate tool names are rejected by the complete-catalog validator. Canonical schema digests cover the full catalog and are rechecked before each call; state remains per WorkerSession with no shared catalog cache. `go build ./cmd/polis ./internal/kernel ./internal/control ./internal/provider ./internal/mcptransport ./internal/mcpowner` and `git diff --check` pass. No tests or frozen CAP scenarios ran; execution remains `not_run`. No schema migration. See `evidence/development/r1-r3-implementation-validation-20261003-slice-156-cap17-bounded-mcp-pagination/verification.md`.
 
 ## Slice 155: CAP-13–19 MCP discovery and trust-boundary audit
 

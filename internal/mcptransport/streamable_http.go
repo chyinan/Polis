@@ -34,6 +34,7 @@ const (
 	maxSchemaNodes             = 10_000
 	maxHeaderValueBytes        = 8 << 10
 	maxResolvedAddresses       = 16
+	maxToolListDuration        = 2 * time.Minute
 )
 
 var errEndpointPolicy = errors.New("MCP endpoint is outside the fixed Streamable HTTP policy")
@@ -218,7 +219,57 @@ func publicMCPAddress(ip netip.Addr) bool {
 }
 
 func (client *Client) ListTools(ctx context.Context) (json.RawMessage, error) {
-	return client.Request(ctx, "tools/list", map[string]any{})
+	if client == nil || ctx == nil {
+		return nil, errors.New("MCP Streamable HTTP tools/list context is unavailable")
+	}
+	listCtx, cancel := context.WithTimeout(ctx, maxToolListDuration)
+	defer cancel()
+	allTools := make([]json.RawMessage, 0)
+	seenCursors := make(map[string]struct{})
+	cursor := ""
+	complete := false
+	for pageNumber := 0; pageNumber < MaxMCPToolListPages; pageNumber++ {
+		params := map[string]any{}
+		if cursor != "" {
+			params["cursor"] = cursor
+		}
+		result, err := client.Request(listCtx, "tools/list", params)
+		if err != nil {
+			return nil, err
+		}
+		pageTools, nextCursor, err := decodeStreamableHTTPToolListPage(result)
+		if err != nil {
+			return nil, err
+		}
+		if err = appendBoundedMCPToolDefinitions(&allTools, pageTools); err != nil {
+			return nil, err
+		}
+		if nextCursor == "" {
+			complete = true
+			break
+		}
+		if err = validateMCPToolListCursor(nextCursor); err != nil {
+			return nil, err
+		}
+		if _, exists := seenCursors[nextCursor]; exists {
+			return nil, errors.New("Streamable HTTP MCP tool-list pagination repeated a cursor")
+		}
+		seenCursors[nextCursor] = struct{}{}
+		if pageNumber == MaxMCPToolListPages-1 {
+			return nil, errors.New("Streamable HTTP MCP tool-list pagination exceeded its page bound")
+		}
+		cursor = nextCursor
+	}
+	if !complete {
+		return nil, errors.New("Streamable HTTP MCP tool-list pagination did not complete")
+	}
+	encoded, err := json.Marshal(struct {
+		Tools []json.RawMessage `json:"tools"`
+	}{Tools: allTools})
+	if err != nil || len(encoded) > MaxStdioToolListBytes {
+		return nil, errors.Join(errors.New("Streamable HTTP MCP tool catalog exceeds its aggregate-byte bound"), err)
+	}
+	return encoded, nil
 }
 
 func (client *Client) ListResources(ctx context.Context) (json.RawMessage, error) {

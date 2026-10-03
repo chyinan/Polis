@@ -153,22 +153,63 @@ func (client *StdioClient) ListTools(ctx context.Context) ([]StdioToolDefinition
 }
 
 func (client *StdioClient) listToolsLocked(ctx context.Context) ([]StdioToolDefinition, string, error) {
-	result, err := client.roundTripLocked(ctx, "tools/list", nil)
+	listCtx, cancel := context.WithTimeout(ctx, stdioRequestTimeout)
+	defer cancel()
+	allTools := make([]json.RawMessage, 0)
+	seenCursors := make(map[string]struct{})
+	cursor := ""
+	complete := false
+	for pageNumber := 0; pageNumber < MaxMCPToolListPages; pageNumber++ {
+		params := map[string]any{}
+		if cursor != "" {
+			params["cursor"] = cursor
+		}
+		result, err := client.roundTripLocked(listCtx, "tools/list", params)
+		if err != nil {
+			return nil, "", err
+		}
+		var response struct {
+			ResultType string                     `json:"resultType"`
+			Tools      json.RawMessage            `json:"tools"`
+			NextCursor string                     `json:"nextCursor,omitempty"`
+			Metadata   map[string]json.RawMessage `json:"_meta,omitempty"`
+			TTLMS      *int64                     `json:"ttlMs"`
+			CacheScope string                     `json:"cacheScope"`
+		}
+		if err = decodeStrictStdioJSON(result, &response); err != nil || response.ResultType != "complete" || response.TTLMS == nil || *response.TTLMS < 0 || (response.CacheScope != "private" && response.CacheScope != "public") {
+			return nil, "", errors.Join(errStdioProtocol, err)
+		}
+		pageTools, pageErr := decodeMCPToolDefinitionsPage(response.Tools)
+		if pageErr != nil {
+			return nil, "", errors.Join(errStdioProtocol, pageErr)
+		}
+		if err = appendBoundedMCPToolDefinitions(&allTools, pageTools); err != nil {
+			return nil, "", err
+		}
+		if response.NextCursor == "" {
+			complete = true
+			break
+		}
+		if err = validateMCPToolListCursor(response.NextCursor); err != nil {
+			return nil, "", err
+		}
+		if _, exists := seenCursors[response.NextCursor]; exists {
+			return nil, "", errors.New("stdio MCP tool-list pagination repeated a cursor")
+		}
+		seenCursors[response.NextCursor] = struct{}{}
+		if pageNumber == MaxMCPToolListPages-1 {
+			return nil, "", errors.New("stdio MCP tool-list pagination exceeded its page bound")
+		}
+		cursor = response.NextCursor
+	}
+	if !complete {
+		return nil, "", errors.New("stdio MCP tool-list pagination did not complete")
+	}
+	encodedTools, err := json.Marshal(allTools)
 	if err != nil {
 		return nil, "", err
 	}
-	var response struct {
-		ResultType string                     `json:"resultType"`
-		Tools      json.RawMessage            `json:"tools"`
-		NextCursor string                     `json:"nextCursor,omitempty"`
-		Metadata   map[string]json.RawMessage `json:"_meta,omitempty"`
-		TTLMS      *int64                     `json:"ttlMs"`
-		CacheScope string                     `json:"cacheScope"`
-	}
-	if err = decodeStrictStdioJSON(result, &response); err != nil || response.ResultType != "complete" || response.TTLMS == nil || *response.TTLMS < 0 || (response.CacheScope != "private" && response.CacheScope != "public") || response.NextCursor != "" {
-		return nil, "", errors.Join(errStdioProtocol, err)
-	}
-	tools, schemas, digest, err := prepareStdioToolDefinitions(response.Tools)
+	tools, schemas, digest, err := prepareStdioToolDefinitions(encodedTools)
 	if err != nil {
 		return nil, "", err
 	}
