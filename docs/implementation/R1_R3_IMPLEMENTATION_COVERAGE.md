@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 158. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 159. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 159: CAP-31 recovery-generation MCP authorization gate
+
+Restore now reserves the same session advisory lock used by `Kernel.Open` for its entire database/CAS restore and authorization-finalization window. A generation-specific staging marker distinguishes a clean rollback from a restored target whose policy finalization is pending. Finalization appends deterministic immutable revocation events for all currently bound MCP Employee capabilities and company event-ledger records in one transaction, then writes the complete marker. If marker completion fails, a retry is idempotent and leaves all restored grants revoked; a new explicit binding is required before future use. New execution continues to require a database-confirmed active WorkerSession. Go build and diff check pass. No tests, actual database/CAS restore, WorkerSession, endpoint or frozen CAP scenario ran; CAP-31 remains `not_run`. See `evidence/development/r1-r3-implementation-validation-20261003-slice-159-cap31-restore-generation-mcp-authorization/verification.md`.
 
 ## Slice 158: CAP-25–32 Worker continuity and recovery audit
 

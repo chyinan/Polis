@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -48,9 +49,10 @@ type VerifyRestoredRecoveryGenerationResult struct {
 }
 
 type recoveryRestoreMarker struct {
-	SchemaVersion  string `json:"schemaVersion"`
-	GenerationID   string `json:"generationId"`
-	ManifestSHA256 string `json:"manifestSha256"`
+	SchemaVersion      string `json:"schemaVersion"`
+	GenerationID       string `json:"generationId"`
+	ManifestSHA256     string `json:"manifestSha256"`
+	MCPBindingsRevoked bool   `json:"mcpBindingsRevoked,omitempty"`
 }
 
 func RestoreRecoveryBackupPackage(ctx context.Context, options RestoreRecoveryBackupOptions) (RestoreRecoveryBackupResult, error) {
@@ -86,12 +88,38 @@ func RestoreRecoveryBackupPackage(ctx context.Context, options RestoreRecoveryBa
 	if !targetOwner {
 		return result, fmt.Errorf("%w: restore connection must own the target database or be a superuser", ErrRecoveryBackupInvalid)
 	}
-	alreadyRestored, err := checkRestoreMarker(ctx, options.TargetDatabaseDSN, report)
+	controlPool, err := pgxpool.New(ctx, options.TargetDatabaseDSN)
+	if err != nil {
+		return result, fmt.Errorf("failed to reserve the recovery target: %w", err)
+	}
+	defer controlPool.Close()
+	controlConnection, err := controlPool.Acquire(ctx)
+	if err != nil {
+		return result, fmt.Errorf("failed to reserve the recovery target: %w", err)
+	}
+	defer controlConnection.Release()
+	var restoreLockHeld bool
+	if err = controlConnection.QueryRow(ctx, "SELECT pg_try_advisory_lock(714209831)").Scan(&restoreLockHeld); err != nil {
+		return result, err
+	}
+	if !restoreLockHeld {
+		return result, fmt.Errorf("%w: a Polis control-plane instance owns the restore target", ErrRecoveryBackupMaintenanceBusy)
+	}
+	defer func() {
+		unlockCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_, _ = controlConnection.Exec(unlockCtx, "SELECT pg_advisory_unlock(714209831)")
+	}()
+	markerKind, databaseMarker, err := readRecoveryDatabaseMarker(ctx, options.TargetDatabaseDSN, report)
 	if err != nil {
 		return result, err
 	}
-	if !targetEmpty && !alreadyRestored {
+	alreadyRestored := markerKind == "complete" && databaseMarker.MCPBindingsRevoked
+	if !targetEmpty && markerKind == "none" {
 		return result, fmt.Errorf("%w: target database is non-empty and has no matching restore marker", ErrRecoveryBackupInvalid)
+	}
+	if targetEmpty && markerKind == "complete" {
+		return result, fmt.Errorf("%w: completed recovery marker has no restored database contents", ErrRecoveryBackupInvalid)
 	}
 	packageRoot, err := filepath.EvalSymlinks(options.PackageRoot)
 	if err != nil {
@@ -122,29 +150,40 @@ func RestoreRecoveryBackupPackage(ctx context.Context, options RestoreRecoveryBa
 		}
 		return RestoreRecoveryBackupResult{Status: "ALREADY_RESTORED", GenerationID: report.GenerationID, DatabaseName: targetDatabase, BlobRoot: targetBlobRoot, SchemaVersion: version, RestoredBlobCount: report.VerifiedBlobCount, RestoredBlobBytes: report.VerifiedBlobBytes}, nil
 	}
-	temporaryDirectory, err := os.MkdirTemp("", "polis-pg-restore-")
-	if err != nil {
-		return result, err
+	if markerKind == "none" {
+		if err = writeDatabaseRestoreStagingMarker(ctx, options.TargetDatabaseDSN, recoveryRestoreMarker{
+			SchemaVersion: RecoveryBackupPackageSchema, GenerationID: report.GenerationID, ManifestSHA256: report.ManifestSHA256,
+		}); err != nil {
+			return result, fmt.Errorf("failed to mark the empty target for this recovery generation: %w", err)
+		}
 	}
-	defer os.RemoveAll(temporaryDirectory)
-	serviceName, pgEnv, cleanupPG, err := preparePostgresUtilityTarget(options.TargetDatabaseDSN, "", temporaryDirectory)
-	if err != nil {
-		return result, err
+	if targetEmpty {
+		temporaryDirectory, tempErr := os.MkdirTemp("", "polis-pg-restore-")
+		if tempErr != nil {
+			return result, tempErr
+		}
+		defer os.RemoveAll(temporaryDirectory)
+		serviceName, pgEnv, cleanupPG, prepareErr := preparePostgresUtilityTarget(options.TargetDatabaseDSN, "", temporaryDirectory)
+		if prepareErr != nil {
+			return result, prepareErr
+		}
+		defer cleanupPG()
+		dumpPath := filepath.Join(packageRoot, RecoveryBackupDatabaseName)
+		command := exec.CommandContext(ctx, pgRestorePath, "--exit-on-error", "--single-transaction", "--no-owner", "--no-acl", "--dbname=service="+serviceName, "--no-password", dumpPath)
+		command.Env = postgresUtilityEnvironment(pgEnv)
+		if output, commandErr := command.CombinedOutput(); commandErr != nil {
+			return result, fmt.Errorf("pg_restore failed; target database transaction rolled back; its matching staging marker permits a verified retry: %w: %s", commandErr, strings.TrimSpace(string(output)))
+		}
+	} else if !alreadyRestored {
+		version, versionErr := restoredSchemaVersion(ctx, options.TargetDatabaseDSN)
+		if versionErr != nil || version != report.SchemaVersion {
+			return result, fmt.Errorf("%w: staged target contains a different or incomplete restored schema", ErrRecoveryBackupInvalid)
+		}
 	}
-	defer cleanupPG()
-	dumpPath := filepath.Join(packageRoot, RecoveryBackupDatabaseName)
-	command := exec.CommandContext(ctx, pgRestorePath, "--exit-on-error", "--single-transaction", "--no-owner", "--no-acl", "--dbname=service="+serviceName, "--no-password", dumpPath)
-	command.Env = postgresUtilityEnvironment(pgEnv)
-	if output, commandErr := command.CombinedOutput(); commandErr != nil {
-		return result, fmt.Errorf("pg_restore failed; target database transaction rolled back: %w: %s", commandErr, strings.TrimSpace(string(output)))
-	}
-	marker := recoveryRestoreMarker{SchemaVersion: RecoveryBackupPackageSchema, GenerationID: report.GenerationID, ManifestSHA256: report.ManifestSHA256}
-	markerRaw, err := json.Marshal(marker)
-	if err != nil {
-		return result, err
-	}
-	if err = writeDatabaseRestoreMarker(ctx, options.TargetDatabaseDSN, markerRaw); err != nil {
-		return result, fmt.Errorf("restore transaction committed but completion marker could not be written: %w", err)
+	if !alreadyRestored {
+		if err = finalizeRecoveryRestore(ctx, controlConnection, report); err != nil {
+			return result, fmt.Errorf("restored database remains staged until MCP Employee bindings are revoked: %w", err)
+		}
 	}
 	if err = grantRecoveryRuntimeAccess(ctx, options.TargetDatabaseDSN, options.RuntimeRoleName); err != nil {
 		return result, fmt.Errorf("restore completed but runtime grants failed; database and CAS were preserved: %w", err)
@@ -380,18 +419,22 @@ func restoredSchemaVersion(ctx context.Context, dsn string) (int64, error) {
 	return version, nil
 }
 
-func writeDatabaseRestoreMarker(ctx context.Context, dsn string, marker []byte) error {
+func writeDatabaseRestoreStagingMarker(ctx context.Context, dsn string, marker recoveryRestoreMarker) error {
 	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		return err
 	}
 	defer pool.Close()
+	markerRaw, err := json.Marshal(marker)
+	if err != nil {
+		return err
+	}
 	var databaseName string
 	if err = pool.QueryRow(ctx, "SELECT current_database()").Scan(&databaseName); err != nil {
 		return err
 	}
 	commentLiteral := ""
-	if err = pool.QueryRow(ctx, "SELECT quote_literal($1)", "polis-recovery-restore@1:"+string(marker)).Scan(&commentLiteral); err != nil {
+	if err = pool.QueryRow(ctx, "SELECT quote_literal($1)", "polis-recovery-stage@1:"+string(markerRaw)).Scan(&commentLiteral); err != nil {
 		return err
 	}
 	_, err = pool.Exec(ctx, "COMMENT ON DATABASE "+pgx.Identifier{databaseName}.Sanitize()+" IS "+commentLiteral)
@@ -399,28 +442,146 @@ func writeDatabaseRestoreMarker(ctx context.Context, dsn string, marker []byte) 
 }
 
 func checkRestoreMarker(ctx context.Context, dsn string, report RecoveryBackupVerificationReport) (bool, error) {
-	pool, err := pgxpool.New(ctx, dsn)
+	kind, marker, err := readRecoveryDatabaseMarker(ctx, dsn, report)
 	if err != nil {
 		return false, err
+	}
+	return kind == "complete" && marker.MCPBindingsRevoked, nil
+}
+
+func readRecoveryDatabaseMarker(ctx context.Context, dsn string, report RecoveryBackupVerificationReport) (string, recoveryRestoreMarker, error) {
+	pool, err := pgxpool.New(ctx, dsn)
+	if err != nil {
+		return "", recoveryRestoreMarker{}, err
 	}
 	defer pool.Close()
 	var marker *string
 	if err = pool.QueryRow(ctx, `SELECT shobj_description((SELECT oid FROM pg_database WHERE datname=current_database()),'pg_database')`).Scan(&marker); err != nil {
-		return false, err
+		return "", recoveryRestoreMarker{}, err
 	}
 	if marker == nil {
-		return false, nil
+		return "none", recoveryRestoreMarker{}, nil
 	}
-	wantPrefix := "polis-recovery-restore@1:"
-	if !strings.HasPrefix(*marker, wantPrefix) {
-		return false, fmt.Errorf("%w: target database has an unrelated database comment", ErrRecoveryBackupInvalid)
+	kind, wantPrefix := "", ""
+	switch {
+	case strings.HasPrefix(*marker, "polis-recovery-restore@1:"):
+		kind, wantPrefix = "complete", "polis-recovery-restore@1:"
+	case strings.HasPrefix(*marker, "polis-recovery-stage@1:"):
+		kind, wantPrefix = "staging", "polis-recovery-stage@1:"
+	default:
+		return "", recoveryRestoreMarker{}, fmt.Errorf("%w: target database has an unrelated database comment", ErrRecoveryBackupInvalid)
 	}
 	var actual recoveryRestoreMarker
 	if json.Unmarshal([]byte(strings.TrimPrefix(*marker, wantPrefix)), &actual) != nil {
-		return false, ErrRecoveryBackupInvalid
+		return "", recoveryRestoreMarker{}, ErrRecoveryBackupInvalid
 	}
 	if actual.SchemaVersion != RecoveryBackupPackageSchema || actual.GenerationID != report.GenerationID || actual.ManifestSHA256 != report.ManifestSHA256 {
-		return false, fmt.Errorf("%w: target database was restored from a different recovery package", ErrRecoveryBackupInvalid)
+		return "", recoveryRestoreMarker{}, fmt.Errorf("%w: target database was restored from a different recovery package", ErrRecoveryBackupInvalid)
 	}
-	return true, nil
+	return kind, actual, nil
+}
+
+func finalizeRecoveryRestore(ctx context.Context, connection *pgxpool.Conn, report RecoveryBackupVerificationReport) error {
+	tx, err := connection.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if report.SchemaVersion >= 18 {
+		companyRows, queryErr := tx.Query(ctx, "SELECT id FROM companies ORDER BY id FOR UPDATE")
+		if queryErr != nil {
+			return queryErr
+		}
+		companies := make([]string, 0)
+		for companyRows.Next() {
+			var companyID string
+			if queryErr = companyRows.Scan(&companyID); queryErr != nil {
+				companyRows.Close()
+				return queryErr
+			}
+			companies = append(companies, companyID)
+		}
+		companyRows.Close()
+		if queryErr = companyRows.Err(); queryErr != nil {
+			return queryErr
+		}
+		for _, companyID := range companies {
+			bindingRows, queryErr := tx.Query(ctx, `SELECT event_id,employee_id,capability_id,version_digest,qualification_id
+FROM (
+ SELECT DISTINCT ON(employee_id,capability_id) event_id,employee_id,capability_id,version_digest,qualification_id,event
+ FROM employee_capability_events WHERE company_id=$1 AND capability_kind='mcp'
+ ORDER BY employee_id,capability_id,event_seq DESC
+) current_bindings WHERE event='bound' ORDER BY employee_id,capability_id`, companyID)
+			if queryErr != nil {
+				return queryErr
+			}
+			type binding struct{ sourceEventID, employeeID, capabilityID, versionDigest, qualificationID string }
+			bindings := make([]binding, 0)
+			for bindingRows.Next() {
+				var item binding
+				if queryErr = bindingRows.Scan(&item.sourceEventID, &item.employeeID, &item.capabilityID, &item.versionDigest, &item.qualificationID); queryErr != nil {
+					bindingRows.Close()
+					return queryErr
+				}
+				bindings = append(bindings, item)
+			}
+			bindingRows.Close()
+			if queryErr = bindingRows.Err(); queryErr != nil {
+				return queryErr
+			}
+			for _, item := range bindings {
+				eventID, requestID := restoredMCPBindingRevocationIDs(report.GenerationID, companyID, item.sourceEventID)
+				const reason = "recovery_generation_requires_new_employee_mcp_binding"
+				if _, queryErr = tx.Exec(ctx, `INSERT INTO employee_capability_events(
+company_id,event_id,employee_id,capability_kind,capability_id,version_digest,qualification_id,event,reason,request_id)
+VALUES($1,$2,$3,'mcp',$4,$5,$6,'revoked',$7,$8)`, companyID, eventID, item.employeeID, item.capabilityID, item.versionDigest, item.qualificationID, reason, requestID); queryErr != nil {
+					return queryErr
+				}
+				var companySeq int64
+				if queryErr = tx.QueryRow(ctx, "UPDATE companies SET company_seq=company_seq+1 WHERE id=$1 RETURNING company_seq", companyID).Scan(&companySeq); queryErr != nil {
+					return queryErr
+				}
+				payload, marshalErr := json.Marshal(map[string]any{
+					"companyId": companyID, "employeeId": item.employeeID, "capabilityKind": "mcp",
+					"capabilityId": item.capabilityID, "reason": reason, "requestId": requestID,
+					"recoveryGenerationId": report.GenerationID, "occurred_at": time.Now().UTC().Format(time.RFC3339Nano),
+				})
+				if marshalErr != nil {
+					return marshalErr
+				}
+				if _, queryErr = tx.Exec(ctx, "INSERT INTO events(company_id,company_seq,kind,payload) VALUES($1,$2,'capability.employee.revoke',$3)", companyID, companySeq, payload); queryErr != nil {
+					return queryErr
+				}
+			}
+		}
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return err
+	}
+	marker := recoveryRestoreMarker{
+		SchemaVersion: RecoveryBackupPackageSchema, GenerationID: report.GenerationID,
+		ManifestSHA256: report.ManifestSHA256, MCPBindingsRevoked: true,
+	}
+	markerRaw, err := json.Marshal(marker)
+	if err != nil {
+		return err
+	}
+	var databaseName, commentLiteral string
+	if err = connection.QueryRow(ctx, "SELECT current_database()").Scan(&databaseName); err != nil {
+		return err
+	}
+	if err = connection.QueryRow(ctx, "SELECT quote_literal($1)", "polis-recovery-restore@1:"+string(markerRaw)).Scan(&commentLiteral); err != nil {
+		return err
+	}
+	if _, err = connection.Exec(ctx, "COMMENT ON DATABASE "+pgx.Identifier{databaseName}.Sanitize()+" IS "+commentLiteral); err != nil {
+		return err
+	}
+	return nil
+}
+
+func restoredMCPBindingRevocationIDs(generationID, companyID, sourceEventID string) (string, string) {
+	identity := generationID + "\x00" + companyID + "\x00" + sourceEventID
+	eventDigest := sha256.Sum256([]byte("recovery-mcp-binding-event\x00" + identity))
+	requestDigest := sha256.Sum256([]byte("recovery-mcp-binding-request\x00" + identity))
+	return hex.EncodeToString(eventDigest[:]), hex.EncodeToString(requestDigest[:])
 }
