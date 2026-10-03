@@ -59,6 +59,42 @@ func ProductDirectMessagingToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithDirectMessaging())
 }
 
+// ProductSharedMissionArtifactToolSurface adds only bounded reads of
+// same-Mission published Task Artifacts to the fake-only @7 profile.
+const ProductSharedMissionArtifactToolSurfaceQualification = "polis-product-tool-surface@8"
+
+const (
+	OfflineSharedMissionArtifactToolSurfacePurpose        = "offline-shared-mission-artifact-tool-surface"
+	OfflineSharedMissionArtifactToolSurfaceSimulationMark = "offline-shared-mission-artifact-tool-surface-unqualified"
+	ProductSharedMissionArtifactManifestDigest            = "4e1e75bd7f6753d5dc55b443e60a9959e7aebd953a3ee29c16a6559e821e8cc3"
+	ProductSharedMissionArtifactSchemaDigest              = "daf4523db81f860aeffdc5e7137b86fd6f4108f12592dceaa9ba74791b3b66bf"
+	ProductSharedMissionArtifactSchemaBytes               = 3813
+)
+
+func ProductSharedMissionArtifactToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithSharedMissionArtifacts())
+}
+
+// ValidateOfflineFakeSharedMissionArtifactSurface accepts only the exact
+// zero-egress @8 surface. It does not qualify a real provider or filesystem.
+func ValidateOfflineFakeSharedMissionArtifactSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductSharedMissionArtifactToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductSharedMissionArtifactToolSurfaceQualification ||
+		profile.Purpose != OfflineSharedMissionArtifactToolSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineSharedMissionArtifactToolSurfaceSimulationMark ||
+		profile.ProductProviderL2Fingerprint != OfflineSharedMissionArtifactToolSurfaceSimulationMark || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 14 || expected.ManifestDigest != ProductSharedMissionArtifactManifestDigest ||
+		expected.AggregateSchemaBytes != ProductSharedMissionArtifactSchemaBytes || expected.AggregateSchemaDigest != ProductSharedMissionArtifactSchemaDigest ||
+		surface.ToolCount != 14 || observed.ToolCount != 14 ||
+		surface.ManifestDigest != ProductSharedMissionArtifactManifestDigest || observed.ManifestDigest != ProductSharedMissionArtifactManifestDigest ||
+		surface.AggregateSchemaBytes != ProductSharedMissionArtifactSchemaBytes || observed.AggregateSchemaBytes != ProductSharedMissionArtifactSchemaBytes ||
+		surface.AggregateSchemaDigest != ProductSharedMissionArtifactSchemaDigest || observed.AggregateSchemaDigest != ProductSharedMissionArtifactSchemaDigest {
+		return fmt.Errorf("shared-Mission-Artifact surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
+}
+
 // ValidateOfflineFakeProductDirectMessagingSurface verifies the exact pinned
 // @7 shape under an explicitly unqualified zero-egress simulation profile.
 func ValidateOfflineFakeProductDirectMessagingSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

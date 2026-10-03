@@ -34,6 +34,7 @@ type EmployeeTools struct {
 	ReadOnly                  bool
 	ProductSurface            bool
 	DirectMessagingSurface    bool
+	SharedArtifactSurface     bool
 	SkillLoadSurface          bool
 	GuidanceSurface           bool
 	ControlledMCPSurface      bool
@@ -108,6 +109,12 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		if e == nil && name == "work_current" && t.ProductSurface && t.DirectMessagingSurface {
 			h.DirectMessageTargets, h.DirectMessageTargetsTruncated, e = k.ProductDirectMessageTargets(ctx, b)
 		}
+		if e == nil && name != "workspace_read" && t.SharedArtifactSurface {
+			h.SharedArtifactReads, h.SharedArtifactReadsTruncated, e = k.SharedMissionArtifactReadHistory(ctx, b)
+		}
+		if e != nil {
+			return ToolResult{}, e
+		}
 		if !t.SkillLoadSurface {
 			h.SkillCatalog = nil
 			h.SkillCatalogTruncated = false
@@ -124,6 +131,30 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 			return ToolResult{Data: h.Workspace}, e
 		}
 		return ToolResult{Data: h}, e
+	case "mission_artifacts_list":
+		if !t.ProductSurface || !t.SharedArtifactSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			AfterArtifactID string `json:"after_artifact_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		page, e := k.ListSharedMissionArtifacts(ctx, b, args.AfterArtifactID)
+		return ToolResult{Data: page}, e
+	case "mission_artifact_read":
+		if !t.ProductSurface || !t.SharedArtifactSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ArtifactID string `json:"artifact_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		receipt, document, e := k.TXReadSharedMissionArtifact(ctx, b, key, args.ArtifactID)
+		return ToolResult{Receipt: &receipt, Data: document}, e
 	case "collab_send":
 		if !t.ProductSurface || !t.DirectMessagingSurface || t.ReadOnly {
 			return ToolResult{}, core.Denied

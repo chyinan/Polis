@@ -168,6 +168,9 @@ func (a *RealProviderWorkerAdapter) Readiness(ctx context.Context) error {
 	if profile.ToolSurfaceQualification == provider.ProductDirectMessagingToolSurfaceQualification && a.runtime.Mode() == "fake" {
 		return provider.ValidateOfflineFakeProductDirectMessagingSurface(a.runtime.Mode(), profile, a.runtime.ToolSurface())
 	}
+	if profile.ToolSurfaceQualification == provider.ProductSharedMissionArtifactToolSurfaceQualification && a.runtime.Mode() == "fake" {
+		return provider.ValidateOfflineFakeSharedMissionArtifactSurface(a.runtime.Mode(), profile, a.runtime.ToolSurface())
+	}
 	if profile.ToolSurfaceQualification == provider.ProductControlledMCPToolSurfaceQualification && a.runtime.Mode() == "fake" {
 		if a.mcpFactory == nil {
 			return errors.New("controlled MCP AppContainer is not configured")
@@ -856,6 +859,10 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 	controlledMCPV2Surface := profile.ToolSurfaceQualification == provider.ProductControlledMCPToolSurfaceV2Qualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductControlledMCPToolSurfaceV2().ManifestDigest
 	controlledMCPSurface := controlledMCPV1Surface || controlledMCPV2Surface
 	directMessagingSurface := profile.ToolSurfaceQualification == provider.ProductDirectMessagingToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductDirectMessagingToolSurface().ManifestDigest
+	sharedMissionArtifactSurface := profile.ToolSurfaceQualification == provider.ProductSharedMissionArtifactToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSharedMissionArtifactToolSurface().ManifestDigest
+	if sharedMissionArtifactSurface {
+		directMessagingSurface = true
+	}
 	turn, turnErr := worker.session.Turn(ctx, thread, prompt, turnOptions, func(name, callID string, raw json.RawMessage) (json.RawMessage, bool) {
 		if controlledMCPSurface && name == "mcp_call" {
 			encoded, callErr := worker.mcpState.call(ctx, a.kernel, a.mcpFactory, worker.companyID, worker.binding, callID, raw)
@@ -869,7 +876,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 			return toolError, false
 		}
 		skillLoadSurface := profile.ToolSurfaceQualification == provider.ProductSkillToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillToolSurface().ManifestDigest
-		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, SkillLoadSurface: skillLoadSurface, DirectMessagingSurface: directMessagingSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
+		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, SkillLoadSurface: skillLoadSurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
 		result := tools.Call(ctx, name, callID, raw)
 		encoded, _ := json.Marshal(result)
 		return encoded, false

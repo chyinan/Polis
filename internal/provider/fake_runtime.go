@@ -18,18 +18,19 @@ import (
 )
 
 type FakeRuntimeConfig struct {
-	TurnDelay                  time.Duration
-	Model                      string
-	Effort                     string
-	Profile                    string
-	Purpose                    string
-	ExecutionEnvelope          string
-	ToolCallLimit              int
-	ReadOnlySkillSurface       bool
-	DirectMessagingSurface     bool
-	ControlledMCPToolSurface   bool
-	ControlledMCPToolSurfaceV2 bool
-	ControlledMCPCallFixture   json.RawMessage
+	TurnDelay                    time.Duration
+	Model                        string
+	Effort                       string
+	Profile                      string
+	Purpose                      string
+	ExecutionEnvelope            string
+	ToolCallLimit                int
+	ReadOnlySkillSurface         bool
+	DirectMessagingSurface       bool
+	SharedMissionArtifactSurface bool
+	ControlledMCPToolSurface     bool
+	ControlledMCPToolSurfaceV2   bool
+	ControlledMCPCallFixture     json.RawMessage
 }
 
 type FakeRuntime struct {
@@ -59,6 +60,8 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 		config.Purpose = "product-artifact"
 		if config.DirectMessagingSurface {
 			config.Purpose = OfflineDirectMessagingToolSurfacePurpose
+		} else if config.SharedMissionArtifactSurface {
+			config.Purpose = OfflineSharedMissionArtifactToolSurfacePurpose
 		} else if config.ReadOnlySkillSurface {
 			config.Purpose = OfflineReadOnlySkillSurfacePurpose
 		} else if config.ControlledMCPToolSurfaceV2 {
@@ -97,6 +100,11 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 		qualification = ProductDirectMessagingToolSurfaceQualification
 		exactSurfaceFingerprint = OfflineDirectMessagingToolSurfaceSimulationMark
 		providerFingerprint = OfflineDirectMessagingToolSurfaceSimulationMark
+	} else if config.SharedMissionArtifactSurface {
+		surface = ProductSharedMissionArtifactToolSurface()
+		qualification = ProductSharedMissionArtifactToolSurfaceQualification
+		exactSurfaceFingerprint = OfflineSharedMissionArtifactToolSurfaceSimulationMark
+		providerFingerprint = OfflineSharedMissionArtifactToolSurfaceSimulationMark
 	}
 	profile := ExecutionProfile{Model: config.Model, Effort: config.Effort, Profile: config.Profile, ToolCallLimit: config.ToolCallLimit, Purpose: config.Purpose, ExactSurfaceExecutionFingerprint: exactSurfaceFingerprint, ProductProviderL2Fingerprint: providerFingerprint, ExecutionEnvelope: config.ExecutionEnvelope, ToolSurfaceQualification: qualification, TransportPolicy: codex.DefaultTransportPolicy()}
 	return &FakeRuntime{config: config, surface: surface, profile: profile}
@@ -112,6 +120,9 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if r.config.ControlledMCPToolSurface && r.config.ControlledMCPToolSurfaceV2 {
 		return errors.New("offline MCP runtime must select exactly one versioned tool surface")
 	}
+	if r.config.SharedMissionArtifactSurface && (r.config.DirectMessagingSurface || r.config.ReadOnlySkillSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
+		return errors.New("offline shared-artifact access requires its isolated versioned tool surface")
+	}
 	if r.config.DirectMessagingSurface && (r.config.ReadOnlySkillSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
 		return errors.New("offline direct messaging requires its isolated versioned tool surface")
 	}
@@ -121,9 +132,10 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	qualifiedSurface := !r.config.ReadOnlySkillSurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
 	offlineSkillSurface := r.config.ReadOnlySkillSurface && ValidateOfflineFakeSkillSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineDirectMessagingSurface := r.config.DirectMessagingSurface && ValidateOfflineFakeProductDirectMessagingSurface(r.Mode(), r.profile, r.surface) == nil
+	offlineSharedMissionArtifactSurface := r.config.SharedMissionArtifactSurface && ValidateOfflineFakeSharedMissionArtifactSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurface := r.config.ControlledMCPToolSurface && !r.config.ReadOnlySkillSurface && ValidateOfflineFakeControlledMCPSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurfaceV2 := r.config.ControlledMCPToolSurfaceV2 && !r.config.ReadOnlySkillSurface && ValidateOfflineFakeControlledMCPSurfaceV2(r.Mode(), r.profile, r.surface) == nil
-	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineDirectMessagingSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
+	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
 		return errors.New("offline provider runtime configuration is invalid")
 	}
 	return nil

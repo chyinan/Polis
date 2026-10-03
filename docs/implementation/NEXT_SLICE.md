@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 150, REQ-29 shared-file access audit)
+## Latest continuation status (Slice 151, REQ-29 same-Mission Artifact reads)
+
+Added `mission_artifacts_list` and `mission_artifact_read` on exact fake-only product surface @8. They derive Company, Mission, Task, Employee and active WorkerSession from the database binding; list at most 32 ready candidate/passed Artifacts per page; read by Artifact ID only; and verify CAS digest, recorded size and UTF-8 before returning bounded untrusted text. Successful reads append exact Artifact/version/session provenance to the event ledger and expose bounded read history in @8 Handover. The opt-in `POLIS_OFFLINE_SHARED_ARTIFACTS_ENABLED=1` requires the fake transport; real provider authorization stays pinned to @4, and @7 remains unchanged. Go package/command build and diff check pass; no tests or live Task E2E ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-151-req29-shared-artifact-read/verification.md`.
+
+Next Slice152: audit CAP-04–06 around single-writer workspace epochs, stable snapshots and CAS retention/GC races. Keep published Artifact reads separate from mutable current-Task workspace writes and recovery snapshots.
+
+## Previous continuation status (Slice 150, REQ-29 shared-file access audit)
 
 The source map confirmed that Mission inputs reach a Task through an immutable manifest and a Worker can read/write only its current Task workspace with digest+revision compare-and-swap. No Worker tool can discover/read another Task's published Artifact, so cross-Task file sharing still depends on someone copying content into a message or input. Recovery snapshots do not grant Worker file access. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-150-req29-shared-file-access-audit/verification.md`.
 
@@ -10,7 +16,7 @@ Next Slice151: add a bounded read-only shared Mission Artifact surface. Listing 
 
 The source audit found no production ResourceBinding/ResourceKey model or shared branch/deploy/publish writer. `companies.workspace_root` is configuration metadata rather than an enforced filesystem boundary; Task workspaces are company/task digest rows, while Linux/Windows preparation uses random exclusive application-managed roots. Git import is read-only. REQ-26 remains open until a real shared write action is connected to a canonical ResourceKey admission fence and old-writer stop evidence. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-149-req26-resource-binding-audit/verification.md`.
 
-Slice 150's source map found the bounded shared-Artifact read gap. Continue with Slice 151; do not add arbitrary host-path access.
+Slice 150's source map identified the cross-Task shared-Artifact read gap; Slice 151 implements its same-Mission immutable Artifact path. REQ-29 remains partial pending CAP-01–06 qualification and complete workspace/snapshot coverage.
 
 ## Previous continuation status (Slice 148, REQ-15 WorkerSession-bound memory correction)
 

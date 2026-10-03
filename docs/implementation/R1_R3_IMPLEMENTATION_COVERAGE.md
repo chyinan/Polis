@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 150. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 151. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 151: REQ-29 bounded same-Mission shared Artifact reads (no migration)
+
+Fake-only Worker surface @8 (14 tools; manifest `4e1e75bd7f6753d5dc55b443e60a9959e7aebd953a3ee29c16a6559e821e8cc3`; schema 3813 bytes / `daf4523db81f860aeffdc5e7137b86fd6f4108f12592dceaa9ba74791b3b66bf`) lists at most 32 ready candidate/passed Artifacts from other Tasks in the active WorkerSession's Company+Mission and reads one by Artifact ID. Kernel checks the database-bound active session, current owned working Task and active Mission; the read verifies CAS digest, bytes and UTF-8, returns bounded untrusted text and writes exact access provenance to the append-only event ledger. @4/@7 and real-provider authorization remain unchanged. Build/diff checks pass, but tests, live WorkerSession E2E and CAP-01–06 qualification remain open. The feature is disabled by default and adds no Schema 99. See `evidence/development/r1-r3-implementation-validation-20261003-slice-151-req29-shared-artifact-read/verification.md`.
 
 ## Slice 150: REQ-29 shared-file access audit
 
@@ -599,7 +603,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | 26 | Company isolation covers shared write targets | R1 | partial; CAS/workspace fencing exists, resource binding remains | R1 |
 | 27 | Handover preserves facts and published artifacts | R1 | partial; checkpoint/recovery foundations exist; E-HANDOVER remains | R1 |
 | 28 | QQ Bot takeover notification | R1 | partial; redacted C2C transport, DPAPI credential storage, one-shot HMAC IPC, revocation gate, qualified-route DB gate, event-path dispatcher, persisted receipt/outcome, crash-to-unknown recovery, bounded restart-safe retry and visible intervention/delivery status exist; live qualification and real delivery remain | R1 C2C |
-| 29 | Authorized workspace and shared-file access | R1 | partial; Task input manifests and current-Task digest/revision workspace access exist, but Worker cannot discover/read same-Mission published Artifacts; CAP-01–06 remain open | R1 |
+| 29 | Authorized workspace and shared-file access | R1 | partial; Fake @8 adds bounded same-Mission ready Artifact discovery/read; directory paths, current-workspace snapshot guarantees and CAP-01–06 qualification remain open | R1 |
 | 30 | Public and company Skills | R1 | partial; a fixed read-only ZIP profile validates `SKILL.md`, a restricted set of references/assets and exact file bytes in company CAS; digest-pinned revisions can be locally qualified, manually approved/revoked and bound to an employee. Slice 47 connects the exact v5 load tool through the fake Worker to the permission-checked Kernel. Real provider v5 remains unqualified; scripts and all Skill code execution stay unavailable. | R1 selected read-only Skill |
 | 31 | Controlled MCP tools/resources | R1 | partial; stdio descriptor registration, approval/binding, persisted runtime qualification and a concrete AppContainer process owner exist; Slices 53–54 add the one-shot call ledger and fake-only `@mcp-v1` Worker dispatch; Slice 55 adds token-gated local package import and immutable CAS revisions; Slice 59 adds default-off authenticated discovery/list observation; Slice 60 adds pre-launch idempotency fencing, per-server package/approval/call serialization, stale-workspace revocation and retryable shared-sandbox cleanup. Real-provider qualification, actual WFP policy, detached-owner recovery and R2 Streamable HTTP endpoint/Worker qualification remain open. | R1 controlled stdio; R2 Streamable HTTP |
 | 32 | Capability environment follows employee identity through handover | R1 | partial; append-only bindings pin Employee ID, capability ID, version digest and qualification record; successor execution remains unavailable | R1 |

@@ -19,4 +19,8 @@ REQ-29 remains partial because the Worker has no read-only path to shared Missio
 
 This access does not include another Task's private writable workspace, another Mission's files, a caller-supplied path or digest, missing/corrupt/invalidated content, or filesystem traversal. Existing write access remains limited to the current Task workspace with digest+revision compare-and-swap. Snapshot/recovery records remain separate from model-readable files. A new model-visible tool set needs its own exact fake-only surface; existing @4 and @7 fingerprints must remain unchanged, and no real-provider qualification is implied.
 
-No implementation, schema, frozen catalog or external action changed in Slice 150. REQ-29 and CAP-01–06 remain open until the bounded shared-Artifact read path and applicable qualification evidence exist.
+## Slice 151 implementation
+
+`mission_artifacts_list` and `mission_artifact_read` now implement the bounded rule above on a new exact fake-only @8 tool surface. The Worker supplies only the page cursor or Artifact ID; the Kernel binds Company, Mission, Task, Employee and session from the database, requires an active provider session and working owned Task, and rejects private, cross-Mission, unavailable and invalidated Artifacts. Pages are capped at 32 entries. Returned content is capped at 4096 bytes, verified against the CAS digest and stored size, and must be valid UTF-8. Successful reads append immutable version and WorkerSession provenance; Handover returns up to 32 earlier read references for that Task. The new surface is opt-in and does not alter @4/@7 or authorize real-provider use. No filesystem path is accepted.
+
+REQ-29 remains partial: arbitrary directory trees and current-workspace snapshots are not modeled, and CAP-01–06 still need applicable qualification. Slice 151 changed no SQL schema or frozen catalog, ran no tests or populated WorkerSession E2E, and performed no external action.

@@ -752,6 +752,13 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 	if err != nil {
 		return nil, err
 	}
+	offlineSharedMissionArtifacts, err := environmentFlag("POLIS_OFFLINE_SHARED_ARTIFACTS_ENABLED")
+	if err != nil {
+		return nil, err
+	}
+	if offlineSharedMissionArtifacts && offlineDirectMessaging {
+		return nil, fmt.Errorf("POLIS_OFFLINE_SHARED_ARTIFACTS_ENABLED=1 requires its isolated Fake @8 tool surface")
+	}
 	automaticDispatch, err := environmentFlag("POLIS_AUTO_WORKER_DISPATCH_ENABLED")
 	if err != nil {
 		return nil, err
@@ -761,6 +768,9 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 	}
 	if offlineDirectMessaging && (mode != "real" || os.Getenv("POLIS_PROVIDER_TRANSPORT") != "fake") {
 		return nil, fmt.Errorf("POLIS_OFFLINE_DIRECT_MESSAGING_ENABLED=1 requires POLIS_WORKER_MODE=real and POLIS_PROVIDER_TRANSPORT=fake")
+	}
+	if offlineSharedMissionArtifacts && (mode != "real" || os.Getenv("POLIS_PROVIDER_TRANSPORT") != "fake") {
+		return nil, fmt.Errorf("POLIS_OFFLINE_SHARED_ARTIFACTS_ENABLED=1 requires POLIS_WORKER_MODE=real and POLIS_PROVIDER_TRANSPORT=fake")
 	}
 	switch mode {
 	case "deterministic":
@@ -773,12 +783,12 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 			return nil, fmt.Errorf("select only one versioned controlled MCP tool surface")
 		}
 		controlledMCP := controlledMCPV1 || controlledMCPV2
-		if controlledMCP && offlineDirectMessaging {
-			return nil, fmt.Errorf("offline direct messaging requires its isolated Fake @7 tool surface")
+		if controlledMCP && (offlineDirectMessaging || offlineSharedMissionArtifacts) {
+			return nil, fmt.Errorf("offline direct messaging and shared-artifact access require their isolated Fake tool surfaces")
 		}
 		var providerRuntime provider.Runtime
 		if transport == "fake" {
-			providerRuntime = provider.NewFakeRuntime(provider.FakeRuntimeConfig{Model: os.Getenv("POLIS_PROVIDER_MODEL"), Effort: os.Getenv("POLIS_PROVIDER_EFFORT"), Profile: os.Getenv("POLIS_PROVIDER_PROFILE"), Purpose: os.Getenv("POLIS_PROVIDER_PURPOSE"), ToolCallLimit: envIntOrDefault("POLIS_PROVIDER_TOOL_CALL_LIMIT", 16), TurnDelay: 100 * time.Millisecond, DirectMessagingSurface: offlineDirectMessaging, ControlledMCPToolSurface: controlledMCPV1, ControlledMCPToolSurfaceV2: controlledMCPV2})
+			providerRuntime = provider.NewFakeRuntime(provider.FakeRuntimeConfig{Model: os.Getenv("POLIS_PROVIDER_MODEL"), Effort: os.Getenv("POLIS_PROVIDER_EFFORT"), Profile: os.Getenv("POLIS_PROVIDER_PROFILE"), Purpose: os.Getenv("POLIS_PROVIDER_PURPOSE"), ToolCallLimit: envIntOrDefault("POLIS_PROVIDER_TOOL_CALL_LIMIT", 16), TurnDelay: 100 * time.Millisecond, DirectMessagingSurface: offlineDirectMessaging, SharedMissionArtifactSurface: offlineSharedMissionArtifacts, ControlledMCPToolSurface: controlledMCPV1, ControlledMCPToolSurfaceV2: controlledMCPV2})
 		} else if transport == "codex" {
 			if controlledMCP {
 				return nil, fmt.Errorf("real-provider controlled MCP surfaces are not qualified")

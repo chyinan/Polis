@@ -76,15 +76,17 @@ type HandoverBundle struct {
 	Workspace                     Workspace
 	Obligations                   []Obligation
 	Checkpoints                   []Checkpoint
-	MemoryStatus                  MemoryTaskStatus              `json:"memory_status,omitempty"`
-	MemoryContext                 []MemoryTaskDependencyContext `json:"memory_context,omitempty"`
-	DirectMessageTargets          []ProductDirectMessageTarget  `json:"direct_message_targets,omitempty"`
-	DirectMessageTargetsTruncated bool                          `json:"direct_message_targets_truncated,omitempty"`
-	SkillCatalog                  []BoundSkillSummary           `json:"skill_catalog,omitempty"`
-	SkillCatalogTruncated         bool                          `json:"skill_catalog_truncated,omitempty"`
-	SkillLoads                    []SkillLoadUse                `json:"skill_loads,omitempty"`
-	SkillLoadsTruncated           bool                          `json:"skill_loads_truncated,omitempty"`
-	MCPToolSets                   []BoundStdioMCPToolSet        `json:"mcp_tool_sets,omitempty"`
+	MemoryStatus                  MemoryTaskStatus               `json:"memory_status,omitempty"`
+	MemoryContext                 []MemoryTaskDependencyContext  `json:"memory_context,omitempty"`
+	DirectMessageTargets          []ProductDirectMessageTarget   `json:"direct_message_targets,omitempty"`
+	DirectMessageTargetsTruncated bool                           `json:"direct_message_targets_truncated,omitempty"`
+	SkillCatalog                  []BoundSkillSummary            `json:"skill_catalog,omitempty"`
+	SkillCatalogTruncated         bool                           `json:"skill_catalog_truncated,omitempty"`
+	SkillLoads                    []SkillLoadUse                 `json:"skill_loads,omitempty"`
+	SkillLoadsTruncated           bool                           `json:"skill_loads_truncated,omitempty"`
+	MCPToolSets                   []BoundStdioMCPToolSet         `json:"mcp_tool_sets,omitempty"`
+	SharedArtifactReads           []SharedMissionArtifactReadUse `json:"shared_artifact_reads,omitempty"`
+	SharedArtifactReadsTruncated  bool                           `json:"shared_artifact_reads_truncated,omitempty"`
 	CompanySeq                    int64
 	Contract                      string
 	ToolBudget                    ToolCallBudget
