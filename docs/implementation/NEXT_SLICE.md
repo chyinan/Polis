@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 152, CAP-04–06 workspace/snapshot/CAS boundary)
+## Latest continuation status (Slice 153, CAP-07–12 Skill boundary audit)
+
+The read-only Skill importer takes a manually selected ZIP, accepts only canonical bounded static paths, writes verified files to CAS and creates a candidate. It does not inspect host Skills/config directories or run hooks/scripts. Exact Skill IDs and immutable revisions prevent name/path shadowing; `skills_load` rechecks the current WorkerSession, bound version, approval and CAS bytes inside the Company-locked write, and records exact usage without granting tools. Revocation blocks future/replayed loads and snapshots affected sessions for the durable exact-session stopper. The concrete bounded-context gap is that Handover can expose 64 Skill summaries with up to 250 file-reference rows apiece; use a new fake-only Worker surface with paginated exact-Skill path listing and keep the existing @5 response unchanged. Project publisher scope and approved Skill-script execution remain unsupported. No code/schema change; frozen CAP scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-153-cap07-12-skill-boundaries/verification.md`.
+
+Next Slice154: add an exact-ID, bounded-page `skills_list` tool to a new fake-only surface, and omit the reference catalog from that surface's `work_current` response. Both listing and loading must derive scope from the database-confirmed active WorkerSession and current Employee binding. Preserve @5 and existing provider admissions; do not execute Skills or accept host paths.
+
+## Previous continuation status (Slice 152, CAP-04–06 workspace/snapshot/CAS boundary)
 
 The Worker workspace path retains database-confirmed session/task-owner checks, digest+revision CAS, bounded content and failure on missing or invalid CAS. CAS collection checks every company row, active write claims and immutable memory pins under the lifecycle and Company locks. Recovery snapshots were the concrete gap: the prior cut read anchors, message/contract/workspace, Mission state and CAS inventory independently. They are now gathered under one Company-row lock while holding the CAS lifecycle lock, preventing concurrent database mutations, CAS-first writers and collection from producing a mixed recovery cut. `go build ./cmd/polis ./internal/kernel ./internal/control ./internal/provider ./internal/codex` and diff check pass. Tests and live DB-backed concurrency/CAP qualification remain unrun. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-152-cap04-06-workspace-snapshot-cas/verification.md`.
-
-Next Slice153: audit CAP-07–12 against the current Skill/config catalog, version binding, bounded loading, revocation, and execution boundary. Keep Worker capability discovery tied to an active database-confirmed WorkerSession, and distinguish candidate inspection from runtime execution qualification.
 
 ## Previous continuation status (Slice 151, REQ-29 same-Mission Artifact reads)
 

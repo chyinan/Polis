@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 152. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 153. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 153: CAP-07–12 Skill discovery, binding, loading and revocation audit
+
+The current Skill importer accepts only an explicit ZIP, rejects unsupported paths/scripts, stores canonical static files in CAS and registers a candidate. There is no host directory scanner or Skill-script executor. Skill revisions are immutable; exact Skill ID/revision and Company publisher-scope binding avoid name lookup or silent version drift. The Worker-facing `skills_load` path checks the persisted active WorkerSession/current Task, binding version, approval and CAS content in the Company-locked write; only one exact UTF-8 text file is returned, its content is marked as static untrusted guidance, and `allowed-tools` metadata has no authority effect. Capability revocation races serialize with loads; replays recheck authorization and loaded sessions enter the durable exact-session stop/reconciliation path. A concrete CAP-09 bound is missing in `work_current`: up to 64 Skill records may each expose 250 file metadata entries. Next Slice154 will add an exact-ID paginated `skills_list` on a new fake-only surface and omit per-file catalogs from that surface's Handover, preserving @5. The product scope lacks Project-level publishers and an approved script execution sandbox. This audit made no code/schema changes; no CAP scenario or live WorkerSession E2E ran. See `evidence/development/r1-r3-implementation-validation-20261003-slice-153-cap07-12-skill-boundaries/verification.md`.
 
 ## Slice 152: CAP-04–06 workspace epochs, consistent recovery cuts and CAS retention
 
