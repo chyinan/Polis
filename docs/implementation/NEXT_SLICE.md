@@ -1,16 +1,22 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 136, REQ-16 provider auth identity snapshot; Schema 93)
+## Latest continuation status (Slice 137, REQ-16 general Codex auth-principal observation; no migration)
+
+General Codex business runtimes now read the mounted auth file during readiness and derive the existing versioned auth-principal fingerprint when its ID-token claims are reconstructable. They record an explicit `unavailable` status otherwise; no credential bytes or claims are stored. Once the WorkerSession identity snapshot is pinned, Codex rechecks the principal before reservation/start and rejects a changed reconstructable fingerprint. This expands attribution beyond LIVE_2 without claiming the principal is a ProviderAccount billing identity. Go provider/kernel/control/workbench/command build, Schema 1–93 hash validation and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-137-general-codex-auth-principal/verification.md`.
+
+Next: establish provider-specific semantics that map auth principals to stable billing accounts, then add an account registry and request reserve/settle/unknown-liability lifecycle. Until those exist, ProviderAccount financial caps and hidden retry cost accounting remain open.
+
+## Previous continuation status (Slice 136, REQ-16 provider auth identity snapshot; Schema 93)
 
 Schema 93 adds one immutable provider auth-identity snapshot per WorkerSession, inserted only while the session is `restoring`. A versioned optional provider capability distinguishes available, unavailable and unsupported observations; the Codex runtime returns an identity fingerprint only for the LIVE_2 path whose auth source it already captures and rechecks. `RealProviderWorkerAdapter` persists the snapshot before provider execution and finalizes the unstarted session if capture or persistence fails. The fingerprint is an auth-principal hint, not a ProviderAccount ID or financial budget key; the snapshot is not exposed to the model and does not enable account-level limits. `go build ./internal/provider ./internal/kernel ./internal/control ./internal/workbench ./cmd/polis`, Schema 1–93 hash validation and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-136-provider-auth-identity-snapshot/verification.md`.
 
-Next: extend validated identity capture beyond the LIVE_2-only Codex path where a provider can supply stable account semantics, then add a ProviderAccount registry and request reserve/settle/unknown-liability lifecycle before financial admission. Hash snapshots alone are insufficient for cost caps.
+Slice 137 extends auth-principal capture to general Codex business profiles when claims are reconstructable. It does not establish billing-account semantics or financial liability.
 
 ## Previous continuation status (Slice 135, REQ-16 ProviderAccount identity/liability binding audit; no migration)
 
 The source audit traced the real provider path from `provider.Runtime` through `RealProviderWorkerAdapter` and the durable `worker_sessions`/provider-terminal records. The general `Runtime` interface exposes no ProviderAccount identity; `ExecutionAuthorization` binds Company/Mission/Task/WorkerSession and execution factors, not an account. `CodexRuntime` has an auth identity fingerprint only in its LIVE_2 credential snapshot path and does not expose it to general Worker admission. Terminal token/tool/egress observations are stored per WorkerSession without an account binding, and no ProviderAccount reserve/settle/unknown-liability ledger exists. Therefore, a strict ProviderAccount financial cap cannot be safely enforced from the current runtime; Slice 132’s conclusion stands with the concrete integration seam now identified. No code, schema, build, tests, PostgreSQL migration/runtime or provider execution was changed or run; `git diff --check` passes. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-135-provider-account-binding-audit/verification.md`.
 
-Slice 136 adds the versioned optional auth-identity capability and immutable WorkerSession snapshot. General-profile identity semantics and the ProviderAccount liability lifecycle remain open.
+Slice 136 adds the versioned optional auth-identity capability and immutable WorkerSession snapshot. Slice 137 captures general Codex principals where reconstructable; provider-specific billing-account semantics and the ProviderAccount liability lifecycle remain open.
 
 ## Previous continuation status (Slice 134, REQ-16 Company closing reserve; Schema 92)
 

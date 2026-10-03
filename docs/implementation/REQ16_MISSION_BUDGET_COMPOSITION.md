@@ -1,6 +1,6 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 136
+Updated: 2026-10-03, Slice 137
 
 ## Decision
 
@@ -38,6 +38,10 @@ The general `provider.Runtime` interface exposes mode, readiness, tool surface, 
 
 Schema 93 adds an append-only auth-principal snapshot table keyed by WorkerSession. The optional provider interface has a versioned schema and explicit available/unavailable/unsupported states; general Codex paths remain unsupported, while LIVE_2 returns only the identity fingerprint already captured during readiness. `RealProviderWorkerAdapter` records the snapshot while the new WorkerSession is restoring, before reserving/starting provider execution. Database and Kernel validation make the binding single-write and immutable. This snapshot is not a ProviderAccount ID and does not reserve or settle financial liability. Next, extend identity capture only where providers guarantee stable account semantics, then implement ProviderAccount-scoped request reserves, settlement and unknown-liability retention. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-136-provider-auth-identity-snapshot/verification.md`.
 
+## Slice 137 general Codex auth-principal observation
+
+General Codex business profiles now capture a versioned auth-principal fingerprint from issuer/subject claims when available and record `unavailable` when they cannot be reconstructed. After the WorkerSession snapshot is pinned, Codex rechecks the fingerprint during readiness/reservation so a changed available principal cannot proceed on that binding. This detects principal changes only when a fingerprint is available; it does not prove the principal equals a provider billing account. No raw auth material or claims are persisted. Provider-account mapping and reserve/settle/unknown-liability accounting remain necessary before financial caps. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-137-general-codex-auth-principal/verification.md`.
+
 ## Previous Slice 133 implementation state
 
 Schema 91 conservatively backfills Company usage from the durable Task counters. Existing caps remain pending until explicit local-owner configuration. An append-only allocation ledger records initial configuration/increases, and immutable rejection rows bind the route, Task/session, cap, usage and budget revision. Admission and each accepted tool call enforce the Company cap before lower scopes; accepted calls increment Company in the same transaction as Mission, Session, Task and ProblemKey. Handover/provider turn clamping uses the minimum Company and lower-scope remaining allowance. Workbench exposes a no-store Company projection and a reasoned, confirmed configuration/increase action. All migrated Companies require explicit configuration before new Worker admission or calls are allowed. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-133-company-tool-call-budget/verification.md`.
@@ -60,4 +64,4 @@ ProviderAccount caps, true USD/token accounting, unknown external liabilities, a
 
 ## Qualification status
 
-Slices 131–136 are implementation/source-audit evidence, not runtime qualification. Slices 131, 133, 134 and 136 Go builds, frontend production builds where relevant, migration hash validation and diff checks passed; Slices 132 and 135 are read-only source/design inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
+Slices 131–137 are implementation/source-audit evidence, not runtime qualification. Slices 131, 133, 134, 136 and 137 Go builds, frontend production builds where relevant, migration hash validation and diff checks passed; Slices 132 and 135 are read-only source/design inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.

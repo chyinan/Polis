@@ -71,6 +71,10 @@ type CodexRuntime struct {
 	authMu                            sync.Mutex
 	authIdentityFingerprint           string
 	authCredentialRevisionFingerprint string
+	authIdentitySnapshotStatus        string
+	authIdentitySnapshotReason        string
+	authIdentitySnapshotCaptured      bool
+	authIdentitySnapshotPinned        bool
 	diagnosticMu                      sync.Mutex
 	diagnosticReservation             *ProductSurfaceDiagnosticReservation
 	diagnosticAuthorization           ProductSurfaceDiagnosticAuthorization
@@ -105,22 +109,35 @@ func (r *CodexRuntime) ProviderAuthIdentitySnapshot(ctx context.Context) (Provid
 	snapshot := ProviderAuthIdentitySnapshot{
 		SchemaVersion: ProviderAuthIdentitySnapshotSchemaV1,
 		SourceClass:   "mounted_codex_auth_file",
-		Status:        "unsupported",
-		ReasonCode:    "identity_not_bound_for_runtime_purpose",
 	}
+	var current *ProviderAuthIdentitySnapshot
 	if r.config.Purpose != Live2AuthorizationPurpose {
-		return snapshot, nil
+		observed := readGeneralCodexAuthIdentity(r.config.AuthFile)
+		current = &observed
 	}
 	r.authMu.Lock()
 	defer r.authMu.Unlock()
-	if r.authIdentityFingerprint == "" {
+	if !r.authIdentitySnapshotCaptured {
 		snapshot.Status = "unavailable"
 		snapshot.ReasonCode = "identity_not_captured_at_readiness"
-		return snapshot, nil
+		return snapshot, snapshot.Validate()
 	}
-	snapshot.Status = "available"
+	snapshot.Status = r.authIdentitySnapshotStatus
 	snapshot.Fingerprint = r.authIdentityFingerprint
-	snapshot.ReasonCode = ""
+	snapshot.ReasonCode = r.authIdentitySnapshotReason
+	if current != nil {
+		expected := ProviderAuthIdentitySnapshot{
+			SchemaVersion: ProviderAuthIdentitySnapshotSchemaV1,
+			SourceClass:   "mounted_codex_auth_file",
+			Status:        r.authIdentitySnapshotStatus,
+			Fingerprint:   r.authIdentityFingerprint,
+			ReasonCode:    r.authIdentitySnapshotReason,
+		}
+		if !sameCodexAuthIdentityObservation(expected, *current) {
+			return ProviderAuthIdentitySnapshot{}, errors.New("Codex auth identity changed before WorkerSession binding")
+		}
+	}
+	r.authIdentitySnapshotPinned = true
 	return snapshot, snapshot.Validate()
 }
 
@@ -181,6 +198,10 @@ func (r *CodexRuntime) Readiness(ctx context.Context) error {
 		if err := r.captureLive2AuthSource(); err != nil {
 			return err
 		}
+	} else if !r.config.DiagnosticOnly {
+		if err := r.captureGeneralCodexAuthIdentity(ctx); err != nil {
+			return err
+		}
 	}
 	if err := r.config.TransportPolicy.Validate(); err != nil {
 		return err
@@ -211,6 +232,8 @@ func (r *CodexRuntime) Reserve(ctx context.Context, authorization ExecutionAutho
 		if err := r.verifyLive2RuntimeArtifacts(); err != nil {
 			return Reservation{}, err
 		}
+	} else if err := r.verifyGeneralCodexAuthIdentity(ctx); err != nil {
+		return Reservation{}, err
 	}
 	if r.config.AllowancePath == "" || r.config.MediumLimit < 1 || r.config.HighLimit != 0 || r.config.ToolCallLimit < 1 {
 		return Reservation{}, errors.New("real provider allowance configuration is incomplete")
@@ -232,6 +255,9 @@ func (r *CodexRuntime) Reserve(ctx context.Context, authorization ExecutionAutho
 	boundAuthorization := authorization
 	r.businessAuthorization = &boundAuthorization
 	r.businessReservation = reservation
+	r.authMu.Lock()
+	r.authIdentitySnapshotPinned = true
+	r.authMu.Unlock()
 	r.statsMu.Lock()
 	r.stats.Reservations++
 	r.stats.ActiveReservations++
@@ -348,10 +374,98 @@ func (r *CodexRuntime) captureLive2AuthSource() error {
 	if r.authIdentityFingerprint == "" && r.authCredentialRevisionFingerprint == "" {
 		r.authIdentityFingerprint = snapshot.identityFingerprint
 		r.authCredentialRevisionFingerprint = snapshot.credentialRevisionFingerprint
+		r.authIdentitySnapshotStatus = "available"
+		r.authIdentitySnapshotReason = ""
+		r.authIdentitySnapshotCaptured = true
 		return nil
 	}
 	if r.authIdentityFingerprint != snapshot.identityFingerprint || r.authCredentialRevisionFingerprint != snapshot.credentialRevisionFingerprint {
 		return errors.New("LIVE_2 credential source changed after provider readiness")
+	}
+	return nil
+}
+
+func readGeneralCodexAuthIdentity(path string) ProviderAuthIdentitySnapshot {
+	snapshot := ProviderAuthIdentitySnapshot{
+		SchemaVersion: ProviderAuthIdentitySnapshotSchemaV1,
+		SourceClass:   "mounted_codex_auth_file",
+		Status:        "unavailable",
+		ReasonCode:    "auth_identity_source_read_failed",
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return snapshot
+	}
+	material, err := codex.ParseAuthMaterial(raw, snapshot.SourceClass)
+	if err != nil || material.IdentityFingerprintStatus != "available" {
+		snapshot.ReasonCode = "auth_principal_not_reconstructable"
+		return snapshot
+	}
+	snapshot.Status = "available"
+	snapshot.Fingerprint = material.IdentityFingerprint
+	snapshot.ReasonCode = ""
+	return snapshot
+}
+
+func sameCodexAuthIdentityObservation(expected, current ProviderAuthIdentitySnapshot) bool {
+	if expected.Status != current.Status {
+		return false
+	}
+	if expected.Status == "available" {
+		return expected.Fingerprint == current.Fingerprint
+	}
+	return true
+}
+
+func (r *CodexRuntime) captureGeneralCodexAuthIdentity(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	current := readGeneralCodexAuthIdentity(r.config.AuthFile)
+	if err := current.Validate(); err != nil {
+		return err
+	}
+	r.authMu.Lock()
+	defer r.authMu.Unlock()
+	expected := ProviderAuthIdentitySnapshot{
+		SchemaVersion: ProviderAuthIdentitySnapshotSchemaV1,
+		SourceClass:   "mounted_codex_auth_file",
+		Status:        r.authIdentitySnapshotStatus,
+		Fingerprint:   r.authIdentityFingerprint,
+		ReasonCode:    r.authIdentitySnapshotReason,
+	}
+	if r.authIdentitySnapshotPinned {
+		if !sameCodexAuthIdentityObservation(expected, current) {
+			return errors.New("Codex auth identity changed after WorkerSession binding")
+		}
+		return nil
+	}
+	r.authIdentityFingerprint = current.Fingerprint
+	r.authIdentitySnapshotStatus = current.Status
+	r.authIdentitySnapshotReason = current.ReasonCode
+	r.authIdentitySnapshotCaptured = true
+	return nil
+}
+
+func (r *CodexRuntime) verifyGeneralCodexAuthIdentity(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	current := readGeneralCodexAuthIdentity(r.config.AuthFile)
+	r.authMu.Lock()
+	defer r.authMu.Unlock()
+	if !r.authIdentitySnapshotCaptured {
+		return errors.New("Codex auth identity readiness snapshot is missing")
+	}
+	expected := ProviderAuthIdentitySnapshot{
+		SchemaVersion: ProviderAuthIdentitySnapshotSchemaV1,
+		SourceClass:   "mounted_codex_auth_file",
+		Status:        r.authIdentitySnapshotStatus,
+		Fingerprint:   r.authIdentityFingerprint,
+		ReasonCode:    r.authIdentitySnapshotReason,
+	}
+	if !sameCodexAuthIdentityObservation(expected, current) {
+		return errors.New("Codex auth identity changed after readiness")
 	}
 	return nil
 }

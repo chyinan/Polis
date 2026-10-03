@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 137 — REQ-16 general Codex auth-principal observation (no migration)
+
+General Codex business runtimes now read the mounted auth file at readiness and derive the existing versioned auth-principal fingerprint when issuer/subject claims are reconstructable. Otherwise the snapshot remains explicitly `unavailable`; raw credential bytes and claim values are not persisted. Once the immutable WorkerSession snapshot is pinned, readiness and reservation/start recheck an available principal and reject a changed fingerprint. This improves execution attribution, but auth principal is still not asserted to equal a billing ProviderAccount. Go provider/kernel/control/workbench/command build, Schema 1–93 hash validation and diff check pass. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-137-general-codex-auth-principal/verification.md`.
+
+Provider-specific billing-account mapping, ProviderAccount registry, request reservation/settlement/unknown-liability accounting, hidden retries and financial enforcement remain open.
+
 ## Slice 136 — REQ-16 provider auth identity snapshot (Schema 93)
 
 Schema 93 adds an immutable, one-per-WorkerSession provider auth identity snapshot that can only be inserted while the session is `restoring`. A versioned optional runtime capability records `available`, `unavailable` or `unsupported`; Codex exposes the fingerprint only for LIVE_2, whose credential path already captures/rechecks it. The real provider adapter records it before provider execution and finalizes an unstarted session if capture/persistence fails. This is a hashed auth-principal hint, not a ProviderAccount financial ID; it is not sent to the model and no financial cap is enabled. Go provider/kernel/control/workbench/command build, migration hashes through 93 and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-136-provider-auth-identity-snapshot/verification.md`.
