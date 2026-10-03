@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 154, CAP-09 bounded Skill discovery)
+## Latest continuation status (Slice 155, CAP-13–19 MCP boundary audit)
+
+The native Worker process uses an isolated session home and receives a fixed Polis tool surface; manual Skill/MCP imports and separate approval/binding gates prevent ambient repository or user config from directly enabling capabilities. Stdio MCP is restricted to a pinned deny-all Windows AppContainer profile. Streamable HTTP is HTTPS-only with redirects/proxies disabled and public-IP/TLS checks; endpoint authentication and external identity qualification are unsupported. Both transports pin MCP `2026-07-28`, ignore tool-hint authority, and fail closed on schema drift or unknown call outcomes. Audit found a local CAP-17 gap: stdio and HTTP `tools/list` reject `nextCursor`, so neither can complete a bounded paginated directory. CAP-13–19 scenarios remain `not_run`; host and external endpoint qualification remain open. See `evidence/development/r1-r3-implementation-validation-20261003-slice-155-cap13-19-mcp-audit/verification.md`.
+
+Next Slice156: add bounded cursor pagination for both stdio and Streamable HTTP tool discovery. Enforce page, cursor, aggregate-byte and total-tool limits; reject repeated cursors, duplicate names and partial/invalid pages. Keep the digest over the complete canonical tool catalog and re-read the full catalog before each call. Preserve per-WorkerSession state isolation and all manual approval gates.
+
+## Previous continuation status (Slice 154, CAP-09 bounded Skill discovery)
 
 Fake @9 adds `skills_list` with at most 32 file metadata entries per page for one exact approved Skill ID. Each call verifies the database-confirmed active WorkerSession, current owned working Task, binding, approved revision and all CAS members while holding the Company lock. @9 omits file-reference arrays from `work_current`; @5 remains unchanged. The opt-in requires the Fake provider transport, while real-provider authorization is unchanged. The importer still accepts only an explicit ZIP; host directory scanning, Project publisher scope and Skill-script execution are unsupported. Build and diff checks pass, but tests, live WorkerSession E2E and all frozen CAP scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-154-cap09-bounded-skill-directory/verification.md`.
 

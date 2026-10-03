@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 154. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 155. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 155: CAP-13–19 MCP discovery and trust-boundary audit
+
+The native Codex Worker launch supplies per-session `HOME`/`CODEX_HOME` and a fixed Polis tool surface; MCP and Skill sources enter via explicit import rather than ambient repository/user-config scanning. MCP metadata qualification, runtime observation/owner approval and Employee binding remain separate gates. Stdio process launch is pinned to the deny-all Windows AppContainer profile. Streamable HTTP restricts requests to canonical HTTPS endpoints, disables proxy/redirect behavior, validates public DNS results and TLS hostname, but does not implement OAuth/endpoint credentials or prove a remote provider identity. Both transports pin `2026-07-28` without legacy fallback. Server annotations do not grant read-only/idempotent policy, and schema changes invalidate the approved digest before calls; unknown outcomes are not retried. Concrete CAP-17 gap: both clients reject `nextCursor`, so paginated MCP directories are refused instead of fully discovered under bounds. Slice156 will add bounded cursor pagination. CAP-13–19 remain partial and their frozen execution status remains `not_run`; Windows AppContainer/WFP host evidence and external endpoint qualification are not inferred from source review. See `evidence/development/r1-r3-implementation-validation-20261003-slice-155-cap13-19-mcp-audit/verification.md`.
 
 ## Slice 154: CAP-09 bounded Skill file discovery
 
