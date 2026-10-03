@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 156. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 157. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 157: CAP-20–24 state, result, outcome and cost audit
+
+The stdio MCP process owner is scoped to a single WorkerSession and pinned to its capability, transport and runtime qualification. Call authorization re-reads the Company/Employee capability binding and qualified schema inside the database guard. Server-initiated requests and input-required results without bounded text content fail closed; resource/media and structured results are rejected, HTML can pass only as untrusted text, and oversized results are rejected at 64 KiB. Calls persist a dispatch intent before remote execution; 30-second stdio and 45-second HTTP timeouts do not imply cancellation of an external side effect. Pending calls become `outcome_unknown` at session stop and are not retried. External HTTP handle isolation by Employee/Company and remote model cost/retry totals cannot be established from this repository; keep CAP-20 and CAP-24 externally unqualified and make no strict total-cost claim. This is source audit only; CAP-20–24 remain `not_run`, with no migration, endpoint, WorkerSession E2E or test. `git diff --check` passes. See `evidence/development/r1-r3-implementation-validation-20261003-slice-157-cap20-24-mcp-isolation-outcomes/verification.md`.
 
 ## Slice 156: CAP-17 complete bounded MCP tool discovery
 
