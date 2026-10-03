@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 147 — refresh frozen-scenario traceability disposition
+
+Regenerated `R1_R3_TRACEABILITY_DISPOSITION.json` from the frozen v0.4.5 catalogs and current approved REQ closure list. All 232 FT/NT/CAP/UI/WF/PP IDs are present exactly once, disposition counts are unchanged, and execution remains `not_run` for every scenario. The current finite list contains 17 open software requirements; corrected the crosswalk description that still said 18. No frozen catalog or implementation scope changed. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-147-traceability-refresh/verification.md`.
+
 ## Slice 146 — FT-63 owner-session integration and no-scope UI entry
 
 The Installation Accounts page is now reachable from the real-mode setup screen when no `VITE_WORKBENCH_COMPANY_ID` is configured, so owner enrollment does not depend on an existing Company. A temporary PostgreSQL 18 database was migrated to Schema 97 and exercised over HTTP: terminal code issuance, owner bootstrap, Argon2 password login, authenticated session read, installation-account read, 403 without CSRF, successful logout and rejected old session all passed. The disposable database was dropped; the main local dev database remains owner-uninitialized. Frontend typecheck, lint and production build pass, with Vite's >500 kB chunk warning. This is backend HTTP integration, not browser/Tauri E2E. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-146-owner-session-integration/verification.md`.

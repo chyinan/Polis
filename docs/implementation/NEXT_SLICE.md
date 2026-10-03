@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 146, owner-session API integration and unscoped UI entry)
+## Latest continuation status (Slice 147, traceability crosswalk refresh)
+
+Refreshed `R1_R3_TRACEABILITY_DISPOSITION.json` against the current finite REQ ledger and frozen v0.4.5 catalogs. The current list has 17 open software requirements; all 232 frozen scenario IDs remain covered, their implementation-disposition counts are unchanged, and every exact execution status remains `not_run`. Corrected the stale “18 open REQs” description without changing any frozen catalog. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-147-traceability-refresh/verification.md`.
+
+Next: continue the bounded REQ-15 employee-session-bound memory proposal/review command path described in Slice 116 and the finite remaining-work list. Owner-selected password and browser/Tauri qualification remain separate human/host qualification items.
+
+## Previous continuation status (Slice 146, owner-session API integration and unscoped UI entry)
 
 The owner page is now reachable from the local real-mode setup screen even before a Company scope exists. A disposable PostgreSQL 18 database was migrated through 97; the terminal bootstrap command issued a temporary code; HTTP bootstrap/login/session, authenticated installation-account read, missing-CSRF rejection (403), valid logout and old-session revocation all passed. The disposable database was dropped afterward; the main Termux dev database remains at Schema 97 with no owner credential and no Company data. Frontend typecheck/lint/build pass. This verifies the API and cookies through HTTP clients, not an actual browser. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-146-owner-session-integration/verification.md`.
 

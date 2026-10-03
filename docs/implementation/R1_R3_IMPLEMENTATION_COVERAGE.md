@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 146. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 147. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 147: traceability disposition refreshed
+
+Regenerated `docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json` from the frozen v0.4.5 catalogs and the current finite REQ closure list. It contains all 232 frozen scenario IDs exactly once, preserves the existing family/disposition counts, and keeps every exact execution state at `not_run`. The current list contains 17 open software requirements; no frozen catalog or implementation scope changed. See `evidence/development/r1-r3-implementation-validation-20261003-slice-147-traceability-refresh/verification.md`.
 
 ## Slice 146: FT-63 owner-session integration and no-scope UI entry
 
@@ -134,7 +138,7 @@ Provider terminal observations now persist the Codex protocol tool-call count, r
 
 ## Slice 117: frozen traceability disposition (no code change)
 
-`docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json` cross-references all 232 IDs in the frozen FT/NT/CAP/UI/WF/PP catalogs with `traceability.json` and `TEST_RELEASE_APPLICABILITY.json`. The disposition is inherited from the finite software-closure list in this ledger: any ID mapped to one of 18 open REQs is `partial`; otherwise its mapped REQs are treated as `implemented` at requirement scope. This avoids treating an implementation disposition as a test result. All 232 exact scenario execution states remain `not_run`, and the frozen design catalogs were not changed. See the evidence note for counts and validation. This is a requirement-level reconciliation, not proof that any exact scenario passed.
+`docs/implementation/R1_R3_TRACEABILITY_DISPOSITION.json` cross-references all 232 IDs in the frozen FT/NT/CAP/UI/WF/PP catalogs with `traceability.json` and `TEST_RELEASE_APPLICABILITY.json`. The disposition is inherited from the current finite software-closure list in this ledger: any ID mapped to one of the 17 open REQs is `partial`; otherwise its mapped REQs are treated as implemented at requirement scope. This avoids treating an implementation disposition as a test result. All 232 exact scenario execution states remain `not_run`, and the frozen design catalogs were not changed. See the evidence note for counts and validation. This is a requirement-level reconciliation, not proof that any exact scenario passed.
 
 ## Slice 116: REQ-15 memory correction queue (no migration)
 

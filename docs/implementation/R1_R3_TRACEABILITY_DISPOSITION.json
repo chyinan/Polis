@@ -1,6 +1,6 @@
 {
   "documentVersion": "0.4.5",
-  "auditDate": "2026-10-02",
+  "auditDate": "2026-10-03",
   "sourceOfTruth": [
     "spec/design-v0.4.5/tests/traceability.json",
     "spec/design-v0.4.5/tests/scenario_catalog.json",
@@ -1036,8 +1036,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ15_MEMORY_TRACEABILITY.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1141,8 +1140,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1161,8 +1159,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1179,8 +1176,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1197,8 +1193,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1216,8 +1211,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ15_MEMORY_TRACEABILITY.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1236,8 +1230,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1257,8 +1250,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1275,8 +1267,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ15_MEMORY_TRACEABILITY.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1294,8 +1285,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ15_MEMORY_TRACEABILITY.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1384,8 +1374,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1857,8 +1846,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ15_MEMORY_TRACEABILITY.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -1895,8 +1883,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -2262,8 +2249,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -2328,8 +2314,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -2425,8 +2410,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -2490,8 +2474,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ15_MEMORY_TRACEABILITY.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -2514,8 +2497,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
@@ -3061,8 +3043,7 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "docs/implementation/REQ14_REVOCATION_DISPATCH_MAP.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
       ]
     },
     {
