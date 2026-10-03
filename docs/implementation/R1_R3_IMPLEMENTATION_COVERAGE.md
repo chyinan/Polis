@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 148. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 149. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 149: REQ-26 C-RESOURCE shared-write audit
+
+The production source review found no `ResourceBinding`/`ResourceKey` storage or active shared branch/deployment/publish writer. Current Git import is a read-only local snapshot; Task workspaces are digest/revision metadata; Linux/Windows preparation creates independent random application-managed workspaces. `companies.workspace_root` is metadata and is not used as a runtime path authorization boundary. REQ-26 remains open until an actual shared writer is connected to canonical target identity, Company ownership/resource-epoch admission fencing and old-writer stop evidence. See `docs/implementation/REQ26_RESOURCE_BINDING_AUDIT.md` and the Slice 149 evidence.
 
 ## Slice 148: REQ-15 WorkerSession-bound memory correction commands (Schema 98)
 

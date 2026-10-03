@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 148, REQ-15 WorkerSession-bound memory correction)
+## Latest continuation status (Slice 149, REQ-26 ResourceKey shared-write audit)
+
+The source audit found no production ResourceBinding/ResourceKey model or shared branch/deploy/publish writer. `companies.workspace_root` is configuration metadata rather than an enforced filesystem boundary; Task workspaces are company/task digest rows, while Linux/Windows preparation uses random exclusive application-managed roots. Git import is read-only. REQ-26 remains open until a real shared write action is connected to a canonical ResourceKey admission fence and old-writer stop evidence. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-149-req26-resource-binding-audit/verification.md`.
+
+Next Slice150: map REQ-29 authorized shared-file access across Task input manifests, CAS-backed reads, Worker Handover and workspace snapshots. Identify one concrete read/write/snapshot gap and its access boundary before changing code; do not add arbitrary host-path access.
+
+## Previous continuation status (Slice 148, REQ-15 WorkerSession-bound memory correction)
 
 Workbench now supports source-backed correction proposals and independent approve/reject decisions. The request supplies only an active WorkerSession ID; Kernel resolves Employee and Task from persisted rows, checks the provider session and working Task again inside the Company-locked write, and stores exact proposer/reviewer session+Task provenance under compound foreign keys. The fixed Planning/Review reviewer policy and separate-proposer rule remain enforced. Approval requires a visible UI confirmation because it creates a verified successor revision and invalidates dependent work. Schema 98 is applied to the local Termux database, which still has no Company, owner or memory rows. Go build, frontend typecheck/lint/build, migration checksum validation, local backend `/healthz`, Vite root and `git diff --check` pass. No tests or correction-command E2E were run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-148-memory-worker-session-commands/verification.md`.
 
-Next: continue the finite software-closure list with the next bounded REQ item. FT-37/40/41 execution, restored-backup revocation qualification, browser/Tauri owner-session qualification, external host/account evidence and the owner-chosen password remain separate open work.
+Slice 149 found no current shared project writer to bind. Continue with Slice 150's REQ-29 shared-file access map. FT-37/40/41 execution, restored-backup revocation qualification, browser/Tauri owner-session qualification, external host/account evidence and the owner-chosen password remain separate open work.
 
 ## Previous continuation status (Slice 147, traceability crosswalk refresh)
 
