@@ -1,5 +1,7 @@
 // pattern: Imperative Shell
 
+import type {MemoryCorrectionCommandReceiptView} from '../domain/workbench';
+import type {ProposeMemoryCorrectionOptions, ReviewMemoryCorrectionOptions} from './workbench-api';
 import type {CreateProjectJobBrowserSessionOptions, ImportStdioMCPPackageOptions, ObserveStdioMCPRuntimeOptions, ObserveStreamableHTTPMCPRuntimeOptions} from './workbench-api';
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
@@ -738,6 +740,14 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.companyId);
     if (options.companyId !== FIXTURE_COMPANY_ID) throw new Error('failed to load fixture memory corrections: scope not found');
     return {items: [], truncated: false};
+  }
+
+  async proposeMemoryCorrection(_options: ProposeMemoryCorrectionOptions): Promise<MemoryCorrectionCommandReceiptView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'memory correction commands require a database-bound active WorkerSession');
+  }
+
+  async reviewMemoryCorrection(_options: ReviewMemoryCorrectionOptions): Promise<MemoryCorrectionCommandReceiptView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'memory correction commands require a database-bound active WorkerSession');
   }
 
   async getCompanyToolCallBudget(options: CompanyScopeOptions): Promise<CompanyToolCallBudgetView> {

@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 148 — REQ-15 WorkerSession-bound memory correction commands (Schema 98)
+
+Added Workbench proposal and independent review routes plus real-mode UI forms. Requests name only an active WorkerSession; Kernel derives Employee and Task from the persisted session, enforces provider mode/current epoch/active Mission/working owned Task, rechecks the Task inside the write transaction, and records session+Task audit provenance with compound database foreign keys. The existing fixed Planning/Review rule, self-review denial, source pinning, revision checks and dependent-work invalidation remain authoritative. Approve UI requires explicit acknowledgement of the new memory revision and downstream revalidation impact. Schema 98 applied successfully to the local database (no Company, owner or correction rows); backend restarted and `/healthz` plus Vite root return 200. Go package/command build, frontend typecheck, ESLint, production build, checksum validation and `git diff --check` pass. No tests or command E2E were run. Vite retains its >500 kB bundle advisory. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-148-memory-worker-session-commands/verification.md`.
+
 ## Slice 147 — refresh frozen-scenario traceability disposition
 
 Regenerated `R1_R3_TRACEABILITY_DISPOSITION.json` from the frozen v0.4.5 catalogs and current approved REQ closure list. All 232 FT/NT/CAP/UI/WF/PP IDs are present exactly once, disposition counts are unchanged, and execution remains `not_run` for every scenario. The current finite list contains 17 open software requirements; corrected the crosswalk description that still said 18. No frozen catalog or implementation scope changed. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-147-traceability-refresh/verification.md`.

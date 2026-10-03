@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 147, traceability crosswalk refresh)
+## Latest continuation status (Slice 148, REQ-15 WorkerSession-bound memory correction)
+
+Workbench now supports source-backed correction proposals and independent approve/reject decisions. The request supplies only an active WorkerSession ID; Kernel resolves Employee and Task from persisted rows, checks the provider session and working Task again inside the Company-locked write, and stores exact proposer/reviewer session+Task provenance under compound foreign keys. The fixed Planning/Review reviewer policy and separate-proposer rule remain enforced. Approval requires a visible UI confirmation because it creates a verified successor revision and invalidates dependent work. Schema 98 is applied to the local Termux database, which still has no Company, owner or memory rows. Go build, frontend typecheck/lint/build, migration checksum validation, local backend `/healthz`, Vite root and `git diff --check` pass. No tests or correction-command E2E were run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-148-memory-worker-session-commands/verification.md`.
+
+Next: continue the finite software-closure list with the next bounded REQ item. FT-37/40/41 execution, restored-backup revocation qualification, browser/Tauri owner-session qualification, external host/account evidence and the owner-chosen password remain separate open work.
+
+## Previous continuation status (Slice 147, traceability crosswalk refresh)
 
 Refreshed `R1_R3_TRACEABILITY_DISPOSITION.json` against the current finite REQ ledger and frozen v0.4.5 catalogs. The current list has 17 open software requirements; all 232 frozen scenario IDs remain covered, their implementation-disposition counts are unchanged, and every exact execution status remains `not_run`. Corrected the stale “18 open REQs” description without changing any frozen catalog. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-147-traceability-refresh/verification.md`.
 
-Next: continue the bounded REQ-15 employee-session-bound memory proposal/review command path described in Slice 116 and the finite remaining-work list. Owner-selected password and browser/Tauri qualification remain separate human/host qualification items.
+Slice 148 completes the Workbench proposal/review command path that was read-only at Slice 116. Continue the other bounded software and qualification work without changing the frozen scenario catalogs. Owner-selected password and browser/Tauri qualification remain separate human/host qualification items.
 
 ## Previous continuation status (Slice 146, owner-session API integration and unscoped UI entry)
 

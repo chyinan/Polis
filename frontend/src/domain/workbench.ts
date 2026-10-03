@@ -1429,11 +1429,21 @@ export type MemoryCorrectionQueueItemView = Readonly<{
   source: MemorySourceReferenceView;
   observedAt: string;
   proposedBy: string;
+  proposedBySessionId?: string;
+  proposedByTaskId?: string;
   proposedAt: string;
   state: 'proposed' | 'approved' | 'rejected' | 'stale' | 'revoked';
   reviewDecision?: string;
   reviewActor?: string;
+  reviewSessionId?: string;
+  reviewTaskId?: string;
   reviewSequence?: number;
+}>;
+
+export type MemoryCorrectionCommandReceiptView = Readonly<{
+  id: string;
+  status: string;
+  revision?: number;
 }>;
 
 export type MemoryCorrectionQueueView = Readonly<{

@@ -87,23 +87,27 @@ type MemoryCorrectionReviewInput struct {
 // Memory text is never returned without an employee-bound read identity;
 // command decisions still go through employee-bound Kernel bindings.
 type MemoryCorrectionQueueItem struct {
-	CorrectionID    string                `json:"correctionId"`
-	RecordID        string                `json:"recordId"`
-	RecordKind      string                `json:"recordKind"`
-	RecordScope     string                `json:"recordScope"`
-	MissionID       string                `json:"missionId,omitempty"`
-	Sensitivity     string                `json:"sensitivity"`
-	BaseRevision    int64                 `json:"baseRevision"`
-	CurrentRevision int64                 `json:"currentRevision"`
-	CurrentState    string                `json:"currentState"`
-	Source          MemorySourceReference `json:"source"`
-	ObservedAt      string                `json:"observedAt"`
-	ProposedBy      string                `json:"proposedBy"`
-	ProposedAt      string                `json:"proposedAt"`
-	State           string                `json:"state"`
-	ReviewDecision  string                `json:"reviewDecision,omitempty"`
-	ReviewActor     string                `json:"reviewActor,omitempty"`
-	ReviewSequence  int64                 `json:"reviewSequence,omitempty"`
+	CorrectionID        string                `json:"correctionId"`
+	RecordID            string                `json:"recordId"`
+	RecordKind          string                `json:"recordKind"`
+	RecordScope         string                `json:"recordScope"`
+	MissionID           string                `json:"missionId,omitempty"`
+	Sensitivity         string                `json:"sensitivity"`
+	BaseRevision        int64                 `json:"baseRevision"`
+	CurrentRevision     int64                 `json:"currentRevision"`
+	CurrentState        string                `json:"currentState"`
+	Source              MemorySourceReference `json:"source"`
+	ObservedAt          string                `json:"observedAt"`
+	ProposedBy          string                `json:"proposedBy"`
+	ProposedBySessionID string                `json:"proposedBySessionId,omitempty"`
+	ProposedByTaskID    string                `json:"proposedByTaskId,omitempty"`
+	ProposedAt          string                `json:"proposedAt"`
+	State               string                `json:"state"`
+	ReviewDecision      string                `json:"reviewDecision,omitempty"`
+	ReviewActor         string                `json:"reviewActor,omitempty"`
+	ReviewSessionID     string                `json:"reviewSessionId,omitempty"`
+	ReviewTaskID        string                `json:"reviewTaskId,omitempty"`
+	ReviewSequence      int64                 `json:"reviewSequence,omitempty"`
 }
 
 type MemoryCorrectionQueue struct {
@@ -389,15 +393,22 @@ func (k *Kernel) TXProposeMemoryCorrection(ctx context.Context, b Binding, input
 	if ctx == nil || !validMemoryCorrectionInput(input, key) {
 		return Receipt{}, core.Malformed
 	}
+	if b.session == "" || b.task == "" {
+		return Receipt{}, core.Denied
+	}
 	contentSum := sha256.Sum256([]byte(input.Content))
 	contentSHA := hex.EncodeToString(contentSum[:])
 	payload := struct {
 		CorrectionID, RecordID, Content, ContentSHA, Reason string
+		WorkerSessionID, TaskID                             string
 		BaseRevision                                        int64
 		ObservedAt                                          time.Time
 		Source                                              MemorySourceReference
-	}{input.CorrectionID, input.RecordID, input.Content, contentSHA, strings.TrimSpace(input.Reason), input.BaseRevision, input.ObservedAt, input.Source}
+	}{input.CorrectionID, input.RecordID, input.Content, contentSHA, strings.TrimSpace(input.Reason), b.session, b.task, input.BaseRevision, input.ObservedAt, input.Source}
 	return k.TXWrite(ctx, b.scope, &b, key, "memory.correction.proposed", payload, func(tx pgx.Tx) (Receipt, error) {
+		if err := recheckMemoryCorrectionWorkerTaskTX(ctx, tx, b); err != nil {
+			return Receipt{}, err
+		}
 		record, err := memoryRecordAccessTX(k, ctx, tx, b, input.RecordID, input.BaseRevision)
 		if err != nil {
 			return Receipt{}, err
@@ -420,10 +431,10 @@ func (k *Kernel) TXProposeMemoryCorrection(ctx context.Context, b Binding, input
 		if observedAt.IsZero() {
 			observedAt = sourceObservedAt
 		}
-		_, err = tx.Exec(ctx, `INSERT INTO memory_correction_requests(company_id,correction_id,record_id,base_revision,proposed_content,content_sha256,source_kind,source_id,source_revision,source_sha256,observed_at,proposer_reason,proposed_by)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, b.scope.company, input.CorrectionID, input.RecordID, input.BaseRevision,
+		_, err = tx.Exec(ctx, `INSERT INTO memory_correction_requests(company_id,correction_id,record_id,base_revision,proposed_content,content_sha256,source_kind,source_id,source_revision,source_sha256,observed_at,proposer_reason,proposed_by,proposer_session_id,proposer_task_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`, b.scope.company, input.CorrectionID, input.RecordID, input.BaseRevision,
 			input.Content, contentSHA, input.Source.Kind, input.Source.ID, input.Source.Revision, input.Source.SHA256, observedAt,
-			strings.TrimSpace(input.Reason), b.employee)
+			strings.TrimSpace(input.Reason), b.employee, b.session, b.task)
 		if isUniqueViolation(err) {
 			return Receipt{}, core.Conflict
 		}
@@ -437,7 +448,8 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, b.scope.company, input.Corr
 		if err = appendEvent(ctx, tx, b.scope, "memory.correction.proposed", map[string]any{
 			"correction_id": input.CorrectionID, "record_id": input.RecordID, "base_revision": input.BaseRevision,
 			"content_sha256": contentSHA, "source_kind": input.Source.Kind, "source_id": input.Source.ID,
-			"source_revision": input.Source.Revision, "proposed_by": b.employee, "reason": strings.TrimSpace(input.Reason),
+			"source_revision": input.Source.Revision, "proposed_by": b.employee, "worker_session_id": b.session,
+			"task_id": b.task, "reason": strings.TrimSpace(input.Reason),
 		}); err != nil {
 			return Receipt{}, err
 		}
@@ -454,8 +466,14 @@ func (k *Kernel) TXReviewMemoryCorrection(ctx context.Context, b Binding, input 
 		(input.Decision != "approved" && input.Decision != "rejected") || !validMemoryReason(input.Reason) {
 		return Receipt{}, core.Malformed
 	}
-	payload := struct{ CorrectionID, Decision, Reason string }{input.CorrectionID, input.Decision, strings.TrimSpace(input.Reason)}
+	if b.session == "" || b.task == "" {
+		return Receipt{}, core.Denied
+	}
+	payload := struct{ CorrectionID, Decision, Reason, WorkerSessionID, TaskID string }{input.CorrectionID, input.Decision, strings.TrimSpace(input.Reason), b.session, b.task}
 	return k.TXWrite(ctx, b.scope, &b, key, "memory.correction.reviewed", payload, func(tx pgx.Tx) (Receipt, error) {
+		if err := recheckMemoryCorrectionWorkerTaskTX(ctx, tx, b); err != nil {
+			return Receipt{}, err
+		}
 		var recordID, proposer, kind, scopeKind, missionID, employeeID, sensitivity, author string
 		var content, contentSHA, sourceKind, sourceID, sourceSHA string
 		var baseRevision, sourceRevision int64
@@ -541,7 +559,8 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, b.scope.company, recordID, resultRe
 		}
 		if err = appendEvent(ctx, tx, b.scope, "memory.correction."+input.Decision, map[string]any{
 			"correction_id": input.CorrectionID, "record_id": recordID, "base_revision": baseRevision,
-			"result_revision": resultRevision, "actor": b.employee, "reason": strings.TrimSpace(input.Reason),
+			"result_revision": resultRevision, "actor": b.employee, "worker_session_id": b.session,
+			"task_id": b.task, "reason": strings.TrimSpace(input.Reason),
 		}); err != nil {
 			return Receipt{}, err
 		}
@@ -553,8 +572,8 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, b.scope.company, recordID, resultRe
 		if resultRevision > 0 {
 			resultRevisionValue = resultRevision
 		}
-		if _, err = tx.Exec(ctx, `INSERT INTO memory_correction_review_events(company_id,company_seq,correction_id,record_id,decision,actor,reason,result_revision)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, b.scope.company, seq, input.CorrectionID, recordID, input.Decision, b.employee, strings.TrimSpace(input.Reason), resultRevisionValue); err != nil {
+		if _, err = tx.Exec(ctx, `INSERT INTO memory_correction_review_events(company_id,company_seq,correction_id,record_id,decision,actor,reason,result_revision,reviewer_session_id,reviewer_task_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, b.scope.company, seq, input.CorrectionID, recordID, input.Decision, b.employee, strings.TrimSpace(input.Reason), resultRevisionValue, b.session, b.task); err != nil {
 			return Receipt{}, err
 		}
 		if resultRevision > 0 {
@@ -564,6 +583,91 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, b.scope.company, seq, input.CorrectionID, reco
 		}
 		return Receipt{ID: input.CorrectionID, Status: input.Decision, Revision: resultRevision}, nil
 	})
+}
+
+// TXProposeMemoryCorrectionForWorkerSession resolves the acting Employee from
+// an active, database-bound provider WorkerSession. Callers can select only a
+// session identifier; Employee and Task identities always come from the
+// persisted session row and are revalidated again inside TXPropose.
+func (k *Kernel) TXProposeMemoryCorrectionForWorkerSession(ctx context.Context, scope Scope, sessionID string, input MemoryCorrectionInput, key string) (Receipt, error) {
+	b, err := k.memoryCorrectionWorkerBinding(ctx, scope, sessionID)
+	if err != nil {
+		return Receipt{}, err
+	}
+	return k.TXProposeMemoryCorrection(ctx, b, input, key)
+}
+
+// TXReviewMemoryCorrectionForWorkerSession applies the same identity rule to
+// the independent fixed Planning/Review decision.
+func (k *Kernel) TXReviewMemoryCorrectionForWorkerSession(ctx context.Context, scope Scope, sessionID string, input MemoryCorrectionReviewInput, key string) (Receipt, error) {
+	b, err := k.memoryCorrectionWorkerBinding(ctx, scope, sessionID)
+	if err != nil {
+		return Receipt{}, err
+	}
+	return k.TXReviewMemoryCorrection(ctx, b, input, key)
+}
+
+func (k *Kernel) memoryCorrectionWorkerBinding(ctx context.Context, scope Scope, sessionID string) (Binding, error) {
+	if k == nil || k.pool == nil || ctx == nil || !core.ValidID(scope.company) || !core.ValidID(sessionID) {
+		return Binding{}, core.Malformed
+	}
+	tx, err := k.pool.Begin(ctx)
+	if err != nil {
+		return Binding{}, err
+	}
+	defer tx.Rollback(ctx)
+	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+		return Binding{}, err
+	}
+	var binding Binding
+	var state, missionState, taskState, taskOwner, executionMode string
+	var employeeEpoch int64
+	err = tx.QueryRow(ctx, `SELECT s.employee_id,s.task_id,s.epoch,s.incarnation,s.state,s.execution_mode,
+e.epoch,m.state,t.state,t.owner
+FROM worker_sessions s
+JOIN employees e ON e.company_id=s.company_id AND e.id=s.employee_id
+JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
+WHERE s.company_id=$1 AND s.id=$2`, scope.company, sessionID).Scan(
+		&binding.employee, &binding.task, &binding.epoch, &binding.incarnation, &state, &executionMode,
+		&employeeEpoch, &missionState, &taskState, &taskOwner,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Binding{}, core.OutOfScope
+	}
+	if err != nil {
+		return Binding{}, err
+	}
+	binding.scope = scope
+	binding.session = sessionID
+	if binding.incarnation != k.incarnation || binding.epoch != employeeEpoch {
+		return Binding{}, core.StaleEpoch
+	}
+	if state != "active" || executionMode != "provider" || missionState != "active" || taskState != "working" || taskOwner != binding.employee {
+		return Binding{}, core.Denied
+	}
+	if _, err = k.checkSession(ctx, tx, binding, true); err != nil {
+		return Binding{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return Binding{}, err
+	}
+	return binding, nil
+}
+
+func recheckMemoryCorrectionWorkerTaskTX(ctx context.Context, tx pgx.Tx, binding Binding) error {
+	var state, owner string
+	err := tx.QueryRow(ctx, `SELECT state,owner FROM tasks WHERE company_id=$1 AND id=$2`, binding.scope.company, binding.task).Scan(&state, &owner)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return core.OutOfScope
+	}
+	if err != nil {
+		return err
+	}
+	if state != "working" || owner != binding.employee {
+		return core.Denied
+	}
+	return nil
 }
 
 // ListMemoryCorrections returns the newest correction requests for a company.
@@ -584,14 +688,15 @@ func (k *Kernel) ListMemoryCorrections(ctx context.Context, scope Scope, limit i
 	rows, err := tx.Query(ctx, `SELECT c.correction_id,c.record_id,r.record_kind,r.scope_kind,COALESCE(r.mission_id,''),r.sensitivity,
 c.base_revision,c.proposed_content,c.content_sha256,b.content,b.content_sha256,c.source_kind,c.source_id,c.source_revision,c.source_sha256,
 c.observed_at::text,c.proposer_reason,c.proposed_by,c.created_at::text,
-cur.revision,cur.state,COALESCE(rv.decision,''),COALESCE(rv.actor,''),COALESCE(rv.reason,''),COALESCE(rv.company_seq,0)
+cur.revision,cur.state,COALESCE(rv.decision,''),COALESCE(rv.actor,''),COALESCE(rv.reason,''),COALESCE(rv.company_seq,0),
+COALESCE(c.proposer_session_id,''),COALESCE(c.proposer_task_id,''),COALESCE(rv.reviewer_session_id,''),COALESCE(rv.reviewer_task_id,'')
 FROM memory_correction_requests c
 JOIN memory_records r ON r.company_id=c.company_id AND r.record_id=c.record_id
 JOIN memory_record_revisions b ON b.company_id=c.company_id AND b.record_id=c.record_id AND b.revision=c.base_revision
 JOIN LATERAL (SELECT v.revision,e.state FROM memory_record_revisions v
  JOIN LATERAL (SELECT state FROM memory_revision_state_events se WHERE se.company_id=v.company_id AND se.record_id=v.record_id AND se.revision=v.revision ORDER BY se.company_seq DESC LIMIT 1) e ON true
  WHERE v.company_id=c.company_id AND v.record_id=c.record_id ORDER BY v.revision DESC LIMIT 1) cur ON true
-LEFT JOIN LATERAL (SELECT decision,actor,reason,company_seq FROM memory_correction_review_events re
+LEFT JOIN LATERAL (SELECT decision,actor,reason,company_seq,reviewer_session_id,reviewer_task_id FROM memory_correction_review_events re
  WHERE re.company_id=c.company_id AND re.correction_id=c.correction_id LIMIT 1) rv ON true
 WHERE c.company_id=$1 ORDER BY c.created_at DESC,c.correction_id DESC LIMIT $2`, scope.company, limit+1)
 	if err != nil {
@@ -606,10 +711,12 @@ WHERE c.company_id=$1 ORDER BY c.created_at DESC,c.correction_id DESC LIMIT $2`,
 		var sourceKind, sourceID, sourceSHA string
 		var sourceRevision int64
 		var reviewSequence int64
+		var reviewSessionID, reviewTaskID string
 		if err = rows.Scan(&item.CorrectionID, &item.RecordID, &item.RecordKind, &item.RecordScope, &item.MissionID, &item.Sensitivity,
 			&item.BaseRevision, &proposedContent, &proposedSHA, &baseContent, &baseSHA, &sourceKind, &sourceID, &sourceRevision, &sourceSHA,
 			&item.ObservedAt, &proposerReason, &item.ProposedBy, &item.ProposedAt, &item.CurrentRevision, &item.CurrentState,
-			&item.ReviewDecision, &item.ReviewActor, &reviewReason, &reviewSequence); err != nil {
+			&item.ReviewDecision, &item.ReviewActor, &reviewReason, &reviewSequence,
+			&item.ProposedBySessionID, &item.ProposedByTaskID, &reviewSessionID, &reviewTaskID); err != nil {
 			return MemoryCorrectionQueue{}, err
 		}
 		if len(result.Items) == limit {
@@ -622,6 +729,8 @@ WHERE c.company_id=$1 ORDER BY c.created_at DESC,c.correction_id DESC LIMIT $2`,
 			return MemoryCorrectionQueue{}, core.Integrity
 		}
 		item.Source = MemorySourceReference{Kind: sourceKind, ID: sourceID, Revision: sourceRevision, SHA256: sourceSHA}
+		item.ReviewSessionID = reviewSessionID
+		item.ReviewTaskID = reviewTaskID
 		item.ReviewSequence = reviewSequence
 		revoked, revokeErr := k.memoryRecordRevokedTX(ctx, tx, scope.company, item.RecordID)
 		if revokeErr != nil {

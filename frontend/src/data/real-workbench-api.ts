@@ -1,5 +1,7 @@
 // pattern: Imperative Shell
 
+import type {MemoryCorrectionCommandReceiptView} from '../domain/workbench';
+import type {ProposeMemoryCorrectionOptions, ReviewMemoryCorrectionOptions} from './workbench-api';
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
 import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, CompanyToolCallClosingReserveReceiptView} from '../domain/workbench';
 import type {ChangeCompanyToolCallBudgetOptions, SetCompanyToolCallClosingReserveOptions} from './workbench-api';
@@ -8,7 +10,7 @@ import type {ChangeMissionToolCallBudgetOptions, MissionToolCallBudgetQueryOptio
 import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
-import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
+import {validateMemoryCorrectionCommandReceipt, validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
 import {validateCompanyToolCallBudget, validateCompanyToolCallBudgetChangeReceipt, validateCompanyToolCallClosingReserveReceipt, validateMissionToolCallBudgetChangeReceipt, validateMissionToolCallBudgetList, validateMissionToolCallClosingReserveReceipt, validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
 import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
@@ -949,6 +951,38 @@ export class RealWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.companyId);
     const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/memory/corrections`);
     return validateMemoryCorrectionQueue(raw);
+  }
+
+  async proposeMemoryCorrection(options: ProposeMemoryCorrectionOptions): Promise<MemoryCorrectionCommandReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.workerSessionId);
+    assertCompanyScope(options.correctionId);
+    assertCompanyScope(options.recordId);
+    assertRequestID(options.requestId);
+    if (!Number.isSafeInteger(options.baseRevision) || options.baseRevision < 1) throw new Error('memory correction base revision is invalid');
+    const reason = options.reason.trim();
+    const reasonBytes = new TextEncoder().encode(reason).length;
+    if (reasonBytes < 1 || reasonBytes > 2048) throw new Error('memory correction reason must be 1–2048 bytes');
+    if (!Number.isSafeInteger(options.source.revision) || options.source.revision < 1 || !/^[0-9a-f]{64}$/.test(options.source.sha256)) throw new Error('memory correction source reference is malformed');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/memory/corrections/propose`, options.requestId, {
+      workerSessionId: options.workerSessionId, correctionId: options.correctionId, recordId: options.recordId,
+      baseRevision: options.baseRevision, content: options.content, source: options.source, reason, requestId: options.requestId,
+    });
+    return validateMemoryCorrectionCommandReceipt(raw);
+  }
+
+  async reviewMemoryCorrection(options: ReviewMemoryCorrectionOptions): Promise<MemoryCorrectionCommandReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.workerSessionId);
+    assertCompanyScope(options.correctionId);
+    assertRequestID(options.requestId);
+    const reason = options.reason.trim();
+    const reasonBytes = new TextEncoder().encode(reason).length;
+    if (reasonBytes < 1 || reasonBytes > 2048) throw new Error('memory correction review reason must be 1–2048 bytes');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/memory/corrections/${encodeURIComponent(options.correctionId)}/review`, options.requestId, {
+      workerSessionId: options.workerSessionId, decision: options.decision, reason, requestId: options.requestId,
+    });
+    return validateMemoryCorrectionCommandReceipt(raw);
   }
 
   async getCompanyToolCallBudget(options: CompanyScopeOptions): Promise<CompanyToolCallBudgetView> {

@@ -1,5 +1,6 @@
 // pattern: Imperative Shell
 
+import type {MemoryCorrectionCommandReceiptView} from '../domain/workbench';
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
 import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, CompanyToolCallClosingReserveReceiptView} from '../domain/workbench';
 import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
@@ -309,6 +310,25 @@ export type DailyRoutineQueryOptions = Readonly<{
 
 export type MemoryTaskStatusQueryOptions = Readonly<{companyId: string; taskId: string}>;
 export type MemoryCorrectionQueueQueryOptions = Readonly<{companyId: string}>;
+export type ProposeMemoryCorrectionOptions = Readonly<{
+  companyId: string;
+  workerSessionId: string;
+  correctionId: string;
+  recordId: string;
+  baseRevision: number;
+  content: string;
+  source: Readonly<{kind: 'mission_input' | 'artifact'; id: string; revision: number; sha256: string}>;
+  reason: string;
+  requestId: string;
+}>;
+export type ReviewMemoryCorrectionOptions = Readonly<{
+  companyId: string;
+  correctionId: string;
+  workerSessionId: string;
+  decision: 'approved' | 'rejected';
+  reason: string;
+  requestId: string;
+}>;
 export type ProblemToolCallBudgetQueryOptions = Readonly<{companyId: string}>;
 export type MissionToolCallBudgetQueryOptions = Readonly<{companyId: string}>;
 export type ChangeCompanyToolCallBudgetOptions = Readonly<{
@@ -699,6 +719,8 @@ export type WorkbenchApi = Readonly<{
   listDailyRoutines(options: DailyRoutineQueryOptions): Promise<ReadonlyArray<DailyRoutineView>>;
   getMemoryTaskStatus(options: MemoryTaskStatusQueryOptions): Promise<MemoryTaskStatusView>;
   listMemoryCorrections(options: MemoryCorrectionQueueQueryOptions): Promise<MemoryCorrectionQueueView>;
+  proposeMemoryCorrection(options: ProposeMemoryCorrectionOptions): Promise<MemoryCorrectionCommandReceiptView>;
+  reviewMemoryCorrection(options: ReviewMemoryCorrectionOptions): Promise<MemoryCorrectionCommandReceiptView>;
   getCompanyToolCallBudget(options: CompanyScopeOptions): Promise<CompanyToolCallBudgetView>;
   changeCompanyToolCallBudget(options: ChangeCompanyToolCallBudgetOptions): Promise<CompanyToolCallBudgetChangeReceiptView>;
   setCompanyToolCallClosingReserve(options: SetCompanyToolCallClosingReserveOptions): Promise<CompanyToolCallClosingReserveReceiptView>;

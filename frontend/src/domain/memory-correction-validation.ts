@@ -1,4 +1,4 @@
-import type {MemoryCorrectionQueueView, MemoryCorrectionQueueItemView} from './workbench';
+import type {MemoryCorrectionCommandReceiptView, MemoryCorrectionQueueView, MemoryCorrectionQueueItemView} from './workbench';
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -27,4 +27,12 @@ export function validateMemoryCorrectionQueue(value: unknown): MemoryCorrectionQ
     throw new Error('failed to parse memory correction queue response');
   }
   return value as unknown as MemoryCorrectionQueueView;
+}
+
+export function validateMemoryCorrectionCommandReceipt(value: unknown): MemoryCorrectionCommandReceiptView {
+  if (!isObject(value) || typeof value.id !== 'string' || typeof value.status !== 'string'
+    || (value.revision !== undefined && (!Number.isSafeInteger(value.revision) || (value.revision as number) < 0))) {
+    throw new Error('failed to parse memory correction command receipt');
+  }
+  return value as unknown as MemoryCorrectionCommandReceiptView;
 }

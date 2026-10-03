@@ -1568,6 +1568,42 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		}
 		response.Header().Set("Cache-Control", "no-store")
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "memory.correction.propose":
+		response.Header().Set("Cache-Control", "no-store")
+		memoryService, ok := service.(control.MemoryCorrectionCommandService)
+		if !ok {
+			writeCommandError(response, http.StatusNotImplemented, path.companyID, "corrections", errors.New("memory correction command service is unavailable"))
+			return
+		}
+		var input control.ProposeMemoryCorrectionRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandError(response, http.StatusBadRequest, path.companyID, "corrections", err)
+			return
+		}
+		receipt, err := memoryService.ProposeMemoryCorrection(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandError(response, commandStatus(err), path.companyID, "corrections", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
+	case "memory.correction.review":
+		response.Header().Set("Cache-Control", "no-store")
+		memoryService, ok := service.(control.MemoryCorrectionCommandService)
+		if !ok {
+			writeCommandError(response, http.StatusNotImplemented, path.companyID, path.resourceID, errors.New("memory correction command service is unavailable"))
+			return
+		}
+		var input control.ReviewMemoryCorrectionRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandError(response, http.StatusBadRequest, path.companyID, path.resourceID, err)
+			return
+		}
+		receipt, err := memoryService.ReviewMemoryCorrection(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandError(response, commandStatus(err), path.companyID, path.resourceID, err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "memory.record_revoke":
 		response.Header().Set("Cache-Control", "no-store")
 		memoryService, ok := service.(control.MemoryRevocationService)
@@ -1831,6 +1867,16 @@ func parsePath(path string) (parsedPath, bool) {
 	}
 	if len(parts) == 3 && parts[1] == "memory" && parts[2] == "corrections" {
 		return parsedPath{companyID: companyID, endpoint: "memory.corrections"}, true
+	}
+	if len(parts) == 4 && parts[1] == "memory" && parts[2] == "corrections" && parts[3] == "propose" {
+		return parsedPath{companyID: companyID, endpoint: "memory.correction.propose"}, true
+	}
+	if len(parts) == 5 && parts[1] == "memory" && parts[2] == "corrections" && parts[3] != "" && parts[4] == "review" {
+		correctionID, err := url.PathUnescape(parts[3])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: correctionID, endpoint: "memory.correction.review"}, true
 	}
 	if len(parts) == 2 && parts[1] == "problem-budgets" {
 		return parsedPath{companyID: companyID, endpoint: "problem.budgets"}, true

@@ -16,6 +16,7 @@ import type {ChangeMissionToolCallBudgetOptions, MissionToolCallBudgetQueryOptio
 import type {SetMissionToolCallClosingReserveOptions} from './workbench-api';
 import type {ChangeCompanyToolCallBudgetOptions} from './workbench-api';
 import type {SetCompanyToolCallClosingReserveOptions} from './workbench-api';
+import type {ProposeMemoryCorrectionOptions, ReviewMemoryCorrectionOptions} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
   return useQuery({
@@ -271,6 +272,30 @@ export function useMemoryCorrectionQueue(api: WorkbenchApi, companyId: string) {
     staleTime: 0,
     refetchOnMount: 'always',
   });
+}
+
+export function useProposeMemoryCorrection(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<ProposeMemoryCorrectionOptions, 'companyId'>) => api.proposeMemoryCorrection({...options, companyId}),
+    onSuccess: async () => invalidateMemoryCorrectionQueries(queryClient, api, companyId),
+  });
+}
+
+export function useReviewMemoryCorrection(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<ReviewMemoryCorrectionOptions, 'companyId'>) => api.reviewMemoryCorrection({...options, companyId}),
+    onSuccess: async () => invalidateMemoryCorrectionQueries(queryClient, api, companyId),
+  });
+}
+
+async function invalidateMemoryCorrectionQueries(queryClient: ReturnType<typeof useQueryClient>, api: WorkbenchApi, companyId: string): Promise<void> {
+  await Promise.all([
+    queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'memory-corrections', companyId]}),
+    queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+    queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
+  ]);
 }
 
 export function useProblemToolCallBudgets(api: WorkbenchApi, companyId: string) {
