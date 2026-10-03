@@ -1,6 +1,6 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 138
+Updated: 2026-10-03, Slice 139
 
 ## Decision
 
@@ -19,6 +19,12 @@ The Company closing reserve follows the same rule inside the Company total. Sche
 - `spec/design-v0.4.5/ARCHITECTURE.md` §14.5 and `spec/design-v0.4.5/contracts/C-RETRY.md` §34.3 place protected closeout capacity inside the Mission total and require trusted classification.
 - `spec/design-v0.4.5/contracts/C-RETRY.md` §34.2 and frozen FT-43 require a Mission outer limit to continue accruing when a new Task ID is used for the same or a different ProblemKey.
 - Frozen FT-42 and §34.1 require retry ownership and bounded visibility; hidden SDK/harness retries cannot be described as a known total where the runtime cannot observe them.
+
+## Slice 139 ProviderAccount billing-scope and owner-boundary audit
+
+The Codex account locator captured in Slice 138 identifies the account selected for Codex backend routing, but does not select a universal budget unit. Current official documentation describes ChatGPT shared allowance/credit plans, Enterprise token-based USD billing, and a separate API Platform organization/project usage model. Credits are not invoices; supported usage displays may be estimates or incomplete. Enterprise Codex analytics requires an eligible workspace and a workspace-scoped Admin key with `codex.enterprise.analytics.read`; API Platform organization credentials cannot read ChatGPT workspace analytics. A read source also does not replace live owner qualification or prove real-time hard-cap semantics. See [Codex plan usage and Enterprise Analytics access](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan), [Work and Codex usage/reporting limits](https://help.openai.com/en/articles/20001478-reviewing-work-and-codex-usage-and-using-personal-analytics-in-chatgpt-desktop), and the [API Platform organization usage/cost endpoints](https://developers.openai.com/api/reference/python/resources/admin/subresources/organization/subresources/usage).
+
+Polis currently has Company-only `kernel.Scope`; a Company-scoped mutation cannot safely configure a ProviderAccount shared across Companies. The environment has no `OPENAI_ADMIN_KEY` or `CODEX_ENTERPRISE_ANALYTICS_KEY`, and no provider account was queried. Next local work is an installation-owner authorization boundary plus a global observed-account registry. External qualification still needs an owner/admin to identify the billing mode and, for eligible Enterprise analytics, provision the scoped Admin key; financial reserves/settlement remain gated on source semantics and unknown-liability retention.
 
 ## Lock-order finding
 
@@ -60,12 +66,13 @@ Schema 89 adds Mission usage and cap/revision columns, backfills usage by summin
 
 ## Remaining bounded sequence
 
-1. Do not claim ProviderAccount financial enforcement until the selected account locator is proven to represent the billable liability scope and runtime admissions can reserve, settle and retain unknown liabilities.
-2. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them.
-3. Keep FT-42–45 and broader qualification separate from implementation evidence; they remain `not_run`.
+1. Implement an installation-owner authority boundary and global observed-account registry before shared cross-Company ProviderAccount mutations; Company-scoped ownership alone is insufficient.
+2. Do not claim ProviderAccount financial enforcement until the selected account locator is bound to the owner-confirmed billable liability scope and runtime admissions can reserve, settle and retain unknown liabilities.
+3. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them.
+4. Keep FT-42–45 and broader qualification separate from implementation evidence; they remain `not_run`.
 
 ProviderAccount registry/caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer remain open requirements; none can be derived from this call counter or the account locator alone.
 
 ## Qualification status
 
-Slices 131–137 are implementation/source-audit evidence, not runtime qualification. Slices 131, 133, 134, 136 and 137 Go builds, frontend production builds where relevant, migration hash validation and diff checks passed; Slices 132 and 135 are read-only source/design inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
+Slices 131–139 are implementation/source-audit evidence, not runtime qualification. Slices 131, 133, 134, 136, 137 and 138 Go builds, frontend production builds where relevant, migration hash validation and diff checks passed; Slices 132, 135 and 139 are read-only source/design inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.

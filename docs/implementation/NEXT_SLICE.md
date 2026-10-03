@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 138, REQ-16 Codex account locator snapshot; Schema 94)
+## Latest continuation status (Slice 139, REQ-16 ProviderAccount billing-scope audit; no migration)
+
+The source audit confirms that an observed Codex account locator is not enough to pick a billable budget unit: ChatGPT plans may use shared allowances/credits, Enterprise can use token-based USD billing, and API Platform usage is organization/project-scoped. Codex Enterprise Analytics requires a workspace-scoped Admin key with `codex.enterprise.analytics.read`; no Admin key is configured in this environment. The Kernel has only Company scope, so no Company owner can safely configure a shared cross-Company ProviderAccount budget yet. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-139-provider-account-billing-scope-audit/verification.md`.
+
+Next local step: add an installation-owner authorization boundary and a global observed-account registry before exposing any cross-Company ProviderAccount budget. Keep financial settlement gated on an owner-confirmed billing mode and a permitted usage source; document external key/workspace qualification separately.
+
+## Previous continuation status (Slice 138, REQ-16 Codex account locator snapshot; Schema 94)
 
 Schema 94 binds a separate immutable provider-account locator snapshot to each new WorkerSession while it is `restoring`. For `auth_mode=chatgpt`, Codex derives a versioned fingerprint from `tokens.account_id`, with the upstream-supported ID-token `chatgpt_account_id` fallback; unsupported modes or missing identifiers are explicit. Raw account IDs are never persisted, and the runtime rejects a changed available account locator after binding. This locator is not yet proven to be the billed account scope and enables no financial cap. Go package/command build, Schema 1–94 hash validation and `git diff --check` pass. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-138-codex-account-locator/verification.md`.
 
-Next: establish which Codex account locators share the provider's billable liability, then add the ProviderAccount registry and request reserve/settle/unknown-liability lifecycle. Keep financial limits disabled until that scope and bounded liability are source-backed.
+Slice 139 records the billing-mode and installation-owner prerequisites that must be resolved before shared ProviderAccount budgets or financial settlement.
 
 ## Previous continuation status (Slice 137, REQ-16 general Codex auth-principal observation; no migration)
 
