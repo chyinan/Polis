@@ -857,7 +857,12 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 			turnErr = fmt.Errorf("provider turn completed but Task input delivery evidence could not be saved: %w", receiptErr)
 		}
 	}
-	usage = map[string]any{"authorization": worker.authorization, "problem_key": worker.problemKey, "task_tool_call_budget_at_start": worker.taskToolBudget, "effective_turn_tool_call_limit": turnOptions.ToolCallLimit, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
+	usageRecord := map[string]any{"authorization": worker.authorization, "problem_key": worker.problemKey, "task_tool_call_budget_at_start": worker.taskToolBudget, "effective_turn_tool_call_limit": turnOptions.ToolCallLimit, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
+	if turn.RetryObservationScope != "" {
+		usageRecord["retry_observation_scope"] = turn.RetryObservationScope
+		usageRecord["unobserved_provider_retry_count"] = nil
+	}
+	usage = usageRecord
 	if turnErr != nil {
 		state, outcome = "inconclusive", "transport_failure"
 		if ctx.Err() != nil {

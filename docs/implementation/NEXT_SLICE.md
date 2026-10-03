@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 127, REQ-16 explicit incomplete budget closeout; Schema 88)
+## Latest continuation status (Slice 128, REQ-16 scoped provider retry observation; no migration)
+
+The real Codex runtime now records the source and scope of its retry observation: `responseStreamDisconnected` with `willRetry` from the app-server protocol. The existing reconnect count and recovered flag refer only to those observable same-turn signals. `unobserved_provider_retry_count` is explicitly `null`; the CLI/service may retry internally without exposing attempt counts here. No hidden retry count is inferred or charged. Go package/command build, frontend build, migration hashes and `git diff --check` pass; tests and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
+
+Next, continue a bounded design review of REQ-16's outer budget authority and composition. Do not derive Mission/Company/Provider limits from tool-call counts or token counts; select a source-backed composition rule before enforcing it. Token/money accounting also remains open.
+
+## Previous continuation status (Slice 127, REQ-16 explicit incomplete budget closeout; Schema 88)
 
 Schema 88 adds a one-shot immutable local-owner incomplete closeout bound to the latest budget-caused rejection and exact Task/ProblemKey/reserve snapshots. It requires a nonterminal Task with no live WorkerSession; the closeout is then enforced against future budget allocations and Worker admissions. The Workbench exposes the explicit, reasoned confirmation and displays the recorded outcome. Schema 84/87 owner allocation paths already provide funded recovery subject to normal Worker admission gates, and immutable rejection history preserves blocked outcomes. Admission, allocation and closeout serialize through the Task row lock. Go package/command build, frontend production build and `git diff --check` pass; the frontend retains its existing >500 kB advisory. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
-
-The next bounded REQ-16 work is to inspect provider execution boundaries for retry attempts that happen below the protocol tool-call observer, then expose only evidence-backed counts. Token/money accounting and Mission/Company/Provider budget composition remain open and must not be inferred from protocol tool-call counts.
 
 ## Previous continuation status (Slice 126, REQ-16 authorized Task budget recovery; Schema 87)
 

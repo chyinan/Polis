@@ -234,12 +234,15 @@ type TurnResult struct {
 	ReconnectRecovered    bool
 	// RetryVisibility is limited when the provider process can retry internally
 	// without exposing those attempts through the Worker protocol.
-	RetryVisibility string
-	TurnCompleted   bool
-	Usage           codex.TokenUsage
-	StartedAt       time.Time
-	FinishedAt      time.Time
+	RetryVisibility       string
+	RetryObservationScope string
+	TurnCompleted         bool
+	Usage                 codex.TokenUsage
+	StartedAt             time.Time
+	FinishedAt            time.Time
 }
+
+const RetryObservationCodexAppServerWillRetry = "codex_app_server_responseStreamDisconnected_willRetry"
 
 type RuntimeStats struct {
 	Reservations       int

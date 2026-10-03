@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 128 — REQ-16 scoped provider retry observation (no migration)
+
+The real Codex runtime terminal usage now identifies the exact retry signal it observes: `responseStreamDisconnected` server errors with `willRetry`. The existing `reconnect_attempt_count` and `reconnect_recovered` fields describe only those same-turn protocol reconnect signals. `unobserved_provider_retry_count` is stored as `null`, because retries internal to the provider CLI/service are not exposed at this boundary; the existing `retry_visibility=limited` remains. This is observability only and does not account or charge hidden attempts. `go build ./internal/kernel ./internal/control ./cmd/polis`, frontend production build, all 88 migration hashes and `git diff --check` pass. The frontend retains the existing >500 kB advisory. Tests and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
+
+REQ-16 remains partial: hidden retries, token/money accounting and Mission/Company/Provider budget composition remain open.
+
 ## Slice 127 — REQ-16 explicit incomplete budget closeout (Schema 88)
 
 Schema 88 adds one immutable, local-owner closeout record per Task. A closeout binds the latest rejection, which must be budget-caused, to exact Task, ProblemKey allocation/usage and closing-reserve snapshots; it is available only after all WorkerSessions stop and the Task remains nonterminal. Closed Tasks cannot receive budget allocations or new Worker admissions. The Workbench shows Task rejection/closeout history and provides a confirmed reasoned closeout action. Existing budget rejections represent the blocked outcome, while the Schema 84/87 allocation paths represent owner-funded recovery subject to normal Worker admission gates. Admission, allocation and closeout serialize on the Task row. Go package/command build, frontend production build and `git diff --check` pass. The production bundle retains the existing >500 kB advisory. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.

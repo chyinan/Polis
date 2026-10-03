@@ -4,7 +4,11 @@ Updated: 2026-10-03
 
 ## Current continuation pointer
 
-The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 127 / Schema 88; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Recent slices 121–127 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized ProblemKey and Task allocations, closing reserves, immutable budget-rejection records and explicit incomplete closeout. Slice 127 verification is in `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
+The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 128 / Schema 88; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Recent slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized ProblemKey and Task allocations, closing reserves, immutable budget-rejection records, explicit incomplete closeout and scoped retry visibility. Slice 128 verification is in `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
+
+## Latest completed slice (128, REQ-16 scoped provider retry observation; no migration)
+
+Real Codex Worker usage identifies that the reconnect count covers only app-server `responseStreamDisconnected` events marked `willRetry`. The terminal record stores that scope and `unobserved_provider_retry_count: null`; retries internal to the CLI/service are not exposed or charged. `retry_visibility=limited` remains. This is conservative observability, not complete retry accounting. `go build ./internal/kernel ./internal/control ./cmd/polis`, frontend build, all Schema 88 migration hashes and `git diff --check` pass. Tests and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
 
 ## Latest completed slice (127, REQ-16 explicit incomplete budget closeout; Schema 88)
 
