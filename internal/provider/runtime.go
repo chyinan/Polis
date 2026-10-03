@@ -35,6 +35,32 @@ func ProductSkillToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithReadOnlySkill())
 }
 
+// ProductSkillDirectoryToolSurface adds bounded exact-Skill path pages while
+// keeping the v5 Skill-load registry immutable.
+const ProductSkillDirectoryToolSurfaceQualification = "polis-product-tool-surface@9"
+
+func ProductSkillDirectoryToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithBoundedSkillDirectory())
+}
+
+func ValidateOfflineFakeSkillDirectorySurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductSkillDirectoryToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductSkillDirectoryToolSurfaceQualification ||
+		profile.Purpose != OfflineSkillDirectorySurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineSkillDirectorySurfaceSimulationMarker ||
+		profile.ProductProviderL2Fingerprint != OfflineSkillDirectorySurfaceSimulationMarker || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 9 || expected.ManifestDigest != ProductSkillDirectoryManifestDigest ||
+		expected.AggregateSchemaBytes != ProductSkillDirectorySchemaBytes || expected.AggregateSchemaDigest != ProductSkillDirectorySchemaDigest ||
+		surface.ToolCount != 9 || observed.ToolCount != 9 ||
+		surface.ManifestDigest != ProductSkillDirectoryManifestDigest || observed.ManifestDigest != ProductSkillDirectoryManifestDigest ||
+		surface.AggregateSchemaBytes != ProductSkillDirectorySchemaBytes || observed.AggregateSchemaBytes != ProductSkillDirectorySchemaBytes ||
+		surface.AggregateSchemaDigest != ProductSkillDirectorySchemaDigest || observed.AggregateSchemaDigest != ProductSkillDirectorySchemaDigest {
+		return fmt.Errorf("bounded Skill directory surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
+}
+
 // ProductGuidanceToolSurface adds the persisted operator guidance inbox and
 // response tools. It is not accepted by the current provider gate.
 const ProductGuidanceToolSurfaceQualification = "polis-product-tool-surface@6"

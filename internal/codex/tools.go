@@ -105,6 +105,21 @@ func ProductEmployeeToolsWithReadOnlySkill() []any {
 	return append(tools, skillTool[0])
 }
 
+// ProductEmployeeToolsWithBoundedSkillDirectory adds explicit keyset paging
+// for the exact immutable Skill revision bound to the current employee.
+func ProductEmployeeToolsWithBoundedSkillDirectory() []any {
+	tools := ProductEmployeeToolsWithReadOnlySkill()
+	directoryTool := productTools([]peerToolDefinition{{
+		"skills_list",
+		"List one bounded page of files for an exact approved Skill ID shown by work_current. Pass an empty after_relative_path for the first page, then use next_after_relative_path. This lists metadata only; use skills_load to read one exact static text file.",
+		map[string]any{
+			"skill_id":            map[string]any{"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[a-zA-Z0-9_-]+$"},
+			"after_relative_path": map[string]any{"type": "string", "minLength": 0, "maxLength": 1024},
+		},
+	}})
+	return append(tools, directoryTool[0])
+}
+
 // ProductEmployeeToolsWithGuidance is a separate surface so guidance response
 // semantics require their own runtime qualification.
 func ProductEmployeeToolsWithGuidance() []any {

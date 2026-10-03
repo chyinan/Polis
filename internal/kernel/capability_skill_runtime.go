@@ -17,6 +17,7 @@ import (
 const maxSkillLoadTextBytes = 64 << 10
 const maxSkillCatalogItems = 64
 const maxSkillLoadHistoryItems = 32
+const SkillDirectoryPageSize = 32
 
 type SkillLoadRequest struct {
 	SkillID      string
@@ -49,6 +50,85 @@ type SkillLoadUse struct {
 	MediaType     string `json:"mediaType"`
 	ContentDigest string `json:"contentDigest"`
 	LoadedAt      string `json:"loadedAt,omitempty"`
+}
+
+type SkillDirectoryPage struct {
+	SkillID               string                  `json:"skillId"`
+	PackageID             string                  `json:"packageId"`
+	Revision              string                  `json:"revision"`
+	VersionDigest         string                  `json:"versionDigest"`
+	Files                 []SkillReferenceSummary `json:"files"`
+	Truncated             bool                    `json:"truncated"`
+	NextAfterRelativePath string                  `json:"nextAfterRelativePath,omitempty"`
+}
+
+// ListBoundReadOnlySkillFiles returns one bounded path page for an exact
+// currently bound Skill. The Company lock serializes listing with revocation,
+// and the verified package is tied to the current active WorkerSession.
+func (k *Kernel) ListBoundReadOnlySkillFiles(ctx context.Context, binding Binding, skillID, afterRelativePath string) (SkillDirectoryPage, error) {
+	if !core.ValidID(skillID) || (afterRelativePath != "" && !validSkillLoadPath(afterRelativePath)) {
+		return SkillDirectoryPage{}, core.Malformed
+	}
+	tx, err := k.pool.Begin(ctx)
+	if err != nil {
+		return SkillDirectoryPage{}, err
+	}
+	defer tx.Rollback(ctx)
+	if err = k.guard(ctx, tx, binding.scope, &binding); err != nil {
+		return SkillDirectoryPage{}, err
+	}
+	taskID, err := k.requireProductTaskWorking(ctx, tx, binding)
+	if err != nil {
+		return SkillDirectoryPage{}, err
+	}
+	if taskID != binding.task {
+		return SkillDirectoryPage{}, core.StaleEpoch
+	}
+	var owner string
+	if err = tx.QueryRow(ctx, "SELECT owner FROM tasks WHERE company_id=$1 AND id=$2", binding.scope.company, taskID).Scan(&owner); err != nil {
+		return SkillDirectoryPage{}, err
+	}
+	if owner != binding.employee {
+		return SkillDirectoryPage{}, core.Denied
+	}
+	// This common authorization path verifies the approved revision, exact
+	// employee binding, and every CAS member before any paths are disclosed.
+	if _, err = k.readAuthorizedSkillText(ctx, tx, binding, SkillLoadRequest{SkillID: skillID, RelativePath: "SKILL.md"}); err != nil {
+		return SkillDirectoryPage{}, err
+	}
+	var packageID, revision, versionDigest string
+	var manifestJSON []byte
+	if err = tx.QueryRow(ctx, `SELECT package_id,revision,content_digest,manifest
+FROM skill_revisions WHERE company_id=$1 AND id=$2`, binding.scope.company, skillID).Scan(&packageID, &revision, &versionDigest, &manifestJSON); err != nil {
+		return SkillDirectoryPage{}, err
+	}
+	var manifest capabilitysource.ReadOnlySkillManifest
+	if len(manifestJSON) == 0 || len(manifestJSON) > 1<<20 || json.Unmarshal(manifestJSON, &manifest) != nil ||
+		manifest.SchemaVersion != capabilitysource.ReadOnlySkillBundleSchema || !manifest.ReadOnly || manifest.Name != packageID || !validCapabilityDigest(versionDigest) {
+		return SkillDirectoryPage{}, core.Integrity
+	}
+	page := SkillDirectoryPage{SkillID: skillID, PackageID: packageID, Revision: revision, VersionDigest: versionDigest, Files: []SkillReferenceSummary{}}
+	for _, file := range manifest.Files {
+		if file.RelativePath <= afterRelativePath {
+			continue
+		}
+		if !validSkillLoadPath(file.RelativePath) || !validCapabilityDigest(file.ContentSHA256) || file.ByteSize <= 0 || file.ByteSize > intake.MaxDirectoryBytes {
+			return SkillDirectoryPage{}, core.Integrity
+		}
+		if len(page.Files) == SkillDirectoryPageSize {
+			page.Truncated = true
+			page.NextAfterRelativePath = page.Files[len(page.Files)-1].RelativePath
+			break
+		}
+		page.Files = append(page.Files, SkillReferenceSummary{
+			RelativePath: file.RelativePath, MediaType: file.MediaType, ByteSize: file.ByteSize, ContentDigest: file.ContentSHA256,
+			Loadable: (file.MediaType == "text/markdown" || file.MediaType == "text/plain") && file.ByteSize <= maxSkillLoadTextBytes,
+		})
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return SkillDirectoryPage{}, err
+	}
+	return page, nil
 }
 
 func (k *Kernel) TXLoadBoundReadOnlySkill(ctx context.Context, binding Binding, key string, request SkillLoadRequest) (Receipt, SkillLoadDocument, error) {

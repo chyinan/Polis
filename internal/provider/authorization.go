@@ -13,6 +13,8 @@ const (
 	ProductReservationBridgeQualificationPurpose   = "R0.5B16_RESERVATION_TO_INITIALIZE_BRIDGE_QUALIFICATION"
 	OfflineReadOnlySkillSurfacePurpose             = "offline-read-only-skill-surface"
 	OfflineSkillSurfaceSimulationMarker            = "offline-skill-surface-unqualified"
+	OfflineSkillDirectorySurfacePurpose            = "offline-skill-directory-surface"
+	OfflineSkillDirectorySurfaceSimulationMarker   = "offline-skill-directory-surface-unqualified"
 	ProductExactSurfaceExecutionFingerprint        = "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff"
 	ProductProviderL2Fingerprint                   = "59a4ac003fb0f49360382a707f7057edc03e0574ba328d0cf3a59eeab2726781"
 	ProductProviderRuntimeEnvelopeFingerprintV2    = "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51"
@@ -31,6 +33,9 @@ const (
 	ProductSkillToolSurfaceV5ManifestDigest        = "f1fe445f46675e7d1883c3b9360f0ad6bef168ce2f5a2ebc8ea97e9a1f28b2a8"
 	ProductSkillToolSurfaceV5AggregateSchemaBytes  = 2459
 	ProductSkillToolSurfaceV5AggregateSchemaDigest = "a43fb0039ccc3e2b654fdf2549ac22432f690f95eb16157ee8373e1e6d059ed0"
+	ProductSkillDirectoryManifestDigest            = "7ad11ab318f15e124554709b8b5bfed2e87f60d4fcad07428def7e41fd1390e1"
+	ProductSkillDirectorySchemaBytes               = 2724
+	ProductSkillDirectorySchemaDigest              = "8ffefe6b5f3399dfb480ab9d77e063b4e407074d45c95a0cf4e85a0603ad788e"
 )
 
 var (
@@ -83,6 +88,23 @@ func ValidateExecutionAuthorization(authorization ExecutionAuthorization) error 
 // v4. The v5 Skill surface is accepted only by the zero-egress fake runtime,
 // using an explicit marker that cannot be mistaken for provider qualification.
 func ValidateRuntimeExecutionAuthorization(authorization ExecutionAuthorization) error {
+	if authorization.ProviderMode == "fake" && authorization.ToolSurfaceQualification == ProductSkillDirectoryToolSurfaceQualification {
+		if err := validateExecutionAuthorizationShape(authorization); err != nil {
+			return err
+		}
+		profile := ExecutionProfile{
+			ToolCallLimit: authorization.ToolCallLimit, Purpose: authorization.Purpose,
+			ExecutionEnvelope:                authorization.ExecutionEnvelope,
+			ToolSurfaceQualification:         authorization.ToolSurfaceQualification,
+			ExactSurfaceExecutionFingerprint: authorization.ExactSurfaceExecutionFingerprint,
+			ProductProviderL2Fingerprint:     authorization.ProductProviderL2Fingerprint,
+		}
+		return ValidateOfflineFakeSkillDirectorySurface(authorization.ProviderMode, profile, ToolSurface{
+			ToolCount: authorization.ToolCount, ManifestDigest: authorization.ToolSurfaceDigest,
+			AggregateSchemaBytes: authorization.AggregateSchemaBytes, AggregateSchemaDigest: authorization.AggregateSchemaDigest,
+			Tools: ProductSkillDirectoryToolSurface().Tools,
+		})
+	}
 	if authorization.ProviderMode == "fake" && authorization.ToolSurfaceQualification == ProductSharedMissionArtifactToolSurfaceQualification {
 		if err := validateExecutionAuthorizationShape(authorization); err != nil {
 			return err

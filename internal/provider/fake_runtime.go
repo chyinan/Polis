@@ -18,19 +18,20 @@ import (
 )
 
 type FakeRuntimeConfig struct {
-	TurnDelay                    time.Duration
-	Model                        string
-	Effort                       string
-	Profile                      string
-	Purpose                      string
-	ExecutionEnvelope            string
-	ToolCallLimit                int
-	ReadOnlySkillSurface         bool
-	DirectMessagingSurface       bool
-	SharedMissionArtifactSurface bool
-	ControlledMCPToolSurface     bool
-	ControlledMCPToolSurfaceV2   bool
-	ControlledMCPCallFixture     json.RawMessage
+	TurnDelay                     time.Duration
+	Model                         string
+	Effort                        string
+	Profile                       string
+	Purpose                       string
+	ExecutionEnvelope             string
+	ToolCallLimit                 int
+	ReadOnlySkillSurface          bool
+	ReadOnlySkillDirectorySurface bool
+	DirectMessagingSurface        bool
+	SharedMissionArtifactSurface  bool
+	ControlledMCPToolSurface      bool
+	ControlledMCPToolSurfaceV2    bool
+	ControlledMCPCallFixture      json.RawMessage
 }
 
 type FakeRuntime struct {
@@ -62,6 +63,8 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 			config.Purpose = OfflineDirectMessagingToolSurfacePurpose
 		} else if config.SharedMissionArtifactSurface {
 			config.Purpose = OfflineSharedMissionArtifactToolSurfacePurpose
+		} else if config.ReadOnlySkillDirectorySurface {
+			config.Purpose = OfflineSkillDirectorySurfacePurpose
 		} else if config.ReadOnlySkillSurface {
 			config.Purpose = OfflineReadOnlySkillSurfacePurpose
 		} else if config.ControlledMCPToolSurfaceV2 {
@@ -90,6 +93,11 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 		qualification = ProductControlledMCPToolSurfaceQualification
 		exactSurfaceFingerprint = OfflineControlledMCPToolSurfaceSimulationMarker
 		providerFingerprint = OfflineControlledMCPToolSurfaceSimulationMarker
+	} else if config.ReadOnlySkillDirectorySurface {
+		surface = ProductSkillDirectoryToolSurface()
+		qualification = ProductSkillDirectoryToolSurfaceQualification
+		exactSurfaceFingerprint = OfflineSkillDirectorySurfaceSimulationMarker
+		providerFingerprint = OfflineSkillDirectorySurfaceSimulationMarker
 	} else if config.ReadOnlySkillSurface {
 		surface = ProductSkillToolSurface()
 		qualification = ProductSkillToolSurfaceQualification
@@ -120,22 +128,26 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if r.config.ControlledMCPToolSurface && r.config.ControlledMCPToolSurfaceV2 {
 		return errors.New("offline MCP runtime must select exactly one versioned tool surface")
 	}
-	if r.config.SharedMissionArtifactSurface && (r.config.DirectMessagingSurface || r.config.ReadOnlySkillSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
+	if r.config.ReadOnlySkillSurface && r.config.ReadOnlySkillDirectorySurface {
+		return errors.New("offline Skill runtime must select exactly one versioned tool surface")
+	}
+	if r.config.SharedMissionArtifactSurface && (r.config.DirectMessagingSurface || r.config.ReadOnlySkillSurface || r.config.ReadOnlySkillDirectorySurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
 		return errors.New("offline shared-artifact access requires its isolated versioned tool surface")
 	}
-	if r.config.DirectMessagingSurface && (r.config.ReadOnlySkillSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
+	if r.config.DirectMessagingSurface && (r.config.ReadOnlySkillSurface || r.config.ReadOnlySkillDirectorySurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
 		return errors.New("offline direct messaging requires its isolated versioned tool surface")
 	}
 	if len(r.config.ControlledMCPCallFixture) > 0 && (!r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 || !json.Valid(r.config.ControlledMCPCallFixture)) {
 		return errors.New("offline MCP call fixture requires the exact controlled-MCP surface and valid JSON")
 	}
-	qualifiedSurface := !r.config.ReadOnlySkillSurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
+	qualifiedSurface := !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
 	offlineSkillSurface := r.config.ReadOnlySkillSurface && ValidateOfflineFakeSkillSurface(r.Mode(), r.profile, r.surface) == nil
+	offlineSkillDirectorySurface := r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeSkillDirectorySurface(r.Mode(), r.profile, r.surface) == nil
 	offlineDirectMessagingSurface := r.config.DirectMessagingSurface && ValidateOfflineFakeProductDirectMessagingSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineSharedMissionArtifactSurface := r.config.SharedMissionArtifactSurface && ValidateOfflineFakeSharedMissionArtifactSurface(r.Mode(), r.profile, r.surface) == nil
-	offlineControlledMCPSurface := r.config.ControlledMCPToolSurface && !r.config.ReadOnlySkillSurface && ValidateOfflineFakeControlledMCPSurface(r.Mode(), r.profile, r.surface) == nil
-	offlineControlledMCPSurfaceV2 := r.config.ControlledMCPToolSurfaceV2 && !r.config.ReadOnlySkillSurface && ValidateOfflineFakeControlledMCPSurfaceV2(r.Mode(), r.profile, r.surface) == nil
-	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
+	offlineControlledMCPSurface := r.config.ControlledMCPToolSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurface(r.Mode(), r.profile, r.surface) == nil
+	offlineControlledMCPSurfaceV2 := r.config.ControlledMCPToolSurfaceV2 && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurfaceV2(r.Mode(), r.profile, r.surface) == nil
+	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineSkillDirectorySurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
 		return errors.New("offline provider runtime configuration is invalid")
 	}
 	return nil
@@ -180,20 +192,22 @@ func (r *FakeRuntime) Start(_ context.Context, options SessionStartOptions) (Ses
 	}
 	return &fakeSession{
 		process: process, delay: r.config.TurnDelay, missionID: options.MissionID, taskID: options.TaskID,
-		skillLoadSurface: options.ToolSurface.ManifestDigest == ProductSkillToolSurface().ManifestDigest,
-		mcpCallSurface:   options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurfaceV2().ManifestDigest,
-		mcpCallFixture:   append(json.RawMessage(nil), r.config.ControlledMCPCallFixture...),
+		skillLoadSurface:      options.ToolSurface.ManifestDigest == ProductSkillToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
+		skillDirectorySurface: options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
+		mcpCallSurface:        options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurfaceV2().ManifestDigest,
+		mcpCallFixture:        append(json.RawMessage(nil), r.config.ControlledMCPCallFixture...),
 	}, nil
 }
 
 type fakeSession struct {
-	process          *runner.Process
-	delay            time.Duration
-	missionID        string
-	taskID           string
-	skillLoadSurface bool
-	mcpCallSurface   bool
-	mcpCallFixture   json.RawMessage
+	process               *runner.Process
+	delay                 time.Duration
+	missionID             string
+	taskID                string
+	skillLoadSurface      bool
+	skillDirectorySurface bool
+	mcpCallSurface        bool
+	mcpCallFixture        json.RawMessage
 }
 
 func (s *fakeSession) Process() *runner.Process { return s.process }
@@ -253,7 +267,34 @@ func (s *fakeSession) Turn(ctx context.Context, _ string, _ string, _ codex.Turn
 		return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, err
 	}
 	if s.skillLoadSurface {
-		if skillID, relativePath := firstLoadableSkillReference(current); skillID != "" {
+		skillID, relativePath := firstLoadableSkillReference(current)
+		if s.skillDirectorySurface {
+			skillID = firstBoundSkillID(current)
+			if skillID != "" {
+				cursor := ""
+				for pageNumber := 0; pageNumber < 8; pageNumber++ {
+					page, listErr := call("skills_list", map[string]any{"skill_id": skillID, "after_relative_path": cursor})
+					if listErr != nil {
+						return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, listErr
+					}
+					relativePath = firstLoadableSkillPath(page)
+					if relativePath != "" {
+						break
+					}
+					data, ok := page["data"].(map[string]any)
+					truncated, _ := data["truncated"].(bool)
+					next, _ := data["nextAfterRelativePath"].(string)
+					if !ok || !truncated || next == "" || next == cursor {
+						return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline Skill directory omitted the required SKILL.md path")
+					}
+					cursor = next
+				}
+				if relativePath == "" {
+					return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline Skill directory exceeded its bounded page count")
+				}
+			}
+		}
+		if skillID != "" && relativePath != "" {
 			loaded, loadErr := call("skills_load", map[string]any{"skill_id": skillID, "relative_path": relativePath})
 			if loadErr != nil || nestedString(loaded, "data", "contentBoundary") != "approved_static_text_no_additional_permissions" || nestedString(loaded, "data", "contentDigest") == "" || nestedString(loaded, "data", "content") == "" {
 				if loadErr == nil {
@@ -371,6 +412,50 @@ func firstLoadableSkillReference(current map[string]any) (string, string) {
 		}
 	}
 	return "", ""
+}
+
+func firstBoundSkillID(current map[string]any) string {
+	data, ok := current["data"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	items, ok := data["skill_catalog"].([]any)
+	if !ok {
+		return ""
+	}
+	for _, rawItem := range items {
+		item, ok := rawItem.(map[string]any)
+		if !ok {
+			continue
+		}
+		if skillID, _ := item["skillId"].(string); skillID != "" {
+			return skillID
+		}
+	}
+	return ""
+}
+
+func firstLoadableSkillPath(page map[string]any) string {
+	data, ok := page["data"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	files, ok := data["files"].([]any)
+	if !ok {
+		return ""
+	}
+	for _, rawFile := range files {
+		file, ok := rawFile.(map[string]any)
+		if !ok {
+			continue
+		}
+		loadable, _ := file["loadable"].(bool)
+		relativePath, _ := file["relativePath"].(string)
+		if loadable && relativePath == "SKILL.md" {
+			return relativePath
+		}
+	}
+	return ""
 }
 
 func (s *fakeSession) Stop(_ context.Context) (runner.StopProof, error) { return s.process.Stop() }

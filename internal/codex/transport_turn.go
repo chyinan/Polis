@@ -257,9 +257,9 @@ func (c *Client) TurnWithOptions(ctx context.Context, thread, effort, prompt str
 				if cached.Tool != p.Tool || cached.Arguments != string(p.Args) {
 					return result, errors.New("outcome_requiring_reconciliation: native tool identity conflict")
 				}
-				if p.Tool == "polis_skills_load" {
+				if p.Tool == "polis_skills_load" || p.Tool == "polis_skills_list" {
 					// Capability revocation takes priority over a response cached
-					// before a reconnect. The Kernel idempotently rechecks grants.
+					// before a reconnect. The Kernel rechecks grants and CAS bytes.
 					toolResult, boundary = handler(strings.TrimPrefix(p.Tool, "polis_"), p.CallID, p.Args)
 				} else {
 					toolResult, boundary = cached.Result, cached.Boundary

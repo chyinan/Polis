@@ -36,6 +36,7 @@ type EmployeeTools struct {
 	DirectMessagingSurface    bool
 	SharedArtifactSurface     bool
 	SkillLoadSurface          bool
+	SkillDirectorySurface     bool
 	GuidanceSurface           bool
 	ControlledMCPSurface      bool
 	ControlledStdioMCPEnabled bool
@@ -120,6 +121,11 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 			h.SkillCatalogTruncated = false
 			h.SkillLoads = nil
 			h.SkillLoadsTruncated = false
+		}
+		if t.SkillDirectorySurface {
+			for index := range h.SkillCatalog {
+				h.SkillCatalog[index].References = nil
+			}
 		}
 		if t.ControlledMCPSurface && name != "workspace_read" {
 			h.MCPToolSets, e = k.BoundMCPToolSets(ctx, b, t.ControlledStdioMCPEnabled, t.StreamableHTTPMCPEnabled)
@@ -255,6 +261,19 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		receipt, document, e := k.TXLoadBoundReadOnlySkill(ctx, b, key, SkillLoadRequest{SkillID: args.SkillID, RelativePath: args.RelativePath})
 		return ToolResult{Receipt: &receipt, Data: document}, e
+	case "skills_list":
+		if !t.ProductSurface || !t.SkillLoadSurface || !t.SkillDirectorySurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			SkillID           string `json:"skill_id"`
+			AfterRelativePath string `json:"after_relative_path"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		page, e := k.ListBoundReadOnlySkillFiles(ctx, b, args.SkillID, args.AfterRelativePath)
+		return ToolResult{Data: page}, e
 	case "workspace_replace":
 		if t.ReadOnly {
 			return ToolResult{}, core.Denied
