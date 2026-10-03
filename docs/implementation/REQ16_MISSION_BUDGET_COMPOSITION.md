@@ -1,10 +1,10 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 137
+Updated: 2026-10-03, Slice 138
 
 ## Decision
 
-The implemented outer scopes are an explicitly configured Mission-level and Company-level **admitted protocol tool-call cap**. Each is a separately dimensioned ceiling over the same accepted call facts, not a claim that every provider request, CLI-internal retry, token, dollar, or tool-side effect is visible. The Codex CLI path continues to report `retry_visibility=limited`, with unobserved retry count unknown. ProviderAccount financial enforcement remains deferred until general WorkerSessions bind a stable account identity and the runtime has a reliable settled/reserved/unknown liability model.
+The implemented outer scopes are an explicitly configured Mission-level and Company-level **admitted protocol tool-call cap**. Each is a separately dimensioned ceiling over the same accepted call facts, not a claim that every provider request, CLI-internal retry, token, dollar, or tool-side effect is visible. The Codex CLI path continues to report `retry_visibility=limited`, with unobserved retry count unknown. General WorkerSessions now bind a selected Codex account locator, but it is not yet proven to cover all billable liability; ProviderAccount financial enforcement also requires a reliable settled/reserved/unknown liability model.
 
 Each accepted tool-call usage fact advances the Company, Mission, Session, Task and ProblemKey counters atomically when those scopes apply. These are projections of one accepted call; a summary must not add those projections together. A Company or ProblemKey cap remains a separate constraint and does not create or reserve capacity in another scope. Company and Mission caps must be explicitly set by the local owner; do not derive them by summing profile defaults, Task limits, or ProblemKey limits. Existing Company and Mission usage can be conservatively backfilled from durable Task call counters, but the cap itself remains pending where no explicit finite ceiling exists.
 
@@ -42,6 +42,10 @@ Schema 93 adds an append-only auth-principal snapshot table keyed by WorkerSessi
 
 General Codex business profiles now capture a versioned auth-principal fingerprint from issuer/subject claims when available and record `unavailable` when they cannot be reconstructed. After the WorkerSession snapshot is pinned, Codex rechecks the fingerprint during readiness/reservation so a changed available principal cannot proceed on that binding. This detects principal changes only when a fingerprint is available; it does not prove the principal equals a provider billing account. No raw auth material or claims are persisted. Provider-account mapping and reserve/settle/unknown-liability accounting remain necessary before financial caps. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-137-general-codex-auth-principal/verification.md`.
 
+## Slice 138 Codex account locator snapshot
+
+The current Codex `CodexAuth::get_account_id` implementation reads the token account ID for token-backed auth, and Codex's backend client sends a selected ChatGPT account ID in the `ChatGPT-Account-Id` header. For ChatGPT auth files, Polis now hashes `tokens.account_id`, falling back to the ID-token `https://api.openai.com/auth.chatgpt_account_id` claim, and binds the observation immutably to each new WorkerSession in Schema 94. The source locates a selected Codex account for routing; it does not document that the ID is the complete billable liability scope or how retries are charged. Therefore the fingerprint is not yet used as a financial budget key. Raw IDs are not persisted. See the [Codex auth account-ID accessor](https://github.com/openai/codex/blob/main/codex-rs/login/src/auth/manager.rs#L3258-L3282) and [Codex backend account-ID header](https://github.com/openai/codex/blob/main/codex-rs/backend-client/src/client.rs#L2631-L2679), plus `evidence/development/r1-r3-implementation-validation-20261003-slice-138-codex-account-locator/verification.md`.
+
 ## Previous Slice 133 implementation state
 
 Schema 91 conservatively backfills Company usage from the durable Task counters. Existing caps remain pending until explicit local-owner configuration. An append-only allocation ledger records initial configuration/increases, and immutable rejection rows bind the route, Task/session, cap, usage and budget revision. Admission and each accepted tool call enforce the Company cap before lower scopes; accepted calls increment Company in the same transaction as Mission, Session, Task and ProblemKey. Handover/provider turn clamping uses the minimum Company and lower-scope remaining allowance. Workbench exposes a no-store Company projection and a reasoned, confirmed configuration/increase action. All migrated Companies require explicit configuration before new Worker admission or calls are allowed. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-133-company-tool-call-budget/verification.md`.
@@ -56,11 +60,11 @@ Schema 89 adds Mission usage and cap/revision columns, backfills usage by summin
 
 ## Remaining bounded sequence
 
-1. Do not claim ProviderAccount financial enforcement until a stable account identity is bound to general WorkerSessions and runtime admissions can reserve, settle and retain unknown liabilities.
+1. Do not claim ProviderAccount financial enforcement until the selected account locator is proven to represent the billable liability scope and runtime admissions can reserve, settle and retain unknown liabilities.
 2. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them.
 3. Keep FT-42–45 and broader qualification separate from implementation evidence; they remain `not_run`.
 
-ProviderAccount caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer remain open requirements; none can be derived from this call counter.
+ProviderAccount registry/caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer remain open requirements; none can be derived from this call counter or the account locator alone.
 
 ## Qualification status
 

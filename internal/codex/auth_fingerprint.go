@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"time"
+	"unicode"
 )
 
 const (
@@ -115,6 +116,55 @@ func ParseAuthMaterial(raw []byte, sourceClass string) (AuthMaterial, error) {
 	material.IdentityFingerprint = hex.EncodeToString(identity[:])
 	material.IdentityFingerprintStatus = "available"
 	return material, nil
+}
+
+// ParseChatGPTAccountIDFingerprint extracts Codex's selected ChatGPT account
+// identifier from its auth file and immediately hashes it into an opaque,
+// provider-scoped key. The raw account identifier is never returned to callers.
+// This is an account locator only; it does not establish billing semantics.
+func ParseChatGPTAccountIDFingerprint(raw []byte) (fingerprint, status, reasonCode string) {
+	var document struct {
+		AuthMode string `json:"auth_mode"`
+		Tokens   struct {
+			AccountID string `json:"account_id"`
+			IDToken   string `json:"id_token"`
+		} `json:"tokens"`
+	}
+	if json.Unmarshal(raw, &document) != nil {
+		return "", "unavailable", "auth_file_unparseable"
+	}
+	if document.AuthMode != "chatgpt" {
+		return "", "unsupported", "auth_mode_account_id_not_supported"
+	}
+	accountID := document.Tokens.AccountID
+	if accountID == "" && document.Tokens.IDToken != "" {
+		if claims, ok := parseJWTClaims(document.Tokens.IDToken); ok {
+			if rawAuth, exists := claims["https://api.openai.com/auth"]; exists {
+				var authClaims map[string]json.RawMessage
+				if json.Unmarshal(rawAuth, &authClaims) == nil {
+					accountID, _ = jsonStringClaim(authClaims, "chatgpt_account_id")
+				}
+			}
+		}
+	}
+	if accountID == "" || strings.TrimSpace(accountID) != accountID || len(accountID) > 512 {
+		return "", "unavailable", "chatgpt_account_id_not_reconstructable"
+	}
+	for _, char := range accountID {
+		if unicode.IsControl(char) {
+			return "", "unavailable", "chatgpt_account_id_not_reconstructable"
+		}
+	}
+	identityBytes, err := json.Marshal(struct {
+		SchemaVersion string `json:"schema_version"`
+		Provider      string `json:"provider"`
+		AccountID     string `json:"account_id"`
+	}{"codex-chatgpt-account-id@1", "codex_chatgpt", accountID})
+	if err != nil {
+		return "", "unavailable", "chatgpt_account_id_not_reconstructable"
+	}
+	fingerprintBytes := sha256.Sum256(identityBytes)
+	return hex.EncodeToString(fingerprintBytes[:]), "available", ""
 }
 
 func (m AuthFingerprintManifest) Validate() error {

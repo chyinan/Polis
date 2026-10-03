@@ -574,6 +574,22 @@ func (a *RealProviderWorkerAdapter) startBusinessWorker(ctx context.Context, com
 		}
 		return nil, fmt.Errorf("provider auth identity snapshot could not be persisted: %w", err)
 	}
+	accountIdentitySnapshot, err := provider.CaptureProviderAccountIdentitySnapshot(ctx, a.runtime)
+	if err != nil {
+		if cleanupErr := a.finalizeUnstartedOwned(context.Background(), companyID, missionID, binding, kernel.ProductTaskInputContext{}, provider.Reservation{}, "provider account identity snapshot could not be captured", "provider-account-identity-snapshot-failed-"+binding.SessionID(), ""); cleanupErr != nil {
+			return nil, errors.Join(err, fmt.Errorf("WorkerSession finalization is unresolved: %w", cleanupErr))
+		}
+		return nil, fmt.Errorf("provider account identity snapshot could not be captured: %w", err)
+	}
+	if _, err = a.kernel.TXRecordWorkerProviderAccountIdentity(ctx, binding, kernel.WorkerProviderAccountIdentitySnapshot{
+		SchemaVersion: accountIdentitySnapshot.SchemaVersion, ProviderClass: accountIdentitySnapshot.ProviderClass,
+		Status: accountIdentitySnapshot.Status, Fingerprint: accountIdentitySnapshot.Fingerprint, ReasonCode: accountIdentitySnapshot.ReasonCode,
+	}); err != nil {
+		if cleanupErr := a.finalizeUnstartedOwned(context.Background(), companyID, missionID, binding, kernel.ProductTaskInputContext{}, provider.Reservation{}, "provider account identity snapshot could not be persisted", "provider-account-identity-snapshot-persist-failed-"+binding.SessionID(), ""); cleanupErr != nil {
+			return nil, errors.Join(err, fmt.Errorf("WorkerSession finalization is unresolved: %w", cleanupErr))
+		}
+		return nil, fmt.Errorf("provider account identity snapshot could not be persisted: %w", err)
+	}
 	inputContext, err := a.kernel.ProductTaskInputContext(ctx, binding)
 	if err != nil {
 		inputErr := fmt.Errorf("product Task input context failed integrity checks: %w", err)

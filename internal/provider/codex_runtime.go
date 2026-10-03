@@ -75,6 +75,11 @@ type CodexRuntime struct {
 	authIdentitySnapshotReason        string
 	authIdentitySnapshotCaptured      bool
 	authIdentitySnapshotPinned        bool
+	providerAccountFingerprint        string
+	providerAccountStatus             string
+	providerAccountReason             string
+	providerAccountCaptured           bool
+	providerAccountPinned             bool
 	diagnosticMu                      sync.Mutex
 	diagnosticReservation             *ProductSurfaceDiagnosticReservation
 	diagnosticAuthorization           ProductSurfaceDiagnosticAuthorization
@@ -141,6 +146,33 @@ func (r *CodexRuntime) ProviderAuthIdentitySnapshot(ctx context.Context) (Provid
 	return snapshot, snapshot.Validate()
 }
 
+func (r *CodexRuntime) ProviderAccountIdentitySnapshot(ctx context.Context) (ProviderAccountIdentitySnapshot, error) {
+	if r == nil || ctx == nil {
+		return ProviderAccountIdentitySnapshot{}, errors.New("Codex account identity snapshot source is unavailable")
+	}
+	if err := ctx.Err(); err != nil {
+		return ProviderAccountIdentitySnapshot{}, err
+	}
+	current := readCodexAccountIdentity(r.config.AuthFile)
+	r.authMu.Lock()
+	defer r.authMu.Unlock()
+	if !r.providerAccountCaptured {
+		return ProviderAccountIdentitySnapshot{}, errors.New("Codex account identity readiness snapshot is missing")
+	}
+	expected := ProviderAccountIdentitySnapshot{
+		SchemaVersion: ProviderAccountIdentitySnapshotSchemaV1,
+		ProviderClass: "codex_chatgpt",
+		Status:        r.providerAccountStatus,
+		Fingerprint:   r.providerAccountFingerprint,
+		ReasonCode:    r.providerAccountReason,
+	}
+	if !sameCodexAccountIdentityObservation(expected, current) {
+		return ProviderAccountIdentitySnapshot{}, errors.New("Codex account identity changed before WorkerSession binding")
+	}
+	r.providerAccountPinned = true
+	return current, current.Validate()
+}
+
 func (r *CodexRuntime) RequiresLinuxWorkerCgroup() bool {
 	return runtime.GOOS == "linux" && r.config.RequireWorkerCgroup
 }
@@ -198,8 +230,14 @@ func (r *CodexRuntime) Readiness(ctx context.Context) error {
 		if err := r.captureLive2AuthSource(); err != nil {
 			return err
 		}
+		if err := r.captureCodexAccountIdentity(ctx); err != nil {
+			return err
+		}
 	} else if !r.config.DiagnosticOnly {
 		if err := r.captureGeneralCodexAuthIdentity(ctx); err != nil {
+			return err
+		}
+		if err := r.captureCodexAccountIdentity(ctx); err != nil {
 			return err
 		}
 	}
@@ -233,6 +271,9 @@ func (r *CodexRuntime) Reserve(ctx context.Context, authorization ExecutionAutho
 			return Reservation{}, err
 		}
 	} else if err := r.verifyGeneralCodexAuthIdentity(ctx); err != nil {
+		return Reservation{}, err
+	}
+	if err := r.verifyCodexAccountIdentity(ctx); err != nil {
 		return Reservation{}, err
 	}
 	if r.config.AllowancePath == "" || r.config.MediumLimit < 1 || r.config.HighLimit != 0 || r.config.ToolCallLimit < 1 {
@@ -415,6 +456,87 @@ func sameCodexAuthIdentityObservation(expected, current ProviderAuthIdentitySnap
 		return expected.Fingerprint == current.Fingerprint
 	}
 	return true
+}
+
+func readCodexAccountIdentity(path string) ProviderAccountIdentitySnapshot {
+	snapshot := ProviderAccountIdentitySnapshot{
+		SchemaVersion: ProviderAccountIdentitySnapshotSchemaV1,
+		ProviderClass: "codex_chatgpt",
+		Status:        "unavailable",
+		ReasonCode:    "auth_source_read_failed",
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return snapshot
+	}
+	fingerprint, status, reason := codex.ParseChatGPTAccountIDFingerprint(raw)
+	snapshot.Fingerprint = fingerprint
+	snapshot.Status = status
+	snapshot.ReasonCode = reason
+	return snapshot
+}
+
+func sameCodexAccountIdentityObservation(expected, current ProviderAccountIdentitySnapshot) bool {
+	if expected.Status != current.Status {
+		return false
+	}
+	if expected.Status == "available" {
+		return expected.Fingerprint == current.Fingerprint
+	}
+	return true
+}
+
+func (r *CodexRuntime) captureCodexAccountIdentity(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	current := readCodexAccountIdentity(r.config.AuthFile)
+	if err := current.Validate(); err != nil {
+		return err
+	}
+	r.authMu.Lock()
+	defer r.authMu.Unlock()
+	expected := ProviderAccountIdentitySnapshot{
+		SchemaVersion: ProviderAccountIdentitySnapshotSchemaV1,
+		ProviderClass: "codex_chatgpt",
+		Status:        r.providerAccountStatus,
+		Fingerprint:   r.providerAccountFingerprint,
+		ReasonCode:    r.providerAccountReason,
+	}
+	if r.providerAccountPinned {
+		if !sameCodexAccountIdentityObservation(expected, current) {
+			return errors.New("Codex account identity changed after WorkerSession binding")
+		}
+		return nil
+	}
+	r.providerAccountFingerprint = current.Fingerprint
+	r.providerAccountStatus = current.Status
+	r.providerAccountReason = current.ReasonCode
+	r.providerAccountCaptured = true
+	return nil
+}
+
+func (r *CodexRuntime) verifyCodexAccountIdentity(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	current := readCodexAccountIdentity(r.config.AuthFile)
+	r.authMu.Lock()
+	defer r.authMu.Unlock()
+	if !r.providerAccountCaptured {
+		return errors.New("Codex account identity readiness snapshot is missing")
+	}
+	expected := ProviderAccountIdentitySnapshot{
+		SchemaVersion: ProviderAccountIdentitySnapshotSchemaV1,
+		ProviderClass: "codex_chatgpt",
+		Status:        r.providerAccountStatus,
+		Fingerprint:   r.providerAccountFingerprint,
+		ReasonCode:    r.providerAccountReason,
+	}
+	if !sameCodexAccountIdentityObservation(expected, current) {
+		return errors.New("Codex account identity changed after readiness")
+	}
+	return nil
 }
 
 func (r *CodexRuntime) captureGeneralCodexAuthIdentity(ctx context.Context) error {
