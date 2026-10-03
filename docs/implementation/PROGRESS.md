@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 126 — REQ-16 authorized Task budget recovery (Schema 87)
+
+An exhausted finite Task tool-call cap can now be increased by a confirmed local-owner command after the Task has no live WorkerSession. Schema 87 records append-only cap transitions with Task revision, ProblemKey allocation revision, closing-reserve revision, request ID and reason; a database guard rejects direct cap edits. Kernel rechecks Task state, both budget revisions, available shared calls and protected closing reserve in the same transaction that updates the Task cap. Workbench shows up to 20 Task budgets per ProblemKey and offers reasoned, confirmed Task allocations. ProblemKey limits and closing reserves remain the controlling shared bounds. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all 87 migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-126-task-budget-recovery/verification.md`.
+
+Mission/Company/Provider budget composition, hidden retries, token/money accounting and durable exhaustion/closeout outcomes remain open.
+
 ## Slice 125 — REQ-16 rejected ProblemKey budget routes (Schema 86)
 
 Budget-gated Worker admissions and tool calls now append an immutable rejection row in the same transaction that returns `TOOL_CALL_BUDGET_EXHAUSTED`. Each row records the route and reason, Task/session identity, Task and ProblemKey usage, cap/allocation revision, and closing-reserve state/revision. The database validates that the snapshot matches the live locked rows and that the reason follows from the recorded limit; rejected admissions do not initialize a Task or ProblemKey cap. Workbench budget rows report the rejection count and latest route/reason/Task. Go package/command build, frontend production build, migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-125-budget-rejection-audit/verification.md`.

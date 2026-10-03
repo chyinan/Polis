@@ -1,6 +1,10 @@
 # Polis cloud Codex handoff
 
-Updated: 2026-10-01
+Updated: 2026-10-03
+
+## Current continuation pointer
+
+The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 126 / Schema 87; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Recent slices 121–126 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized ProblemKey and Task allocations, closing reserves and immutable budget-rejection records. Slice 126 verification is in `evidence/development/r1-r3-implementation-validation-20261003-slice-126-task-budget-recovery/verification.md`.
 
 ## Objective and boundaries
 

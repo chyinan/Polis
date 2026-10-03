@@ -1,7 +1,7 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView} from '../domain/workbench';
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentCorrectionView, DomainContentPublicationView} from '../domain/workbench';
 import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DailyRoutineView, DataMode, DomainContentDraftView, DomainContentReviewView, DomainContentReviewSubmissionView, DomainContentSampleEvidenceView, DomainContentSourceEventView, DomainContentSourceStateView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceAreaAssessmentView, DomainEvidenceAreaView, DomainEvidenceItemView, DomainEvidenceLedgerView, DomainEvidencePreviewAttestationView, DomainEvidenceRecordView, DomainEvidenceReviewOutcomeView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, EmployeeDraft, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatus, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackCollectionPolicyReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, HumanInterventionState, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, ServiceBrowserSessionView, StdioMCPPackageRevisionView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
@@ -328,6 +328,18 @@ export type SetProblemToolCallClosingReserveOptions = Readonly<{
   reason: string;
   requestId: string;
 }>;
+export type AllocateTaskToolCallsOptions = Readonly<{
+  companyId: string;
+  problemKey: string;
+  taskId: string;
+  additionalToolCalls: number;
+  expectedToolCallLimit: number;
+  expectedTaskRevision: number;
+  expectedProblemRevision: number;
+  expectedReserveRevision: number;
+  reason: string;
+  requestId: string;
+}>;
 export type MemoryTaskRevalidationPreviewOptions = Readonly<{companyId: string; taskId: string; dependencyId: string; correctionId: string}>;
 export type RevalidateMemoryTaskOptions = Readonly<{
   companyId: string;
@@ -634,6 +646,7 @@ export type WorkbenchApi = Readonly<{
   listMemoryCorrections(options: MemoryCorrectionQueueQueryOptions): Promise<MemoryCorrectionQueueView>;
   listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView>;
   allocateProblemToolCalls(options: AllocateProblemToolCallsOptions): Promise<ProblemToolCallAllocationReceiptView>;
+  allocateTaskToolCalls(options: AllocateTaskToolCallsOptions): Promise<TaskToolCallAllocationReceiptView>;
   setProblemToolCallClosingReserve(options: SetProblemToolCallClosingReserveOptions): Promise<ProblemToolCallClosingReserveReceiptView>;
   getMemoryTaskRevalidationPreview(options: MemoryTaskRevalidationPreviewOptions): Promise<MemoryTaskRevalidationPreviewView>;
   revalidateMemoryTask(options: RevalidateMemoryTaskOptions): Promise<MemoryTaskRevalidationReceipt>;

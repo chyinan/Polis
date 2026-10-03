@@ -26,9 +26,21 @@ type ProblemToolCallClosingReserveRequest struct {
 	Confirm                 bool   `json:"confirm"`
 }
 
+type TaskToolCallAllocationRequest struct {
+	RequestID               string `json:"requestId"`
+	AdditionalCalls         int64  `json:"additionalToolCalls"`
+	ExpectedLimit           int64  `json:"expectedToolCallLimit"`
+	ExpectedTaskRevision    int64  `json:"expectedTaskRevision"`
+	ExpectedProblemRevision int64  `json:"expectedProblemRevision"`
+	ExpectedReserveRevision int64  `json:"expectedReserveRevision"`
+	Reason                  string `json:"reason"`
+	Confirm                 bool   `json:"confirm"`
+}
+
 type ProblemToolBudgetService interface {
 	ListProblemToolCallBudgets(ctx context.Context, companyID string) (kernel.ProblemToolCallBudgetList, error)
 	AllocateProblemToolCalls(ctx context.Context, companyID, problemKey string, request ProblemToolCallAllocationRequest) (kernel.Receipt, error)
+	AllocateTaskToolCalls(ctx context.Context, companyID, problemKey, taskID string, request TaskToolCallAllocationRequest) (kernel.Receipt, error)
 	SetProblemToolCallClosingReserve(ctx context.Context, companyID, problemKey string, request ProblemToolCallClosingReserveRequest) (kernel.Receipt, error)
 }
 
@@ -61,6 +73,19 @@ func (s *Service) AllocateProblemToolCalls(ctx context.Context, companyID, probl
 	return s.runtime.TXAllocateProblemToolCalls(ctx, s.runtime.LocalScope(companyID), problemKey, kernel.ProblemToolCallAllocationInput{
 		RequestID: request.RequestID, AdditionalCalls: request.AdditionalCalls,
 		ExpectedLimit: request.ExpectedLimit, ExpectedRevision: request.ExpectedRevision, Reason: request.Reason,
+	})
+}
+
+func (s *Service) AllocateTaskToolCalls(ctx context.Context, companyID, problemKey, taskID string, request TaskToolCallAllocationRequest) (kernel.Receipt, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || !kernel.ValidProblemKey(problemKey) || !core.ValidID(taskID) ||
+		validateRequestID(request.RequestID) != nil || request.AdditionalCalls < 1 || request.ExpectedLimit < 1 ||
+		request.ExpectedTaskRevision < 1 || request.ExpectedProblemRevision < 1 || request.ExpectedReserveRevision < 0 || !request.Confirm {
+		return kernel.Receipt{}, core.Malformed
+	}
+	return s.runtime.TXAllocateTaskToolCalls(ctx, s.runtime.LocalScope(companyID), problemKey, taskID, kernel.TaskToolCallAllocationInput{
+		RequestID: request.RequestID, AdditionalCalls: request.AdditionalCalls, ExpectedLimit: request.ExpectedLimit,
+		ExpectedTaskRevision: request.ExpectedTaskRevision, ExpectedProblemRevision: request.ExpectedProblemRevision,
+		ExpectedReserveRevision: request.ExpectedReserveRevision, Reason: request.Reason,
 	})
 }
 

@@ -1,8 +1,8 @@
 import {useState} from 'react';
 import type {ReactElement} from 'react';
-import {useAllocateProblemToolCalls, useProblemToolCallBudgets, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
+import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useProblemToolCallBudgets, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
 import type {WorkbenchApi} from '../data/workbench-api';
-import type {ProblemToolCallBudgetView} from '../domain/workbench';
+import type {ProblemToolCallBudgetView, TaskToolCallBudgetView} from '../domain/workbench';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
 
@@ -48,7 +48,7 @@ export function ProblemToolBudgetPanel({api, companyId}: Props): ReactElement | 
       <div><span className={styles.cardEyebrow}>预算审计</span><h2 className={styles.sectionTitle}>问题级工具调用额度</h2></div>
       <StatusBadge label={query.data ? `${query.data.items.length}${query.data.truncated ? '+' : ''} 个问题` : '读取中'} tone="info" />
     </div>
-    <p className={styles.formHint}>额度按 ProblemKey 在多个任务间共享。追加额度与关闭预留都需要本地操作者确认并保留不可撤回的版本记录；已存在 Task 的固定本地上限不会被追加命令重置。关闭预留只保护 Kernel 创建的 review 与 peer_review Task，可在首个 Worker 前预先配置。此处统计工具调用，不代表 Token、金额或隐藏重试成本。</p>
+    <p className={styles.formHint}>额度按 ProblemKey 在多个任务间共享。ProblemKey 与单个 Task 的追加额度都需要本地操作者确认并保留不可撤回的版本记录。提高 Task 上限仍受共享 ProblemKey 额度约束；普通 Task 还会保留关闭类预留。关闭预留只保护 Kernel 创建的 review 与 peer_review Task，可在首个 Worker 前预先配置。此处统计工具调用，不代表 Token、金额或隐藏重试成本。</p>
     {query.isPending ? <p className={styles.formHint}>正在读取 ProblemKey 额度…</p> : null}
     {query.isError ? <p className={styles.errorText} role="alert">读取额度失败：{query.error.message}</p> : null}
     {query.data?.items.length === 0 ? <p className={styles.formHint}>当前没有可显示的 ProblemKey 预算。</p> : null}
@@ -132,7 +132,62 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
         {reserveMutation.isError ? <p className={styles.errorText} role="alert">更新预留失败：{reserveMutation.error.message}；如预算版本已变化，请刷新后重新确认。</p> : null}
       </form> : <p className={styles.formHint}>无限额 ProblemKey 不接受关闭类预留。</p>}
       {budget.state === 'pending' && budget.closingReserveRevision > 0 ? <p className={styles.formHint}>当前预留在首个 Worker admission 时生效；其初始 ProblemKey 上限必须是有限额度且不小于预留数。</p> : null}
+      {budget.tasks.length > 0 ? <div className={styles.viewStack}>
+        <strong>Task 固定上限</strong>
+        {budget.tasks.map(task => <TaskBudgetRow api={api} budget={budget} companyId={companyId} key={task.taskId} task={task} />)}
+        {budget.tasksTruncated ? <p className={styles.formHint}>当前最多显示此 ProblemKey 下的 20 个 Task。</p> : null}
+      </div> : null}
     </div>
     <StatusBadge label={stateLabel(budget.state)} tone={stateTone(budget.state)} />
   </article>;
+}
+
+function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchApi; budget: ProblemToolCallBudgetView; companyId: string; task: TaskToolCallBudgetView}>): ReactElement {
+  const allocation = useAllocateTaskToolCalls(api, companyId);
+  const [additional, setAdditional] = useState('');
+  const [reason, setReason] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
+  const additionalCalls = Number(additional);
+  const closingTask = task.kind === 'review' || task.kind === 'peer_review';
+  const problemAvailable = budget.state === 'unbounded' ? Number.MAX_SAFE_INTEGER
+    : Math.max(budget.toolCallsRemaining - (closingTask ? 0 : budget.closingReserveRemaining), 0);
+  const finiteTask = task.toolCallLimit !== null && task.toolCallLimit > 0;
+  const canSubmit = finiteTask && task.allocationEligible && confirmed
+    && Number.isSafeInteger(additionalCalls) && additionalCalls > 0 && additionalCalls <= problemAvailable
+    && reason.trim().length > 0 && !allocation.isPending;
+
+  async function submit(): Promise<void> {
+    if (!canSubmit || task.toolCallLimit === null) return;
+    await allocation.mutateAsync({
+      problemKey: budget.problemKey,
+      taskId: task.taskId,
+      additionalToolCalls: additionalCalls,
+      expectedToolCallLimit: task.toolCallLimit,
+      expectedTaskRevision: task.allocationRevision,
+      expectedProblemRevision: budget.allocationRevision,
+      expectedReserveRevision: budget.closingReserveRevision,
+      reason,
+      requestId: `task-budget-${crypto.randomUUID()}`,
+    });
+    setAdditional('');
+    setReason('');
+    setConfirmed(false);
+  }
+
+  const limitLabel = task.toolCallLimit === null ? '尚未初始化' : task.toolCallLimit === 0 ? '无上限' : task.toolCallLimit.toLocaleString('zh-CN');
+  const remainingLabel = task.toolCallsRemaining < 0 ? '无上限' : task.toolCallsRemaining.toLocaleString('zh-CN');
+  return <div className={styles.boundaryItem}>
+    <div className={styles.viewStack}>
+      <p><strong><code>{task.taskId}</code></strong> · {task.kind} · 已用 {task.toolCallsUsed.toLocaleString('zh-CN')} / 上限 {limitLabel} · 剩余 {remainingLabel} · 额度版本 {task.allocationRevision}</p>
+      {task.lastAllocatedAt ? <p className={styles.formHint}>最近追加：{task.lastAllocatedAt} · {task.lastAllocationReason}</p> : null}
+      {finiteTask && task.allocationEligible ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
+        <label className={styles.formLabel}>追加此 Task 的调用次数<input className={styles.formField} inputMode="numeric" min="1" max={problemAvailable} step="1" type="number" value={additional} onChange={event => setAdditional(event.target.value)} /></label>
+        <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
+        <label className={styles.formLabel}><input checked={confirmed} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认追加此 Task 的工具调用额度并理解此记录不可撤回</label>
+        <button className={styles.commandButton} disabled={!canSubmit} type="submit">{allocation.isPending ? '正在记录…' : '追加 Task 额度'}</button>
+        {allocation.isError ? <p className={styles.errorText} role="alert">Task 额度追加失败：{allocation.error.message}；如预算版本已变化，请刷新后重新确认。</p> : null}
+        {problemAvailable === 0 ? <p className={styles.formHint}>当前 ProblemKey 没有可供此 Task 使用的额度；请先调整 ProblemKey 额度或关闭预留。</p> : null}
+      </form> : <p className={styles.formHint}>{finiteTask && task.toolCallsRemaining > 0 ? '此 Task 的固定额度尚未耗尽；额度耗尽且所有 WorkerSession 停止后，可申请追加。' : finiteTask ? '此 Task 已运行、已关闭或仍有活动 WorkerSession，当前不能追加额度。' : '只有已初始化的有限 Task 上限可以追加。'}</p>}
+    </div>
+  </div>;
 }

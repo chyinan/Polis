@@ -1445,6 +1445,18 @@ export type ProblemToolCallBudgetState = 'pending' | 'unbounded' | 'available' |
 export type ProblemToolCallBudgetRejectionRoute = 'worker_admission' | 'worker_tool_call';
 export type ProblemToolCallBudgetRejectionReason = 'session_limit' | 'task_limit' | 'problem_limit' | 'closing_reserve' | 'initial_closing_reserve';
 
+export type TaskToolCallBudgetView = Readonly<{
+  taskId: string;
+  kind: string;
+  toolCallLimit: number | null;
+  toolCallsUsed: number;
+  toolCallsRemaining: number;
+  allocationRevision: number;
+  allocationEligible: boolean;
+  lastAllocationReason?: string;
+  lastAllocatedAt?: string;
+}>;
+
 export type ProblemToolCallBudgetView = Readonly<{
   problemKey: string;
   missionId: string;
@@ -1467,6 +1479,8 @@ export type ProblemToolCallBudgetView = Readonly<{
   lastRejectionRoute?: ProblemToolCallBudgetRejectionRoute;
   lastRejectionReason?: ProblemToolCallBudgetRejectionReason;
   lastRejectionTaskId?: string;
+  tasks: ReadonlyArray<TaskToolCallBudgetView>;
+  tasksTruncated: boolean;
 }>;
 
 export type ProblemToolCallBudgetListView = Readonly<{
@@ -1483,6 +1497,12 @@ export type ProblemToolCallAllocationReceiptView = Readonly<{
 export type ProblemToolCallClosingReserveReceiptView = Readonly<{
   id: string;
   status: 'reserve_updated';
+  revision: number;
+}>;
+
+export type TaskToolCallAllocationReceiptView = Readonly<{
+  id: string;
+  status: 'task_budget_allocated';
   revision: number;
 }>;
 

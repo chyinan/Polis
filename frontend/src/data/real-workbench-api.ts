@@ -1,12 +1,12 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
 import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
-import {validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt} from '../domain/problem-budget-validation';
-import type {AllocateProblemToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
+import {validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt} from '../domain/problem-budget-validation';
+import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
@@ -974,6 +974,34 @@ export class RealWorkbenchApi implements WorkbenchApi {
       confirm: true,
     });
     return validateProblemToolCallAllocationReceipt(raw, options.problemKey, options.expectedRevision + 1);
+  }
+
+  async allocateTaskToolCalls(options: AllocateTaskToolCallsOptions): Promise<TaskToolCallAllocationReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.taskId);
+    if (!/^problem:[A-Za-z0-9_-]{1,80}$/.test(options.problemKey)) throw new Error('ProblemKey is malformed');
+    assertRequestID(options.requestId);
+    if (!Number.isSafeInteger(options.additionalToolCalls) || options.additionalToolCalls < 1
+      || !Number.isSafeInteger(options.expectedToolCallLimit) || options.expectedToolCallLimit < 1
+      || !Number.isSafeInteger(options.expectedTaskRevision) || options.expectedTaskRevision < 1
+      || !Number.isSafeInteger(options.expectedProblemRevision) || options.expectedProblemRevision < 1
+      || !Number.isSafeInteger(options.expectedReserveRevision) || options.expectedReserveRevision < 0) {
+      throw new Error('Task allocation values must be safe integers');
+    }
+    const reason = options.reason.trim();
+    const reasonLength = Array.from(reason).length;
+    if (reasonLength < 1 || reasonLength > 500) throw new Error('allocation reason must contain 1–500 characters');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/problem-budgets/${encodeURIComponent(options.problemKey)}/tasks/${encodeURIComponent(options.taskId)}/allocations`, options.requestId, {
+      additionalToolCalls: options.additionalToolCalls,
+      expectedToolCallLimit: options.expectedToolCallLimit,
+      expectedTaskRevision: options.expectedTaskRevision,
+      expectedProblemRevision: options.expectedProblemRevision,
+      expectedReserveRevision: options.expectedReserveRevision,
+      reason,
+      requestId: options.requestId,
+      confirm: true,
+    });
+    return validateTaskToolCallAllocationReceipt(raw, options.taskId, options.expectedTaskRevision + 1);
   }
 
   async setProblemToolCallClosingReserve(options: SetProblemToolCallClosingReserveOptions): Promise<ProblemToolCallClosingReserveReceiptView> {

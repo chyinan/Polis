@@ -1,4 +1,4 @@
-import type {ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView} from './workbench';
+import type {ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallBudgetView} from './workbench';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -6,6 +6,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isCount(value: unknown): value is number {
   return Number.isSafeInteger(value) && Number(value) >= 0;
+}
+
+function isTaskBudget(value: unknown): value is TaskToolCallBudgetView {
+  if (!isRecord(value) || typeof value.taskId !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(value.taskId)
+    || typeof value.kind !== 'string' || !isCount(value.toolCallsUsed)
+    || typeof value.toolCallsRemaining !== 'number' || !Number.isSafeInteger(value.toolCallsRemaining) || value.toolCallsRemaining < -1
+    || !Number.isSafeInteger(value.allocationRevision) || Number(value.allocationRevision) < 1
+    || typeof value.allocationEligible !== 'boolean') return false;
+  if (value.toolCallLimit !== null && !isCount(value.toolCallLimit)) return false;
+  if (value.lastAllocationReason !== undefined && typeof value.lastAllocationReason !== 'string') return false;
+  if (value.lastAllocatedAt !== undefined && typeof value.lastAllocatedAt !== 'string') return false;
+  if (value.toolCallLimit === null) return value.toolCallsRemaining === 0;
+  if (value.toolCallLimit === 0) return value.toolCallsRemaining === -1;
+  return value.toolCallsRemaining === Math.max(value.toolCallLimit - value.toolCallsUsed, 0);
 }
 
 function isProblemBudget(value: unknown): value is ProblemToolCallBudgetView {
@@ -17,6 +31,7 @@ function isProblemBudget(value: unknown): value is ProblemToolCallBudgetView {
     || !isCount(value.closingReserveToolCalls) || !isCount(value.closingReserveRemaining)
     || !isCount(value.closingReserveRevision)
     || !isCount(value.budgetRejectionCount)
+    || typeof value.tasksTruncated !== 'boolean' || !Array.isArray(value.tasks) || value.tasks.length > 20 || !value.tasks.every(isTaskBudget)
     || !['pending', 'unbounded', 'available', 'closing_reserved', 'exhausted'].includes(String(value.state))) return false;
   if (value.toolCallLimit !== null && !isCount(value.toolCallLimit)) return false;
   if (value.lastAllocationReason !== undefined && typeof value.lastAllocationReason !== 'string') return false;
@@ -62,4 +77,11 @@ export function validateProblemToolCallClosingReserveReceipt(value: unknown, pro
     throw new Error('failed to parse ProblemKey closing reserve receipt');
   }
   return value as unknown as ProblemToolCallClosingReserveReceiptView;
+}
+
+export function validateTaskToolCallAllocationReceipt(value: unknown, taskId: string, revision: number): TaskToolCallAllocationReceiptView {
+  if (!isRecord(value) || value.id !== taskId || value.status !== 'task_budget_allocated' || value.revision !== revision) {
+    throw new Error('failed to parse Task budget allocation receipt');
+  }
+  return value as unknown as TaskToolCallAllocationReceiptView;
 }

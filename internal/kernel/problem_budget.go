@@ -13,27 +13,41 @@ import (
 )
 
 type ProblemToolCallBudget struct {
-	ProblemKey               string `json:"problemKey"`
-	MissionID                string `json:"missionId"`
-	TaskCount                int64  `json:"taskCount"`
-	WorkerSessionAttempts    int64  `json:"workerSessionAttempts"`
-	ToolCallLimit            *int64 `json:"toolCallLimit"`
-	ToolCallsUsed            int64  `json:"toolCallsUsed"`
-	ToolCallsRemaining       int64  `json:"toolCallsRemaining"`
-	AllocationRevision       int64  `json:"allocationRevision"`
-	ClosingReserveToolCalls  int64  `json:"closingReserveToolCalls"`
-	ClosingReserveRemaining  int64  `json:"closingReserveRemaining"`
-	ClosingReserveRevision   int64  `json:"closingReserveRevision"`
-	State                    string `json:"state"`
-	LastAllocationReason     string `json:"lastAllocationReason,omitempty"`
-	LastAllocatedAt          string `json:"lastAllocatedAt,omitempty"`
-	LastClosingReserveReason string `json:"lastClosingReserveReason,omitempty"`
-	LastClosingReserveAt     string `json:"lastClosingReserveAt,omitempty"`
-	BudgetRejectionCount     int64  `json:"budgetRejectionCount"`
-	LastRejectionAt          string `json:"lastRejectionAt,omitempty"`
-	LastRejectionRoute       string `json:"lastRejectionRoute,omitempty"`
-	LastRejectionReason      string `json:"lastRejectionReason,omitempty"`
-	LastRejectionTaskID      string `json:"lastRejectionTaskId,omitempty"`
+	ProblemKey               string               `json:"problemKey"`
+	MissionID                string               `json:"missionId"`
+	TaskCount                int64                `json:"taskCount"`
+	WorkerSessionAttempts    int64                `json:"workerSessionAttempts"`
+	ToolCallLimit            *int64               `json:"toolCallLimit"`
+	ToolCallsUsed            int64                `json:"toolCallsUsed"`
+	ToolCallsRemaining       int64                `json:"toolCallsRemaining"`
+	AllocationRevision       int64                `json:"allocationRevision"`
+	ClosingReserveToolCalls  int64                `json:"closingReserveToolCalls"`
+	ClosingReserveRemaining  int64                `json:"closingReserveRemaining"`
+	ClosingReserveRevision   int64                `json:"closingReserveRevision"`
+	State                    string               `json:"state"`
+	LastAllocationReason     string               `json:"lastAllocationReason,omitempty"`
+	LastAllocatedAt          string               `json:"lastAllocatedAt,omitempty"`
+	LastClosingReserveReason string               `json:"lastClosingReserveReason,omitempty"`
+	LastClosingReserveAt     string               `json:"lastClosingReserveAt,omitempty"`
+	BudgetRejectionCount     int64                `json:"budgetRejectionCount"`
+	LastRejectionAt          string               `json:"lastRejectionAt,omitempty"`
+	LastRejectionRoute       string               `json:"lastRejectionRoute,omitempty"`
+	LastRejectionReason      string               `json:"lastRejectionReason,omitempty"`
+	LastRejectionTaskID      string               `json:"lastRejectionTaskId,omitempty"`
+	Tasks                    []TaskToolCallBudget `json:"tasks"`
+	TasksTruncated           bool                 `json:"tasksTruncated"`
+}
+
+type TaskToolCallBudget struct {
+	TaskID               string `json:"taskId"`
+	Kind                 string `json:"kind"`
+	ToolCallLimit        *int64 `json:"toolCallLimit"`
+	ToolCallsUsed        int64  `json:"toolCallsUsed"`
+	ToolCallsRemaining   int64  `json:"toolCallsRemaining"`
+	AllocationRevision   int64  `json:"allocationRevision"`
+	AllocationEligible   bool   `json:"allocationEligible"`
+	LastAllocationReason string `json:"lastAllocationReason,omitempty"`
+	LastAllocatedAt      string `json:"lastAllocatedAt,omitempty"`
 }
 
 type ProblemToolCallBudgetList struct {
@@ -55,6 +69,16 @@ type ProblemToolCallClosingReserveInput struct {
 	ExpectedBudgetRevision  int64
 	ExpectedReserveRevision int64
 	ReservedCalls           int64
+	Reason                  string
+}
+
+type TaskToolCallAllocationInput struct {
+	RequestID               string
+	AdditionalCalls         int64
+	ExpectedLimit           int64
+	ExpectedTaskRevision    int64
+	ExpectedProblemRevision int64
+	ExpectedReserveRevision int64
 	Reason                  string
 }
 
@@ -191,6 +215,7 @@ ORDER BY pb.problem_key LIMIT $2`, scope.company, limit+1)
 		}
 		item.State = "pending"
 		item.ToolCallsRemaining = 0
+		item.Tasks = make([]TaskToolCallBudget, 0, 20)
 		if toolCallLimit.Valid {
 			currentLimit := toolCallLimit.Int64
 			item.ToolCallLimit = &currentLimit
@@ -214,10 +239,164 @@ ORDER BY pb.problem_key LIMIT $2`, scope.company, limit+1)
 	if err = rows.Err(); err != nil {
 		return ProblemToolCallBudgetList{}, err
 	}
+	rows.Close()
+	for budgetIndex := range result.Items {
+		budget := &result.Items[budgetIndex]
+		taskRows, queryErr := tx.Query(ctx, `SELECT t.id,t.kind,t.task_tool_call_limit,t.task_tool_calls_used,
+		 COALESCE((SELECT max(a.revision) FROM task_tool_call_allocations a WHERE a.company_id=t.company_id AND a.task_id=t.id),1)::bigint,
+		 (t.task_tool_call_limit IS NOT NULL AND t.task_tool_call_limit>0 AND t.task_tool_calls_used>=t.task_tool_call_limit AND
+		  t.state NOT IN ('completed','cancelled') AND NOT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=t.company_id AND s.task_id=t.id AND s.state!='stopped')),
+		 COALESCE((SELECT latest.reason FROM task_tool_call_allocations latest WHERE latest.company_id=t.company_id AND latest.task_id=t.id ORDER BY latest.revision DESC LIMIT 1),''),
+		 COALESCE((SELECT latest.created_at::text FROM task_tool_call_allocations latest WHERE latest.company_id=t.company_id AND latest.task_id=t.id ORDER BY latest.revision DESC LIMIT 1),'')
+FROM (SELECT company_id,id,kind,task_tool_call_limit,task_tool_calls_used,state FROM tasks
+ WHERE company_id=$1 AND problem_key=$2 ORDER BY id LIMIT 21) t
+ORDER BY t.id`, scope.company, budget.ProblemKey)
+		if queryErr != nil {
+			return ProblemToolCallBudgetList{}, queryErr
+		}
+		for taskRows.Next() {
+			var task TaskToolCallBudget
+			var taskLimit pgtype.Int8
+			if queryErr = taskRows.Scan(&task.TaskID, &task.Kind, &taskLimit, &task.ToolCallsUsed,
+				&task.AllocationRevision, &task.AllocationEligible, &task.LastAllocationReason, &task.LastAllocatedAt); queryErr != nil {
+				taskRows.Close()
+				return ProblemToolCallBudgetList{}, queryErr
+			}
+			if taskLimit.Valid {
+				currentLimit := taskLimit.Int64
+				task.ToolCallLimit = &currentLimit
+				switch {
+				case currentLimit == 0:
+					task.ToolCallsRemaining = -1
+				case task.ToolCallsUsed < currentLimit:
+					task.ToolCallsRemaining = currentLimit - task.ToolCallsUsed
+				}
+			}
+			if len(budget.Tasks) == 20 {
+				budget.TasksTruncated = true
+				break
+			}
+			budget.Tasks = append(budget.Tasks, task)
+		}
+		if queryErr = taskRows.Err(); queryErr != nil {
+			taskRows.Close()
+			return ProblemToolCallBudgetList{}, queryErr
+		}
+		taskRows.Close()
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return ProblemToolCallBudgetList{}, err
 	}
 	return result, nil
+}
+
+func (k *Kernel) TXAllocateTaskToolCalls(ctx context.Context, scope Scope, problemKey, taskID string, input TaskToolCallAllocationInput) (Receipt, error) {
+	reason := strings.TrimSpace(input.Reason)
+	if k == nil || ctx == nil || !core.ValidID(scope.company) || !ValidProblemKey(problemKey) || !core.ValidID(taskID) ||
+		!core.ValidID(input.RequestID) || input.AdditionalCalls < 1 || input.ExpectedLimit < 1 ||
+		input.ExpectedTaskRevision < 1 || input.ExpectedProblemRevision < 1 || input.ExpectedReserveRevision < 0 ||
+		utf8.RuneCountInString(reason) < 1 || utf8.RuneCountInString(reason) > 500 {
+		return Receipt{}, core.Malformed
+	}
+	command := struct {
+		ProblemKey string
+		TaskID     string
+		Input      TaskToolCallAllocationInput
+		Reason     string
+	}{problemKey, taskID, input, reason}
+	return k.TXWrite(ctx, scope, nil, input.RequestID, "problem.task_tool_budget.allocate", command, func(tx pgx.Tx) (Receipt, error) {
+		var taskLimit pgtype.Int8
+		var taskUsed int64
+		var taskProblemKey, taskKind, taskState string
+		err := tx.QueryRow(ctx, `SELECT task_tool_call_limit,task_tool_calls_used,problem_key,kind,state
+FROM tasks WHERE company_id=$1 AND id=$2 FOR UPDATE`, scope.company, taskID).Scan(&taskLimit, &taskUsed, &taskProblemKey, &taskKind, &taskState)
+		if errors.Is(err, pgx.ErrNoRows) || taskProblemKey != problemKey {
+			return Receipt{}, core.OutOfScope
+		}
+		if err != nil {
+			return Receipt{}, err
+		}
+		if !taskLimit.Valid || taskLimit.Int64 <= 0 || taskUsed < taskLimit.Int64 || taskState == "completed" || taskState == "cancelled" {
+			return Receipt{}, core.Denied
+		}
+		var liveSession bool
+		if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=$1 AND s.task_id=$2 AND s.state!='stopped')`, scope.company, taskID).Scan(&liveSession); err != nil {
+			return Receipt{}, err
+		}
+		if liveSession {
+			return Receipt{}, core.Denied
+		}
+		var taskRevision int64
+		if err = tx.QueryRow(ctx, `SELECT COALESCE(max(a.revision),1)::bigint FROM task_tool_call_allocations a
+WHERE a.company_id=$1 AND a.task_id=$2`, scope.company, taskID).Scan(&taskRevision); err != nil {
+			return Receipt{}, err
+		}
+		if input.ExpectedLimit != taskLimit.Int64 || input.ExpectedTaskRevision != taskRevision {
+			return Receipt{}, core.Conflict
+		}
+		if taskRevision == math.MaxInt64 || input.AdditionalCalls > math.MaxInt64-taskLimit.Int64 {
+			return Receipt{}, core.TooLarge
+		}
+
+		var baseLimit pgtype.Int8
+		if err = tx.QueryRow(ctx, `SELECT tool_call_limit FROM problem_tool_call_budgets
+WHERE company_id=$1 AND problem_key=$2 FOR UPDATE`, scope.company, problemKey).Scan(&baseLimit); errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		} else if err != nil {
+			return Receipt{}, err
+		}
+		var problemLimit pgtype.Int8
+		var problemUsed, problemRevision int64
+		if err = tx.QueryRow(ctx, `SELECT tool_call_limit,tool_calls_used,revision FROM problem_tool_call_budget_effective
+WHERE company_id=$1 AND problem_key=$2`, scope.company, problemKey).Scan(&problemLimit, &problemUsed, &problemRevision); err != nil {
+			return Receipt{}, err
+		}
+		if !baseLimit.Valid || !problemLimit.Valid {
+			return Receipt{}, core.Denied
+		}
+		if problemRevision != input.ExpectedProblemRevision {
+			return Receipt{}, core.Conflict
+		}
+		_, reserveRemaining, reserveRevision, err := problemToolCallClosingReserveSnapshot(ctx, tx, scope.company, problemKey)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if reserveRevision != input.ExpectedReserveRevision {
+			return Receipt{}, core.Conflict
+		}
+		if problemLimit.Int64 > 0 {
+			remaining := problemLimit.Int64 - problemUsed
+			if remaining < 0 {
+				return Receipt{}, core.Integrity
+			}
+			available := remaining
+			if !isProblemClosingTaskKind(taskKind) {
+				available -= reserveRemaining
+				if available < 0 {
+					available = 0
+				}
+			}
+			if input.AdditionalCalls > available {
+				return Receipt{}, core.ToolCallBudgetExceeded
+			}
+		}
+		resultingLimit := taskLimit.Int64 + input.AdditionalCalls
+		newRevision := taskRevision + 1
+		if _, err = tx.Exec(ctx, `INSERT INTO task_tool_call_allocations(company_id,task_id,revision,request_id,additional_tool_calls,
+previous_limit,resulting_limit,problem_budget_revision,closing_reserve_revision,authorized_by,reason)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'local-owner',$10)`, scope.company, taskID, newRevision, input.RequestID,
+			input.AdditionalCalls, taskLimit.Int64, resultingLimit, problemRevision, reserveRevision, reason); err != nil {
+			return Receipt{}, err
+		}
+		tag, err := tx.Exec(ctx, `UPDATE tasks SET task_tool_call_limit=$3 WHERE company_id=$1 AND id=$2`, scope.company, taskID, resultingLimit)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if tag.RowsAffected() != 1 {
+			return Receipt{}, core.Conflict
+		}
+		return Receipt{ID: taskID, Status: "task_budget_allocated", Revision: newRevision}, nil
+	})
 }
 
 func (k *Kernel) TXAllocateProblemToolCalls(ctx context.Context, scope Scope, problemKey string, input ProblemToolCallAllocationInput) (Receipt, error) {

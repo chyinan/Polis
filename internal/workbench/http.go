@@ -34,6 +34,7 @@ type parsedPath struct {
 	endpoint     string
 	missionID    string
 	resourceID   string
+	targetID     string
 	evidenceArea string
 }
 
@@ -524,6 +525,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		receipt, err := budgetService.AllocateProblemToolCalls(ctx, path.companyID, path.resourceID, input)
 		if err != nil {
 			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "budget", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
+	case "problem.budget.task.allocate":
+		response.Header().Set("Cache-Control", "no-store")
+		budgetService, ok := service.(control.ProblemToolBudgetService)
+		if !ok {
+			writeError(response, http.StatusNotImplemented, "ProblemKey budget service is unavailable")
+			return
+		}
+		var input control.TaskToolCallAllocationRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.targetID, "task_budget", err)
+			return
+		}
+		receipt, err := budgetService.AllocateTaskToolCalls(ctx, path.companyID, path.resourceID, path.targetID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.targetID, "task_budget", err)
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
@@ -1676,6 +1695,17 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: problemKey, endpoint: "problem.budget.allocate"}, true
+	}
+	if len(parts) == 6 && parts[1] == "problem-budgets" && parts[3] == "tasks" && parts[5] == "allocations" {
+		problemKey, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		taskID, err := url.PathUnescape(parts[4])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: problemKey, targetID: taskID, endpoint: "problem.budget.task.allocate"}, true
 	}
 	if len(parts) == 4 && parts[1] == "problem-budgets" && parts[3] == "closing-reserve" {
 		problemKey, err := url.PathUnescape(parts[2])

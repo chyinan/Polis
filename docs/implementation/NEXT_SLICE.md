@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 125, REQ-16 rejected ProblemKey budget routes; Schema 86)
+## Latest continuation status (Slice 126, REQ-16 authorized Task budget recovery; Schema 87)
+
+Schema 87 adds an append-only local-owner Task cap allocation ledger and prevents direct changes to an initialized Task limit. The confirmed recovery command requires an exhausted finite Task with no live WorkerSession and revalidates its state, cap/revision, shared ProblemKey revision and closing-reserve revision. It can raise a finite Task cap only when the shared ProblemKey has sufficient available calls; the ProblemKey remains the controlling runtime cap. Workbench lists bounded Task budgets and exposes a reasoned allocation form. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all 87 migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-126-task-budget-recovery/verification.md`.
+
+The next REQ-16 slice should persist stable outcomes for exhausted work: whether it remains blocked, is owner-funded for a successor attempt, or closes with an explicit incomplete result. Token/money measurement and hidden CLI retries remain unaccounted; Mission/Company/Provider composition needs a defined authority and reservation model before enforcement.
+
+## Previous continuation status (Slice 125, REQ-16 rejected ProblemKey budget routes; Schema 86)
 
 Schema 86 persists immutable rejected-route records for Worker admission and tool-call budget denials. A record binds the attempted Task/session, rejection route/reason, usage snapshot, ProblemKey allocation revision and closing-reserve policy/remaining amount. The insert trigger revalidates the locked counters and reason; a rejected first admission leaves both Task and ProblemKey caps uninitialized. Workbench shows each ProblemKey's rejection count and latest event. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all 86 migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-125-budget-rejection-audit/verification.md`.
-
-The next REQ-16 slice can address stable exhaustion closeout/recovery or a bounded outer-budget ledger. Token/money measurement and hidden CLI retries remain unaccounted; Mission/Company/Provider composition needs a defined authority and reservation model before enforcement.
 
 ## Previous continuation status (Slice 124, REQ-16 protected ProblemKey closing reserve; Schema 85)
 
