@@ -28,7 +28,7 @@ func OwnerSetupHandler(store *installationauth.Store, secureCookies bool) http.H
 		response.Header().Set("X-Content-Type-Options", "nosniff")
 		switch request.URL.Path {
 		case "/api/installation/owner/status":
-			if !isLocalOwnerSetupRequest(request) {
+			if !isLocalOwnerSetupStatusRequest(request) {
 				writeError(response, http.StatusForbidden, "owner setup is available only from the local Workbench")
 				return
 			}
@@ -109,6 +109,22 @@ func isLocalOwnerSetupRequest(request *http.Request) bool {
 	}
 	origin := request.Header.Get("Origin")
 	if origin == "" || !AllowedOrigin(origin) {
+		return false
+	}
+	host, _, err := net.SplitHostPort(request.RemoteAddr)
+	if err != nil {
+		return false
+	}
+	address := net.ParseIP(host)
+	return address != nil && address.IsLoopback()
+}
+
+func isLocalOwnerSetupStatusRequest(request *http.Request) bool {
+	if request == nil {
+		return false
+	}
+	origin := request.Header.Get("Origin")
+	if origin != "" && !AllowedOrigin(origin) {
 		return false
 	}
 	host, _, err := net.SplitHostPort(request.RemoteAddr)

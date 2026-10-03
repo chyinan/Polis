@@ -49,6 +49,17 @@ func TestOwnerSetupStatusDoesNotRequireDesktopServiceToken(t *testing.T) {
 	}
 }
 
+func TestOwnerSetupStatusAllowsSameOriginLoopbackReadWithoutOriginHeader(t *testing.T) {
+	handler := MiddlewareWithRemoteOrigin("configured-desktop-token", "", OwnerSetupHandler(nil, false))
+	request := httptest.NewRequest(http.MethodGet, "/api/installation/owner/status", nil)
+	request.RemoteAddr = "127.0.0.1:4321"
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status=%d body=%s, want status handler reached without an Origin header", response.Code, response.Body.String())
+	}
+}
+
 func TestOwnerSessionStatusIsPublicAndReportsNoSession(t *testing.T) {
 	handler := MiddlewareWithRemoteOrigin("configured-desktop-token", "", OwnerSetupHandler(nil, false))
 	request := httptest.NewRequest(http.MethodGet, "/api/installation/owner/session", nil)

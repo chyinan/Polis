@@ -2,7 +2,7 @@
 
 import {useEffect, useState, type ReactNode} from 'react';
 import {NavLink, useLocation, useNavigate} from 'react-router-dom';
-import {Activity, BadgeCheck, Building2, ChevronDown, CircleHelp, FileCheck2, Layers3, MessageSquare, Moon, Radio, Settings, ShieldCheck, Sun, Target, UsersRound, type LucideIcon} from 'lucide-react';
+import {Activity, BadgeCheck, Building2, ChevronDown, CircleHelp, FileCheck2, KeyRound, Layers3, MessageSquare, Moon, Radio, Settings, ShieldCheck, Sun, Target, UsersRound, type LucideIcon} from 'lucide-react';
 import type {ActivityStreamStatus} from '../../data/workbench-api';
 import type {DataMode, Freshness} from '../../domain/workbench';
 import {labelDataMode, labelRecoveryState} from '../../domain/display-labels';
@@ -51,6 +51,7 @@ const groupNavigation: ReadonlyArray<NavigationItem> = [
   {label: '新建公司', path: 'new-company', icon: Layers3},
   {label: '集团资源', path: 'resources', icon: Layers3},
   {label: '集团设置', path: 'settings', icon: Settings},
+  {label: '安装账户', path: 'installation', icon: KeyRound},
 ];
 
 function readThemePreference(): ThemeMode {
@@ -79,7 +80,7 @@ export function AppShell({apiBaseUrl, children, companyId, companyName, dataMode
   const [scopeOpen, setScopeOpen] = useState(false);
   const isGroupScope = location.pathname.startsWith('/group/');
   const navItems = isGroupScope ? groupNavigation : companyNavigation;
-  const groupViewLabel = location.pathname.includes('/new-company') ? '新建公司' : location.pathname.includes('/resources') ? '集团资源' : location.pathname.includes('/settings') ? '集团设置' : '总览';
+  const groupViewLabel = location.pathname.includes('/installation') ? '安装账户' : location.pathname.includes('/new-company') ? '新建公司' : location.pathname.includes('/resources') ? '集团资源' : location.pathname.includes('/settings') ? '集团设置' : '总览';
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

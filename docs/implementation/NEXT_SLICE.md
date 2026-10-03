@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 143, FT-63 owner sessions; Schema 97)
+## Latest continuation status (Slice 144, FT-63 Workbench owner UI)
+
+The Group navigation now includes an Installation Accounts page with local first-owner bootstrap-code entry, password login/logout, session status/expiry and a read-only observed-account table. The setup view is offered only when the loopback setup-status endpoint reports no owner; HTTPS remote Workbench shows login only. The page uses credentialed requests, reads the root-path CSRF cookie for logout, and explains that account locator fingerprints do not establish billing scope. Same-origin loopback status reads can omit `Origin`; bootstrap still requires an allowed Origin and loopback peer. Frontend TypeScript, ESLint and production build pass; focused Go tests/build and migration hashes 1–97 pass. PostgreSQL migration/runtime and real browser E2E were not run because `POLIS_DSN` is unset and local PostgreSQL is unavailable. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-144-owner-workbench-ui/verification.md`.
+
+Next: complete database-backed browser qualification of setup/login/CSRF/logout after PostgreSQL is available. Review local Tauri WebView cookie behavior in that run. Do not add cross-Company mutations or financial settlement until owner-session qualification and billing-scope prerequisites are satisfied.
+
+## Previous continuation status (Slice 143, FT-63 owner sessions; Schema 97)
 
 Schema 97 adds durable owner sessions with SHA-256 token/CSRF digests, fixed 12-hour expiry, append-only login events and one-time revocation, plus a persisted five-failure/15-minute login throttle. Owner login sets HttpOnly, SameSite=Strict cookies; the session cookie is Secure for configured HTTPS remote Workbench mode. Unsafe cookie-authenticated requests require a session-bound double-submit token in `X-Polis-CSRF-Token`. The desktop middleware accepts a valid owner session for protected Workbench routes, while static desktop-token access remains supported; the installation-wide observed-account route now accepts either authenticated owner. Focused installationauth/desktop/workbench tests, `go build ./cmd/polis`, migration hashes 1–97 and `git diff --check` pass. PostgreSQL migration/runtime and browser E2E were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-143-owner-sessions/verification.md`.
 

@@ -16,6 +16,7 @@ import {CompanyOverviewPage} from '../pages/CompanyOverviewPage';
 import {CollaborationPage, DecisionsPage, EmployeesPage, EvidencePage, MissionPage, OperationsPage, OrgChartPage, ResourcesPage, SettingsPage, TaskPage} from '../pages/WorkbenchPages';
 import {FeedbackPage, GroupResourcesPage, GroupSettingsPage} from '../pages/CurrentScopePages';
 import {NotificationSettingsPage} from '../pages/NotificationSettingsPage';
+import {InstallationOwnerPage} from '../pages/InstallationOwnerPage';
 import {GroupOverviewPage, NewCompanyPage} from '../pages/GroupPages';
 import styles from './app.module.css';
 
@@ -71,6 +72,7 @@ function WorkbenchRuntime({api, apiBaseUrl, companyId}: Readonly<{api: Workbench
         <Route element={<NewCompanyPage api={api} />} path="/group/new-company" />
         <Route element={<GroupResourcesPage api={api} companyId={companyId} />} path="/group/resources" />
         <Route element={<GroupSettingsPage api={api} companyId={companyId} />} path="/group/settings" />
+        <Route element={<InstallationOwnerPage workbenchApiBaseUrl={apiBaseUrl} />} path="/group/installation" />
         <Route element={<NotAvailablePage />} path="*" />
       </Routes>
     </AppShell>
