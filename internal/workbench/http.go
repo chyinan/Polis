@@ -81,6 +81,19 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				return
 			}
 			writeJSON(response, http.StatusOK, budgets)
+		case "mission.budgets":
+			response.Header().Set("Cache-Control", "no-store")
+			budgetService, ok := service.(control.ProblemToolBudgetService)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "Mission tool-call budget service is unavailable")
+				return
+			}
+			budgets, err := budgetService.ListMissionToolCallBudgets(ctx, path.companyID)
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, "budgets", "company", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, budgets)
 		case "missions.routines":
 			routineReader, ok := model.(DailyRoutineReader)
 			if !ok {
@@ -510,6 +523,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		return
 	}
 	switch path.endpoint {
+	case "mission.budget.allocate":
+		response.Header().Set("Cache-Control", "no-store")
+		budgetService, ok := service.(control.ProblemToolBudgetService)
+		if !ok {
+			writeError(response, http.StatusNotImplemented, "Mission tool-call budget service is unavailable")
+			return
+		}
+		var input control.MissionToolCallBudgetChangeRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "mission_budget", err)
+			return
+		}
+		receipt, err := budgetService.ChangeMissionToolCallBudget(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "mission_budget", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "problem.budget.allocate":
 		response.Header().Set("Cache-Control", "no-store")
 		budgetService, ok := service.(control.ProblemToolBudgetService)
@@ -1706,6 +1737,16 @@ func parsePath(path string) (parsedPath, bool) {
 	}
 	if len(parts) == 2 && parts[1] == "problem-budgets" {
 		return parsedPath{companyID: companyID, endpoint: "problem.budgets"}, true
+	}
+	if len(parts) == 2 && parts[1] == "mission-budgets" {
+		return parsedPath{companyID: companyID, endpoint: "mission.budgets"}, true
+	}
+	if len(parts) == 4 && parts[1] == "mission-budgets" && parts[3] == "allocations" {
+		missionID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: missionID, endpoint: "mission.budget.allocate"}, true
 	}
 	if len(parts) == 4 && parts[1] == "problem-budgets" && parts[3] == "allocations" {
 		problemKey, err := url.PathUnescape(parts[2])

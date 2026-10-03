@@ -177,10 +177,11 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
   const cancelMutation = useCancelMission(api, companyId);
   const [title, setTitle] = useState('');
   const [goal, setGoal] = useState('');
+  const [protocolToolCallLimit, setProtocolToolCallLimit] = useState('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [phase, setPhase] = useState<CommandPhase>('idle');
   const [message, setMessage] = useState<string | null>(null);
-  const createRequest = useRef<Readonly<{title: string; goal: string; criteria: string; requestId: string}> | null>(null);
+  const createRequest = useRef<Readonly<{title: string; goal: string; criteria: string; toolCallLimit: number; requestId: string}> | null>(null);
   const startRequestID = useRef<string | null>(null);
   const cancelRequestID = useRef<string | null>(null);
 
@@ -198,6 +199,7 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
     event.preventDefault();
     const trimmedTitle = title.trim();
     const trimmedGoal = goal.trim();
+    const toolCallLimit = Number(protocolToolCallLimit);
     const criteria = acceptanceCriteria.split(/\r?\n/).map(item => item.trim()).filter(Boolean);
     const acceptanceContract: AcceptanceContract | null = criteria.length === 0 ? null : {revision: 'text-acceptance@1', required_text: criteria};
     if (trimmedTitle === '' || trimmedGoal === '') {
@@ -205,19 +207,25 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
       setMessage('标题和目标正文不能为空');
       return;
     }
+    if (!Number.isSafeInteger(toolCallLimit) || toolCallLimit < 1) {
+      setPhase('error');
+      setMessage('使命上限必须是大于 0 的安全整数');
+      return;
+    }
     if (acceptanceContract !== null && !isAcceptanceContract(acceptanceContract)) {
       setPhase('error');
       setMessage('验收条件需为 1–8 条非空文本，每条不超过 512 字节；仅支持 {{mission_id}} 和 {{task_id}} 占位符。');
       return;
     }
-    const pending = createRequest.current?.title === trimmedTitle && createRequest.current.goal === trimmedGoal && createRequest.current.criteria === acceptanceCriteria
+    const pending = createRequest.current?.title === trimmedTitle && createRequest.current.goal === trimmedGoal
+      && createRequest.current.criteria === acceptanceCriteria && createRequest.current.toolCallLimit === toolCallLimit
       ? createRequest.current
-      : {title: trimmedTitle, goal: trimmedGoal, criteria: acceptanceCriteria, requestId: crypto.randomUUID()};
+      : {title: trimmedTitle, goal: trimmedGoal, criteria: acceptanceCriteria, toolCallLimit, requestId: crypto.randomUUID()};
     createRequest.current = pending;
     setPhase('submitting');
     setMessage(null);
     try {
-      await createMutation.mutateAsync({title: pending.title, goal: pending.goal, acceptanceContract, requestId: pending.requestId});
+      await createMutation.mutateAsync({title: pending.title, goal: pending.goal, acceptanceContract, protocolToolCallLimit: pending.toolCallLimit, requestId: pending.requestId});
       createRequest.current = null;
       setPhase('accepted');
       setMessage('使命目标已受理，正在重新读取权威快照。');
@@ -264,6 +272,8 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
     {canCreate ? <form className={styles.formStack} onSubmit={handleCreate}>
       <label className={styles.formLabel}>使命标题<input data-command-field="mission-title" className={styles.formField} value={title} onChange={event => setTitle(event.target.value)} placeholder="例如：完成本期目标" /></label>
       <label className={styles.formLabel}>目标正文<textarea data-command-field="mission-goal" className={styles.formField} rows={3} value={goal} onChange={event => setGoal(event.target.value)} placeholder="描述目标与可检查结果" /></label>
+      <label className={styles.formLabel}>使命工具调用上限<input data-command-field="mission-tool-call-limit" className={styles.formField} inputMode="numeric" min="1" required step="1" type="number" value={protocolToolCallLimit} onChange={event => setProtocolToolCallLimit(event.target.value)} /></label>
+      <p className={styles.formHint}>按 Kernel 接纳的协议工具调用计数，并与 WorkerSession、Task、ProblemKey 额度共同约束。它不代表 Token 或金额；CLI / 服务内部隐藏重试目前无法完整计数。</p>
       <label className={styles.formLabel}>公开验收条件（可选，每行一条）<textarea data-command-field="mission-acceptance" className={styles.formField} rows={4} value={acceptanceCriteria} onChange={event => setAcceptanceCriteria(event.target.value)} placeholder={'使命 ID：{{mission_id}}\n任务 ID：{{task_id}}\n确认说明：\n任务摘要：'} aria-describedby="mission-acceptance-help" /></label>
       <p className={styles.formHint} id="mission-acceptance-help">条件会随使命显示，并在启动时冻结到任务。无条件的任务只允许探索，不能通过正式验收提交产物。</p>
       <button className={styles.commandButton} data-command="mission-create" disabled={isSubmitting} type="submit"><Play aria-hidden="true" size={14} />{isSubmitting ? '提交中…' : '提交使命目标'}</button>

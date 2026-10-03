@@ -4,11 +4,15 @@ Updated: 2026-10-03
 
 ## Current continuation pointer
 
-The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 129 / Schema 88; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Recent slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized ProblemKey and Task allocations, closing reserves, immutable budget-rejection records, explicit incomplete closeout and scoped retry visibility. Slice 129 records the Mission budget composition decision and lock-order prerequisite; it does not implement the Mission cap. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-129-mission-budget-composition/verification.md`.
+The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 130 / Schema 89; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized allocations, closing reserves, immutable rejection records, incomplete closeout and scoped retry visibility. Slice 129 records the Mission budget decision; Slice 130 implements the explicit Mission tool-call cap, legacy usage backfill, owner configuration, atomic charging and rejection evidence. Mission closing reserve and broader budget qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-130-mission-tool-call-budget/verification.md`.
 
-## Latest completed slice (129, REQ-16 Mission budget composition and lock-order audit; no migration)
+## Latest completed slice (130, REQ-16 explicit Mission tool-call cap; Schema 89)
 
-The next bounded budget unit is an explicitly configured Mission cap for admitted protocol tool calls. Do not derive the Mission cap from Task/ProblemKey defaults or label it token/USD accounting. One call must count once across applicable scopes; Mission closing reserve belongs within the total. Cancellation updates Mission before Tasks, while Worker charge locks Session/Task before ProblemKey, so adding a Mission lock after Task would invert the order. Next implementation must unify Mission → WorkerSession/Task → ProblemKey acquisition across admission, charge, and lifecycle paths. No code, schema, builds or tests changed in Slice 129. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md`.
+Schema 89 backfills Mission usage from durable Task counters while leaving caps unset. New Mission creation requires an explicit finite cap; Settings configures pending legacy Missions and permits only total-cap increases through a confirmed, reasoned append-only ledger. Admission and each accepted call serialize Mission → WorkerSession/Task → ProblemKey, incrementing applicable counters atomically. Immutable Mission-level denial snapshots, Handover fields and provider turn clamping use the same cap. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 89 migration hashes and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. Mission reserve and Company/Provider/token/money accounting remain open. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md` and the Slice 130 evidence.
+
+## Previous completed slice (129, REQ-16 Mission budget composition and lock-order audit; no migration)
+
+The source-backed Mission cap design and lock-order rationale are recorded in `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md`; Slice 130 implements the cap under that decision.
 
 ## Latest completed slice (128, REQ-16 scoped provider retry observation; no migration)
 
@@ -18,7 +22,7 @@ Real Codex Worker usage identifies that the reconnect count covers only app-serv
 
 Schema 88 adds an immutable local-owner incomplete Task closeout tied to the latest budget-caused rejection and exact Task, ProblemKey and closing-reserve snapshots. It requires a nonterminal Task with no live WorkerSession and prevents later Worker admission or Task-budget allocation. The Workbench exposes reasoned confirmation and shows the outcome. Together with Schema 86 rejections and Schema 84/87 owner allocations, exhausted work can remain blocked, receive funded recovery subject to normal Worker admission gates, or close explicitly as incomplete. Admission, allocation and closeout serialize on the Task row. Go package/command build, frontend production build and `git diff --check` pass; the frontend reports the existing >500 kB advisory. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
 
-Slice 128's scoped provider retry observation is recorded above. Token/money accounting, hidden CLI retries and Mission/Company/Provider budget enforcement remain open.
+Slice 128's scoped provider retry observation is recorded above. Slice 130 adds Mission tool-call enforcement; Mission closing reserve, Company/Provider budgets, hidden CLI retries, token/money accounting and scenario qualification remain open.
 
 ## Objective and boundaries
 

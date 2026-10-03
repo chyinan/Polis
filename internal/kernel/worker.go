@@ -6,18 +6,23 @@ type Workspace struct {
 	Revision        int64
 }
 type ToolCallBudget struct {
-	Limit                 int64 `json:"tool_call_limit"`
-	Used                  int64 `json:"tool_calls_used"`
-	Remaining             int64 `json:"tool_calls_remaining"`
-	TaskLimit             int64 `json:"task_tool_call_limit"`
-	TaskUsed              int64 `json:"task_tool_calls_used"`
-	TaskRemaining         int64 `json:"task_tool_calls_remaining"`
-	ProblemLimit          int64 `json:"problem_tool_call_limit"`
-	ProblemUsed           int64 `json:"problem_tool_calls_used"`
-	ProblemRemaining      int64 `json:"problem_tool_calls_remaining"`
-	ProblemAvailable      int64 `json:"problem_tool_calls_available"`
-	ProblemClosingReserve int64 `json:"problem_tool_calls_reserved_for_closing"`
-	ProblemClosingClass   bool  `json:"problem_closing_task_class"`
+	Limit                  int64 `json:"tool_call_limit"`
+	Used                   int64 `json:"tool_calls_used"`
+	Remaining              int64 `json:"tool_calls_remaining"`
+	MissionLimit           int64 `json:"mission_tool_call_limit"`
+	MissionUsed            int64 `json:"mission_tool_calls_used"`
+	MissionRemaining       int64 `json:"mission_tool_calls_remaining"`
+	MissionLimitConfigured bool  `json:"mission_tool_call_limit_configured"`
+	MissionBudgetRevision  int64 `json:"mission_tool_call_budget_revision"`
+	TaskLimit              int64 `json:"task_tool_call_limit"`
+	TaskUsed               int64 `json:"task_tool_calls_used"`
+	TaskRemaining          int64 `json:"task_tool_calls_remaining"`
+	ProblemLimit           int64 `json:"problem_tool_call_limit"`
+	ProblemUsed            int64 `json:"problem_tool_calls_used"`
+	ProblemRemaining       int64 `json:"problem_tool_calls_remaining"`
+	ProblemAvailable       int64 `json:"problem_tool_calls_available"`
+	ProblemClosingReserve  int64 `json:"problem_tool_calls_reserved_for_closing"`
+	ProblemClosingClass    bool  `json:"problem_closing_task_class"`
 }
 
 type ProblemLineage struct {

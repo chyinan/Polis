@@ -52,12 +52,42 @@ type TaskToolCallIncompleteClosureRequest struct {
 	Confirm                  bool   `json:"confirm"`
 }
 
+type MissionToolCallBudgetChangeRequest struct {
+	RequestID              string `json:"requestId"`
+	ExpectedToolCallLimit  *int64 `json:"expectedToolCallLimit"`
+	ExpectedRevision       int64  `json:"expectedRevision"`
+	ResultingToolCallLimit int64  `json:"resultingToolCallLimit"`
+	Reason                 string `json:"reason"`
+	Confirm                bool   `json:"confirm"`
+}
+
 type ProblemToolBudgetService interface {
 	ListProblemToolCallBudgets(ctx context.Context, companyID string) (kernel.ProblemToolCallBudgetList, error)
+	ListMissionToolCallBudgets(ctx context.Context, companyID string) (kernel.MissionToolCallBudgetList, error)
+	ChangeMissionToolCallBudget(ctx context.Context, companyID, missionID string, request MissionToolCallBudgetChangeRequest) (kernel.Receipt, error)
 	AllocateProblemToolCalls(ctx context.Context, companyID, problemKey string, request ProblemToolCallAllocationRequest) (kernel.Receipt, error)
 	AllocateTaskToolCalls(ctx context.Context, companyID, problemKey, taskID string, request TaskToolCallAllocationRequest) (kernel.Receipt, error)
 	CloseTaskToolBudgetIncomplete(ctx context.Context, companyID, problemKey, taskID string, request TaskToolCallIncompleteClosureRequest) (kernel.Receipt, error)
 	SetProblemToolCallClosingReserve(ctx context.Context, companyID, problemKey string, request ProblemToolCallClosingReserveRequest) (kernel.Receipt, error)
+}
+
+func (s *Service) ListMissionToolCallBudgets(ctx context.Context, companyID string) (kernel.MissionToolCallBudgetList, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) {
+		return kernel.MissionToolCallBudgetList{}, core.Malformed
+	}
+	return s.runtime.ListMissionToolCallBudgets(ctx, s.runtime.LocalScope(companyID), 100)
+}
+
+func (s *Service) ChangeMissionToolCallBudget(ctx context.Context, companyID, missionID string, request MissionToolCallBudgetChangeRequest) (kernel.Receipt, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || !core.ValidID(missionID) ||
+		validateRequestID(request.RequestID) != nil || request.ExpectedRevision < 0 || request.ResultingToolCallLimit < 1 || !request.Confirm ||
+		(request.ExpectedToolCallLimit != nil && *request.ExpectedToolCallLimit < 1) {
+		return kernel.Receipt{}, core.Malformed
+	}
+	return s.runtime.TXChangeMissionToolCallBudget(ctx, s.runtime.LocalScope(companyID), missionID, kernel.MissionToolCallBudgetChangeInput{
+		RequestID: request.RequestID, ExpectedLimit: request.ExpectedToolCallLimit, ExpectedRevision: request.ExpectedRevision,
+		ResultingLimit: request.ResultingToolCallLimit, Reason: request.Reason,
+	})
 }
 
 func (s *Service) SetProblemToolCallClosingReserve(ctx context.Context, companyID, problemKey string, request ProblemToolCallClosingReserveRequest) (kernel.Receipt, error) {

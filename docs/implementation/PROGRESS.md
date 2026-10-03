@@ -1,16 +1,20 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 129 — REQ-16 Mission budget composition and lock-order audit (no migration)
+## Slice 130 — REQ-16 explicit Mission tool-call cap (Schema 89)
 
-The frozen design permits a Mission-level cap for a separately named unit. The selected next enforcement unit is admitted protocol tool calls; do not infer it from default Task/ProblemKey caps or present it as a USD, token, or fully observed provider-request cap. One accepted call projects into Session/Task/ProblemKey/Mission scopes in one transaction. The Mission closing reserve is inside the Mission total and uses fixed Kernel-authorized closing classes. Lock review found cancellation updates Mission then Tasks, whereas Worker call charge locks Session/Task then ProblemKey; adding a Mission lock after Task would invert the order. The enforcement work must unify Mission → WorkerSession/Task → ProblemKey ordering across admission, charge and lifecycle paths. No code/schema/build/test/runtime changes were made. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-129-mission-budget-composition/verification.md`.
+Schema 89 backfills Mission usage from durable Task counters while leaving caps unset, and adds an append-only local-owner configure/increase ledger and immutable Mission admission/call rejection evidence. Workbench creation requires an explicit finite protocol tool-call cap; Settings supports confirmed, reasoned configuration of legacy Missions and cap increases with revision checks. Worker admission and call charging acquire Mission before WorkerSession/Task and ProblemKey. Each accepted call advances Session, Task, ProblemKey and Mission counters atomically. Handover and the provider turn limit use the minimum remaining allowance. This measures admitted protocol tool calls only; hidden CLI/service retries, tokens and USD are not included. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 89 migration hashes and `git diff --check` pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-130-mission-tool-call-budget/verification.md`.
 
-The next slice adds an explicit owner-configured Mission cap and usage enforcement with conservative legacy usage backfill, Mission-level rejection evidence, and Handover/Workbench visibility. Mission reserve, Company/Provider caps, hidden retries, token/money accounting and frozen scenario qualification remain open.
+Next: add a separately revisioned Mission closing reserve inside the total cap for fixed Kernel-created review/peer-review classes. Company/Provider caps, hidden retries, token/money accounting and frozen scenario qualification remain open.
+
+## Previous continuation status (Slice 129 — REQ-16 Mission budget composition and lock-order audit; no migration)
+
+The frozen design permits separately dimensioned Mission caps. The selected unit is admitted protocol tool calls; one accepted call projects into each applicable scope, and the Mission closing reserve belongs inside the total. The Mission ceiling must not be inferred from default Task/ProblemKey caps or presented as token/USD accounting. Lock review identified Mission → WorkerSession/Task → ProblemKey as the safe order. Slice 130 implements this order across admission and charge while lifecycle cancellation already updates Mission before Tasks. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-129-mission-budget-composition/verification.md`.
 
 ## Slice 128 — REQ-16 scoped provider retry observation (no migration)
 
 The real Codex runtime terminal usage now identifies the exact retry signal it observes: `responseStreamDisconnected` server errors with `willRetry`. The existing `reconnect_attempt_count` and `reconnect_recovered` fields describe only those same-turn protocol reconnect signals. `unobserved_provider_retry_count` is stored as `null`, because retries internal to the provider CLI/service are not exposed at this boundary; the existing `retry_visibility=limited` remains. This is observability only and does not account or charge hidden attempts. `go build ./internal/kernel ./internal/control ./cmd/polis`, frontend production build, all 88 migration hashes and `git diff --check` pass. The frontend retains the existing >500 kB advisory. Tests and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
 
-REQ-16 remains partial: hidden retries, token/money accounting and Mission/Company/Provider budget composition remain open.
+REQ-16 remains partial: Slice 130 adds the Mission tool-call cap; Mission closing reserve, Company/Provider budgets, hidden retries, token/money accounting and frozen scenario qualification remain open.
 
 ## Slice 127 — REQ-16 explicit incomplete budget closeout (Schema 88)
 
@@ -22,7 +26,7 @@ REQ-16 remains partial: hidden provider/CLI retries, token/money accounting and 
 
 An exhausted finite Task tool-call cap can now be increased by a confirmed local-owner command after the Task has no live WorkerSession. Schema 87 records append-only cap transitions with Task revision, ProblemKey allocation revision, closing-reserve revision, request ID and reason; a database guard rejects direct cap edits. Kernel rechecks Task state, both budget revisions, available shared calls and protected closing reserve in the same transaction that updates the Task cap. Workbench shows up to 20 Task budgets per ProblemKey and offers reasoned, confirmed Task allocations. ProblemKey limits and closing reserves remain the controlling shared bounds. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all 87 migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-126-task-budget-recovery/verification.md`.
 
-Mission/Company/Provider budget composition, hidden retries and token/money accounting remain open.
+At Slice 126, Mission/Company/Provider budget composition, hidden retries and token/money accounting remained open; Slice 130 later adds a Mission tool-call cap, with reserve and broader budget scopes still outstanding.
 
 ## Slice 125 — REQ-16 rejected ProblemKey budget routes (Schema 86)
 

@@ -86,6 +86,39 @@ func (k *Kernel) TXCreateMissionGoalWithAcceptance(ctx context.Context, s Scope,
 	})
 }
 
+func (k *Kernel) TXCreateMissionGoalWithAcceptanceAndToolCallLimit(ctx context.Context, s Scope, title, goal string, acceptance *taskvalidation.AcceptanceContract, toolCallLimit int64, key string) (Receipt, error) {
+	if strings.TrimSpace(title) == "" || len(title) > 200 || strings.TrimSpace(goal) == "" || len(goal) > core.MaxContent || toolCallLimit < 1 {
+		return Receipt{}, core.Malformed
+	}
+	if taskvalidation.ValidateContract(acceptance) != nil {
+		return Receipt{}, core.Malformed
+	}
+	command := struct {
+		Title                 string
+		Goal                  string
+		AcceptanceContract    *taskvalidation.AcceptanceContract
+		ProtocolToolCallLimit int64
+	}{title, goal, acceptance, toolCallLimit}
+	return k.TXWrite(ctx, s, nil, key, "mission.create", command, func(tx pgx.Tx) (Receipt, error) {
+		id := newID()
+		var acceptanceJSON []byte
+		var err error
+		if acceptance != nil {
+			acceptanceJSON, err = json.Marshal(acceptance)
+			if err != nil {
+				return Receipt{}, err
+			}
+		}
+		if _, err = tx.Exec(ctx, "INSERT INTO missions(company_id,id,title,goal,contract,acceptance_contract) VALUES($1,$2,$3,$4,$5,$6)", s.company, id, title, goal, core.Contract, acceptanceJSON); err != nil {
+			return Receipt{}, err
+		}
+		if err = configureMissionToolCallBudgetTX(ctx, tx, s.company, id, key, toolCallLimit, "Explicit Mission protocol tool-call cap at creation"); err != nil {
+			return Receipt{}, err
+		}
+		return Receipt{ID: id, Status: "draft"}, nil
+	})
+}
+
 type MissionDetails struct {
 	ID, Title, Goal, State string
 	AcceptanceContract     *taskvalidation.AcceptanceContract

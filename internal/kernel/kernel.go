@@ -409,6 +409,8 @@ func (k *Kernel) txWrite(ctx context.Context, s Scope, b *Binding, key, op strin
 	eventKind := op
 	if r.Status == "budget_rejected" {
 		eventKind = "problem.budget.route_rejected"
+	} else if r.Status == "mission_budget_rejected" {
+		eventKind = "mission.tool_budget.route_rejected"
 	}
 	if e = appendEvent(ctx, tx, s, eventKind, r); e != nil {
 		return Receipt{}, e

@@ -53,7 +53,7 @@ func RequiresSessionTokenPath(path string) bool {
 	if strings.Contains(path, "/takeover-leases") || strings.Contains(path, "/takeover-lease") {
 		return true
 	}
-	if strings.Contains(path, "/problem-budgets") {
+	if strings.Contains(path, "/problem-budgets") || strings.Contains(path, "/mission-budgets") {
 		return true
 	}
 	if strings.Contains(path, "/tasks/") && (strings.HasSuffix(path, "/jobs") || strings.HasSuffix(path, "/workspace")) {

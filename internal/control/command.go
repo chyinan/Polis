@@ -15,10 +15,11 @@ import (
 )
 
 type CreateMissionRequest struct {
-	Title              string                             `json:"title"`
-	Goal               string                             `json:"goal"`
-	RequestID          string                             `json:"requestId"`
-	AcceptanceContract *taskvalidation.AcceptanceContract `json:"acceptanceContract,omitempty"`
+	Title                 string                             `json:"title"`
+	Goal                  string                             `json:"goal"`
+	ProtocolToolCallLimit int64                              `json:"protocolToolCallLimit"`
+	RequestID             string                             `json:"requestId"`
+	AcceptanceContract    *taskvalidation.AcceptanceContract `json:"acceptanceContract,omitempty"`
 }
 
 type MissionCommandRequest struct {
@@ -528,6 +529,9 @@ func validateCreateMissionRequest(request CreateMissionRequest) error {
 		return core.Malformed
 	}
 	if strings.TrimSpace(request.Goal) == "" || len(request.Goal) > core.MaxContent {
+		return core.Malformed
+	}
+	if request.ProtocolToolCallLimit < 1 {
 		return core.Malformed
 	}
 	if taskvalidation.ValidateContract(request.AcceptanceContract) != nil {

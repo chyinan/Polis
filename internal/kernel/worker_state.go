@@ -243,6 +243,19 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		if e != nil {
 			return Receipt{}, e
 		}
+		missionBudget, e := lockMissionToolCallBudgetTX(ctx, tx, s.company, t.Mission)
+		if e != nil {
+			return Receipt{}, e
+		}
+		if missionBudget.State != "active" {
+			return Receipt{}, core.Denied
+		}
+		if reason := missionToolCallBudgetRejectionReason(missionBudget); reason != "" {
+			if err := recordMissionToolCallBudgetRejection(ctx, tx, s.company, t.Mission, t.ID, "", requestID, "worker_admission", reason, missionBudget); err != nil {
+				return Receipt{}, err
+			}
+			return Receipt{ID: t.ID, Status: "mission_budget_rejected"}, nil
+		}
 		if e = k.requireMemoryTaskWritableTX(ctx, tx, s.company, t.ID); e != nil {
 			return Receipt{}, e
 		}
@@ -395,7 +408,7 @@ WHERE company_id=$1 AND problem_key=$2 AND tool_call_limit IS NULL`, s.company, 
 		}
 		return Receipt{ID: b.session, Status: "restoring"}, e
 	})
-	if e == nil && r.Status == "budget_rejected" {
+	if e == nil && (r.Status == "mission_budget_rejected" || r.Status == "budget_rejected") {
 		return Binding{}, core.ToolCallBudgetExceeded
 	}
 	return b, e
@@ -403,18 +416,25 @@ WHERE company_id=$1 AND problem_key=$2 AND tool_call_limit IS NULL`, s.company, 
 
 func (k *Kernel) WorkerToolCallBudget(ctx context.Context, b Binding) (ToolCallBudget, error) {
 	var budget ToolCallBudget
-	var taskLimit, problemLimit pgtype.Int8
+	var missionLimit, taskLimit, problemLimit pgtype.Int8
 	var problemKey, taskKind string
-	e := k.pool.QueryRow(ctx, `SELECT s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used,
+	e := k.pool.QueryRow(ctx, `SELECT s.tool_call_limit,s.tool_calls_used,m.mission_tool_call_limit,m.mission_tool_calls_used,
+m.mission_tool_call_budget_revision,t.task_tool_call_limit,t.task_tool_calls_used,
 pb.tool_call_limit,pb.tool_calls_used,t.problem_key,t.kind
 FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
 JOIN problem_tool_call_budget_effective pb ON pb.company_id=t.company_id AND pb.problem_key=t.problem_key
-WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed, &problemLimit, &budget.ProblemUsed, &problemKey, &taskKind)
+WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Limit, &budget.Used, &missionLimit,
+		&budget.MissionUsed, &budget.MissionBudgetRevision, &taskLimit, &budget.TaskUsed, &problemLimit, &budget.ProblemUsed, &problemKey, &taskKind)
 	if e != nil {
 		return budget, e
 	}
 	if !taskLimit.Valid || !problemLimit.Valid {
 		return budget, core.Integrity
+	}
+	budget.MissionLimitConfigured = missionLimit.Valid
+	if missionLimit.Valid {
+		budget.MissionLimit = missionLimit.Int64
 	}
 	budget.TaskLimit = taskLimit.Int64
 	budget.ProblemLimit = problemLimit.Int64
@@ -431,28 +451,53 @@ func (k *Kernel) TXConsumeToolCall(ctx context.Context, b Binding, key, name str
 	var budget ToolCallBudget
 	sessionWrite := name != "work_current" && name != "context_read" && name != "workspace_read"
 	r, e := k.txWrite(ctx, b.scope, &b, key, "worker.tool_call", name, sessionWrite, func(tx pgx.Tx) (Receipt, error) {
-		if !sessionWrite {
-			var sessionState, missionState string
-			if err := tx.QueryRow(ctx, `SELECT s.state,m.state FROM worker_sessions s
+		var taskID, missionID string
+		if err := tx.QueryRow(ctx, `SELECT s.task_id,t.mission_id FROM worker_sessions s
 JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
-JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
-WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&sessionState, &missionState); err != nil {
+WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&taskID, &missionID); err != nil {
+			return Receipt{}, err
+		}
+		missionBudget, err := lockMissionToolCallBudgetTX(ctx, tx, b.scope.company, missionID)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if missionBudget.State != "active" {
+			return Receipt{}, core.Denied
+		}
+		if reason := missionToolCallBudgetRejectionReason(missionBudget); reason != "" {
+			if err := recordMissionToolCallBudgetRejection(ctx, tx, b.scope.company, missionID, taskID, b.session, key, "worker_tool_call", reason, missionBudget); err != nil {
 				return Receipt{}, err
 			}
-			if sessionState != "active" || missionState != "active" {
+			return Receipt{ID: b.session, Status: "mission_budget_rejected"}, nil
+		}
+		if !sessionWrite {
+			var sessionState string
+			if err := tx.QueryRow(ctx, `SELECT state FROM worker_sessions WHERE company_id=$1 AND id=$2`, b.scope.company, b.session).Scan(&sessionState); err != nil {
+				return Receipt{}, err
+			}
+			if sessionState != "active" {
 				return Receipt{}, core.Denied
 			}
 		}
-		var taskID, problemKey, taskKind string
+		var lockedTaskID, lockedMissionID, problemKey, taskKind string
 		var taskLimit, problemLimit, problemBaseLimit pgtype.Int8
-		if e := tx.QueryRow(ctx, `SELECT s.task_id,t.problem_key,s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used,t.kind
+		if e := tx.QueryRow(ctx, `SELECT s.task_id,t.mission_id,t.problem_key,s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used,t.kind
 FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
-WHERE s.company_id=$1 AND s.id=$2 FOR UPDATE OF s,t`, b.scope.company, b.session).Scan(&taskID, &problemKey, &budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed, &taskKind); e != nil {
+WHERE s.company_id=$1 AND s.id=$2 FOR UPDATE OF s,t`, b.scope.company, b.session).Scan(&lockedTaskID, &lockedMissionID, &problemKey, &budget.Limit, &budget.Used, &taskLimit, &budget.TaskUsed, &taskKind); e != nil {
 			return Receipt{}, e
+		}
+		if taskID != lockedTaskID || missionID != lockedMissionID {
+			return Receipt{}, core.Conflict
 		}
 		if !taskLimit.Valid {
 			return Receipt{}, core.Integrity
 		}
+		budget.MissionLimitConfigured = missionBudget.Limit.Valid
+		if missionBudget.Limit.Valid {
+			budget.MissionLimit = missionBudget.Limit.Int64
+		}
+		budget.MissionUsed = missionBudget.Used
+		budget.MissionBudgetRevision = missionBudget.Revision
 		budget.TaskLimit = taskLimit.Int64
 		if e := tx.QueryRow(ctx, `SELECT tool_call_limit FROM problem_tool_call_budgets
 WHERE company_id=$1 AND problem_key=$2 FOR UPDATE`, b.scope.company, problemKey).Scan(&problemBaseLimit); e != nil {
@@ -524,13 +569,23 @@ AND (tool_call_limit=0 OR tool_calls_used<tool_call_limit)`, b.scope.company, pr
 		if tag.RowsAffected() != 1 {
 			return Receipt{}, core.ToolCallBudgetExceeded
 		}
+		budget.MissionUsed++
+		tag, e = tx.Exec(ctx, `UPDATE missions SET mission_tool_calls_used=$3
+WHERE company_id=$1 AND id=$2 AND mission_tool_call_limit IS NOT NULL
+AND mission_tool_calls_used<mission_tool_call_limit`, b.scope.company, missionID, budget.MissionUsed)
+		if e != nil {
+			return Receipt{}, e
+		}
+		if tag.RowsAffected() != 1 {
+			return Receipt{}, core.ToolCallBudgetExceeded
+		}
 		if budget.ProblemClosingClass && budget.ProblemClosingReserve > 0 {
 			budget.ProblemClosingReserve--
 		}
 		setEffectiveToolCallBudgetRemaining(&budget)
 		return Receipt{ID: b.session, Status: "tool_call"}, nil
 	})
-	if e == nil && r.Status == "budget_rejected" {
+	if e == nil && (r.Status == "mission_budget_rejected" || r.Status == "budget_rejected") {
 		if latest, readErr := k.WorkerToolCallBudget(ctx, b); readErr == nil {
 			budget = latest
 		}
@@ -546,6 +601,16 @@ func setEffectiveToolCallBudgetRemaining(budget *ToolCallBudget) {
 	budget.Remaining = -1
 	if budget.Limit > 0 {
 		budget.Remaining = budget.Limit - budget.Used
+	}
+	budget.MissionRemaining = 0
+	if budget.MissionLimitConfigured {
+		budget.MissionRemaining = budget.MissionLimit - budget.MissionUsed
+		if budget.MissionRemaining < 0 {
+			budget.MissionRemaining = 0
+		}
+	}
+	if budget.Remaining < 0 || budget.MissionRemaining < budget.Remaining {
+		budget.Remaining = budget.MissionRemaining
 	}
 	budget.TaskRemaining = -1
 	if budget.TaskLimit > 0 {
@@ -858,17 +923,25 @@ func (k *Kernel) Handover(ctx context.Context, b Binding) (HandoverBundle, error
 		return out, e
 	}
 	var task string
-	var taskLimit, problemLimit pgtype.Int8
-	e = tx.QueryRow(ctx, `SELECT s.task_id,s.tool_call_limit,s.tool_calls_used,t.task_tool_call_limit,t.task_tool_calls_used,
+	var missionLimit, taskLimit, problemLimit pgtype.Int8
+	e = tx.QueryRow(ctx, `SELECT s.task_id,s.tool_call_limit,s.tool_calls_used,m.mission_tool_call_limit,m.mission_tool_calls_used,m.mission_tool_call_budget_revision,
+t.task_tool_call_limit,t.task_tool_calls_used,
 pb.tool_call_limit,pb.tool_calls_used
 FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
 JOIN problem_tool_call_budget_effective pb ON pb.company_id=t.company_id AND pb.problem_key=t.problem_key
-WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&task, &out.ToolBudget.Limit, &out.ToolBudget.Used, &taskLimit, &out.ToolBudget.TaskUsed, &problemLimit, &out.ToolBudget.ProblemUsed)
+WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&task, &out.ToolBudget.Limit, &out.ToolBudget.Used,
+		&missionLimit, &out.ToolBudget.MissionUsed, &out.ToolBudget.MissionBudgetRevision, &taskLimit, &out.ToolBudget.TaskUsed,
+		&problemLimit, &out.ToolBudget.ProblemUsed)
 	if e != nil {
 		return out, e
 	}
 	if !taskLimit.Valid || !problemLimit.Valid {
 		return out, core.Integrity
+	}
+	out.ToolBudget.MissionLimitConfigured = missionLimit.Valid
+	if missionLimit.Valid {
+		out.ToolBudget.MissionLimit = missionLimit.Int64
 	}
 	out.ToolBudget.TaskLimit = taskLimit.Int64
 	out.ToolBudget.ProblemLimit = problemLimit.Int64

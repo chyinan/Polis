@@ -1495,6 +1495,40 @@ export type ProblemToolCallBudgetListView = Readonly<{
   truncated: boolean;
 }>;
 
+export type MissionToolCallBudgetState = 'pending' | 'available' | 'exhausted';
+export type MissionToolCallBudgetRejectionReason = 'mission_budget_pending' | 'mission_limit';
+export type MissionToolCallBudgetRejectionRoute = 'worker_admission' | 'worker_tool_call';
+
+export type MissionToolCallBudgetView = Readonly<{
+  missionId: string;
+  title: string;
+  missionState: string;
+  toolCallLimit: number | null;
+  toolCallsUsed: number;
+  toolCallsRemaining: number;
+  revision: number;
+  state: MissionToolCallBudgetState;
+  allocationCount: number;
+  lastReason?: string;
+  lastAllocatedAt?: string;
+  rejectionCount: number;
+  lastRejectionAt?: string;
+  lastRejectionRoute?: MissionToolCallBudgetRejectionRoute;
+  lastRejectionReason?: MissionToolCallBudgetRejectionReason;
+  lastRejectionTaskId?: string;
+}>;
+
+export type MissionToolCallBudgetListView = Readonly<{
+  items: ReadonlyArray<MissionToolCallBudgetView>;
+  truncated: boolean;
+}>;
+
+export type MissionToolCallBudgetChangeReceiptView = Readonly<{
+  id: string;
+  status: 'mission_budget_configured' | 'mission_budget_allocated';
+  revision: number;
+}>;
+
 export type ProblemToolCallAllocationReceiptView = Readonly<{
   id: string;
   status: 'allocated';

@@ -1,6 +1,6 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 129
+Updated: 2026-10-03, Slice 130
 
 ## Decision
 
@@ -24,15 +24,18 @@ Current Worker admission reads a Task, then locks its Task row and the ProblemKe
 
 Adding a Mission row lock after the current Task lock would create opposite orders between charging and cancellation. The enforcement slice must first make admission/charge and Mission lifecycle lock acquisition consistent, with a documented order of Mission → WorkerSession/Task → ProblemKey where those rows are needed. Audit every affected writer before applying that order; read-only projections can remain snapshot reads. ProblemKey-only allocation paths must not acquire Mission after holding the ProblemKey row.
 
-## Bounded implementation sequence
+## Slice 130 implementation state
 
-1. Add the durable Mission call-cap/usage projection and append-only owner configuration/allocation history. New Workbench Missions must receive an explicit finite cap; a legacy Mission with no trustworthy configured cap stays pending until an owner records one. Backfill usage from Task counters without inventing missing use.
-2. Reorder Worker admission, call charging, Mission lifecycle writes, and budget denials around the shared lock order. Check Mission capacity in the same transaction that accepts a call; store Mission cap/usage/revision in the rejection evidence.
-3. Expose Mission cap and remaining calls in Handover and Workbench, and expose confirmed owner changes with stale-snapshot protection. Label the unit as admitted protocol tool calls and disclose that hidden retries remain unknown.
-4. Add a revisioned Mission closing-reserve policy bounded by the total cap, using only the fixed Kernel-created closing classes. Keep this a later sub-slice if it cannot be safely completed with cap enforcement.
+Schema 89 adds Mission usage and cap/revision columns, backfills usage by summing durable Task counters, and leaves the cap null for all existing Missions. The append-only allocation ledger only permits initial configuration or increases; immutable rejection evidence records pending/exhausted Mission denials. Workbench Mission creation requires an explicit finite cap, and Settings configures pending legacy Missions or raises a total cap with a reason, confirmation and expected revision. Kernel admission and charging acquire Mission before Session/Task and ProblemKey. Each accepted call increments all applicable counters in one transaction. Handover reports Mission usage/remaining and the provider turn limit uses the minimum remaining allowance. Hidden retries remain `limited` and are not claimed by this cap. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-130-mission-tool-call-budget/verification.md`.
+
+## Remaining bounded sequence
+
+1. Add a revisioned Mission closing-reserve policy inside the finite Mission total, limited to fixed Kernel-created `review` and `peer_review` classes. Ordinary Task admission and provider turn clamping must preserve remaining Mission reserve; closing calls consume both the reserve and overall Mission cap.
+2. Separately evaluate Company/ProviderAccount limits and token/money accounting only where the design defines reliable usage identities and observable cost. Do not infer those from tool-call counters.
+3. Keep exact FT-42–45 execution and broader R1–R3 qualification separate from build-only implementation evidence. They remain `not_run` here.
 
 Company and ProviderAccount caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer are separate open requirements; none can be derived from this call counter.
 
 ## Qualification status
 
-This is a source and lock-order audit, not runtime qualification. No code or schema changed in Slice 129. No tests, migration runtime, provider execution, or live cost measurement were run. FT-42–45 remain `not_run` in the frozen catalog.
+Slice 130 is implementation evidence, not runtime qualification. Go package/command builds, frontend production build, migration hash validation and diff checks passed. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.

@@ -70,7 +70,7 @@ func (s *Service) CreateMission(ctx context.Context, companyID string, request C
 	if err := validateCreateMissionRequest(request); err != nil {
 		return CommandReceipt{}, err
 	}
-	receipt, err := s.runtime.TXCreateMissionGoalWithAcceptance(ctx, s.runtime.LocalScope(companyID), request.Title, request.Goal, request.AcceptanceContract, request.RequestID)
+	receipt, err := s.runtime.TXCreateMissionGoalWithAcceptanceAndToolCallLimit(ctx, s.runtime.LocalScope(companyID), request.Title, request.Goal, request.AcceptanceContract, request.ProtocolToolCallLimit, request.RequestID)
 	if err != nil {
 		return CommandReceipt{}, err
 	}
