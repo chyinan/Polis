@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 142 — FT-63 first-owner bootstrap (Schema 96)
+
+Schema 96 persists one installation owner, a single expiring bootstrap digest, a bounded failure throttle and append-only auth events. `polis owner-bootstrap` requires a terminal and a non-superuser `POLIS_DSN`; it prints a cryptographically random one-time code that is valid for ten minutes, while only its SHA-256 digest is stored. The local setup endpoint requires a loopback peer and an allowed local Origin, applies a five-failure/15-minute limit, and atomically consumes the code while storing the Argon2id password hash. Tokenless web registration remains impossible because both routes enforce the local setup boundary. Focused desktop/installationauth tests, `go build ./cmd/polis`, migration hash validation through 96 and `git diff --check` pass. PostgreSQL migration/runtime was not run. Browser login/logout, persisted sessions, cookies, CSRF and UI wiring remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-142-first-owner-bootstrap/verification.md`.
+
 ## Slice 141 — FT-63 bounded Argon2id password hash primitive (no migration)
 
 Added `internal/installationauth` with fixed Argon2id parameters (64 MiB, three passes, four lanes), random per-password salt, a 32-byte derived key, constant-time verification, strict encoded-parameter parsing, 1 KiB input bound and a two-operation memory gate. The official `golang.org/x/crypto/argon2` package is pinned at v0.57.0. Focused tests for correct/wrong passwords and malformed/unbounded stored parameters pass; package build and `git diff --check` pass. This is only a credential primitive: FT-63 still needs the first-owner bootstrap, persistent owner row and revocable browser sessions/CSRF integration. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-141-owner-password-hash/verification.md`.

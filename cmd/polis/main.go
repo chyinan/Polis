@@ -18,6 +18,7 @@ import (
 	"polis/internal/desktop"
 	"polis/internal/environment"
 	githubfeedback "polis/internal/feedback/github"
+	"polis/internal/installationauth"
 	"polis/internal/intake"
 	"polis/internal/kernel"
 	"polis/internal/provider"
@@ -92,6 +93,9 @@ func run() error {
 	}
 	if os.Args[1] == "serve" {
 		return serveWorkbench()
+	}
+	if os.Args[1] == "owner-bootstrap" {
+		return runOwnerBootstrap()
 	}
 	if os.Args[1] == "import-git" {
 		return importGitMissionInput()
@@ -508,6 +512,12 @@ func serveWorkbench() (returnErr error) {
 	shutdownRequested := make(chan struct{}, 1)
 	maintenance := newDesktopMaintenanceGate()
 	router := http.NewServeMux()
+	ownerAuthStore, err := installationauth.OpenStore(ctx, os.Getenv("POLIS_DSN"))
+	if err != nil {
+		return fmt.Errorf("failed to start installation owner setup store: %w", err)
+	}
+	defer ownerAuthStore.Close()
+	router.Handle("/api/installation/owner/", desktop.OwnerSetupHandler(ownerAuthStore))
 	router.Handle("/api/workbench/", workbench.NewHandler(store, commandService))
 	router.HandleFunc("/healthz", func(response http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodGet {

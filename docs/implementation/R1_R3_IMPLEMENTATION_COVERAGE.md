@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 141. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 142. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 142: FT-63 first-owner bootstrap (Schema 96)
+
+Schema 96 adds the one-owner credential row, one-time bootstrap state, a failure throttle and append-only authentication events. The local OS command `polis owner-bootstrap` requires an interactive terminal and issues a 10-minute random code while storing only its SHA-256 digest. The local-only setup endpoint checks loopback peer and local Origin, rejects tokenless remote registration, throttles five failures for 15 minutes, and consumes the code atomically with the Argon2id password hash. Focused boundary tests, command build and migration hash checks through 96 pass; no PostgreSQL runtime was available/run. Durable owner sessions, login/logout, cookies, CSRF and frontend setup/login states remain open, so FT-63 is not complete. See `evidence/development/r1-r3-implementation-validation-20261003-slice-142-first-owner-bootstrap/verification.md`.
 
 ## Slice 141: FT-63 bounded owner password hashing (no migration)
 
@@ -559,7 +563,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | 22 | Office/3D remains decoupled from core | R1 | excluded by explicit user scope | Excluded |
 | 23 | Mission activation and safe closeout | R1 | partial; create/start/pause/resume/cancel use idempotent commands and WorkerSession stop/start, while formal closeout/recovery qualification remains | R1 |
 | 24 | Authenticated formal employee operations | R1 | partial; product tool surface exists, current full runtime path is unqualified | R1 |
-| 25 | Explicit administrator and continuing authorization | R1 | partial; local desktop token/provider readiness exist; user authorization lifecycle remains | R1 |
+| 25 | Explicit administrator and continuing authorization | R1 | partial; local desktop token/provider readiness exist; Slice 141 adds bounded Argon2id hashing and Slice 142 adds terminal-issued one-time first-owner bootstrap; durable browser sessions, login/logout, cookie/CSRF enforcement and the owner UI remain | R1 |
 | 26 | Company isolation covers shared write targets | R1 | partial; CAS/workspace fencing exists, resource binding remains | R1 |
 | 27 | Handover preserves facts and published artifacts | R1 | partial; checkpoint/recovery foundations exist; E-HANDOVER remains | R1 |
 | 28 | QQ Bot takeover notification | R1 | partial; redacted C2C transport, DPAPI credential storage, one-shot HMAC IPC, revocation gate, qualified-route DB gate, event-path dispatcher, persisted receipt/outcome, crash-to-unknown recovery, bounded restart-safe retry and visible intervention/delivery status exist; live qualification and real delivery remain | R1 C2C |

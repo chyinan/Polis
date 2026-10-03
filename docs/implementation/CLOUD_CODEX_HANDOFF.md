@@ -4,9 +4,13 @@ Updated: 2026-10-03
 
 ## Current continuation pointer
 
-The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 141 / Schema 95; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized allocations, closing reserves, immutable rejection records, incomplete closeout and scoped retry visibility. Slices 129–131 establish Mission protocol-tool-call cap and reserve enforcement; Slice 133 adds the Company cap and Slice 134 its closing reserve. Slices 135–137 bind Codex auth-principal observations, Slice 138 captures Codex's selected account locator, and Slice 140 adds the installation-wide observation registry. Slice 141 adds a bounded Argon2id password-hash primitive; FT-63 bootstrap and browser sessions remain open. Financial controls remain unimplemented. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-141-owner-password-hash/verification.md`.
+The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 142 / Schema 96; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized allocations, closing reserves, immutable rejection records, incomplete closeout and scoped retry visibility. Slices 129–131 establish Mission protocol-tool-call cap and reserve enforcement; Slice 133 adds the Company cap and Slice 134 its closing reserve. Slices 135–137 bind Codex auth-principal observations, Slice 138 captures Codex's selected account locator, and Slice 140 adds the installation-wide observation registry. Slices 141–142 establish the Argon2id password primitive and local first-owner bootstrap; durable browser sessions and CSRF remain open. Financial controls remain unimplemented. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-142-first-owner-bootstrap/verification.md`.
 
-## Latest completed slice (141, FT-63 bounded owner password hash primitive; no migration)
+## Latest completed slice (142, FT-63 first-owner bootstrap; Schema 96)
+
+The terminal-only command issues a short-lived random setup code; Schema 96 stores only its digest. The local-origin endpoint throttles attempts and atomically creates the single owner password record. Browser sessions, cookies, CSRF and UI login remain open. See Slice 142 evidence.
+
+## Previous completed slice (141, FT-63 bounded owner password hash primitive; no migration)
 
 The owner password helper uses fixed bounded Argon2id parameters, random salts and constant-time comparison. It is not yet wired to owner enrollment/login. See Slice 141 evidence.
 

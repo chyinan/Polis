@@ -36,12 +36,14 @@ func MiddlewareWithRemoteOrigin(token, remoteOrigin string, next http.Handler) h
 			response.WriteHeader(http.StatusNoContent)
 			return
 		}
+		ownerSetupRequest := request.URL.Path == "/api/installation/owner/status" || request.URL.Path == "/api/installation/owner/bootstrap"
 		queryToken := request.URL.Query().Get("desktop_token")
 		if remoteConfigured && !localOriginRequest {
 			queryToken = ""
 		}
 		presented := PresentedToken(request.Header.Get("X-Polis-Desktop-Token"), request.Header.Get("Authorization"), queryToken)
-		if (token != "" && !TokenMatches(token, presented)) || (token == "" && RequiresSessionTokenPath(request.URL.Path)) {
+		if (token != "" && !TokenMatches(token, presented) && !ownerSetupRequest) ||
+			(token == "" && RequiresSessionTokenPath(request.URL.Path) && !ownerSetupRequest) {
 			writeError(response, http.StatusUnauthorized, "desktop session token is missing or invalid")
 			return
 		}
