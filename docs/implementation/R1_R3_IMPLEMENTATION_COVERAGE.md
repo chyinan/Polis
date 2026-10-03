@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 140. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 141. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 141: FT-63 bounded owner password hashing (no migration)
+
+`internal/installationauth` uses the official `golang.org/x/crypto/argon2` implementation at v0.57.0 with fixed Argon2id parameters (64 MiB, three passes, four lanes), random salts, constant-time comparison and a bounded verification parser. A two-operation gate bounds simultaneous Argon2 memory use. Focused tests pass. This does not create an owner, issue or consume a bootstrap code, authenticate a browser, or satisfy FT-63; those remain the next implementation work. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-141-owner-password-hash/verification.md`.
 
 ## Slice 140: REQ-16 observed ProviderAccount registry (Schema 95)
 

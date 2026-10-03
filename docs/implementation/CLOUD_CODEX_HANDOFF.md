@@ -4,9 +4,13 @@ Updated: 2026-10-03
 
 ## Current continuation pointer
 
-The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 140 / Schema 95; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized allocations, closing reserves, immutable rejection records, incomplete closeout and scoped retry visibility. Slices 129–131 establish Mission protocol-tool-call cap and reserve enforcement; Slice 133 adds the Company cap and Slice 134 its closing reserve. Slices 135–137 bind Codex auth-principal observations, Slice 138 captures Codex's selected account locator, and Slice 140 adds the installation-wide observation registry. Slice 139 documents billing-mode prerequisites. Financial controls remain unimplemented, and the full FT-63 first-owner login/session boundary remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-140-provider-account-registry/verification.md`.
+The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 141 / Schema 95; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized allocations, closing reserves, immutable rejection records, incomplete closeout and scoped retry visibility. Slices 129–131 establish Mission protocol-tool-call cap and reserve enforcement; Slice 133 adds the Company cap and Slice 134 its closing reserve. Slices 135–137 bind Codex auth-principal observations, Slice 138 captures Codex's selected account locator, and Slice 140 adds the installation-wide observation registry. Slice 141 adds a bounded Argon2id password-hash primitive; FT-63 bootstrap and browser sessions remain open. Financial controls remain unimplemented. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-141-owner-password-hash/verification.md`.
 
-## Latest completed slice (140, REQ-16 observed ProviderAccount registry; Schema 95)
+## Latest completed slice (141, FT-63 bounded owner password hash primitive; no migration)
+
+The owner password helper uses fixed bounded Argon2id parameters, random salts and constant-time comparison. It is not yet wired to owner enrollment/login. See Slice 141 evidence.
+
+## Previous completed slice (140, REQ-16 observed ProviderAccount registry; Schema 95)
 
 The immutable registry backfills existing available account locators and links future observations to WorkerSessions. A token-protected, read-only Workbench endpoint exposes only fingerprints and aggregate counts; the shared desktop token is not the dedicated first-owner login/session design. Financial caps, liability settlement and live account qualification remain open. See Slice 140 evidence.
 

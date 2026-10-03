@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 141 — FT-63 bounded Argon2id password hash primitive (no migration)
+
+Added `internal/installationauth` with fixed Argon2id parameters (64 MiB, three passes, four lanes), random per-password salt, a 32-byte derived key, constant-time verification, strict encoded-parameter parsing, 1 KiB input bound and a two-operation memory gate. The official `golang.org/x/crypto/argon2` package is pinned at v0.57.0. Focused tests for correct/wrong passwords and malformed/unbounded stored parameters pass; package build and `git diff --check` pass. This is only a credential primitive: FT-63 still needs the first-owner bootstrap, persistent owner row and revocable browser sessions/CSRF integration. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-141-owner-password-hash/verification.md`.
+
 ## Slice 140 — REQ-16 observed ProviderAccount registry (Schema 95)
 
 Schema 95 backfills available WorkerSession account-locator observations into an immutable installation-wide registry. New snapshots register the account and per-session observation atomically while the Company lifecycle lock is held; global keys are acquired afterward, and future cross-scope operations must retain that order. `InstallationOwnerScope` is tied to the active Kernel incarnation. The read-only `/api/workbench/installation/provider-accounts` projection exposes locator fingerprints and aggregate counts only; the route rejects tokenless access and checks the middleware-authenticated desktop management token. This does not identify the billing unit or enable ProviderAccount budgets. The shared desktop token is a local service credential, not the separate FT-63 first-owner login/session flow. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-140-provider-account-registry/verification.md`.

@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 140, REQ-16 observed ProviderAccount registry; Schema 95)
+## Latest continuation status (Slice 141, FT-63 password hashing foundation; no migration)
+
+`internal/installationauth` now hashes and verifies installation-owner passwords with Argon2id using fixed 64 MiB / three-pass / four-lane parameters, random salts, constant-time comparison and a two-operation memory gate. Verification rejects any encoded parameters other than the reviewed bounded profile before allocating Argon2 memory. Focused package tests pass. This is a credential primitive only; no owner row, bootstrap code, login session, cookie or CSRF route exists yet. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-141-owner-password-hash/verification.md`.
+
+Next local step: persist single-owner and one-time bootstrap state, then add a TTY-only `polis owner-bootstrap` command and local first-owner completion route. Keep tokenless web registration impossible; later add durable revocable sessions and CSRF checks before exposing installation-wide mutations.
+
+## Previous continuation status (Slice 140, REQ-16 observed ProviderAccount registry; Schema 95)
 
 Schema 95 backfills available WorkerSession account-locator observations into an immutable installation-wide registry and observation ledger. New snapshots add registry associations in the same pre-execution Company-guarded transaction. A read-only Workbench endpoint returns aggregate account fingerprints and observation counts only after the configured desktop management token is validated; `InstallationOwnerScope` is bound to the current Kernel incarnation. This is not billing-scope proof and enables no shared budget. The current shared desktop token is not the dedicated first-owner bootstrap and per-person login required by FT-63. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-140-provider-account-registry/verification.md`.
 
