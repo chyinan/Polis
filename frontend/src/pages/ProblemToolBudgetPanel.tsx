@@ -1,8 +1,8 @@
 import {useState} from 'react';
 import type {ReactElement} from 'react';
-import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useChangeMissionToolCallBudget, useCloseTaskToolBudgetIncomplete, useMissionToolCallBudgets, useProblemToolCallBudgets, useSetMissionToolCallClosingReserve, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
+import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useChangeCompanyToolCallBudget, useChangeMissionToolCallBudget, useCloseTaskToolBudgetIncomplete, useCompanyToolCallBudget, useMissionToolCallBudgets, useProblemToolCallBudgets, useSetMissionToolCallClosingReserve, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
 import type {WorkbenchApi} from '../data/workbench-api';
-import type {MissionToolCallBudgetView, ProblemToolCallBudgetView, TaskToolCallBudgetView} from '../domain/workbench';
+import type {CompanyToolCallBudgetView, MissionToolCallBudgetView, ProblemToolCallBudgetView, TaskToolCallBudgetView} from '../domain/workbench';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
 
@@ -53,8 +53,19 @@ function taskRejectionReasonLabel(reason: NonNullable<TaskToolCallBudgetView['la
 export function ProblemToolBudgetPanel({api, companyId}: Props): ReactElement | null {
   const query = useProblemToolCallBudgets(api, companyId);
   const missions = useMissionToolCallBudgets(api, companyId);
+  const company = useCompanyToolCallBudget(api, companyId);
   if (api.mode !== 'real') return null;
   return <div className={styles.viewStack}>
+    <section className={styles.sectionCard}>
+      <div className={styles.sectionHeader}>
+        <div><span className={styles.cardEyebrow}>预算审计</span><h2 className={styles.sectionTitle}>Company 协议工具调用上限</h2></div>
+        <StatusBadge label={company.data ? companyBudgetStateLabel(company.data.state) : '读取中'} tone={company.data?.state === 'available' ? 'success' : company.data?.state === 'exhausted' ? 'danger' : 'warning'} />
+      </div>
+      <p className={styles.formHint}>Company 上限覆盖该公司的协议工具调用，并与 Mission、ProblemKey、Task、WorkerSession 计数在同一事务中扣减。它只计入本地已准入的协议工具调用，不代表模型请求、隐藏重试、Token 或 USD provider 账单。</p>
+      {company.isPending ? <p className={styles.formHint}>正在读取 Company 额度…</p> : null}
+      {company.isError ? <p className={styles.errorText} role="alert">读取 Company 额度失败：{company.error.message}</p> : null}
+      {company.data ? <CompanyBudgetRow api={api} budget={company.data} companyId={companyId} /> : null}
+    </section>
     <section className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
         <div><span className={styles.cardEyebrow}>预算审计</span><h2 className={styles.sectionTitle}>使命工具调用额度</h2></div>
@@ -80,6 +91,56 @@ export function ProblemToolBudgetPanel({api, companyId}: Props): ReactElement | 
     {query.data?.truncated ? <p className={styles.formHint}>当前最多显示 100 个 ProblemKey。</p> : null}
     </section>
   </div>;
+}
+
+function companyBudgetStateLabel(state: CompanyToolCallBudgetView['state']): string {
+  if (state === 'pending') return '待配置上限';
+  return state === 'exhausted' ? '已耗尽' : '可用';
+}
+
+function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi; budget: CompanyToolCallBudgetView; companyId: string}>): ReactElement {
+  const change = useChangeCompanyToolCallBudget(api, companyId);
+  const [resultingLimit, setResultingLimit] = useState('');
+  const [reason, setReason] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
+  const proposed = Number(resultingLimit);
+  const canSubmit = confirmed && Number.isSafeInteger(proposed) && proposed > 0 && proposed >= budget.toolCallsUsed
+    && (budget.toolCallLimit === null || proposed > budget.toolCallLimit)
+    && reason.trim().length > 0 && Array.from(reason.trim()).length <= 500 && !change.isPending;
+
+  async function submit(): Promise<void> {
+    if (!canSubmit) return;
+    await change.mutateAsync({
+      expectedToolCallLimit: budget.toolCallLimit,
+      expectedRevision: budget.revision,
+      resultingToolCallLimit: proposed,
+      reason,
+      requestId: `company-budget-${crypto.randomUUID()}`,
+    });
+    setResultingLimit('');
+    setReason('');
+    setConfirmed(false);
+  }
+
+  const limitLabel = budget.toolCallLimit === null ? '待配置' : budget.toolCallLimit.toLocaleString('zh-CN');
+  return <article className={styles.boundaryItem}>
+    <div className={styles.viewStack}>
+      <div><strong>Company <code>{budget.companyId}</code></strong></div>
+      <p>已用 {budget.toolCallsUsed.toLocaleString('zh-CN')} / 上限 {limitLabel} · 剩余 {budget.toolCallsRemaining.toLocaleString('zh-CN')} · 额度版本 {budget.revision}</p>
+      {budget.lastAllocatedAt ? <p className={styles.formHint}>最近配置或追加：{budget.lastAllocatedAt} · {budget.lastReason}</p> : null}
+      {budget.rejectionCount > 0 && budget.lastRejectionAt && budget.lastRejectionRoute && budget.lastRejectionReason && budget.lastRejectionTaskId
+        ? <p className={styles.formHint}>准入或调用拒绝 {budget.rejectionCount.toLocaleString('zh-CN')} 次 · 最近：{budget.lastRejectionAt} · {budget.lastRejectionRoute === 'worker_admission' ? 'Worker 准入' : '工具调用'} · {budget.lastRejectionReason === 'company_budget_pending' ? 'Company 尚未配置上限' : 'Company 上限已耗尽'} · Task <code>{budget.lastRejectionTaskId}</code></p>
+        : <p className={styles.formHint}>尚无 Company 上限拒绝记录。</p>}
+      <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
+        <label className={styles.formLabel}>{budget.toolCallLimit === null ? '配置 Company 协议工具调用上限' : '提高 Company 协议工具调用上限'}<input className={styles.formField} inputMode="numeric" min={Math.max(1, budget.toolCallsUsed, budget.toolCallLimit === null ? 1 : budget.toolCallLimit + 1)} step="1" type="number" value={resultingLimit} onChange={event => setResultingLimit(event.target.value)} /></label>
+        <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
+        <label className={styles.formLabel}><input checked={confirmed} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认设置或追加此 Company 的总协议工具调用额度；授权记录不可撤回</label>
+        <button className={styles.commandButton} disabled={!canSubmit} type="submit">{change.isPending ? '正在记录…' : budget.toolCallLimit === null ? '配置 Company 上限' : '追加 Company 额度'}</button>
+        {change.isError ? <p className={styles.errorText} role="alert">Company 额度变更失败：{change.error.message}；如版本已变化，请刷新后重新确认。</p> : null}
+      </form>
+    </div>
+    <StatusBadge label={companyBudgetStateLabel(budget.state)} tone={budget.state === 'available' ? 'success' : budget.state === 'exhausted' ? 'danger' : 'warning'} />
+  </article>;
 }
 
 function missionBudgetStateLabel(state: MissionToolCallBudgetView['state']): string {

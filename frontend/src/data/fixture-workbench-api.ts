@@ -4,8 +4,8 @@ import type {CreateProjectJobBrowserSessionOptions, ImportStdioMCPPackageOptions
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
-import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, ChangeMissionToolCallBudgetOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, MissionToolCallBudgetQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetMissionToolCallClosingReserveOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
+import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, ChangeCompanyToolCallBudgetOptions, ChangeMissionToolCallBudgetOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, MissionToolCallBudgetQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetMissionToolCallClosingReserveOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
+import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
 
@@ -738,6 +738,17 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.companyId);
     if (options.companyId !== FIXTURE_COMPANY_ID) throw new Error('failed to load fixture memory corrections: scope not found');
     return {items: [], truncated: false};
+  }
+
+  async getCompanyToolCallBudget(options: CompanyScopeOptions): Promise<CompanyToolCallBudgetView> {
+    assertCompanyScope(options.companyId);
+    if (options.companyId !== FIXTURE_COMPANY_ID) throw new Error('failed to load fixture Company budget: scope not found');
+    return {companyId: FIXTURE_COMPANY_ID, toolCallLimit: null, toolCallsUsed: 0, toolCallsRemaining: 0,
+      revision: 0, state: 'pending', allocationCount: 0, rejectionCount: 0};
+  }
+
+  async changeCompanyToolCallBudget(_options: ChangeCompanyToolCallBudgetOptions): Promise<CompanyToolCallBudgetChangeReceiptView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'Company budget changes are unavailable in fixture mode');
   }
 
   async listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView> {

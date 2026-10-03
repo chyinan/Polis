@@ -1,6 +1,7 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
+import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView} from '../domain/workbench';
 import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentCorrectionView, DomainContentPublicationView} from '../domain/workbench';
@@ -310,6 +311,14 @@ export type MemoryTaskStatusQueryOptions = Readonly<{companyId: string; taskId: 
 export type MemoryCorrectionQueueQueryOptions = Readonly<{companyId: string}>;
 export type ProblemToolCallBudgetQueryOptions = Readonly<{companyId: string}>;
 export type MissionToolCallBudgetQueryOptions = Readonly<{companyId: string}>;
+export type ChangeCompanyToolCallBudgetOptions = Readonly<{
+  companyId: string;
+  expectedToolCallLimit: number | null;
+  expectedRevision: number;
+  resultingToolCallLimit: number;
+  reason: string;
+  requestId: string;
+}>;
 export type ChangeMissionToolCallBudgetOptions = Readonly<{
   companyId: string;
   missionId: string;
@@ -681,6 +690,8 @@ export type WorkbenchApi = Readonly<{
   listDailyRoutines(options: DailyRoutineQueryOptions): Promise<ReadonlyArray<DailyRoutineView>>;
   getMemoryTaskStatus(options: MemoryTaskStatusQueryOptions): Promise<MemoryTaskStatusView>;
   listMemoryCorrections(options: MemoryCorrectionQueueQueryOptions): Promise<MemoryCorrectionQueueView>;
+  getCompanyToolCallBudget(options: CompanyScopeOptions): Promise<CompanyToolCallBudgetView>;
+  changeCompanyToolCallBudget(options: ChangeCompanyToolCallBudgetOptions): Promise<CompanyToolCallBudgetChangeReceiptView>;
   listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView>;
   listMissionToolCallBudgets(options: MissionToolCallBudgetQueryOptions): Promise<MissionToolCallBudgetListView>;
   changeMissionToolCallBudget(options: ChangeMissionToolCallBudgetOptions): Promise<MissionToolCallBudgetChangeReceiptView>;

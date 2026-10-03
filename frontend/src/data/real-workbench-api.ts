@@ -1,13 +1,15 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
+import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView} from '../domain/workbench';
+import type {ChangeCompanyToolCallBudgetOptions} from './workbench-api';
 import type {MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView} from '../domain/workbench';
 import type {ChangeMissionToolCallBudgetOptions, MissionToolCallBudgetQueryOptions, SetMissionToolCallClosingReserveOptions} from './workbench-api';
 import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
 import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
-import {validateMissionToolCallBudgetChangeReceipt, validateMissionToolCallBudgetList, validateMissionToolCallClosingReserveReceipt, validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
+import {validateCompanyToolCallBudget, validateCompanyToolCallBudgetChangeReceipt, validateMissionToolCallBudgetChangeReceipt, validateMissionToolCallBudgetList, validateMissionToolCallClosingReserveReceipt, validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
 import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
@@ -947,6 +949,36 @@ export class RealWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.companyId);
     const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/memory/corrections`);
     return validateMemoryCorrectionQueue(raw);
+  }
+
+  async getCompanyToolCallBudget(options: CompanyScopeOptions): Promise<CompanyToolCallBudgetView> {
+    assertCompanyScope(options.companyId);
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/company-tool-call-budget`);
+    return validateCompanyToolCallBudget(raw, options.companyId);
+  }
+
+  async changeCompanyToolCallBudget(options: ChangeCompanyToolCallBudgetOptions): Promise<CompanyToolCallBudgetChangeReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertRequestID(options.requestId);
+    if (!Number.isSafeInteger(options.resultingToolCallLimit) || options.resultingToolCallLimit < 1
+      || !Number.isSafeInteger(options.expectedRevision) || options.expectedRevision < 0
+      || (options.expectedToolCallLimit !== null && (!Number.isSafeInteger(options.expectedToolCallLimit) || options.expectedToolCallLimit < 1))
+      || (options.expectedToolCallLimit === null && options.expectedRevision !== 0)
+      || (options.expectedToolCallLimit !== null && (options.expectedRevision < 1 || options.resultingToolCallLimit <= options.expectedToolCallLimit))) {
+      throw new Error('Company tool-call budget values must be positive, increasing safe integers');
+    }
+    const reason = options.reason.trim();
+    const reasonLength = Array.from(reason).length;
+    if (reasonLength < 1 || reasonLength > 500) throw new Error('allocation reason must contain 1–500 characters');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/company-tool-call-budget`, options.requestId, {
+      expectedToolCallLimit: options.expectedToolCallLimit,
+      expectedRevision: options.expectedRevision,
+      resultingToolCallLimit: options.resultingToolCallLimit,
+      reason,
+      requestId: options.requestId,
+      confirm: true,
+    });
+    return validateCompanyToolCallBudgetChangeReceipt(raw, options.companyId, options.expectedRevision + 1, options.expectedToolCallLimit === null);
   }
 
   async listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView> {

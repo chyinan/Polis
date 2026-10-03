@@ -1534,6 +1534,33 @@ export type MissionToolCallBudgetChangeReceiptView = Readonly<{
   revision: number;
 }>;
 
+export type CompanyToolCallBudgetState = 'pending' | 'available' | 'exhausted';
+export type CompanyToolCallBudgetRejectionRoute = 'worker_admission' | 'worker_tool_call';
+export type CompanyToolCallBudgetRejectionReason = 'company_budget_pending' | 'company_limit';
+
+export type CompanyToolCallBudgetView = Readonly<{
+  companyId: string;
+  toolCallLimit: number | null;
+  toolCallsUsed: number;
+  toolCallsRemaining: number;
+  revision: number;
+  state: CompanyToolCallBudgetState;
+  allocationCount: number;
+  lastReason?: string;
+  lastAllocatedAt?: string;
+  rejectionCount: number;
+  lastRejectionAt?: string;
+  lastRejectionRoute?: CompanyToolCallBudgetRejectionRoute;
+  lastRejectionReason?: CompanyToolCallBudgetRejectionReason;
+  lastRejectionTaskId?: string;
+}>;
+
+export type CompanyToolCallBudgetChangeReceiptView = Readonly<{
+  id: string;
+  status: 'company_budget_configured' | 'company_budget_allocated';
+  revision: number;
+}>;
+
 export type MissionToolCallClosingReserveReceiptView = Readonly<{
   id: string;
   status: 'mission_closing_reserve_updated';

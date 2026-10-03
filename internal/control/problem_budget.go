@@ -61,6 +61,15 @@ type MissionToolCallBudgetChangeRequest struct {
 	Confirm                bool   `json:"confirm"`
 }
 
+type CompanyToolCallBudgetChangeRequest struct {
+	RequestID              string `json:"requestId"`
+	ExpectedToolCallLimit  *int64 `json:"expectedToolCallLimit"`
+	ExpectedRevision       int64  `json:"expectedRevision"`
+	ResultingToolCallLimit int64  `json:"resultingToolCallLimit"`
+	Reason                 string `json:"reason"`
+	Confirm                bool   `json:"confirm"`
+}
+
 type MissionToolCallClosingReserveRequest struct {
 	RequestID                     string `json:"requestId"`
 	ReservedToolCalls             int64  `json:"reservedToolCalls"`
@@ -72,6 +81,8 @@ type MissionToolCallClosingReserveRequest struct {
 }
 
 type ProblemToolBudgetService interface {
+	GetCompanyToolCallBudget(ctx context.Context, companyID string) (kernel.CompanyToolCallBudget, error)
+	ChangeCompanyToolCallBudget(ctx context.Context, companyID string, request CompanyToolCallBudgetChangeRequest) (kernel.Receipt, error)
 	ListProblemToolCallBudgets(ctx context.Context, companyID string) (kernel.ProblemToolCallBudgetList, error)
 	ListMissionToolCallBudgets(ctx context.Context, companyID string) (kernel.MissionToolCallBudgetList, error)
 	ChangeMissionToolCallBudget(ctx context.Context, companyID, missionID string, request MissionToolCallBudgetChangeRequest) (kernel.Receipt, error)
@@ -80,6 +91,27 @@ type ProblemToolBudgetService interface {
 	AllocateTaskToolCalls(ctx context.Context, companyID, problemKey, taskID string, request TaskToolCallAllocationRequest) (kernel.Receipt, error)
 	CloseTaskToolBudgetIncomplete(ctx context.Context, companyID, problemKey, taskID string, request TaskToolCallIncompleteClosureRequest) (kernel.Receipt, error)
 	SetProblemToolCallClosingReserve(ctx context.Context, companyID, problemKey string, request ProblemToolCallClosingReserveRequest) (kernel.Receipt, error)
+}
+
+func (s *Service) GetCompanyToolCallBudget(ctx context.Context, companyID string) (kernel.CompanyToolCallBudget, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) {
+		return kernel.CompanyToolCallBudget{}, core.Malformed
+	}
+	return s.runtime.GetCompanyToolCallBudget(ctx, s.runtime.LocalScope(companyID))
+}
+
+func (s *Service) ChangeCompanyToolCallBudget(ctx context.Context, companyID string, request CompanyToolCallBudgetChangeRequest) (kernel.Receipt, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) ||
+		validateRequestID(request.RequestID) != nil || request.ExpectedRevision < 0 || request.ResultingToolCallLimit < 1 || !request.Confirm ||
+		(request.ExpectedToolCallLimit != nil && *request.ExpectedToolCallLimit < 1) ||
+		(request.ExpectedToolCallLimit == nil && request.ExpectedRevision != 0) ||
+		(request.ExpectedToolCallLimit != nil && (request.ExpectedRevision < 1 || request.ResultingToolCallLimit <= *request.ExpectedToolCallLimit)) {
+		return kernel.Receipt{}, core.Malformed
+	}
+	return s.runtime.TXChangeCompanyToolCallBudget(ctx, s.runtime.LocalScope(companyID), kernel.CompanyToolCallBudgetChangeInput{
+		RequestID: request.RequestID, ExpectedLimit: request.ExpectedToolCallLimit, ExpectedRevision: request.ExpectedRevision,
+		ResultingLimit: request.ResultingToolCallLimit, Reason: request.Reason,
+	})
 }
 
 func (s *Service) ListMissionToolCallBudgets(ctx context.Context, companyID string) (kernel.MissionToolCallBudgetList, error) {

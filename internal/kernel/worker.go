@@ -9,6 +9,11 @@ type ToolCallBudget struct {
 	Limit                          int64 `json:"tool_call_limit"`
 	Used                           int64 `json:"tool_calls_used"`
 	Remaining                      int64 `json:"tool_calls_remaining"`
+	CompanyLimit                   int64 `json:"company_tool_call_limit"`
+	CompanyUsed                    int64 `json:"company_tool_calls_used"`
+	CompanyRemaining               int64 `json:"company_tool_calls_remaining"`
+	CompanyLimitConfigured         bool  `json:"company_tool_call_limit_configured"`
+	CompanyBudgetRevision          int64 `json:"company_tool_call_budget_revision"`
 	MissionLimit                   int64 `json:"mission_tool_call_limit"`
 	MissionUsed                    int64 `json:"mission_tool_calls_used"`
 	MissionRemaining               int64 `json:"mission_tool_calls_remaining"`

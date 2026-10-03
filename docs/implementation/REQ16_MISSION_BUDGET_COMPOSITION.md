@@ -1,12 +1,12 @@
 # REQ-16 Mission budget composition decision
 
-Updated: 2026-10-03, Slice 132
+Updated: 2026-10-03, Slice 133
 
 ## Decision
 
-The first outer-scope budget to enforce is a Mission-level **admitted protocol tool-call cap**. It is one separately dimensioned cap, not a claim that every provider request, CLI-internal retry, token, dollar, or tool-side effect is visible. The Codex CLI path continues to report `retry_visibility=limited`, with unobserved retry count unknown.
+The implemented outer scopes are an explicitly configured Mission-level and Company-level **admitted protocol tool-call cap**. Each is a separately dimensioned ceiling over the same accepted call facts, not a claim that every provider request, CLI-internal retry, token, dollar, or tool-side effect is visible. The Codex CLI path continues to report `retry_visibility=limited`, with unobserved retry count unknown. ProviderAccount financial enforcement remains deferred until general WorkerSessions bind a stable account identity and the runtime has a reliable settled/reserved/unknown liability model.
 
-Each accepted tool-call usage fact must advance the Session, Task, ProblemKey, and Mission counters atomically when those scopes apply. These are projections of one accepted call; a summary must not add those projections together. A ProblemKey cap remains a child constraint and does not create or reserve Mission capacity. The Mission cap must be explicitly set by the local owner; do not derive it by summing profile defaults, Task limits, or ProblemKey limits. Existing Mission usage can be conservatively backfilled from the already-persisted Task call counters, but the cap itself must remain pending where no explicit finite Mission ceiling exists.
+Each accepted tool-call usage fact advances the Company, Mission, Session, Task and ProblemKey counters atomically when those scopes apply. These are projections of one accepted call; a summary must not add those projections together. A Company or ProblemKey cap remains a separate constraint and does not create or reserve capacity in another scope. Company and Mission caps must be explicitly set by the local owner; do not derive them by summing profile defaults, Task limits, or ProblemKey limits. Existing Company and Mission usage can be conservatively backfilled from durable Task call counters, but the cap itself remains pending where no explicit finite ceiling exists.
 
 The Mission closing reserve is a policy inside that total cap. Only fixed, Kernel-authorized closing Task classes may consume it; a closing call still advances the same Mission usage counter and remains inside the cap. The ProblemKey reserve remains an additional child-level admission constraint and does not stand in for Mission reserve policy.
 
@@ -20,9 +20,13 @@ The Mission closing reserve is a policy inside that total cap. Only fixed, Kerne
 
 ## Lock-order finding
 
-Current Worker admission reads a Task, then locks its Task row and the ProblemKey budget row (`internal/kernel/worker_state.go`, `txNewWorkerWithToolBudget`). Tool-call charging locks the WorkerSession and Task together, then locks the ProblemKey budget (`Kernel.TXConsumeToolCall` in the same file). Mission cancellation updates the Mission row and then updates its Tasks (`Kernel.TXCancelMission` in `internal/kernel/mission.go`).
+Current Workbench writes obtain the Company lifecycle row lock before callback-level budget locks. Worker admission reads a Task, then checks the Company and Mission budgets before locking its Task row and ProblemKey budget (`internal/kernel/worker_state.go`, `txNewWorkerWithToolBudget`). Tool-call charging checks Company and Mission before locking the WorkerSession/Task and then the ProblemKey (`Kernel.TXConsumeToolCall` in the same file). Mission cancellation also runs under the Company lock and updates the Mission before its Tasks (`Kernel.TXCancelMission` in `internal/kernel/mission.go`).
 
-Adding a Mission row lock after the current Task lock would create opposite orders between charging and cancellation. The enforcement slice must first make admission/charge and Mission lifecycle lock acquisition consistent, with a documented order of Mission → WorkerSession/Task → ProblemKey where those rows are needed. Audit every affected writer before applying that order; read-only projections can remain snapshot reads. ProblemKey-only allocation paths must not acquire Mission after holding the ProblemKey row.
+The budget lock order is Company → Mission → WorkerSession/Task → ProblemKey where each row applies. Read-only projections remain snapshot reads. ProblemKey-only allocation paths must not acquire Mission after holding the ProblemKey row.
+
+## Slice 133 implementation state
+
+Schema 91 conservatively backfills Company usage from the durable Task counters. Existing caps remain pending until explicit local-owner configuration. An append-only allocation ledger records initial configuration/increases, and immutable rejection rows bind the route, Task/session, cap, usage and budget revision. Admission and each accepted tool call enforce the Company cap before lower scopes; accepted calls increment Company in the same transaction as Mission, Session, Task and ProblemKey. Handover/provider turn clamping uses the minimum Company and lower-scope remaining allowance. Workbench exposes a no-store Company projection and a reasoned, confirmed configuration/increase action. All migrated Companies require explicit configuration before new Worker admission or calls are allowed. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-133-company-tool-call-budget/verification.md`.
 
 ## Slice 131 implementation state
 
@@ -34,12 +38,12 @@ Schema 89 adds Mission usage and cap/revision columns, backfills usage by summin
 
 ## Remaining bounded sequence
 
-1. Implement a Company cap for admitted protocol tool calls, with explicit owner-set limits and a conservative backfill from immutable/durable Task usage. Label this unit precisely; it does not bound provider egress, hidden retries, tokens or USD.
-2. Do not claim ProviderAccount financial enforcement until a stable account identity is bound to general WorkerSessions and runtime admissions can reserve, settle and retain unknown liabilities.
-3. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them. Keep FT-42–45 and broader qualification separate from implementation evidence; they remain `not_run`.
+1. Do not claim ProviderAccount financial enforcement until a stable account identity is bound to general WorkerSessions and runtime admissions can reserve, settle and retain unknown liabilities.
+2. Evaluate hidden retry, token and money accounting only where exact source observations and usage identities support them.
+3. Keep FT-42–45 and broader qualification separate from implementation evidence; they remain `not_run`.
 
-Company and ProviderAccount caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer are separate open requirements; none can be derived from this call counter.
+ProviderAccount caps, true USD/token accounting, unknown external liabilities, and retry visibility below the app-server observer remain open requirements; none can be derived from this call counter.
 
 ## Qualification status
 
-Slices 131–132 are implementation/source-audit evidence, not runtime qualification. Slice 131 Go package/command builds, frontend production build, migration hash validation and diff checks passed; Slice 132 is read-only design/source inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
+Slices 131–133 are implementation/source-audit evidence, not runtime qualification. Slice 131 and 133 Go package/command builds, frontend production builds, migration hash validation and diff checks passed; Slice 132 is read-only design/source inspection. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. FT-42–45 remain `not_run` in the frozen catalog.
