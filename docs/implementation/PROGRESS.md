@@ -1,10 +1,16 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 127 — REQ-16 explicit incomplete budget closeout (Schema 88)
+
+Schema 88 adds one immutable, local-owner closeout record per Task. A closeout binds the latest rejection, which must be budget-caused, to exact Task, ProblemKey allocation/usage and closing-reserve snapshots; it is available only after all WorkerSessions stop and the Task remains nonterminal. Closed Tasks cannot receive budget allocations or new Worker admissions. The Workbench shows Task rejection/closeout history and provides a confirmed reasoned closeout action. Existing budget rejections represent the blocked outcome, while the Schema 84/87 allocation paths represent owner-funded recovery subject to normal Worker admission gates. Admission, allocation and closeout serialize on the Task row. Go package/command build, frontend production build and `git diff --check` pass. The production bundle retains the existing >500 kB advisory. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
+
+REQ-16 remains partial: hidden provider/CLI retries, token/money accounting and Mission/Company/Provider budget composition remain open.
+
 ## Slice 126 — REQ-16 authorized Task budget recovery (Schema 87)
 
 An exhausted finite Task tool-call cap can now be increased by a confirmed local-owner command after the Task has no live WorkerSession. Schema 87 records append-only cap transitions with Task revision, ProblemKey allocation revision, closing-reserve revision, request ID and reason; a database guard rejects direct cap edits. Kernel rechecks Task state, both budget revisions, available shared calls and protected closing reserve in the same transaction that updates the Task cap. Workbench shows up to 20 Task budgets per ProblemKey and offers reasoned, confirmed Task allocations. ProblemKey limits and closing reserves remain the controlling shared bounds. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all 87 migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-126-task-budget-recovery/verification.md`.
 
-Mission/Company/Provider budget composition, hidden retries, token/money accounting and durable exhaustion/closeout outcomes remain open.
+Mission/Company/Provider budget composition, hidden retries and token/money accounting remain open.
 
 ## Slice 125 — REQ-16 rejected ProblemKey budget routes (Schema 86)
 

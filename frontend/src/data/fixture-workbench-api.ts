@@ -4,8 +4,8 @@ import type {CreateProjectJobBrowserSessionOptions, ImportStdioMCPPackageOptions
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
-import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView} from '../domain/workbench';
+import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
 
@@ -752,6 +752,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
 
   async allocateTaskToolCalls(_options: AllocateTaskToolCallsOptions): Promise<TaskToolCallAllocationReceiptView> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'Task budget allocations are unavailable in fixture mode');
+  }
+
+  async closeTaskToolBudgetIncomplete(_options: CloseTaskToolBudgetIncompleteOptions): Promise<TaskToolCallIncompleteClosureReceiptView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'Task budget closeouts are unavailable in fixture mode');
   }
 
   async setProblemToolCallClosingReserve(_options: SetProblemToolCallClosingReserveOptions): Promise<ProblemToolCallClosingReserveReceiptView> {

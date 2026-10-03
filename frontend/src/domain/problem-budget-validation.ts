@@ -1,4 +1,4 @@
-import type {ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallBudgetView} from './workbench';
+import type {ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallBudgetView, TaskToolCallIncompleteClosureReceiptView} from './workbench';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -13,10 +13,20 @@ function isTaskBudget(value: unknown): value is TaskToolCallBudgetView {
     || typeof value.kind !== 'string' || !isCount(value.toolCallsUsed)
     || typeof value.toolCallsRemaining !== 'number' || !Number.isSafeInteger(value.toolCallsRemaining) || value.toolCallsRemaining < -1
     || !Number.isSafeInteger(value.allocationRevision) || Number(value.allocationRevision) < 1
-    || typeof value.allocationEligible !== 'boolean') return false;
+    || typeof value.allocationEligible !== 'boolean' || !isCount(value.budgetRejectionCount)
+    || typeof value.closedIncomplete !== 'boolean' || typeof value.closureEligible !== 'boolean') return false;
   if (value.toolCallLimit !== null && !isCount(value.toolCallLimit)) return false;
   if (value.lastAllocationReason !== undefined && typeof value.lastAllocationReason !== 'string') return false;
   if (value.lastAllocatedAt !== undefined && typeof value.lastAllocatedAt !== 'string') return false;
+  if (value.lastRejectionReason !== undefined && !['session_limit', 'task_limit', 'problem_limit', 'closing_reserve', 'initial_closing_reserve'].includes(String(value.lastRejectionReason))) return false;
+  if (value.lastRejectionAt !== undefined && typeof value.lastRejectionAt !== 'string') return false;
+  if (value.closureReason !== undefined && typeof value.closureReason !== 'string') return false;
+  if (value.closedAt !== undefined && typeof value.closedAt !== 'string') return false;
+  if (Number(value.budgetRejectionCount) === 0 && (value.lastRejectionReason !== undefined || value.lastRejectionAt !== undefined)) return false;
+  if (Number(value.budgetRejectionCount) > 0 && (value.lastRejectionReason === undefined || typeof value.lastRejectionAt !== 'string')) return false;
+  if (value.closedIncomplete && (typeof value.closureReason !== 'string' || value.closureReason.trim() === '' || typeof value.closedAt !== 'string' || value.closureEligible || value.allocationEligible)) return false;
+  if (!value.closedIncomplete && (value.closureReason !== undefined || value.closedAt !== undefined)) return false;
+  if (value.closureEligible && (Number(value.budgetRejectionCount) === 0 || value.closedIncomplete || value.lastRejectionReason === 'session_limit')) return false;
   if (value.toolCallLimit === null) return value.toolCallsRemaining === 0;
   if (value.toolCallLimit === 0) return value.toolCallsRemaining === -1;
   return value.toolCallsRemaining === Math.max(value.toolCallLimit - value.toolCallsUsed, 0);
@@ -84,4 +94,11 @@ export function validateTaskToolCallAllocationReceipt(value: unknown, taskId: st
     throw new Error('failed to parse Task budget allocation receipt');
   }
   return value as unknown as TaskToolCallAllocationReceiptView;
+}
+
+export function validateTaskToolCallIncompleteClosureReceipt(value: unknown, taskId: string): TaskToolCallIncompleteClosureReceiptView {
+  if (!isRecord(value) || value.id !== taskId || value.status !== 'closed_incomplete' || value.revision !== 1) {
+    throw new Error('failed to parse Task incomplete budget closure receipt');
+  }
+  return value as unknown as TaskToolCallIncompleteClosureReceiptView;
 }

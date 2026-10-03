@@ -252,6 +252,14 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 WHERE company_id=$1 AND id=$2 FOR UPDATE`, s.company, t.ID).Scan(&taskToolCallLimit, &taskToolCallsUsed); e != nil {
 			return Receipt{}, e
 		}
+		var incompleteBudgetClosure bool
+		if e = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM task_tool_call_budget_incomplete_closures c
+WHERE c.company_id=$1 AND c.task_id=$2)`, s.company, t.ID).Scan(&incompleteBudgetClosure); e != nil {
+			return Receipt{}, e
+		}
+		if incompleteBudgetClosure {
+			return Receipt{}, core.Denied
+		}
 		effectiveTaskLimit := toolCallLimit
 		if taskToolCallLimit.Valid {
 			effectiveTaskLimit = taskToolCallLimit.Int64

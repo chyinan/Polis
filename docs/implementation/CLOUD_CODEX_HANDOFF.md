@@ -4,7 +4,13 @@ Updated: 2026-10-03
 
 ## Current continuation pointer
 
-The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 126 / Schema 87; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Recent slices 121–126 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized ProblemKey and Task allocations, closing reserves and immutable budget-rejection records. Slice 126 verification is in `evidence/development/r1-r3-implementation-validation-20261003-slice-126-task-budget-recovery/verification.md`.
+The active checkout has advanced beyond the historical Slice 102–104 notes below. The current implementation is Slice 127 / Schema 88; read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Recent slices 121–127 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized ProblemKey and Task allocations, closing reserves, immutable budget-rejection records and explicit incomplete closeout. Slice 127 verification is in `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
+
+## Latest completed slice (127, REQ-16 explicit incomplete budget closeout; Schema 88)
+
+Schema 88 adds an immutable local-owner incomplete Task closeout tied to the latest budget-caused rejection and exact Task, ProblemKey and closing-reserve snapshots. It requires a nonterminal Task with no live WorkerSession and prevents later Worker admission or Task-budget allocation. The Workbench exposes reasoned confirmation and shows the outcome. Together with Schema 86 rejections and Schema 84/87 owner allocations, exhausted work can remain blocked, receive funded recovery subject to normal Worker admission gates, or close explicitly as incomplete. Admission, allocation and closeout serialize on the Task row. Go package/command build, frontend production build and `git diff --check` pass; the frontend reports the existing >500 kB advisory. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
+
+The next bounded REQ-16 step is to inspect provider execution boundaries for retry attempts below the protocol tool-call observer and expose only evidence-backed counts. Token/money accounting and Mission/Company/Provider composition remain open.
 
 ## Objective and boundaries
 

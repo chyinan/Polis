@@ -1,12 +1,12 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
 import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
-import {validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt} from '../domain/problem-budget-validation';
-import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
+import {validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
+import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
@@ -1002,6 +1002,40 @@ export class RealWorkbenchApi implements WorkbenchApi {
       confirm: true,
     });
     return validateTaskToolCallAllocationReceipt(raw, options.taskId, options.expectedTaskRevision + 1);
+  }
+
+  async closeTaskToolBudgetIncomplete(options: CloseTaskToolBudgetIncompleteOptions): Promise<TaskToolCallIncompleteClosureReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.taskId);
+    if (!/^problem:[A-Za-z0-9_-]{1,80}$/.test(options.problemKey)) throw new Error('ProblemKey is malformed');
+    assertRequestID(options.requestId);
+    for (const value of [options.expectedTaskToolCallsUsed, options.expectedTaskRevision, options.expectedProblemToolCallsUsed, options.expectedProblemRevision, options.expectedClosingReserveToolCalls, options.expectedClosingReserveRemaining, options.expectedReserveRevision]) {
+      if (!Number.isSafeInteger(value) || value < 0) throw new Error('Task closeout snapshots must be safe integers');
+    }
+    if (options.expectedTaskRevision < 1 || options.expectedProblemRevision < 1
+      || options.expectedClosingReserveRemaining > options.expectedClosingReserveToolCalls
+      || (options.expectedTaskToolCallLimit !== null && (!Number.isSafeInteger(options.expectedTaskToolCallLimit) || options.expectedTaskToolCallLimit < 0))
+      || (options.expectedProblemToolCallLimit !== null && (!Number.isSafeInteger(options.expectedProblemToolCallLimit) || options.expectedProblemToolCallLimit < 0))) {
+      throw new Error('Task closeout limits or revisions are malformed');
+    }
+    const reason = options.reason.trim();
+    const reasonLength = Array.from(reason).length;
+    if (reasonLength < 1 || reasonLength > 500) throw new Error('closeout reason must contain 1–500 characters');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/problem-budgets/${encodeURIComponent(options.problemKey)}/tasks/${encodeURIComponent(options.taskId)}/budget-closure`, options.requestId, {
+      expectedTaskToolCallLimit: options.expectedTaskToolCallLimit,
+      expectedTaskToolCallsUsed: options.expectedTaskToolCallsUsed,
+      expectedTaskRevision: options.expectedTaskRevision,
+      expectedProblemToolCallLimit: options.expectedProblemToolCallLimit,
+      expectedProblemToolCallsUsed: options.expectedProblemToolCallsUsed,
+      expectedProblemRevision: options.expectedProblemRevision,
+      expectedClosingReserveToolCalls: options.expectedClosingReserveToolCalls,
+      expectedClosingReserveRemaining: options.expectedClosingReserveRemaining,
+      expectedReserveRevision: options.expectedReserveRevision,
+      reason,
+      requestId: options.requestId,
+      confirm: true,
+    });
+    return validateTaskToolCallIncompleteClosureReceipt(raw, options.taskId);
   }
 
   async setProblemToolCallClosingReserve(options: SetProblemToolCallClosingReserveOptions): Promise<ProblemToolCallClosingReserveReceiptView> {

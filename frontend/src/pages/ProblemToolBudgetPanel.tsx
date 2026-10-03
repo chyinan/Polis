@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import type {ReactElement} from 'react';
-import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useProblemToolCallBudgets, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
+import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useCloseTaskToolBudgetIncomplete, useProblemToolCallBudgets, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
 import type {WorkbenchApi} from '../data/workbench-api';
 import type {ProblemToolCallBudgetView, TaskToolCallBudgetView} from '../domain/workbench';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
@@ -31,6 +31,16 @@ function rejectionRouteLabel(route: NonNullable<ProblemToolCallBudgetView['lastR
 }
 
 function rejectionReasonLabel(reason: NonNullable<ProblemToolCallBudgetView['lastRejectionReason']>): string {
+  switch (reason) {
+    case 'session_limit': return 'WorkerSession 额度已耗尽';
+    case 'task_limit': return 'Task 额度已耗尽';
+    case 'problem_limit': return 'ProblemKey 额度已耗尽';
+    case 'closing_reserve': return '剩余额度受关闭预留保护';
+    case 'initial_closing_reserve': return '首个额度不能覆盖关闭预留';
+  }
+}
+
+function taskRejectionReasonLabel(reason: NonNullable<TaskToolCallBudgetView['lastRejectionReason']>): string {
   switch (reason) {
     case 'session_limit': return 'WorkerSession 额度已耗尽';
     case 'task_limit': return 'Task 额度已耗尽';
@@ -144,9 +154,12 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 
 function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchApi; budget: ProblemToolCallBudgetView; companyId: string; task: TaskToolCallBudgetView}>): ReactElement {
   const allocation = useAllocateTaskToolCalls(api, companyId);
+  const closeout = useCloseTaskToolBudgetIncomplete(api, companyId);
   const [additional, setAdditional] = useState('');
   const [reason, setReason] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const [closeoutReason, setCloseoutReason] = useState('');
+  const [closeoutConfirmed, setCloseoutConfirmed] = useState(false);
   const additionalCalls = Number(additional);
   const closingTask = task.kind === 'review' || task.kind === 'peer_review';
   const problemAvailable = budget.state === 'unbounded' ? Number.MAX_SAFE_INTEGER
@@ -174,12 +187,38 @@ function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchA
     setConfirmed(false);
   }
 
+  const canCloseIncomplete = task.closureEligible && closeoutConfirmed && closeoutReason.trim().length > 0
+    && Array.from(closeoutReason.trim()).length <= 500 && !closeout.isPending;
+
+  async function submitCloseIncomplete(): Promise<void> {
+    if (!canCloseIncomplete) return;
+    await closeout.mutateAsync({
+      problemKey: budget.problemKey,
+      taskId: task.taskId,
+      expectedTaskToolCallLimit: task.toolCallLimit,
+      expectedTaskToolCallsUsed: task.toolCallsUsed,
+      expectedTaskRevision: task.allocationRevision,
+      expectedProblemToolCallLimit: budget.toolCallLimit,
+      expectedProblemToolCallsUsed: budget.toolCallsUsed,
+      expectedProblemRevision: budget.allocationRevision,
+      expectedClosingReserveToolCalls: budget.closingReserveToolCalls,
+      expectedClosingReserveRemaining: budget.closingReserveRemaining,
+      expectedReserveRevision: budget.closingReserveRevision,
+      reason: closeoutReason,
+      requestId: `task-close-${crypto.randomUUID()}`,
+    });
+    setCloseoutReason('');
+    setCloseoutConfirmed(false);
+  }
+
   const limitLabel = task.toolCallLimit === null ? '尚未初始化' : task.toolCallLimit === 0 ? '无上限' : task.toolCallLimit.toLocaleString('zh-CN');
   const remainingLabel = task.toolCallsRemaining < 0 ? '无上限' : task.toolCallsRemaining.toLocaleString('zh-CN');
   return <div className={styles.boundaryItem}>
     <div className={styles.viewStack}>
       <p><strong><code>{task.taskId}</code></strong> · {task.kind} · 已用 {task.toolCallsUsed.toLocaleString('zh-CN')} / 上限 {limitLabel} · 剩余 {remainingLabel} · 额度版本 {task.allocationRevision}</p>
       {task.lastAllocatedAt ? <p className={styles.formHint}>最近追加：{task.lastAllocatedAt} · {task.lastAllocationReason}</p> : null}
+      {task.budgetRejectionCount > 0 && task.lastRejectionReason && task.lastRejectionAt ? <p className={styles.formHint}>预算拒绝 {task.budgetRejectionCount.toLocaleString('zh-CN')} 次 · 最近：{task.lastRejectionAt} · {taskRejectionReasonLabel(task.lastRejectionReason)}</p> : null}
+      {task.closedIncomplete ? <p className={styles.formHint}>已关闭为未完成 · {task.closedAt} · 理由：{task.closureReason}</p> : null}
       {finiteTask && task.allocationEligible ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
         <label className={styles.formLabel}>追加此 Task 的调用次数<input className={styles.formField} inputMode="numeric" min="1" max={problemAvailable} step="1" type="number" value={additional} onChange={event => setAdditional(event.target.value)} /></label>
         <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
@@ -188,6 +227,12 @@ function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchA
         {allocation.isError ? <p className={styles.errorText} role="alert">Task 额度追加失败：{allocation.error.message}；如预算版本已变化，请刷新后重新确认。</p> : null}
         {problemAvailable === 0 ? <p className={styles.formHint}>当前 ProblemKey 没有可供此 Task 使用的额度；请先调整 ProblemKey 额度或关闭预留。</p> : null}
       </form> : <p className={styles.formHint}>{finiteTask && task.toolCallsRemaining > 0 ? '此 Task 的固定额度尚未耗尽；额度耗尽且所有 WorkerSession 停止后，可申请追加。' : finiteTask ? '此 Task 已运行、已关闭或仍有活动 WorkerSession，当前不能追加额度。' : '只有已初始化的有限 Task 上限可以追加。'}</p>}
+      {task.closureEligible ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submitCloseIncomplete().catch(() => undefined); }}>
+        <label className={styles.formLabel}>关闭为未完成的理由<textarea className={styles.formField} maxLength={500} rows={2} value={closeoutReason} onChange={event => setCloseoutReason(event.target.value)} /></label>
+        <label className={styles.formLabel}><input checked={closeoutConfirmed} onChange={event => setCloseoutConfirmed(event.target.checked)} type="checkbox" /> 我确认此 Task 以未完成状态不可撤回地关闭</label>
+        <button className={styles.commandButton} disabled={!canCloseIncomplete} type="submit">{closeout.isPending ? '正在记录…' : '关闭为未完成'}</button>
+        {closeout.isError ? <p className={styles.errorText} role="alert">未完成关闭失败：{closeout.error.message}；如快照已变化，请刷新后重新确认。</p> : null}
+      </form> : null}
     </div>
   </div>;
 }

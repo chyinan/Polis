@@ -1455,6 +1455,13 @@ export type TaskToolCallBudgetView = Readonly<{
   allocationEligible: boolean;
   lastAllocationReason?: string;
   lastAllocatedAt?: string;
+  budgetRejectionCount: number;
+  lastRejectionReason?: ProblemToolCallBudgetRejectionReason;
+  lastRejectionAt?: string;
+  closedIncomplete: boolean;
+  closureReason?: string;
+  closedAt?: string;
+  closureEligible: boolean;
 }>;
 
 export type ProblemToolCallBudgetView = Readonly<{
@@ -1504,6 +1511,12 @@ export type TaskToolCallAllocationReceiptView = Readonly<{
   id: string;
   status: 'task_budget_allocated';
   revision: number;
+}>;
+
+export type TaskToolCallIncompleteClosureReceiptView = Readonly<{
+  id: string;
+  status: 'closed_incomplete';
+  revision: 1;
 }>;
 
 export type MemoryTaskStatusView = Readonly<{

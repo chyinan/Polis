@@ -10,7 +10,7 @@ import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
-import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CreateDailyRoutineOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
+import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {RevalidateMemoryTaskOptions} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
@@ -295,6 +295,18 @@ export function useAllocateTaskToolCalls(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<AllocateTaskToolCallsOptions, 'companyId'>) => api.allocateTaskToolCalls({...options, companyId}),
+    onSuccess: async () => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
+    ]),
+  });
+}
+
+export function useCloseTaskToolBudgetIncomplete(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<CloseTaskToolBudgetIncompleteOptions, 'companyId'>) => api.closeTaskToolBudgetIncomplete({...options, companyId}),
     onSuccess: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),

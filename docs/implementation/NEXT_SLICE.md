@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 126, REQ-16 authorized Task budget recovery; Schema 87)
+## Latest continuation status (Slice 127, REQ-16 explicit incomplete budget closeout; Schema 88)
+
+Schema 88 adds a one-shot immutable local-owner incomplete closeout bound to the latest budget-caused rejection and exact Task/ProblemKey/reserve snapshots. It requires a nonterminal Task with no live WorkerSession; the closeout is then enforced against future budget allocations and Worker admissions. The Workbench exposes the explicit, reasoned confirmation and displays the recorded outcome. Schema 84/87 owner allocation paths already provide funded recovery subject to normal Worker admission gates, and immutable rejection history preserves blocked outcomes. Admission, allocation and closeout serialize through the Task row lock. Go package/command build, frontend production build and `git diff --check` pass; the frontend retains its existing >500 kB advisory. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
+
+The next bounded REQ-16 work is to inspect provider execution boundaries for retry attempts that happen below the protocol tool-call observer, then expose only evidence-backed counts. Token/money accounting and Mission/Company/Provider budget composition remain open and must not be inferred from protocol tool-call counts.
+
+## Previous continuation status (Slice 126, REQ-16 authorized Task budget recovery; Schema 87)
 
 Schema 87 adds an append-only local-owner Task cap allocation ledger and prevents direct changes to an initialized Task limit. The confirmed recovery command requires an exhausted finite Task with no live WorkerSession and revalidates its state, cap/revision, shared ProblemKey revision and closing-reserve revision. It can raise a finite Task cap only when the shared ProblemKey has sufficient available calls; the ProblemKey remains the controlling runtime cap. Workbench lists bounded Task budgets and exposes a reasoned allocation form. `go build ./internal/kernel ./internal/control ./cmd/polis`, `npm run build`, all 87 migration hashes and `git diff --check` pass. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-126-task-budget-recovery/verification.md`.
-
-The next REQ-16 slice should persist stable outcomes for exhausted work: whether it remains blocked, is owner-funded for a successor attempt, or closes with an explicit incomplete result. Token/money measurement and hidden CLI retries remain unaccounted; Mission/Company/Provider composition needs a defined authority and reservation model before enforcement.
 
 ## Previous continuation status (Slice 125, REQ-16 rejected ProblemKey budget routes; Schema 86)
 

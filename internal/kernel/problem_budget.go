@@ -48,6 +48,13 @@ type TaskToolCallBudget struct {
 	AllocationEligible   bool   `json:"allocationEligible"`
 	LastAllocationReason string `json:"lastAllocationReason,omitempty"`
 	LastAllocatedAt      string `json:"lastAllocatedAt,omitempty"`
+	BudgetRejectionCount int64  `json:"budgetRejectionCount"`
+	LastRejectionReason  string `json:"lastRejectionReason,omitempty"`
+	LastRejectionAt      string `json:"lastRejectionAt,omitempty"`
+	ClosedIncomplete     bool   `json:"closedIncomplete"`
+	ClosureReason        string `json:"closureReason,omitempty"`
+	ClosedAt             string `json:"closedAt,omitempty"`
+	ClosureEligible      bool   `json:"closureEligible"`
 }
 
 type ProblemToolCallBudgetList struct {
@@ -80,6 +87,20 @@ type TaskToolCallAllocationInput struct {
 	ExpectedProblemRevision int64
 	ExpectedReserveRevision int64
 	Reason                  string
+}
+
+type TaskToolCallIncompleteClosureInput struct {
+	RequestID                string
+	ExpectedTaskLimit        *int64
+	ExpectedTaskUsed         int64
+	ExpectedTaskRevision     int64
+	ExpectedProblemLimit     *int64
+	ExpectedProblemUsed      int64
+	ExpectedProblemRevision  int64
+	ExpectedReserveCalls     int64
+	ExpectedReserveRemaining int64
+	ExpectedReserveRevision  int64
+	Reason                   string
 }
 
 type problemBudgetQueryRower interface {
@@ -242,15 +263,34 @@ ORDER BY pb.problem_key LIMIT $2`, scope.company, limit+1)
 	rows.Close()
 	for budgetIndex := range result.Items {
 		budget := &result.Items[budgetIndex]
+		problemLimitSnapshot := pgtype.Int8{}
+		if budget.ToolCallLimit != nil {
+			problemLimitSnapshot = pgtype.Int8{Int64: *budget.ToolCallLimit, Valid: true}
+		}
 		taskRows, queryErr := tx.Query(ctx, `SELECT t.id,t.kind,t.task_tool_call_limit,t.task_tool_calls_used,
 		 COALESCE((SELECT max(a.revision) FROM task_tool_call_allocations a WHERE a.company_id=t.company_id AND a.task_id=t.id),1)::bigint,
 		 (t.task_tool_call_limit IS NOT NULL AND t.task_tool_call_limit>0 AND t.task_tool_calls_used>=t.task_tool_call_limit AND
-		  t.state NOT IN ('completed','cancelled') AND NOT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=t.company_id AND s.task_id=t.id AND s.state!='stopped')),
+		  t.state NOT IN ('completed','cancelled') AND NOT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=t.company_id AND s.task_id=t.id AND s.state!='stopped') AND
+		  NOT EXISTS(SELECT 1 FROM task_tool_call_budget_incomplete_closures c WHERE c.company_id=t.company_id AND c.task_id=t.id)),
 		 COALESCE((SELECT latest.reason FROM task_tool_call_allocations latest WHERE latest.company_id=t.company_id AND latest.task_id=t.id ORDER BY latest.revision DESC LIMIT 1),''),
-		 COALESCE((SELECT latest.created_at::text FROM task_tool_call_allocations latest WHERE latest.company_id=t.company_id AND latest.task_id=t.id ORDER BY latest.revision DESC LIMIT 1),'')
+		 COALESCE((SELECT latest.created_at::text FROM task_tool_call_allocations latest WHERE latest.company_id=t.company_id AND latest.task_id=t.id ORDER BY latest.revision DESC LIMIT 1),''),
+		 (SELECT count(*) FROM problem_tool_call_budget_rejections d WHERE d.company_id=t.company_id AND d.task_id=t.id),
+		 COALESCE((SELECT d.reason FROM problem_tool_call_budget_rejections d WHERE d.company_id=t.company_id AND d.task_id=t.id ORDER BY d.occurred_at DESC,d.request_id DESC LIMIT 1),''),
+		 COALESCE((SELECT d.occurred_at::text FROM problem_tool_call_budget_rejections d WHERE d.company_id=t.company_id AND d.task_id=t.id ORDER BY d.occurred_at DESC,d.request_id DESC LIMIT 1),''),
+		 EXISTS(SELECT 1 FROM task_tool_call_budget_incomplete_closures c WHERE c.company_id=t.company_id AND c.task_id=t.id),
+		 COALESCE((SELECT c.reason FROM task_tool_call_budget_incomplete_closures c WHERE c.company_id=t.company_id AND c.task_id=t.id),''),
+		 COALESCE((SELECT c.created_at::text FROM task_tool_call_budget_incomplete_closures c WHERE c.company_id=t.company_id AND c.task_id=t.id),''),
+		  (t.state NOT IN ('completed','cancelled') AND NOT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=t.company_id AND s.task_id=t.id AND s.state!='stopped') AND
+		  EXISTS(SELECT 1 FROM problem_tool_call_budget_rejections d WHERE d.company_id=t.company_id AND d.task_id=t.id AND d.reason<>'session_limit' AND
+		   d.request_id=(SELECT latest.request_id FROM problem_tool_call_budget_rejections latest WHERE latest.company_id=t.company_id AND latest.task_id=t.id ORDER BY latest.occurred_at DESC,latest.request_id DESC LIMIT 1) AND
+		   d.task_tool_call_limit IS NOT DISTINCT FROM t.task_tool_call_limit AND d.task_tool_calls_used=t.task_tool_calls_used AND
+		   d.problem_tool_call_limit IS NOT DISTINCT FROM $3 AND d.problem_tool_calls_used=$4 AND d.problem_budget_revision=$5 AND
+		   d.closing_reserve_tool_calls=$6 AND d.closing_reserve_remaining=$7 AND d.closing_reserve_revision=$8) AND
+		  NOT EXISTS(SELECT 1 FROM task_tool_call_budget_incomplete_closures c WHERE c.company_id=t.company_id AND c.task_id=t.id))
 FROM (SELECT company_id,id,kind,task_tool_call_limit,task_tool_calls_used,state FROM tasks
  WHERE company_id=$1 AND problem_key=$2 ORDER BY id LIMIT 21) t
-ORDER BY t.id`, scope.company, budget.ProblemKey)
+ORDER BY t.id`, scope.company, budget.ProblemKey, problemLimitSnapshot, budget.ToolCallsUsed, budget.AllocationRevision,
+			budget.ClosingReserveToolCalls, budget.ClosingReserveRemaining, budget.ClosingReserveRevision)
 		if queryErr != nil {
 			return ProblemToolCallBudgetList{}, queryErr
 		}
@@ -258,7 +298,9 @@ ORDER BY t.id`, scope.company, budget.ProblemKey)
 			var task TaskToolCallBudget
 			var taskLimit pgtype.Int8
 			if queryErr = taskRows.Scan(&task.TaskID, &task.Kind, &taskLimit, &task.ToolCallsUsed,
-				&task.AllocationRevision, &task.AllocationEligible, &task.LastAllocationReason, &task.LastAllocatedAt); queryErr != nil {
+				&task.AllocationRevision, &task.AllocationEligible, &task.LastAllocationReason, &task.LastAllocatedAt,
+				&task.BudgetRejectionCount, &task.LastRejectionReason, &task.LastRejectionAt,
+				&task.ClosedIncomplete, &task.ClosureReason, &task.ClosedAt, &task.ClosureEligible); queryErr != nil {
 				taskRows.Close()
 				return ProblemToolCallBudgetList{}, queryErr
 			}
@@ -324,6 +366,14 @@ FROM tasks WHERE company_id=$1 AND id=$2 FOR UPDATE`, scope.company, taskID).Sca
 			return Receipt{}, err
 		}
 		if liveSession {
+			return Receipt{}, core.Denied
+		}
+		var closed bool
+		if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM task_tool_call_budget_incomplete_closures c
+WHERE c.company_id=$1 AND c.task_id=$2)`, scope.company, taskID).Scan(&closed); err != nil {
+			return Receipt{}, err
+		}
+		if closed {
 			return Receipt{}, core.Denied
 		}
 		var taskRevision int64
@@ -396,6 +446,111 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'local-owner',$10)`, scope.company, taskID, ne
 			return Receipt{}, core.Conflict
 		}
 		return Receipt{ID: taskID, Status: "task_budget_allocated", Revision: newRevision}, nil
+	})
+}
+
+func int8SnapshotMatches(actual pgtype.Int8, expected *int64) bool {
+	if expected == nil {
+		return !actual.Valid
+	}
+	return actual.Valid && actual.Int64 == *expected
+}
+
+func (k *Kernel) TXCloseTaskToolBudgetIncomplete(ctx context.Context, scope Scope, problemKey, taskID string, input TaskToolCallIncompleteClosureInput) (Receipt, error) {
+	reason := strings.TrimSpace(input.Reason)
+	if k == nil || ctx == nil || !core.ValidID(scope.company) || !ValidProblemKey(problemKey) || !core.ValidID(taskID) ||
+		!core.ValidID(input.RequestID) || input.ExpectedTaskUsed < 0 || input.ExpectedTaskRevision < 1 ||
+		input.ExpectedProblemUsed < 0 || input.ExpectedProblemRevision < 1 || input.ExpectedReserveCalls < 0 ||
+		input.ExpectedReserveRemaining < 0 || input.ExpectedReserveRemaining > input.ExpectedReserveCalls || input.ExpectedReserveRevision < 0 ||
+		utf8.RuneCountInString(reason) < 1 || utf8.RuneCountInString(reason) > 500 {
+		return Receipt{}, core.Malformed
+	}
+	command := struct {
+		ProblemKey string
+		TaskID     string
+		Input      TaskToolCallIncompleteClosureInput
+		Reason     string
+	}{problemKey, taskID, input, reason}
+	return k.TXWrite(ctx, scope, nil, input.RequestID, "problem.task_tool_budget.close_incomplete", command, func(tx pgx.Tx) (Receipt, error) {
+		var taskLimit pgtype.Int8
+		var taskUsed int64
+		var taskProblemKey, taskState string
+		if err := tx.QueryRow(ctx, `SELECT task_tool_call_limit,task_tool_calls_used,problem_key,state
+FROM tasks WHERE company_id=$1 AND id=$2 FOR UPDATE`, scope.company, taskID).Scan(&taskLimit, &taskUsed, &taskProblemKey, &taskState); errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		} else if err != nil {
+			return Receipt{}, err
+		}
+		if taskProblemKey != problemKey {
+			return Receipt{}, core.OutOfScope
+		}
+		if taskState == "completed" || taskState == "cancelled" || !int8SnapshotMatches(taskLimit, input.ExpectedTaskLimit) || taskUsed != input.ExpectedTaskUsed {
+			return Receipt{}, core.Conflict
+		}
+		var liveSession bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=$1 AND s.task_id=$2 AND s.state!='stopped')`, scope.company, taskID).Scan(&liveSession); err != nil {
+			return Receipt{}, err
+		}
+		if liveSession {
+			return Receipt{}, core.Denied
+		}
+		var closed bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM task_tool_call_budget_incomplete_closures c WHERE c.company_id=$1 AND c.task_id=$2)`, scope.company, taskID).Scan(&closed); err != nil {
+			return Receipt{}, err
+		}
+		if closed {
+			return Receipt{}, core.Conflict
+		}
+		var sourceRejection, sourceReason string
+		if err := tx.QueryRow(ctx, `SELECT d.request_id,d.reason FROM problem_tool_call_budget_rejections d
+WHERE d.company_id=$1 AND d.task_id=$2 ORDER BY d.occurred_at DESC,d.request_id DESC LIMIT 1`, scope.company, taskID).Scan(&sourceRejection, &sourceReason); errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.Denied
+		} else if err != nil {
+			return Receipt{}, err
+		}
+		if sourceReason == "session_limit" {
+			return Receipt{}, core.Denied
+		}
+		var taskRevision int64
+		if err := tx.QueryRow(ctx, `SELECT COALESCE(max(a.revision),1)::bigint FROM task_tool_call_allocations a
+WHERE a.company_id=$1 AND a.task_id=$2`, scope.company, taskID).Scan(&taskRevision); err != nil {
+			return Receipt{}, err
+		}
+		if taskRevision != input.ExpectedTaskRevision {
+			return Receipt{}, core.Conflict
+		}
+		var baseLimit pgtype.Int8
+		if err := tx.QueryRow(ctx, `SELECT tool_call_limit FROM problem_tool_call_budgets
+WHERE company_id=$1 AND problem_key=$2 FOR UPDATE`, scope.company, problemKey).Scan(&baseLimit); errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		} else if err != nil {
+			return Receipt{}, err
+		}
+		var problemLimit pgtype.Int8
+		var problemUsed, problemRevision int64
+		if err := tx.QueryRow(ctx, `SELECT tool_call_limit,tool_calls_used,revision FROM problem_tool_call_budget_effective
+WHERE company_id=$1 AND problem_key=$2`, scope.company, problemKey).Scan(&problemLimit, &problemUsed, &problemRevision); err != nil {
+			return Receipt{}, err
+		}
+		if !int8SnapshotMatches(problemLimit, input.ExpectedProblemLimit) || problemUsed != input.ExpectedProblemUsed || problemRevision != input.ExpectedProblemRevision {
+			return Receipt{}, core.Conflict
+		}
+		reserveCalls, reserveRemaining, reserveRevision, err := problemToolCallClosingReserveSnapshot(ctx, tx, scope.company, problemKey)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if reserveCalls != input.ExpectedReserveCalls || reserveRemaining != input.ExpectedReserveRemaining || reserveRevision != input.ExpectedReserveRevision {
+			return Receipt{}, core.Conflict
+		}
+		_, err = tx.Exec(ctx, `INSERT INTO task_tool_call_budget_incomplete_closures(company_id,task_id,problem_key,request_id,
+source_rejection_request_id,task_tool_call_limit,task_tool_calls_used,task_allocation_revision,
+problem_tool_call_limit,problem_tool_calls_used,problem_budget_revision,closing_reserve_tool_calls,closing_reserve_remaining,closing_reserve_revision,authorized_by,reason)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,'local-owner',$15)`, scope.company, taskID, problemKey, input.RequestID,
+			sourceRejection, taskLimit, taskUsed, taskRevision, problemLimit, problemUsed, problemRevision, reserveCalls, reserveRemaining, reserveRevision, reason)
+		if err != nil {
+			return Receipt{}, err
+		}
+		return Receipt{ID: taskID, Status: "closed_incomplete", Revision: 1}, nil
 	})
 }
 
