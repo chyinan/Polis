@@ -1,13 +1,13 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView} from '../domain/workbench';
-import type {ChangeMissionToolCallBudgetOptions, MissionToolCallBudgetQueryOptions} from './workbench-api';
+import type {MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView} from '../domain/workbench';
+import type {ChangeMissionToolCallBudgetOptions, MissionToolCallBudgetQueryOptions, SetMissionToolCallClosingReserveOptions} from './workbench-api';
 import type {DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import {validateDailyRoutineCommandReceipt, validateDailyRoutines} from '../domain/daily-routine-validation';
 import {validateMemoryTaskRevalidationPreview, validateMemoryTaskRevalidationReceipt, validateMemoryTaskStatus} from '../domain/memory-revalidation-validation';
 import {validateMemoryCorrectionQueue} from '../domain/memory-correction-validation';
-import {validateMissionToolCallBudgetChangeReceipt, validateMissionToolCallBudgetList, validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
+import {validateMissionToolCallBudgetChangeReceipt, validateMissionToolCallBudgetList, validateMissionToolCallClosingReserveReceipt, validateProblemToolCallAllocationReceipt, validateProblemToolCallBudgetList, validateProblemToolCallClosingReserveReceipt, validateTaskToolCallAllocationReceipt, validateTaskToolCallIncompleteClosureReceipt} from '../domain/problem-budget-validation';
 import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
@@ -984,6 +984,33 @@ export class RealWorkbenchApi implements WorkbenchApi {
       confirm: true,
     });
     return validateMissionToolCallBudgetChangeReceipt(raw, options.missionId, options.expectedRevision + 1, options.expectedToolCallLimit === null);
+  }
+
+  async setMissionToolCallClosingReserve(options: SetMissionToolCallClosingReserveOptions): Promise<MissionToolCallClosingReserveReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    assertRequestID(options.requestId);
+    if (!Number.isSafeInteger(options.reservedToolCalls) || options.reservedToolCalls < 0
+      || !Number.isSafeInteger(options.expectedMissionBudgetRevision) || options.expectedMissionBudgetRevision < 0
+      || !Number.isSafeInteger(options.expectedReserveRevision) || options.expectedReserveRevision < 0
+      || (options.expectedMissionToolCallLimit !== null && (!Number.isSafeInteger(options.expectedMissionToolCallLimit) || options.expectedMissionToolCallLimit < 1))
+      || (options.expectedMissionToolCallLimit === null && options.expectedMissionBudgetRevision !== 0)
+      || (options.expectedMissionToolCallLimit !== null && options.expectedMissionBudgetRevision < 1)) {
+      throw new Error('Mission closing reserve values must be safe integers');
+    }
+    const reason = options.reason.trim();
+    const reasonLength = Array.from(reason).length;
+    if (reasonLength < 1 || reasonLength > 500) throw new Error('closing reserve reason must contain 1–500 characters');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/mission-budgets/${encodeURIComponent(options.missionId)}/closing-reserve`, options.requestId, {
+      reservedToolCalls: options.reservedToolCalls,
+      expectedMissionToolCallLimit: options.expectedMissionToolCallLimit,
+      expectedMissionBudgetRevision: options.expectedMissionBudgetRevision,
+      expectedReserveRevision: options.expectedReserveRevision,
+      reason,
+      requestId: options.requestId,
+      confirm: true,
+    });
+    return validateMissionToolCallClosingReserveReceipt(raw, options.missionId, options.expectedReserveRevision + 1);
   }
 
   async allocateProblemToolCalls(options: AllocateProblemToolCallsOptions): Promise<ProblemToolCallAllocationReceiptView> {

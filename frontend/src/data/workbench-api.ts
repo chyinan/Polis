@@ -1,7 +1,7 @@
 // pattern: Imperative Shell
 
 import type {MissionInputCommandReceipt, MissionInputView, TaskInputManifestView} from '../domain/mission-input';
-import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
+import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentCorrectionView, DomainContentPublicationView} from '../domain/workbench';
 import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DailyRoutineView, DataMode, DomainContentDraftView, DomainContentReviewView, DomainContentReviewSubmissionView, DomainContentSampleEvidenceView, DomainContentSourceEventView, DomainContentSourceStateView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceAreaAssessmentView, DomainEvidenceAreaView, DomainEvidenceItemView, DomainEvidenceLedgerView, DomainEvidencePreviewAttestationView, DomainEvidenceRecordView, DomainEvidenceReviewOutcomeView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, EmployeeDraft, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatus, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackCollectionPolicyReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, HumanInterventionState, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, ServiceBrowserSessionView, StdioMCPPackageRevisionView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
@@ -316,6 +316,16 @@ export type ChangeMissionToolCallBudgetOptions = Readonly<{
   expectedToolCallLimit: number | null;
   expectedRevision: number;
   resultingToolCallLimit: number;
+  reason: string;
+  requestId: string;
+}>;
+export type SetMissionToolCallClosingReserveOptions = Readonly<{
+  companyId: string;
+  missionId: string;
+  reservedToolCalls: number;
+  expectedMissionToolCallLimit: number | null;
+  expectedMissionBudgetRevision: number;
+  expectedReserveRevision: number;
   reason: string;
   requestId: string;
 }>;
@@ -674,6 +684,7 @@ export type WorkbenchApi = Readonly<{
   listProblemToolCallBudgets(options: ProblemToolCallBudgetQueryOptions): Promise<ProblemToolCallBudgetListView>;
   listMissionToolCallBudgets(options: MissionToolCallBudgetQueryOptions): Promise<MissionToolCallBudgetListView>;
   changeMissionToolCallBudget(options: ChangeMissionToolCallBudgetOptions): Promise<MissionToolCallBudgetChangeReceiptView>;
+  setMissionToolCallClosingReserve(options: SetMissionToolCallClosingReserveOptions): Promise<MissionToolCallClosingReserveReceiptView>;
   allocateProblemToolCalls(options: AllocateProblemToolCallsOptions): Promise<ProblemToolCallAllocationReceiptView>;
   allocateTaskToolCalls(options: AllocateTaskToolCallsOptions): Promise<TaskToolCallAllocationReceiptView>;
   closeTaskToolBudgetIncomplete(options: CloseTaskToolBudgetIncompleteOptions): Promise<TaskToolCallIncompleteClosureReceiptView>;

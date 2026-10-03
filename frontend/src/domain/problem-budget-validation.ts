@@ -1,4 +1,4 @@
-import type {MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallBudgetView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallBudgetView, TaskToolCallIncompleteClosureReceiptView} from './workbench';
+import type {MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallBudgetView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallBudgetView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallBudgetView, TaskToolCallIncompleteClosureReceiptView} from './workbench';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -79,25 +79,34 @@ function isMissionToolCallBudget(value: unknown): value is MissionToolCallBudget
   if (!isRecord(value) || typeof value.missionId !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(value.missionId)
     || typeof value.title !== 'string' || typeof value.missionState !== 'string'
     || !isCount(value.toolCallsUsed) || !isCount(value.toolCallsRemaining)
+    || !isCount(value.closingReserveToolCalls) || !isCount(value.closingReserveRemaining)
+    || !isCount(value.closingReserveRevision)
     || !isCount(value.revision) || !isCount(value.allocationCount) || !isCount(value.rejectionCount)
-    || !['pending', 'available', 'exhausted'].includes(String(value.state))) return false;
+    || !['pending', 'available', 'closing_reserved', 'exhausted'].includes(String(value.state))) return false;
   if (value.toolCallLimit !== null && (!isCount(value.toolCallLimit) || Number(value.toolCallLimit) < 1)) return false;
   if (value.lastReason !== undefined && typeof value.lastReason !== 'string') return false;
   if (value.lastAllocatedAt !== undefined && typeof value.lastAllocatedAt !== 'string') return false;
+  if (value.lastClosingReserveReason !== undefined && typeof value.lastClosingReserveReason !== 'string') return false;
+  if (value.lastClosingReserveAt !== undefined && typeof value.lastClosingReserveAt !== 'string') return false;
   if (value.lastRejectionAt !== undefined && typeof value.lastRejectionAt !== 'string') return false;
   if (value.lastRejectionRoute !== undefined && !['worker_admission', 'worker_tool_call'].includes(String(value.lastRejectionRoute))) return false;
-  if (value.lastRejectionReason !== undefined && !['mission_budget_pending', 'mission_limit'].includes(String(value.lastRejectionReason))) return false;
+  if (value.lastRejectionReason !== undefined && !['mission_budget_pending', 'mission_limit', 'mission_closing_reserve'].includes(String(value.lastRejectionReason))) return false;
   if (value.lastRejectionTaskId !== undefined && (typeof value.lastRejectionTaskId !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(value.lastRejectionTaskId))) return false;
   if (value.rejectionCount === 0 && (value.lastRejectionAt !== undefined || value.lastRejectionRoute !== undefined
     || value.lastRejectionReason !== undefined || value.lastRejectionTaskId !== undefined)) return false;
   if (value.rejectionCount > 0 && (typeof value.lastRejectionAt !== 'string' || value.lastRejectionRoute === undefined
     || value.lastRejectionReason === undefined || value.lastRejectionTaskId === undefined)) return false;
+  if (value.closingReserveRemaining > value.closingReserveToolCalls) return false;
+  if (value.closingReserveRevision === 0 && (value.lastClosingReserveReason !== undefined || value.lastClosingReserveAt !== undefined)) return false;
+  if (value.closingReserveRevision > 0 && (typeof value.lastClosingReserveReason !== 'string' || typeof value.lastClosingReserveAt !== 'string')) return false;
   if (value.toolCallLimit === null) return value.state === 'pending' && value.toolCallsRemaining === 0
     && value.revision === 0 && value.allocationCount === 0;
   return value.revision > 0 && value.allocationCount === value.revision
     && value.toolCallsUsed <= value.toolCallLimit
     && value.toolCallsRemaining === value.toolCallLimit - value.toolCallsUsed
-    && (value.state === 'available' ? value.toolCallsRemaining > 0 : value.state === 'exhausted' && value.toolCallsRemaining === 0);
+    && (value.state === 'available' ? value.toolCallsRemaining > value.closingReserveRemaining
+      : value.state === 'closing_reserved' ? value.toolCallsRemaining > 0 && value.toolCallsRemaining <= value.closingReserveRemaining
+        : value.state === 'exhausted' && value.toolCallsRemaining === 0);
 }
 
 export function validateMissionToolCallBudgetList(value: unknown): MissionToolCallBudgetListView {
@@ -113,6 +122,13 @@ export function validateMissionToolCallBudgetChangeReceipt(value: unknown, missi
     throw new Error('failed to parse Mission tool-call budget receipt');
   }
   return value as unknown as MissionToolCallBudgetChangeReceiptView;
+}
+
+export function validateMissionToolCallClosingReserveReceipt(value: unknown, missionId: string, revision: number): MissionToolCallClosingReserveReceiptView {
+  if (!isRecord(value) || value.id !== missionId || value.status !== 'mission_closing_reserve_updated' || value.revision !== revision) {
+    throw new Error('failed to parse Mission closing reserve receipt');
+  }
+  return value as unknown as MissionToolCallClosingReserveReceiptView;
 }
 
 export function validateProblemToolCallAllocationReceipt(value: unknown, problemKey: string, revision: number): ProblemToolCallAllocationReceiptView {

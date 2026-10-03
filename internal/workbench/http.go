@@ -541,6 +541,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "mission.budget.closing_reserve":
+		response.Header().Set("Cache-Control", "no-store")
+		budgetService, ok := service.(control.ProblemToolBudgetService)
+		if !ok {
+			writeError(response, http.StatusNotImplemented, "Mission tool-call budget service is unavailable")
+			return
+		}
+		var input control.MissionToolCallClosingReserveRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "mission_budget", err)
+			return
+		}
+		receipt, err := budgetService.SetMissionToolCallClosingReserve(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "mission_budget", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "problem.budget.allocate":
 		response.Header().Set("Cache-Control", "no-store")
 		budgetService, ok := service.(control.ProblemToolBudgetService)
@@ -1747,6 +1765,13 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: missionID, endpoint: "mission.budget.allocate"}, true
+	}
+	if len(parts) == 4 && parts[1] == "mission-budgets" && parts[3] == "closing-reserve" {
+		missionID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: missionID, endpoint: "mission.budget.closing_reserve"}, true
 	}
 	if len(parts) == 4 && parts[1] == "problem-budgets" && parts[3] == "allocations" {
 		problemKey, err := url.PathUnescape(parts[2])

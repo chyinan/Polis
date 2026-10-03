@@ -1495,8 +1495,8 @@ export type ProblemToolCallBudgetListView = Readonly<{
   truncated: boolean;
 }>;
 
-export type MissionToolCallBudgetState = 'pending' | 'available' | 'exhausted';
-export type MissionToolCallBudgetRejectionReason = 'mission_budget_pending' | 'mission_limit';
+export type MissionToolCallBudgetState = 'pending' | 'available' | 'closing_reserved' | 'exhausted';
+export type MissionToolCallBudgetRejectionReason = 'mission_budget_pending' | 'mission_limit' | 'mission_closing_reserve';
 export type MissionToolCallBudgetRejectionRoute = 'worker_admission' | 'worker_tool_call';
 
 export type MissionToolCallBudgetView = Readonly<{
@@ -1506,11 +1506,16 @@ export type MissionToolCallBudgetView = Readonly<{
   toolCallLimit: number | null;
   toolCallsUsed: number;
   toolCallsRemaining: number;
+  closingReserveToolCalls: number;
+  closingReserveRemaining: number;
+  closingReserveRevision: number;
   revision: number;
   state: MissionToolCallBudgetState;
   allocationCount: number;
   lastReason?: string;
   lastAllocatedAt?: string;
+  lastClosingReserveReason?: string;
+  lastClosingReserveAt?: string;
   rejectionCount: number;
   lastRejectionAt?: string;
   lastRejectionRoute?: MissionToolCallBudgetRejectionRoute;
@@ -1526,6 +1531,12 @@ export type MissionToolCallBudgetListView = Readonly<{
 export type MissionToolCallBudgetChangeReceiptView = Readonly<{
   id: string;
   status: 'mission_budget_configured' | 'mission_budget_allocated';
+  revision: number;
+}>;
+
+export type MissionToolCallClosingReserveReceiptView = Readonly<{
+  id: string;
+  status: 'mission_closing_reserve_updated';
   revision: number;
 }>;
 

@@ -1,10 +1,16 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 130 — REQ-16 explicit Mission tool-call cap (Schema 89)
+## Slice 131 — REQ-16 Mission closing reserve (Schema 90)
+
+Schema 90 adds an append-only Mission closing-reserve policy inside the explicit total cap. Only Kernel-created `review` and `peer_review` Tasks spend protected calls. Ordinary Task admission and accepted-call accounting preserve unspent reserve; closing calls decrement reserve while also incrementing Mission, ProblemKey, Task and Session usage atomically. Pending Missions can configure reserve first, but initial cap configuration must cover usage plus unspent reserve. Mission rejection records bind the reserve amount, remaining count and revision. Handover and provider budgets expose the reserve revision and clamp ordinary work to unreserved Mission availability. Settings supports confirmed, reasoned reserve policy changes. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 90 migration hashes and `git diff --check` pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-131-mission-closing-reserve/verification.md`.
+
+REQ-16 remains partial. Company/ProviderAccount caps, hidden retries, token/money accounting, stable exhaustion qualification and frozen FT-42–45 execution remain open. Next resolve Company and Provider budget semantics against the design and reliable usage identities before implementing either cap.
+
+## Previous continuation status (Slice 130 — REQ-16 explicit Mission tool-call cap; Schema 89)
 
 Schema 89 backfills Mission usage from durable Task counters while leaving caps unset, and adds an append-only local-owner configure/increase ledger and immutable Mission admission/call rejection evidence. Workbench creation requires an explicit finite protocol tool-call cap; Settings supports confirmed, reasoned configuration of legacy Missions and cap increases with revision checks. Worker admission and call charging acquire Mission before WorkerSession/Task and ProblemKey. Each accepted call advances Session, Task, ProblemKey and Mission counters atomically. Handover and the provider turn limit use the minimum remaining allowance. This measures admitted protocol tool calls only; hidden CLI/service retries, tokens and USD are not included. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 89 migration hashes and `git diff --check` pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-130-mission-tool-call-budget/verification.md`.
 
-Next: add a separately revisioned Mission closing reserve inside the total cap for fixed Kernel-created review/peer-review classes. Company/Provider caps, hidden retries, token/money accounting and frozen scenario qualification remain open.
+Slice 131 adds the Mission closing reserve. Company/Provider caps, hidden retries, token/money accounting and frozen scenario qualification remain open.
 
 ## Previous continuation status (Slice 129 — REQ-16 Mission budget composition and lock-order audit; no migration)
 
@@ -14,7 +20,7 @@ The frozen design permits separately dimensioned Mission caps. The selected unit
 
 The real Codex runtime terminal usage now identifies the exact retry signal it observes: `responseStreamDisconnected` server errors with `willRetry`. The existing `reconnect_attempt_count` and `reconnect_recovered` fields describe only those same-turn protocol reconnect signals. `unobserved_provider_retry_count` is stored as `null`, because retries internal to the provider CLI/service are not exposed at this boundary; the existing `retry_visibility=limited` remains. This is observability only and does not account or charge hidden attempts. `go build ./internal/kernel ./internal/control ./cmd/polis`, frontend production build, all 88 migration hashes and `git diff --check` pass. The frontend retains the existing >500 kB advisory. Tests and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
 
-REQ-16 remains partial: Slice 130 adds the Mission tool-call cap; Mission closing reserve, Company/Provider budgets, hidden retries, token/money accounting and frozen scenario qualification remain open.
+REQ-16 remains partial: Slice 131 adds the Mission closing reserve; Company/Provider budgets, hidden retries, token/money accounting and frozen scenario qualification remain open.
 
 ## Slice 127 — REQ-16 explicit incomplete budget closeout (Schema 88)
 

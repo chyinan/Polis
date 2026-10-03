@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 130, REQ-16 explicit Mission tool-call cap; Schema 89)
+## Latest continuation status (Slice 131, REQ-16 Mission closing reserve; Schema 90)
+
+Schema 90 adds append-only Mission closing-reserve revisions inside the explicit total cap. Only fixed Kernel-created `review` and `peer_review` Tasks may spend protected calls; ordinary admission, accepted-call accounting, Handover and provider turn clamping preserve the remaining reserve. Closing calls reduce reserve and Mission total atomically. A pending Mission may record a reserve, but its first finite cap must cover recorded usage plus unspent reserve. Immutable Mission rejection evidence records reserve snapshots/revision and distinguishes calls blocked by protected capacity. Settings exposes confirmed, reasoned reserve changes. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 90 migration hashes and `git diff --check` pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-131-mission-closing-reserve/verification.md`.
+
+Next: resolve Company and ProviderAccount budget semantics against the frozen design and reliable usage identities before implementing either cap. Hidden retries, token/money accounting and frozen scenario qualification remain open. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md`.
+
+## Previous continuation status (Slice 130, REQ-16 explicit Mission tool-call cap; Schema 89)
 
 Schema 89 backfills Mission usage by summing durable Task counters, leaves every cap unset until explicitly configured, and adds append-only owner cap history plus immutable Mission-level admission/call rejection snapshots. New Workbench Mission creation requires a finite protocol tool-call cap; Settings lets the local owner configure a legacy Mission or increase its total cap with confirmation, reason and expected revision. Kernel admission and accepted tool-call charging lock Mission before WorkerSession/Task and ProblemKey; one accepted call increments each applicable counter atomically. Handover and provider turn clamping use the minimum remaining cap. Hidden CLI/service retries, tokens and USD remain outside this counter. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 89 migration hashes and `git diff --check` pass. The existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-130-mission-tool-call-budget/verification.md`.
-
-Next add a separately revisioned Mission closing reserve inside the total cap, restricted to fixed Kernel-created review/peer-review classes. Company/Provider caps, hidden retries, token/money accounting and frozen scenario qualification remain open. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md`.
 
 ## Previous continuation status (Slice 129, REQ-16 Mission budget composition and lock-order audit; no migration)
 
