@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 144, FT-63 Workbench owner UI)
+## Latest continuation status (Slice 145, PostgreSQL migration compatibility; Schema 97 applied locally)
+
+The checked-in migrations 78 and 79 lacked `-- +goose Up`; Goose rejected 78 on the existing Termux development database, which was at schema 77 with no partial table. The migration loader now adds the missing marker only in the stream Goose parses while migration hashes and execution evidence continue to use the unchanged source bytes. Schema 97's trigger function now has Goose `StatementBegin/End` boundaries. Updated migration hash validation and `go test ./db` pass. On the local `polis_r0_termux` database (previously schema 72, no Companies/Missions), migration completed to schema 97; migration execution evidence 78–97 is present. Backend `/healthz`, owner status/session routes and Vite root return successfully, and the CSRF preflight returns 204. The owner is intentionally not initialized because no owner-chosen password has been supplied. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-145-postgres-migration-compat/verification.md`.
+
+Next: the owner can run the local bootstrap command and choose a password in the Installation Accounts page. Then complete browser-based login/logout/CSRF qualification, including Tauri WebView cookie behavior. Continue the remaining approved R1–R3 coverage; financial settlement remains closed pending owner-confirmed billing scope.
+
+## Previous continuation status (Slice 144, FT-63 Workbench owner UI)
 
 The Group navigation now includes an Installation Accounts page with local first-owner bootstrap-code entry, password login/logout, session status/expiry and a read-only observed-account table. The setup view is offered only when the loopback setup-status endpoint reports no owner; HTTPS remote Workbench shows login only. The page uses credentialed requests, reads the root-path CSRF cookie for logout, and explains that account locator fingerprints do not establish billing scope. Same-origin loopback status reads can omit `Origin`; bootstrap still requires an allowed Origin and loopback peer. Frontend TypeScript, ESLint and production build pass; focused Go tests/build and migration hashes 1–97 pass. PostgreSQL migration/runtime and real browser E2E were not run because `POLIS_DSN` is unset and local PostgreSQL is unavailable. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-144-owner-workbench-ui/verification.md`.
 
-Next: complete database-backed browser qualification of setup/login/CSRF/logout after PostgreSQL is available. Review local Tauri WebView cookie behavior in that run. Do not add cross-Company mutations or financial settlement until owner-session qualification and billing-scope prerequisites are satisfied.
+Slice 145 brought up the local Termux PostgreSQL runtime and applied Schema 97. The remaining qualification is browser-based, including local Tauri WebView cookie behavior. Do not add cross-Company mutations or financial settlement until owner-session qualification and billing-scope prerequisites are satisfied.
 
 ## Previous continuation status (Slice 143, FT-63 owner sessions; Schema 97)
 

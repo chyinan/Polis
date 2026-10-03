@@ -17,6 +17,7 @@ CREATE TABLE installation_owner_sessions (
 CREATE INDEX installation_owner_sessions_active_expiry
  ON installation_owner_sessions(expires_at) WHERE revoked_at IS NULL;
 
+-- +goose StatementBegin
 CREATE FUNCTION protect_installation_owner_session() RETURNS trigger AS $$
 BEGIN
  IF TG_OP='DELETE' THEN
@@ -30,6 +31,7 @@ BEGIN
  RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
+-- +goose StatementEnd
 CREATE TRIGGER installation_owner_sessions_revoke_once
  BEFORE UPDATE OR DELETE ON installation_owner_sessions FOR EACH ROW
  EXECUTE FUNCTION protect_installation_owner_session();

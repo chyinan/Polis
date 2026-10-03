@@ -2,11 +2,13 @@
 package db
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"io/fs"
 	"path"
 	"runtime"
@@ -38,6 +40,49 @@ type migrationSource struct {
 	sha256 string
 }
 
+// A pair of historical SQL migrations omitted Goose's Up marker. Normalize
+// only the stream consumed by Goose; the checked-in migration bytes and their
+// manifest digests stay unchanged for migration execution evidence.
+var legacyGooseUpMarkerFiles = map[string]struct{}{
+	"migrations/00078_memory_cas_retention_pins.sql": {},
+	"migrations/00079_cas_blob_write_claims.sql":     {},
+}
+
+type gooseMigrationSourceFS struct{ source fs.FS }
+
+func (source gooseMigrationSourceFS) Open(name string) (fs.File, error) {
+	file, err := source.source.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	if _, needsMarker := legacyGooseUpMarkerFiles[name]; !needsMarker {
+		return file, nil
+	}
+	content, err := io.ReadAll(file)
+	if err != nil {
+		_ = file.Close()
+		return nil, err
+	}
+	info, err := file.Stat()
+	if err != nil {
+		_ = file.Close()
+		return nil, err
+	}
+	if err = file.Close(); err != nil {
+		return nil, err
+	}
+	return &gooseMigrationFile{reader: bytes.NewReader(append([]byte("-- +goose Up\n"), content...)), info: info}, nil
+}
+
+type gooseMigrationFile struct {
+	reader *bytes.Reader
+	info   fs.FileInfo
+}
+
+func (file *gooseMigrationFile) Read(buffer []byte) (int, error) { return file.reader.Read(buffer) }
+func (file *gooseMigrationFile) Close() error                    { return nil }
+func (file *gooseMigrationFile) Stat() (fs.FileInfo, error)      { return file.info, nil }
+
 func MigrateToVersion(ctx context.Context, dsn string, targetVersion int64) error {
 	gooseMigrationProcessMu.Lock()
 	defer gooseMigrationProcessMu.Unlock()
@@ -66,7 +111,7 @@ func MigrateToVersion(ctx context.Context, dsn string, targetVersion int64) erro
 		_ = executeSessionAdvisoryLock(context.Background(), lockConn, "SELECT pg_advisory_unlock($1)")
 	}()
 
-	goose.SetBaseFS(migrations)
+	goose.SetBaseFS(gooseMigrationSourceFS{source: migrations})
 	if err = goose.SetDialect("postgres"); err != nil {
 		return err
 	}

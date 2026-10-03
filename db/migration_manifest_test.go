@@ -2,10 +2,12 @@
 package db
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io/fs"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -27,6 +29,34 @@ func TestVerifyMigrationManifestMatchesExactEmbeddedSQLSet(t *testing.T) {
 func TestEmbeddedMigrationManifestMatchesRepository(t *testing.T) {
 	if err := verifyMigrationManifest(migrations, migrationHashManifest); err != nil {
 		t.Fatalf("embedded migration manifest: %v", err)
+	}
+}
+
+func TestGooseMigrationSourceAddsMissingLegacyUpMarkersWithoutChangingSourceBytes(t *testing.T) {
+	for _, name := range []string{
+		"migrations/00078_memory_cas_retention_pins.sql",
+		"migrations/00079_cas_blob_write_claims.sql",
+	} {
+		original, err := fs.ReadFile(migrations, name)
+		if err != nil {
+			t.Fatalf("read original migration %s: %v", name, err)
+		}
+		normalized, err := fs.ReadFile(gooseMigrationSourceFS{source: migrations}, name)
+		if err != nil {
+			t.Fatalf("read Goose migration %s: %v", name, err)
+		}
+		want := append([]byte("-- +goose Up\n"), original...)
+		if !bytes.Equal(normalized, want) {
+			t.Fatalf("Goose migration %s did not receive exactly one Up marker", name)
+		}
+	}
+	original, err := fs.ReadFile(migrations, "migrations/00077_memory_clean_revalidation.sql")
+	if err != nil {
+		t.Fatalf("read unaffected migration: %v", err)
+	}
+	unchanged, err := fs.ReadFile(gooseMigrationSourceFS{source: migrations}, "migrations/00077_memory_clean_revalidation.sql")
+	if err != nil || !bytes.Equal(unchanged, original) {
+		t.Fatalf("unaffected Goose migration changed: err=%v", err)
 	}
 }
 
