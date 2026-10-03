@@ -1,5 +1,11 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 136 — REQ-16 provider auth identity snapshot (Schema 93)
+
+Schema 93 adds an immutable, one-per-WorkerSession provider auth identity snapshot that can only be inserted while the session is `restoring`. A versioned optional runtime capability records `available`, `unavailable` or `unsupported`; Codex exposes the fingerprint only for LIVE_2, whose credential path already captures/rechecks it. The real provider adapter records it before provider execution and finalizes an unstarted session if capture/persistence fails. This is a hashed auth-principal hint, not a ProviderAccount financial ID; it is not sent to the model and no financial cap is enabled. Go provider/kernel/control/workbench/command build, migration hashes through 93 and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-136-provider-auth-identity-snapshot/verification.md`.
+
+General-profile account identity semantics, ProviderAccount registry, request reservation/settlement/unknown-liability accounting, hidden retries and financial enforcement remain open.
+
 ## Slice 135 — REQ-16 ProviderAccount identity/liability binding audit (no migration)
 
 Source tracing across `provider.Runtime`, `ExecutionAuthorization`, `RealProviderWorkerAdapter`, `worker_sessions` and provider-terminal records confirms the general Worker path has no stable ProviderAccount identity. `CodexRuntime` captures/rechecks an auth identity fingerprint only for the LIVE_2 path and does not expose it to general admission. Terminal token/tool/egress observations are per WorkerSession, with no ProviderAccount binding or reserve/settle/unknown-liability ledger. No ProviderAccount financial cap can be safely enforced yet. No code/schema/build/test/database/provider execution was changed or run; `git diff --check` passes. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-135-provider-account-binding-audit/verification.md`.

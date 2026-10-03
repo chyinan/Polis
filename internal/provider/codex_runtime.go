@@ -95,6 +95,35 @@ func NewCodexRuntime(config CodexRuntimeConfig) *CodexRuntime {
 
 func (r *CodexRuntime) Mode() string             { return "real" }
 func (r *CodexRuntime) ToolSurface() ToolSurface { return r.surface }
+func (r *CodexRuntime) ProviderAuthIdentitySnapshot(ctx context.Context) (ProviderAuthIdentitySnapshot, error) {
+	if r == nil || ctx == nil {
+		return ProviderAuthIdentitySnapshot{}, errors.New("Codex auth identity snapshot source is unavailable")
+	}
+	if err := ctx.Err(); err != nil {
+		return ProviderAuthIdentitySnapshot{}, err
+	}
+	snapshot := ProviderAuthIdentitySnapshot{
+		SchemaVersion: ProviderAuthIdentitySnapshotSchemaV1,
+		SourceClass:   "mounted_codex_auth_file",
+		Status:        "unsupported",
+		ReasonCode:    "identity_not_bound_for_runtime_purpose",
+	}
+	if r.config.Purpose != Live2AuthorizationPurpose {
+		return snapshot, nil
+	}
+	r.authMu.Lock()
+	defer r.authMu.Unlock()
+	if r.authIdentityFingerprint == "" {
+		snapshot.Status = "unavailable"
+		snapshot.ReasonCode = "identity_not_captured_at_readiness"
+		return snapshot, nil
+	}
+	snapshot.Status = "available"
+	snapshot.Fingerprint = r.authIdentityFingerprint
+	snapshot.ReasonCode = ""
+	return snapshot, snapshot.Validate()
+}
+
 func (r *CodexRuntime) RequiresLinuxWorkerCgroup() bool {
 	return runtime.GOOS == "linux" && r.config.RequireWorkerCgroup
 }
