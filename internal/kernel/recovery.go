@@ -49,55 +49,64 @@ func ReadSnapshot(ctx context.Context, dsn, company, mission string) (Snapshot, 
 }
 
 func (k *Kernel) Snapshot(ctx context.Context, s Scope, id string) (Snapshot, error) {
-	var out Snapshot
 	tx, e := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	defer tx.Rollback(ctx)
+	out, e := snapshotMissionTX(ctx, tx, s, id)
+	if e != nil {
+		return Snapshot{}, e
+	}
+	return out, tx.Commit(ctx)
+}
+
+func snapshotMissionTX(ctx context.Context, tx pgx.Tx, s Scope, id string) (Snapshot, error) {
+	var out Snapshot
+	var e error
 	out.MissionState, e = missionState(ctx, tx, s, id)
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	q := dbgen.New(tx)
 	tasks, e := q.ListTasks(ctx, dbgen.ListTasksParams{CompanyID: s.company, MissionID: id})
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	for _, t := range tasks {
 		out.Tasks = append(out.Tasks, Task{ID: t.ID, Mission: t.MissionID, Owner: t.Owner, Kind: core.TaskKind(t.Kind), State: t.State, Generation: t.Generation})
 	}
 	out.Employees, e = q.ListEmployees(ctx, s.company)
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	out.Messages, e = q.ListMessages(ctx, dbgen.ListMessagesParams{CompanyID: s.company, MissionID: id})
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	obs, e := q.ListObligations(ctx, dbgen.ListObligationsParams{CompanyID: s.company, MissionID: id})
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	for _, o := range obs {
 		out.Obligations = append(out.Obligations, Obligation{o.ID, o.State})
 	}
 	arts, e := q.ListArtifacts(ctx, dbgen.ListArtifactsParams{CompanyID: s.company, MissionID: id})
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	for _, a := range arts {
 		out.Artifacts = append(out.Artifacts, Artifact{a.ID, a.Digest, a.State, a.Verdict})
 	}
 	e = tx.QueryRow(ctx, "SELECT company_seq FROM companies WHERE id=$1", s.company).Scan(&out.CompanySeq)
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
 	e = tx.QueryRow(ctx, "SELECT count(*) FROM events WHERE company_id=$1 AND kind='fake.claim'", s.company).Scan(&out.FakeClaims)
 	if e != nil {
-		return out, e
+		return Snapshot{}, e
 	}
-	return out, tx.Commit(ctx)
+	return out, nil
 }
 
 // This private bootstrap transaction runs on the exact connection holding the

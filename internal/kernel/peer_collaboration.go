@@ -64,25 +64,37 @@ type PeerIntegrationInput struct {
 }
 
 func (k *Kernel) PeerContractAt(ctx context.Context, s Scope, revisionID string) (PeerContractRevision, error) {
+	return peerContractAt(ctx, k.pool, s, revisionID)
+}
+
+func peerContractAt(ctx context.Context, q peerRecoveryQueryer, s Scope, revisionID string) (PeerContractRevision, error) {
 	var out PeerContractRevision
-	e := k.pool.QueryRow(ctx, "SELECT id,mission_id,endpoint,schema::text,digest,state,revision,COALESCE(base_revision,0) FROM contract_revisions WHERE company_id=$1 AND id=$2", s.company, revisionID).Scan(&out.ID, &out.Mission, &out.Endpoint, &out.Schema, &out.Digest, &out.State, &out.Revision, &out.BaseRevision)
+	e := q.QueryRow(ctx, "SELECT id,mission_id,endpoint,schema::text,digest,state,revision,COALESCE(base_revision,0) FROM contract_revisions WHERE company_id=$1 AND id=$2", s.company, revisionID).Scan(&out.ID, &out.Mission, &out.Endpoint, &out.Schema, &out.Digest, &out.State, &out.Revision, &out.BaseRevision)
 	return out, e
 }
 
 func (k *Kernel) PeerMessageAt(ctx context.Context, s Scope, messageID string) (PeerMessage, string, string, error) {
+	return peerMessageAt(ctx, k.pool, s, messageID)
+}
+
+func peerMessageAt(ctx context.Context, q peerRecoveryQueryer, s Scope, messageID string) (PeerMessage, string, string, error) {
 	var out PeerMessage
 	var body, obligationState string
-	e := k.pool.QueryRow(ctx, "SELECT m.id,m.task_id,m.contract_revision_id,m.delivery_state,m.body,COALESCE(o.state,''),COALESCE(o.id,'') FROM messages m LEFT JOIN obligations o ON o.company_id=m.company_id AND o.id=m.id WHERE m.company_id=$1 AND m.id=$2", s.company, messageID).Scan(&out.ID, &out.TaskID, &out.ContractRevisionID, &out.DeliveryState, &body, &obligationState, &out.ObligationID)
+	e := q.QueryRow(ctx, "SELECT m.id,m.task_id,m.contract_revision_id,m.delivery_state,m.body,COALESCE(o.state,''),COALESCE(o.id,'') FROM messages m LEFT JOIN obligations o ON o.company_id=m.company_id AND o.id=m.id WHERE m.company_id=$1 AND m.id=$2", s.company, messageID).Scan(&out.ID, &out.TaskID, &out.ContractRevisionID, &out.DeliveryState, &body, &obligationState, &out.ObligationID)
 	return out, body, obligationState, e
 }
 
 func (k *Kernel) PeerWorkspaceAt(ctx context.Context, s Scope, taskID string) (Workspace, error) {
+	return peerWorkspaceAt(ctx, k.pool, k.root, s, taskID)
+}
+
+func peerWorkspaceAt(ctx context.Context, q peerRecoveryQueryer, root string, s Scope, taskID string) (Workspace, error) {
 	var out Workspace
-	e := k.pool.QueryRow(ctx, "SELECT digest,revision FROM worker_workspaces WHERE company_id=$1 AND task_id=$2", s.company, taskID).Scan(&out.Digest, &out.Revision)
+	e := q.QueryRow(ctx, "SELECT digest,revision FROM worker_workspaces WHERE company_id=$1 AND task_id=$2", s.company, taskID).Scan(&out.Digest, &out.Revision)
 	if e != nil {
 		return out, e
 	}
-	content, e := readBlob(k.root, s.company, out.Digest)
+	content, e := readBlob(root, s.company, out.Digest)
 	if e != nil {
 		return out, e
 	}
@@ -256,7 +268,27 @@ LIMIT 1`, b.scope.company, out.TaskID).Scan(&out.MessageID, &out.MessageState, &
 
 func (k *Kernel) PeerHandoverBoundarySnapshot(ctx context.Context, b Binding, handover PeerHandoverBundle) (PeerHandoverBoundarySnapshot, error) {
 	var out PeerHandoverBoundarySnapshot
-	anchors, err := k.PeerRecoveryAnchors(ctx, b.scope.company)
+	// Lock order matches collection and CAS-first writes: lifecycle advisory
+	// lock, then the Company row. Holding both through the database cut and
+	// filesystem inventory keeps workspace/artifact references and CAS entries
+	// from changing independently while this recovery boundary is assembled.
+	unlockCAS, err := k.lockCASLifecycle(ctx, b.scope.company)
+	if err != nil {
+		return out, err
+	}
+	defer unlockCAS()
+	tx, err := k.pool.Begin(ctx)
+	if err != nil {
+		return out, err
+	}
+	defer tx.Rollback(ctx)
+	var lockedCompany string
+	if err = tx.QueryRow(ctx, "SELECT id FROM companies WHERE id=$1 FOR UPDATE", b.scope.company).Scan(&lockedCompany); errors.Is(err, pgx.ErrNoRows) {
+		return out, core.OutOfScope
+	} else if err != nil {
+		return out, err
+	}
+	anchors, err := peerRecoveryAnchors(ctx, tx, b.scope.company)
 	if err != nil {
 		return out, err
 	}
@@ -269,19 +301,19 @@ func (k *Kernel) PeerHandoverBoundarySnapshot(ctx context.Context, b Binding, ha
 		// observation.
 		messageID, contractID, taskID = anchors.MessageID, anchors.FinalContractRevisionID, anchors.BackendTaskID
 	}
-	message, body, obligationState, err := k.PeerMessageAt(ctx, b.scope, messageID)
+	message, body, obligationState, err := peerMessageAt(ctx, tx, b.scope, messageID)
 	if err != nil {
 		return out, recoveryAnchorFailure("pending_peer_obligation", messageID, "Message persisted and Obligation pending", err)
 	}
-	contract, err := k.PeerContractAt(ctx, b.scope, contractID)
+	contract, err := peerContractAt(ctx, tx, b.scope, contractID)
 	if err != nil {
 		return out, recoveryAnchorFailure("effective_contract", contractID, "accepted effective ContractRevision", err)
 	}
-	workspace, err := k.PeerWorkspaceAt(ctx, b.scope, taskID)
+	workspace, err := peerWorkspaceAt(ctx, tx, k.root, b.scope, taskID)
 	if err != nil {
 		return out, recoveryAnchorFailure("backend_workspace", taskID, "worker workspace at terminal revision", err)
 	}
-	state, err := k.Snapshot(ctx, b.scope, anchors.MissionID)
+	state, err := snapshotMissionTX(ctx, tx, b.scope, anchors.MissionID)
 	if err != nil {
 		return out, err
 	}
@@ -338,6 +370,9 @@ func (k *Kernel) PeerHandoverBoundarySnapshot(ctx context.Context, b Binding, ha
 			TerminalState: fmt.Sprintf("actual_message=%s actual_contract=%s actual_workspace_revision=%d actual_obligation_state=%s", message.ID, message.ContractRevisionID, workspace.Revision, anchors.ObligationState),
 			Err:           core.Conflict,
 		}
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return PeerHandoverBoundarySnapshot{}, err
 	}
 	return out, nil
 }

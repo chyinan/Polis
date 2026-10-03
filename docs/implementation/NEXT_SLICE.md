@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-03)
 
-## Latest continuation status (Slice 151, REQ-29 same-Mission Artifact reads)
+## Latest continuation status (Slice 152, CAP-04–06 workspace/snapshot/CAS boundary)
+
+The Worker workspace path retains database-confirmed session/task-owner checks, digest+revision CAS, bounded content and failure on missing or invalid CAS. CAS collection checks every company row, active write claims and immutable memory pins under the lifecycle and Company locks. Recovery snapshots were the concrete gap: the prior cut read anchors, message/contract/workspace, Mission state and CAS inventory independently. They are now gathered under one Company-row lock while holding the CAS lifecycle lock, preventing concurrent database mutations, CAS-first writers and collection from producing a mixed recovery cut. `go build ./cmd/polis ./internal/kernel ./internal/control ./internal/provider ./internal/codex` and diff check pass. Tests and live DB-backed concurrency/CAP qualification remain unrun. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-152-cap04-06-workspace-snapshot-cas/verification.md`.
+
+Next Slice153: audit CAP-07–12 against the current Skill/config catalog, version binding, bounded loading, revocation, and execution boundary. Keep Worker capability discovery tied to an active database-confirmed WorkerSession, and distinguish candidate inspection from runtime execution qualification.
+
+## Previous continuation status (Slice 151, REQ-29 same-Mission Artifact reads)
 
 Added `mission_artifacts_list` and `mission_artifact_read` on exact fake-only product surface @8. They derive Company, Mission, Task, Employee and active WorkerSession from the database binding; list at most 32 ready candidate/passed Artifacts per page; read by Artifact ID only; and verify CAS digest, recorded size and UTF-8 before returning bounded untrusted text. Successful reads append exact Artifact/version/session provenance to the event ledger and expose bounded read history in @8 Handover. The opt-in `POLIS_OFFLINE_SHARED_ARTIFACTS_ENABLED=1` requires the fake transport; real provider authorization stays pinned to @4, and @7 remains unchanged. Go package/command build and diff check pass; no tests or live Task E2E ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-151-req29-shared-artifact-read/verification.md`.
-
-Next Slice152: audit CAP-04–06 around single-writer workspace epochs, stable snapshots and CAS retention/GC races. Keep published Artifact reads separate from mutable current-Task workspace writes and recovery snapshots.
 
 ## Previous continuation status (Slice 150, REQ-29 shared-file access audit)
 

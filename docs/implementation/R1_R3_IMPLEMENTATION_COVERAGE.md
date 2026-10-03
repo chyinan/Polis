@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 151. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-03, Slice 152. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 152: CAP-04–06 workspace epochs, consistent recovery cuts and CAS retention
+
+Product workspace writes are fenced by the persisted WorkerSession/task owner and compare both the current digest and monotonic workspace revision. CAS-first writes hold a durable claim; the collector holds the CAS lifecycle advisory lock and Company row lock while scanning references and deleting only unreferenced blobs. Schema 78 pins exact CAS versions used by memory history. A source audit found that `PeerHandoverBoundarySnapshot` previously collected recovery anchors, peer state, workspace bytes, Mission state and CAS inventory through separate reads. It now holds the lifecycle and Company locks across one transaction and the filesystem inventory, so a workspace transition, event write, artifact mutation or collector cannot interleave and produce a mixed cut. Missing or corrupt CAS data still fails the cut. `go build ./cmd/polis ./internal/kernel ./internal/control ./internal/provider ./internal/codex` and `git diff --check` pass. No tests, live concurrency test, populated WorkerSession E2E or frozen CAP-04–06 scenario ran; their execution status remains `not_run`. See `evidence/development/r1-r3-implementation-validation-20261003-slice-152-cap04-06-workspace-snapshot-cas/verification.md`.
 
 ## Slice 151: REQ-29 bounded same-Mission shared Artifact reads (no migration)
 
