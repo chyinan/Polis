@@ -556,7 +556,7 @@ export function useRunResearchSimulation(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RunResearchSimulationOptions, 'companyId'>) => api.runResearchSimulation({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -564,7 +564,7 @@ export function useSetContentSourceAuthorization(api: WorkbenchApi, companyId: s
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetContentSourceAuthorizationOptions, 'companyId'>) => api.setContentSourceAuthorization({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -572,7 +572,7 @@ export function useRegisterContentDraft(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RegisterContentDraftOptions, 'companyId'>) => api.registerContentDraft({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -580,7 +580,7 @@ export function useRecordContentReview(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RecordContentReviewOptions, 'companyId'>) => api.recordContentReview({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -588,7 +588,7 @@ export function useSimulateContentPublication(api: WorkbenchApi, companyId: stri
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SimulateContentPublicationOptions, 'companyId'>) => api.simulateContentPublication({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -596,7 +596,7 @@ export function useRecordContentCorrection(api: WorkbenchApi, companyId: string)
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RecordContentCorrectionOptions, 'companyId'>) => api.recordContentCorrection({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -604,7 +604,7 @@ export function useRecordContentFeedback(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RecordContentFeedbackOptions, 'companyId'>) => api.recordContentFeedback({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -612,7 +612,7 @@ export function useRecordDomainEvidence(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RecordDomainEvidenceOptions, 'companyId'>) => api.recordDomainEvidence({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -620,7 +620,7 @@ export function useRecordDomainEvidenceReview(api: WorkbenchApi, companyId: stri
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RecordDomainEvidenceReviewOptions, 'companyId'>) => api.recordDomainEvidenceReview({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -628,7 +628,7 @@ export function useRecordDomainEvidenceSubstantiveAssessment(api: WorkbenchApi, 
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RecordDomainEvidenceSubstantiveAssessmentOptions, 'companyId'>) => api.recordDomainEvidenceSubstantiveAssessment({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 
@@ -636,7 +636,7 @@ export function useRecordDomainProfileQualification(api: WorkbenchApi, companyId
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RecordDomainProfileQualificationOptions, 'companyId'>) => api.recordDomainProfileQualification({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }
 

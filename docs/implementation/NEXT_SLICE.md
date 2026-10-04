@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 184, REQ-25 capability catalog reconciliation)
+## Latest continuation status (Slice 185, R3 domain evidence command reconciliation)
+
+Content and research evidence mutations now refresh the domain evidence projection after success or error. This includes source/draft/review/publication/correction/feedback changes and research simulation plus profile qualification evidence; an ambiguous response can no longer leave the old evidence status as the only visible state. Frontend production build and diff check pass; no evidence was submitted and no simulation, external publication, Worker/provider action, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-185-r3-evidence-response-refresh/verification.md`.
+
+## Previous continuation status (Slice 184, REQ-25 capability catalog reconciliation)
 
 Capability package import/registration, metadata qualification and decisions, revocation review, MCP runtime approval/observation, and employee binding changes now refresh the capability catalog after success or error. This keeps persisted approval, binding, and runtime-observation state visible when a response is ambiguous. Frontend production build and diff check pass; no tests, capability operation, Worker/provider action, endpoint observation, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-184-req25-capability-response-refresh/verification.md`.
 

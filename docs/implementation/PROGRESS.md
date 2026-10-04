@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 185 — R3 domain evidence command reconciliation
+
+Content and research evidence mutations now invalidate the persisted domain evidence projection after success or error. This covers source authorization, draft registration, review, simulated publication, correction and feedback records, evidence submissions and reviews, substantive assessments, profile qualification records, and research simulation. Frontend production build and `git diff --check` pass; no evidence was submitted, no simulation/publication was run, and no Worker/provider activity or frozen scenario occurred. No schema change. Both R3 profiles remain unqualified and disabled pending independent content/research quality, recovery, cost, intervention, and organization-benefit evidence. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-185-r3-evidence-response-refresh/verification.md`.
+
 ## Slice 184 — REQ-25 capability catalog command reconciliation
 
 All Workbench capability catalog mutations now invalidate the authoritative catalog after success or error. This covers package import/registration, metadata qualification and approval/revocation, incomplete revocation review, MCP runtime qualification/observation, and employee capability binding/unbinding. Frontend production build and `git diff --check` pass; no tests, capability operation, Worker/provider activity, external endpoint observation, or frozen scenario ran. No schema change. Continuing authorization and real capability execution qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-184-req25-capability-response-refresh/verification.md`.
