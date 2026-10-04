@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 201, directory input exact retries)
+## Latest continuation status (Slice 202, bounded REQ-39 patch handback)
+
+The Task takeover editor now imports strict UTF-8 unified patches for `workspace.txt` against the lease's frozen text, verifies every hunk, rejects stale/conflicting or oversized results, and previews the frozen and proposed snapshots side by side. The existing server lease, digest/revision checks and MissionInput handback remain the only persistence path; request IDs use UUIDs. Frontend production build and diff check pass; no lease or snapshot command ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-202-req39-bounded-patch-handback/verification.md`.
+
+## Previous continuation status (Slice 201, directory input exact retries)
 
 Directory MissionInput upload now retains the selected File objects, target input identity, and request ID after an ambiguous response. The Workbench offers a same-payload retry and keeps the files available until confirmed success; it also allows the operator to discard the pending retry after checking refreshed input history. Frontend build and diff check pass; no upload was submitted. See `evidence/development/r1-r3-implementation-validation-20261004-slice-201-directory-input-retries/verification.md`.
 

@@ -1,9 +1,10 @@
 // pattern: Imperative Shell
-import {useEffect, useMemo, useRef, useState, type ReactElement} from 'react';
+import {useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactElement} from 'react';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useCreateTaskTakeoverLease, useReleaseTaskTakeoverLease, useSubmitTaskTakeoverSnapshot, useTaskTakeoverLeases} from '../data/workbench-query';
 import type {CompanyOverviewView, TaskTakeoverLeaseView} from '../domain/workbench';
+import {applyWorkspaceTextPatch, MAX_WORKSPACE_PATCH_BYTES, MAX_WORKSPACE_SNAPSHOT_BYTES} from '../domain/workspace-patch';
 import styles from '../styles/workbench.module.css';
 
 type PendingSnapshotReturn = Readonly<{
@@ -31,9 +32,12 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const eligibleTasks = useMemo(() => overview.tasks.filter(task => task.state !== 'completed' && task.state !== 'cancelled'), [overview.tasks]);
   const [selectedTaskId, setSelectedTaskId] = useState('');
   const [content, setContent] = useState('');
+  const [baseContent, setBaseContent] = useState<string | null>(null);
   const [humanEffortSeconds, setHumanEffortSeconds] = useState('');
   const [loadedLeaseId, setLoadedLeaseId] = useState('');
   const [localError, setLocalError] = useState('');
+  const [patchNotice, setPatchNotice] = useState('');
+  const [patchError, setPatchError] = useState('');
   const [pendingSnapshotReturn, setPendingSnapshotReturn] = useState<PendingSnapshotReturn | null>(null);
   const pendingRequestIds = useRef(new Map<string, string>());
   const taskId = selectedTaskId || eligibleTasks[0]?.taskId || '';
@@ -41,18 +45,25 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const pending = createLease.isPending || submitSnapshot.isPending || releaseLease.isPending;
   const contentBytes = new TextEncoder().encode(content).length;
   const canGrant = api.mode === 'real' && missionState === 'paused' && leasesQuery.data !== undefined && taskId !== '' && activeLease === null && pendingSnapshotReturn === null && !pending;
-  const canReturn = missionState === 'paused' && activeLease !== null && content.trim() !== '' && contentBytes <= 4096 && pendingSnapshotReturn === null && !pending;
+  const canReturn = missionState === 'paused' && activeLease !== null && baseContent !== null && loadedLeaseId === activeLease.leaseId && content.trim() !== '' && contentBytes <= MAX_WORKSPACE_SNAPSHOT_BYTES && pendingSnapshotReturn === null && !pending;
 
   useEffect(() => {
     if (activeLease === null || loadedLeaseId === activeLease.leaseId) return;
     let live = true;
     setLocalError('');
+    setBaseContent(null);
+    setContent('');
+    setPatchNotice('');
+    setPatchError('');
     void api.getWorkspace({companyId, taskId: activeLease.taskId}).then(workspace => {
       const workspaceRevision = Number(workspace.revision);
       if (workspace.digest !== activeLease.baseWorkspaceDigest || workspaceRevision !== activeLease.baseWorkspaceRevision || workspace.files.length !== 1 || workspace.files[0]?.path !== 'workspace.txt') {
         throw new Error('读取到的工作区与接管冻结版本不一致，不能用于编辑。');
       }
-      if (live) setContent(workspace.files[0].content);
+      if (live) {
+        setBaseContent(workspace.files[0].content);
+        setContent(workspace.files[0].content);
+      }
     }).catch(error => {
       if (live) setLocalError(error instanceof Error ? error.message : '读取冻结工作区失败。');
     }).finally(() => {
@@ -82,6 +93,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
       clearRequestId(key);
       setSelectedTaskId(lease.taskId);
       setContent('');
+      setBaseContent(null);
       setLoadedLeaseId('');
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
@@ -99,7 +111,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
     setLocalError('');
     const attempt: PendingSnapshotReturn = {
       leaseId: activeLease.leaseId,
-      requestId: `task-takeover-return-${activeLease.leaseId}-${Date.now()}`,
+      requestId: `task-takeover-return-${activeLease.leaseId}-${crypto.randomUUID()}`,
       baseWorkspaceDigest: activeLease.baseWorkspaceDigest,
       baseWorkspaceRevision: activeLease.baseWorkspaceRevision,
       content,
@@ -107,6 +119,30 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
     };
     setPendingSnapshotReturn(attempt);
     await retrySnapshotReturn(attempt);
+  }
+
+  async function importPatch(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+    const file = event.currentTarget.files?.item(0) ?? null;
+    event.currentTarget.value = '';
+    if (file === null) return;
+    setPatchError('');
+    setPatchNotice('');
+    if (baseContent === null || activeLease === null || loadedLeaseId !== activeLease.leaseId) {
+      setPatchError('冻结工作区尚未加载完成，不能导入补丁。');
+      return;
+    }
+    if (file.size > MAX_WORKSPACE_PATCH_BYTES) {
+      setPatchError(`补丁超过 ${MAX_WORKSPACE_PATCH_BYTES} 字节上限。`);
+      return;
+    }
+    try {
+      const patchText = new TextDecoder('utf-8', {fatal: true}).decode(await file.arrayBuffer());
+      const applied = applyWorkspaceTextPatch(baseContent, patchText);
+      setContent(applied.content);
+      setPatchNotice(`补丁已按冻结基线核对：新增 ${applied.addedLines} 行、删除 ${applied.removedLines} 行。下方可对比冻结文本与候选文本。`);
+    } catch (error) {
+      setPatchError(error instanceof Error ? error.message : '补丁无效，候选内容未更改。');
+    }
   }
 
   async function retrySnapshotReturn(attempt: PendingSnapshotReturn): Promise<void> {
@@ -128,6 +164,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
       await releaseLease.mutateAsync({leaseId: activeLease.leaseId, requestId: requestIdFor(key)});
       clearRequestId(key);
       setContent('');
+      setBaseContent(null);
       setLoadedLeaseId('');
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
@@ -165,8 +202,22 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
             <div className={styles.recordActions}><button className={styles.commandButton} disabled={pending || missionState !== 'paused'} onClick={() => { void release(); }} type="button">释放租约，不提交 snapshot</button></div>
           </div>
           <label className={styles.formLabel}>完整工作区文本 snapshot
-            <textarea className={styles.formField} disabled={pendingSnapshotReturn !== null} rows={10} maxLength={4096} value={content} onChange={event => setContent(event.target.value)} placeholder="正在读取冻结工作区文本…" />
+            <textarea className={styles.formField} disabled={pendingSnapshotReturn !== null || baseContent === null} rows={10} maxLength={MAX_WORKSPACE_SNAPSHOT_BYTES} value={content} onChange={event => { setContent(event.target.value); setPatchNotice(''); }} placeholder="正在读取冻结工作区文本…" />
           </label>
+          <label className={styles.formLabel}>导入基线补丁（仅限 workspace.txt）
+            <input accept=".diff,.patch,text/plain" className={styles.formField} disabled={pendingSnapshotReturn !== null || baseContent === null || loadedLeaseId !== activeLease.leaseId} onChange={event => { void importPatch(event); }} type="file" />
+          </label>
+          <p className={styles.formHint}>只接受 UTF-8 unified diff，必须仅修改 workspace.txt，且所有 hunk 必须匹配本租约冻结内容。补丁不会执行脚本、启用 Skill/MCP 或写入旧 Task；过期基线和冲突会拒绝导入。</p>
+          {patchError !== '' ? <p className={styles.formError} role="alert">{patchError}</p> : null}
+          {patchNotice !== '' ? <p className={styles.operationNotice} role="status">{patchNotice}</p> : null}
+          {baseContent !== null ? <div className={styles.wizardGrid}>
+            <label className={styles.formLabel}>冻结基线（只读）
+              <textarea aria-label="冻结基线预览" className={styles.formField} readOnly rows={8} value={baseContent} />
+            </label>
+            <label className={styles.formLabel}>待交还候选（只读预览）
+              <textarea aria-label="待交还候选预览" className={styles.formField} readOnly rows={8} value={content} />
+            </label>
+          </div> : null}
           <div className={styles.recordLead}><span>{contentBytes} / 4096 UTF-8 字节</span></div>
           <label className={styles.formLabel}>人工投入秒数（可留空）
             <input className={styles.formField} inputMode="numeric" max={86400} min={0} value={humanEffortSeconds} onChange={event => setHumanEffortSeconds(event.target.value)} />
