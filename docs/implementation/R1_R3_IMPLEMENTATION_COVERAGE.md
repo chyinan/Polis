@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 161. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 162. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 162: REQ-13 automatic dispatch fairness/quota/WorkerSession boundary audit
+
+The opt-in dispatcher only accepts the zero-egress Fake @7 surface and selects one eligible Task per 30-second cycle from active Companies/Missions whose Employee schedule is `wake_pending`. Candidate queries advance a process-local Company-ID cursor; database Worker admission remains authoritative and rechecks the Task, mission, schedule and live-session state under the admission transaction. `paused` and `waiting_quota` are denied, a new WorkerSession is durably created as `restoring`, and the adapter validates and activates it before the Worker run loop starts. No Worker action is released outside a database-confirmed active WorkerSession. This slice found no production provider-quota readiness/recovery or `waiting_quota` release path and no cross-instance cursor or global slot accounting. It only audits source; no Worker, provider activity or test ran. REQ-13 remains open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-162-req13-dispatch-boundary-audit/verification.md`.
 
 ## Slice 161: REQ-15 FT-41 old-backup memory revocation audit
 

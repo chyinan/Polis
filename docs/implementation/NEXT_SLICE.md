@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 161, REQ-15 FT-41 old-backup memory revocation audit)
+## Latest continuation status (Slice 162, REQ-13 automatic dispatch boundary audit)
 
-The memory revocation tombstone is outside recovery generations. Desktop starts each generation with the stable `<desktop-data-root>/memory-revocations` path, while generation CAS roots live under `generations/<id>/cas`. `Kernel.Open` loads tombstones before database recovery, applies them to the recovered database, and reconciles schedules only afterward. Memory read, handover, dependency and write paths consult the overlay. Thus restoring an older database on the same Desktop data root cannot make a revoked record readable again. This is a source audit only: old DB/CAS bytes are retained, so logical access denial is not physical erasure. No restore, Desktop boot, WorkerSession or frozen FT-41 scenario was run; REQ-15 remains partial and FT-41 remains `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-161-req15-memory-revocation-restore-audit/verification.md`.
+Source audit confirms that the dispatcher is opt-in, Fake @7 only, and considers a single ready `compat/emp-backend` Task from an active Company/Mission with a `wake_pending` schedule. It advances a process-local Company cursor after each attempt and performs at most one attempt per 30 seconds. Candidate selection is not authorization: `TXNewProductProviderWorkerWithToolBudget` serializes on the database Company/schedule guards, refuses paused and `waiting_quota`, refuses a live Employee session, and persists a new `restoring` WorkerSession. The adapter validates it and commits it `active` before entering the Worker run loop. This satisfies the requested database-confirmed active WorkerSession boundary for Worker turns. No Worker was started in this audit; the local DB has no Company or WorkerSession.
 
-Next Slice162: audit the remaining REQ-13 automatic Worker dispatch path for fairness, `waiting_quota` recovery and its database-confirmed WorkerSession admission boundary. Keep provider quota unknown and dispatch disabled unless the persisted gates and an active WorkerSession are confirmed.
+Remaining REQ-13 gaps are concrete: no production quota readiness/recovery writer exists; `waiting_quota` is preserved by reconciliation and admission with no observed automatic release path; and cursor/global slot accounting is process-local, so cross-instance fairness and global concurrency limits are not established. The audit does not change dispatch, provider or database state. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-162-req13-dispatch-boundary-audit/verification.md`.
+
+Next Slice163: inspect the remaining REQ-14 capability revocation and Worker stop/reconciliation boundary from source, especially whether accepted revocations reach every persisted active WorkerSession and how restart resumes an incomplete stop. Keep Worker activity disabled unless a database-confirmed active WorkerSession is present.
+
+## Previous continuation status (Slice 161, REQ-15 FT-41 old-backup memory revocation audit)
+
+Desktop places memory tombstones under its stable data root while each generation's CAS lives under `generations/<id>/cas`. Kernel startup loads tombstones before DB recovery and reapplies them before returning. This source audit indicates that same-root old-generation restore cannot make revoked records readable, but historical DB/CAS bytes remain. No restore, Desktop boot, WorkerSession or frozen FT-41 scenario ran; FT-41 remains `not_run` and REQ-15 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-161-req15-memory-revocation-restore-audit/verification.md`.
 
 ## Previous continuation status (Slice 160, REQ-25 restored owner-session revocation)
 
