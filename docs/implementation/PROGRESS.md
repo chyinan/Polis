@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 216 — REQ-39 legacy/tree baseline fence
+
+Takeover lease grant and snapshot handback now verify that any existing Schema 103 Task tree is exactly one `workspace.txt`, still in the same Mission-private root, with digest and source revision matching `worker_workspaces`. Legacy Tasks without a tree retain their bounded behavior. Multi-file or divergent trees, including the `formatter.go` product tree, are rejected before an incomplete base can be edited and checked again at handback. `go build ./...` and `git diff --check` pass. No tests, database operation, takeover command, Worker/provider action or frozen scenario ran. REQ-39 remains partial; full tree-manifest leases and multi-file handback remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md`.
+
 ## Slice 215 — CAP-06 evidence pointer refresh
 
 Added the Slice 213 Artifact delivery-kind fence and Slice 214 Mission Artifact-projection evidence to CAP-06 in the live traceability crosswalk. No scenario state, disposition, count or other scenario record changed; CAP-06 remains `partial` / `not_run`. JSON validation and `git diff --check` pass. No tests, code, schema, database, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-215-cap06-evidence-refresh/verification.md`.

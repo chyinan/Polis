@@ -41,6 +41,13 @@ func (k *Kernel) TXCreateTaskTakeoverLease(ctx context.Context, scope Scope, mis
 		} else if err != nil {
 			return Receipt{}, err
 		}
+		matches, err := taskTakeoverWorkspaceTreeMatchesLegacyTX(ctx, tx, scope, missionID, taskID, baseDigest, baseRevision)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if !matches {
+			return Receipt{}, core.ConflictError{Reason: "human takeover requires one workspace.txt whose digest and source revision match the frozen Task workspace", CurrentState: "workspace_tree_mismatch"}
+		}
 		baseRequirementsDigest, err := missionChangeRequirementsDigest(missionID, basis.Title, basis.Goal, basis.AcceptanceContract, basis.InputRevisions)
 		if err != nil {
 			return Receipt{}, err
@@ -185,6 +192,13 @@ func (k *Kernel) TXSubmitTaskTakeoverSnapshot(ctx context.Context, scope Scope, 
 		}
 		if currentDigest != input.BaseWorkspaceDigest || currentRevision != input.BaseWorkspaceRevision {
 			return Receipt{}, core.ConflictError{Reason: "Task workspace changed after the takeover lease was granted", CurrentState: "workspace_revision_changed"}
+		}
+		matches, err := taskTakeoverWorkspaceTreeMatchesLegacyTX(ctx, tx, scope, missionID, currentLease.TaskID, currentDigest, currentRevision)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if !matches {
+			return Receipt{}, core.ConflictError{Reason: "Task file tree no longer matches the single-file takeover baseline", CurrentState: "workspace_tree_mismatch"}
 		}
 		var activeSlot bool
 		if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3)", scope.company, currentLease.TaskID, leaseID).Scan(&activeSlot); err != nil {
@@ -362,6 +376,33 @@ func (k *Kernel) TaskTakeoverLeases(ctx context.Context, scope Scope, missionID 
 		out = append(out, lease)
 	}
 	return out, nil
+}
+
+// taskTakeoverWorkspaceTreeMatchesLegacyTX keeps the bounded, legacy human
+// handback path aligned with Schema 103's private Task tree. Tasks without a
+// tree retain the pre-Schema-103 behavior. Once a tree exists, it must still
+// be exactly the workspace.txt represented by worker_workspaces at the same
+// source revision; a multi-file or divergent tree cannot be handed back as if
+// it were a complete frozen workspace.
+func taskTakeoverWorkspaceTreeMatchesLegacyTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, taskID, digest string, revision int64) (bool, error) {
+	var rootExists bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_workspace_roots WHERE company_id=$1 AND task_id=$2)`, scope.company, taskID).Scan(&rootExists); err != nil {
+		return false, err
+	}
+	if !rootExists {
+		return true, nil
+	}
+	var matches bool
+	err := tx.QueryRow(ctx, `SELECT r.read_write_class='task_private' AND r.owner=t.owner AND r.mission_id=t.mission_id
+	AND r.mission_id=$3 AND t.mission_id=$3
+	AND count(f.relative_path)=1
+	AND COALESCE(bool_and(f.relative_path='workspace.txt' AND f.digest=$4 AND f.source_revision=$5),false)
+FROM worker_workspace_roots r
+JOIN tasks t ON t.company_id=r.company_id AND t.id=r.task_id
+LEFT JOIN worker_workspace_files f ON f.company_id=r.company_id AND f.workspace_id=r.id
+WHERE r.company_id=$1 AND r.task_id=$2
+GROUP BY r.id,r.read_write_class,r.owner,r.mission_id,t.owner,t.mission_id`, scope.company, taskID, missionID, digest, revision).Scan(&matches)
+	return matches, err
 }
 
 func taskTakeoverLeaseForUpdate(ctx context.Context, tx pgx.Tx, scope Scope, missionID, leaseID string) (TaskTakeoverLease, string, error) {
