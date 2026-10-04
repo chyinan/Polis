@@ -322,12 +322,12 @@ func (k *Kernel) TXCancelMission(ctx context.Context, s Scope, id, key string) (
 		if state != "active" && state != "paused" {
 			return Receipt{}, core.ConflictError{Reason: "mission cannot be cancelled from " + state, CurrentState: state}
 		}
-		var live bool
-		if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id WHERE s.company_id=$1 AND t.mission_id=$2 AND s.state!='stopped')", s.company, id).Scan(&live); err != nil {
+		outstanding, err := missionHasOutstandingJobWork(ctx, tx, s.company, id)
+		if err != nil {
 			return Receipt{}, err
 		}
-		if live {
-			return Receipt{}, core.ConflictError{Reason: "mission still has a live worker session", CurrentState: state}
+		if outstanding {
+			return Receipt{}, core.ConflictError{Reason: "Mission still has outstanding execution; stop and reconcile its writers before cancellation", CurrentState: "reconcile_required"}
 		}
 		if _, err = tx.Exec(ctx, "UPDATE missions SET state='cancelled' WHERE company_id=$1 AND id=$2 AND state IN ('active','paused')", s.company, id); err != nil {
 			return Receipt{}, err
@@ -379,6 +379,13 @@ func (k *Kernel) TXSetMissionPausedCommand(ctx context.Context, s Scope, id stri
 		}
 		if state != allowedState {
 			return Receipt{}, core.ConflictError{Reason: "mission lifecycle transition is not valid from " + state, CurrentState: state}
+		}
+		outstanding, err := missionHasOutstandingJobWork(ctx, tx, s.company, id)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if outstanding {
+			return Receipt{}, core.ConflictError{Reason: "Mission still has outstanding execution; stop and reconcile its writers before changing lifecycle state", CurrentState: "reconcile_required"}
 		}
 		_, e = tx.Exec(ctx, "UPDATE missions SET state=$3 WHERE company_id=$1 AND id=$2", s.company, id, resultingState)
 		if e != nil {

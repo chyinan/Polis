@@ -120,8 +120,19 @@ func (k *Kernel) MissionHasOutstandingJobWork(ctx context.Context, companyID, mi
 	if !core.ValidID(companyID) || !core.ValidID(missionID) {
 		return false, core.Malformed
 	}
+	return missionHasOutstandingJobWork(ctx, k.pool, companyID, missionID)
+}
+
+type missionWorkQueryer interface {
+	QueryRow(context.Context, string, ...any) pgx.Row
+}
+
+// missionHasOutstandingJobWork can run against either the pool or a guarded
+// lifecycle transaction. Lifecycle transitions use the transactional form so
+// admissions cannot slip between an external stop check and the state change.
+func missionHasOutstandingJobWork(ctx context.Context, queryer missionWorkQueryer, companyID, missionID string) (bool, error) {
 	var outstanding bool
-	err := k.pool.QueryRow(ctx, `SELECT EXISTS(
+	err := queryer.QueryRow(ctx, `SELECT EXISTS(
  SELECT 1 FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
  WHERE s.company_id=$1 AND t.mission_id=$2 AND s.state<>'stopped'
 ) OR EXISTS(

@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
+## Latest continuation status (Slice 168, REQ-23 lifecycle admission/closeout fencing)
+
+The audit found a race between Control's external stop/outstanding-work checks and the later Kernel lifecycle transition: new WorkerSessions, JobRuns or service leases could be admitted while the Mission was still active. `TXWrite` serializes these operations on the Company row, so Pause, Resume, and Cancel now repeat the shared outstanding-execution query inside that same guarded transaction and fail with `reconcile_required` if any writer or live service lease remains. The check covers non-stopped WorkerSessions, accepted/starting/running/unknown JobRuns and non-revoked unexpired service leases. `go build ./internal/kernel ./internal/control ./cmd/polis` and `git diff --check` pass; tests and Worker/provider activity were not run. REQ-23 remains partial: the required `closing` / `ended_not_met` lifecycle and terminal closeout recovery are not implemented. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-168-req23-lifecycle-admission-fence/verification.md`.
+
+Next Slice169: implement the smallest durable REQ-23 closeout state machine required by the existing contract: retain the Mission slot while closing, stop new admission, settle or preserve in-flight responsibility, and permit only explicit terminal outcomes. Keep late receipts historical and avoid declaring success from Task state alone.
+
+## Previous continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
 
 Source audit confirms the fixed roster is Planning, Backend, Frontend and Review. Product-provider execution is restricted to `compat` Tasks owned by Backend, and provider authorization also requires Employee role `backend`. The product direct-message extension is an exact 12-tool @7 surface admitted only by the zero-egress Fake validator; the real provider adapter and authorization remain pinned to the qualified 7-tool @4 surface. Kernel sends bind the current Task/WorkerSession to an exact same-Mission fixed-roster recipient in `ready` or `working`, and persist FYI or actionable-request lifecycle state. Product writes require the exact database-bound provider WorkerSession to be active. No code/schema change; no tests, Worker or provider activity ran. REQ-02 remains partial pending role-specific executable Task contracts and exact real-provider surface qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-167-req02-role-and-provider-boundary-audit/verification.md`.
-
-Next Slice168: audit REQ-23 Mission activation and safe closeout paths against the persisted WorkerSession lifecycle. Identify any locally implementable state-transition gap without performing Worker actions; keep runtime/recovery qualification separate.
 
 ## Previous continuation status (Slice 166, REQ-13 quota readiness/recovery boundary audit)
 
