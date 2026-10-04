@@ -73,6 +73,12 @@ type MissionInputsPanelProps = Readonly<{
   missionState: string;
 }>;
 
+type PendingMissionDirectoryUpload = Readonly<{
+  inputId: string | null;
+  requestId: string;
+  files: ReadonlyArray<Readonly<{relativePath: string; file: File}>>;
+}>;
+
 const missionInputStateLabels: Readonly<Record<MissionInputState, string>> = {
   uploading: '上传未完成',
   stored: '原件已保存',
@@ -90,6 +96,7 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
   const [notice, setNotice] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [retryTarget, setRetryTarget] = useState<MissionInputView | null>(null);
+  const [pendingDirectoryUpload, setPendingDirectoryUpload] = useState<PendingMissionDirectoryUpload | null>(null);
   const inputs = query.data ?? [];
   const latestByID = new Map<string, MissionInputView>();
   for (const input of inputs) {
@@ -119,25 +126,35 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
     }
   }
 
+  async function submitDirectoryUpload(pending: PendingMissionDirectoryUpload): Promise<void> {
+    setNotice(null);
+    setUploadError(null);
+    try {
+      const receipt = await directoryUpload.mutateAsync({
+        inputId: pending.inputId,
+        requestId: pending.requestId,
+        files: pending.files,
+      });
+      setInputId('');
+      setPendingDirectoryUpload(null);
+      setNotice(receipt.displayName + ' 目录快照已保存为第 ' + receipt.revision + ' 版。上传不会启动使命，也不代表模型已读取。');
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setUploadError(`目录快照结果尚未确认：${detail} 请先核对已刷新的输入版本；重试会使用同一批文件和请求 ID。`);
+    }
+  }
+
   async function handleDirectoryChange(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     const selectedFiles = Array.from(event.currentTarget.files ?? []);
     event.currentTarget.value = '';
     if (selectedFiles.length === 0) return;
-    setNotice(null);
-    setUploadError(null);
-    try {
-      const files = selectedFiles.map(file => ({relativePath: file.webkitRelativePath, file}));
-      const receipt = await directoryUpload.mutateAsync({
-        inputId: inputId === '' ? null : inputId,
-        requestId: 'mission-directory-' + crypto.randomUUID(),
-        files,
-      });
-      setInputId('');
-      setNotice(receipt.displayName + ' 目录快照已保存为第 ' + receipt.revision + ' 版。上传不会启动使命，也不代表模型已读取。');
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : '命令结果未知';
-      setUploadError(`目录快照结果尚未确认：${detail} 请先核对已刷新的输入版本，再选择续传或重试。`);
-    }
+    const pending: PendingMissionDirectoryUpload = {
+      inputId: inputId === '' ? null : inputId,
+      requestId: 'mission-directory-' + crypto.randomUUID(),
+      files: selectedFiles.map(file => ({relativePath: file.webkitRelativePath, file})),
+    };
+    setPendingDirectoryUpload(pending);
+    await submitDirectoryUpload(pending);
   }
 
   return <section className={styles.detailGrid}>
@@ -167,7 +184,7 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
           <input
             className={styles.formField}
             data-testid="mission-directory-input"
-            disabled={!canUpload || directoryUpload.isPending || upload.isPending}
+            disabled={!canUpload || directoryUpload.isPending || upload.isPending || pendingDirectoryUpload !== null}
             multiple
             onChange={event => { void handleDirectoryChange(event); }}
             ref={element => element?.setAttribute('webkitdirectory', '')}
@@ -176,6 +193,10 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
         </label> : null}
         <p className={styles.formHint}>单文件上限 {MAX_MISSION_INPUT_BYTES / (1024 * 1024)} MB；PDF 原件最多 6 MB；目录最多 {MAX_MISSION_DIRECTORY_FILES} 个文件、合计 {MAX_MISSION_DIRECTORY_BYTES / (1024 * 1024)} MB。单文件支持 UTF-8 文本、代码、Markdown、CSV、PNG、JPEG 和 PDF。PDF 原件与有界文本抽取记录会一起保存，抽取文本可进入 Worker；扫描页不做 OCR，原 PDF 不会作为文本发送。ZIP 项目包仅在内存中有界检查，支持文本可进入 Worker 上下文，未支持文件会单独标示；上传只保存版本，不启动员工，也不代表模型已读取。</p>
         {retryTarget !== null ? <button className={styles.textButton} disabled={upload.isPending || directoryUpload.isPending} onClick={() => setRetryTarget(null)} type="button">取消续传</button> : null}
+        {pendingDirectoryUpload !== null ? <div className={styles.commandGroup}>
+          <button className={styles.commandButton} disabled={directoryUpload.isPending || upload.isPending} onClick={() => { void submitDirectoryUpload(pendingDirectoryUpload); }} type="button">用同一批文件和请求 ID 重试目录上传</button>
+          <button className={styles.textButton} disabled={directoryUpload.isPending || upload.isPending} onClick={() => setPendingDirectoryUpload(null)} type="button">放弃待确认上传并选择其他目录</button>
+        </div> : null}
         {upload.isPending || directoryUpload.isPending ? <div className={styles.emptyState} role="status">正在保存输入快照…</div> : null}
         {uploadError ? <p className={styles.formError} role="alert">{uploadError}</p> : null}
         {notice ? <p className={styles.operationNotice} data-testid="mission-input-upload-status" role="status">{notice}</p> : null}

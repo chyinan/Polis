@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 200, JobRun and handover exact retries)
+## Latest continuation status (Slice 201, directory input exact retries)
+
+Directory MissionInput upload now retains the selected File objects, target input identity, and request ID after an ambiguous response. The Workbench offers a same-payload retry and keeps the files available until confirmed success; it also allows the operator to discard the pending retry after checking refreshed input history. Frontend build and diff check pass; no upload was submitted. See `evidence/development/r1-r3-implementation-validation-20261004-slice-201-directory-input-retries/verification.md`.
+
+## Previous continuation status (Slice 200, JobRun and handover exact retries)
 
 Cross-backend handover creation, isolated batch/service JobRun start, and JobRun stop now preserve exact request IDs for same-payload retries after an ambiguous response. Their full source/target, Task, session, environment, script/argument or service, and JobRun identifiers form the retry identity. Frontend build and diff check pass; no handover or JobRun was created, started, or stopped. See `evidence/development/r1-r3-implementation-validation-20261004-slice-200-jobrun-retries/verification.md`.
 

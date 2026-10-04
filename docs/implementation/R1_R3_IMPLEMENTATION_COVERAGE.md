@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 200. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 201. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+## Slice 201: directory MissionInput upload exact retries
+
+The directory upload control retains its selected File objects, target input ID, and request ID after an ambiguous response; retry resends the exact same files and identity. The pending payload remains until a successful receipt, while an explicit discard action lets the operator choose another directory after checking refreshed history. Frontend production build and diff check pass; no upload was submitted. No Worker/provider action, host operation, frozen scenario, or schema change occurred. See `evidence/development/r1-r3-implementation-validation-20261004-slice-201-directory-input-retries/verification.md`.
+
 ## Slice 200: JobRun and handover exact retries
 
 Cross-backend handover creation and isolated batch/service JobRun start/stop preserve exact same-payload request IDs after ambiguous results. Frontend build and diff check pass; no handover or JobRun ran. No Worker/provider action or frozen scenario ran; no schema change. Host execution remains unqualified. See `evidence/development/r1-r3-implementation-validation-20261004-slice-200-jobrun-retries/verification.md`.
