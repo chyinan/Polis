@@ -1,7 +1,7 @@
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import type {ReactElement} from 'react';
 import {useAllocateProblemToolCalls, useAllocateTaskToolCalls, useChangeCompanyToolCallBudget, useChangeMissionToolCallBudget, useCloseTaskToolBudgetIncomplete, useCompanyToolCallBudget, useMissionToolCallBudgets, useProblemToolCallBudgets, useSetCompanyToolCallClosingReserve, useSetMissionToolCallClosingReserve, useSetProblemToolCallClosingReserve} from '../data/workbench-query';
-import type {WorkbenchApi} from '../data/workbench-api';
+import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, WorkbenchApi} from '../data/workbench-api';
 import type {CompanyToolCallBudgetView, MissionToolCallBudgetView, ProblemToolCallBudgetView, TaskToolCallBudgetView} from '../domain/workbench';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
@@ -165,14 +165,14 @@ function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
         <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
         <label className={styles.formLabel}><input checked={confirmed} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认设置或追加此 Company 的总协议工具调用额度；授权记录不可撤回</label>
         <button className={styles.commandButton} disabled={!canSubmit} type="submit">{change.isPending ? '正在记录…' : budget.toolCallLimit === null ? '配置 Company 上限' : '追加 Company 额度'}</button>
-        {change.isError ? <p className={styles.errorText} role="alert">Company 额度变更失败：{change.error.message}；如版本已变化，请刷新后重新确认。</p> : null}
+        {change.isError ? <p className={styles.errorText} role="alert">Company 额度变更结果尚未确认：{change.error.message} 已刷新额度版本，请先核对再继续。</p> : null}
       </form>
       <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submitReserve().catch(() => undefined); }}>
         <label className={styles.formLabel}>保护 Company 总额度内供关闭类任务使用的调用数<input className={styles.formField} inputMode="numeric" min="0" max={budget.toolCallLimit === null ? undefined : budget.toolCallsRemaining} step="1" type="number" value={reserveValue} onChange={event => setReserveValue(event.target.value)} /></label>
         <label className={styles.formLabel}>Company 关闭预留理由<textarea className={styles.formField} maxLength={500} rows={2} value={reserveReason} onChange={event => setReserveReason(event.target.value)} /></label>
         <label className={styles.formLabel}><input checked={reserveConfirmed} onChange={event => setReserveConfirmed(event.target.checked)} type="checkbox" /> 我确认此预留只供 Kernel 创建的 review 与 peer_review Task 使用</label>
         <button className={styles.commandButton} disabled={!canSetReserve} type="submit">{reserveMutation.isPending ? '正在记录…' : '更新 Company 关闭预留'}</button>
-        {reserveMutation.isError ? <p className={styles.errorText} role="alert">Company 关闭预留更新失败：{reserveMutation.error.message}；如预算或版本已变化，请刷新后重新确认。</p> : null}
+        {reserveMutation.isError ? <p className={styles.errorText} role="alert">Company 关闭预留结果尚未确认：{reserveMutation.error.message} 已刷新额度版本，请先核对再继续。</p> : null}
       </form>
     </div>
     <StatusBadge label={companyBudgetStateLabel(budget.state)} tone={budget.state === 'available' ? 'success' : budget.state === 'exhausted' ? 'danger' : 'warning'} />
@@ -259,14 +259,14 @@ function MissionBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
         <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
         <label className={styles.formLabel}><input checked={confirmed} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认设置或追加此使命的总工具调用额度；授权记录不可撤回</label>
         <button className={styles.commandButton} disabled={!canSubmit} type="submit">{change.isPending ? '正在记录…' : budget.toolCallLimit === null ? '配置 Mission 上限' : '追加 Mission 额度'}</button>
-        {change.isError ? <p className={styles.errorText} role="alert">Mission 额度变更失败：{change.error.message}；如版本已变化，请刷新后重新确认。</p> : null}
+        {change.isError ? <p className={styles.errorText} role="alert">Mission 额度变更结果尚未确认：{change.error.message} 已刷新额度版本，请先核对再继续。</p> : null}
       </form>
       <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submitReserve().catch(() => undefined); }}>
         <label className={styles.formLabel}>保护关闭类任务的剩余 Mission 调用数<input className={styles.formField} inputMode="numeric" min="0" max={budget.toolCallLimit === null ? undefined : budget.toolCallsRemaining} step="1" type="number" value={reserveValue} onChange={event => setReserveValue(event.target.value)} /></label>
         <label className={styles.formLabel}>关闭预留策略理由<textarea className={styles.formField} maxLength={500} rows={2} value={reserveReason} onChange={event => setReserveReason(event.target.value)} /></label>
         <label className={styles.formLabel}><input checked={reserveConfirmed} onChange={event => setReserveConfirmed(event.target.checked)} type="checkbox" /> 我确认此预留只供 Kernel 创建的 review 与 peer_review Mission 任务使用</label>
         <button className={styles.commandButton} disabled={!canSetReserve} type="submit">{reserveMutation.isPending ? '正在记录…' : '更新 Mission 关闭预留'}</button>
-        {reserveMutation.isError ? <p className={styles.errorText} role="alert">Mission 关闭预留更新失败：{reserveMutation.error.message}；如额度或版本已变化，请刷新后重新确认。</p> : null}
+        {reserveMutation.isError ? <p className={styles.errorText} role="alert">Mission 关闭预留结果尚未确认：{reserveMutation.error.message} 已刷新额度版本，请先核对再继续。</p> : null}
       </form>
     </div>
     <StatusBadge label={missionBudgetStateLabel(budget.state)} tone={tone} />
@@ -276,6 +276,7 @@ function MissionBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi; budget: ProblemToolCallBudgetView; companyId: string}>): ReactElement {
   const allocation = useAllocateProblemToolCalls(api, companyId);
   const reserveMutation = useSetProblemToolCallClosingReserve(api, companyId);
+  const pendingAllocation = useRef<AllocateProblemToolCallsOptions | null>(null);
   const [additional, setAdditional] = useState('');
   const [reason, setReason] = useState('');
   const [confirmed, setConfirmed] = useState(false);
@@ -286,8 +287,11 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
   const reserveConfigurable = budget.state === 'pending' || finite;
   const reserveMaximum = budget.state === 'pending' ? Number.MAX_SAFE_INTEGER : budget.toolCallsRemaining;
   const additionalCalls = Number(additional);
-  const canSubmit = finite && confirmed && Number.isSafeInteger(additionalCalls) && additionalCalls > 0
-    && reason.trim().length > 0 && !allocation.isPending;
+  const retryingAllocation = allocation.isError && pendingAllocation.current !== null;
+  const canSubmit = retryingAllocation
+    ? confirmed && !allocation.isPending
+    : finite && confirmed && Number.isSafeInteger(additionalCalls) && additionalCalls > 0
+      && reason.trim().length > 0 && !allocation.isPending;
   const reservedCalls = Number(reserveValue);
   const canSubmitReserve = reserveConfigurable && reserveConfirmed && reserveValue.trim() !== ''
     && Number.isSafeInteger(reservedCalls) && reservedCalls >= 0 && reservedCalls <= reserveMaximum
@@ -295,14 +299,14 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 
   async function submit(): Promise<void> {
     if (!canSubmit || budget.toolCallLimit === null) return;
-    await allocation.mutateAsync({
-      problemKey: budget.problemKey,
-      additionalToolCalls: additionalCalls,
-      expectedToolCallLimit: budget.toolCallLimit,
-      expectedRevision: budget.allocationRevision,
-      reason,
-      requestId: `budget-${crypto.randomUUID()}`,
-    });
+    const request = pendingAllocation.current ?? {
+      companyId, problemKey: budget.problemKey, additionalToolCalls: additionalCalls,
+      expectedToolCallLimit: budget.toolCallLimit, expectedRevision: budget.allocationRevision,
+      reason, requestId: `budget-${crypto.randomUUID()}`,
+    } satisfies AllocateProblemToolCallsOptions;
+    pendingAllocation.current = request;
+    await allocation.mutateAsync(request);
+    pendingAllocation.current = null;
     setAdditional('');
     setReason('');
     setConfirmed(false);
@@ -334,18 +338,19 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
       {budget.closingReserveRevision > 0 ? <p className={styles.formHint}>关闭类预留：当前保护 {budget.closingReserveRemaining.toLocaleString('zh-CN')} 次（本次策略设为 {budget.closingReserveToolCalls.toLocaleString('zh-CN')}）· 版本 {budget.closingReserveRevision} · {budget.lastClosingReserveAt} · {budget.lastClosingReserveReason}</p> : <p className={styles.formHint}>尚未设置关闭类预留；当前按 0 次保护。</p>}
       {budget.budgetRejectionCount > 0 && budget.lastRejectionRoute && budget.lastRejectionReason && budget.lastRejectionAt && budget.lastRejectionTaskId ? <p className={styles.formHint}>预算拒绝 {budget.budgetRejectionCount.toLocaleString('zh-CN')} 次 · 最近：{budget.lastRejectionAt} · {rejectionRouteLabel(budget.lastRejectionRoute)} · {rejectionReasonLabel(budget.lastRejectionReason)} · Task <code>{budget.lastRejectionTaskId}</code></p> : <p className={styles.formHint}>尚无预算拒绝记录。</p>}
       {finite ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
-        <label className={styles.formLabel}>追加调用次数<input className={styles.formField} inputMode="numeric" min="1" step="1" type="number" value={additional} onChange={event => setAdditional(event.target.value)} /></label>
-        <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
-        <label className={styles.formLabel}><input checked={confirmed} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认追加的工具调用额度并理解此记录不可撤回</label>
-        <button className={styles.commandButton} disabled={!canSubmit} type="submit">{allocation.isPending ? '正在记录…' : '追加 ProblemKey 额度'}</button>
-        {allocation.isError ? <p className={styles.errorText} role="alert">追加失败：{allocation.error.message}；如额度版本已变化，请刷新后重新确认。</p> : null}
+        <label className={styles.formLabel}>追加调用次数<input className={styles.formField} disabled={pendingAllocation.current !== null} inputMode="numeric" min="1" step="1" type="number" value={additional} onChange={event => setAdditional(event.target.value)} /></label>
+        <label className={styles.formLabel}>授权理由<textarea className={styles.formField} disabled={pendingAllocation.current !== null} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
+        <label className={styles.formLabel}><input checked={confirmed} disabled={pendingAllocation.current !== null} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认追加的工具调用额度并理解此记录不可撤回</label>
+        <button className={styles.commandButton} disabled={!canSubmit} type="submit">{allocation.isPending ? '正在记录…' : allocation.isError && pendingAllocation.current !== null ? '按原请求安全重试' : '追加 ProblemKey 额度'}</button>
+        {allocation.isError ? <p className={styles.errorText} role="alert">额度追加结果尚未确认：{allocation.error.message} 已刷新预算。相同请求可安全重试。</p> : null}
+        {allocation.isError && pendingAllocation.current !== null ? <button className={styles.textButton} onClick={() => { pendingAllocation.current = null; allocation.reset(); setConfirmed(false); }} type="button">我已核对刷新后的额度，放弃原请求并重新配置</button> : null}
       </form> : null}
       {reserveConfigurable ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submitReserve().catch(() => undefined); }}>
         <label className={styles.formLabel}>保护关闭类任务的剩余调用数<input className={styles.formField} inputMode="numeric" min="0" max={budget.state === 'pending' ? undefined : reserveMaximum} step="1" type="number" value={reserveValue} onChange={event => setReserveValue(event.target.value)} /></label>
         <label className={styles.formLabel}>预留策略理由<textarea className={styles.formField} maxLength={500} rows={2} value={reserveReason} onChange={event => setReserveReason(event.target.value)} /></label>
         <label className={styles.formLabel}><input checked={reserveConfirmed} onChange={event => setReserveConfirmed(event.target.checked)} type="checkbox" /> 我确认此预留仅供 review 与 peer_review Task 使用</label>
         <button className={styles.commandButton} disabled={!canSubmitReserve} type="submit">{reserveMutation.isPending ? '正在记录…' : '更新关闭类预留'}</button>
-        {reserveMutation.isError ? <p className={styles.errorText} role="alert">更新预留失败：{reserveMutation.error.message}；如预算版本已变化，请刷新后重新确认。</p> : null}
+        {reserveMutation.isError ? <p className={styles.errorText} role="alert">ProblemKey 关闭预留结果尚未确认：{reserveMutation.error.message} 已刷新额度版本，请先核对再继续。</p> : null}
       </form> : <p className={styles.formHint}>无限额 ProblemKey 不接受关闭类预留。</p>}
       {budget.state === 'pending' && budget.closingReserveRevision > 0 ? <p className={styles.formHint}>当前预留在首个 Worker admission 时生效；其初始 ProblemKey 上限必须是有限额度且不小于预留数。</p> : null}
       {budget.tasks.length > 0 ? <div className={styles.viewStack}>
@@ -361,6 +366,7 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchApi; budget: ProblemToolCallBudgetView; companyId: string; task: TaskToolCallBudgetView}>): ReactElement {
   const allocation = useAllocateTaskToolCalls(api, companyId);
   const closeout = useCloseTaskToolBudgetIncomplete(api, companyId);
+  const pendingAllocation = useRef<AllocateTaskToolCallsOptions | null>(null);
   const [additional, setAdditional] = useState('');
   const [reason, setReason] = useState('');
   const [confirmed, setConfirmed] = useState(false);
@@ -371,23 +377,25 @@ function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchA
   const problemAvailable = budget.state === 'unbounded' ? Number.MAX_SAFE_INTEGER
     : Math.max(budget.toolCallsRemaining - (closingTask ? 0 : budget.closingReserveRemaining), 0);
   const finiteTask = task.toolCallLimit !== null && task.toolCallLimit > 0;
-  const canSubmit = finiteTask && task.allocationEligible && confirmed
-    && Number.isSafeInteger(additionalCalls) && additionalCalls > 0 && additionalCalls <= problemAvailable
-    && reason.trim().length > 0 && !allocation.isPending;
+  const retryingAllocation = allocation.isError && pendingAllocation.current !== null;
+  const canSubmit = retryingAllocation
+    ? confirmed && !allocation.isPending
+    : finiteTask && task.allocationEligible && confirmed
+      && Number.isSafeInteger(additionalCalls) && additionalCalls > 0 && additionalCalls <= problemAvailable
+      && reason.trim().length > 0 && !allocation.isPending;
 
   async function submit(): Promise<void> {
-    if (!canSubmit || task.toolCallLimit === null) return;
-    await allocation.mutateAsync({
-      problemKey: budget.problemKey,
-      taskId: task.taskId,
-      additionalToolCalls: additionalCalls,
-      expectedToolCallLimit: task.toolCallLimit,
-      expectedTaskRevision: task.allocationRevision,
-      expectedProblemRevision: budget.allocationRevision,
-      expectedReserveRevision: budget.closingReserveRevision,
-      reason,
-      requestId: `task-budget-${crypto.randomUUID()}`,
-    });
+    if (!canSubmit) return;
+    const request = pendingAllocation.current ?? (task.toolCallLimit === null ? null : {
+      companyId, problemKey: budget.problemKey, taskId: task.taskId, additionalToolCalls: additionalCalls,
+      expectedToolCallLimit: task.toolCallLimit, expectedTaskRevision: task.allocationRevision,
+      expectedProblemRevision: budget.allocationRevision, expectedReserveRevision: budget.closingReserveRevision,
+      reason, requestId: `task-budget-${crypto.randomUUID()}`,
+    } satisfies AllocateTaskToolCallsOptions);
+    if (request === null) return;
+    pendingAllocation.current = request;
+    await allocation.mutateAsync(request);
+    pendingAllocation.current = null;
     setAdditional('');
     setReason('');
     setConfirmed(false);
@@ -425,19 +433,20 @@ function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchA
       {task.lastAllocatedAt ? <p className={styles.formHint}>最近追加：{task.lastAllocatedAt} · {task.lastAllocationReason}</p> : null}
       {task.budgetRejectionCount > 0 && task.lastRejectionReason && task.lastRejectionAt ? <p className={styles.formHint}>预算拒绝 {task.budgetRejectionCount.toLocaleString('zh-CN')} 次 · 最近：{task.lastRejectionAt} · {taskRejectionReasonLabel(task.lastRejectionReason)}</p> : null}
       {task.closedIncomplete ? <p className={styles.formHint}>已关闭为未完成 · {task.closedAt} · 理由：{task.closureReason}</p> : null}
-      {finiteTask && task.allocationEligible ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
-        <label className={styles.formLabel}>追加此 Task 的调用次数<input className={styles.formField} inputMode="numeric" min="1" max={problemAvailable} step="1" type="number" value={additional} onChange={event => setAdditional(event.target.value)} /></label>
-        <label className={styles.formLabel}>授权理由<textarea className={styles.formField} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
-        <label className={styles.formLabel}><input checked={confirmed} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认追加此 Task 的工具调用额度并理解此记录不可撤回</label>
-        <button className={styles.commandButton} disabled={!canSubmit} type="submit">{allocation.isPending ? '正在记录…' : '追加 Task 额度'}</button>
-        {allocation.isError ? <p className={styles.errorText} role="alert">Task 额度追加失败：{allocation.error.message}；如预算版本已变化，请刷新后重新确认。</p> : null}
+      {finiteTask && (task.allocationEligible || retryingAllocation) ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submit().catch(() => undefined); }}>
+        <label className={styles.formLabel}>追加此 Task 的调用次数<input className={styles.formField} disabled={pendingAllocation.current !== null} inputMode="numeric" min="1" max={problemAvailable} step="1" type="number" value={additional} onChange={event => setAdditional(event.target.value)} /></label>
+        <label className={styles.formLabel}>授权理由<textarea className={styles.formField} disabled={pendingAllocation.current !== null} maxLength={500} rows={2} value={reason} onChange={event => setReason(event.target.value)} /></label>
+        <label className={styles.formLabel}><input checked={confirmed} disabled={pendingAllocation.current !== null} onChange={event => setConfirmed(event.target.checked)} type="checkbox" /> 我确认追加此 Task 的工具调用额度并理解此记录不可撤回</label>
+        <button className={styles.commandButton} disabled={!canSubmit} type="submit">{allocation.isPending ? '正在记录…' : allocation.isError && pendingAllocation.current !== null ? '按原请求安全重试' : '追加 Task 额度'}</button>
+        {allocation.isError ? <p className={styles.errorText} role="alert">Task 额度追加结果尚未确认：{allocation.error.message} 已刷新预算。相同请求可安全重试。</p> : null}
+        {allocation.isError && pendingAllocation.current !== null ? <button className={styles.textButton} onClick={() => { pendingAllocation.current = null; allocation.reset(); setConfirmed(false); }} type="button">我已核对刷新后的额度，放弃原请求并重新配置</button> : null}
         {problemAvailable === 0 ? <p className={styles.formHint}>当前 ProblemKey 没有可供此 Task 使用的额度；请先调整 ProblemKey 额度或关闭预留。</p> : null}
       </form> : <p className={styles.formHint}>{finiteTask && task.toolCallsRemaining > 0 ? '此 Task 的固定额度尚未耗尽；额度耗尽且所有 WorkerSession 停止后，可申请追加。' : finiteTask ? '此 Task 已运行、已关闭或仍有活动 WorkerSession，当前不能追加额度。' : '只有已初始化的有限 Task 上限可以追加。'}</p>}
       {task.closureEligible ? <form className={styles.formStack} onSubmit={event => { event.preventDefault(); void submitCloseIncomplete().catch(() => undefined); }}>
         <label className={styles.formLabel}>关闭为未完成的理由<textarea className={styles.formField} maxLength={500} rows={2} value={closeoutReason} onChange={event => setCloseoutReason(event.target.value)} /></label>
         <label className={styles.formLabel}><input checked={closeoutConfirmed} onChange={event => setCloseoutConfirmed(event.target.checked)} type="checkbox" /> 我确认此 Task 以未完成状态不可撤回地关闭</label>
         <button className={styles.commandButton} disabled={!canCloseIncomplete} type="submit">{closeout.isPending ? '正在记录…' : '关闭为未完成'}</button>
-        {closeout.isError ? <p className={styles.errorText} role="alert">未完成关闭失败：{closeout.error.message}；如快照已变化，请刷新后重新确认。</p> : null}
+        {closeout.isError ? <p className={styles.errorText} role="alert">未完成关闭结果尚未确认：{closeout.error.message} 已刷新预算快照，请先核对 Task 状态再继续。</p> : null}
       </form> : null}
     </div>
   </div>;

@@ -322,7 +322,7 @@ export function useChangeCompanyToolCallBudget(api: WorkbenchApi, companyId: str
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ChangeCompanyToolCallBudgetOptions, 'companyId'>) => api.changeCompanyToolCallBudget({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-tool-call-budget', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
@@ -336,7 +336,7 @@ export function useSetCompanyToolCallClosingReserve(api: WorkbenchApi, companyId
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetCompanyToolCallClosingReserveOptions, 'companyId'>) => api.setCompanyToolCallClosingReserve({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-tool-call-budget', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
@@ -360,7 +360,7 @@ export function useChangeMissionToolCallBudget(api: WorkbenchApi, companyId: str
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ChangeMissionToolCallBudgetOptions, 'companyId'>) => api.changeMissionToolCallBudget({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
@@ -373,7 +373,7 @@ export function useSetMissionToolCallClosingReserve(api: WorkbenchApi, companyId
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetMissionToolCallClosingReserveOptions, 'companyId'>) => api.setMissionToolCallClosingReserve({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
@@ -385,7 +385,7 @@ export function useAllocateProblemToolCalls(api: WorkbenchApi, companyId: string
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<AllocateProblemToolCallsOptions, 'companyId'>) => api.allocateProblemToolCalls({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
@@ -397,7 +397,7 @@ export function useAllocateTaskToolCalls(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<AllocateTaskToolCallsOptions, 'companyId'>) => api.allocateTaskToolCalls({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
@@ -409,7 +409,7 @@ export function useCloseTaskToolBudgetIncomplete(api: WorkbenchApi, companyId: s
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<CloseTaskToolBudgetIncompleteOptions, 'companyId'>) => api.closeTaskToolBudgetIncomplete({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
@@ -421,7 +421,7 @@ export function useSetProblemToolCallClosingReserve(api: WorkbenchApi, companyId
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetProblemToolCallClosingReserveOptions, 'companyId'>) => api.setProblemToolCallClosingReserve({...options, companyId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'problem-tool-budgets', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),

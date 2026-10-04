@@ -1,9 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 181, REQ-15 memory correction response reconciliation)
+## Latest continuation status (Slice 182, REQ-16 budget command reconciliation)
+
+Company, Mission, ProblemKey and Task budget mutations now refresh budget, Company and activity projections after success or error. Incremental ProblemKey/Task allocations retain the exact request payload and ID after an ambiguous response; operators can replay that exact receipt or, after checking refreshed limits, explicitly discard it and create a newly confirmed request. Frontend production build and diff check pass; no tests, Worker/provider action or frozen scenario ran. Budgets still count admitted protocol tool calls and do not account for hidden provider retries, tokens or money. See `evidence/development/r1-r3-implementation-validation-20261004-slice-182-req16-budget-response-refresh/verification.md`.
+
+## Previous continuation status (Slice 181, REQ-15 memory correction response reconciliation)
 
 WorkerSession-bound memory correction proposals and independent review commands now refresh the metadata-only queue, Company overview and activity after success or error. Exact request IDs stay available for a retry, and the UI directs operators to check the refreshed queue/memory state when a response is ambiguous. Frontend production build and diff check pass; no tests, Worker/provider action or frozen scenario ran. This did not create or review a correction and still requires an active database-confirmed WorkerSession for those commands. See `evidence/development/r1-r3-implementation-validation-20261004-slice-181-req15-memory-correction-response-refresh/verification.md`.
-
 ## Previous continuation status (Slice 180, REQ-13 Routine command reconciliation)
 
 Routine creation and legacy Routine instruction repair now refresh Routine, Company/Mission and activity projections after success or error. The UI retains exact retry request IDs and reports uncertain outcomes while directing the operator to inspect the refreshed Routine/Task state. Frontend production build and diff check pass; no tests, scheduler iteration, Worker/provider action or frozen scenario ran. This does not qualify due materialization or Worker admission. See `evidence/development/r1-r3-implementation-validation-20261004-slice-180-req13-routine-response-refresh/verification.md`.
@@ -49,7 +52,7 @@ Workbench now exposes owner decisions to finish a Mission as `ended_not_met` or 
 
 Schema 101 adds durable closeout intent/report records, `closing` and `ended_not_met` Mission states, and retains the Company Mission slot during closeout. Cancellation first commits the admission fence, disables Routine scheduling and quiesces schedules, then Control stops project Jobs and Workers. Finalization rechecks WorkerSessions, JobRuns and live service leases in the guarded transaction before settling pending obligations, Tasks and Routine occurrences and recording a report. The paused-Mission successor-change path now also records the old Mission's closeout and marks transferred obligations superseded. The Kernel supports explicit terminal outcomes; `succeeded` requires exact independently passed Artifact references, settled Tasks/Obligations, and a recorded owner rationale. Workbench reads the closeout record and recognizes the new states. Local Termux migrated to Schema 101 with Company=0 and WorkerSession=0. Go package/command builds, frontend production build, migration hashes and `git diff --check` pass. No tests or Worker/provider actions ran. REQ-23 remains partial until owner-facing non-cancel decisions and restart/frozen-scenario qualification are complete. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-169-req23-durable-closeout/verification.md`.
 
-Next Slice182: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
+Next Slice183: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
 
 ## Previous continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
 
