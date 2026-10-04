@@ -4,133 +4,145 @@ Updated: 2026-10-04
 
 ## Current continuation pointer
 
-The active checkout is Slice 166 / Schema 100. Read `docs/implementation/NEXT_SLICE.md` for the latest completed slice and next step, and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the remaining approved scope. Slices 121–128 add immutable ProblemKey lineage, shared ProblemKey budgets, owner-authorized allocations, closing reserves, immutable rejection records, incomplete closeout and scoped retry visibility. Slices 129–140 establish Mission/Company protocol-tool-call caps and account-locator observations. Slices 141–146 establish the installation-owner credential/session/UI path and exercise it against a disposable PostgreSQL database. Slice 147 refreshes the frozen-scenario crosswalk; Slice 148 adds WorkerSession-bound memory correction commands (Schema 98); Slices 149–151 address REQ-26/29 boundaries. Slices 152–158 audit current workspace, capability, MCP and recovery boundaries while retaining unexecuted CAP statuses. Slices 159–160 fence restored MCP Employee grants and installation-owner browser sessions. Slice 161 audits memory tombstone replay across old-backup restores; Slice 162 audits opt-in Fake-only dispatch and confirms database-gated Worker activation while provider-quota recovery and cross-instance/global fairness remain unresolved. Slice 163 fixes Windows exact-session recovery for capability-revoked sessions left in `reconcile_required`. Slice 164 writes immutable completion receipts for new revoke-time session inventories; Slice 165 records an installation-owner-only acknowledged-unresolved disposition for incomplete legacy inventories without claiming quiescence; Slice 166 confirms there is no authoritative quota-readiness source or production waiting_quota release writer. The local database was migrated to Schema 100 and still has no owner, Company or WorkerSession; do not create an owner password without the user's choice. Actual restore, browser-session, WorkerSession, browser/Tauri and external host/account qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.
+The active checkout is synchronized at Slice 206; the latest migration source is Schema 102. Read `docs/implementation/NEXT_SLICE.md` for the current continuation and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the finite approved scope. Recent stages 167–205 advance local REQ-02/13/14/23/25/36/39 implementation and response recovery, add Windows signing integration, and reconcile REQ-29's current shared-Artifact implementation; these do not complete the corresponding frozen qualification. Items requiring owner decisions, real WorkerSessions, provider accounts, publisher certificates, Windows/Linux qualification hosts, browser evidence, or R3 domain evidence remain open as recorded in the coverage ledger. Do not assume an active WorkerSession; delegate Worker work only when a current database read confirms an active session. Do not create or start one to satisfy that condition. The user requires each completed stage to be committed and pushed. Evidence for the latest stages is linked from `NEXT_SLICE.md`.
 
-## Latest completed slice (166, REQ-13 quota readiness/recovery boundary audit)
+## Latest completed slice (206, handoff pointer synchronization)
+
+Synchronized the repository's top-level `AGENTS.md` and cloud handoff pointer with the current Slice 205 ledger and latest migration source Schema 102. The coverage ledger remains the authoritative list of open software and external qualification work. Updated old handoff statements to label completed slices as historical and explicitly mark the pre-Slice-151 REQ-29 gap statement as superseded. No code, database, tests, Worker/provider action, or external operation was performed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-206-handoff-pointer-synchronization/verification.md`.
+
+## Previous completed slice (205, REQ-29 audit reconciliation)
+
+The current source audit now correctly distinguishes Slice 151's fake-only @8 same-Mission ready Artifact reads from the still-unmodeled arbitrary directory tree and mutable current-workspace snapshots. Coverage and continuation notes preserve Slice 150 as historical. No code, database, tests, Worker/provider action, or external operation was performed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-205-req29-audit-reconciliation/verification.md`.
+
+## Previous completed slice (204, Windows signing integration)
+
+The signed Windows Tauri packaging path is opt-in and fails closed unless a valid current-user publisher certificate, timestamp URL, SignTool, and packaged PostgreSQL runtime are available. Frontend production build and diff checks passed; no Windows package/signing action was run. See `evidence/development/r1-r3-implementation-validation-20261004-slice-204-windows-signing-integration/verification.md`.
+
+## Historical completed slice (166, REQ-13 quota readiness/recovery boundary audit)
 
 Source review confirms `waiting_quota` is sticky and admission-safe, but no production Go path writes/releases it and no authoritative provider quota readiness source exists. `provider_quota_exhausted` is only a notification reason. Automatic recovery has no trusted release condition to implement; the optional Fake @7 dispatcher also has only a process-local Company cursor. No code/schema change, tests, Worker or provider activity ran. REQ-13 remains open. See Slice 166 evidence.
 
-## Previous completed slice (165, REQ-14 owner-reviewed unresolved disposition)
+## Historical completed slice (165, REQ-14 owner-reviewed unresolved disposition)
 
 Schema 100 adds immutable installation-owner review receipts for old incomplete capability revocations. The only disposition is `acknowledged_unresolved`; it records that historical completeness remains unknown, requires a validated owner session plus CSRF, and rechecks the active incomplete target under the Company write guard. The projection remains `sessionInventoryComplete=false` and `quiesced=false`; the action neither reconstructs missing sessions nor stops Workers. Local Termux migrated to Schema 100 and has Company=0, owner=0, WorkerSession=0. Native/Windows Go builds, frontend build, migration hash verification and diff check pass; tests and owner/Worker/provider activity did not run. REQ-14 remains open for any applicable owner review and runtime qualification. See Slice 165 evidence.
 
-## Previous completed slice (164, REQ-14 complete revocation-inventory receipt)
+## Historical completed slice (164, REQ-14 complete revocation-inventory receipt)
 
 The prior projection could treat a pre-Schema-73 revocation with no usage rows as quiesced even though it could not prove whether an unused but bound WorkerSession existed at revoke time. Schema 99 adds an immutable completion receipt written in the same revoke transaction, including for an exact snapshot containing zero sessions. The projection prefers a receipt or a nonempty Schema-73 snapshot; an older zero-row revocation without either remains `sessionInventoryComplete=false` and cannot report quiesced. Workbench now labels that state “需复核”. The local development database was migrated to Schema 99. Linux and Windows/amd64 Go builds, frontend production build and `git diff --check` pass. No tests or Worker activity ran. REQ-14 remains open for legacy review and runtime qualification. See Slice 164 evidence.
 
-## Latest completed slice (163, REQ-14 restart retry for revoked Worker stop)
+## Historical completed slice (163, REQ-14 restart retry for revoked Worker stop)
 
 Capability revocation snapshots the affected live/use-recorded WorkerSessions in the revocation transaction. The background coordinator drains those durable snapshots and retries; after restart, the adapter delegates to exact-session host reconciliation. Kernel recovery marks non-stopped sessions `reconcile_required`, but the Windows exact-session path previously accepted only `restoring`, so repeated retries could never progress after a startup host reconciliation failure. It now accepts `reconcile_required` too and retains exact session, containment-profile, host-tree proof and database-state checks. Linux already accepted this state. Native and Windows/amd64 command builds plus `git diff --check` pass. No tests or Worker stop were run, and CAP/FT qualification remains open. See Slice 163 evidence.
 
-## Latest completed slice (162, REQ-13 dispatch fairness/quota/WorkerSession boundary)
+## Historical completed slice (162, REQ-13 dispatch fairness/quota/WorkerSession boundary)
 
 Source audit confirms that automatic dispatch is opt-in and only accepts the exact zero-egress Fake @7 surface. It selects active-company/active-Mission ready work from `wake_pending`, advances one company cursor per 30-second cycle, and leaves session creation to the normal database admission transaction. That transaction locks the Employee schedule, rejects `paused` and `waiting_quota`, rejects a live session, and creates a `restoring` WorkerSession. The adapter validates and activates that persisted session before starting the run loop. No production quota recovery writer, shared cursor/global slot accounting, or multi-instance fairness mechanism was found. No Worker was started; the local database has no active WorkerSession. REQ-13 remains open. See Slice 162 evidence.
 
-## Latest completed slice (161, REQ-15 FT-41 old-backup memory revocation audit)
+## Historical completed slice (161, REQ-15 FT-41 old-backup memory revocation audit)
 
 Desktop uses a stable tombstone root outside generation CAS directories. Kernel loads tombstones before DB recovery and applies them to the restored database before the runtime becomes available. This blocks logical memory access after restoring an older generation on the same data root, but does not erase old CAS/DB bytes. Source audit only; FT-41 and Desktop restore remain `not_run`. See Slice 161 evidence.
 
-## Latest completed slice (160, REQ-25 restored installation-owner session revocation)
+## Historical completed slice (160, REQ-25 restored installation-owner session revocation)
 
 Recovery holds both the Kernel control-plane lock and owner-auth lock through completion. Schema 97+ restores revoke every unrevoked installation-owner token digest and add immutable `session_revoked` auth events in the same transaction as MCP binding revocation. The marker requires both gates; old markers can retry safely. Owner credentials remain, so login can be re-established. Build/diff checks pass; restore, browser, WorkerSession and frozen CAP/FT scenarios were not run. See Slice 160 evidence.
 
-## Latest completed slice (159, CAP-31 recovery-generation MCP authorization gate)
+## Historical completed slice (159, CAP-31 recovery-generation MCP authorization gate)
 
 Recovery reserves the Kernel control-plane advisory lock across database/CAS restore and finalization. It records deterministic append-only revocations for every currently bound MCP Employee capability before completing the generation marker; staging state allows safe idempotent retry after a partial finalization. Any later execution needs a fresh binding and database-confirmed active WorkerSession. Build and diff checks pass; tests, actual restore, WorkerSession/endpoint and frozen CAP execution were not run. CAP-31 remains `not_run`. See the Slice 159 evidence.
 
-## Latest completed slice (151, REQ-29 same-Mission shared Artifact reads; no migration)
+## Historical completed slice (151, REQ-29 same-Mission shared Artifact reads; no migration)
 
 An opt-in exact fake-only @8 Worker surface lists bounded pages of ready candidate/passed Artifacts in the current Company+Mission and reads a selected Artifact ID after database-confirmed active WorkerSession/Task ownership checks and CAS digest/size/UTF-8 verification. Reads append exact version/session provenance and bounded Handover history. @4 remains the real-provider gate and @7 is unchanged. The environment flag is off by default. See the Slice 151 audit and evidence.
 
-## Latest completed slice (150, REQ-29 shared-file access audit; no code/schema change)
+## Historical completed slice (150, REQ-29 shared-file access audit; no code/schema change)
 
-Task input manifests already deliver immutable Mission inputs and a Worker can read/write its current Task workspace with digest+revision fencing. No Worker tool lists or reads another Task's published Artifact. Slice 151 will add same-Company+Mission reads of ready candidate/passed Artifact versions on a separate fake-only tool surface; recovery snapshots remain separate. See the Slice 150 audit and evidence.
+Task input manifests deliver immutable Mission inputs and a Worker can read/write its current Task workspace with digest+revision fencing. At Slice 150 no Worker tool listed or read another Task's published Artifact; Slice 151 later added same-Mission ready candidate/passed Artifact reads on fake-only @8. Arbitrary directory trees and mutable current-workspace snapshots remain unmodeled. Recovery snapshots remain separate. See the updated REQ-29 audit and the original Slice 150/151 evidence.
 
-## Latest completed slice (149, REQ-26 C-RESOURCE audit; no code/schema change)
+## Historical completed slice (149, REQ-26 C-RESOURCE audit; no code/schema change)
 
 The source audit found no production ResourceKey model or shared branch/deploy/publish writer. Current Git import is read-only; Task workspaces are per-Company/Task digest metadata; project preparation uses fresh random application-managed workspaces. The Company `workspace_root` setting is not a runtime path boundary. REQ-26 remains open for a future actual shared writer and must not be represented as protected by an inert registry. See the Slice 149 audit and evidence.
 
-## Latest completed slice (148, REQ-15 WorkerSession-bound memory corrections; Schema 98)
+## Historical completed slice (148, REQ-15 WorkerSession-bound memory corrections; Schema 98)
 
 Workbench proposal/review requests carry only a WorkerSession ID. Kernel derives Employee and Task from durable session rows, rechecks the active provider session and working Task under the write transaction, preserves exact session/Task provenance with compound foreign keys, and keeps the fixed Planning/Review and independent-review rules. The approval UI explicitly confirms downstream invalidation. Go and frontend builds, checksums, local Schema 98 migration and backend/frontend health checks pass. The main local database still has no owner, Company or correction data; correction-command E2E and frozen scenarios were not run. See the Slice 148 evidence.
 
-## Latest completed slice (146, FT-63 owner-session API integration)
+## Historical completed slice (146, FT-63 owner-session API integration)
 
 A disposable database verified bootstrap, login, protected read, CSRF denial, logout and revocation. The disposable database was dropped. The main local dev database has no owner credential; the owner must choose it through the Workbench. Browser E2E is not complete. See Slice 146 evidence.
 
-## Latest completed slice (145, PostgreSQL migration compatibility; Schema 97 applied locally)
+## Historical completed slice (145, PostgreSQL migration compatibility; Schema 97 applied locally)
 
 The local Termux database is now at Schema 97. Historical migration parser gaps in 78/79 were normalized only for Goose's reader, preserving source hashes, and the new PL/pgSQL function in 97 was properly bracketed. Backend health and owner status/session routes are responding. Owner enrollment is left pending until the installation owner chooses a password. See Slice 145 evidence.
 
-## Latest completed slice (144, FT-63 Workbench owner setup/login UI)
+## Historical completed slice (144, FT-63 Workbench owner setup/login UI)
 
 The Group navigation now includes a first-owner setup/login/logout page and read-only observed-account table. It hides first-owner enrollment on HTTPS remote Workbench and clarifies that locator fingerprints do not prove billing scope. TypeScript, ESLint and production build pass; database/browser E2E remains open because PostgreSQL is unavailable. See Slice 144 evidence.
 
-## Latest completed slice (143, FT-63 revocable owner sessions; Schema 97)
+## Historical completed slice (143, FT-63 revocable owner sessions; Schema 97)
 
 The backend now issues 12-hour revocable owner sessions, stores token/CSRF digests only, rate-limits failed logins and enforces a session-bound CSRF header for unsafe cookie-authenticated requests. Focused Go verification and build pass; PostgreSQL migration/runtime and browser E2E remain unverified. The owner setup/login UI is the next local stage. See Slice 143 evidence.
 
-## Latest completed slice (142, FT-63 first-owner bootstrap; Schema 96)
+## Historical completed slice (142, FT-63 first-owner bootstrap; Schema 96)
 
 The terminal-only command issues a short-lived random setup code; Schema 96 stores only its digest. The local-origin endpoint throttles attempts and atomically creates the single owner password record. Browser sessions, cookies, CSRF and UI login remain open. See Slice 142 evidence.
 
-## Previous completed slice (141, FT-63 bounded owner password hash primitive; no migration)
+## Historical completed slice (141, FT-63 bounded owner password hash primitive; no migration)
 
 The owner password helper uses fixed bounded Argon2id parameters, random salts and constant-time comparison. It is not yet wired to owner enrollment/login. See Slice 141 evidence.
 
-## Previous completed slice (140, REQ-16 observed ProviderAccount registry; Schema 95)
+## Historical completed slice (140, REQ-16 observed ProviderAccount registry; Schema 95)
 
 The immutable registry backfills existing available account locators and links future observations to WorkerSessions. A token-protected, read-only Workbench endpoint exposes only fingerprints and aggregate counts; the shared desktop token is not the dedicated first-owner login/session design. Financial caps, liability settlement and live account qualification remain open. See Slice 140 evidence.
 
-## Previous completed slice (139, REQ-16 ProviderAccount billing-scope audit; no migration)
+## Historical completed slice (139, REQ-16 ProviderAccount billing-scope audit; no migration)
 
 Official sources distinguish ChatGPT shared credits/allowances, Enterprise token-based USD billing and API Platform organization/project billing. Enterprise Codex Analytics requires a workspace-scoped Admin key. No such key is configured here; live workspace usage/cost validation remains external. Kernel has only Company scope, so shared ProviderAccount mutations need an installation-owner boundary before implementation. See Slice 139 evidence.
 
-## Latest completed slice (138, REQ-16 Codex account locator snapshot; Schema 94)
+## Historical completed slice (138, REQ-16 Codex account locator snapshot; Schema 94)
 
 For ChatGPT auth files, Codex `tokens.account_id` (or the supported ID-token account claim) is hashed and bound immutably to each WorkerSession before execution; unavailable/unsupported cases are explicit. The runtime rejects a changed available account locator after binding. This is the selected Codex account routing scope, not proven billing coverage or a financial budget key. Go build, Schema 1–94 hashes and diff check pass; tests, PostgreSQL migration/runtime and provider execution were not run. See Slice 138 evidence.
 
-## Latest completed slice (137, REQ-16 general Codex auth-principal observation; no migration)
+## Historical completed slice (137, REQ-16 general Codex auth-principal observation; no migration)
 
 General Codex business runtimes now derive the auth-principal fingerprint when the mounted auth file contains reconstructable issuer/subject claims; otherwise identity remains unavailable. After an identity snapshot is pinned to a WorkerSession, the runtime rechecks an available fingerprint before reservation/start and stops if it changed. This does not prove ProviderAccount billing identity or measure spend. Go build, Schema 1–93 hashes and diff check pass; tests, PostgreSQL runtime and provider execution were not run. See Slice 137 evidence.
 
-## Previous completed slice (136, REQ-16 provider auth identity snapshot; Schema 93)
+## Historical completed slice (136, REQ-16 provider auth identity snapshot; Schema 93)
 
 Schema 93 stores an immutable provider auth-identity snapshot per WorkerSession before execution. The optional versioned runtime capability reports available/unavailable/unsupported; only the existing LIVE_2 Codex path reports a fingerprint. Capture or persistence errors finalize the unstarted WorkerSession. The fingerprint is an auth-principal hint rather than a ProviderAccount ID or financial accounting unit. Go provider/kernel/control/workbench/command build, migration hash checks through 93 and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. ProviderAccount identity semantics outside LIVE_2 and its request-liability lifecycle remain open. See Slice 136 evidence.
 
-## Previous completed slice (135, REQ-16 ProviderAccount identity/liability binding audit; no migration)
+## Historical completed slice (135, REQ-16 ProviderAccount identity/liability binding audit; no migration)
 
 The general provider runtime and execution authorization carry no ProviderAccount identity. The auth identity snapshot is limited to the Codex LIVE_2 credential path and is not exposed to ordinary Worker admission. Durable usage is session-scoped; no account-level request reservation, settlement or unknown-liability ledger exists. Financial ProviderAccount caps remain deferred until those foundations are implemented. No code/schema/build/test/database/provider execution was changed or run; `git diff --check` passes. See Slice 135 evidence.
 
-## Previous completed slice (134, REQ-16 Company closing reserve; Schema 92)
+## Historical completed slice (134, REQ-16 Company closing reserve; Schema 92)
 
 Schema 92 adds append-only Company reserve revisions inside its total protocol-tool-call cap. Only Kernel-created `review` and `peer_review` Tasks can use protected calls; ordinary work preserves remaining reserve during admission, charging, Handover and provider turn clamping. Closing calls burn reserve and Company total atomically. Pending Companies may configure reserve first, but initial cap configuration must cover existing usage plus remaining reserve. Immutable Company denial snapshots include reserve state, and Settings exposes confirmed reasoned updates. Go package/command build, frontend production build, hashes through 92 and `git diff --check` pass; Vite reports the existing 810.97 kB minified bundle advisory. Tests, PostgreSQL migration/runtime, provider execution and live cost measurement were not run. This measures admitted protocol tool calls only. See Slice 134 evidence.
 
-## Previous completed slice (133, REQ-16 Company protocol tool-call cap; Schema 91)
+## Historical completed slice (133, REQ-16 Company protocol tool-call cap; Schema 91)
 
 Schema 91 backfills Company usage from durable Task counters and leaves the cap pending until explicit local-owner configuration. Append-only allocation history permits configuration/increases; immutable Company admission/call rejection evidence binds cap, usage and revision. Worker admission checks Company before Mission and accepted protocol tool calls charge Company with Session, Task, ProblemKey and Mission in one transaction. Handover and provider turn clamping use the minimum remaining calls. Settings exposes a no-store projection and confirmed reasoned change form. All Companies need explicit configuration after migration before new admissions/calls proceed. This does not measure model requests, hidden retries, tokens, provider egress or USD. Go package/command build, frontend production build, migration hashes through 91 and diff check pass; the existing Vite >500 kB advisory remains. Tests, PostgreSQL migration/runtime and provider execution were not run. ProviderAccount identity/liability, hidden retries, token/money accounting and FT-42–45 qualification remain open. See Slice 133 evidence.
 
-## Previous completed slice (132, REQ-16 Company/Provider budget identity audit; no migration)
+## Historical completed slice (132, REQ-16 Company/Provider budget identity audit; no migration)
 
 Company ID is stable; `txWrite` locks Company before budget-related row locks; admitted tool calls use idempotency keys derived from session and provider call ID; Task counters support conservative Company usage backfill. This enables an explicitly labeled Company protocol-tool-call cap, not a model/token/USD cap. General WorkerSessions do not bind a ProviderAccount ID, and terminal token observations are not settled provider-account spend. Do not enforce a strict financial ProviderAccount cap until identity and liability accounting exist. See the Slice 132 evidence.
 
-## Previous completed slice (131, REQ-16 Mission closing reserve; Schema 90)
+## Historical completed slice (131, REQ-16 Mission closing reserve; Schema 90)
 
 Schema 90 adds append-only Mission reserve revisions inside the total cap. Only Kernel-created `review` and `peer_review` Tasks can consume protected calls. Ordinary work preserves reserve through admission, accepted-call accounting, Handover and provider turn clamping; closing calls consume it while still counting toward Mission total. Pending Missions may set reserve, but the first finite cap must cover usage and unspent reserve. Immutable rejection snapshots include reserve revision/state, and Settings exposes a confirmed reasoned update. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 90 migration hashes and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md` and the Slice 131 evidence.
 
-## Previous completed slice (130, REQ-16 explicit Mission tool-call cap; Schema 89)
+## Historical completed slice (130, REQ-16 explicit Mission tool-call cap; Schema 89)
 
 Schema 89 backfills Mission usage from durable Task counters while leaving caps unset. New Mission creation requires an explicit finite cap; Settings configures pending legacy Missions and permits only total-cap increases through a confirmed, reasoned append-only ledger. Admission and each accepted call serialize Mission → WorkerSession/Task → ProblemKey, incrementing applicable counters atomically. Immutable Mission-level denial snapshots, Handover fields and provider turn clamping use the same cap. `go build ./internal/kernel ./internal/control ./internal/workbench ./internal/desktop ./cmd/polis`, `npm run build`, all 89 migration hashes and `git diff --check` pass. Tests, PostgreSQL migration/runtime and provider execution were not run. Company/Provider/token/money accounting remain open. See `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md` and the Slice 130 evidence.
 
-## Previous completed slice (129, REQ-16 Mission budget composition and lock-order audit; no migration)
+## Historical completed slice (129, REQ-16 Mission budget composition and lock-order audit; no migration)
 
 The source-backed Mission cap design and lock-order rationale are recorded in `docs/implementation/REQ16_MISSION_BUDGET_COMPOSITION.md`; Slice 130 implements the cap under that decision.
 
-## Latest completed slice (128, REQ-16 scoped provider retry observation; no migration)
+## Historical completed slice (128, REQ-16 scoped provider retry observation; no migration)
 
 Real Codex Worker usage identifies that the reconnect count covers only app-server `responseStreamDisconnected` events marked `willRetry`. The terminal record stores that scope and `unobserved_provider_retry_count: null`; retries internal to the CLI/service are not exposed or charged. `retry_visibility=limited` remains. This is conservative observability, not complete retry accounting. `go build ./internal/kernel ./internal/control ./cmd/polis`, frontend build, all Schema 88 migration hashes and `git diff --check` pass. Tests and provider execution were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-128-provider-retry-visibility/verification.md`.
 
-## Latest completed slice (127, REQ-16 explicit incomplete budget closeout; Schema 88)
+## Historical completed slice (127, REQ-16 explicit incomplete budget closeout; Schema 88)
 
 Schema 88 adds an immutable local-owner incomplete Task closeout tied to the latest budget-caused rejection and exact Task, ProblemKey and closing-reserve snapshots. It requires a nonterminal Task with no live WorkerSession and prevents later Worker admission or Task-budget allocation. The Workbench exposes reasoned confirmation and shows the outcome. Together with Schema 86 rejections and Schema 84/87 owner allocations, exhausted work can remain blocked, receive funded recovery subject to normal Worker admission gates, or close explicitly as incomplete. Admission, allocation and closeout serialize on the Task row. Go package/command build, frontend production build and `git diff --check` pass; the frontend reports the existing >500 kB advisory. Tests and PostgreSQL migration/runtime were not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-127-task-budget-incomplete-closeout/verification.md`.
 
@@ -192,14 +204,14 @@ Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-1
 
 ## Remaining work and next move
 
-Use the current finite list in `R1_R3_IMPLEMENTATION_COVERAGE.md`; it contains 17 open software requirements. REQ-13 quota readiness and dispatch qualification, REQ-14 historical revocation limits, REQ-15 restore qualification/scenarios, REQ-16 provider liability, REQ-25/26/29/39, and the qualified employee/runtime path for REQ-23/24/27/30–34 remain open. Slice 147 completed the bounded scenario crosswalk; Slice 148 completed the memory correction command path. R2 Linux host/recovery and remote-workbench qualifications, Windows clean-VM/package checks, and independent R3 content/research quality, cost, recovery and organization-benefit evidence remain separate qualification work.
+Use the current finite list in `R1_R3_IMPLEMENTATION_COVERAGE.md`; it contains the open software requirements and keeps them separate from owner-, account-, certificate-, and host-dependent qualification. REQ-02/13/14/15/16/23–27/29/30–39 remain partial in the specific ways listed there. Slice 205 reconciled the REQ-29 audit; Slice 204 added a fail-closed signing integration, but no publisher certificate or qualified Windows release host is available here. R2 Linux host/recovery and remote-workbench qualifications, Windows clean-VM/package checks, and independent R3 content/research quality, cost, recovery and organization-benefit evidence remain separate open work.
 
-Next Slice152: audit CAP-04–06 around single-writer workspace epochs, stable snapshots and CAS retention/GC races. Keep published Artifact reads separate from mutable current-Task workspace writes and recovery snapshots.
+Next Slice207: continue from `docs/implementation/NEXT_SLICE.md`; preserve frozen scenario states as `not_run` until those scenarios are actually run, keep quota readiness fail-closed, and only delegate Worker activity after a current database read confirms an active WorkerSession. Do not infer owner policy, provider authority, or host qualification from local builds or source audits.
 
 ## Working conventions
 
 - Follow `AGENTS.md`: Go/PostgreSQL 18/pgx/sqlc/goose, migrations only forward, evidence under `evidence/development/`, and RTK-prefixed shell commands.
 - Preserve exact provider-surface fingerprints and old probe registries. A new model-visible tool set needs a distinct versioned surface and independent qualification.
-- Use disposable PostgreSQL/file roots only. Full Go suite and both Linux/Windows command builds are appropriate after code slices; external qualification remains gated.
-- There is one principal code writer. Review is read-only. Wait for reviewers instead of terminating them early.
-- Slice101 through Slice104, including this current handoff and the REQ-14 dispatch map, are synchronized to GitHub `main` for cloud pickup. This is source synchronization only; it does not authorize deployment or external provider actions.
+- Use disposable PostgreSQL/file roots for qualification.
+- Keep verification scoped to the user's request; builds and `git diff --check` do not qualify frozen scenarios. External qualification remains gated by its required host/account and separate authorization.
+- After every completed stage, commit and push to GitHub `main`, then fetch and verify the remote file tree before continuing. This is source synchronization only; it does not authorize deployment or external provider actions.

@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 206 — handoff pointer synchronization
+
+Updated `AGENTS.md` and `CLOUD_CODEX_HANDOFF.md` to point at the current Slice 205 ledger and latest migration source Schema 102. Marked completed slices as historical and corrected the pre-Slice-151 REQ-29 statement. No code, database, tests, Worker/provider action or external operation. See `evidence/development/r1-r3-implementation-validation-20261004-slice-206-handoff-pointer-synchronization/verification.md`.
+
 ## Slice 205 — REQ-29 audit reconciliation
 
 Updated the REQ-29 source map to reflect Slice 151's fake-only @8 same-Mission Artifact listing and exact-ID reads, and clarified the still-missing arbitrary directory/current-workspace snapshot model. Corrected the current coverage and handoff summaries; preserved Slice 150 as historical evidence. No code, database, tests, Worker/provider action or external operation. See `evidence/development/r1-r3-implementation-validation-20261004-slice-205-req29-audit-reconciliation/verification.md`.
