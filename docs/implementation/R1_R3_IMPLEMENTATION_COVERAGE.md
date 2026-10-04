@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 202. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 203. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+## Slice 203: REQ-25 owner authorization coverage reconciliation
+
+The coverage row had not been updated after Slice 146 completed the local owner bootstrap/login/logout and read-only account UI. It now records that Schema 97 sessions, cookie/CSRF protection and this UI exist, based on source review and existing disposable-PostgreSQL HTTP-client evidence. Browser/Tauri WebView qualification, owner-selected local setup, and externally scoped financial/cross-Company operations remain open. No authentication or database operation ran for this audit. See `evidence/development/r1-r3-implementation-validation-20261004-slice-203-req25-coverage-reconciliation/verification.md`.
+
 ## Slice 202: bounded REQ-39 patch handback
 
 The paused-Mission Task takeover editor accepts a single-file UTF-8 unified patch only for `workspace.txt`. It checks all hunks against the granted lease's frozen workspace text, rejects stale/context-mismatched or oversized candidates without replacing the current editor content, and shows frozen and proposed snapshots side by side. The returned snapshot still uses the existing digest/revision-bound lease path and is stored as a new MissionInput; it does not write the old Task workspace or execute patch content. Frontend production build and diff check pass; no lease, WorkerSession or snapshot command was run. No Worker/provider activity, host operation, frozen scenario, or schema change occurred. See `evidence/development/r1-r3-implementation-validation-20261004-slice-202-req39-bounded-patch-handback/verification.md`.
@@ -500,7 +504,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 202
+## Finite remaining work at Slice 203
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
@@ -783,7 +787,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | 22 | Office/3D remains decoupled from core | R1 | excluded by explicit user scope | Excluded |
 | 23 | Mission activation and safe closeout | R1 | partial; idempotent create/start/pause/resume/cancel use stop/start, and Slice 168 repeats the outstanding WorkerSession/JobRun/service-lease check inside the Company-serialized lifecycle transaction to close the admission race. Formal `closing` / `ended_not_met` outcome, responsibility settlement, and closeout-recovery qualification remain open. See Slice 168 source/build evidence. | R1 |
 | 24 | Authenticated formal employee operations | R1 | partial; product tool surface exists, current full runtime path is unqualified | R1 |
-| 25 | Explicit administrator and continuing authorization | R1 | partial; local desktop token/provider readiness exist; Slice 141 adds bounded Argon2id hashing and Slice 142 adds terminal-issued one-time first-owner bootstrap; durable browser sessions, login/logout, cookie/CSRF enforcement and the owner UI remain | R1 |
+| 25 | Explicit administrator and continuing authorization | R1 | partial; local bootstrap uses a terminal-issued one-time code and Argon2id; Schema 97 adds hashed, expiring, revocable owner sessions, HttpOnly/SameSite cookies, login throttling and session-bound double-submit CSRF; the Installation Accounts UI supports bootstrap/login/logout and read-only account observation. Slice 146 verified the flow with HTTP clients against disposable PostgreSQL, not a real browser. Owner-selected setup, local browser/Tauri WebView and remote-browser qualification remain; financial settlement and cross-Company owner mutations remain gated on separately confirmed scope. | R1 |
 | 26 | Company isolation covers shared write targets | R1 | partial; CAS/workspace fencing exists, resource binding remains | R1 |
 | 27 | Handover preserves facts and published artifacts | R1 | partial; checkpoint/recovery foundations exist; E-HANDOVER remains | R1 |
 | 28 | QQ Bot takeover notification | R1 | partial; redacted C2C transport, DPAPI credential storage, one-shot HMAC IPC, revocation gate, qualified-route DB gate, event-path dispatcher, persisted receipt/outcome, crash-to-unknown recovery, bounded restart-safe retry and visible intervention/delivery status exist; live qualification and real delivery remain | R1 C2C |
