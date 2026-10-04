@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 190, service browser session retry recovery)
+## Latest continuation status (Slice 191, REQ-39 formal change exact retries)
+
+Mission change create/consider/decline/apply commands now retain the exact request ID for the same payload while an outcome is unresolved. A response-loss retry reuses the same Kernel receipt; changing the intent produces a distinct ID, and success clears the pending identity. Frontend production build and diff check pass; no formal change was created, reviewed, or applied. See `evidence/development/r1-r3-implementation-validation-20261004-slice-191-req39-formal-change-retry/verification.md`.
+
+## Previous continuation status (Slice 190, service browser session retry recovery)
 
 Service JobRun browser-session requests now retain their exact request ID after an ambiguous response. Retrying the same still-live service command can replay the same short-lived session instead of minting another ticket. Workbench errors identify the result as unconfirmed. Frontend production build and diff check pass; no JobRun or browser session was started and no host/provider activity or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-190-service-browser-session-response-recovery/verification.md`.
 

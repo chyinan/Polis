@@ -1,5 +1,5 @@
 // pattern: Imperative Shell
-import {useState, type ReactElement} from 'react';
+import {useRef, useState, type ReactElement} from 'react';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useApplyMissionChangeRequest, useConsiderMissionChangeRequest, useCreateMissionChangeRequest, useDeclineMissionChangeRequest, useMissionChangeRequests} from '../data/workbench-query';
 import type {CompanyOverviewView, MissionChangeRequestView, StatusTone} from '../domain/workbench';
@@ -25,6 +25,7 @@ export function MissionChangeRequestPanel({api, companyId, missionId, missionSta
   const [proposedGoal, setProposedGoal] = useState(overview.mission.goal);
   const [criteriaText, setCriteriaText] = useState(overview.mission.acceptanceContract?.required_text.join('\n') ?? '');
   const [blockPreviousResults, setBlockPreviousResults] = useState(true);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const criteria = criteriaText.split(/\r?\n/).map(value => value.trim()).filter(value => value !== '');
   const proposedAcceptanceContract = criteria.length === 0 ? null : {revision: 'text-acceptance@1' as const, required_text: criteria};
   const hasAcceptanceContract = proposedAcceptanceContract !== null || overview.mission.acceptanceContract !== null;
@@ -33,26 +34,51 @@ export function MissionChangeRequestPanel({api, companyId, missionId, missionSta
   const canRequestFormalChange = missionState === 'active' || missionState === 'paused';
   const canCreate = canRequestFormalChange && activeRequest === null && summary.trim() !== '' && proposedTitle.trim() !== '' && proposedGoal.trim() !== '' && criteria.length <= 8 && hasAcceptanceContract;
 
+  function requestIdentity(operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
+    const key = JSON.stringify({operation, payload});
+    const requestId = pendingRequestIds.current.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+    pendingRequestIds.current.set(key, requestId);
+    return {key, requestId};
+  }
+
+  function clearRequestIdentity(key: string): void {
+    pendingRequestIds.current.delete(key);
+  }
+
   async function submit(): Promise<void> {
     if (!canCreate) return;
-    await createRequest.mutateAsync({
-      requestId: `mission-change-create-${Date.now()}`,
+    const payload = {
       changeSummary: summary.trim(), proposedTitle: proposedTitle.trim(), proposedGoal: proposedGoal.trim(),
       proposedAcceptanceContract, blockPreviousResults,
+    };
+    const pending = requestIdentity('mission-change-create', payload);
+    await createRequest.mutateAsync({
+      requestId: pending.requestId,
+      ...payload,
     });
+    clearRequestIdentity(pending.key);
     setSummary('');
   }
 
   async function consider(request: MissionChangeRequestView): Promise<void> {
-    await considerRequest.mutateAsync({changeRequestId: request.changeRequestId, requestId: `mission-change-consider-${request.changeRequestId}-${Date.now()}`});
+    const payload = {changeRequestId: request.changeRequestId};
+    const pending = requestIdentity('mission-change-consider', payload);
+    await considerRequest.mutateAsync({...payload, requestId: pending.requestId});
+    clearRequestIdentity(pending.key);
   }
 
   async function decline(request: MissionChangeRequestView): Promise<void> {
-    await declineRequest.mutateAsync({changeRequestId: request.changeRequestId, requestId: `mission-change-decline-${request.changeRequestId}-${Date.now()}`});
+    const payload = {changeRequestId: request.changeRequestId};
+    const pending = requestIdentity('mission-change-decline', payload);
+    await declineRequest.mutateAsync({...payload, requestId: pending.requestId});
+    clearRequestIdentity(pending.key);
   }
 
   async function apply(request: MissionChangeRequestView): Promise<void> {
-    await applyRequest.mutateAsync({changeRequestId: request.changeRequestId, impactSha256: request.impactSha256, requestId: `mission-change-apply-${request.changeRequestId}-${Date.now()}`});
+    const payload = {changeRequestId: request.changeRequestId, impactSha256: request.impactSha256};
+    const pending = requestIdentity('mission-change-apply', payload);
+    await applyRequest.mutateAsync({...payload, requestId: pending.requestId});
+    clearRequestIdentity(pending.key);
   }
 
   return <section className={styles.sectionCard}>

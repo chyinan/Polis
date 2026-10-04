@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 191 — REQ-39 formal change exact retry recovery
+
+Mission change create/consider/decline/apply controls preserve the exact RequestID for a same-payload retry after an ambiguous result. The UI clears the pending key only after success; payload changes use another idempotency identity. Frontend production build and `git diff --check` pass; no change request was created, considered, declined, or applied. No Worker/provider activity or frozen scenario ran. No schema change. REQ-39 patch/handoff and qualification gaps remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-191-req39-formal-change-retry/verification.md`.
+
 ## Slice 190 — service browser session retry recovery
 
 Workbench retains the exact service-browser request ID for an ambiguous browser-session response and reuses it for a retry against the same JobRun. The in-memory ingress returns the same unexpired session for a repeated request ID, preventing a response-loss retry from issuing a second ticket. Frontend production build and `git diff --check` pass; no JobRun/browser session was started, no host/provider action ran, and no frozen scenario was executed. No schema change. Host/browser qualification remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-190-service-browser-session-response-recovery/verification.md`.
