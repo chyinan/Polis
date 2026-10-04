@@ -22,7 +22,7 @@ func (k *Kernel) TXCreateProbe(ctx context.Context, s Scope, mission string) (Ta
 	}
 	r, e := k.TXWrite(ctx, s, nil, "probe-"+mission, "probe.create", mission, func(tx pgx.Tx) (Receipt, error) {
 		var occupied bool
-		e := tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused'))", s.company).Scan(&occupied)
+		e := tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused','closing'))", s.company).Scan(&occupied)
 		if e != nil {
 			return Receipt{}, e
 		}

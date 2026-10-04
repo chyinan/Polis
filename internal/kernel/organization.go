@@ -183,7 +183,7 @@ func (k *Kernel) TXArchiveCompany(ctx context.Context, companyID, key string) (R
 			return Receipt{ID: companyID, Status: "archived"}, nil
 		}
 		var activeMission bool
-		if err := tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused'))", companyID).Scan(&activeMission); err != nil {
+		if err := tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused','closing'))", companyID).Scan(&activeMission); err != nil {
 			return Receipt{}, err
 		}
 		if activeMission {

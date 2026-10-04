@@ -271,7 +271,7 @@ func (k *Kernel) TXStartMission(ctx context.Context, s Scope, id, key string) (R
 			return Receipt{ID: activation, Status: state}, e
 		}
 		var occupied bool
-		e = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused'))", s.company).Scan(&occupied)
+		e = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused','closing'))", s.company).Scan(&occupied)
 		if e != nil {
 			return Receipt{}, e
 		}
@@ -298,7 +298,7 @@ func (k *Kernel) TXStartMissionCommand(ctx context.Context, s Scope, id, key str
 			return Receipt{}, core.ConflictError{Reason: "mission is already " + state, CurrentState: state}
 		}
 		var occupied bool
-		if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused'))", s.company).Scan(&occupied); err != nil {
+		if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused','closing'))", s.company).Scan(&occupied); err != nil {
 			return Receipt{}, err
 		}
 		if occupied {
@@ -314,32 +314,10 @@ func (k *Kernel) TXStartMissionCommand(ctx context.Context, s Scope, id, key str
 }
 
 func (k *Kernel) TXCancelMission(ctx context.Context, s Scope, id, key string) (Receipt, error) {
-	return k.TXWrite(ctx, s, nil, key, "mission.cancel", id, func(tx pgx.Tx) (Receipt, error) {
-		state, err := missionState(ctx, tx, s, id)
-		if err != nil {
-			return Receipt{}, err
-		}
-		if state != "active" && state != "paused" {
-			return Receipt{}, core.ConflictError{Reason: "mission cannot be cancelled from " + state, CurrentState: state}
-		}
-		outstanding, err := missionHasOutstandingJobWork(ctx, tx, s.company, id)
-		if err != nil {
-			return Receipt{}, err
-		}
-		if outstanding {
-			return Receipt{}, core.ConflictError{Reason: "Mission still has outstanding execution; stop and reconcile its writers before cancellation", CurrentState: "reconcile_required"}
-		}
-		if _, err = tx.Exec(ctx, "UPDATE missions SET state='cancelled' WHERE company_id=$1 AND id=$2 AND state IN ('active','paused')", s.company, id); err != nil {
-			return Receipt{}, err
-		}
-		if _, err = tx.Exec(ctx, "UPDATE tasks SET state='cancelled' WHERE company_id=$1 AND mission_id=$2 AND state NOT IN ('completed','cancelled')", s.company, id); err != nil {
-			return Receipt{}, err
-		}
-		if err = setMissionEmployeeSchedulesTX(ctx, tx, s, id, false); err != nil {
-			return Receipt{}, err
-		}
-		return Receipt{ID: id, Status: "cancelled"}, nil
-	})
+	if _, err := k.TXBeginMissionCancellation(ctx, s, id, key); err != nil {
+		return Receipt{}, err
+	}
+	return k.TXFinalizeMissionCloseout(ctx, s, id)
 }
 
 func (k *Kernel) MissionBootstrapTask(ctx context.Context, s Scope, id string) (Task, error) {

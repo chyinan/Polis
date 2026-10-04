@@ -446,7 +446,7 @@ func (s *PostgresReadStore) HasActiveWork(ctx context.Context) (bool, error) {
 	defer tx.Rollback(ctx)
 	var active bool
 	if err = tx.QueryRow(ctx, `SELECT EXISTS(
-		SELECT 1 FROM missions WHERE state IN ('active','paused')
+		SELECT 1 FROM missions WHERE state IN ('active','paused','closing')
 		UNION ALL
 		SELECT 1 FROM worker_sessions WHERE state <> 'stopped'
 	)`).Scan(&active); err != nil {
@@ -716,7 +716,7 @@ func readOverview(ctx context.Context, tx pgx.Tx, companyID string) (CompanyOver
 	var acceptanceJSON []byte
 	missionErr := tx.QueryRow(ctx, `SELECT id,title,goal,state,contract,acceptance_contract FROM missions
 WHERE company_id=$1
-ORDER BY CASE state WHEN 'active' THEN 0 WHEN 'paused' THEN 1 ELSE 2 END,id
+ORDER BY CASE state WHEN 'active' THEN 0 WHEN 'paused' THEN 1 WHEN 'closing' THEN 2 ELSE 3 END,id
 LIMIT 1`, companyID).Scan(&mission.ID, &mission.Title, &mission.Goal, &mission.State, &mission.Contract, &acceptanceJSON)
 	if errors.Is(missionErr, pgx.ErrNoRows) {
 		mission = missionRow{ID: "unavailable", State: "draft", Contract: "unavailable"}
@@ -729,6 +729,10 @@ LIMIT 1`, companyID).Scan(&mission.ID, &mission.Title, &mission.Goal, &mission.S
 			return CompanyOverviewView{}, fmt.Errorf("mission acceptance contract is invalid")
 		}
 		mission.AcceptanceContract = &acceptance
+	}
+	closeout, err := readMissionCloseout(ctx, tx, companyID, mission.ID)
+	if err != nil {
+		return CompanyOverviewView{}, err
 	}
 	tasks, err := readTasks(ctx, tx, companyID, mission.ID)
 	if err != nil {
@@ -830,12 +834,50 @@ LIMIT 1`, companyID).Scan(&mission.ID, &mission.Title, &mission.Goal, &mission.S
 	for _, intervention := range interventions {
 		attention = append(attention, humanInterventionAttention(intervention))
 	}
-	missionView := MissionSummary{MissionID: mission.ID, Title: firstNonEmpty(mission.Title, mission.ID), Goal: missionGoal(mission), State: mapMissionState(mission.State), Contract: mission.Contract, AcceptanceContract: mission.AcceptanceContract, CurrentContractRevision: currentContract, NextMilestone: "不可得", VerifiedMilestones: "0", MilestoneTotal: "0", Milestones: []Milestone{}}
+	missionView := MissionSummary{MissionID: mission.ID, Title: firstNonEmpty(mission.Title, mission.ID), Goal: missionGoal(mission), State: mapMissionState(mission.State), Contract: mission.Contract, AcceptanceContract: mission.AcceptanceContract, CurrentContractRevision: currentContract, NextMilestone: "不可得", VerifiedMilestones: "0", MilestoneTotal: "0", Milestones: []Milestone{}, Closeout: closeout}
 	description := "runtime company scope from PostgreSQL"
 	if workspaceRoot != "" {
 		description = "workspace root configured: " + workspaceRoot
 	}
 	return CompanyOverviewView{Meta: meta, Company: CompanyView{CompanyID: companyID, Name: firstNonEmpty(companyName, companyID), Description: description}, Mission: missionView, Team: team, Employees: employeeViews, Tasks: taskViews, Obligations: obligationViews, Artifacts: artifactViews, Checkpoints: checkpointViews, Resources: resources, Attention: attention, RecentActivity: recentActivity}, nil
+}
+
+func readMissionCloseout(ctx context.Context, tx pgx.Tx, companyID, missionID string) (*MissionCloseoutSummary, error) {
+	var closeout MissionCloseoutSummary
+	var terminalOutcome pgtype.Text
+	var finishedAt pgtype.Timestamptz
+	var openedAt time.Time
+	var report []byte
+	err := tx.QueryRow(ctx, `SELECT requested_outcome,rationale,acceptance_artifact_ids,opened_at,
+terminal_outcome,closeout_report,finished_at FROM mission_closeouts WHERE company_id=$1 AND mission_id=$2`, companyID, missionID).Scan(
+		&closeout.RequestedOutcome, &closeout.Rationale, &closeout.AcceptanceArtifactIDs, &openedAt,
+		&terminalOutcome, &report, &finishedAt,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	closeout.OpenedAt = openedAt.UTC().Format(time.RFC3339Nano)
+	if terminalOutcome.Valid {
+		value := terminalOutcome.String
+		closeout.TerminalOutcome = &value
+	}
+	if finishedAt.Valid {
+		value := finishedAt.Time.UTC().Format(time.RFC3339Nano)
+		closeout.FinishedAt = &value
+	}
+	if len(report) > 0 {
+		if !json.Valid(report) {
+			return nil, fmt.Errorf("Mission closeout report is invalid")
+		}
+		closeout.Report = append(json.RawMessage(nil), report...)
+	}
+	if closeout.AcceptanceArtifactIDs == nil {
+		closeout.AcceptanceArtifactIDs = []string{}
+	}
+	return &closeout, nil
 }
 
 func readHumanInterventions(ctx context.Context, tx pgx.Tx, companyID, missionID string) ([]humanInterventionRow, error) {
@@ -1438,7 +1480,7 @@ func firstNonEmpty(values ...string) string {
 }
 
 func mapMissionState(value string) string {
-	if value == "active" || value == "paused" || value == "succeeded" || value == "draft" || value == "cancelled" {
+	if value == "active" || value == "paused" || value == "closing" || value == "succeeded" || value == "ended_not_met" || value == "draft" || value == "cancelled" {
 		return value
 	}
 	return "draft"

@@ -624,7 +624,16 @@ func (s *Service) CancelMission(ctx context.Context, companyID string, request M
 		return CommandReceipt{}, err
 	}
 	if found {
-		return commandReceipt("mission.cancel", request.RequestID, prior.ID, prior.Status), nil
+		details, detailsErr := s.runtime.MissionDetails(ctx, scope, request.MissionID)
+		if detailsErr != nil {
+			return CommandReceipt{}, detailsErr
+		}
+		if details.State == "cancelled" {
+			return commandReceipt("mission.cancel", request.RequestID, prior.ID, "cancelled"), nil
+		}
+		if details.State != "closing" || prior.Status != "closing" {
+			return CommandReceipt{}, core.ConflictError{Reason: "Mission cancellation receipt does not match the durable lifecycle state", CurrentState: details.State}
+		}
 	}
 	if s.worker == nil {
 		return CommandReceipt{}, errors.New("deterministic worker adapter is unavailable")
@@ -636,7 +645,20 @@ func (s *Service) CancelMission(ctx context.Context, companyID string, request M
 		return CommandReceipt{}, err
 	}
 	if found {
-		return commandReceipt("mission.cancel", request.RequestID, prior.ID, prior.Status), nil
+		details, detailsErr := s.runtime.MissionDetails(ctx, scope, request.MissionID)
+		if detailsErr != nil {
+			return CommandReceipt{}, detailsErr
+		}
+		if details.State == "cancelled" {
+			return commandReceipt("mission.cancel", request.RequestID, prior.ID, "cancelled"), nil
+		}
+		if details.State != "closing" || prior.Status != "closing" {
+			return CommandReceipt{}, core.ConflictError{Reason: "Mission cancellation receipt does not match the durable lifecycle state", CurrentState: details.State}
+		}
+	} else {
+		if _, err = s.runtime.TXBeginMissionCancellation(ctx, scope, request.MissionID, request.RequestID); err != nil {
+			return CommandReceipt{}, err
+		}
 	}
 	if s.worker == nil {
 		return CommandReceipt{}, errors.New("deterministic worker adapter is unavailable")
@@ -645,16 +667,16 @@ func (s *Service) CancelMission(ctx context.Context, companyID string, request M
 		return CommandReceipt{}, err
 	}
 	if err = s.worker.Stop(ctx, companyID, request.MissionID); err != nil {
-		return CommandReceipt{}, core.ConflictError{Reason: "worker stop is not confirmed; Mission cancellation is blocked", CurrentState: "active"}
+		return CommandReceipt{}, core.ConflictError{Reason: "worker stop is not confirmed; Mission remains closing and new work admission is blocked", CurrentState: "reconcile_required"}
 	}
 	outstandingWork, err := s.runtime.MissionHasOutstandingJobWork(ctx, companyID, request.MissionID)
 	if err != nil {
 		return CommandReceipt{}, err
 	}
 	if outstandingWork {
-		return CommandReceipt{}, core.ConflictError{Reason: "Mission execution has not reached a confirmed stop; cancellation is blocked", CurrentState: "reconcile_required"}
+		return CommandReceipt{}, core.ConflictError{Reason: "Mission remains closing until execution reaches a confirmed stop", CurrentState: "reconcile_required"}
 	}
-	receipt, err := s.runtime.TXCancelMission(ctx, scope, request.MissionID, request.RequestID)
+	receipt, err := s.runtime.TXFinalizeMissionCloseout(ctx, scope, request.MissionID)
 	if err != nil {
 		return CommandReceipt{}, err
 	}

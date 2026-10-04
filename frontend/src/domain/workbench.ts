@@ -1379,11 +1379,21 @@ export type HumanInterventionCommandReceipt = Readonly<{
   resultingState: HumanInterventionState;
 }>;
 
+export type MissionCloseoutSummary = Readonly<{
+  requestedOutcome: 'succeeded' | 'ended_not_met' | 'cancelled';
+  rationale: string;
+  acceptanceArtifactIds: ReadonlyArray<string>;
+  openedAt: string;
+  terminalOutcome: 'succeeded' | 'ended_not_met' | 'cancelled' | null;
+  report?: Readonly<Record<string, unknown>>;
+  finishedAt: string | null;
+}>;
+
 export type MissionSummary = Readonly<{
   missionId: string;
   title: string;
   goal: string;
-  state: 'draft' | 'active' | 'paused' | 'succeeded' | 'cancelled';
+  state: 'draft' | 'active' | 'paused' | 'closing' | 'succeeded' | 'ended_not_met' | 'cancelled';
   contract: string;
   acceptanceContract: AcceptanceContract | null;
   currentContractRevision: ContractRevisionSummary | null;
@@ -1395,6 +1405,7 @@ export type MissionSummary = Readonly<{
     label: string;
     state: 'verified' | 'current' | 'upcoming' | 'blocked';
   }>>;
+  closeout?: MissionCloseoutSummary | null;
 }>;
 
 export type DailyRoutineCatchUpPolicy = 'skip' | 'coalesce_latest' | 'catch_up';

@@ -107,7 +107,8 @@ function MissionLifecycleControls({api, companyId, missionId, missionState}: Rea
     {missionState === 'active' ? <button className={styles.commandButton} data-testid="mission-pause" disabled={busy} onClick={() => { void run('pause'); }} type="button">暂停使命</button> : null}
     {missionState === 'paused' ? <button className={styles.commandButton} data-testid="mission-resume" disabled={busy} onClick={() => { void run('resume'); }} type="button">恢复使命</button> : null}
     {missionState === 'active' || missionState === 'paused' ? <button className={styles.textButton} data-testid="mission-cancel" disabled={busy} onClick={() => { void run('cancel'); }} type="button">结束使命</button> : null}
-    {missionState === 'succeeded' || missionState === 'cancelled' ? <span className={styles.formHint}>使命已结束</span> : null}
+    {missionState === 'closing' ? <span className={styles.formHint}>使命收尾中：旧 Worker、Job 和待处理责任仍在核对</span> : null}
+    {missionState === 'succeeded' || missionState === 'ended_not_met' || missionState === 'cancelled' ? <span className={styles.formHint}>使命已结束</span> : null}
   </div>{message ? <p className={styles.formError} role="alert">{message}</p> : <p className={styles.formHint}>暂停会停止当前 WorkerSession 并保留使命；恢复会在运行时就绪后启动新的会话。QQ 回复不控制这些状态。</p>}</section>;
 }
 

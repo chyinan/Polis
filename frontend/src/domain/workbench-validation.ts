@@ -750,18 +750,31 @@ function isMissionSummary(value: unknown): boolean {
   return hasString(value, 'missionId')
     && hasString(value, 'title')
     && hasString(value, 'goal')
-    && isOneOf(value.state, ['draft', 'active', 'paused', 'succeeded', 'cancelled'])
+    && isOneOf(value.state, ['draft', 'active', 'paused', 'closing', 'succeeded', 'ended_not_met', 'cancelled'])
     && hasString(value, 'contract')
     && (value.acceptanceContract === null || isAcceptanceContract(value.acceptanceContract))
     && (value.currentContractRevision === null || isContractRevision(value.currentContractRevision))
     && hasString(value, 'nextMilestone')
     && hasString(value, 'verifiedMilestones')
     && hasString(value, 'milestoneTotal')
+    && (!Object.hasOwn(value, 'closeout') || value.closeout === null || isMissionCloseoutSummary(value.closeout))
     && Array.isArray(value.milestones)
     && value.milestones.every(milestone => isRecord(milestone)
       && hasString(milestone, 'id')
       && hasString(milestone, 'label')
       && isOneOf(milestone.state, ['verified', 'current', 'upcoming', 'blocked']));
+}
+
+function isMissionCloseoutSummary(value: unknown): boolean {
+  return isRecord(value)
+    && isOneOf(value.requestedOutcome, ['succeeded', 'ended_not_met', 'cancelled'])
+    && hasString(value, 'rationale')
+    && Array.isArray(value.acceptanceArtifactIds)
+    && value.acceptanceArtifactIds.every(item => typeof item === 'string')
+    && hasString(value, 'openedAt')
+    && (value.terminalOutcome === null || isOneOf(value.terminalOutcome, ['succeeded', 'ended_not_met', 'cancelled']))
+    && (!Object.hasOwn(value, 'report') || isRecord(value.report))
+    && isNullableString(value.finishedAt);
 }
 
 function isContractRevision(value: unknown): value is ContractRevisionSummary {

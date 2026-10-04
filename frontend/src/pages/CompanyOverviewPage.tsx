@@ -74,13 +74,14 @@ function qualificationTone(status: EmployeeSummary['qualification']['status']): 
 }
 
 function missionStateLabel(state: CompanyOverviewView['mission']['state']): string {
-  const labels: Readonly<Record<CompanyOverviewView['mission']['state'], string>> = {draft: '草案', active: '进行中', paused: '已暂停', succeeded: '已完成', cancelled: '已取消'};
+  const labels: Readonly<Record<CompanyOverviewView['mission']['state'], string>> = {draft: '草案', active: '进行中', paused: '已暂停', closing: '收尾中', succeeded: '已完成', ended_not_met: '未达成而结束', cancelled: '已取消'};
   return labels[state];
 }
 
 function missionStateTone(state: CompanyOverviewView['mission']['state']): 'info' | 'neutral' | 'success' | 'warning' | 'danger' {
   if (state === 'succeeded') return 'success';
-  if (state === 'paused') return 'warning';
+  if (state === 'paused' || state === 'closing') return 'warning';
+  if (state === 'ended_not_met') return 'danger';
   if (state === 'active') return 'info';
   return 'neutral';
 }
@@ -144,6 +145,7 @@ function SnapshotStrip({overview, companyId}: Readonly<{overview: CompanyOvervie
 
 function MissionCard({overview, api, companyId}: Readonly<{overview: CompanyOverviewView; api: WorkbenchApi; companyId: string}>) {
   const {mission} = overview;
+  const closeout = mission.closeout;
   const isMissionConfigured = mission.missionId !== 'unavailable';
   const revision = mission.currentContractRevision;
   return (
@@ -164,6 +166,12 @@ function MissionCard({overview, api, companyId}: Readonly<{overview: CompanyOver
           {mission.acceptanceContract.required_text.map((criterion, index) => <li key={`${index}-${criterion}`}>{criterion}</li>)}
         </ol> : <p>未配置。员工可以探索，但不能创建合格检查点或提交产物。</p>}
       </section>
+      {closeout ? <section className={styles.acceptancePanel} data-mission-closeout={closeout.terminalOutcome ?? 'closing'} aria-label="使命收尾记录">
+        <div className={styles.acceptanceHeader}><BadgeCheck aria-hidden="true" size={15} /><strong>收尾记录 · {closeout.terminalOutcome ?? '处理中'}</strong></div>
+        <p>{closeout.rationale}</p>
+        {closeout.acceptanceArtifactIds.length > 0 ? <p>验收证据：{closeout.acceptanceArtifactIds.join('、')}</p> : null}
+        {closeout.report ? <p>收尾报告：取消任务 {String(closeout.report.cancelledTaskTotal ?? 0)} 项，撤销责任 {String(closeout.report.declinedObligationTotal ?? 0)} 项，移交责任 {String(closeout.report.supersededObligationTotal ?? 0)} 项，取消周期实例 {String(closeout.report.cancelledRoutineTotal ?? 0)} 项。</p> : null}
+      </section> : null}
       <MissionControls api={api} companyId={companyId} mission={mission} />
     </article>
   );
@@ -280,8 +288,10 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
     </form> : <div className={styles.wizardActions}>
       {canStart ? <button className={styles.commandButton} data-command="mission-start" disabled={isSubmitting} onClick={() => void handleStart()} type="button"><Play aria-hidden="true" size={14} />{isSubmitting ? '启动中…' : '启动使命'}</button> : null}
       {canCancel ? <button className={styles.textButton} data-command="mission-cancel" disabled={isSubmitting} onClick={() => void handleCancel()} type="button"><Square aria-hidden="true" size={14} />{isSubmitting ? '停止中…' : '停止使命'}</button> : null}
+      {!canStart && !canCancel && mission.state === 'closing' ? <StatusBadge label="收尾中：正在隔离旧工作并核对责任" tone="warning" /> : null}
       {!canStart && !canCancel && mission.state === 'cancelled' ? <StatusBadge label="已取消" tone="neutral" /> : null}
       {!canStart && !canCancel && mission.state === 'succeeded' ? <StatusBadge label="已完成" tone="success" /> : null}
+      {!canStart && !canCancel && mission.state === 'ended_not_met' ? <StatusBadge label="未达成而结束" tone="danger" /> : null}
     </div>}
     {phase !== 'idle' ? <p className={phase === 'conflict' || phase === 'error' ? styles.errorText : styles.formHint} data-command-phase={phase} role={phase === 'conflict' || phase === 'error' ? 'alert' : 'status'}>{message}</p> : null}
   </section>;

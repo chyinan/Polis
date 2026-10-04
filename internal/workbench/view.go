@@ -3,6 +3,7 @@ package workbench
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"polis/internal/taskvalidation"
@@ -191,6 +192,17 @@ type MissionSummary struct {
 	VerifiedMilestones      string                             `json:"verifiedMilestones"`
 	MilestoneTotal          string                             `json:"milestoneTotal"`
 	Milestones              []Milestone                        `json:"milestones"`
+	Closeout                *MissionCloseoutSummary            `json:"closeout,omitempty"`
+}
+
+type MissionCloseoutSummary struct {
+	RequestedOutcome      string          `json:"requestedOutcome"`
+	Rationale             string          `json:"rationale"`
+	AcceptanceArtifactIDs []string        `json:"acceptanceArtifactIds"`
+	OpenedAt              string          `json:"openedAt"`
+	TerminalOutcome       *string         `json:"terminalOutcome"`
+	Report                json.RawMessage `json:"report,omitempty"`
+	FinishedAt            *string         `json:"finishedAt"`
 }
 
 type ActivityEvent struct {

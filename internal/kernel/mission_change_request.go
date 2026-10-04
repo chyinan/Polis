@@ -790,13 +790,56 @@ VALUES($1,$2,$3,1,$4,'upload',$5,'text/markdown',$6,$7,'usable',0,0)`, scope.com
 		}
 		mapping = append(mapping, MissionChangeInputRevisionMap{Origin: "task_workspace", SourceTaskID: task.TaskID, PreviousInputID: "workspace:" + task.TaskID, PreviousRevision: *task.WorkspaceRevision, SuccessorInputID: successorInputID, SuccessorRevision: 1, ContentDigest: *task.WorkspaceDigest})
 	}
-	if _, err = tx.Exec(ctx, `UPDATE missions SET state='cancelled' WHERE company_id=$1 AND id=$2 AND state='paused'`, scope.company, missionID); err != nil {
+	rationale := "Replaced through approved change request " + changeRequestID + "; responsibility carryover is recorded in successor Mission " + successorMissionID
+	if err = beginMissionCloseoutTX(ctx, tx, scope, missionID, "cancelled", rationale, []string{}, changeRequestID); err != nil {
+		return "", nil, err
+	}
+	if _, err = tx.Exec(ctx, `UPDATE obligations o SET state='superseded'
+FROM tasks t WHERE o.company_id=t.company_id AND o.task_id=t.id AND t.company_id=$1 AND t.mission_id=$2
+	 AND o.state NOT IN ('fulfilled','declined','superseded')`, scope.company, missionID); err != nil {
 		return "", nil, err
 	}
 	if _, err = tx.Exec(ctx, `UPDATE tasks SET state='cancelled' WHERE company_id=$1 AND mission_id=$2 AND state NOT IN ('completed','cancelled')`, scope.company, missionID); err != nil {
 		return "", nil, err
 	}
-	if err = setMissionEmployeeSchedulesTX(ctx, tx, scope, missionID, false); err != nil {
+	if _, err = tx.Exec(ctx, `UPDATE routine_occurrences o SET state='cancelled'
+FROM routines r WHERE o.company_id=r.company_id AND o.routine_id=r.id
+	 AND r.company_id=$1 AND r.mission_id=$2 AND o.state IN ('pending','needs_instruction','delivered')`, scope.company, missionID); err != nil {
+		return "", nil, err
+	}
+	var cancelledTaskTotal, supersededObligationTotal, cancelledRoutineTotal int64
+	if err = tx.QueryRow(ctx, `SELECT count(*) FROM tasks WHERE company_id=$1 AND mission_id=$2 AND state='cancelled'`, scope.company, missionID).Scan(&cancelledTaskTotal); err != nil {
+		return "", nil, err
+	}
+	if err = tx.QueryRow(ctx, `SELECT count(*) FROM obligations o JOIN tasks t ON t.company_id=o.company_id AND t.id=o.task_id
+WHERE o.company_id=$1 AND t.mission_id=$2 AND o.state='superseded'`, scope.company, missionID).Scan(&supersededObligationTotal); err != nil {
+		return "", nil, err
+	}
+	if err = tx.QueryRow(ctx, `SELECT count(*) FROM routine_occurrences o JOIN routines r ON r.company_id=o.company_id AND r.id=o.routine_id
+WHERE r.company_id=$1 AND r.mission_id=$2 AND o.state='cancelled'`, scope.company, missionID).Scan(&cancelledRoutineTotal); err != nil {
+		return "", nil, err
+	}
+	closeoutReport, err := json.Marshal(map[string]any{
+		"outcome":                   "cancelled",
+		"rationale":                 rationale,
+		"successorMissionId":        successorMissionID,
+		"changeRequestId":           changeRequestID,
+		"cancelledTaskTotal":        cancelledTaskTotal,
+		"supersededObligationTotal": supersededObligationTotal,
+		"cancelledRoutineTotal":     cancelledRoutineTotal,
+	})
+	if err != nil {
+		return "", nil, err
+	}
+	if err = finishMissionCloseoutTX(ctx, tx, scope, missionID, "cancelled", closeoutReport); err != nil {
+		return "", nil, err
+	}
+	if _, err = tx.Exec(ctx, `UPDATE employee_schedules s SET state='sleeping',checked_generation=work_generation,
+ pause_reason=NULL,next_due_at=NULL,updated_at=now()
+WHERE s.company_id=$1 AND s.employee_id IN (
+ SELECT t.owner FROM tasks t WHERE t.company_id=$1 AND t.mission_id=$2
+ UNION SELECT r.employee_id FROM routines r WHERE r.company_id=$1 AND r.mission_id=$2
+)`, scope.company, missionID); err != nil {
 		return "", nil, err
 	}
 	if err = appendEvent(ctx, tx, scope, "mission.cancelled", map[string]any{"mission_id": missionID, "change_request_id": changeRequestID}); err != nil {
