@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 218 — REQ-27 handover sequence fence
+
+Worker Handover assembly reads its base context and optional direct-message, shared Artifact, and MCP projections through separate read paths. The adapter now checks the Company sequence captured by the base Handover against the sequence after assembling all enabled projections, retrying the whole read up to three times. If writes keep racing it, the tool returns a clear conflict and asks the Worker to read current work again, rather than returning a mixed-version context. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity, or frozen scenario ran. E-HANDOVER remains unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md`.
+
 ## Slice 217 — REQ-39 evidence crosswalk refresh
 
 Added Slice 216's takeover/tree-baseline evidence reference to all eight frozen scenarios mapped to REQ-39. `PP-09`, `UI-45`, `WF-21`–`WF-25`, and `WF-36` remain `partial` / `not_run`; no scenario disposition, execution state, or count changed. JSON parsing and `git diff --check` pass. No tests, code, database, Worker/provider activity, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-217-req39-evidence-crosswalk/verification.md`.

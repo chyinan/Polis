@@ -108,15 +108,34 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		if e := strictArgs(raw, &args); e != nil {
 			return ToolResult{}, e
 		}
-		h, e := k.Handover(ctx, b)
-		if e == nil && name == "work_current" && t.ProductSurface && t.DirectMessagingSurface {
-			h.DirectMessageTargets, h.DirectMessageTargetsTruncated, e = k.ProductDirectMessageTargets(ctx, b)
-		}
-		if e == nil && name != "workspace_read" && t.SharedArtifactSurface {
-			h.SharedArtifactReads, h.SharedArtifactReadsTruncated, e = k.SharedMissionArtifactReadHistory(ctx, b)
-		}
-		if e != nil {
-			return ToolResult{}, e
+		var h HandoverBundle
+		var e error
+		// Optional projections use separate read APIs; do not return them as one
+		// handover if a Company write committed between those reads.
+		for attempt := 0; attempt < 3; attempt++ {
+			h, e = k.Handover(ctx, b)
+			if e == nil && name == "work_current" && t.ProductSurface && t.DirectMessagingSurface {
+				h.DirectMessageTargets, h.DirectMessageTargetsTruncated, e = k.ProductDirectMessageTargets(ctx, b)
+			}
+			if e == nil && name != "workspace_read" && t.SharedArtifactSurface {
+				h.SharedArtifactReads, h.SharedArtifactReadsTruncated, e = k.SharedMissionArtifactReadHistory(ctx, b)
+			}
+			if e == nil && t.ControlledMCPSurface && name != "workspace_read" {
+				h.MCPToolSets, e = k.BoundMCPToolSets(ctx, b, t.ControlledStdioMCPEnabled, t.StreamableHTTPMCPEnabled)
+			}
+			if e != nil {
+				return ToolResult{}, e
+			}
+			var currentCompanySeq int64
+			if e = k.pool.QueryRow(ctx, "SELECT company_seq FROM companies WHERE id=$1", b.scope.company).Scan(&currentCompanySeq); e != nil {
+				return ToolResult{}, e
+			}
+			if currentCompanySeq == h.CompanySeq {
+				break
+			}
+			if attempt == 2 {
+				return ToolResult{Error: core.Conflict.Error(), Detail: "Company state changed while assembling the handover snapshot; read current work again."}, nil
+			}
 		}
 		if !t.SkillLoadSurface {
 			h.SkillCatalog = nil
@@ -127,12 +146,6 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		if t.SkillDirectorySurface {
 			for index := range h.SkillCatalog {
 				h.SkillCatalog[index].References = nil
-			}
-		}
-		if t.ControlledMCPSurface && name != "workspace_read" {
-			h.MCPToolSets, e = k.BoundMCPToolSets(ctx, b, t.ControlledStdioMCPEnabled, t.StreamableHTTPMCPEnabled)
-			if e != nil {
-				return ToolResult{}, e
 			}
 		}
 		if name == "workspace_read" {

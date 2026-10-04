@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 217. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 218. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 218: REQ-27 handover sequence fence
+
+The Worker Handover adapter now verifies that the Company sequence did not change while it assembled the base Handover and separately queried optional direct-message, shared Artifact, and MCP context. It retries up to three times, then returns a retryable conflict instead of a mixed-version context. All eight frozen REQ-27 scenarios cite this source evidence and remain `partial` / `not_run`; E-HANDOVER still requires the owner-approved behavioral protocol and actual model-transition evidence. See `evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md`.
 
 ## Slice 217: REQ-39 evidence crosswalk refresh
 
@@ -838,7 +842,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | 24 | Authenticated formal employee operations | R1 | partial; product tool surface exists, current full runtime path is unqualified | R1 |
 | 25 | Explicit administrator and continuing authorization | R1 | partial; local bootstrap uses a terminal-issued one-time code and Argon2id; Schema 97 adds hashed, expiring, revocable owner sessions, HttpOnly/SameSite cookies, login throttling and session-bound double-submit CSRF; the Installation Accounts UI supports bootstrap/login/logout and read-only account observation. Slice 146 verified the flow with HTTP clients against disposable PostgreSQL, not a real browser. Owner-selected setup, local browser/Tauri WebView and remote-browser qualification remain; financial settlement and cross-Company owner mutations remain gated on separately confirmed scope. | R1 |
 | 26 | Company isolation covers shared write targets | R1 | partial; CAS-backed private Task trees are Company/Task/session/epoch/revision fenced; no shared branch/deploy/publish writer exists to bind, and ResourceKey alias handling plus FT-66/FT-70 qualification remain open | R1 |
-| 27 | Handover preserves facts and published artifacts | R1 | partial; checkpoint/recovery foundations exist; E-HANDOVER remains | R1 |
+| 27 | Handover preserves facts and published artifacts | R1 | partial; Worker Handover carries Task plan, workspace digest/revision/content, obligations, checkpoints, memory context, budget lineage and Company sequence under a read-only repeatable-read transaction; optional message/Artifact/MCP projections are sequence-fenced after assembly (Slice 218). E-HANDOVER's cross-model hidden-regression protocol and owner-approved budget/threshold evidence remain unrun | R1 |
 | 28 | QQ Bot takeover notification | R1 | partial; redacted C2C transport, DPAPI credential storage, one-shot HMAC IPC, revocation gate, qualified-route DB gate, event-path dispatcher, persisted receipt/outcome, crash-to-unknown recovery, bounded restart-safe retry and visible intervention/delivery status exist; live qualification and real delivery remain | R1 C2C |
 | 29 | Authorized workspace and shared-file access | R1 | partial; fake-only @8 adds bounded same-Mission ready Artifact reads and opt-in fake-only @10 adds a bounded CAS-backed logical private Task file tree plus immutable `draft_not_accepted` snapshots; host mounts, company/group shared roots, snapshot lifecycle decisions and CAP-01–06 qualification remain open | R1 |
 | 30 | Public and company Skills | R1 | partial; a fixed read-only ZIP profile validates `SKILL.md`, a restricted set of references/assets and exact file bytes in company CAS; digest-pinned revisions can be locally qualified, manually approved/revoked and bound to an employee. Slice 47 connects the exact v5 load tool through the fake Worker to the permission-checked Kernel. Real provider v5 remains unqualified; scripts and all Skill code execution stay unavailable. | R1 selected read-only Skill |

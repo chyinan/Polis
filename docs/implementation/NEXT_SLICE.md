@@ -1,5 +1,11 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
+## Latest continuation status (Slice 218, REQ-27 handover sequence fence)
+
+Worker `work_current`, `context_read`, and `workspace_read` compose the base Handover plus optional direct-message, shared Artifact, and MCP projections from separate reads. The Kernel now compares the Company sequence captured by Handover with the current sequence after composition, rebuilding up to three times and returning `CONFLICT` with a retry instruction if writes keep racing the read. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity, or frozen scenario ran. All eight REQ-27 scenarios remain `partial` / `not_run`; behavioral E-HANDOVER evidence and owner-approved thresholds remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md`.
+
+Next Slice219: continue the finite open REQ ledger at a concrete local implementation or evidence gap. Preserve every frozen scenario execution state as `not_run` until that scenario actually runs. Keep Worker/provider work gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+
 ## Latest continuation status (Slice 217, REQ-39 evidence crosswalk refresh)
 
 The live traceability crosswalk now links Slice 216's legacy/tree baseline fence evidence to all eight frozen scenarios mapped to REQ-39 (`PP-09`, `UI-45`, `WF-21`–`WF-25`, `WF-36`). Each remains `partial` / `not_run`; scenario totals, other evidence, and disposition counts are unchanged. JSON parsing and `git diff --check` pass. No tests, code, database, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-217-req39-evidence-crosswalk/verification.md`.
