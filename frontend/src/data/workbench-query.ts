@@ -126,7 +126,7 @@ export function useCreateMission(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<CreateMissionOptions, 'companyId'>) => api.createMission({...options, companyId}),
-    onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
   });
 }
 
@@ -134,7 +134,7 @@ export function useCreateCompany(api: WorkbenchApi) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: CompanyDraftOptions) => api.createCompany(options),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'companies']}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'companies']}),
   });
 }
 
@@ -142,7 +142,7 @@ export function useUpdateCompany(api: WorkbenchApi) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: UpdateCompanyOptions) => api.updateCompany(options),
-    onSuccess: async (_receipt, options) => {
+    onSettled: async (_receipt, _error, options) => {
       await Promise.all([
         queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'companies']}),
         queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', options.companyId]}),
@@ -155,7 +155,7 @@ export function useArchiveCompany(api: WorkbenchApi) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: ArchiveCompanyOptions) => api.archiveCompany(options),
-    onSuccess: async (_receipt, options) => {
+    onSettled: async (_receipt, _error, options) => {
       await Promise.all(archiveInvalidationKeys(api.mode, options.companyId).map(queryKey => queryClient.invalidateQueries({queryKey})));
     },
   });
@@ -172,7 +172,7 @@ export function useUpdateRuntimeSettings(api: WorkbenchApi) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: UpdateRuntimeSettingsOptions) => api.updateRuntimeSettings(options),
-    onSuccess: async (_receipt, options) => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'runtime-settings', options.companyId]}),
+    onSettled: async (_receipt, _error, options) => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'runtime-settings', options.companyId]}),
   });
 }
 
@@ -188,7 +188,7 @@ export function useSendOperatorInstruction(api: WorkbenchApi, companyId: string)
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<CreateOperatorInstructionOptions, 'companyId'>) => api.sendOperatorInstruction({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'operator-instructions', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'operator-instructions', companyId]}),
   });
 }
 

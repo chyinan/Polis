@@ -1,5 +1,10 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 178 — Workbench setup/config response reconciliation
+
+Company/Mission creation, Company update/archive, runtime settings and operator-instruction mutations now invalidate their authoritative read models on settle, not only on success. Their error presentations describe an unconfirmed outcome and direct the operator to refresh/check persisted state before repeating the command. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider activity or frozen scenarios ran. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-178-req23-setup-response-refresh/verification.md`.
+
+
 ## Slice 177 — REQ-37 JobRun response reconciliation
 
 Project JobRun start/stop and cross-backend handover mutations now invalidate Task run/handover histories on settle, including ambiguous errors. This ensures a server-side commit whose response is lost is reconciled before the UI can rely on its old state. Task controls label the result unconfirmed and require checking the refreshed history. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, JobRun, Worker/provider action or frozen scenario ran. REQ-37 remains partial pending native host, restart and frozen qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-177-req37-jobrun-response-refresh/verification.md`.
