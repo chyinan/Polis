@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 172. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 173. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 173: REQ-13 durable Fake Worker dispatch fairness (Schema 102)
+
+The optional zero-egress Fake @7 product dispatcher now uses a Schema-102 singleton cursor row locked for each claim transaction, so cursor advancement and candidate selection are shared across runtime instances. A unique `(Company, Task)` 30-second lease prevents two dispatchers from claiming the same candidate before the Worker's existing database-authoritative session admission. Claims expire after a process exit and normal starts release them. Quota readiness remains fail-closed. The new coordination migration is forward-only because downgrading could reset live coordination state. The local Termux DB is Schema 102 with Company=0, WorkerSession=0, one cursor row and no claims. `go build ./...`, the 102-entry migration hash check and diff check pass; no tests or dispatch/Worker/provider action ran. There is still no owner-confirmed global Worker slot limit or authoritative provider quota signal. Shared global capacity accounting/enforcement is open; the draft team capacity is not runtime policy. REQ-13 remains partial. See `evidence/development/r1-r3-implementation-validation-20261004-slice-173-req13-dispatch-fairness/verification.md`.
 
 ## Slice 172: REQ-02 executable role-contract and provider-surface audit
 

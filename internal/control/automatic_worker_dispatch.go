@@ -63,17 +63,22 @@ func (s *Service) runAutomaticProductWorkerDispatcher(ctx context.Context, repor
 func (s *Service) dispatchAutomaticProductWorkerOnce(ctx context.Context) error {
 	s.projectLifecycleMu.Lock()
 	defer s.projectLifecycleMu.Unlock()
-	candidate, found, err := s.runtime.NextProductWorkerDispatchCandidate(ctx, s.automaticProductDispatchCursor)
+	candidate, found, err := s.runtime.ClaimNextProductWorkerDispatchCandidate(ctx)
 	if err != nil {
 		return err
 	}
 	if !found {
-		s.automaticProductDispatchCursor = ""
 		return nil
 	}
-	s.automaticProductDispatchCursor = candidate.CompanyID
-	if err = s.worker.Start(ctx, candidate.CompanyID, candidate.MissionID); err != nil {
-		return fmt.Errorf("automatic product Worker dispatch failed for company %s mission %s task %s: %w", candidate.CompanyID, candidate.MissionID, candidate.TaskID, err)
+	startErr := s.worker.Start(ctx, candidate.CompanyID, candidate.MissionID)
+	releaseCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	releaseErr := s.runtime.ReleaseProductWorkerDispatchClaim(releaseCtx, candidate.ClaimID)
+	cancel()
+	if startErr != nil {
+		return fmt.Errorf("automatic product Worker dispatch failed for company %s mission %s task %s: %w", candidate.CompanyID, candidate.MissionID, candidate.TaskID, startErr)
+	}
+	if releaseErr != nil {
+		return fmt.Errorf("automatic product Worker dispatch succeeded but claim %s could not be released before expiry: %w", candidate.ClaimID, releaseErr)
 	}
 	return nil
 }

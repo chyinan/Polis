@@ -3,7 +3,10 @@ package kernel
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"polis/internal/core"
@@ -26,6 +29,7 @@ type ProductWorkerDispatchCandidate struct {
 	CompanyID string
 	MissionID string
 	TaskID    string
+	ClaimID   string
 }
 
 // NextProductWorkerDispatchCandidate returns one eligible product Task after
@@ -33,8 +37,18 @@ type ProductWorkerDispatchCandidate struct {
 // within that keyset page. A quota-blocked or paused schedule is never eligible;
 // any prior WorkerSession remains a durable one-shot fence.
 func (k *Kernel) NextProductWorkerDispatchCandidate(ctx context.Context, afterCompanyID string) (ProductWorkerDispatchCandidate, bool, error) {
+	return nextProductWorkerDispatchCandidate(ctx, k.pool, afterCompanyID)
+}
+
+const productWorkerDispatchClaimTTL = 30 * time.Second
+
+type productWorkerDispatchQueryer interface {
+	QueryRow(context.Context, string, ...any) pgx.Row
+}
+
+func nextProductWorkerDispatchCandidate(ctx context.Context, queryer productWorkerDispatchQueryer, afterCompanyID string) (ProductWorkerDispatchCandidate, bool, error) {
 	var candidate ProductWorkerDispatchCandidate
-	err := k.pool.QueryRow(ctx, `SELECT t.company_id,t.mission_id,t.id
+	err := queryer.QueryRow(ctx, `SELECT t.company_id,t.mission_id,t.id
 FROM tasks t
 JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
 JOIN companies c ON c.id=t.company_id
@@ -47,6 +61,9 @@ WHERE c.state='active' AND m.state='active'
   AND EXISTS(SELECT 1 FROM task_validation_bindings v WHERE v.company_id=t.company_id AND v.task_id=t.id)
   AND NOT EXISTS(SELECT 1 FROM worker_sessions w WHERE w.company_id=t.company_id AND w.task_id=t.id)
   AND NOT EXISTS(SELECT 1 FROM worker_sessions w WHERE w.company_id=t.company_id AND w.employee_id=t.owner AND w.state<>'stopped')
+  AND NOT EXISTS(SELECT 1 FROM product_worker_dispatch_claims dispatch_claim
+                 WHERE dispatch_claim.company_id=t.company_id AND dispatch_claim.task_id=t.id
+                   AND dispatch_claim.expires_at>now())
   AND (SELECT count(*) FROM tasks executable
        WHERE executable.company_id=t.company_id AND executable.mission_id=t.mission_id
          AND executable.owner=$1 AND executable.kind=$2) = 1
@@ -59,6 +76,75 @@ LIMIT 1`, core.EmployeeBackendID, core.TaskKindCompat, afterCompanyID).Scan(&can
 		return ProductWorkerDispatchCandidate{}, false, err
 	}
 	return candidate, true, nil
+}
+
+// ClaimNextProductWorkerDispatchCandidate durably advances a shared Company
+// cursor and creates a short-lived claim in one transaction. The claim keeps
+// another dispatcher instance from selecting the same Task before Worker
+// admission creates its authoritative WorkerSession. A crash releases the
+// claim by expiry.
+func (k *Kernel) ClaimNextProductWorkerDispatchCandidate(ctx context.Context) (ProductWorkerDispatchCandidate, bool, error) {
+	tx, err := k.pool.Begin(ctx)
+	if err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	defer tx.Rollback(ctx)
+	if _, err = tx.Exec(ctx, `DELETE FROM product_worker_dispatch_claims WHERE expires_at<=now()`); err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	var cursor string
+	if err = tx.QueryRow(ctx, `SELECT cursor_company_id FROM product_worker_dispatch_state WHERE id=1 FOR UPDATE`).Scan(&cursor); err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	candidate, found, err := nextProductWorkerDispatchCandidate(ctx, tx, cursor)
+	if err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	if !found && cursor != "" {
+		candidate, found, err = nextProductWorkerDispatchCandidate(ctx, tx, "")
+		if err != nil {
+			return ProductWorkerDispatchCandidate{}, false, err
+		}
+	}
+	if !found {
+		if err = tx.Commit(ctx); err != nil {
+			return ProductWorkerDispatchCandidate{}, false, err
+		}
+		return ProductWorkerDispatchCandidate{}, false, nil
+	}
+	var claimIDBytes [16]byte
+	if _, err = rand.Read(claimIDBytes[:]); err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	candidate.ClaimID = hex.EncodeToString(claimIDBytes[:])
+	if _, err = tx.Exec(ctx, `INSERT INTO product_worker_dispatch_claims(claim_id,company_id,task_id,expires_at)
+VALUES($1,$2,$3,now()+$4::interval)`, candidate.ClaimID, candidate.CompanyID, candidate.TaskID, productWorkerDispatchClaimTTL.String()); err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	if _, err = tx.Exec(ctx, `UPDATE product_worker_dispatch_state SET cursor_company_id=$1,updated_at=now() WHERE id=1`, candidate.CompanyID); err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return ProductWorkerDispatchCandidate{}, false, err
+	}
+	return candidate, true, nil
+}
+
+// ReleaseProductWorkerDispatchClaim is idempotent so a successful Worker
+// admission can always retire its dispatcher coordination claim.
+func (k *Kernel) ReleaseProductWorkerDispatchClaim(ctx context.Context, claimID string) error {
+	if len(claimID) != 32 {
+		return core.Malformed
+	}
+	claimIDBytes, err := hex.DecodeString(claimID)
+	if err != nil {
+		return core.Malformed
+	}
+	if hex.EncodeToString(claimIDBytes) != claimID {
+		return core.Malformed
+	}
+	_, err = k.pool.Exec(ctx, `DELETE FROM product_worker_dispatch_claims WHERE claim_id=$1`, claimID)
+	return err
 }
 
 func (k *Kernel) EmployeeSchedule(ctx context.Context, scope Scope, employeeID string) (EmployeeScheduleSnapshot, error) {
