@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 193 — Workbench guidance and settings exact retries
+
+Operator guidance, runtime configuration, Company update, and Company archive mutations now retain the exact request ID for a same-payload retry after an ambiguous response. Changed payloads receive different identities; pending IDs clear on success. Frontend production build and `git diff --check` pass. No guidance or setting changed, no Company was archived, and no Worker/provider action or frozen scenario ran. No schema change. Runtime restart and host/account qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-193-workbench-settings-retries/verification.md`.
+
 ## Slice 192 — REQ-39 takeover lease exact retry recovery
 
 Task takeover grant/release controls preserve the exact request ID after an ambiguous response and reuse it for the same target lease intent. Lease release now refreshes the lease, Company overview and activity projections after success or error. Frontend production build and `git diff --check` pass; no lease was granted or released, no Worker/provider activity ran, and no frozen scenario was executed. No schema change. Patch import and full exclusive handoff qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-192-req39-takeover-lease-retry/verification.md`.

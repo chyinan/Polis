@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 192, REQ-39 takeover lease retry recovery)
+## Latest continuation status (Slice 193, Workbench guidance and settings exact retries)
+
+Operator guidance, runtime settings, Company updates, and Company archive commands now preserve their exact request ID for the same payload after an ambiguous response. These controls already refresh their authoritative views; success clears the pending identity. Frontend production build and diff check pass; no guidance or setting changed and no Company was archived. See `evidence/development/r1-r3-implementation-validation-20261004-slice-193-workbench-settings-retries/verification.md`.
+
+## Previous continuation status (Slice 192, REQ-39 takeover lease retry recovery)
 
 Takeover grant/release controls now keep the exact request ID for same-intent retries after an ambiguous response, and release refreshes lease, Company and activity state after either outcome. The UI directs operators to inspect refreshed state before retrying. Frontend production build and diff check pass; no lease was granted or released and no Worker/provider or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-192-req39-takeover-lease-retry/verification.md`.
 

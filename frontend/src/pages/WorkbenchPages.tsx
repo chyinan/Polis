@@ -22,6 +22,17 @@ type PageProps = Readonly<{api: WorkbenchApi; companyId: string}>;
 
 const CUSTOM_CODEX_MODEL = '__custom_codex_model__';
 
+function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
+  const key = JSON.stringify({operation, payload});
+  const requestId = pendingIds.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+  pendingIds.set(key, requestId);
+  return {key, requestId};
+}
+
+function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: string): void {
+  pendingIds.delete(key);
+}
+
 function ViewHeader({eyebrow, title, action}: Readonly<{eyebrow: string; title: string; action?: ReactNode}>) {
   return <div className={styles.viewHeader}><div><p className={styles.eyebrow}>{eyebrow}</p><h1 className={styles.pageTitle}>{title}</h1></div>{action ? <div className={styles.viewHeaderAction}>{action}</div> : null}</div>;
 }
@@ -131,11 +142,15 @@ function OperatorInstructionPanel({companyId, instructionsQuery, missionId, over
   const [employeeId, setEmployeeId] = useState('');
   const [taskId, setTaskId] = useState('');
   const [companyWide, setCompanyWide] = useState(false);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const guidanceEmployees = companyWide ? overview.employees : overview.employees.filter(employee => overview.tasks.some(task => task.ownerEmployeeId === employee.employeeId));
   async function submit(): Promise<void> {
     const trimmed = content.trim();
     if (trimmed === '') return;
-    await sendInstruction.mutateAsync({missionId: companyWide ? null : missionId, employeeId: employeeId || null, taskId: companyWide ? null : taskId || null, content: trimmed, requestId: `operator-instruction-${companyId}-${Date.now()}`});
+    const payload = {missionId: companyWide ? null : missionId, employeeId: employeeId || null, taskId: companyWide ? null : taskId || null, content: trimmed};
+    const pending = pendingRequestIdentity(pendingRequestIds.current, `operator-instruction-${companyId}`, payload);
+    await sendInstruction.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     setContent('');
   }
   return <section className={styles.sectionCard}>
@@ -352,6 +367,7 @@ export function SettingsPage({api, companyId}: PageProps) {
 
 function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runtime: RuntimeSettingsView}>): ReactElement {
   const update = useUpdateRuntimeSettings(api);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const [provider, setProvider] = useState(runtime.provider);
   const [model, setModel] = useState(runtime.model);
   const [effort, setEffort] = useState(runtime.effort);
@@ -419,7 +435,10 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
   }
 
   async function saveRuntimeSettings(): Promise<void> {
-    await update.mutateAsync({companyId: runtime.companyId, provider, model, effort, profile: profileToSave, requestId: `runtime-settings-${runtime.companyId}-${Date.now()}`});
+    const payload = {companyId: runtime.companyId, provider, model, effort, profile: profileToSave};
+    const pending = pendingRequestIdentity(pendingRequestIds.current, `runtime-settings-${runtime.companyId}`, payload);
+    await update.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
   }
   return <article className={`${styles.sectionCard} ${styles.runtimeSettingsCard}`}>
     <div className={styles.sectionHeader}>
@@ -491,6 +510,7 @@ function OrganizationSettings({api, company}: Readonly<{api: WorkbenchApi; compa
   const navigate = useNavigate();
   const update = useUpdateCompany(api);
   const archive = useArchiveCompany(api);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const [name, setName] = useState(company.name);
   const [workspaceRoot, setWorkspaceRoot] = useState(company.workspaceRoot);
   useEffect(() => {
@@ -498,11 +518,17 @@ function OrganizationSettings({api, company}: Readonly<{api: WorkbenchApi; compa
     setWorkspaceRoot(company.workspaceRoot);
   }, [company.name, company.workspaceRoot]);
   async function save(): Promise<void> {
-    await update.mutateAsync({companyId: company.id, name, workspaceRoot, roster: company.roster, requestId: `company-update-${company.id}-${Date.now()}`});
+    const payload = {companyId: company.id, name, workspaceRoot, roster: company.roster};
+    const pending = pendingRequestIdentity(pendingRequestIds.current, `company-update-${company.id}`, payload);
+    await update.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
   }
   async function archiveCompany(): Promise<void> {
     if (!window.confirm('确认归档此公司？历史记录会保留，进行中的使命必须先停止。')) return;
-    await archive.mutateAsync({companyId: company.id, requestId: `company-archive-${company.id}-${Date.now()}`});
+    const payload = {companyId: company.id};
+    const pending = pendingRequestIdentity(pendingRequestIds.current, `company-archive-${company.id}`, payload);
+    await archive.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     navigate('/group/overview');
   }
   return <section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>公司 / 组织</span><h2 className={styles.sectionTitle}>公司基本信息</h2></div><StatusBadge label={company.state === 'active' ? '运行中' : '已归档'} tone={company.state === 'active' ? 'success' : 'neutral'} /></div><div className={styles.formStack}><label className={styles.formLabel}>公司名称<input className={styles.formField} value={name} onChange={event => setName(event.target.value)} /></label><label className={styles.formLabel}>工作区 / 项目目录<input className={styles.formField} value={workspaceRoot} onChange={event => setWorkspaceRoot(event.target.value)} /></label><div className={styles.detailRows}><DataRow label="固定员工" value={`${company.roster.length} 个逻辑员工`} /><DataRow label="员工 ID" value={company.roster.map(employee => employee.id).join(' · ')} mono /></div>{update.isError || archive.isError ? <p className={styles.formError} role="alert">操作结果尚未确认：{update.error?.message ?? archive.error?.message} 请先核对已刷新的公司状态，再继续。</p> : null}<div className={styles.wizardActions}><button className={styles.commandButton} disabled={update.isPending || company.state === 'archived'} onClick={() => { void save(); }} type="button">{update.isPending ? '正在保存…' : '保存基本信息'}</button>{company.state === 'active' ? <button className={styles.textButton} disabled={archive.isPending} onClick={() => { void archiveCompany(); }}>{archive.isPending ? '正在归档…' : '归档公司'}</button> : null}</div></div></section>;
