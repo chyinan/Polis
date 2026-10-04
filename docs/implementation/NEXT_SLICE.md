@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 165, REQ-14 owner-reviewed unresolved disposition)
+## Latest continuation status (Slice 166, REQ-13 quota readiness/recovery boundary audit)
+
+Source audit confirmed `waiting_quota` is a sticky fail-closed schedule state: actionable signals preserve it, schedule reconciliation preserves it, the auto-dispatch query selects only `wake_pending`, and `TXNewWorker` rejects it. The current production Go sources contain no writer that enters or releases `waiting_quota`, and no authoritative provider quota readiness source exists; `provider_quota_exhausted` appears only as notification text. Therefore there is no safe automatic release decision to implement from current evidence. The Fake @7 auto-dispatcher still has a process-local Company cursor and no shared/global slot accounting. No code or schema change; no tests, Worker or provider activity ran. REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.
+
+Next Slice167: audit the remaining REQ-02 fixed Employee roles and direct-message/product-provider boundaries. Preserve real-provider @4 authorization and the rule that any Worker action requires a database-confirmed active WorkerSession.
+
+## Previous continuation status (Slice 165, REQ-14 owner-reviewed unresolved disposition)
 
 Schema 100 adds immutable installation-owner review records for incomplete legacy revocations. The only supported disposition is `acknowledged_unresolved`: the owner records that the historical session set cannot be proven, with a rationale. The endpoint requires a validated installation-owner session and CSRF token, and rechecks that the target is still active and incomplete under the Company write guard. Review never completes the inventory, changes `quiesced`, or stops a Worker. The UI explains these limits and shows the recorded decision. Local Termux migrated to Schema 100; the database has zero Companies, owner credentials, and WorkerSessions. Native and Windows/amd64 Go builds, frontend production build, migration hash verification and `git diff --check` pass. No tests, owner review, Worker or provider activity ran. REQ-14 remains open pending applicable owner action and runtime qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-165-req14-owner-review/verification.md`.
-
-Next Slice166: continue the bounded open software ledger, starting with REQ-13 quota recovery/readiness and dispatch fairness. Keep Worker execution gated on a database-confirmed active WorkerSession, and keep production dispatch separate from the zero-egress Fake @7 path.
 
 ## Previous continuation status (Slice 164, REQ-14 complete revocation-inventory receipt)
 
