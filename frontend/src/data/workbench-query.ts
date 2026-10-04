@@ -5,6 +5,7 @@ import {useEffect, useState} from 'react';
 import type {ImportStdioMCPPackageOptions, ObserveStdioMCPRuntimeOptions, ObserveStreamableHTTPMCPRuntimeOptions} from './workbench-api';
 import type {BindEmployeeCapabilityOptions, CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateMissionChangeRequestOptions, CreateTaskEnvironmentHandoverOptions, CreateOperatorInstructionOptions, CreateTaskTakeoverLeaseOptions, DecideCapabilityOptions, DecideGitHubFeedbackSourceOptions, EnvironmentExecutorQualificationOptions, EnvironmentPolicyDecisionOptions, EnsureEnvironmentOptions, ImportSkillOptions, ImportReadOnlySkillPackageOptions, MissionChangeRequestCommandOptions, MissionChangeRequestQueryOptions, MissionCommandOptions, PollGitHubFeedbackSourceOptions, ProbeGitHubFeedbackSourceOptions, QualifyCapabilityOptions, RecordDomainEvidenceOptions, RecordDomainEvidenceReviewOptions, RecordDomainEvidenceSubstantiveAssessmentOptions, RecordDomainProfileQualificationOptions, RegisterGitHubFeedbackSourceOptions, ReleaseTaskTakeoverLeaseOptions, ReviewCapabilityRevocationOptions, SetGitHubFeedbackBacklogStatusOptions, SetHumanInterventionStateOptions, TaskCrossBackendHandoversQueryOptions, TaskInputManifestQueryOptions, TaskJobLogsQueryOptions, TaskJobRunsQueryOptions, StartTaskJobRunOptions, StopTaskJobRunOptions, TaskTakeoverLeaseQueryOptions, TaskTakeoverSnapshotOptions, UploadMissionDirectoryInputOptions, UploadMissionInputOptions, UpdateCompanyOptions, ArchiveCompanyOptions, RegisterMCPOptions, TestNotificationOptions, UpdateRuntimeSettingsOptions, WorkbenchApi} from './workbench-api';
 import type {ActivityStreamStatus} from './workbench-api';
+import type {MissionCloseoutOptions} from './workbench-api';
 import type {CreateProjectJobBrowserSessionOptions} from './workbench-api';
 import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
 import type {RunResearchSimulationOptions} from './workbench-api';
@@ -984,6 +985,14 @@ export function useCancelMission(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionCommandOptions, 'companyId'>) => api.cancelMission({...options, companyId}),
+    onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
+  });
+}
+
+export function useCloseMission(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<MissionCloseoutOptions, 'companyId'>) => api.closeMission({...options, companyId}),
     onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
   });
 }

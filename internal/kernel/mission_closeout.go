@@ -68,11 +68,12 @@ func (k *Kernel) beginMissionCloseout(ctx context.Context, scope Scope, missionI
 		if err != nil {
 			return Receipt{}, err
 		}
-		if state != "active" && state != "paused" && !(state == "draft" && outcome == "cancelled") {
+		if state != "active" && state != "paused" && !(state == "draft" && outcome != "succeeded") {
 			return Receipt{}, core.ConflictError{Reason: "Mission cannot enter closeout from " + state, CurrentState: state}
 		}
 		if outcome == "succeeded" {
 			var matched int
+			var unsettledTasks, unresolvedObligations int
 			if err = tx.QueryRow(ctx, `SELECT count(*) FROM artifacts a
 JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id
 WHERE a.company_id=$1 AND t.mission_id=$2 AND a.id=ANY($3::text[])
@@ -81,6 +82,16 @@ WHERE a.company_id=$1 AND t.mission_id=$2 AND a.id=ANY($3::text[])
 			}
 			if matched != len(artifactIDs) {
 				return Receipt{}, core.ConflictError{Reason: "Mission success evidence must reference exact ready Artifacts with an independent passed review", CurrentState: "acceptance_evidence_required"}
+			}
+			if err = tx.QueryRow(ctx, `SELECT count(*) FROM tasks WHERE company_id=$1 AND mission_id=$2 AND state NOT IN ('completed','cancelled')`, scope.company, missionID).Scan(&unsettledTasks); err != nil {
+				return Receipt{}, err
+			}
+			if err = tx.QueryRow(ctx, `SELECT count(*) FROM obligations o JOIN tasks t ON t.company_id=o.company_id AND t.id=o.task_id
+WHERE o.company_id=$1 AND t.mission_id=$2 AND o.state NOT IN ('fulfilled','declined','superseded')`, scope.company, missionID).Scan(&unresolvedObligations); err != nil {
+				return Receipt{}, err
+			}
+			if unsettledTasks != 0 || unresolvedObligations != 0 {
+				return Receipt{}, core.ConflictError{Reason: "Mission success can be requested only after all Tasks and Obligations are settled", CurrentState: "acceptance_unresolved"}
 			}
 		}
 		if err = beginMissionCloseoutTX(ctx, tx, scope, missionID, outcome, rationale, artifactIDs, requestID); err != nil {

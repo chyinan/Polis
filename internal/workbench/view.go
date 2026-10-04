@@ -199,6 +199,7 @@ type MissionCloseoutSummary struct {
 	RequestedOutcome      string          `json:"requestedOutcome"`
 	Rationale             string          `json:"rationale"`
 	AcceptanceArtifactIDs []string        `json:"acceptanceArtifactIds"`
+	RequestID             string          `json:"requestId"`
 	OpenedAt              string          `json:"openedAt"`
 	TerminalOutcome       *string         `json:"terminalOutcome"`
 	Report                json.RawMessage `json:"report,omitempty"`

@@ -1,6 +1,7 @@
 // pattern: Imperative Shell
 
 import type {MemoryCorrectionCommandReceiptView} from '../domain/workbench';
+import type {MissionCloseoutOptions} from './workbench-api';
 import type {ProposeMemoryCorrectionOptions, ReviewMemoryCorrectionOptions} from './workbench-api';
 import type {CreateProjectJobBrowserSessionOptions, ImportStdioMCPPackageOptions, ObserveStdioMCPRuntimeOptions, ObserveStreamableHTTPMCPRuntimeOptions} from './workbench-api';
 import type {RunResearchSimulationOptions} from './workbench-api';
@@ -943,6 +944,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
   }
 
   async cancelMission(_options: MissionCommandOptions): Promise<MissionCommandReceipt> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'commands are unavailable in fixture mode');
+  }
+
+  async closeMission(_options: MissionCloseoutOptions): Promise<MissionCommandReceipt> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'commands are unavailable in fixture mode');
   }
 

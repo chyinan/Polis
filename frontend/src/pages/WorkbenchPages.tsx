@@ -15,6 +15,7 @@ import {MissionChangeRequestPanel} from './MissionChangeRequestPanel';
 import {MissionTakeoverPanel} from './MissionTakeoverPanel';
 import {TaskMemoryImpactPanel} from './TaskMemoryImpactPanel';
 import {ProblemToolBudgetPanel} from './ProblemToolBudgetPanel';
+import {MissionCloseoutControls} from './MissionCloseoutControls';
 import styles from '../styles/workbench.module.css';
 
 type PageProps = Readonly<{api: WorkbenchApi; companyId: string}>;
@@ -80,7 +81,7 @@ function MissionOverview({overview}: Readonly<{overview: CompanyOverviewView}>) 
   </section>;
 }
 
-function MissionLifecycleControls({api, companyId, missionId, missionState}: Readonly<{api: WorkbenchApi; companyId: string; missionId: string; missionState: string}>) {
+function MissionLifecycleControls({api, companyId, missionId, missionState, closeout}: Readonly<{api: WorkbenchApi; companyId: string; missionId: string; missionState: string; closeout?: CompanyOverviewView['mission']['closeout']}>) {
   const start = useStartMission(api, companyId);
   const pause = usePauseMission(api, companyId);
   const resume = useResumeMission(api, companyId);
@@ -102,14 +103,14 @@ function MissionLifecycleControls({api, companyId, missionId, missionState}: Rea
     }
   }
 
-  return <section className={styles.sectionCard} data-testid="mission-lifecycle"><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>人工控制</span><h2 className={styles.sectionTitle}>使命生命周期</h2></div><StatusBadge label={labelDisplayValue(missionState)} tone={missionState === 'active' ? 'success' : missionState === 'paused' ? 'warning' : 'neutral'} /></div><div className={styles.wizardActions}>
+  return <><section className={styles.sectionCard} data-testid="mission-lifecycle"><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>人工控制</span><h2 className={styles.sectionTitle}>使命生命周期</h2></div><StatusBadge label={labelDisplayValue(missionState)} tone={missionState === 'active' ? 'success' : missionState === 'paused' ? 'warning' : 'neutral'} /></div><div className={styles.wizardActions}>
     {missionState === 'draft' ? <button className={styles.commandButton} data-testid="mission-start" disabled={busy} onClick={() => { void run('start'); }} type="button">开始使命</button> : null}
     {missionState === 'active' ? <button className={styles.commandButton} data-testid="mission-pause" disabled={busy} onClick={() => { void run('pause'); }} type="button">暂停使命</button> : null}
     {missionState === 'paused' ? <button className={styles.commandButton} data-testid="mission-resume" disabled={busy} onClick={() => { void run('resume'); }} type="button">恢复使命</button> : null}
     {missionState === 'active' || missionState === 'paused' ? <button className={styles.textButton} data-testid="mission-cancel" disabled={busy} onClick={() => { void run('cancel'); }} type="button">结束使命</button> : null}
     {missionState === 'closing' ? <span className={styles.formHint}>使命收尾中：旧 Worker、Job 和待处理责任仍在核对</span> : null}
     {missionState === 'succeeded' || missionState === 'ended_not_met' || missionState === 'cancelled' ? <span className={styles.formHint}>使命已结束</span> : null}
-  </div>{message ? <p className={styles.formError} role="alert">{message}</p> : <p className={styles.formHint}>暂停会停止当前 WorkerSession 并保留使命；恢复会在运行时就绪后启动新的会话。QQ 回复不控制这些状态。</p>}</section>;
+  </div>{message ? <p className={styles.formError} role="alert">{message}</p> : <p className={styles.formHint}>暂停会停止当前 WorkerSession 并保留使命；恢复会在运行时就绪后启动新的会话。QQ 回复不控制这些状态。</p>}</section><MissionCloseoutControls api={api} companyId={companyId} missionId={missionId} missionState={missionState} closeout={closeout} /></>;
 }
 
 export function MissionPage({api, companyId}: PageProps) {
@@ -121,7 +122,7 @@ export function MissionPage({api, companyId}: PageProps) {
   const state = renderOverviewState(query, '正在读取使命快照');
   if (state) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 使命" title="使命" />{state}</div>;
   const overview = getOverview(query);
-  return <div className={styles.viewStack}><ViewHeader action={<StatusBadge label={labelDisplayValue(overview.mission.state)} tone={overview.mission.state === 'active' ? 'success' : overview.mission.state === 'paused' ? 'warning' : 'info'} />} eyebrow="公司 / 使命" title="使命" /><TabBar active={tab} onChange={setTab} tabs={tabs} />{tab === 'overview' ? <><MissionOverview overview={overview} /><MissionLifecycleControls api={api} companyId={companyId} missionId={overview.mission.missionId} missionState={overview.mission.state} /></> : <MissionSubpage api={api} companyId={companyId} overview={overview} tab={tab === 'inputs' ? 'inputs' : tab === 'guidance' ? 'guidance' : 'deliveries'} />}<OperatorInstructionPanel companyId={companyId} instructionsQuery={instructionsQuery} missionId={overview.mission.missionId} overview={overview} sendInstruction={sendInstruction} /><MissionTakeoverPanel key={overview.mission.missionId} api={api} companyId={companyId} missionId={overview.mission.missionId} missionState={overview.mission.state} overview={overview} /><MissionChangeRequestPanel key={`changes-${overview.mission.missionId}`} api={api} companyId={companyId} missionId={overview.mission.missionId} missionState={overview.mission.state} overview={overview} /></div>;
+  return <div className={styles.viewStack}><ViewHeader action={<StatusBadge label={labelDisplayValue(overview.mission.state)} tone={overview.mission.state === 'active' ? 'success' : overview.mission.state === 'paused' ? 'warning' : 'info'} />} eyebrow="公司 / 使命" title="使命" /><TabBar active={tab} onChange={setTab} tabs={tabs} />{tab === 'overview' ? <><MissionOverview overview={overview} /><MissionLifecycleControls api={api} companyId={companyId} missionId={overview.mission.missionId} missionState={overview.mission.state} closeout={overview.mission.closeout} /></> : <MissionSubpage api={api} companyId={companyId} overview={overview} tab={tab === 'inputs' ? 'inputs' : tab === 'guidance' ? 'guidance' : 'deliveries'} />}<OperatorInstructionPanel companyId={companyId} instructionsQuery={instructionsQuery} missionId={overview.mission.missionId} overview={overview} sendInstruction={sendInstruction} /><MissionTakeoverPanel key={overview.mission.missionId} api={api} companyId={companyId} missionId={overview.mission.missionId} missionState={overview.mission.state} overview={overview} /><MissionChangeRequestPanel key={`changes-${overview.mission.missionId}`} api={api} companyId={companyId} missionId={overview.mission.missionId} missionState={overview.mission.state} overview={overview} /></div>;
 }
 
 function OperatorInstructionPanel({companyId, instructionsQuery, missionId, overview, sendInstruction}: Readonly<{companyId: string; instructionsQuery: ReturnType<typeof useOperatorInstructions>; missionId: string; overview: CompanyOverviewView; sendInstruction: ReturnType<typeof useSendOperatorInstruction>}>): ReactElement {

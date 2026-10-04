@@ -27,6 +27,14 @@ type MissionCommandRequest struct {
 	RequestID string `json:"requestId"`
 }
 
+type MissionCloseoutCommandRequest struct {
+	MissionID             string   `json:"missionId,omitempty"`
+	Outcome               string   `json:"outcome"`
+	Rationale             string   `json:"rationale"`
+	AcceptanceArtifactIDs []string `json:"acceptanceArtifactIds,omitempty"`
+	RequestID             string   `json:"requestId"`
+}
+
 type CreateOperatorInstructionRequest struct {
 	MissionID  string `json:"missionId"`
 	TaskID     string `json:"taskId,omitempty"`
@@ -138,6 +146,10 @@ type CommandService interface {
 type MissionLifecycleService interface {
 	PauseMission(ctx context.Context, companyID string, request MissionCommandRequest) (CommandReceipt, error)
 	ResumeMission(ctx context.Context, companyID string, request MissionCommandRequest) (CommandReceipt, error)
+}
+
+type MissionCloseoutCommandService interface {
+	CloseMission(ctx context.Context, companyID string, request MissionCloseoutCommandRequest) (CommandReceipt, error)
 }
 
 type OrganizationService interface {

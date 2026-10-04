@@ -12,6 +12,7 @@ import {CommandApiError, type WorkbenchApi} from '../data/workbench-api';
 import {isAcceptanceContract} from '../domain/workbench-validation';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import {DailyRoutinePanel} from './DailyRoutinePanel';
+import {MissionCloseoutControls} from './MissionCloseoutControls';
 import styles from '../styles/workbench.module.css';
 
 type CompanyOverviewPageProps = Readonly<{
@@ -173,6 +174,7 @@ function MissionCard({overview, api, companyId}: Readonly<{overview: CompanyOver
         {closeout.report ? <p>收尾报告：取消任务 {String(closeout.report.cancelledTaskTotal ?? 0)} 项，撤销责任 {String(closeout.report.declinedObligationTotal ?? 0)} 项，移交责任 {String(closeout.report.supersededObligationTotal ?? 0)} 项，取消周期实例 {String(closeout.report.cancelledRoutineTotal ?? 0)} 项。</p> : null}
       </section> : null}
       <MissionControls api={api} companyId={companyId} mission={mission} />
+      <MissionCloseoutControls api={api} companyId={companyId} missionId={mission.missionId} missionState={mission.state} closeout={mission.closeout} />
     </article>
   );
 }

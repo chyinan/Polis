@@ -848,9 +848,9 @@ func readMissionCloseout(ctx context.Context, tx pgx.Tx, companyID, missionID st
 	var finishedAt pgtype.Timestamptz
 	var openedAt time.Time
 	var report []byte
-	err := tx.QueryRow(ctx, `SELECT requested_outcome,rationale,acceptance_artifact_ids,opened_at,
+	err := tx.QueryRow(ctx, `SELECT requested_outcome,rationale,acceptance_artifact_ids,request_id,opened_at,
 terminal_outcome,closeout_report,finished_at FROM mission_closeouts WHERE company_id=$1 AND mission_id=$2`, companyID, missionID).Scan(
-		&closeout.RequestedOutcome, &closeout.Rationale, &closeout.AcceptanceArtifactIDs, &openedAt,
+		&closeout.RequestedOutcome, &closeout.Rationale, &closeout.AcceptanceArtifactIDs, &closeout.RequestID, &openedAt,
 		&terminalOutcome, &report, &finishedAt,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {

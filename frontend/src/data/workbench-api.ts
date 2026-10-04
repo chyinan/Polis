@@ -622,6 +622,15 @@ export type MissionCommandOptions = Readonly<{
   requestId: string;
 }>;
 
+export type MissionCloseoutOptions = Readonly<{
+  companyId: string;
+  missionId: string;
+  outcome: 'succeeded' | 'ended_not_met';
+  rationale: string;
+  acceptanceArtifactIds: ReadonlyArray<string>;
+  requestId: string;
+}>;
+
 export type QualifyCapabilityOptions = Readonly<{companyId: string; capabilityKind: 'skill' | 'mcp'; capabilityId: string; requestId: string}>;
 export type DecideCapabilityOptions = Readonly<{companyId: string; capabilityKind: 'skill' | 'mcp'; capabilityId: string; qualificationId: string; decision: 'approved' | 'revoked'; rationale: string; requestId: string}>;
 export type ReviewCapabilityRevocationOptions = Readonly<{companyId: string; revocationId: string; rationale: string; requestId: string}>;
@@ -759,6 +768,7 @@ export type WorkbenchApi = Readonly<{
   pauseMission(options: MissionCommandOptions): Promise<MissionCommandReceipt>;
   resumeMission(options: MissionCommandOptions): Promise<MissionCommandReceipt>;
   cancelMission(options: MissionCommandOptions): Promise<MissionCommandReceipt>;
+  closeMission(options: MissionCloseoutOptions): Promise<MissionCommandReceipt>;
   setHumanInterventionState(options: SetHumanInterventionStateOptions): Promise<HumanInterventionCommandReceipt>;
   subscribeToActivityEvents(options: ActivityStreamOptions, listener: ActivityEventListener, onStatus?: ActivityStreamStatusListener): () => void;
 }>;

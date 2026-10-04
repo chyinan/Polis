@@ -2,9 +2,9 @@
 
 export type DataMode = 'real' | 'simulated' | 'unavailable';
 
-export type MissionCommandType = 'mission.create' | 'mission.start' | 'mission.pause' | 'mission.resume' | 'mission.cancel';
+export type MissionCommandType = 'mission.create' | 'mission.start' | 'mission.pause' | 'mission.resume' | 'mission.cancel' | 'mission.closeout';
 
-export type MissionCommandResultState = 'draft' | 'active' | 'paused' | 'cancelled';
+export type MissionCommandResultState = 'draft' | 'active' | 'paused' | 'closing' | 'succeeded' | 'ended_not_met' | 'cancelled';
 
 export type CompanyState = 'active' | 'archived';
 
@@ -1383,6 +1383,7 @@ export type MissionCloseoutSummary = Readonly<{
   requestedOutcome: 'succeeded' | 'ended_not_met' | 'cancelled';
   rationale: string;
   acceptanceArtifactIds: ReadonlyArray<string>;
+  requestId: string;
   openedAt: string;
   terminalOutcome: 'succeeded' | 'ended_not_met' | 'cancelled' | null;
   report?: Readonly<Record<string, unknown>>;
