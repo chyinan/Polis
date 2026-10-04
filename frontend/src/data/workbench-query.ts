@@ -708,7 +708,10 @@ export function useSetHumanInterventionState(api: WorkbenchApi, companyId: strin
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetHumanInterventionStateOptions, 'companyId'>) => api.setHumanInterventionState({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+    onSettled: async () => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
+    ]),
   });
 }
 

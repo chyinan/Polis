@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 188 — REQ-23 human intervention response recovery
+
+Human intervention acknowledge/resolve mutations now refresh Company overview and activity after success or error. The UI labels an ambiguous outcome, and same-state retries keep the exact request ID during the mounted row's lifetime. Frontend production build and `git diff --check` pass; no intervention state was changed, Worker/provider action ran, or frozen scenario was executed. No schema change. REQ-23 restart and frozen FT-57–60/72 qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-188-req23-intervention-response-refresh/verification.md`.
+
 ## Slice 187 — REQ-15 Task memory revalidation command reconciliation
 
 Task memory revalidation now invalidates the Task memory-impact, Company overview and activity projections after either success or error. Ambiguous errors direct the operator to inspect refreshed Task and memory state; the component retains the exact request ID for an exact same-intent retry. Frontend production build and `git diff --check` pass; no revalidation command or Worker/provider action ran and no frozen scenario was executed. No schema change. REQ-15 restore and frozen FT-37/40/41 qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-187-req15-task-memory-response-refresh/verification.md`.

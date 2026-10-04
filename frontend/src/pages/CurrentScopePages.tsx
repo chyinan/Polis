@@ -1,6 +1,6 @@
 // pattern: Imperative Shell
 
-import {useEffect, useState, type ReactElement} from 'react';
+import {useEffect, useRef, useState, type ReactElement} from 'react';
 import {Activity, Building2, CheckCircle2, CircleAlert, Handshake, LockKeyhole, MessageSquareText, Settings2, ShieldCheck, UsersRound} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useBindEmployeeCapability, useCapabilityCatalog, useCompanyFeedback, useCompanyList, useCompanyOverview, useDecideCapability, useApproveStdioMCPRuntimeQualification, useObserveStdioMCPRuntime, useObserveStreamableHTTPMCPRuntime, useDecideGitHubFeedbackSource, useDeleteGitHubFeedbackCredential, useImportReadOnlySkillPackage, useImportStdioMCPPackage, usePollGitHubFeedbackSource, useProbeGitHubFeedbackSource, useQualifyCapability, useRegisterGitHubFeedbackSource, useRegisterMCP, useRevokeEmployeeCapability, useReviewIncompleteCapabilityRevocation, useRuntimeSettings, useSetGitHubFeedbackBacklogStatus, useSetHumanInterventionState, useStoreGitHubFeedbackCredential} from '../data/workbench-query';
@@ -813,13 +813,20 @@ function CompanyResourceRow({company}: Readonly<{company: CompanySummaryView}>):
 function AttentionRow({api, companyId, item}: Readonly<{api: WorkbenchApi; companyId: string; item: AttentionItem}>): ReactElement {
   const stateMutation = useSetHumanInterventionState(api, companyId);
   const [actionError, setActionError] = useState<string | null>(null);
+  const pendingRequest = useRef<Readonly<{state: 'acknowledged' | 'resolved'; requestId: string}> | null>(null);
   const isIntervention = item.subject.kind === 'human_intervention' && item.workflowState !== undefined;
   async function updateState(state: 'acknowledged' | 'resolved'): Promise<void> {
     setActionError(null);
+    const pending = pendingRequest.current?.state === state
+      ? pendingRequest.current
+      : {state, requestId: `human-${item.subject.id}-${state}-${crypto.randomUUID()}`};
+    pendingRequest.current = pending;
     try {
-      await stateMutation.mutateAsync({interventionId: item.subject.id, state, requestId: `human-${item.subject.id}-${state}-${Date.now()}`});
+      await stateMutation.mutateAsync({interventionId: item.subject.id, state, requestId: pending.requestId});
+      pendingRequest.current = null;
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : '人工介入状态更新失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setActionError(`人工介入状态更新结果尚未确认：${detail} 已刷新介入状态与活动，请核对后使用同一请求 ID 重试。`);
     }
   }
   return <div className={styles.recordRow}>

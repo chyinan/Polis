@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 187. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 188. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+## Slice 188: REQ-23 human intervention response recovery
+
+Human intervention acknowledge/resolve commands now refresh Company overview and activity after success or error. The UI retains the request ID for exact same-state retry and reports ambiguous results alongside the refreshed intervention state. Frontend production build and diff check pass; no intervention command or Worker/provider action ran and no frozen scenario was executed. No schema change. REQ-23 restart and frozen FT-57–60/72 qualification remain open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-188-req23-intervention-response-refresh/verification.md`.
+
 ## Slice 187: REQ-15 Task memory revalidation command reconciliation
 
 Task memory revalidation now refreshes Task memory-impact, Company overview, and activity projections after success or error. Ambiguous errors direct operators to inspect refreshed Task state; the exact same-intent request ID remains available for retry. Frontend production build and diff check pass; no revalidation command, Worker/provider action, or frozen scenario ran. No schema change. REQ-15 restore and frozen FT-37/40/41 qualification remain open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-187-req15-task-memory-response-refresh/verification.md`.
@@ -440,7 +444,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 187
+## Finite remaining work at Slice 188
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
