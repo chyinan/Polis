@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 189 — notification command response recovery
+
+Local notification route save/test and disabled QQ notification-draft mutations now refresh notification projections after success or error. The Workbench retains the exact request ID for the same route/draft/test intent, reports ambiguous outcomes and points to refreshed delivery/route state. Frontend production build and `git diff --check` pass; no route or draft was changed and no notification or external API request was sent. No Worker/provider action, frozen scenario or schema migration ran. External QQ notification qualification remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-189-notification-response-refresh/verification.md`.
+
 ## Slice 188 — REQ-23 human intervention response recovery
 
 Human intervention acknowledge/resolve mutations now refresh Company overview and activity after success or error. The UI labels an ambiguous outcome, and same-state retries keep the exact request ID during the mounted row's lifetime. Frontend production build and `git diff --check` pass; no intervention state was changed, Worker/provider action ran, or frozen scenario was executed. No schema change. REQ-23 restart and frozen FT-57–60/72 qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-188-req23-intervention-response-refresh/verification.md`.

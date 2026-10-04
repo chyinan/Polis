@@ -1,6 +1,6 @@
 // pattern: Imperative Shell
 
-import {useEffect, useState, type ReactElement, type ReactNode} from 'react';
+import {useEffect, useRef, useState, type ReactElement, type ReactNode} from 'react';
 import {BadgeCheck, Check, CircleAlert, FileCheck2, Filter, Layers3, LockKeyhole, MessageSquare, Radio, Settings2, ShieldAlert, Target, UsersRound} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useCodexModelCatalog, useCollaboration, useCompanyList, useCompanyOverview, useArchiveCompany, useConfigureNotificationRoute, useNotifications, useOperations, useOperatorInstructions, useRuntimeSettings, useSendOperatorInstruction, useTestNotification, useUpdateCompany, useUpdateRuntimeSettings, useStartMission, usePauseMission, useResumeMission, useCancelMission} from '../data/workbench-query';
@@ -296,16 +296,40 @@ export function NotificationsPage({api, companyId}: PageProps) {
   const test = useTestNotification(api, companyId);
   const [destination, setDestination] = useState('local://workbench');
   const [enabled, setEnabled] = useState(false);
+  const [commandError, setCommandError] = useState<string | null>(null);
+  const pendingRoute = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
+  const pendingTest = useRef<string | null>(null);
   if (query.isPending) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="接管通知" /><LoadingPanel label="正在读取通知路由" /></div>;
   if (query.isError) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="接管通知" /><ErrorPanel message={query.error.message} /></div>;
   const route = query.data.routes[0] ?? null;
   async function saveRoute(): Promise<void> {
-    await configure.mutateAsync({adapter: 'local', destination, enabled, requestId: `notification-route-${companyId}-${Date.now()}`});
+    setCommandError(null);
+    const fingerprint = JSON.stringify({destination, enabled});
+    const pending = pendingRoute.current?.fingerprint === fingerprint
+      ? pendingRoute.current
+      : {fingerprint, requestId: `notification-route-${companyId}-${crypto.randomUUID()}`};
+    pendingRoute.current = pending;
+    try {
+      await configure.mutateAsync({adapter: 'local', destination, enabled, requestId: pending.requestId});
+      pendingRoute.current = null;
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setCommandError(`通知路由结果尚未确认：${detail} 已刷新当前状态；核对后重试会复用原请求 ID。`);
+    }
   }
   async function sendTest(): Promise<void> {
-    await test.mutateAsync({requestId: `notification-test-${companyId}-${Date.now()}`});
+    setCommandError(null);
+    const requestId = pendingTest.current ?? `notification-test-${companyId}-${crypto.randomUUID()}`;
+    pendingTest.current = requestId;
+    try {
+      await test.mutateAsync({requestId});
+      pendingTest.current = null;
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setCommandError(`通知测试结果尚未确认：${detail} 已刷新投递记录；核对后重试会复用原请求 ID。`);
+    }
   }
-  return <div className={styles.viewStack}><ViewHeader action={<StatusBadge label={route?.enabled ? '已启用' : '已停用'} tone={route?.enabled ? 'success' : 'neutral'} />} eyebrow="公司 / 设置" title="接管通知" /><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>通知通道</span><h2 className={styles.sectionTitle}>通道配置</h2></div><Radio aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.formStack}><label className={styles.formLabel}>适配器<input className={styles.formField} value="本地记录" readOnly /></label><label className={styles.formLabel}>目标地址<input className={styles.formField} value={destination} onChange={event => setDestination(event.target.value)} /></label><label className={styles.formLabel}><input checked={enabled} onChange={event => setEnabled(event.target.checked)} type="checkbox" /> 启用本地适配器</label><div className={styles.wizardActions}><button className={styles.commandButton} disabled={configure.isPending} onClick={() => { void saveRoute(); }} type="button">{configure.isPending ? '正在保存…' : '保存路由'}</button><button className={styles.textButton} disabled={test.isPending || !route?.enabled} onClick={() => { void sendTest(); }} type="button">{test.isPending ? '正在测试…' : '测试通知'}</button></div>{configure.isError || test.isError ? <p className={styles.formError} role="alert">通知操作失败：{configure.error?.message ?? test.error?.message}</p> : null}<p className={styles.formHint}>当前本地适配器只记录投递结果；未配置 QQ 或其他外部账户，不会产生外部发送。</p></div></section><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>投递结果</span><h2 className={styles.sectionTitle}>投递结果</h2></div><StatusBadge label={`${query.data.deliveries.length} 条`} tone="info" /></div><div className={styles.recordList}>{query.data.deliveries.length === 0 ? <div className={styles.emptyState}>暂无通知投递。</div> : query.data.deliveries.map(delivery => <div className={styles.recordRow} key={delivery.deliveryId}><div className={styles.recordLead}><Radio aria-hidden="true" size={16} /><div><strong>{labelNotificationAdapter(delivery.adapter)} · {labelDisplayValue(delivery.state)}</strong><span>{delivery.deliveryId} · 意图 {delivery.intentId}</span></div></div><div className={styles.recordMeta}><StatusBadge label={delivery.errorCode ?? '无错误'} tone={delivery.errorCode ? 'danger' : 'success'} /></div></div>)}</div></section></div>;
+  return <div className={styles.viewStack}><ViewHeader action={<StatusBadge label={route?.enabled ? '已启用' : '已停用'} tone={route?.enabled ? 'success' : 'neutral'} />} eyebrow="公司 / 设置" title="接管通知" /><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>通知通道</span><h2 className={styles.sectionTitle}>通道配置</h2></div><Radio aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.formStack}><label className={styles.formLabel}>适配器<input className={styles.formField} value="本地记录" readOnly /></label><label className={styles.formLabel}>目标地址<input className={styles.formField} value={destination} onChange={event => setDestination(event.target.value)} /></label><label className={styles.formLabel}><input checked={enabled} onChange={event => setEnabled(event.target.checked)} type="checkbox" /> 启用本地适配器</label><div className={styles.wizardActions}><button className={styles.commandButton} disabled={configure.isPending} onClick={() => { void saveRoute(); }} type="button">{configure.isPending ? '正在保存…' : '保存路由'}</button><button className={styles.textButton} disabled={test.isPending || !route?.enabled} onClick={() => { void sendTest(); }} type="button">{test.isPending ? '正在测试…' : '测试通知'}</button></div>{commandError || configure.isError || test.isError ? <p className={styles.formError} role="alert">{commandError ?? `通知命令结果尚未确认；已刷新状态：${configure.error?.message ?? test.error?.message}`}</p> : null}<p className={styles.formHint}>当前本地适配器只记录投递结果；未配置 QQ 或其他外部账户，不会产生外部发送。</p></div></section><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>投递结果</span><h2 className={styles.sectionTitle}>投递结果</h2></div><StatusBadge label={`${query.data.deliveries.length} 条`} tone="info" /></div><div className={styles.recordList}>{query.data.deliveries.length === 0 ? <div className={styles.emptyState}>暂无通知投递。</div> : query.data.deliveries.map(delivery => <div className={styles.recordRow} key={delivery.deliveryId}><div className={styles.recordLead}><Radio aria-hidden="true" size={16} /><div><strong>{labelNotificationAdapter(delivery.adapter)} · {labelDisplayValue(delivery.state)}</strong><span>{delivery.deliveryId} · 意图 {delivery.intentId}</span></div></div><div className={styles.recordMeta}><StatusBadge label={delivery.errorCode ?? '无错误'} tone={delivery.errorCode ? 'danger' : 'success'} /></div></div>)}</div></section></div>;
 }
 
 export function SettingsPage({api, companyId}: PageProps) {

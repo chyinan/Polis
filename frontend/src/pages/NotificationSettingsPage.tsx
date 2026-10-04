@@ -1,6 +1,6 @@
 // pattern: Imperative Shell
 
-import {useState, type ReactElement} from 'react';
+import {useRef, useState, type ReactElement} from 'react';
 import {BellRing, Check, FileSearch, MessageSquareWarning} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useConfigureNotificationRoute, useNotifications} from '../data/workbench-query';
@@ -17,6 +17,7 @@ export function NotificationSettingsPage({api, companyId}: NotificationSettingsP
   const [secretRef, setSecretRef] = useState('');
   const [safetyAlias, setSafetyAlias] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const pendingRequest = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
 
   if (query.isPending) return <div className={styles.viewStack}><NotificationHeader /><div className={styles.emptyState} role="status">正在读取通知配置…</div></div>;
   if (query.isError) return <div className={styles.viewStack}><NotificationHeader /><div className={styles.formError} role="alert">读取通知配置失败：{labelErrorMessage(query.error.message)}</div></div>;
@@ -26,11 +27,18 @@ export function NotificationSettingsPage({api, companyId}: NotificationSettingsP
 
   async function saveDisabledDraft(): Promise<void> {
     setMessage(null);
+    const fingerprint = JSON.stringify({target: target.trim(), secretRef: secretRef.trim(), safetyAlias: safetyAlias.trim()});
+    const pending = pendingRequest.current?.fingerprint === fingerprint
+      ? pendingRequest.current
+      : {fingerprint, requestId: `notification-draft-${companyId}-${crypto.randomUUID()}`};
+    pendingRequest.current = pending;
     try {
-      await configure.mutateAsync({adapter: 'qq_official', destination: target.trim(), safetyAlias: safetyAlias.trim(), credentialRef: secretRef.trim(), enabled: false, requestId: `notification-draft-${companyId}-${Date.now()}`});
+      await configure.mutateAsync({adapter: 'qq_official', destination: target.trim(), safetyAlias: safetyAlias.trim(), credentialRef: secretRef.trim(), enabled: false, requestId: pending.requestId});
+      pendingRequest.current = null;
       setMessage('已保存禁用草案；当前不会产生外部发送。');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '保存通知草案失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setMessage(`禁用通知草案保存结果尚未确认：${detail} 已刷新通知状态；核对后同一草案重试会复用原请求 ID。`);
     }
   }
 

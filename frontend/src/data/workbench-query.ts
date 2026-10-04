@@ -878,7 +878,7 @@ export function useConfigureNotificationRoute(api: WorkbenchApi, companyId: stri
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ConfigureNotificationRouteOptions, 'companyId'>) => api.configureNotificationRoute({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'notifications', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'notifications', companyId]}),
   });
 }
 
@@ -886,7 +886,7 @@ export function useTestNotification(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<TestNotificationOptions, 'companyId'>) => api.testNotification({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'notifications', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'notifications', companyId]}),
   });
 }
 
