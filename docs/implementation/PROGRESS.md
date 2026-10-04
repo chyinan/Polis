@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 200 — JobRun and handover exact retries
+
+Cross-backend handover creation, isolated batch/service JobRun start, and JobRun stop retain exact request IDs after ambiguous results for same-payload retries. Identity includes the full source/target and Task or JobRun scope plus environment/session and script/argument or service configuration. Frontend production build and `git diff --check` pass. No handover or JobRun was created, started, or stopped. No Worker/provider action or frozen scenario ran; no schema change. Host execution remains unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-200-jobrun-retries/verification.md`.
+
 ## Slice 199 — budget exact retries
 
 Company, Mission and ProblemKey budget/reserve changes and Task incomplete closeout retain exact same-payload request IDs after ambiguous outcomes. Their current revision/CAS fields are included in the identity; existing ProblemKey/Task incremental allocations continue retaining the exact complete request. Frontend build and `git diff --check` pass. No budget changed and no Task was closed. No Worker/provider action or frozen scenario ran; no schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-199-budget-retries/verification.md`.

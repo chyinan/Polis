@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 199, budget exact retries)
+## Latest continuation status (Slice 200, JobRun and handover exact retries)
+
+Cross-backend handover creation, isolated batch/service JobRun start, and JobRun stop now preserve exact request IDs for same-payload retries after an ambiguous response. Their full source/target, Task, session, environment, script/argument or service, and JobRun identifiers form the retry identity. Frontend build and diff check pass; no handover or JobRun was created, started, or stopped. See `evidence/development/r1-r3-implementation-validation-20261004-slice-200-jobrun-retries/verification.md`.
+
+## Previous continuation status (Slice 199, budget exact retries)
 
 Company/Mission/ProblemKey budget and closing-reserve updates, plus Task incomplete-closeout, now retain exact request IDs for same-payload retries after ambiguous results. Company/Mission/ProblemKey/Task limit or reserve compare-and-swap fields are part of the retry identity; incremental ProblemKey/Task allocations already retain their full request. Frontend build and diff check pass; no budget was changed and no Task was closed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-199-budget-retries/verification.md`.
 

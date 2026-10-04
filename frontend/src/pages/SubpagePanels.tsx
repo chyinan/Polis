@@ -16,6 +16,17 @@ import {ActivityTimeline} from '../components/activity-timeline/ActivityTimeline
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
 
+function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
+  const key = JSON.stringify({operation, payload});
+  const requestId = pendingIds.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+  pendingIds.set(key, requestId);
+  return {key, requestId};
+}
+
+function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: string): void {
+  pendingIds.delete(key);
+}
+
 function DataRow({label, value, mono = false}: Readonly<{label: string; value: ReactNode; mono?: boolean}>) {
   return <div className={styles.detailRow}><span className={styles.fieldLabel}>{label}</span><span className={mono ? styles.detailValueMono : styles.detailValue}>{value}</span></div>;
 }
@@ -267,6 +278,7 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const [jobActionMessage, setJobActionMessage] = useState<string | null>(null);
   const [jobActionError, setJobActionError] = useState<string | null>(null);
   const [serviceBrowserSession, setServiceBrowserSession] = useState<Readonly<{jobId: string; session: ServiceBrowserSessionView}> | null>(null);
+  const pendingJobRequestIds = useRef(new Map<string, string>());
   const jobLogsQuery = useTaskJobLogs(api, companyId, selectedJobLogId, tab === 'jobs');
   const environmentPolicy = useDecideProjectEnvironmentPolicy(api, companyId);
   const environmentExecutorQualification = useDecideProjectEnvironmentExecutorQualification(api, companyId);
@@ -410,10 +422,10 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
     setJobActionError(null);
     setJobActionMessage(null);
     try {
-      const handover: CrossBackendHandoverView = await createCrossBackendHandover.mutateAsync({
-        companyId, taskId: task.taskId, sourceJobId: job.jobId, targetEnvironmentRevisionId: target.revisionId,
-        requestId: `handover-create-${crypto.randomUUID()}`,
-      });
+      const payload = {companyId, taskId: task.taskId, sourceJobId: job.jobId, targetEnvironmentRevisionId: target.revisionId};
+      const pending = pendingRequestIdentity(pendingJobRequestIds.current, 'handover-create', payload);
+      const handover: CrossBackendHandoverView = await createCrossBackendHandover.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingJobRequestIds.current, pending.key);
       setSelectedEnvironmentRevisionId(target.revisionId);
       setSelectedHandoverID(handover.handoverId);
       setJobActionMessage(`接续记录 ${formatEntityId(handover.handoverId)} 已创建；工作区版本 ${handover.workspaceRevision}；记录 SHA-256 ${handover.recordSha256}`);
@@ -431,12 +443,14 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
     }
     try {
       const args = jobArguments.split('\n').map(argument => argument.trim()).filter(argument => argument !== '');
-      const receipt = await startProjectJob.mutateAsync({
+      const payload = {
         companyId, taskId: task.taskId, sessionId: activeTaskSession?.sessionId ?? '',
         environmentRevisionId: selectedJobEnvironment.revisionId, scriptPath: jobScriptPath, args,
         ...(crossBackendHandoverRequired && selectedHandover !== null ? {handoverId: selectedHandover.handoverId} : {}),
-        requestId: `job-start-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingJobRequestIds.current, 'job-start', payload);
+      const receipt = await startProjectJob.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingJobRequestIds.current, pending.key);
       setJobActionMessage(`JobRun ${formatEntityId(receipt.jobId)}：${labelDisplayValue(receipt.state)}`);
       setSelectedJobLogId(receipt.jobId);
     } catch (error) {
@@ -452,12 +466,14 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       return;
     }
     try {
-      const receipt = await startProjectJob.mutateAsync({
+      const payload = {
         companyId, taskId: task.taskId, sessionId: activeTaskSession?.sessionId ?? '',
-        environmentRevisionId: selectedJobEnvironment.revisionId, kind: 'service', serviceId,
+        environmentRevisionId: selectedJobEnvironment.revisionId, kind: 'service' as const, serviceId,
         ...(crossBackendHandoverRequired && selectedHandover !== null ? {handoverId: selectedHandover.handoverId} : {}),
-        requestId: `service-start-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingJobRequestIds.current, 'service-start', payload);
+      const receipt = await startProjectJob.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingJobRequestIds.current, pending.key);
       setJobActionMessage(`服务 JobRun ${formatEntityId(receipt.jobId)}：${labelDisplayValue(receipt.state)} / ${labelDisplayValue(receipt.readiness)}`);
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
@@ -468,7 +484,10 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
     setJobActionError(null);
     setJobActionMessage(null);
     try {
-      const receipt = await stopProjectJob.mutateAsync({companyId, jobId, requestId: `job-stop-${crypto.randomUUID()}`});
+      const payload = {companyId, jobId};
+      const pending = pendingRequestIdentity(pendingJobRequestIds.current, 'job-stop', payload);
+      const receipt = await stopProjectJob.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingJobRequestIds.current, pending.key);
       if (serviceBrowserSession?.jobId === jobId) setServiceBrowserSession(null);
       setJobActionMessage(`JobRun ${formatEntityId(receipt.jobId)}：${labelDisplayValue(receipt.state)}`);
     } catch (error) {
