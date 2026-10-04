@@ -524,7 +524,11 @@ export function useReleaseTaskTakeoverLease(api: WorkbenchApi, companyId: string
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ReleaseTaskTakeoverLeaseOptions, 'companyId' | 'missionId'>) => api.releaseTaskTakeoverLease({...options, companyId, missionId}),
-    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
+    onSettled: async () => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
+    ]),
   });
 }
 

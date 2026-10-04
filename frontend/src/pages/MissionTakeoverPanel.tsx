@@ -1,5 +1,5 @@
 // pattern: Imperative Shell
-import {useEffect, useMemo, useState, type ReactElement} from 'react';
+import {useEffect, useMemo, useRef, useState, type ReactElement} from 'react';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useCreateTaskTakeoverLease, useReleaseTaskTakeoverLease, useSubmitTaskTakeoverSnapshot, useTaskTakeoverLeases} from '../data/workbench-query';
@@ -35,6 +35,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const [loadedLeaseId, setLoadedLeaseId] = useState('');
   const [localError, setLocalError] = useState('');
   const [pendingSnapshotReturn, setPendingSnapshotReturn] = useState<PendingSnapshotReturn | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const taskId = selectedTaskId || eligibleTasks[0]?.taskId || '';
   const activeLease = leasesQuery.data?.find(item => item.taskId === taskId && item.state === 'granted') ?? null;
   const pending = createLease.isPending || submitSnapshot.isPending || releaseLease.isPending;
@@ -60,13 +61,32 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
     return () => { live = false; };
   }, [activeLease, api, companyId, loadedLeaseId]);
 
+  function requestIdFor(key: string): string {
+    const existing = pendingRequestIds.current.get(key);
+    if (existing !== undefined) return existing;
+    const requestId = `${key}-${crypto.randomUUID()}`;
+    pendingRequestIds.current.set(key, requestId);
+    return requestId;
+  }
+
+  function clearRequestId(key: string): void {
+    pendingRequestIds.current.delete(key);
+  }
+
   async function grant(): Promise<void> {
     if (!canGrant) return;
     setLocalError('');
-    const lease = await createLease.mutateAsync({taskId, requestId: `task-takeover-grant-${Date.now()}`});
-    setSelectedTaskId(lease.taskId);
-    setContent('');
-    setLoadedLeaseId('');
+    const key = `task-takeover-grant-${taskId}`;
+    try {
+      const lease = await createLease.mutateAsync({taskId, requestId: requestIdFor(key)});
+      clearRequestId(key);
+      setSelectedTaskId(lease.taskId);
+      setContent('');
+      setLoadedLeaseId('');
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setLocalError(`接管租约结果尚未确认：${detail} 已刷新租约状态；若仍可申请，重试会复用原请求 ID。`);
+    }
   }
 
   async function handBack(): Promise<void> {
@@ -102,9 +122,17 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
 
   async function release(): Promise<void> {
     if (activeLease === null || pending) return;
-    await releaseLease.mutateAsync({leaseId: activeLease.leaseId, requestId: `task-takeover-release-${activeLease.leaseId}-${Date.now()}`});
-    setContent('');
-    setLoadedLeaseId('');
+    setLocalError('');
+    const key = `task-takeover-release-${activeLease.leaseId}`;
+    try {
+      await releaseLease.mutateAsync({leaseId: activeLease.leaseId, requestId: requestIdFor(key)});
+      clearRequestId(key);
+      setContent('');
+      setLoadedLeaseId('');
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setLocalError(`租约释放结果尚未确认：${detail} 已刷新租约与活动状态；若仍可释放，重试会复用原请求 ID。`);
+    }
   }
 
   return <section className={styles.sectionCard}>

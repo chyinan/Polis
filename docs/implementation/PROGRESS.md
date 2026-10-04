@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 192 — REQ-39 takeover lease exact retry recovery
+
+Task takeover grant/release controls preserve the exact request ID after an ambiguous response and reuse it for the same target lease intent. Lease release now refreshes the lease, Company overview and activity projections after success or error. Frontend production build and `git diff --check` pass; no lease was granted or released, no Worker/provider activity ran, and no frozen scenario was executed. No schema change. Patch import and full exclusive handoff qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-192-req39-takeover-lease-retry/verification.md`.
+
 ## Slice 191 — REQ-39 formal change exact retry recovery
 
 Mission change create/consider/decline/apply controls preserve the exact RequestID for a same-payload retry after an ambiguous result. The UI clears the pending key only after success; payload changes use another idempotency identity. Frontend production build and `git diff --check` pass; no change request was created, considered, declined, or applied. No Worker/provider activity or frozen scenario ran. No schema change. REQ-39 patch/handoff and qualification gaps remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-191-req39-formal-change-retry/verification.md`.

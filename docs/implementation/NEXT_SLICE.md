@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 191, REQ-39 formal change exact retries)
+## Latest continuation status (Slice 192, REQ-39 takeover lease retry recovery)
+
+Takeover grant/release controls now keep the exact request ID for same-intent retries after an ambiguous response, and release refreshes lease, Company and activity state after either outcome. The UI directs operators to inspect refreshed state before retrying. Frontend production build and diff check pass; no lease was granted or released and no Worker/provider or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-192-req39-takeover-lease-retry/verification.md`.
+
+## Previous continuation status (Slice 191, REQ-39 formal change exact retries)
 
 Mission change create/consider/decline/apply commands now retain the exact request ID for the same payload while an outcome is unresolved. A response-loss retry reuses the same Kernel receipt; changing the intent produces a distinct ID, and success clears the pending identity. Frontend production build and diff check pass; no formal change was created, reviewed, or applied. See `evidence/development/r1-r3-implementation-validation-20261004-slice-191-req39-formal-change-retry/verification.md`.
 
