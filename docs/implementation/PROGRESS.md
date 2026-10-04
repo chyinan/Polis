@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 210 — REQ-39 frozen workspace read retry (no migration)
+
+Takeover Workbench now records a frozen workspace as loaded only after the response matches the lease digest/revision and the supported single-file shape. If the read fails or the response does not match, the operator can retry against the same lease; no new lease or conflicting operation is required. Multi-file patch handback remains unsupported because the current lease and MissionInput route bind only the legacy single-file workspace, not a frozen Schema 103 tree manifest. `npm run build` and `git diff --check` pass; no tests, lease command, Worker/provider action, database operation or frozen scenario ran. REQ-39 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-210-req39-frozen-workspace-read-retry/verification.md`.
+
 ## Slice 209 — REQ-26 shared-write audit refresh (Schema 103)
 
 Rechecked C-RESOURCE and the production write/import paths after the new private Task tree landed. The CAS-backed tree remains scoped by Company, Task owner, active WorkerSession/epoch and a root revision; it is not a shared host directory. `companies.workspace_root` is still not a runtime authorization root. No ResourceKey/ResourceBinding record or production shared branch/deploy/publish writer exists; Git source import remains a local immutable read. Adding a ledger without a concrete action would not enforce anything. REQ-26 stays partial, and FT-66/FT-70 remain `not_run`. Source audit only: no code/schema change, tests, database migration, Worker/provider activity or external write. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-209-req26-resource-binding-audit/verification.md`.

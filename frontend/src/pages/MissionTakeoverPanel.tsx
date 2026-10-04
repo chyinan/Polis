@@ -38,6 +38,8 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const [localError, setLocalError] = useState('');
   const [patchNotice, setPatchNotice] = useState('');
   const [patchError, setPatchError] = useState('');
+  const [workspaceLoadFailed, setWorkspaceLoadFailed] = useState(false);
+  const [workspaceLoadAttempt, setWorkspaceLoadAttempt] = useState(0);
   const [pendingSnapshotReturn, setPendingSnapshotReturn] = useState<PendingSnapshotReturn | null>(null);
   const pendingRequestIds = useRef(new Map<string, string>());
   const taskId = selectedTaskId || eligibleTasks[0]?.taskId || '';
@@ -55,6 +57,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
     setContent('');
     setPatchNotice('');
     setPatchError('');
+    setWorkspaceLoadFailed(false);
     void api.getWorkspace({companyId, taskId: activeLease.taskId}).then(workspace => {
       const workspaceRevision = Number(workspace.revision);
       if (workspace.digest !== activeLease.baseWorkspaceDigest || workspaceRevision !== activeLease.baseWorkspaceRevision || workspace.files.length !== 1 || workspace.files[0]?.path !== 'workspace.txt') {
@@ -63,14 +66,23 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
       if (live) {
         setBaseContent(workspace.files[0].content);
         setContent(workspace.files[0].content);
+        setLoadedLeaseId(activeLease.leaseId);
       }
     }).catch(error => {
-      if (live) setLocalError(error instanceof Error ? error.message : '读取冻结工作区失败。');
-    }).finally(() => {
-      if (live) setLoadedLeaseId(activeLease.leaseId);
+      if (live) {
+        setWorkspaceLoadFailed(true);
+        setLocalError(error instanceof Error ? error.message : '读取冻结工作区失败。');
+      }
     });
     return () => { live = false; };
-  }, [activeLease, api, companyId, loadedLeaseId]);
+  }, [activeLease, api, companyId, loadedLeaseId, workspaceLoadAttempt]);
+
+  function retryFrozenWorkspaceRead(): void {
+    if (activeLease === null || pending || pendingSnapshotReturn !== null) return;
+    setWorkspaceLoadFailed(false);
+    setLocalError('');
+    setWorkspaceLoadAttempt(attempt => attempt + 1);
+  }
 
   function requestIdFor(key: string): string {
     const existing = pendingRequestIds.current.get(key);
@@ -203,6 +215,13 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
             </div></div>
             <div className={styles.recordActions}><button className={styles.commandButton} disabled={pending || pendingSnapshotReturn !== null || missionState !== 'paused'} onClick={() => { void release(); }} type="button">释放租约，不提交 snapshot</button></div>
           </div>
+          {workspaceLoadFailed ? <div className={styles.recordRow}>
+            <div className={styles.recordLead}><div>
+              <strong>冻结工作区尚未加载</strong>
+              <span>重试会继续读取同一租约绑定的摘要和修订号；不会创建新租约。</span>
+            </div></div>
+            <div className={styles.recordActions}><button className={styles.commandButton} disabled={pending || pendingSnapshotReturn !== null} onClick={retryFrozenWorkspaceRead} type="button">重试读取冻结工作区</button></div>
+          </div> : null}
           <label className={styles.formLabel}>完整工作区文本 snapshot
             <textarea className={styles.formField} disabled={pendingSnapshotReturn !== null || baseContent === null} rows={10} maxLength={MAX_WORKSPACE_SNAPSHOT_BYTES} value={content} onChange={event => { setContent(event.target.value); setPatchNotice(''); }} placeholder="正在读取冻结工作区文本…" />
           </label>
