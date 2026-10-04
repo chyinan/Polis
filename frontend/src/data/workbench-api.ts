@@ -624,6 +624,7 @@ export type MissionCommandOptions = Readonly<{
 
 export type QualifyCapabilityOptions = Readonly<{companyId: string; capabilityKind: 'skill' | 'mcp'; capabilityId: string; requestId: string}>;
 export type DecideCapabilityOptions = Readonly<{companyId: string; capabilityKind: 'skill' | 'mcp'; capabilityId: string; qualificationId: string; decision: 'approved' | 'revoked'; rationale: string; requestId: string}>;
+export type ReviewCapabilityRevocationOptions = Readonly<{companyId: string; revocationId: string; rationale: string; requestId: string}>;
 export type ApproveStdioMCPRuntimeQualificationOptions = Readonly<{companyId: string; runtimeQualificationId: string; rationale: string; requestId: string}>;
 export type BindEmployeeCapabilityOptions = Readonly<{companyId: string; employeeId: string; capabilityKind: 'skill' | 'mcp'; capabilityId: string; qualificationId: string; reason: string; requestId: string}>;
 
@@ -710,6 +711,7 @@ export type WorkbenchApi = Readonly<{
   registerMCP(options: RegisterMCPOptions): Promise<unknown>;
   qualifyCapability(options: QualifyCapabilityOptions): Promise<unknown>;
   decideCapability(options: DecideCapabilityOptions): Promise<unknown>;
+  reviewIncompleteCapabilityRevocation(options: ReviewCapabilityRevocationOptions): Promise<unknown>;
   approveStdioMCPRuntimeQualification(options: ApproveStdioMCPRuntimeQualificationOptions): Promise<unknown>;
   bindEmployeeCapability(options: BindEmployeeCapabilityOptions): Promise<unknown>;
   revokeEmployeeCapability(options: BindEmployeeCapabilityOptions): Promise<unknown>;

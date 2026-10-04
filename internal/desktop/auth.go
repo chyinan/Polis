@@ -84,6 +84,9 @@ func RequiresSessionTokenPath(path string) bool {
 	if strings.Contains(path, "/artifacts/") && (strings.HasSuffix(path, "/manifest") || strings.HasSuffix(path, "/download")) {
 		return true
 	}
+	if strings.Contains(path, "/capabilities/revocations/") && strings.HasSuffix(path, "/review") {
+		return true
+	}
 	if strings.HasSuffix(path, "/domain-workflows") || strings.Contains(path, "/domain-workflows/") || strings.Contains(path, "/domain-evidence/") || strings.HasSuffix(path, "/domain-evidence") {
 		return true
 	}

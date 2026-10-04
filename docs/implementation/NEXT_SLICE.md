@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 164, REQ-14 complete revocation-inventory receipt)
+## Latest continuation status (Slice 165, REQ-14 owner-reviewed unresolved disposition)
+
+Schema 100 adds immutable installation-owner review records for incomplete legacy revocations. The only supported disposition is `acknowledged_unresolved`: the owner records that the historical session set cannot be proven, with a rationale. The endpoint requires a validated installation-owner session and CSRF token, and rechecks that the target is still active and incomplete under the Company write guard. Review never completes the inventory, changes `quiesced`, or stops a Worker. The UI explains these limits and shows the recorded decision. Local Termux migrated to Schema 100; the database has zero Companies, owner credentials, and WorkerSessions. Native and Windows/amd64 Go builds, frontend production build, migration hash verification and `git diff --check` pass. No tests, owner review, Worker or provider activity ran. REQ-14 remains open pending applicable owner action and runtime qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-165-req14-owner-review/verification.md`.
+
+Next Slice166: continue the bounded open software ledger, starting with REQ-13 quota recovery/readiness and dispatch fairness. Keep Worker execution gated on a database-confirmed active WorkerSession, and keep production dispatch separate from the zero-egress Fake @7 path.
+
+## Previous continuation status (Slice 164, REQ-14 complete revocation-inventory receipt)
 
 Schema 99 adds an immutable completion receipt for every newly captured revoke-time session inventory, even when the snapshot contains zero sessions. The projection accepts either this receipt or a nonempty exact Schema-73 snapshot as complete. Older zero-row revocations with only the usage-ledger fallback now show `sessionInventoryComplete=false`, and `quiesced` is forced false because a bound-but-unused historical session cannot be ruled out. Workbench distinguishes this “需复核” state. The local Termux database migrated successfully to Schema 99; Go native and Windows/amd64 builds, frontend production build and `git diff --check` pass. No Worker, provider activity or tests ran. REQ-14 remains open until legacy incomplete revocations receive a safe owner-reviewed disposition and runtime qualification completes. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-164-req14-revocation-inventory-completeness/verification.md`.
-
-Next Slice165: design and implement an owner-reviewed disposition for legacy revocations with incomplete session inventories. Do not infer an exact historical session set from current usage events; any Worker stop must target a database-confirmed active WorkerSession.
 
 ## Previous continuation status (Slice 163, REQ-14 restart retry for revoked Worker stop)
 

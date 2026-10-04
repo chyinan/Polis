@@ -31,7 +31,7 @@ import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
 import {type ImportStdioMCPPackageOptions, type ObserveStdioMCPRuntimeOptions, type ObserveStreamableHTTPMCPRuntimeOptions, MAX_STDIO_MCP_PACKAGE_BYTES} from './workbench-api';
 import type {ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceLedgerView, DomainEvidenceRecordView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
 import {validateActivityEvent, validateActivityView, validateArtifactDeliveryManifest, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainEvidenceSubstantiveAssessmentRecord, validateDomainProfileQualificationRecord, validateEnvironmentExecutorQualificationReceipt, validateEnvironmentPolicyDecisionReceipt, validateEnvironmentPreparationRun, validateGitHubCredentialReceipt, validateGitHubFeedbackBacklogStatusReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateHumanInterventionCommandReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateMissionInputCommandReceipt, validateMissionInputs, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases, validateWorkspace, validationMessage} from '../domain/workbench-validation';
-import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
+import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
 
 export class RealWorkbenchApi implements WorkbenchApi {
   readonly mode = 'real' as const;
@@ -796,6 +796,19 @@ export class RealWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.qualificationId);
     assertRequestID(options.requestId);
     return this.post(`/companies/${encodeURIComponent(options.companyId)}/capabilities/decide`, options.requestId, options);
+  }
+
+  async reviewIncompleteCapabilityRevocation(options: ReviewCapabilityRevocationOptions): Promise<unknown> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.revocationId);
+    assertRequestID(options.requestId);
+    if (options.rationale.trim() === '' || new TextEncoder().encode(options.rationale).length > 512) {
+      throw new CommandApiError('MALFORMED_INPUT', 400, 'owner review rationale must contain 1 to 512 bytes', options.revocationId);
+    }
+    return this.post(`/companies/${encodeURIComponent(options.companyId)}/capabilities/revocations/${encodeURIComponent(options.revocationId)}/review`, options.requestId, {
+      rationale: options.rationale,
+      requestId: options.requestId,
+    }, true);
   }
 
   async approveStdioMCPRuntimeQualification(options: Readonly<{companyId: string; runtimeQualificationId: string; rationale: string; requestId: string}>): Promise<unknown> {
@@ -1628,11 +1641,16 @@ export class RealWorkbenchApi implements WorkbenchApi {
     return response.json() as Promise<unknown>;
   }
 
-  private async post(path: string, requestID: string, body: unknown): Promise<unknown> {
+  private async post(path: string, requestID: string, body: unknown, requireOwnerCSRF = false): Promise<unknown> {
+    const headers = this.requestHeaders({'Accept': 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': requestID});
+    if (requireOwnerCSRF) {
+      const csrf = this.ownerCSRFCookie();
+      if (csrf !== '') headers['X-Polis-CSRF-Token'] = csrf;
+    }
     const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'POST',
       credentials: 'same-origin',
-      headers: this.requestHeaders({'Accept': 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': requestID}),
+      headers,
       body: JSON.stringify(body),
     });
     if (!response.ok) {
@@ -1676,6 +1694,16 @@ export class RealWorkbenchApi implements WorkbenchApi {
 
   private requestHeaders(headers: Record<string, string>): Record<string, string> {
     return this.sessionToken === null ? headers : {...headers, 'X-Polis-Desktop-Token': this.sessionToken};
+  }
+
+  private ownerCSRFCookie(): string {
+    if (typeof document === 'undefined') return '';
+    const prefix = 'polis_owner_csrf=';
+    for (const item of document.cookie.split(';')) {
+      const cookie = item.trim();
+      if (cookie.startsWith(prefix)) return cookie.slice(prefix.length);
+    }
+    return '';
   }
 }
 

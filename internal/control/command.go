@@ -414,6 +414,13 @@ type CapabilityService interface {
 	DecideCapability(ctx context.Context, companyID string, request DecideCapabilityRequest) (kernel.Receipt, error)
 	BindEmployeeCapability(ctx context.Context, companyID string, request BindEmployeeCapabilityRequest) (kernel.Receipt, error)
 	RevokeEmployeeCapability(ctx context.Context, companyID string, request BindEmployeeCapabilityRequest) (kernel.Receipt, error)
+	ReviewIncompleteCapabilityRevocation(ctx context.Context, companyID string, request ReviewCapabilityRevocationRequest) (kernel.Receipt, error)
+}
+
+type ReviewCapabilityRevocationRequest struct {
+	RevocationID string `json:"revocationId"`
+	Rationale    string `json:"rationale"`
+	RequestID    string `json:"requestId"`
 }
 
 type MCPRuntimeQualificationService interface {

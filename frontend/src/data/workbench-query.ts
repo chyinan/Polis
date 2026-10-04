@@ -3,7 +3,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import type {ImportStdioMCPPackageOptions, ObserveStdioMCPRuntimeOptions, ObserveStreamableHTTPMCPRuntimeOptions} from './workbench-api';
-import type {BindEmployeeCapabilityOptions, CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateMissionChangeRequestOptions, CreateTaskEnvironmentHandoverOptions, CreateOperatorInstructionOptions, CreateTaskTakeoverLeaseOptions, DecideCapabilityOptions, DecideGitHubFeedbackSourceOptions, EnvironmentExecutorQualificationOptions, EnvironmentPolicyDecisionOptions, EnsureEnvironmentOptions, ImportSkillOptions, ImportReadOnlySkillPackageOptions, MissionChangeRequestCommandOptions, MissionChangeRequestQueryOptions, MissionCommandOptions, PollGitHubFeedbackSourceOptions, ProbeGitHubFeedbackSourceOptions, QualifyCapabilityOptions, RecordDomainEvidenceOptions, RecordDomainEvidenceReviewOptions, RecordDomainEvidenceSubstantiveAssessmentOptions, RecordDomainProfileQualificationOptions, RegisterGitHubFeedbackSourceOptions, ReleaseTaskTakeoverLeaseOptions, SetGitHubFeedbackBacklogStatusOptions, SetHumanInterventionStateOptions, TaskCrossBackendHandoversQueryOptions, TaskInputManifestQueryOptions, TaskJobLogsQueryOptions, TaskJobRunsQueryOptions, StartTaskJobRunOptions, StopTaskJobRunOptions, TaskTakeoverLeaseQueryOptions, TaskTakeoverSnapshotOptions, UploadMissionDirectoryInputOptions, UploadMissionInputOptions, UpdateCompanyOptions, ArchiveCompanyOptions, RegisterMCPOptions, TestNotificationOptions, UpdateRuntimeSettingsOptions, WorkbenchApi} from './workbench-api';
+import type {BindEmployeeCapabilityOptions, CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateMissionChangeRequestOptions, CreateTaskEnvironmentHandoverOptions, CreateOperatorInstructionOptions, CreateTaskTakeoverLeaseOptions, DecideCapabilityOptions, DecideGitHubFeedbackSourceOptions, EnvironmentExecutorQualificationOptions, EnvironmentPolicyDecisionOptions, EnsureEnvironmentOptions, ImportSkillOptions, ImportReadOnlySkillPackageOptions, MissionChangeRequestCommandOptions, MissionChangeRequestQueryOptions, MissionCommandOptions, PollGitHubFeedbackSourceOptions, ProbeGitHubFeedbackSourceOptions, QualifyCapabilityOptions, RecordDomainEvidenceOptions, RecordDomainEvidenceReviewOptions, RecordDomainEvidenceSubstantiveAssessmentOptions, RecordDomainProfileQualificationOptions, RegisterGitHubFeedbackSourceOptions, ReleaseTaskTakeoverLeaseOptions, ReviewCapabilityRevocationOptions, SetGitHubFeedbackBacklogStatusOptions, SetHumanInterventionStateOptions, TaskCrossBackendHandoversQueryOptions, TaskInputManifestQueryOptions, TaskJobLogsQueryOptions, TaskJobRunsQueryOptions, StartTaskJobRunOptions, StopTaskJobRunOptions, TaskTakeoverLeaseQueryOptions, TaskTakeoverSnapshotOptions, UploadMissionDirectoryInputOptions, UploadMissionInputOptions, UpdateCompanyOptions, ArchiveCompanyOptions, RegisterMCPOptions, TestNotificationOptions, UpdateRuntimeSettingsOptions, WorkbenchApi} from './workbench-api';
 import type {ActivityStreamStatus} from './workbench-api';
 import type {CreateProjectJobBrowserSessionOptions} from './workbench-api';
 import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
@@ -652,6 +652,14 @@ export function useDecideCapability(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<DecideCapabilityOptions, 'companyId'>) => api.decideCapability({...options, companyId}),
+    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+  });
+}
+
+export function useReviewIncompleteCapabilityRevocation(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<ReviewCapabilityRevocationOptions, 'companyId'>) => api.reviewIncompleteCapabilityRevocation({...options, companyId}),
     onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }

@@ -627,6 +627,13 @@ export type CapabilityRevocationMCPCallView = Readonly<{
   createdAt: string;
 }>;
 
+export type CapabilityRevocationOwnerReviewView = Readonly<{
+  disposition: 'acknowledged_unresolved';
+  rationale: string;
+  actor: 'installation-owner';
+  reviewedAt: string;
+}>;
+
 export type CapabilityRevocationStatusView = Readonly<{
   companyId: string;
   revocationId: string;
@@ -643,6 +650,7 @@ export type CapabilityRevocationStatusView = Readonly<{
   effectiveForNewDispatch: boolean;
   quiesced: boolean;
   sessionInventoryComplete: boolean;
+  ownerReview?: CapabilityRevocationOwnerReviewView;
   affectedSessionCount: number;
   liveSessionCount: number;
   sessions: ReadonlyArray<CapabilityRevocationSessionView>;

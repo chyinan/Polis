@@ -1461,6 +1461,15 @@ function isCapabilityRevocationMCPCall(value: unknown): value is CapabilityRevoc
     && hasString(value, 'createdAt');
 }
 
+function isCapabilityRevocationOwnerReview(value: unknown): value is NonNullable<CapabilityRevocationStatusView['ownerReview']> {
+  return isRecord(value)
+    && value.disposition === 'acknowledged_unresolved'
+    && hasString(value, 'rationale')
+    && typeof value.rationale === 'string' && value.rationale.trim() !== ''
+    && value.actor === 'installation-owner'
+    && hasString(value, 'reviewedAt');
+}
+
 function isCapabilityRevocationStatus(value: unknown, companyId: string): value is CapabilityRevocationStatusView {
   return isRecord(value)
     && value.companyId === companyId
@@ -1478,6 +1487,7 @@ function isCapabilityRevocationStatus(value: unknown, companyId: string): value 
     && typeof value.effectiveForNewDispatch === 'boolean'
     && typeof value.quiesced === 'boolean'
     && typeof value.sessionInventoryComplete === 'boolean'
+    && (value.ownerReview === undefined || isCapabilityRevocationOwnerReview(value.ownerReview))
     && isNonNegativeSafeInteger(value.affectedSessionCount)
     && isNonNegativeSafeInteger(value.liveSessionCount)
     && Array.isArray(value.sessions) && value.sessions.every(isCapabilityRevocationSession)

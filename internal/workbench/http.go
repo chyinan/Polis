@@ -1326,6 +1326,37 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "capabilities.revocation-review":
+		if !installationauth.IsAuthenticated(ctx) {
+			writeError(response, http.StatusUnauthorized, "installation owner authentication is required")
+			return
+		}
+		csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+		csrfValue := ""
+		if csrfCookie != nil {
+			csrfValue = csrfCookie.Value
+		}
+		if request.Header.Get("Origin") == "" || !installationauth.CSRFValid(ctx, csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+			writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+			return
+		}
+		capabilityService, ok := service.(control.CapabilityService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "capability_revocation", errors.New("capability catalog is unavailable"))
+			return
+		}
+		var input control.ReviewCapabilityRevocationRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "capability_revocation", err)
+			return
+		}
+		input.RevocationID = path.resourceID
+		receipt, err := capabilityService.ReviewIncompleteCapabilityRevocation(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "capability_revocation", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "capabilities.runtime-approve":
 		qualificationService, ok := service.(control.MCPRuntimeQualificationService)
 		if !ok {
@@ -2016,6 +2047,13 @@ func parsePath(path string) (parsedPath, bool) {
 	}
 	if len(parts) == 3 && parts[1] == "capabilities" && (parts[2] == "skills" || parts[2] == "mcp" || parts[2] == "mcp-packages" || parts[2] == "qualify" || parts[2] == "decide" || parts[2] == "bind" || parts[2] == "unbind" || parts[2] == "runtime-approve" || parts[2] == "runtime-observe" || parts[2] == "runtime-observe-http") {
 		return parsedPath{companyID: companyID, endpoint: "capabilities." + parts[2]}, true
+	}
+	if len(parts) == 5 && parts[1] == "capabilities" && parts[2] == "revocations" && parts[3] != "" && parts[4] == "review" {
+		revocationID, err := url.PathUnescape(parts[3])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: revocationID, endpoint: "capabilities.revocation-review"}, true
 	}
 	if len(parts) == 3 && parts[1] == "feedback" && parts[2] == "sources" {
 		return parsedPath{companyID: companyID, endpoint: "feedback.sources"}, true

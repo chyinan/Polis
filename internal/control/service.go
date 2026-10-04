@@ -224,6 +224,17 @@ func (s *Service) DecideCapability(ctx context.Context, companyID string, reques
 	return receipt, err
 }
 
+func (s *Service) ReviewIncompleteCapabilityRevocation(ctx context.Context, companyID string, request ReviewCapabilityRevocationRequest) (kernel.Receipt, error) {
+	if err := validateRequestID(request.RequestID); err != nil {
+		return kernel.Receipt{}, err
+	}
+	return s.runtime.TXReviewIncompleteCapabilityRevocation(ctx, companyID, kernel.CapabilityRevocationOwnerReviewInput{
+		RevocationID: request.RevocationID,
+		Rationale:    request.Rationale,
+		RequestID:    request.RequestID,
+	})
+}
+
 func (s *Service) ApproveStdioMCPRuntimeQualification(ctx context.Context, companyID string, request ApproveStdioMCPRuntimeQualificationRequest) (kernel.Receipt, error) {
 	if err := validateRequestID(request.RequestID); err != nil {
 		return kernel.Receipt{}, err

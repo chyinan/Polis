@@ -19,29 +19,37 @@ const (
 // revoke-time session snapshots on every catalog read. It needs no
 // process-local cursor or recovery state.
 type CapabilityRevocationStatus struct {
-	CompanyID                string                        `json:"companyId"`
-	RevocationID             string                        `json:"revocationId"`
-	Scope                    string                        `json:"scope"`
-	CapabilityKind           string                        `json:"capabilityKind"`
-	CapabilityID             string                        `json:"capabilityId"`
-	VersionDigest            string                        `json:"versionDigest"`
-	QualificationID          string                        `json:"qualificationId"`
-	EmployeeID               string                        `json:"employeeId,omitempty"`
-	Reason                   string                        `json:"reason"`
-	Actor                    string                        `json:"actor"`
-	AcceptedAt               string                        `json:"acceptedAt"`
-	RevocationAccepted       bool                          `json:"revocationAccepted"`
-	EffectiveForNewDispatch  bool                          `json:"effectiveForNewDispatch"`
-	Quiesced                 bool                          `json:"quiesced"`
-	SessionInventoryComplete bool                          `json:"sessionInventoryComplete"`
-	AffectedSessionCount     int64                         `json:"affectedSessionCount"`
-	LiveSessionCount         int64                         `json:"liveSessionCount"`
-	Sessions                 []CapabilityRevocationSession `json:"sessions"`
-	SessionsTruncated        bool                          `json:"sessionsTruncated"`
-	MCPCallCount             int64                         `json:"mcpCallCount"`
-	DispatchingMCPCallCount  int64                         `json:"dispatchingMcpCallCount"`
-	MCPCalls                 []CapabilityRevocationMCPCall `json:"mcpCalls"`
-	MCPCallsTruncated        bool                          `json:"mcpCallsTruncated"`
+	CompanyID                string                           `json:"companyId"`
+	RevocationID             string                           `json:"revocationId"`
+	Scope                    string                           `json:"scope"`
+	CapabilityKind           string                           `json:"capabilityKind"`
+	CapabilityID             string                           `json:"capabilityId"`
+	VersionDigest            string                           `json:"versionDigest"`
+	QualificationID          string                           `json:"qualificationId"`
+	EmployeeID               string                           `json:"employeeId,omitempty"`
+	Reason                   string                           `json:"reason"`
+	Actor                    string                           `json:"actor"`
+	AcceptedAt               string                           `json:"acceptedAt"`
+	RevocationAccepted       bool                             `json:"revocationAccepted"`
+	EffectiveForNewDispatch  bool                             `json:"effectiveForNewDispatch"`
+	Quiesced                 bool                             `json:"quiesced"`
+	SessionInventoryComplete bool                             `json:"sessionInventoryComplete"`
+	OwnerReview              *CapabilityRevocationOwnerReview `json:"ownerReview,omitempty"`
+	AffectedSessionCount     int64                            `json:"affectedSessionCount"`
+	LiveSessionCount         int64                            `json:"liveSessionCount"`
+	Sessions                 []CapabilityRevocationSession    `json:"sessions"`
+	SessionsTruncated        bool                             `json:"sessionsTruncated"`
+	MCPCallCount             int64                            `json:"mcpCallCount"`
+	DispatchingMCPCallCount  int64                            `json:"dispatchingMcpCallCount"`
+	MCPCalls                 []CapabilityRevocationMCPCall    `json:"mcpCalls"`
+	MCPCallsTruncated        bool                             `json:"mcpCallsTruncated"`
+}
+
+type CapabilityRevocationOwnerReview struct {
+	Disposition string `json:"disposition"`
+	Rationale   string `json:"rationale"`
+	Actor       string `json:"actor"`
+	ReviewedAt  string `json:"reviewedAt"`
 }
 
 type CapabilityRevocationSession struct {
@@ -289,6 +297,17 @@ ORDER BY i.created_at DESC,i.intent_id LIMIT $4`
 			status.MCPCalls = status.MCPCalls[:maxRevocationInventoryItems]
 			status.MCPCallsTruncated = true
 		}
+	}
+	var ownerReview CapabilityRevocationOwnerReview
+	reviewErr := tx.QueryRow(ctx, `SELECT disposition,rationale,actor,reviewed_at::text
+FROM capability_revocation_owner_reviews WHERE company_id=$1 AND revocation_id=$2`, status.CompanyID, status.RevocationID).Scan(
+		&ownerReview.Disposition, &ownerReview.Rationale, &ownerReview.Actor, &ownerReview.ReviewedAt)
+	if errors.Is(reviewErr, pgx.ErrNoRows) {
+		status.OwnerReview = nil
+	} else if reviewErr != nil {
+		return reviewErr
+	} else {
+		status.OwnerReview = &ownerReview
 	}
 	status.Quiesced = status.SessionInventoryComplete && status.LiveSessionCount == 0 && status.DispatchingMCPCallCount == 0
 	return nil

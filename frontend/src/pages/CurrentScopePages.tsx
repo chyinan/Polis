@@ -3,7 +3,7 @@
 import {useEffect, useState, type ReactElement} from 'react';
 import {Activity, Building2, CheckCircle2, CircleAlert, Handshake, LockKeyhole, MessageSquareText, Settings2, ShieldCheck, UsersRound} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useBindEmployeeCapability, useCapabilityCatalog, useCompanyFeedback, useCompanyList, useCompanyOverview, useDecideCapability, useApproveStdioMCPRuntimeQualification, useObserveStdioMCPRuntime, useObserveStreamableHTTPMCPRuntime, useDecideGitHubFeedbackSource, useDeleteGitHubFeedbackCredential, useImportReadOnlySkillPackage, useImportStdioMCPPackage, usePollGitHubFeedbackSource, useProbeGitHubFeedbackSource, useQualifyCapability, useRegisterGitHubFeedbackSource, useRegisterMCP, useRevokeEmployeeCapability, useRuntimeSettings, useSetGitHubFeedbackBacklogStatus, useSetHumanInterventionState, useStoreGitHubFeedbackCredential} from '../data/workbench-query';
+import {useBindEmployeeCapability, useCapabilityCatalog, useCompanyFeedback, useCompanyList, useCompanyOverview, useDecideCapability, useApproveStdioMCPRuntimeQualification, useObserveStdioMCPRuntime, useObserveStreamableHTTPMCPRuntime, useDecideGitHubFeedbackSource, useDeleteGitHubFeedbackCredential, useImportReadOnlySkillPackage, useImportStdioMCPPackage, usePollGitHubFeedbackSource, useProbeGitHubFeedbackSource, useQualifyCapability, useRegisterGitHubFeedbackSource, useRegisterMCP, useRevokeEmployeeCapability, useReviewIncompleteCapabilityRevocation, useRuntimeSettings, useSetGitHubFeedbackBacklogStatus, useSetHumanInterventionState, useStoreGitHubFeedbackCredential} from '../data/workbench-query';
 import {useSetGitHubFeedbackCollectionPolicy} from '../data/workbench-query';
 import type {AttentionItem, CapabilityDecisionView, CapabilityQualificationView, CompanyFeedbackView, CompanySummaryView, MCPServerDefinitionView, RuntimeSettingsView, StdioMCPPackageRevisionView} from '../domain/workbench';
 import {labelActivityKind, labelActivityText, labelDisplayValue, labelErrorMessage} from '../domain/display-labels';
@@ -547,6 +547,7 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
   const approveRuntimeQualification = useApproveStdioMCPRuntimeQualification(api, companyId);
   const bind = useBindEmployeeCapability(api, companyId);
   const revokeBinding = useRevokeEmployeeCapability(api, companyId);
+  const reviewRevocation = useReviewIncompleteCapabilityRevocation(api, companyId);
   const employeeOverview = useCompanyOverview(api, companyId);
   const [skillRevision, setSkillRevision] = useState('');
   const [skillBundleFile, setSkillBundleFile] = useState<File | null>(null);
@@ -606,6 +607,19 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
       await decide.mutateAsync({capabilityKind: kind, capabilityId: id, qualificationId, decision, rationale, requestId: requestId('capability-decision')});
       setMessage(decision === 'approved' ? '已记录人工批准；能力运行仍被资格门控。' : '已撤销能力并撤销现有员工绑定。');
     } catch (error) { setMessage(error instanceof Error ? error.message : '能力决策失败'); }
+  }
+  async function reviewIncompleteRevocation(revocationId: string): Promise<void> {
+    setMessage(null);
+    if (rationale.trim() === '') {
+      setMessage('请填写复核理由。');
+      return;
+    }
+    const confirmed = window.confirm('确认以安装所有者身份记录：该历史撤销缺少精确会话清单，现有证据无法证明撤销时的完整 WorkerSession 集合。此复核不会补造清单、不会标记已静止，也不会停止 Worker。');
+    if (!confirmed) return;
+    try {
+      await reviewRevocation.mutateAsync({revocationId, rationale: rationale.trim(), requestId: requestId('capability-revocation-review')});
+      setMessage('已记录安装所有者复核；历史清单仍不完整，撤销仍未证明静止。');
+    } catch (error) { setMessage(error instanceof Error ? error.message : '撤销记录复核失败'); }
   }
   async function approveRuntimeQualificationRecord(runtimeQualificationId: string): Promise<void> {
     setMessage(null);
@@ -678,17 +692,18 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
     <section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>审批审计</span><h2 className={styles.sectionTitle}>人工决定记录</h2></div><StatusBadge label={`${query.data.decisions.length} 条`} tone="info" /></div>{query.data.decisions.length > 0 ? <div className={styles.recordList}>{query.data.decisions.map(item => <div className={styles.recordRow} key={item.decisionId}><div className={styles.recordLead}><ShieldCheck aria-hidden="true" size={16} /><div><strong>{item.capabilityKind} / {item.capabilityId} · {item.versionDigest}</strong><span>{item.actor} · {item.qualificationId} · {item.rationale}</span></div></div><StatusBadge label={labelDisplayValue(item.decision)} tone={item.decision === 'approved' ? 'success' : 'danger'} /></div>)}</div> : <div className={styles.emptyState}>尚无人工批准或撤销记录。</div>}</section>
     <section className={styles.sectionCard}>
       <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>REQ-14 / 撤销状态</span><h2 className={styles.sectionTitle}>派发门禁与受影响执行</h2></div><StatusBadge label={`${query.data.revocations.length} 条当前撤销`} tone="info" /></div>
-      <p className={styles.formHint}>接受撤销后会阻止后续派发。只有会话清单完整、所有受影响 WorkerSession 均已停止，且没有 dispatching MCP 意图时才显示已静止。缺少精确撤销时快照的历史记录会显示需复核；结果未知会保留在明细中。此视图从持久化事件和意图重建，目前只读，不会自动停止 Worker。</p>
+      <p className={styles.formHint}>接受撤销后会阻止后续派发。只有会话清单完整、所有受影响 WorkerSession 均已停止，且没有 dispatching MCP 意图时才显示已静止。安装所有者可以对旧记录作“已复核但仍无法证明静止”的不可变记录；这不会补造撤销时清单、改变静止状态或停止 Worker。操作需要先登录安装所有者，并填写复核理由；结果未知会保留在明细中。</p>
       {query.data.revocations.length > 0 ? <div className={styles.recordList}>{query.data.revocations.map(item => <div className={styles.recordRow} key={item.revocationId}>
         <div className={styles.recordLead}><ShieldCheck aria-hidden="true" size={16} /><div>
           <strong>{item.scope === 'employee' ? `${item.employeeId} · ` : ''}{item.capabilityKind} / {item.capabilityId}</strong>
           <span>撤销已接受：{item.revocationAccepted ? '是' : '否'} · 对新派发生效：{item.effectiveForNewDispatch ? '是' : '否'} · {item.acceptedAt}</span>
           <span>撤销时会话清单：{item.sessionInventoryComplete ? '完整' : '不完整，需复核'}</span>
+          {item.ownerReview ? <span>安装所有者复核：已记录但仍无法证明静止 · {item.ownerReview.reviewedAt} · {item.ownerReview.rationale}</span> : null}
           <span>WorkerSession：{item.liveSessionCount} 个未停止 / {item.affectedSessionCount} 个受影响 · MCP：{item.dispatchingMcpCallCount} 个派发中 / {item.mcpCallCount} 个意图</span>
           {item.sessions.map(session => <span key={session.sessionId}>会话 {session.sessionId} · {session.employeeId} · 当前 {session.state}{session.stateAtRevocation ? ` / 撤销时 ${session.stateAtRevocation}` : ''} · Skill 加载 {session.skillLoadCount} · MCP 调用 {session.mcpCallCount}</span>)}
           {item.mcpCalls.map(call => <span key={call.intentId}>MCP {call.intentId} · {call.toolName} · 当前 {call.status === 'dispatching' ? '派发中' : call.status === 'completed' ? '已完成' : `结果未知${call.reasonCode ? `（${call.reasonCode}）` : ''}`}{call.statusAtRevocation ? ` / 撤销时 ${call.statusAtRevocation}` : ''}</span>)}
           {item.sessionsTruncated || item.mcpCallsTruncated ? <span>明细已截断；数量汇总仍按完整清单计算。</span> : null}
-        </div></div><StatusBadge label={item.quiesced ? '已静止' : item.sessionInventoryComplete ? '尚未静止' : '需复核'} tone={item.quiesced ? 'success' : 'warning'} />
+        </div></div><div className={styles.recordMeta}><StatusBadge label={item.quiesced ? '已静止' : item.sessionInventoryComplete ? '尚未静止' : item.ownerReview ? '已复核，静止未证' : '需复核'} tone={item.quiesced ? 'success' : 'warning'} />{!item.sessionInventoryComplete && !item.ownerReview ? <button className={styles.textButton} disabled={rationale.trim() === '' || reviewRevocation.isPending} onClick={() => { void reviewIncompleteRevocation(item.revocationId); }} type="button">安装所有者复核</button> : null}</div>
       </div>)}</div> : <div className={styles.emptyState}>当前没有生效中的能力撤销。</div>}
       {query.data.revocationsTruncated ? <div className={styles.formHint}>当前仅显示最近的 64 条撤销状态。</div> : null}
     </section>
