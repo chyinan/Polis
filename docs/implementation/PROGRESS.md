@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 197 — content operations exact retries
+
+Content source authorization/revocation, draft registration, independent review, local simulated publication, correction and internal feedback retain exact request IDs for same-payload retries after ambiguous outcomes. IDs clear after successful responses. Frontend production build and `git diff --check` pass. No content evidence or publication command was submitted; no external effect, Worker/provider action or frozen scenario ran. No schema change. Domain qualification remains `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-197-content-operation-retries/verification.md`.
+
 ## Slice 196 — GitHub feedback exact retries
 
 GitHub credential store/delete, backlog updates, source register/probe/decision, read-only poll, and collection-policy commands retain exact request IDs for same-payload retries after ambiguous outcomes. Token matching uses a SHA-256 digest without putting token text in the pending identity key. Frontend production build and `git diff --check` pass. No credential or repository request was made, no poll or collection-policy change ran, and no Worker/provider action or frozen scenario ran. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-196-github-feedback-retries/verification.md`.

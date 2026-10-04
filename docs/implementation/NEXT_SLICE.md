@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 196, GitHub feedback exact retries)
+## Latest continuation status (Slice 197, content operations exact retries)
+
+Content source authorization, draft registration, independent review, local simulated publication, correction, and feedback commands now preserve the same request ID for exact same-payload retries after ambiguous outcomes. Successful responses clear the pending identity. Frontend build and diff check pass; no content evidence was submitted and no publication, external effect, Worker/provider action, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-197-content-operation-retries/verification.md`.
+
+## Previous continuation status (Slice 196, GitHub feedback exact retries)
 
 GitHub credential store/delete, internal backlog updates, source registration/probe/decision, polling, and collection-policy commands now reuse their request ID for the exact same payload after an ambiguous response. Credential identity uses a one-way token digest, not the token text. Existing response refresh remains in place. Frontend production build and diff check pass; no credential, repository request, poll, or policy change was performed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-196-github-feedback-retries/verification.md`.
 

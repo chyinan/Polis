@@ -1,6 +1,6 @@
 // pattern: Imperative Shell
 
-import {useState, type ReactElement} from 'react';
+import {useRef, useState, type ReactElement} from 'react';
 import type {MissionInputView} from '../domain/mission-input';
 import type {DomainContentClaimFindingView, DomainContentClaimReviewView, DomainContentDraftView, DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentPublicationView, DomainContentReviewView, DomainContentSourceEventView, EmployeeSummary} from '../domain/workbench';
 import type {WorkbenchApi} from '../data/workbench-api';
@@ -29,6 +29,17 @@ type ClaimDraft = Readonly<{
 
 const EMPTY_CLAIM_DRAFT: ClaimDraft = {finding: '', sourceKey: '', limitation: ''};
 const MAX_CONTENT_INPUT_BYTES = 1_048_576;
+
+function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
+  const key = JSON.stringify({operation, payload});
+  const requestId = pendingIds.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+  pendingIds.set(key, requestId);
+  return {key, requestId};
+}
+
+function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: string): void {
+  pendingIds.delete(key);
+}
 
 function inputReferenceKey(inputId: string, revision: string): string {
   return JSON.stringify([inputId, revision]);
@@ -75,6 +86,7 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
   const [feedbackCategory, setFeedbackCategory] = useState<DomainContentFeedbackCategoryView>('correction_requested');
   const [feedbackNote, setFeedbackNote] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
 
   const inputs = inputsQuery.data ?? [];
   const usableInputs = inputs.filter(isContentInput);
@@ -119,11 +131,13 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
       return;
     }
     try {
-      const event = await authorizeSource.mutateAsync({
+      const payload = {
         sourceInputId: sourceInputID, sourceInputRevision: sourceRevision,
         sourceSha256: sourceSHA256, state: sourceState, rationale: sourceRationale.trim(),
-        requestId: `content-source-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'content-source', payload);
+      const event = await authorizeSource.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setSourceRationale('');
       setSourceMessage(event.state === 'authorized' ? `已授权来源 ${event.inputId}@${event.revision}。` : `已撤销来源 ${event.inputId}@${event.revision}。`);
     } catch (error) {
@@ -139,11 +153,13 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
       return;
     }
     try {
-      const draft = await registerDraft.mutateAsync({
+      const payload = {
         draftInputId: selectedDraftInput.inputId, draftInputRevision: selectedDraftInput.revision,
         writerEmployeeId, criticalClaims, constraintsPassed,
-        requestId: `content-draft-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'content-draft', payload);
+      const draft = await registerDraft.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setDraftMessage(`草稿版本 ${draft.draftInputId}@${draft.draftRevision} 已固定。后续编辑须上传为新的 MissionInput 版本。`);
     } catch (error) {
       setDraftMessage(error instanceof Error ? error.message : '内容草稿登记失败。');
@@ -198,7 +214,7 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
       return;
     }
     try {
-      const review = await recordReview.mutateAsync({
+      const payload = {
         draftInputId: selectedDraft.draftInputId, draftRevision: selectedDraft.draftRevision,
         correctionId: pendingCorrection?.correctionId ?? '',
         review: {draftRevision: selectedDraft.draftRevision, checkerEmployeeId, humanSampled: true, claims: reviewedClaims},
@@ -207,8 +223,10 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
           plan: {inputId: samplePlan.inputId, revision: samplePlan.revision, sha256: samplePlan.sha256},
           sampledClaimIds, sampledByEmployeeId: checkerEmployeeId,
         },
-        requestId: `content-review-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'content-review', payload);
+      const review = await recordReview.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setReviewMessage(`独立核查已保存：${review.outcome}${review.stale ? '（草稿版本已过期）' : ''}。这不授予内容运营资格。`);
     } catch (error) {
       setReviewMessage(error instanceof Error ? error.message : '内容事实核查失败。');
@@ -222,7 +240,10 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
       return;
     }
     try {
-      const publication = await simulatePublication.mutateAsync({reviewId: review.reviewId, requestId: `content-publication-${crypto.randomUUID()}`});
+      const payload = {reviewId: review.reviewId};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'content-publication', payload);
+      const publication = await simulatePublication.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setReviewMessage(`模拟发布 ${publication.publicationId} 已记录。没有向外部平台发布内容。`);
     } catch (error) {
       setReviewMessage(error instanceof Error ? error.message : '模拟发布失败。');
@@ -237,12 +258,15 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
       return;
     }
     try {
-      const correction = await recordCorrection.mutateAsync({
+      const payload = {
         publicationId: selectedCorrectionPublication.publicationId,
         correctionDraftInputId: correctionDraft.draftInputId,
         correctionDraftRevision: correctionDraft.draftRevision,
-        rationale: correctionRationale.trim(), requestId: `content-correction-${crypto.randomUUID()}`,
-      });
+        rationale: correctionRationale.trim(),
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'content-correction', payload);
+      const correction = await recordCorrection.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setCorrectionMessage(`纠错记录 ${correction.correctionId} 已保存；新草稿需要重新核查。`);
       setCorrectionRationale('');
     } catch (error) {
@@ -257,10 +281,12 @@ export function ContentOperationsPanel({api, companyId, missionId, employees, so
       return;
     }
     try {
-      const item = await recordFeedback.mutateAsync({
+      const payload = {
         publicationId: selectedFeedbackPublicationID, category: feedbackCategory, note: feedbackNote.trim(),
-        requestId: `content-feedback-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'content-feedback', payload);
+      const item = await recordFeedback.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setFeedbackMessage(item.state === 'review_required' ? '反馈已记录并标记为需要人工复核；没有自动创建任务。' : '反馈已作为内部观察记录。');
       setFeedbackNote('');
     } catch (error) {
