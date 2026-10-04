@@ -278,7 +278,7 @@ export function useProposeMemoryCorrection(api: WorkbenchApi, companyId: string)
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ProposeMemoryCorrectionOptions, 'companyId'>) => api.proposeMemoryCorrection({...options, companyId}),
-    onSuccess: async () => invalidateMemoryCorrectionQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateMemoryCorrectionQueries(queryClient, api, companyId),
   });
 }
 
@@ -286,7 +286,7 @@ export function useReviewMemoryCorrection(api: WorkbenchApi, companyId: string) 
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ReviewMemoryCorrectionOptions, 'companyId'>) => api.reviewMemoryCorrection({...options, companyId}),
-    onSuccess: async () => invalidateMemoryCorrectionQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateMemoryCorrectionQueries(queryClient, api, companyId),
   });
 }
 

@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 181 — REQ-15 memory correction command reconciliation
+
+Memory correction proposal and independent review mutations now invalidate the metadata-only correction queue plus Company overview/activity on settle. Existing exact request IDs remain available on same-payload retry. UI errors identify unconfirmed results and direct operators to the refreshed queue and memory state. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider activity or frozen scenario ran. No schema change or correction action was performed; commands still require their database-confirmed active WorkerSession. REQ-15 remains partial pending restore/frozen qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-181-req15-memory-correction-response-refresh/verification.md`.
+
 ## Slice 180 — REQ-13 Routine command-response reconciliation
 
 Routine creation and legacy Routine task-instruction repair now invalidate Routine history, Company/Mission overview and activity after either success or error. The UI keeps the request ID for an exact retry and labels errors unconfirmed, so operators can check the refreshed Routine/Task state before continuing. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, scheduler iteration, Worker/provider activity or frozen scenario ran. No schema change. REQ-13 materialization and Worker admission qualification remain partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-180-req13-routine-response-refresh/verification.md`.

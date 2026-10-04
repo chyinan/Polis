@@ -79,7 +79,8 @@ function ProposeCorrectionForm({api, companyId, sessions}: Readonly<{
       setReason('');
     } catch (error) {
       setIsError(true);
-      setMessage(error instanceof Error ? error.message : '提交更正提案失败。');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setMessage(`更正提案结果尚未确认：${detail} 请先核对已刷新的更正队列，再继续。`);
     }
   }
 
@@ -146,7 +147,8 @@ function ReviewCorrectionForm({api, companyId, item, reviewers}: Readonly<{
       setConfirmApproval(false);
     } catch (error) {
       setIsError(true);
-      setMessage(error instanceof Error ? error.message : '提交更正裁定失败。');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setMessage(`更正裁定结果尚未确认：${detail} 请先核对已刷新的队列与记忆状态，再继续。`);
     }
   }
 
