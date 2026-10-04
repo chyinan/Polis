@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 177 — REQ-37 JobRun response reconciliation
+
+Project JobRun start/stop and cross-backend handover mutations now invalidate Task run/handover histories on settle, including ambiguous errors. This ensures a server-side commit whose response is lost is reconciled before the UI can rely on its old state. Task controls label the result unconfirmed and require checking the refreshed history. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, JobRun, Worker/provider action or frozen scenario ran. REQ-37 remains partial pending native host, restart and frozen qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-177-req37-jobrun-response-refresh/verification.md`.
+
 ## Slice 176 — REQ-23 lifecycle response reconciliation
 
 Mission start, pause and resume now invalidate Workbench Company/Mission and activity snapshots after success or error, matching the existing cancel/closeout handling. A committed lifecycle transition whose HTTP response is lost therefore refreshes the displayed state before another action can be chosen. Start/pause/resume UI errors now describe an unconfirmed or conflicting result and direct the operator to the refreshed Mission state. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider action or frozen scenario ran. REQ-23 remains partial pending restart and frozen-scenario qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-176-req23-lifecycle-response-refresh/verification.md`.

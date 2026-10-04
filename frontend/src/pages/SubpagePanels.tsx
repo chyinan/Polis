@@ -388,7 +388,8 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       setSelectedHandoverID(handover.handoverId);
       setJobActionMessage(`接续记录 ${formatEntityId(handover.handoverId)} 已创建；工作区版本 ${handover.workspaceRevision}；记录 SHA-256 ${handover.recordSha256}`);
     } catch (error) {
-      setJobActionError(error instanceof Error ? error.message : '跨后端接续记录创建失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setJobActionError(`接续记录结果尚未确认：${detail} 请先核对已刷新的接续记录，再继续。`);
     }
   };
   const startProjectJobRun = async () => {
@@ -409,7 +410,8 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       setJobActionMessage(`JobRun ${formatEntityId(receipt.jobId)}：${labelDisplayValue(receipt.state)}`);
       setSelectedJobLogId(receipt.jobId);
     } catch (error) {
-      setJobActionError(error instanceof Error ? error.message : '隔离批处理启动失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setJobActionError(`JobRun 启动结果尚未确认：${detail} 请先核对已刷新的 JobRun 状态，再继续。`);
     }
   };
   const startProjectServiceJobRun = async (serviceId: string) => {
@@ -428,7 +430,8 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       });
       setJobActionMessage(`服务 JobRun ${formatEntityId(receipt.jobId)}：${labelDisplayValue(receipt.state)} / ${labelDisplayValue(receipt.readiness)}`);
     } catch (error) {
-      setJobActionError(error instanceof Error ? error.message : '隔离服务启动失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setJobActionError(`服务 JobRun 启动结果尚未确认：${detail} 请先核对已刷新的 JobRun 状态，再继续。`);
     }
   };
   const stopProjectJobRun = async (jobId: string) => {
@@ -439,7 +442,8 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       if (serviceBrowserSession?.jobId === jobId) setServiceBrowserSession(null);
       setJobActionMessage(`JobRun ${formatEntityId(receipt.jobId)}：${labelDisplayValue(receipt.state)}`);
     } catch (error) {
-      setJobActionError(error instanceof Error ? error.message : '隔离作业停止失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setJobActionError(`JobRun 停止结果尚未确认：${detail} 请先核对已刷新的 JobRun 状态，再继续。`);
     }
   };
   const requestServiceBrowserSession = async (jobId: string) => {

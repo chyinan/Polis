@@ -753,10 +753,10 @@ export function useCreateTaskEnvironmentHandover(api: WorkbenchApi) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: CreateTaskEnvironmentHandoverOptions) => api.createTaskEnvironmentHandover(options),
-    onSuccess: async handover => {
+    onSettled: async (_handover, _error, options) => {
       await Promise.all([
-        queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-cross-backend-handovers', handover.companyId, handover.taskId]}),
-        queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-job-runs', handover.companyId, handover.taskId]}),
+        queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-cross-backend-handovers', options.companyId, options.taskId]}),
+        queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-job-runs', options.companyId, options.taskId]}),
       ]);
     },
   });
@@ -775,7 +775,7 @@ export function useStartTaskJobRun(api: WorkbenchApi) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: StartTaskJobRunOptions) => api.startTaskJobRun(options),
-    onSuccess: receipt => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-job-runs', receipt.companyId, receipt.taskId]}),
+    onSettled: (_receipt, _error, options) => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-job-runs', options.companyId, options.taskId]}),
   });
 }
 
@@ -783,7 +783,7 @@ export function useStopTaskJobRun(api: WorkbenchApi) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: StopTaskJobRunOptions) => api.stopTaskJobRun(options),
-    onSuccess: receipt => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-job-runs', receipt.companyId, receipt.taskId]}),
+    onSettled: (_receipt, _error, options) => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-job-runs', options.companyId]}),
   });
 }
 
