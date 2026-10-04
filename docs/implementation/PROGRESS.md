@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 187 — REQ-15 Task memory revalidation command reconciliation
+
+Task memory revalidation now invalidates the Task memory-impact, Company overview and activity projections after either success or error. Ambiguous errors direct the operator to inspect refreshed Task and memory state; the component retains the exact request ID for an exact same-intent retry. Frontend production build and `git diff --check` pass; no revalidation command or Worker/provider action ran and no frozen scenario was executed. No schema change. REQ-15 restore and frozen FT-37/40/41 qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-187-req15-task-memory-response-refresh/verification.md`.
+
 ## Slice 186 — GitHub feedback command reconciliation
 
 GitHub feedback credential store/delete, source registration/probe/decision, polling, backlog status, and collection-policy mutations now invalidate the feedback read model after success or error. Frontend production build and `git diff --check` pass; no credentials were stored or deleted, no GitHub API call or collection run occurred, and no Worker/provider action or frozen scenario ran. No schema change. External repository permissions, credential-host qualification, and feedback collection remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-186-github-feedback-response-refresh/verification.md`.

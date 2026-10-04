@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 186, GitHub feedback command reconciliation)
+## Latest continuation status (Slice 187, REQ-15 Task memory revalidation recovery)
+
+Task memory revalidation now refreshes the Task memory-impact view, Company overview and activity after success or error. If the command response is ambiguous, the Workbench identifies the result as unconfirmed and preserves the exact request ID for the same-intent retry after checking refreshed Task state. Frontend production build and diff check pass; no revalidation was submitted and no Worker/provider or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-187-req15-task-memory-response-refresh/verification.md`.
+
+## Previous continuation status (Slice 186, GitHub feedback command reconciliation)
 
 GitHub feedback credential, source, polling, backlog and collection-policy commands now refresh the feedback projection after success or error. This reconciles credential/source state after a committed operation whose response is lost. Frontend production build and diff check pass; no credentials were stored or deleted, and no GitHub API, Worker/provider action, or frozen scenario ran. Repository permission and external collection qualification remain open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-186-github-feedback-response-refresh/verification.md`.
 

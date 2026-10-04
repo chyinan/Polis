@@ -75,7 +75,8 @@ export function TaskMemoryImpactPanel({api, companyId, taskId}: Props) {
       setMessage(`已记录重验 ${receipt.id}。Task 已回到可执行状态；本操作不会启动 Worker。`);
     } catch (error) {
       setMessageError(true);
-      setMessage(error instanceof CommandApiError ? error.message : error instanceof Error ? error.message : '记忆重验失败。');
+      const detail = error instanceof CommandApiError ? error.message : error instanceof Error ? error.message : '命令结果未知。';
+      setMessage(`记忆重验结果尚未确认：${detail} 已刷新 Task 和记忆状态；核对后，同一意图可复用请求 ID 重试。`);
     }
   }
 

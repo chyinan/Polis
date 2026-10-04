@@ -433,7 +433,7 @@ export function useRevalidateMemoryTask(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RevalidateMemoryTaskOptions, 'companyId'>) => api.revalidateMemoryTask({...options, companyId}),
-    onSuccess: async (_receipt, options) => Promise.all([
+    onSettled: async (_receipt, _error, options) => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-memory-impact', companyId, options.taskId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
