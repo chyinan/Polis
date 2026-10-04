@@ -57,6 +57,17 @@ type DomainEvidencePreviewManifestState = Readonly<{
 const EMPTY_PREVIEW_STATE: DomainEvidencePreviewState = {loading: false, error: null, preview: null, relativePath: null, objectUrl: null};
 const EMPTY_PREVIEW_MANIFEST_STATE: DomainEvidencePreviewManifestState = {loading: false, error: null, manifest: null};
 
+function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
+  const key = JSON.stringify({operation, payload});
+  const requestId = pendingIds.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+  pendingIds.set(key, requestId);
+  return {key, requestId};
+}
+
+function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: string): void {
+  pendingIds.delete(key);
+}
+
 function domainEvidenceAreaKey(companyId: string, recordId: string, area: DomainEvidenceAreaView): string {
   return `${companyId}:${recordId}:${area}`;
 }
@@ -83,6 +94,7 @@ export function DomainEvidencePanel({api, companyId}: DomainEvidencePanelProps):
   const [reviewDrafts, setReviewDrafts] = useState<Readonly<Record<string, DomainEvidenceReviewDraft>>>({});
   const [previews, setPreviews] = useState<Readonly<Record<string, DomainEvidencePreviewState>>>({});
   const [previewManifests, setPreviewManifests] = useState<Readonly<Record<string, DomainEvidencePreviewManifestState>>>({});
+  const pendingRequestIds = useRef(new Map<string, string>());
   const previewUrls = useRef(new Set<string>());
   const previewGeneration = useRef(0);
 
@@ -129,12 +141,14 @@ export function DomainEvidencePanel({api, companyId}: DomainEvidencePanelProps):
       return;
     }
     try {
-      const record = await recordEvidence.mutateAsync({
+      const payload = {
         profileId: profile.id,
         profileRevision: profile.revision,
         evidence: result.evidence,
-        requestId: `domain-evidence-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'domain-evidence', payload);
+      const record = await recordEvidence.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setDrafts({});
       setMessage(record.readinessStatus === 'ready_for_review'
         ? '证据引用已记入不可变记录，当前进入待人工审核；这不会取得资格或开启执行。'
@@ -155,14 +169,16 @@ export function DomainEvidencePanel({api, companyId}: DomainEvidencePanelProps):
       return;
     }
     try {
-      const record = await recordQualification.mutateAsync({
+      const payload = {
         profileId: profile.id,
         profileRevision: profile.revision,
         decision,
         ...(decision === 'qualified' ? {evidenceInputId: qualificationInputId.trim(), evidenceInputRevision: qualificationInputRevision} : {}),
         rationale: qualificationRationale.trim(),
-        requestId: `domain-profile-qualification-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'domain-profile-qualification', payload);
+      const record = await recordQualification.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setQualificationRationale('');
       setQualificationMessage(decision === 'qualified'
         ? `已记录全局领域资格决定 ${record.eventId}；产品执行仍保持关闭。`
@@ -216,14 +232,16 @@ export function DomainEvidencePanel({api, companyId}: DomainEvidencePanelProps):
           mediaType: preview.mediaType,
         };
       }).filter((item): item is NonNullable<typeof item> => item !== null);
-      await recordReview.mutateAsync({
+      const payload = {
         recordId,
         outcome: draft.outcome,
         reviewerEmployeeId: draft.reviewerEmployeeId,
         rationale: draft.rationale,
         previewedEvidence,
-        requestId: `domain-evidence-review-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'domain-evidence-review', payload);
+      await recordReview.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('引用审核已写入不可变记录；它不代表底层内容质量，不取得领域资格，也不会开启执行。');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '领域证据引用审核失败');
@@ -455,6 +473,7 @@ function DomainEvidenceSubstantiveAssessmentPanel({api, companyId, record, revie
   const [reviewerEmployeeId, setReviewerEmployeeId] = useState('');
   const [drafts, setDrafts] = useState<Readonly<Partial<Record<DomainEvidenceAreaView, DomainEvidenceSubstantiveDraft>>>>({});
   const [message, setMessage] = useState<string | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const previewedEvidence = record.submission.evidence.map(item => previews[domainEvidenceAreaKey(companyId, record.recordId, item.area)]?.preview)
     .filter((preview): preview is DomainEvidenceArtifactPreviewView => preview !== null && preview !== undefined)
     .map(preview => ({area: preview.area, relativePath: preview.relativePath, sourceDigest: preview.sourceDigest, contentDigest: preview.contentDigest, mediaType: preview.mediaType}));
@@ -484,14 +503,16 @@ function DomainEvidenceSubstantiveAssessmentPanel({api, companyId, record, revie
       return;
     }
     try {
-      const assessment = await recordAssessment.mutateAsync({
+      const payload = {
         recordId: record.recordId,
         evidenceDigest: record.evidenceDigest,
         reviewerEmployeeId,
         areaAssessments: areaAssessments as ReadonlyArray<{area: DomainEvidenceAreaView; outcome: DomainEvidenceAreaAssessmentOutcomeView; rationale: string}>,
         previewedEvidence,
-        requestId: `domain-substantive-assessment-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'domain-substantive-assessment', payload);
+      const assessment = await recordAssessment.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage(`逐领域判定已记录：${substantiveOutcomeLabel(assessment.outcome)}。该结论只适用于本次证据提交，未改变参考 profile 资格或执行状态。`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '领域证据实质审阅失败。');

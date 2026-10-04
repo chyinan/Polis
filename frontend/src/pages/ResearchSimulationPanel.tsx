@@ -1,6 +1,6 @@
 // pattern: Imperative Shell
 
-import {useState, type ReactElement} from 'react';
+import {useRef, useState, type ReactElement} from 'react';
 import type {MissionInputView} from '../domain/mission-input';
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {WorkbenchApi} from '../data/workbench-api';
@@ -18,6 +18,13 @@ type ResearchSimulationPanelProps = Readonly<{
 const MAX_DATASET_BYTES = 1_048_576;
 const MAX_METHOD_BYTES = 16_384;
 const MAX_RISK_BUDGET_UNITS = 5_120_000;
+
+function pendingRequestIdentity(pendingIds: Map<string, string>, payload: unknown): Readonly<{key: string; requestId: string}> {
+  const key = JSON.stringify({operation: 'research-simulation', payload});
+  const requestId = pendingIds.get(key) ?? `research-simulation-${crypto.randomUUID()}`;
+  pendingIds.set(key, requestId);
+  return {key, requestId};
+}
 
 function isUsableSimulationInput(input: MissionInputView, maximumBytes: number): boolean {
   const byteSize = Number(input.byteSize);
@@ -45,6 +52,7 @@ export function ResearchSimulationPanel({api, companyId, missionId, runs}: Props
   const [controlDefinition, setControlDefinition] = useState('');
   const [riskBudgetUnits, setRiskBudgetUnits] = useState('128');
   const [message, setMessage] = useState<string | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
 
   const allInputs = inputsQuery.data ?? [];
   const datasets = allInputs.filter(input => isUsableSimulationInput(input, MAX_DATASET_BYTES));
@@ -72,7 +80,7 @@ export function ResearchSimulationPanel({api, companyId, missionId, runs}: Props
       return;
     }
     try {
-      const run = await runSimulation.mutateAsync({
+      const payload = {
         datasetInputId: selectedDataset.inputId,
         datasetInputRevision: selectedDataset.revision,
         methodInputId: selectedMethod.inputId,
@@ -80,8 +88,10 @@ export function ResearchSimulationPanel({api, companyId, missionId, runs}: Props
         seed,
         controlDefinition: controlDefinition.trim(),
         riskBudgetUnits: budget,
-        requestId: `research-simulation-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, payload);
+      const run = await runSimulation.mutateAsync({...payload, requestId: pending.requestId});
+      pendingRequestIds.current.delete(pending.key);
       setMessage(`模拟记录 ${run.runId} 已保存。领域资格仍为 not_run，执行仍保持关闭。`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '研究模拟失败。');

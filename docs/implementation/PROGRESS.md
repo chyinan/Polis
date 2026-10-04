@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 198 — R3 evidence and research exact retries
+
+Evidence submissions, profile qualification decisions, reference reviews, substantive assessments and deterministic research simulations retain their request IDs for exact same-payload retries after ambiguous results; success clears the pending identity. Frontend production build and `git diff --check` pass. No evidence or qualification was submitted and no simulation ran. No Worker/provider action or frozen scenario ran; no schema change. R3 qualification remains `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-198-r3-evidence-retries/verification.md`.
+
 ## Slice 197 — content operations exact retries
 
 Content source authorization/revocation, draft registration, independent review, local simulated publication, correction and internal feedback retain exact request IDs for same-payload retries after ambiguous outcomes. IDs clear after successful responses. Frontend production build and `git diff --check` pass. No content evidence or publication command was submitted; no external effect, Worker/provider action or frozen scenario ran. No schema change. Domain qualification remains `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-197-content-operation-retries/verification.md`.

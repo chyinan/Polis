@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 197, content operations exact retries)
+## Latest continuation status (Slice 198, R3 evidence and research exact retries)
+
+R3 evidence submission, profile qualification decisions, reference review, substantive assessment, and deterministic research simulations now preserve their request ID for the exact same payload after an ambiguous response. Successful responses clear the pending identity. Frontend build and diff check pass; no evidence or qualification was submitted and no simulation ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-198-r3-evidence-retries/verification.md`.
+
+## Previous continuation status (Slice 197, content operations exact retries)
 
 Content source authorization, draft registration, independent review, local simulated publication, correction, and feedback commands now preserve the same request ID for exact same-payload retries after ambiguous outcomes. Successful responses clear the pending identity. Frontend build and diff check pass; no content evidence was submitted and no publication, external effect, Worker/provider action, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-197-content-operation-retries/verification.md`.
 
