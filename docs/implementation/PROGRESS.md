@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 212 — REQ-29 frozen traceability refresh
+
+Refreshed the live `R1_R3_TRACEABILITY_DISPOSITION.json` crosswalk after Slice 211. CAP-01–06 now each cite the revocation implementation evidence in addition to the logical-tree evidence; all six remain `partial` with execution status `not_run`. All 232 frozen scenario records and disposition counts remain unchanged. JSON validation and `git diff --check` pass; no code, schema, migration, test, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-212-req29-traceability-refresh/verification.md`.
+
 ## Slice 211 — REQ-29 draft workspace snapshot revocation (Schema 104)
 
 Added a durable, immutable revocation receipt for a ready draft workspace snapshot. The operation is fenced to the source Task's current active WorkerSession/epoch; the receipt and Artifact `revoked` state commit atomically, future snapshot manifest/file reads are denied, and the CAS bytes remain retained. Revoked snapshots are excluded from deliverable projections and startup recovery no longer requires unreachable snapshot payloads. The opt-in fake-only @11 surface exercises create/read/revoke/read-denied, while real-provider authorization stays pinned to @4. `go build ./...`, all migration hash checks and `git diff --check` pass. No tests, migration application, Worker/provider session, or frozen scenario ran. REQ-29 remains partial pending host/shared-root/lifecycle retention and CAP-01–06 qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md`.

@@ -1,8 +1,12 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 211. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 212. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
-## Slice 211: REQ-29 draft workspace snapshot revocation (Schema 104)
+## Slice 212: REQ-29 frozen traceability refresh
+
+The live scenario crosswalk now links Slice 211's source-owner workspace-snapshot revocation evidence from CAP-01–06, in addition to Slice 208's logical Task-tree evidence. Their implementation disposition remains `partial`, exact execution status remains `not_run`, and all 232 scenario records and disposition counts are unchanged. This refresh changes evidence pointers only. See `evidence/development/r1-r3-implementation-validation-20261005-slice-212-req29-traceability-refresh/verification.md`.
+
+## Previous Slice 211: REQ-29 draft workspace snapshot revocation (Schema 104)
 
 Schema 104 adds an immutable revocation receipt for an exact ready `draft_not_accepted` workspace snapshot. The active source Task owner must present its current WorkerSession/epoch; the receipt and Artifact state transition to `revoked` are atomic. Manifest and file reads recheck/lock the Artifact, preventing later reads and a revoke/read race. Existing CAS content and prior read results are retained; this does not implement reclamation. Workbench deliverable projections exclude snapshots, and recovery checks only ready snapshots. The added tool is on a separate opt-in fake-only @11 profile; @10 and real-provider @4 authorization are unchanged. Build/hash/diff checks pass, with no tests, migration application, Worker/provider execution, or CAP scenario run. REQ-29 remains partial pending host and shared roots, a retention/GC policy, and CAP-01–06 qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md`.
 
@@ -529,7 +533,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 211
+## Finite remaining work at Slice 212
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 

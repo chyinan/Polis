@@ -1,6 +1,6 @@
 {
   "documentVersion": "0.4.5",
-  "auditDate": "2026-10-04",
+  "auditDate": "2026-10-05",
   "sourceOfTruth": [
     "spec/design-v0.4.5/tests/traceability.json",
     "spec/design-v0.4.5/tests/scenario_catalog.json",
@@ -61,7 +61,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md"
       ]
     },
     {
@@ -81,7 +82,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md"
       ]
     },
     {
@@ -99,7 +101,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md"
       ]
     },
     {
@@ -117,7 +120,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md"
       ]
     },
     {
@@ -135,7 +139,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md"
       ]
     },
     {
@@ -153,7 +158,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md"
       ]
     },
     {
