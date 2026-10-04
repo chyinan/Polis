@@ -124,6 +124,21 @@ func ProductEmployeeToolsWithWorkspaceTree() []any {
 	return append(tools, treeTools...)
 }
 
+// ProductEmployeeToolsWithWorkspaceSnapshotRevocation is a separately
+// versioned fake-only @11 extension. It preserves the @10 registry digest.
+func ProductEmployeeToolsWithWorkspaceSnapshotRevocation() []any {
+	tools := ProductEmployeeToolsWithWorkspaceTree()
+	revocationTool := productTools([]peerToolDefinition{{
+		"workspace_snapshot_revoke",
+		"Revoke one exact draft snapshot created by your current Task. Only the active owner WorkerSession can revoke its own snapshot. Future reads by same-Mission colleagues are denied; content already read is not recalled, and retained CAS bytes are not deleted.",
+		map[string]any{
+			"artifact_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"reason":      map[string]any{"type": "string", "minLength": 1, "maxLength": 512},
+		},
+	}})
+	return append(tools, revocationTool[0])
+}
+
 // ProductEmployeeToolsWithReadOnlySkill is a separately versioned surface.
 // The historical qualified surface above remains byte-for-byte unchanged.
 func ProductEmployeeToolsWithReadOnlySkill() []any {

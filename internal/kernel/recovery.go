@@ -172,7 +172,7 @@ func (k *Kernel) txRecover(ctx context.Context) error {
 		return e
 	}
 	// Files are checked outside the short DB snapshot and before dispatch.
-	rows, e := k.pool.Query(ctx, "SELECT company_id,id,digest,artifact_kind,bytes FROM artifacts ORDER BY company_id,id")
+	rows, e := k.pool.Query(ctx, "SELECT company_id,id,digest,artifact_kind,bytes FROM artifacts WHERE state!='revoked' ORDER BY company_id,id")
 	if e != nil {
 		return e
 	}
@@ -262,7 +262,7 @@ WHERE a.artifact_kind='workspace_snapshot' AND a.state='ready' ORDER BY a.compan
 // All artifact payloads are checked before any epoch, incarnation, event, or
 // artifact mutation is committed.
 func (k *Kernel) txRecoverWithRuntimeCASBinding(ctx context.Context) error {
-	rows, err := k.pool.Query(ctx, "SELECT company_id,id,digest,artifact_kind,bytes FROM artifacts ORDER BY company_id,id")
+	rows, err := k.pool.Query(ctx, "SELECT company_id,id,digest,artifact_kind,bytes FROM artifacts WHERE state!='revoked' ORDER BY company_id,id")
 	if err != nil {
 		return err
 	}
@@ -298,7 +298,9 @@ func (k *Kernel) txRecoverWithRuntimeCASBinding(ctx context.Context) error {
 		}
 	}
 	workspaceRows, err := k.pool.Query(ctx, `SELECT company_id,digest,bytes FROM worker_workspace_files
-UNION ALL SELECT company_id,digest,bytes FROM workspace_snapshot_files ORDER BY company_id,digest`)
+UNION ALL SELECT f.company_id,f.digest,f.bytes FROM workspace_snapshot_files f
+JOIN artifacts a ON a.company_id=f.company_id AND a.id=f.artifact_id
+WHERE a.artifact_kind='workspace_snapshot' AND a.state='ready' ORDER BY company_id,digest`)
 	if err != nil {
 		return err
 	}

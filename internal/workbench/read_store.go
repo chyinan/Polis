@@ -379,7 +379,7 @@ func (s *PostgresReadStore) GetArtifact(ctx context.Context, companyID, artifact
 	defer tx.Rollback(ctx)
 	var view ArtifactDetailView
 	var bytes int64
-	if err = tx.QueryRow(ctx, `SELECT id,task_id,digest,bytes,state,verdict FROM artifacts WHERE company_id=$1 AND id=$2`, companyID, artifactID).Scan(&view.ArtifactID, &view.TaskID, &view.Digest, &bytes, &view.State, &view.Verdict); errors.Is(err, pgx.ErrNoRows) {
+	if err = tx.QueryRow(ctx, `SELECT id,task_id,digest,bytes,state,verdict FROM artifacts WHERE company_id=$1 AND id=$2 AND artifact_kind='deliverable'`, companyID, artifactID).Scan(&view.ArtifactID, &view.TaskID, &view.Digest, &bytes, &view.State, &view.Verdict); errors.Is(err, pgx.ErrNoRows) {
 		return ArtifactDetailView{}, errCompanyNotFound
 	} else if err != nil {
 		return ArtifactDetailView{}, err
@@ -1046,7 +1046,7 @@ COALESCE(aq.contract_revision_id,''),COALESCE(product_aq.check_id,''),COALESCE(p
 FROM artifacts a JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id
 LEFT JOIN artifact_qualifications aq ON aq.company_id=a.company_id AND aq.artifact_id=a.id
 LEFT JOIN task_validation_artifact_qualifications product_aq ON product_aq.company_id=a.company_id AND product_aq.artifact_id=a.id
-WHERE a.company_id=$1 AND t.mission_id=$2 ORDER BY a.id`, companyID, missionID)
+WHERE a.company_id=$1 AND t.mission_id=$2 AND a.artifact_kind='deliverable' ORDER BY a.id`, companyID, missionID)
 	if err != nil {
 		return nil, err
 	}

@@ -27,21 +27,22 @@ type CheckRunner interface {
 // EmployeeTools is constructed by the trusted adapter. No payload can select
 // company, employee, attempt, epoch or task. callID comes from the native bridge.
 type EmployeeTools struct {
-	Kernel                    *Kernel
-	Binding                   Binding
-	Checker                   CheckRunner
-	Phase                     string
-	ReadOnly                  bool
-	ProductSurface            bool
-	DirectMessagingSurface    bool
-	SharedArtifactSurface     bool
-	WorkspaceTreeSurface      bool
-	SkillLoadSurface          bool
-	SkillDirectorySurface     bool
-	GuidanceSurface           bool
-	ControlledMCPSurface      bool
-	ControlledStdioMCPEnabled bool
-	StreamableHTTPMCPEnabled  bool
+	Kernel                             *Kernel
+	Binding                            Binding
+	Checker                            CheckRunner
+	Phase                              string
+	ReadOnly                           bool
+	ProductSurface                     bool
+	DirectMessagingSurface             bool
+	SharedArtifactSurface              bool
+	WorkspaceTreeSurface               bool
+	WorkspaceSnapshotRevocationSurface bool
+	SkillLoadSurface                   bool
+	SkillDirectorySurface              bool
+	GuidanceSurface                    bool
+	ControlledMCPSurface               bool
+	ControlledStdioMCPEnabled          bool
+	StreamableHTTPMCPEnabled           bool
 }
 
 func strictArgs(raw []byte, v any) error {
@@ -226,6 +227,19 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		receipt, snapshot, e := k.CreateProductWorkspaceSnapshot(ctx, b, key, args.ExpectedRevision)
 		return ToolResult{Receipt: &receipt, Data: snapshot}, e
+	case "workspace_snapshot_revoke":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface || !t.WorkspaceSnapshotRevocationSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ArtifactID string `json:"artifact_id"`
+			Reason     string `json:"reason"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		receipt, e := k.RevokeProductWorkspaceSnapshot(ctx, b, key, args.ArtifactID, args.Reason)
+		return ToolResult{Receipt: &receipt}, e
 	case "workspace_snapshot_read":
 		if !t.ProductSurface || !t.WorkspaceTreeSurface {
 			return ToolResult{}, core.Denied

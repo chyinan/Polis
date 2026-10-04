@@ -18,21 +18,22 @@ import (
 )
 
 type FakeRuntimeConfig struct {
-	TurnDelay                     time.Duration
-	Model                         string
-	Effort                        string
-	Profile                       string
-	Purpose                       string
-	ExecutionEnvelope             string
-	ToolCallLimit                 int
-	ReadOnlySkillSurface          bool
-	ReadOnlySkillDirectorySurface bool
-	DirectMessagingSurface        bool
-	SharedMissionArtifactSurface  bool
-	WorkspaceTreeSurface          bool
-	ControlledMCPToolSurface      bool
-	ControlledMCPToolSurfaceV2    bool
-	ControlledMCPCallFixture      json.RawMessage
+	TurnDelay                          time.Duration
+	Model                              string
+	Effort                             string
+	Profile                            string
+	Purpose                            string
+	ExecutionEnvelope                  string
+	ToolCallLimit                      int
+	ReadOnlySkillSurface               bool
+	ReadOnlySkillDirectorySurface      bool
+	DirectMessagingSurface             bool
+	SharedMissionArtifactSurface       bool
+	WorkspaceTreeSurface               bool
+	WorkspaceSnapshotRevocationSurface bool
+	ControlledMCPToolSurface           bool
+	ControlledMCPToolSurfaceV2         bool
+	ControlledMCPCallFixture           json.RawMessage
 }
 
 type FakeRuntime struct {
@@ -60,7 +61,9 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 	}
 	if config.Purpose == "" {
 		config.Purpose = "product-artifact"
-		if config.WorkspaceTreeSurface {
+		if config.WorkspaceSnapshotRevocationSurface {
+			config.Purpose = OfflineWorkspaceSnapshotRevocationSurfacePurpose
+		} else if config.WorkspaceTreeSurface {
 			config.Purpose = OfflineWorkspaceTreeSurfacePurpose
 		} else if config.DirectMessagingSurface {
 			config.Purpose = OfflineDirectMessagingToolSurfacePurpose
@@ -86,7 +89,12 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 	qualification := ProductToolSurfaceQualification
 	exactSurfaceFingerprint := ProductExactSurfaceExecutionFingerprint
 	providerFingerprint := ProductProviderL2Fingerprint
-	if config.WorkspaceTreeSurface {
+	if config.WorkspaceSnapshotRevocationSurface {
+		surface = ProductWorkspaceSnapshotRevocationToolSurface()
+		qualification = ProductWorkspaceSnapshotRevocationToolSurfaceQualification
+		exactSurfaceFingerprint = OfflineWorkspaceSnapshotRevocationSurfaceSimulationMark
+		providerFingerprint = OfflineWorkspaceSnapshotRevocationSurfaceSimulationMark
+	} else if config.WorkspaceTreeSurface {
 		surface = ProductWorkspaceTreeToolSurface()
 		qualification = ProductWorkspaceTreeToolSurfaceQualification
 		exactSurfaceFingerprint = OfflineWorkspaceTreeSurfaceSimulationMark
@@ -136,7 +144,8 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if r.config.ControlledMCPToolSurface && r.config.ControlledMCPToolSurfaceV2 {
 		return errors.New("offline MCP runtime must select exactly one versioned tool surface")
 	}
-	if r.config.WorkspaceTreeSurface && (r.config.ReadOnlySkillSurface || r.config.ReadOnlySkillDirectorySurface || r.config.DirectMessagingSurface || r.config.SharedMissionArtifactSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
+	if (r.config.WorkspaceTreeSurface || r.config.WorkspaceSnapshotRevocationSurface) &&
+		(r.config.WorkspaceTreeSurface && r.config.WorkspaceSnapshotRevocationSurface || r.config.ReadOnlySkillSurface || r.config.ReadOnlySkillDirectorySurface || r.config.DirectMessagingSurface || r.config.SharedMissionArtifactSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
 		return errors.New("offline workspace-tree access requires its isolated versioned tool surface")
 	}
 	if r.config.ReadOnlySkillSurface && r.config.ReadOnlySkillDirectorySurface {
@@ -151,15 +160,16 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if len(r.config.ControlledMCPCallFixture) > 0 && (!r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 || !json.Valid(r.config.ControlledMCPCallFixture)) {
 		return errors.New("offline MCP call fixture requires the exact controlled-MCP surface and valid JSON")
 	}
-	qualifiedSurface := !r.config.WorkspaceTreeSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
+	qualifiedSurface := !r.config.WorkspaceTreeSurface && !r.config.WorkspaceSnapshotRevocationSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
 	offlineSkillSurface := r.config.ReadOnlySkillSurface && ValidateOfflineFakeSkillSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineSkillDirectorySurface := r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeSkillDirectorySurface(r.Mode(), r.profile, r.surface) == nil
 	offlineDirectMessagingSurface := r.config.DirectMessagingSurface && ValidateOfflineFakeProductDirectMessagingSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineSharedMissionArtifactSurface := r.config.SharedMissionArtifactSurface && ValidateOfflineFakeSharedMissionArtifactSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineWorkspaceTreeSurface := r.config.WorkspaceTreeSurface && ValidateOfflineFakeWorkspaceTreeSurface(r.Mode(), r.profile, r.surface) == nil
+	offlineWorkspaceSnapshotRevocationSurface := r.config.WorkspaceSnapshotRevocationSurface && ValidateOfflineFakeWorkspaceSnapshotRevocationSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurface := r.config.ControlledMCPToolSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurfaceV2 := r.config.ControlledMCPToolSurfaceV2 && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurfaceV2(r.Mode(), r.profile, r.surface) == nil
-	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineSkillDirectorySurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineWorkspaceTreeSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
+	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineSkillDirectorySurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineWorkspaceTreeSurface && !offlineWorkspaceSnapshotRevocationSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
 		return errors.New("offline provider runtime configuration is invalid")
 	}
 	return nil
@@ -204,24 +214,26 @@ func (r *FakeRuntime) Start(_ context.Context, options SessionStartOptions) (Ses
 	}
 	return &fakeSession{
 		process: process, delay: r.config.TurnDelay, missionID: options.MissionID, taskID: options.TaskID,
-		skillLoadSurface:      options.ToolSurface.ManifestDigest == ProductSkillToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
-		skillDirectorySurface: options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
-		mcpCallSurface:        options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurfaceV2().ManifestDigest,
-		workspaceTreeSurface:  options.ToolSurface.ManifestDigest == ProductWorkspaceTreeToolSurface().ManifestDigest,
-		mcpCallFixture:        append(json.RawMessage(nil), r.config.ControlledMCPCallFixture...),
+		skillLoadSurface:                   options.ToolSurface.ManifestDigest == ProductSkillToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
+		skillDirectorySurface:              options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
+		mcpCallSurface:                     options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurfaceV2().ManifestDigest,
+		workspaceTreeSurface:               options.ToolSurface.ManifestDigest == ProductWorkspaceTreeToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductWorkspaceSnapshotRevocationToolSurface().ManifestDigest,
+		workspaceSnapshotRevocationSurface: options.ToolSurface.ManifestDigest == ProductWorkspaceSnapshotRevocationToolSurface().ManifestDigest,
+		mcpCallFixture:                     append(json.RawMessage(nil), r.config.ControlledMCPCallFixture...),
 	}, nil
 }
 
 type fakeSession struct {
-	process               *runner.Process
-	delay                 time.Duration
-	missionID             string
-	taskID                string
-	skillLoadSurface      bool
-	skillDirectorySurface bool
-	mcpCallSurface        bool
-	workspaceTreeSurface  bool
-	mcpCallFixture        json.RawMessage
+	process                            *runner.Process
+	delay                              time.Duration
+	missionID                          string
+	taskID                             string
+	skillLoadSurface                   bool
+	skillDirectorySurface              bool
+	mcpCallSurface                     bool
+	workspaceTreeSurface               bool
+	workspaceSnapshotRevocationSurface bool
+	mcpCallFixture                     json.RawMessage
 }
 
 func (s *fakeSession) Process() *runner.Process { return s.process }
@@ -327,7 +339,23 @@ func (s *fakeSession) Turn(ctx context.Context, _ string, _ string, _ codex.Turn
 		if _, treeErr = call("workspace_snapshot_file_read", map[string]any{"artifact_id": artifactID, "relative_path": "offline/qualification.txt"}); treeErr != nil {
 			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
 		}
-		return TurnResult{State: "completed", Outcome: "workspace_tree_snapshot_created", ToolCalls: calls, ProviderEgress: 0, StartedAt: started, FinishedAt: time.Now().UTC()}, nil
+		if s.workspaceSnapshotRevocationSurface {
+			revocation, revokeErr := call("workspace_snapshot_revoke", map[string]any{"artifact_id": artifactID, "reason": "offline revocation surface qualification"})
+			if revokeErr != nil || nestedString(revocation, "receipt", "status") != "revoked" {
+				if revokeErr != nil {
+					return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, revokeErr
+				}
+				return TurnResult{State: "failed", Outcome: "workspace_snapshot_not_revoked", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline snapshot revocation did not return a revoked receipt")
+			}
+			if _, readErr := call("workspace_snapshot_read", map[string]any{"artifact_id": artifactID}); readErr == nil {
+				return TurnResult{State: "failed", Outcome: "revoked_workspace_snapshot_still_readable", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline workspace snapshot remained readable after revocation")
+			}
+		}
+		outcome := "workspace_tree_snapshot_created"
+		if s.workspaceSnapshotRevocationSurface {
+			outcome = "workspace_snapshot_revoked"
+		}
+		return TurnResult{State: "completed", Outcome: outcome, ToolCalls: calls, ProviderEgress: 0, StartedAt: started, FinishedAt: time.Now().UTC()}, nil
 	}
 	if s.skillLoadSurface {
 		skillID, relativePath := firstLoadableSkillReference(current)

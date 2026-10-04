@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 211 — REQ-29 draft workspace snapshot revocation (Schema 104)
+
+Added a durable, immutable revocation receipt for a ready draft workspace snapshot. The operation is fenced to the source Task's current active WorkerSession/epoch; the receipt and Artifact `revoked` state commit atomically, future snapshot manifest/file reads are denied, and the CAS bytes remain retained. Revoked snapshots are excluded from deliverable projections and startup recovery no longer requires unreachable snapshot payloads. The opt-in fake-only @11 surface exercises create/read/revoke/read-denied, while real-provider authorization stays pinned to @4. `go build ./...`, all migration hash checks and `git diff --check` pass. No tests, migration application, Worker/provider session, or frozen scenario ran. REQ-29 remains partial pending host/shared-root/lifecycle retention and CAP-01–06 qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md`.
+
 ## Slice 210 — REQ-39 frozen workspace read retry (no migration)
 
 Takeover Workbench now records a frozen workspace as loaded only after the response matches the lease digest/revision and the supported single-file shape. If the read fails or the response does not match, the operator can retry against the same lease; no new lease or conflicting operation is required. Multi-file patch handback remains unsupported because the current lease and MissionInput route bind only the legacy single-file workspace, not a frozen Schema 103 tree manifest. `npm run build` and `git diff --check` pass; no tests, lease command, Worker/provider action, database operation or frozen scenario ran. REQ-39 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-210-req39-frozen-workspace-read-retry/verification.md`.

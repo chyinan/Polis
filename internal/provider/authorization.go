@@ -88,6 +88,23 @@ func ValidateExecutionAuthorization(authorization ExecutionAuthorization) error 
 // v4. The v5 Skill surface is accepted only by the zero-egress fake runtime,
 // using an explicit marker that cannot be mistaken for provider qualification.
 func ValidateRuntimeExecutionAuthorization(authorization ExecutionAuthorization) error {
+	if authorization.ProviderMode == "fake" && authorization.ToolSurfaceQualification == ProductWorkspaceSnapshotRevocationToolSurfaceQualification {
+		if err := validateExecutionAuthorizationShape(authorization); err != nil {
+			return err
+		}
+		profile := ExecutionProfile{
+			ToolCallLimit: authorization.ToolCallLimit, Purpose: authorization.Purpose,
+			ExecutionEnvelope:                authorization.ExecutionEnvelope,
+			ToolSurfaceQualification:         authorization.ToolSurfaceQualification,
+			ExactSurfaceExecutionFingerprint: authorization.ExactSurfaceExecutionFingerprint,
+			ProductProviderL2Fingerprint:     authorization.ProductProviderL2Fingerprint,
+		}
+		return ValidateOfflineFakeWorkspaceSnapshotRevocationSurface(authorization.ProviderMode, profile, ToolSurface{
+			ToolCount: authorization.ToolCount, ManifestDigest: authorization.ToolSurfaceDigest,
+			AggregateSchemaBytes: authorization.AggregateSchemaBytes, AggregateSchemaDigest: authorization.AggregateSchemaDigest,
+			Tools: ProductWorkspaceSnapshotRevocationToolSurface().Tools,
+		})
+	}
 	if authorization.ProviderMode == "fake" && authorization.ToolSurfaceQualification == ProductWorkspaceTreeToolSurfaceQualification {
 		if err := validateExecutionAuthorizationShape(authorization); err != nil {
 			return err

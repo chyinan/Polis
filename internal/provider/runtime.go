@@ -118,6 +118,38 @@ func ProductWorkspaceTreeToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithWorkspaceTree())
 }
 
+const ProductWorkspaceSnapshotRevocationToolSurfaceQualification = "polis-product-tool-surface@11"
+
+const (
+	OfflineWorkspaceSnapshotRevocationSurfacePurpose        = "offline-workspace-snapshot-revocation-tool-surface"
+	OfflineWorkspaceSnapshotRevocationSurfaceSimulationMark = "offline-workspace-snapshot-revocation-tool-surface-unqualified"
+	ProductWorkspaceSnapshotRevocationManifestDigest        = "25152782a2709b80aefac62aef4361a5de4eceefd13133a940a0790bde35dd30"
+	ProductWorkspaceSnapshotRevocationSchemaDigest          = "627364e0509ea58afb0ed584f44dbf78fcb99ec47bc4605af60908facb8ea2a1"
+	ProductWorkspaceSnapshotRevocationSchemaBytes           = 5601
+)
+
+func ProductWorkspaceSnapshotRevocationToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithWorkspaceSnapshotRevocation())
+}
+
+func ValidateOfflineFakeWorkspaceSnapshotRevocationSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductWorkspaceSnapshotRevocationToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductWorkspaceSnapshotRevocationToolSurfaceQualification ||
+		profile.Purpose != OfflineWorkspaceSnapshotRevocationSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineWorkspaceSnapshotRevocationSurfaceSimulationMark ||
+		profile.ProductProviderL2Fingerprint != OfflineWorkspaceSnapshotRevocationSurfaceSimulationMark || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 23 || expected.ManifestDigest != ProductWorkspaceSnapshotRevocationManifestDigest ||
+		expected.AggregateSchemaBytes != ProductWorkspaceSnapshotRevocationSchemaBytes || expected.AggregateSchemaDigest != ProductWorkspaceSnapshotRevocationSchemaDigest ||
+		surface.ToolCount != 23 || observed.ToolCount != 23 || surface.ManifestDigest != ProductWorkspaceSnapshotRevocationManifestDigest ||
+		observed.ManifestDigest != ProductWorkspaceSnapshotRevocationManifestDigest || surface.AggregateSchemaBytes != ProductWorkspaceSnapshotRevocationSchemaBytes ||
+		observed.AggregateSchemaBytes != ProductWorkspaceSnapshotRevocationSchemaBytes || surface.AggregateSchemaDigest != ProductWorkspaceSnapshotRevocationSchemaDigest ||
+		observed.AggregateSchemaDigest != ProductWorkspaceSnapshotRevocationSchemaDigest {
+		return fmt.Errorf("workspace-snapshot revocation surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
+}
+
 func ValidateOfflineFakeWorkspaceTreeSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
 	expected := ProductWorkspaceTreeToolSurface()
 	observed := ToolSurfaceFromTools(surface.Tools)

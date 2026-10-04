@@ -611,6 +611,46 @@ VALUES($1,$2,$3,$4,$5,$6,$7)`, binding.scope.company, artifactID, rootID, entry.
 	return receipt, snapshot, nil
 }
 
+func (k *Kernel) RevokeProductWorkspaceSnapshot(ctx context.Context, binding Binding, key, artifactID, reason string) (Receipt, error) {
+	if !core.ValidID(key) || !core.ValidID(artifactID) || !utf8.ValidString(reason) || strings.TrimSpace(reason) == "" || len([]byte(reason)) > 512 {
+		return Receipt{}, core.Malformed
+	}
+	reason = strings.TrimSpace(reason)
+	return k.TXWrite(ctx, binding.scope, &binding, key, "workspace.snapshot.revoked", struct {
+		ArtifactID string
+		Reason     string
+	}{artifactID, reason}, func(tx pgx.Tx) (Receipt, error) {
+		rootID, _, taskID, err := k.requireWorkspaceTreeWriterTX(ctx, tx, binding, 0, "update")
+		if err != nil {
+			return Receipt{}, err
+		}
+		var digest string
+		var revision int64
+		err = tx.QueryRow(ctx, `SELECT digest,workspace_revision FROM artifacts
+WHERE company_id=$1 AND id=$2 AND task_id=$3 AND workspace_id=$4 AND artifact_kind='workspace_snapshot'
+ AND state='ready' AND verdict='draft_not_accepted' FOR UPDATE`, binding.scope.company, artifactID, taskID, rootID).Scan(&digest, &revision)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		}
+		if err != nil {
+			return Receipt{}, err
+		}
+		_, err = tx.Exec(ctx, `INSERT INTO workspace_snapshot_revocations(company_id,artifact_id,workspace_id,workspace_revision,artifact_digest,revoked_by,worker_session_id,worker_epoch,request_id,reason)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, binding.scope.company, artifactID, rootID, revision, digest, binding.employee, binding.session, binding.epoch, key, reason)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if err = appendEvent(ctx, tx, binding.scope, "worker.workspace.snapshot.revoked", map[string]any{
+			"artifactId": artifactID, "sha256": digest, "workspaceId": rootID, "taskId": taskID,
+			"workspaceRevision": revision, "employeeId": binding.employee, "sessionId": binding.session,
+			"epoch": binding.epoch, "requestId": key, "reason": reason,
+		}); err != nil {
+			return Receipt{}, err
+		}
+		return Receipt{ID: artifactID, Status: "revoked", Revision: revision}, nil
+	})
+}
+
 func (k *Kernel) ReadProductWorkspaceSnapshot(ctx context.Context, binding Binding, artifactID string) (WorkspaceTreeSnapshot, error) {
 	var snapshot WorkspaceTreeSnapshot
 	if !core.ValidID(artifactID) {
@@ -637,7 +677,8 @@ func (k *Kernel) ReadProductWorkspaceSnapshot(ctx context.Context, binding Bindi
 FROM worker_sessions s JOIN tasks reader_task ON reader_task.company_id=s.company_id AND reader_task.id=s.task_id
 JOIN artifacts a ON a.company_id=s.company_id AND a.id=$3
 JOIN tasks source_task ON source_task.company_id=a.company_id AND source_task.id=a.task_id
-WHERE s.company_id=$1 AND s.id=$2 AND s.state='active'`, binding.scope.company, binding.session, artifactID).Scan(&readerMission, &sourceTask, &sourceMission, &author, &workspaceID, &digest, &state, &verdict, &revision, &byteCount)
+WHERE s.company_id=$1 AND s.id=$2 AND s.state='active' AND a.state='ready' AND a.artifact_kind='workspace_snapshot'
+FOR SHARE OF a`, binding.scope.company, binding.session, artifactID).Scan(&readerMission, &sourceTask, &sourceMission, &author, &workspaceID, &digest, &state, &verdict, &revision, &byteCount)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return snapshot, core.OutOfScope
 	}
@@ -732,18 +773,72 @@ func (k *Kernel) ReadProductWorkspaceSnapshotFile(ctx context.Context, binding B
 		if entry.RelativePath != path {
 			continue
 		}
+		// Recheck and lock the Artifact in the same transaction that reads the
+		// selected CAS bytes. Revocation cannot commit between manifest lookup
+		// and file delivery.
+		tx, txErr := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+		if txErr != nil {
+			return out, txErr
+		}
+		defer tx.Rollback(ctx)
+		if txErr = k.guardWithSessionMode(ctx, tx, binding.scope, &binding, false); txErr != nil {
+			return out, txErr
+		}
+		readerTask, txErr := k.requireProductTaskWorking(ctx, tx, binding)
+		if txErr != nil || readerTask != binding.task {
+			if txErr == nil {
+				txErr = core.StaleEpoch
+			}
+			return out, txErr
+		}
+		var readerMission, sourceTask, sourceMission, author, workspaceID, digest, state, verdict string
+		var revision, byteCount int64
+		txErr = tx.QueryRow(ctx, `SELECT reader_task.mission_id,a.task_id,source_task.mission_id,a.author,a.workspace_id,a.digest,a.state,a.verdict,a.workspace_revision,a.bytes
+FROM worker_sessions s JOIN tasks reader_task ON reader_task.company_id=s.company_id AND reader_task.id=s.task_id
+JOIN artifacts a ON a.company_id=s.company_id AND a.id=$3
+JOIN tasks source_task ON source_task.company_id=a.company_id AND source_task.id=a.task_id
+WHERE s.company_id=$1 AND s.id=$2 AND s.state='active' AND a.state='ready' AND a.artifact_kind='workspace_snapshot'
+FOR SHARE OF a`, binding.scope.company, binding.session, artifactID).Scan(&readerMission, &sourceTask, &sourceMission, &author, &workspaceID, &digest, &state, &verdict, &revision, &byteCount)
+		if errors.Is(txErr, pgx.ErrNoRows) {
+			return out, core.OutOfScope
+		}
+		if txErr != nil {
+			return out, txErr
+		}
+		if readerMission != sourceMission || (sourceTask == binding.task && author != binding.employee) || author == "" || state != "ready" || verdict != "draft_not_accepted" ||
+			workspaceID != snapshot.RootBindingID || digest != snapshot.Digest || revision != snapshot.Revision || byteCount != snapshot.Bytes {
+			return out, core.OutOfScope
+		}
+		var storedDigest string
+		var storedBytes, storedRevision int64
+		txErr = tx.QueryRow(ctx, `SELECT digest,bytes,file_revision FROM workspace_snapshot_files
+WHERE company_id=$1 AND artifact_id=$2 AND relative_path=$3`, binding.scope.company, artifactID, path).Scan(&storedDigest, &storedBytes, &storedRevision)
+		if errors.Is(txErr, pgx.ErrNoRows) {
+			return out, core.OutOfScope
+		}
+		if txErr != nil {
+			return out, txErr
+		}
+		if storedDigest != entry.Digest || storedBytes != entry.Bytes || storedRevision != entry.FileRevision {
+			return out, core.Integrity
+		}
 		content, readErr := readBlobBounded(k.root, binding.scope.company, entry.Digest, workspaceTreeMaxFileBytes)
 		if readErr != nil || int64(len(content)) != entry.Bytes || !utf8.Valid(content) {
 			return out, core.Integrity
 		}
 		read := WorkspaceTreeRead{RootBindingID: snapshot.RootBindingID, TaskID: snapshot.TaskID, RelativePath: path, Digest: entry.Digest,
 			Bytes: entry.Bytes, FileRevision: entry.FileRevision, Revision: snapshot.Revision, ContentType: entry.ContentType, Content: string(content)}
-		read.ReadReference, err = k.recordWorkspaceTreeRead(ctx, binding, "worker.workspace.snapshot.file.read", map[string]any{
-			"artifactId": artifactID, "sourceTaskId": snapshot.TaskID, "workspaceId": snapshot.RootBindingID, "workspaceRevision": snapshot.Revision,
+		read.ReadReference = newID()
+		if txErr = appendEvent(ctx, tx, binding.scope, "worker.workspace.snapshot.file.read", map[string]any{
+			"readReference": read.ReadReference,
+			"artifactId":    artifactID, "sourceTaskId": snapshot.TaskID, "workspaceId": snapshot.RootBindingID, "workspaceRevision": snapshot.Revision,
 			"relativePath": path, "sha256": entry.Digest, "bytes": entry.Bytes, "fileRevision": entry.FileRevision,
-		})
-		if err != nil {
-			return WorkspaceTreeRead{}, err
+			"readerTaskId": binding.task, "employeeId": binding.employee, "sessionId": binding.session, "epoch": binding.epoch,
+		}); txErr != nil {
+			return WorkspaceTreeRead{}, txErr
+		}
+		if txErr = tx.Commit(ctx); txErr != nil {
+			return WorkspaceTreeRead{}, txErr
 		}
 		return read, nil
 	}
