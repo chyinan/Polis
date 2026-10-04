@@ -514,7 +514,7 @@ export function useSubmitTaskTakeoverSnapshot(api: WorkbenchApi, companyId: stri
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<TaskTakeoverSnapshotOptions, 'companyId' | 'missionId'>) => api.submitTaskTakeoverSnapshot({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
     ]),

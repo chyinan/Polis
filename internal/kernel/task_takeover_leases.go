@@ -94,7 +94,7 @@ func (k *Kernel) TXSubmitTaskTakeoverSnapshot(ctx context.Context, scope Scope, 
 	if err != nil {
 		return TaskTakeoverLease{}, err
 	}
-	if lease.State != "granted" || lease.BaseWorkspaceDigest != input.BaseWorkspaceDigest || lease.BaseWorkspaceRevision != input.BaseWorkspaceRevision {
+	if lease.BaseWorkspaceDigest != input.BaseWorkspaceDigest || lease.BaseWorkspaceRevision != input.BaseWorkspaceRevision {
 		return TaskTakeoverLease{}, core.ConflictError{Reason: "human snapshot does not match an active frozen takeover lease", CurrentState: lease.State}
 	}
 	content := []byte(input.Content)
@@ -113,11 +113,8 @@ func (k *Kernel) TXSubmitTaskTakeoverSnapshot(ctx context.Context, scope Scope, 
 	if err != nil {
 		return TaskTakeoverLease{}, err
 	}
-	digest, err := k.putBlobWithClaim(ctx, scope.company, content)
-	if err != nil {
-		return TaskTakeoverLease{}, err
-	}
-	if digest != prepared.ContentDigest || digest != diffSummary.SubmittedContentDigest {
+	digest := prepared.ContentDigest
+	if digest != diffSummary.SubmittedContentDigest {
 		return TaskTakeoverLease{}, core.Integrity
 	}
 	requestFingerprint := fingerprint(struct {
@@ -129,6 +126,24 @@ func (k *Kernel) TXSubmitTaskTakeoverSnapshot(ctx context.Context, scope Scope, 
 		ContentDigest      string
 		HumanEffortSeconds int64
 	}{missionID, leaseID, input.RequestID, input.BaseWorkspaceDigest, input.BaseWorkspaceRevision, digest, input.HumanEffortSeconds})
+	if lease.State != "granted" {
+		// Route an exact retry through the standard receipt guard before doing
+		// any CAS writes. A new or mismatched request still conflicts here.
+		receipt, replayErr := k.TXWrite(ctx, scope, nil, input.RequestID, "task.takeover.snapshot.returned", requestFingerprint, func(pgx.Tx) (Receipt, error) {
+			return Receipt{}, core.ConflictError{Reason: "takeover lease is no longer active", CurrentState: lease.State}
+		})
+		if replayErr != nil {
+			return TaskTakeoverLease{}, replayErr
+		}
+		return k.TaskTakeoverLease(ctx, scope, missionID, receipt.ID)
+	}
+	storedDigest, err := k.putBlobWithClaim(ctx, scope.company, content)
+	if err != nil {
+		return TaskTakeoverLease{}, err
+	}
+	if storedDigest != digest {
+		return TaskTakeoverLease{}, core.Integrity
+	}
 	receipt, err := k.TXWrite(ctx, scope, nil, input.RequestID, "task.takeover.snapshot.returned", requestFingerprint, func(tx pgx.Tx) (Receipt, error) {
 		currentLease, state, err := taskTakeoverLeaseForUpdate(ctx, tx, scope, missionID, leaseID)
 		if err != nil {

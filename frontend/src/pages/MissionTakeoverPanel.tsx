@@ -6,6 +6,15 @@ import {useCreateTaskTakeoverLease, useReleaseTaskTakeoverLease, useSubmitTaskTa
 import type {CompanyOverviewView, TaskTakeoverLeaseView} from '../domain/workbench';
 import styles from '../styles/workbench.module.css';
 
+type PendingSnapshotReturn = Readonly<{
+  leaseId: string;
+  requestId: string;
+  baseWorkspaceDigest: string;
+  baseWorkspaceRevision: number;
+  content: string;
+  humanEffortSeconds: number;
+}>;
+
 type MissionTakeoverPanelProps = Readonly<{
   api: WorkbenchApi;
   companyId: string;
@@ -25,12 +34,13 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const [humanEffortSeconds, setHumanEffortSeconds] = useState('');
   const [loadedLeaseId, setLoadedLeaseId] = useState('');
   const [localError, setLocalError] = useState('');
+  const [pendingSnapshotReturn, setPendingSnapshotReturn] = useState<PendingSnapshotReturn | null>(null);
   const taskId = selectedTaskId || eligibleTasks[0]?.taskId || '';
   const activeLease = leasesQuery.data?.find(item => item.taskId === taskId && item.state === 'granted') ?? null;
   const pending = createLease.isPending || submitSnapshot.isPending || releaseLease.isPending;
   const contentBytes = new TextEncoder().encode(content).length;
-  const canGrant = api.mode === 'real' && missionState === 'paused' && leasesQuery.data !== undefined && taskId !== '' && activeLease === null && !pending;
-  const canReturn = missionState === 'paused' && activeLease !== null && content.trim() !== '' && contentBytes <= 4096 && !pending;
+  const canGrant = api.mode === 'real' && missionState === 'paused' && leasesQuery.data !== undefined && taskId !== '' && activeLease === null && pendingSnapshotReturn === null && !pending;
+  const canReturn = missionState === 'paused' && activeLease !== null && content.trim() !== '' && contentBytes <= 4096 && pendingSnapshotReturn === null && !pending;
 
   useEffect(() => {
     if (activeLease === null || loadedLeaseId === activeLease.leaseId) return;
@@ -67,15 +77,27 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
       return;
     }
     setLocalError('');
-    await submitSnapshot.mutateAsync({
+    const attempt: PendingSnapshotReturn = {
       leaseId: activeLease.leaseId,
       requestId: `task-takeover-return-${activeLease.leaseId}-${Date.now()}`,
       baseWorkspaceDigest: activeLease.baseWorkspaceDigest,
       baseWorkspaceRevision: activeLease.baseWorkspaceRevision,
       content,
       humanEffortSeconds: effort,
-    });
-    setLoadedLeaseId('');
+    };
+    setPendingSnapshotReturn(attempt);
+    await retrySnapshotReturn(attempt);
+  }
+
+  async function retrySnapshotReturn(attempt: PendingSnapshotReturn): Promise<void> {
+    setLocalError('');
+    try {
+      await submitSnapshot.mutateAsync(attempt);
+      setPendingSnapshotReturn(null);
+      setLoadedLeaseId('');
+    } catch {
+      // Keep the exact payload and request ID so an ambiguous response can be retried safely.
+    }
   }
 
   async function release(): Promise<void> {
@@ -93,8 +115,15 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
     <p className={styles.panelDescription}>仅在 Mission 已暂停且 Worker、Job 和服务端点停止后发放接管租约。交还内容绑定冻结的工作区摘要与修订号，作为 MissionInput 进入后续正式变更请求；不会直接覆盖旧 Task 工作区。</p>
     {eligibleTasks.length === 0 ? <div className={styles.emptyState}>没有可接管的未完成 Task。</div> : <>
       <div className={styles.formStack}>
+        {pendingSnapshotReturn !== null ? <div className={styles.recordRow}>
+          <div className={styles.recordLead}><div>
+            <strong>快照交还结果尚未确认</strong>
+            <span>重试会使用相同内容、冻结版本和请求 ID；系统会读取已保存回执或继续原提交。</span>
+          </div></div>
+          <div className={styles.recordActions}><button className={styles.commandButton} disabled={pending} onClick={() => { void retrySnapshotReturn(pendingSnapshotReturn); }} type="button">以同一请求重试交还</button></div>
+        </div> : null}
         <label className={styles.formLabel}>目标 Task
-          <select className={styles.formField} value={taskId} onChange={event => { setSelectedTaskId(event.target.value); setContent(''); setLoadedLeaseId(''); }}>
+          <select className={styles.formField} disabled={pendingSnapshotReturn !== null} value={taskId} onChange={event => { setSelectedTaskId(event.target.value); setContent(''); setLoadedLeaseId(''); }}>
             {eligibleTasks.map(task => <option key={task.taskId} value={task.taskId}>{task.title} · {task.taskId} · {task.state}</option>)}
           </select>
         </label>
@@ -108,17 +137,17 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
             <div className={styles.recordActions}><button className={styles.commandButton} disabled={pending || missionState !== 'paused'} onClick={() => { void release(); }} type="button">释放租约，不提交 snapshot</button></div>
           </div>
           <label className={styles.formLabel}>完整工作区文本 snapshot
-            <textarea className={styles.formField} rows={10} maxLength={4096} value={content} onChange={event => setContent(event.target.value)} placeholder="正在读取冻结工作区文本…" />
+            <textarea className={styles.formField} disabled={pendingSnapshotReturn !== null} rows={10} maxLength={4096} value={content} onChange={event => setContent(event.target.value)} placeholder="正在读取冻结工作区文本…" />
           </label>
           <div className={styles.recordLead}><span>{contentBytes} / 4096 UTF-8 字节</span></div>
           <label className={styles.formLabel}>人工投入秒数（可留空）
             <input className={styles.formField} inputMode="numeric" max={86400} min={0} value={humanEffortSeconds} onChange={event => setHumanEffortSeconds(event.target.value)} />
           </label>
-          <button className={styles.commandButton} disabled={!canReturn || loadedLeaseId !== activeLease.leaseId} onClick={() => { void handBack(); }} type="button">{submitSnapshot.isPending ? '正在核对并交还…' : '交还人工 snapshot'}</button>
+          {pendingSnapshotReturn === null ? <button className={styles.commandButton} disabled={!canReturn || loadedLeaseId !== activeLease.leaseId} onClick={() => { void handBack(); }} type="button">{submitSnapshot.isPending ? '正在核对并交还…' : '交还人工 snapshot'}</button> : null}
         </>}
         {leasesQuery.isError ? <p className={styles.formError} role="alert">接管历史读取失败：{leasesQuery.error.message}</p> : null}
         {createLease.isError ? <p className={styles.formError} role="alert">接管请求失败：{createLease.error.message}</p> : null}
-        {submitSnapshot.isError ? <p className={styles.formError} role="alert">snapshot 交还失败：{submitSnapshot.error.message}</p> : null}
+        {submitSnapshot.isError ? <p className={styles.formError} role="alert">snapshot 交还请求未确认：{submitSnapshot.error.message} 请检查上方租约状态，再以相同请求 ID 重试。</p> : null}
         {releaseLease.isError ? <p className={styles.formError} role="alert">租约释放失败：{releaseLease.error.message}</p> : null}
         {localError !== '' ? <p className={styles.formError} role="alert">{localError}</p> : null}
       </div>
