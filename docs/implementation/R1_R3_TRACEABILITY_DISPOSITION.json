@@ -159,7 +159,9 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-213-req29-delivery-kind-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-214-req29-mission-artifact-projection-fence/verification.md"
       ]
     },
     {

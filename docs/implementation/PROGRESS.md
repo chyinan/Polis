@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 215 — CAP-06 evidence pointer refresh
+
+Added the Slice 213 Artifact delivery-kind fence and Slice 214 Mission Artifact-projection evidence to CAP-06 in the live traceability crosswalk. No scenario state, disposition, count or other scenario record changed; CAP-06 remains `partial` / `not_run`. JSON validation and `git diff --check` pass. No tests, code, schema, database, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-215-cap06-evidence-refresh/verification.md`.
+
 ## Slice 214 — REQ-29 Mission Artifact projection fence
 
 Kernel Mission snapshots now list only `deliverable` Artifacts through the shared SQL query used by recovery and peer-state projections. Workspace snapshots therefore cannot appear as ordinary delivery Artifacts in consumers that lack an Artifact-kind field. The query source and generated sqlc code stay synchronized. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-214-req29-mission-artifact-projection-fence/verification.md`.
