@@ -592,7 +592,7 @@ func (k *Kernel) ReconcileWindowsWorkerSession(ctx context.Context, companyID, s
 		if candidate.CompanyID != companyID || candidate.SessionID != sessionID {
 			continue
 		}
-		if candidate.State != "restoring" || candidate.Containment.HostOS != "windows" || candidate.Containment.Profile != "windows_worker_job_object@1" {
+		if (candidate.State != "restoring" && candidate.State != "reconcile_required") || candidate.Containment.HostOS != "windows" || candidate.Containment.Profile != "windows_worker_job_object@1" {
 			return core.Denied
 		}
 		reconcileCtx, cancel := context.WithTimeout(ctx, 5*time.Second)

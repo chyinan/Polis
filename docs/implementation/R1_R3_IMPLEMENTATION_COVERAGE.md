@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 162. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 163. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 163: REQ-14 capability-revoked Worker restart-stop retry
+
+Accepted capability revocations snapshot matching live sessions and recorded-use sessions durably. A periodic coordinator drains the snapshot and stops the exact WorkerSession. Kernel recovery marks non-stopped sessions `reconcile_required`; Windows exact-session reconciliation previously refused that state, preventing the coordinator from retrying an incomplete startup stop. Windows now accepts `reconcile_required` alongside `restoring` while preserving exact ID, containment and host-stop proof checks. Linux already did so. Native and Windows/amd64 command builds and `git diff --check` pass; no tests or stop were run. REQ-14 remains open pending lifecycle and frozen-scenario qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-163-req14-revocation-stop-restart/verification.md`.
 
 ## Slice 162: REQ-13 automatic dispatch fairness/quota/WorkerSession boundary audit
 
