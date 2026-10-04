@@ -796,7 +796,7 @@ export function useDecideProjectEnvironmentPolicy(api: WorkbenchApi, companyId: 
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<EnvironmentPolicyDecisionOptions, 'companyId'>) => api.decideProjectEnvironmentPolicy({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
   });
 }
 
@@ -804,7 +804,7 @@ export function useDecideProjectEnvironmentExecutorQualification(api: WorkbenchA
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<EnvironmentExecutorQualificationOptions, 'companyId'>) => api.decideProjectEnvironmentExecutorQualification({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
   });
 }
 
@@ -812,7 +812,7 @@ export function useEnsureProjectEnvironment(api: WorkbenchApi, companyId: string
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<EnsureEnvironmentOptions, 'companyId'>) => api.ensureProjectEnvironment({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
   });
 }
 

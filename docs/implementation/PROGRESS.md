@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 183 — REQ-36 environment command response reconciliation
+
+Project environment policy decisions, executor qualification decisions, and preparation requests now invalidate the persisted environment projection after either success or error. The Workbench retains the exact request ID for retrying the same intent after an ambiguous response; errors direct operators to inspect refreshed state. Frontend production build and `git diff --check` pass; no tests, environment preparation, Worker/provider activity, host qualification, or frozen scenario ran. No schema change. Environment preparation remains unqualified on a real host. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-183-req36-environment-response-refresh/verification.md`.
+
 ## Slice 182 — REQ-16 budget command reconciliation
 
 Company, Mission, ProblemKey and Task budget mutations now invalidate persisted budget and related Company/activity projections on settle. Incremental ProblemKey and Task allocations retain the exact request body/RequestID through an ambiguous result; same-request retry replays the Kernel receipt, while starting a new allocation requires explicitly releasing the pending command after checking the refreshed snapshot. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider activity or frozen scenario ran. No schema change. REQ-16 still lacks provider-account liability, hidden retry, token/money accounting and frozen FT-42–45 qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-182-req16-budget-response-refresh/verification.md`.

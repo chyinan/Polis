@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 182, REQ-16 budget command reconciliation)
+## Latest continuation status (Slice 183, REQ-36 environment command reconciliation)
+
+Project environment policy decisions, executor qualification decisions, and preparation requests now refresh the persisted environment projection after success or error. Workbench keeps each exact request ID for same-intent retry after an ambiguous response and instructs operators to check refreshed state first. Frontend production build and diff check pass; no tests, environment preparation, Worker/provider action, host qualification, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-183-req36-environment-response-refresh/verification.md`.
+
+## Previous continuation status (Slice 182, REQ-16 budget command reconciliation)
 
 Company, Mission, ProblemKey and Task budget mutations now refresh budget, Company and activity projections after success or error. Incremental ProblemKey/Task allocations retain the exact request payload and ID after an ambiguous response; operators can replay that exact receipt or, after checking refreshed limits, explicitly discard it and create a newly confirmed request. Frontend production build and diff check pass; no tests, Worker/provider action or frozen scenario ran. Budgets still count admitted protocol tool calls and do not account for hidden provider retries, tokens or money. See `evidence/development/r1-r3-implementation-validation-20261004-slice-182-req16-budget-response-refresh/verification.md`.
 

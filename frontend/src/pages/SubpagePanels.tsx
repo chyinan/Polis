@@ -1,7 +1,7 @@
 // pattern: Imperative Shell
 
 import {BadgeCheck, Check, FileCheck2, FolderOpen, Handshake, History, LockKeyhole, MessageSquare, Settings2, ShieldAlert, Wrench} from 'lucide-react';
-import {useState, type ChangeEvent, type ReactNode} from 'react';
+import {useRef, useState, type ChangeEvent, type ReactNode} from 'react';
 import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, EmployeeSummary, JobRunView, ProjectEnvironmentRevisionView, TaskSummary} from '../domain/workbench';
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES} from '../data/workbench-api';
@@ -281,6 +281,9 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const [executorEvidenceInputRevision, setExecutorEvidenceInputRevision] = useState('');
   const [environmentActionMessage, setEnvironmentActionMessage] = useState<string | null>(null);
   const [environmentActionError, setEnvironmentActionError] = useState<string | null>(null);
+  const pendingEnvironmentPolicy = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
+  const pendingEnvironmentQualification = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
+  const pendingEnvironmentPreparation = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   if (task === null) return <section className={styles.sectionCard}><EmptyPanel detail="当前快照没有可选任务对象。" title="暂无任务详情" /></section>;
   const downloadArtifact = async () => {
     setDownloadingArtifact(true);
@@ -308,11 +311,19 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       setEnvironmentActionError('请填写环境策略决策理由。');
       return;
     }
+    const rationale = environmentRationale;
+    const fingerprint = JSON.stringify({revisionId, decision, rationale});
+    const pending = pendingEnvironmentPolicy.current?.fingerprint === fingerprint
+      ? pendingEnvironmentPolicy.current
+      : {fingerprint, requestId: `environment-policy-${crypto.randomUUID()}`};
+    pendingEnvironmentPolicy.current = pending;
     try {
-      await environmentPolicy.mutateAsync({revisionId, decision, rationale: environmentRationale, requestId: 'environment-policy-' + crypto.randomUUID()});
+      await environmentPolicy.mutateAsync({revisionId, decision, rationale, requestId: pending.requestId});
+      pendingEnvironmentPolicy.current = null;
       setEnvironmentActionMessage(decision === 'approved' ? '环境策略批准已记入审计；隔离执行资格仍单独门控。' : '环境策略已撤销。');
     } catch (error) {
-      setEnvironmentActionError(error instanceof Error ? error.message : '环境策略决策失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setEnvironmentActionError(`环境策略结果尚未确认：${detail} 已刷新隔离环境状态，请先核对再继续。`);
     }
   };
   const decideEnvironmentExecutorQualification = async (revisionId: string, decision: 'qualified' | 'revoked') => {
@@ -322,24 +333,40 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       setEnvironmentActionError('请填写资格证据的 MissionInput ID、版本和审批理由。');
       return;
     }
+    const evidenceInputId = executorEvidenceInputId.trim();
+    const evidenceInputRevision = executorEvidenceInputRevision;
+    const rationale = environmentRationale;
+    const fingerprint = JSON.stringify({revisionId, decision, evidenceInputId, evidenceInputRevision, rationale});
+    const pending = pendingEnvironmentQualification.current?.fingerprint === fingerprint
+      ? pendingEnvironmentQualification.current
+      : {fingerprint, requestId: `environment-executor-qualification-${crypto.randomUUID()}`};
+    pendingEnvironmentQualification.current = pending;
     try {
       await environmentExecutorQualification.mutateAsync({
-        revisionId, decision, evidenceInputId: executorEvidenceInputId.trim(), evidenceInputRevision: executorEvidenceInputRevision,
-        rationale: environmentRationale, requestId: 'environment-executor-qualification-' + crypto.randomUUID(),
+        revisionId, decision, evidenceInputId, evidenceInputRevision, rationale, requestId: pending.requestId,
       });
+      pendingEnvironmentQualification.current = null;
       setEnvironmentActionMessage(decision === 'qualified' ? '资格报告已按当前执行器、主机、隔离策略和工具链指纹记入审计。' : '当前执行器资格已撤销。');
     } catch (error) {
-      setEnvironmentActionError(error instanceof Error ? error.message : '执行器资格决策失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setEnvironmentActionError(`执行器资格结果尚未确认：${detail} 已刷新隔离环境状态，请先核对再继续。`);
     }
   };
   const requestEnvironmentPreparation = async (revisionId: string) => {
     setEnvironmentActionMessage(null);
     setEnvironmentActionError(null);
+    const fingerprint = JSON.stringify({revisionId});
+    const pending = pendingEnvironmentPreparation.current?.fingerprint === fingerprint
+      ? pendingEnvironmentPreparation.current
+      : {fingerprint, requestId: `environment-ensure-${crypto.randomUUID()}`};
+    pendingEnvironmentPreparation.current = pending;
     try {
-      const run = await ensureEnvironment.mutateAsync({revisionId, requestId: 'environment-ensure-' + crypto.randomUUID()});
+      const run = await ensureEnvironment.mutateAsync({revisionId, requestId: pending.requestId});
+      pendingEnvironmentPreparation.current = null;
       setEnvironmentActionMessage(`准备请求 ${formatEntityId(run.runId)}：${labelDisplayValue(run.state)} · ${labelDisplayValue(run.reasonCode)}`);
     } catch (error) {
-      setEnvironmentActionError(error instanceof Error ? error.message : '环境准备请求失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setEnvironmentActionError(`环境准备结果尚未确认：${detail} 已刷新准备记录；同一环境重试会复用原请求 ID。`);
     }
   };
   const readyJobEnvironments = (projectEnvironmentsQuery.data ?? []).filter(item => item.sourceBindingStatus === 'bound'
