@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 203, REQ-25 authorization coverage reconciliation)
+## Latest continuation status (Slice 204, Windows signing integration)
+
+Windows Tauri packaging now has an explicit signed-release config and PowerShell wrapper. It requires a valid, unexpired current-user publisher certificate with private key and Code Signing EKU plus Windows SDK SignTool; it signs with SHA-256, timestamps, and verifies Authenticode, failing closed on missing prerequisites. Ordinary development packaging is unchanged. Frontend build and diff check pass; this environment lacks the publisher certificate, Windows host/SDK and packaged PostgreSQL runtime, so no Windows signature or installer was produced. See `evidence/development/r1-r3-implementation-validation-20261004-slice-204-windows-signing-integration/verification.md`.
+
+## Previous continuation status (Slice 203, REQ-25 authorization coverage reconciliation)
 
 The source audit found that the REQ-25 matrix still described owner sessions, CSRF, login/logout and the owner page as missing. Current code and Slice 146 evidence already provide and verify that local flow against disposable PostgreSQL through HTTP clients. The ledger now records it accurately; actual browser/Tauri WebView qualification, owner-selected local setup and externally scoped mutations remain pending. No authentication, database, browser, or test operation was run for this reconciliation. See `evidence/development/r1-r3-implementation-validation-20261004-slice-203-req25-coverage-reconciliation/verification.md`.
 
