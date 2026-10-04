@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-03, Slice 160. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 161. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 161: REQ-15 FT-41 old-backup memory revocation audit
+
+Desktop launches each selected generation with one stable `<desktop-data-root>/memory-revocations` root; generation-specific CAS is stored separately. Kernel startup loads tombstones before database recovery, reapplies them to the restored database before returning, and guards memory access through the file/DB overlay. Source review therefore confirms a same-Desktop-root restore cannot re-enable revoked records for reads or Handover. This does not erase prior immutable DB/CAS bytes or qualify the actual Desktop restore path. No restore, WorkerSession or frozen FT-41 scenario ran; FT-41 remains `not_run` and REQ-15 remains partial. See `evidence/development/r1-r3-implementation-validation-20261004-slice-161-req15-memory-revocation-restore-audit/verification.md`.
 
 ## Slice 160: REQ-25 restored installation-owner session revocation
 

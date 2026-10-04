@@ -1,10 +1,14 @@
-# Current handoff — approved R1–R3 implementation (2026-10-03)
+# Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 160, REQ-25 restored owner-session revocation)
+## Latest continuation status (Slice 161, REQ-15 FT-41 old-backup memory revocation audit)
 
-Restore now holds both the control-plane advisory lock and the installation-owner authentication lock through completion-marker write. In the same finalization transaction as Slice159's MCP Employee-binding revocations, Schema 97+ recovery revokes every unrevoked installation-owner session and writes an immutable `session_revoked` auth event containing only that token's digest. The completed generation marker records both gates; old Slice159 markers are finalized in place, and retries after a committed revocation remain idempotent. Restored owner credentials remain configured, but old browser sessions require a fresh login. No schema migration was added. `go build ./internal/recovery ./cmd/polis` and `git diff --check` pass. Tests, actual restore, browser/session, WorkerSession and frozen-scenario execution were not run; CAP-31 and FT-77 remain `not_run`, and REQ-25 remains open pending its other requirements and qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-160-req25-restore-owner-session-revocation/verification.md`.
+The memory revocation tombstone is outside recovery generations. Desktop starts each generation with the stable `<desktop-data-root>/memory-revocations` path, while generation CAS roots live under `generations/<id>/cas`. `Kernel.Open` loads tombstones before database recovery, applies them to the recovered database, and reconciles schedules only afterward. Memory read, handover, dependency and write paths consult the overlay. Thus restoring an older database on the same Desktop data root cannot make a revoked record readable again. This is a source audit only: old DB/CAS bytes are retained, so logical access denial is not physical erasure. No restore, Desktop boot, WorkerSession or frozen FT-41 scenario was run; REQ-15 remains partial and FT-41 remains `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-161-req15-memory-revocation-restore-audit/verification.md`.
 
-Next Slice161: audit whether restoring an older database can resurrect revoked memory/deletion state (REQ-15, FT-41), then implement a bounded restoration fence if the source exposes a concrete local gap. Keep external Worker and frozen-scenario qualification separate; any Worker action requires a database-confirmed active WorkerSession.
+Next Slice162: audit the remaining REQ-13 automatic Worker dispatch path for fairness, `waiting_quota` recovery and its database-confirmed WorkerSession admission boundary. Keep provider quota unknown and dispatch disabled unless the persisted gates and an active WorkerSession are confirmed.
+
+## Previous continuation status (Slice 160, REQ-25 restored owner-session revocation)
+
+Recovery holds both the control-plane and installation-owner auth locks through completion-marker write. Schema 97+ restores revoke unrevoked owner sessions and append immutable `session_revoked` auth events alongside MCP binding revocations; older Slice159 markers are safely upgraded. The owner password remains, while previous browser sessions require a new login. `go build ./internal/recovery ./cmd/polis` and `git diff --check` pass. Database restore, browser auth and frozen scenarios remain unrun. Evidence: `evidence/development/r1-r3-implementation-validation-20261003-slice-160-req25-restore-owner-session-revocation/verification.md`.
 
 ## Previous continuation status (Slice 159, CAP-31 recovery-generation MCP authorization gate)
 
