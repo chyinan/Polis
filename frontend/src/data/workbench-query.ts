@@ -904,14 +904,18 @@ export function useCompanyFeedback(api: WorkbenchApi, companyId: string) {
 }
 
 export function useStoreGitHubFeedbackCredential(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Readonly<{token: string; requestId: string}>) => api.storeGitHubFeedbackCredential({...options, companyId}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 
 export function useDeleteGitHubFeedbackCredential(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Readonly<{requestId: string}>) => api.deleteGitHubFeedbackCredential({...options, companyId}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 
@@ -919,7 +923,7 @@ export function useRegisterGitHubFeedbackSource(api: WorkbenchApi, companyId: st
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RegisterGitHubFeedbackSourceOptions, 'companyId'>) => api.registerGitHubFeedbackSource({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 
@@ -927,7 +931,7 @@ export function useProbeGitHubFeedbackSource(api: WorkbenchApi, companyId: strin
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ProbeGitHubFeedbackSourceOptions, 'companyId'>) => api.probeGitHubFeedbackSource({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 
@@ -935,7 +939,7 @@ export function useDecideGitHubFeedbackSource(api: WorkbenchApi, companyId: stri
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<DecideGitHubFeedbackSourceOptions, 'companyId'>) => api.decideGitHubFeedbackSource({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 
@@ -943,7 +947,7 @@ export function usePollGitHubFeedbackSource(api: WorkbenchApi, companyId: string
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<PollGitHubFeedbackSourceOptions, 'companyId'>) => api.pollGitHubFeedbackSource({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 
@@ -951,7 +955,7 @@ export function useSetGitHubFeedbackBacklogStatus(api: WorkbenchApi, companyId: 
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetGitHubFeedbackBacklogStatusOptions, 'companyId'>) => api.setGitHubFeedbackBacklogStatus({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 
@@ -959,7 +963,7 @@ export function useSetGitHubFeedbackCollectionPolicy(api: WorkbenchApi, companyI
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetGitHubFeedbackCollectionPolicyOptions, 'companyId'>) => api.setGitHubFeedbackCollectionPolicy({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'feedback', companyId]}),
   });
 }
 

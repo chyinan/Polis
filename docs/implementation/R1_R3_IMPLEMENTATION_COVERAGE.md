@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 185. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 186. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+## Slice 186: GitHub feedback command reconciliation
+
+GitHub feedback credential, source, poll, backlog, and collection-policy commands now refresh the feedback read model after success or error. This surfaces stored credential/source state when an operation committed but its response was lost. Frontend production build and diff check pass; no credential was stored or deleted and no GitHub API, polling, Worker/provider action, or frozen scenario ran. No schema change. External repository permissions and collection qualification remain open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-186-github-feedback-response-refresh/verification.md`.
+
 ## Slice 185: R3 domain evidence command reconciliation
 
 Content and research evidence mutations now invalidate the persisted domain evidence projection after success or error. This includes source authorization, drafts, reviews, simulated publications, corrections, feedback, research simulations, evidence records/reviews, assessments, and profile qualification evidence. Frontend production build and diff check pass; no evidence or simulation was submitted or run, and no external publication, Worker/provider action, or frozen scenario occurred. No schema change. Both R3 profiles remain `not_run` and execution-disabled pending independent evidence. See `evidence/development/r1-r3-implementation-validation-20261004-slice-185-r3-evidence-response-refresh/verification.md`.
@@ -432,7 +436,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work at Slice 185
+## Finite remaining work at Slice 186
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
@@ -448,7 +452,7 @@ Qualification closure, after the corresponding local paths are stable:
 
 - Windows AppContainer/WFP/registry/Node/npm, independent browser and clean-VM evidence; a valid publisher certificate is needed to verify signed binaries. Linux/Node needs a delegated cgroup host and multi-day recovery evidence. Local Linux cgroup identity and subtree limits are implemented but do not qualify a host.
 - R1 E-START, E-ORG, E-HANDOVER, provider continuity, Workbench truth/scope/command and independent browser evidence. Exact provider paths remain gated until qualified.
-- Target-specific R1/R2 evidence for real QQ C2C delivery, selected Skill/stdio MCP, Streamable HTTP MCP, GitHub repository permissions, remote Workbench access, cross-backend recovery, multi-company operation, and release use of CSV/ZIP/PDF inputs. Their local foundations do not establish external qualification.
+- Slice 186 refreshes GitHub feedback credential/source state after ambiguous command responses. Target-specific R1/R2 evidence for real QQ C2C delivery, selected Skill/stdio MCP, Streamable HTTP MCP, GitHub repository permissions, remote Workbench access, cross-backend recovery, multi-company operation, and release use of CSV/ZIP/PDF inputs remains open; local state reconciliation does not establish external qualification.
 - Slice 185 refreshes content/research evidence read models on ambiguous command outcomes. Separate R3 content and research evidence for quality, recovery, cost, and organization benefit remains required; content also requires intervention evidence. Both profiles remain `not_run` and disabled until independently reviewed.
 
 Evidence requiring a real certificate, domain, account, or host stays `not_run` until that resource exists and the operation is separately authorized. Close this list against the frozen v0.4.5 requirements; further work requires an explicit scope revision.

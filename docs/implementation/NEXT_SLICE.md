@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 185, R3 domain evidence command reconciliation)
+## Latest continuation status (Slice 186, GitHub feedback command reconciliation)
+
+GitHub feedback credential, source, polling, backlog and collection-policy commands now refresh the feedback projection after success or error. This reconciles credential/source state after a committed operation whose response is lost. Frontend production build and diff check pass; no credentials were stored or deleted, and no GitHub API, Worker/provider action, or frozen scenario ran. Repository permission and external collection qualification remain open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-186-github-feedback-response-refresh/verification.md`.
+
+## Previous continuation status (Slice 185, R3 domain evidence command reconciliation)
 
 Content and research evidence mutations now refresh the domain evidence projection after success or error. This includes source/draft/review/publication/correction/feedback changes and research simulation plus profile qualification evidence; an ambiguous response can no longer leave the old evidence status as the only visible state. Frontend production build and diff check pass; no evidence was submitted and no simulation, external publication, Worker/provider action, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-185-r3-evidence-response-refresh/verification.md`.
 
