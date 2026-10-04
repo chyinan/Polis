@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 208 — REQ-29 logical private Task tree and immutable snapshots (Schema 103)
+
+Schema 103 introduces bounded UTF-8 files over the company CAS, private Task roots, per-file digests/revisions, active WorkerSession/epoch write fencing, and immutable workspace snapshot Artifacts with per-file retention references. The optional fake-only @10 surface exposes list/search/read/write/delete and exact-ID snapshot reads; real-provider authorization remains on @4. Legacy `formatter.go` stays connected to the existing single-file validation and delivery flow, and those gates reject multi-file trees. Existing deliverable consumers and memory-target binding now exclude snapshot Artifacts. `go build ./...`, all migration hash checks, and `git diff --check` pass. No test, PostgreSQL migration, Worker/provider runtime or CAP scenario ran. REQ-29 remains partial: no host mount, shared company/group roots or CAP-01–06 qualification is claimed. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md`.
+
 ## Slice 207 — REQ-39 pending snapshot safety
 
 Workbench prevents releasing a takeover lease while the exact snapshot-return payload/request remains unresolved, preserving a same-operation retry path. Frontend production build and `git diff --check` pass; no tests, takeover lease, snapshot command, Worker/provider action or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-207-req39-pending-snapshot-safety/verification.md`.

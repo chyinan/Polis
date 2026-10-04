@@ -35,6 +35,7 @@ type EmployeeTools struct {
 	ProductSurface            bool
 	DirectMessagingSurface    bool
 	SharedArtifactSurface     bool
+	WorkspaceTreeSurface      bool
 	SkillLoadSurface          bool
 	SkillDirectorySurface     bool
 	GuidanceSurface           bool
@@ -149,6 +150,107 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		page, e := k.ListSharedMissionArtifacts(ctx, b, args.AfterArtifactID)
 		return ToolResult{Data: page}, e
+	case "workspace_files_list":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			AfterCursor string `json:"after_cursor"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		page, e := k.ListProductWorkspaceTree(ctx, b, args.AfterCursor)
+		return ToolResult{Data: page}, e
+	case "workspace_files_search":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			Query       string `json:"query"`
+			AfterCursor string `json:"after_cursor"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		page, e := k.SearchProductWorkspaceTree(ctx, b, args.Query, args.AfterCursor)
+		return ToolResult{Data: page}, e
+	case "workspace_file_read":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			RelativePath string `json:"relative_path"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		file, e := k.ReadProductWorkspaceFile(ctx, b, args.RelativePath)
+		return ToolResult{Data: file}, e
+	case "workspace_file_write":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ExpectedRevision int64  `json:"expected_revision"`
+			RelativePath     string `json:"relative_path"`
+			Content          string `json:"content"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		receipt, e := k.WriteProductWorkspaceFile(ctx, b, key, args.RelativePath, args.ExpectedRevision, args.Content)
+		return ToolResult{Receipt: &receipt}, e
+	case "workspace_file_delete":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ExpectedRevision int64  `json:"expected_revision"`
+			RelativePath     string `json:"relative_path"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		receipt, e := k.DeleteProductWorkspaceFile(ctx, b, key, args.RelativePath, args.ExpectedRevision)
+		return ToolResult{Receipt: &receipt}, e
+	case "workspace_snapshot":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ExpectedRevision int64 `json:"expected_revision"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		receipt, snapshot, e := k.CreateProductWorkspaceSnapshot(ctx, b, key, args.ExpectedRevision)
+		return ToolResult{Receipt: &receipt, Data: snapshot}, e
+	case "workspace_snapshot_read":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ArtifactID string `json:"artifact_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		snapshot, e := k.ReadProductWorkspaceSnapshot(ctx, b, args.ArtifactID)
+		return ToolResult{Data: snapshot}, e
+	case "workspace_snapshot_file_read":
+		if !t.ProductSurface || !t.WorkspaceTreeSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ArtifactID   string `json:"artifact_id"`
+			RelativePath string `json:"relative_path"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		file, e := k.ReadProductWorkspaceSnapshotFile(ctx, b, args.ArtifactID, args.RelativePath)
+		return ToolResult{Data: file}, e
 	case "mission_artifact_read":
 		if !t.ProductSurface || !t.SharedArtifactSurface || t.ReadOnly {
 			return ToolResult{}, core.Denied
@@ -631,7 +733,7 @@ func (k *Kernel) RecordHistorical(ctx context.Context, b Binding, name string, r
 // dynamic tool. The supplied checker is frozen by the executable, not the model.
 func (k *Kernel) VerifyProbe(ctx context.Context, s Scope, artifact, phase string, v CheckRunner) (runner.Report, error) {
 	var digest, author, task string
-	e := k.pool.QueryRow(ctx, "SELECT digest,author,task_id FROM artifacts WHERE company_id=$1 AND id=$2 AND state='ready' AND contract='signed-zero@1'", s.company, artifact).Scan(&digest, &author, &task)
+	e := k.pool.QueryRow(ctx, "SELECT digest,author,task_id FROM artifacts WHERE company_id=$1 AND id=$2 AND artifact_kind='deliverable' AND state='ready' AND contract='signed-zero@1'", s.company, artifact).Scan(&digest, &author, &task)
 	if e != nil {
 		return runner.Report{}, e
 	}

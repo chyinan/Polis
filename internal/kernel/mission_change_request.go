@@ -491,7 +491,7 @@ WHERE t.company_id=$1 AND t.mission_id=$2 ORDER BY t.id LIMIT $3`, scope.company
 	rows.Close()
 	rows, err = tx.Query(ctx, `SELECT a.id,a.task_id,a.digest,a.verdict
 FROM artifacts a JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id
-WHERE a.company_id=$1 AND t.mission_id=$2 ORDER BY a.id LIMIT $3`, scope.company, missionID, maxMissionChangeImpactItems+1)
+WHERE a.company_id=$1 AND t.mission_id=$2 AND a.artifact_kind='deliverable' ORDER BY a.id LIMIT $3`, scope.company, missionID, maxMissionChangeImpactItems+1)
 	if err != nil {
 		return MissionChangeImpact{}, "", err
 	}

@@ -418,6 +418,11 @@ WHERE company_id=$1 AND problem_key=$2 AND tool_call_limit IS NULL`, s.company, 
 		if e != nil {
 			return Receipt{}, e
 		}
+		if productProvider {
+			if e = k.bindProductWorkspaceTreeTX(ctx, tx, b, t, productWorkspaceDigest, productWorkspaceRevision); e != nil {
+				return Receipt{}, e
+			}
+		}
 		if e = txEnsureWorkerProcessContainment(ctx, tx, s, b.session, runner.CurrentProcessContainmentMetadata()); e != nil {
 			return Receipt{}, e
 		}
@@ -1238,6 +1243,31 @@ AND s.company_id=$1 AND s.id=$2 AND w.digest=$4 RETURNING w.revision`, b.scope.c
 				return Receipt{}, core.Conflict
 			}
 			return Receipt{}, e
+		}
+		if requireRevision {
+			var rootID string
+			var rootRevision int64
+			treeErr := tx.QueryRow(ctx, `SELECT id,revision FROM worker_workspace_roots WHERE company_id=$1 AND task_id=$2 FOR UPDATE`, b.scope.company, b.task).Scan(&rootID, &rootRevision)
+			if treeErr == nil {
+				var writerSession string
+				var writerEpoch int64
+				if treeErr = tx.QueryRow(ctx, `SELECT writer_session_id,writer_epoch FROM worker_workspace_roots WHERE company_id=$1 AND id=$2`, b.scope.company, rootID).Scan(&writerSession, &writerEpoch); treeErr != nil {
+					return Receipt{}, treeErr
+				}
+				if writerSession != b.session || writerEpoch != b.epoch {
+					return Receipt{}, core.StaleEpoch
+				}
+				nextTreeRevision := rootRevision + 1
+				if _, treeErr = tx.Exec(ctx, `INSERT INTO worker_workspace_files(company_id,workspace_id,relative_path,digest,bytes,file_revision,source_revision,content_type)
+VALUES($1,$2,'formatter.go',$3,$4,$5,$5,'text/utf-8') ON CONFLICT(company_id,workspace_id,relative_path) DO UPDATE SET digest=EXCLUDED.digest,bytes=EXCLUDED.bytes,file_revision=EXCLUDED.file_revision,source_revision=EXCLUDED.source_revision`, b.scope.company, rootID, digest, len(content), nextTreeRevision); treeErr != nil {
+					return Receipt{}, treeErr
+				}
+				if _, treeErr = tx.Exec(ctx, `UPDATE worker_workspace_roots SET revision=$3 WHERE company_id=$1 AND id=$2 AND revision=$4`, b.scope.company, rootID, nextTreeRevision, rootRevision); treeErr != nil {
+					return Receipt{}, treeErr
+				}
+			} else if !errors.Is(treeErr, pgx.ErrNoRows) {
+				return Receipt{}, treeErr
+			}
 		}
 		receipt := Receipt{ID: digest, Status: "persisted"}
 		if requireRevision {

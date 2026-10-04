@@ -75,6 +75,15 @@ WHERE s.company_id=$1 AND s.id=$2 AND s.state='active'`, b.scope.company, b.sess
 		if currentTaskID != taskID || taskID != handover.Task.ID || digest != handover.Workspace.Digest || revision != handover.Workspace.Revision || bindingDigest != result.ConfigurationDigest {
 			return Receipt{}, core.Conflict
 		}
+		workspaceTreeSafe, treeErr := WorkspaceTreeCanSubmit(ctx, tx, b.scope.company, taskID)
+		if treeErr != nil {
+			return Receipt{}, treeErr
+		}
+		if !workspaceTreeSafe {
+			result.Status = taskvalidation.StatusNotConfigured
+			result.ReasonCode = "workspace_tree_not_supported"
+			result.Feedback = "The current deliverable validator accepts one formatter.go file. Remove other workspace files or use a tree-aware acceptance contract before submitting."
+		}
 		body, err := json.Marshal(result)
 		if err != nil {
 			return Receipt{}, err
@@ -119,6 +128,13 @@ WHERE s.company_id=$1 AND s.id=$2 AND s.state='active'`, b.scope.company, b.sess
 		return current, err
 	}
 	if taskID != task.ID || state != "working" || current.WorkspaceDigest != expectedWorkspaceDigest {
+		return current, core.Conflict
+	}
+	workspaceTreeSafe, err := WorkspaceTreeCanSubmit(ctx, tx, b.scope.company, task.ID)
+	if err != nil {
+		return current, err
+	}
+	if !workspaceTreeSafe {
 		return current, core.Conflict
 	}
 	rows, err := tx.Query(ctx, `SELECT id,data FROM worker_checkpoints

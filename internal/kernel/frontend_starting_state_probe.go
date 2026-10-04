@@ -89,7 +89,7 @@ ORDER BY cr.revision DESC,m.id DESC LIMIT 1`, state.CompanyID, state.MissionID).
 	if err != nil {
 		return state, err
 	}
-	err = tx.QueryRow(ctx, `SELECT id,task_id,author,digest,state,verdict FROM artifacts WHERE company_id=$1 AND task_id=$2 AND author='emp-backend' ORDER BY id DESC LIMIT 1`, state.CompanyID, state.BackendTaskID).Scan(&state.BackendArtifactID, &state.BackendArtifactTaskID, &state.BackendArtifactAuthor, &state.BackendArtifactDigest, &state.BackendArtifactState, &state.BackendArtifactVerdict)
+	err = tx.QueryRow(ctx, `SELECT id,task_id,author,digest,state,verdict FROM artifacts WHERE company_id=$1 AND task_id=$2 AND author='emp-backend' AND artifact_kind='deliverable' ORDER BY id DESC LIMIT 1`, state.CompanyID, state.BackendTaskID).Scan(&state.BackendArtifactID, &state.BackendArtifactTaskID, &state.BackendArtifactAuthor, &state.BackendArtifactDigest, &state.BackendArtifactState, &state.BackendArtifactVerdict)
 	if errors.Is(err, pgx.ErrNoRows) {
 		err = nil
 	} else if err != nil {

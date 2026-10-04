@@ -409,7 +409,7 @@ FOR UPDATE OF o,m`, b.scope.company, obligationID, b.session).Scan(&taskID, &own
 		var digest string
 		if err = tx.QueryRow(ctx, `SELECT a.digest FROM artifacts a JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id
 JOIN missions m ON m.company_id=t.company_id AND m.id=t.mission_id
-WHERE a.company_id=$1 AND a.id=$2 AND a.task_id=$3 AND a.author=$4 AND a.state='ready' AND a.verdict='candidate' AND a.contract=m.contract`,
+WHERE a.company_id=$1 AND a.id=$2 AND a.task_id=$3 AND a.author=$4 AND a.artifact_kind='deliverable' AND a.state='ready' AND a.verdict='candidate' AND a.contract=m.contract`,
 			b.scope.company, artifactID, taskID, b.employee).Scan(&digest); err != nil {
 			return Receipt{}, core.Denied
 		}

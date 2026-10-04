@@ -90,6 +90,40 @@ func ProductEmployeeToolsWithSharedMissionArtifacts() []any {
 	return append(tools, sharedArtifactTools...)
 }
 
+// ProductEmployeeToolsWithWorkspaceTree is the fake-only @10 extension. It
+// adds a bounded private text-file tree and immutable draft snapshots while
+// leaving the qualified @4 and historical @7/@8 registries unchanged.
+func ProductEmployeeToolsWithWorkspaceTree() []any {
+	tools := ProductEmployeeToolsWithSharedMissionArtifacts()
+	treeTools := productTools([]peerToolDefinition{
+		{"workspace_files_list", "List one bounded page of files in your current private Task workspace. Use the opaque next_cursor from the prior page; pass an empty after_cursor for the first page. The cursor pins the exact root and tree revision.", map[string]any{
+			"after_cursor": map[string]any{"type": "string", "minLength": 0, "maxLength": 4096},
+		}},
+		{"workspace_files_search", "Search UTF-8 text in your current private Task workspace. Results are bounded and include an opaque next_cursor pinned to the exact root, query and tree revision; a changed revision requires a fresh search.", map[string]any{
+			"query": map[string]any{"type": "string", "minLength": 1, "maxLength": 256}, "after_cursor": map[string]any{"type": "string", "minLength": 0, "maxLength": 4096},
+		}},
+		{"workspace_file_read", "Read one exact relative UTF-8 file from your current private Task workspace. This does not accept a host path, URI or digest.", map[string]any{
+			"relative_path": map[string]any{"type": "string", "minLength": 1, "maxLength": 1024},
+		}},
+		{"workspace_file_write", "Create or replace one UTF-8 file in your current private Task workspace using the current tree revision. Paths are relative to the authorized Task root; traversal, absolute paths and URI-encoded paths are rejected.", map[string]any{
+			"expected_revision": map[string]any{"type": "integer", "minimum": 1}, "relative_path": map[string]any{"type": "string", "minLength": 1, "maxLength": 1024}, "content": map[string]any{"type": "string", "minLength": 1, "maxLength": 2097152},
+		}},
+		{"workspace_file_delete", "Delete one exact file in your current private Task workspace using the current tree revision. Directories are implicit and cannot be used to escape the Task root.", map[string]any{
+			"expected_revision": map[string]any{"type": "integer", "minimum": 1}, "relative_path": map[string]any{"type": "string", "minLength": 1, "maxLength": 1024},
+		}},
+		{"workspace_snapshot", "Create an immutable ready Artifact snapshot of one exact workspace revision. It is marked draft_not_accepted and does not qualify or submit the Task deliverable. Share its Artifact ID explicitly with a same-Mission colleague.", map[string]any{
+			"expected_revision": map[string]any{"type": "integer", "minimum": 1},
+		}},
+		{"workspace_snapshot_read", "Read metadata and the bounded file manifest from one exact draft snapshot Artifact ID. Only the same Mission is in scope; the snapshot is not accepted work.", map[string]any{
+			"artifact_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+		{"workspace_snapshot_file_read", "Read one exact relative UTF-8 file from a ready draft snapshot Artifact in your current Mission. Supply its Artifact ID and relative path; a digest or host path is not accepted.", map[string]any{
+			"artifact_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80}, "relative_path": map[string]any{"type": "string", "minLength": 1, "maxLength": 1024},
+		}},
+	})
+	return append(tools, treeTools...)
+}
+
 // ProductEmployeeToolsWithReadOnlySkill is a separately versioned surface.
 // The historical qualified surface above remains byte-for-byte unchanged.
 func ProductEmployeeToolsWithReadOnlySkill() []any {

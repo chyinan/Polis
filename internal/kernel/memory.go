@@ -1715,7 +1715,7 @@ func validateMemoryDependencyTargetTX(ctx context.Context, tx pgx.Tx, scope Scop
 			return "", core.Malformed
 		}
 		var state, verdict string
-		err := tx.QueryRow(ctx, `SELECT t.mission_id,a.digest,a.state,a.verdict FROM artifacts a JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id WHERE a.company_id=$1 AND a.id=$2`, scope.company, input.TargetID).Scan(&missionID, &digest, &state, &verdict)
+		err := tx.QueryRow(ctx, `SELECT t.mission_id,a.digest,a.state,a.verdict FROM artifacts a JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id WHERE a.company_id=$1 AND a.id=$2 AND a.artifact_kind='deliverable'`, scope.company, input.TargetID).Scan(&missionID, &digest, &state, &verdict)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return "", core.OutOfScope
 		}

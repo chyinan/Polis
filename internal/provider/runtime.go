@@ -101,6 +101,41 @@ func ProductSharedMissionArtifactToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithSharedMissionArtifacts())
 }
 
+// ProductWorkspaceTreeToolSurface adds the bounded logical private Task tree
+// and immutable draft snapshots on a distinct fake-only registry. The real
+// provider authorization path remains pinned to @4.
+const ProductWorkspaceTreeToolSurfaceQualification = "polis-product-tool-surface@10"
+
+const (
+	OfflineWorkspaceTreeSurfacePurpose        = "offline-workspace-tree-tool-surface"
+	OfflineWorkspaceTreeSurfaceSimulationMark = "offline-workspace-tree-tool-surface-unqualified"
+	ProductWorkspaceTreeManifestDigest        = "8ada99789818b7198861c32f39cce9a7a9be48fd24e7a3b5a139dd2e762f1aba"
+	ProductWorkspaceTreeSchemaDigest          = "cde1dc84c2e16ae7c85f6c590c704f03a6123d0a46775f709701192228b289a3"
+	ProductWorkspaceTreeSchemaBytes           = 5386
+)
+
+func ProductWorkspaceTreeToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithWorkspaceTree())
+}
+
+func ValidateOfflineFakeWorkspaceTreeSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductWorkspaceTreeToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductWorkspaceTreeToolSurfaceQualification ||
+		profile.Purpose != OfflineWorkspaceTreeSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineWorkspaceTreeSurfaceSimulationMark ||
+		profile.ProductProviderL2Fingerprint != OfflineWorkspaceTreeSurfaceSimulationMark || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 22 || expected.ManifestDigest != ProductWorkspaceTreeManifestDigest ||
+		expected.AggregateSchemaBytes != ProductWorkspaceTreeSchemaBytes || expected.AggregateSchemaDigest != ProductWorkspaceTreeSchemaDigest ||
+		surface.ToolCount != 22 || observed.ToolCount != 22 || surface.ManifestDigest != ProductWorkspaceTreeManifestDigest ||
+		observed.ManifestDigest != ProductWorkspaceTreeManifestDigest || surface.AggregateSchemaBytes != ProductWorkspaceTreeSchemaBytes ||
+		observed.AggregateSchemaBytes != ProductWorkspaceTreeSchemaBytes || surface.AggregateSchemaDigest != ProductWorkspaceTreeSchemaDigest ||
+		observed.AggregateSchemaDigest != ProductWorkspaceTreeSchemaDigest {
+		return fmt.Errorf("workspace-tree surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
+}
+
 // ValidateOfflineFakeSharedMissionArtifactSurface accepts only the exact
 // zero-egress @8 surface. It does not qualify a real provider or filesystem.
 func ValidateOfflineFakeSharedMissionArtifactSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

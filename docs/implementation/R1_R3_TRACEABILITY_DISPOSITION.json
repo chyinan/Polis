@@ -1,6 +1,6 @@
 {
   "documentVersion": "0.4.5",
-  "auditDate": "2026-10-03",
+  "auditDate": "2026-10-04",
   "sourceOfTruth": [
     "spec/design-v0.4.5/tests/traceability.json",
     "spec/design-v0.4.5/tests/scenario_catalog.json",
@@ -60,7 +60,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
       ]
     },
     {
@@ -79,7 +80,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
       ]
     },
     {
@@ -96,7 +98,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
       ]
     },
     {
@@ -113,7 +116,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
       ]
     },
     {
@@ -130,7 +134,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
       ]
     },
     {
@@ -147,7 +152,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md"
       ]
     },
     {

@@ -293,6 +293,13 @@ WHERE s.company_id=$1 AND s.id=$2 AND s.state='active'`, b.scope.company, b.sess
 	if taskID != task.ID || taskState != "working" || task.Kind != core.TaskKindCompat {
 		return out, productDeliveryDenied("Task_state_disallows_delivery", "the current Task is not an active provider-executable delivery target.", "task_state", "working compat Task", taskState)
 	}
+	workspaceTreeSafe, err := WorkspaceTreeCanSubmit(ctx, tx, b.scope.company, task.ID)
+	if err != nil {
+		return out, err
+	}
+	if !workspaceTreeSafe {
+		return out, productDeliveryDenied("workspace_tree_not_supported", "the current delivery validator accepts one formatter.go file; remove other workspace files before submitting.", "workspace_tree", "one formatter.go file", "multiple_or_missing_files")
+	}
 	if bindingDigest == "" || runnerRevision == "" {
 		return out, productDeliveryDenied("validation_required", "run workspace_check and obtain a PASS receipt for a Task with an immutable TaskValidationBinding.", "validation_receipt", "current PASS receipt bound to this Task", "missing_binding")
 	}

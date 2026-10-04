@@ -29,6 +29,7 @@ type FakeRuntimeConfig struct {
 	ReadOnlySkillDirectorySurface bool
 	DirectMessagingSurface        bool
 	SharedMissionArtifactSurface  bool
+	WorkspaceTreeSurface          bool
 	ControlledMCPToolSurface      bool
 	ControlledMCPToolSurfaceV2    bool
 	ControlledMCPCallFixture      json.RawMessage
@@ -59,7 +60,9 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 	}
 	if config.Purpose == "" {
 		config.Purpose = "product-artifact"
-		if config.DirectMessagingSurface {
+		if config.WorkspaceTreeSurface {
+			config.Purpose = OfflineWorkspaceTreeSurfacePurpose
+		} else if config.DirectMessagingSurface {
 			config.Purpose = OfflineDirectMessagingToolSurfacePurpose
 		} else if config.SharedMissionArtifactSurface {
 			config.Purpose = OfflineSharedMissionArtifactToolSurfacePurpose
@@ -83,7 +86,12 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 	qualification := ProductToolSurfaceQualification
 	exactSurfaceFingerprint := ProductExactSurfaceExecutionFingerprint
 	providerFingerprint := ProductProviderL2Fingerprint
-	if config.ControlledMCPToolSurfaceV2 {
+	if config.WorkspaceTreeSurface {
+		surface = ProductWorkspaceTreeToolSurface()
+		qualification = ProductWorkspaceTreeToolSurfaceQualification
+		exactSurfaceFingerprint = OfflineWorkspaceTreeSurfaceSimulationMark
+		providerFingerprint = OfflineWorkspaceTreeSurfaceSimulationMark
+	} else if config.ControlledMCPToolSurfaceV2 {
 		surface = ProductControlledMCPToolSurfaceV2()
 		qualification = ProductControlledMCPToolSurfaceV2Qualification
 		exactSurfaceFingerprint = OfflineControlledMCPToolSurfaceV2SimulationMarker
@@ -128,6 +136,9 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if r.config.ControlledMCPToolSurface && r.config.ControlledMCPToolSurfaceV2 {
 		return errors.New("offline MCP runtime must select exactly one versioned tool surface")
 	}
+	if r.config.WorkspaceTreeSurface && (r.config.ReadOnlySkillSurface || r.config.ReadOnlySkillDirectorySurface || r.config.DirectMessagingSurface || r.config.SharedMissionArtifactSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
+		return errors.New("offline workspace-tree access requires its isolated versioned tool surface")
+	}
 	if r.config.ReadOnlySkillSurface && r.config.ReadOnlySkillDirectorySurface {
 		return errors.New("offline Skill runtime must select exactly one versioned tool surface")
 	}
@@ -140,14 +151,15 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if len(r.config.ControlledMCPCallFixture) > 0 && (!r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 || !json.Valid(r.config.ControlledMCPCallFixture)) {
 		return errors.New("offline MCP call fixture requires the exact controlled-MCP surface and valid JSON")
 	}
-	qualifiedSurface := !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
+	qualifiedSurface := !r.config.WorkspaceTreeSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
 	offlineSkillSurface := r.config.ReadOnlySkillSurface && ValidateOfflineFakeSkillSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineSkillDirectorySurface := r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeSkillDirectorySurface(r.Mode(), r.profile, r.surface) == nil
 	offlineDirectMessagingSurface := r.config.DirectMessagingSurface && ValidateOfflineFakeProductDirectMessagingSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineSharedMissionArtifactSurface := r.config.SharedMissionArtifactSurface && ValidateOfflineFakeSharedMissionArtifactSurface(r.Mode(), r.profile, r.surface) == nil
+	offlineWorkspaceTreeSurface := r.config.WorkspaceTreeSurface && ValidateOfflineFakeWorkspaceTreeSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurface := r.config.ControlledMCPToolSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurfaceV2 := r.config.ControlledMCPToolSurfaceV2 && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurfaceV2(r.Mode(), r.profile, r.surface) == nil
-	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineSkillDirectorySurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
+	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineSkillSurface && !offlineSkillDirectorySurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineWorkspaceTreeSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
 		return errors.New("offline provider runtime configuration is invalid")
 	}
 	return nil
@@ -195,6 +207,7 @@ func (r *FakeRuntime) Start(_ context.Context, options SessionStartOptions) (Ses
 		skillLoadSurface:      options.ToolSurface.ManifestDigest == ProductSkillToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
 		skillDirectorySurface: options.ToolSurface.ManifestDigest == ProductSkillDirectoryToolSurface().ManifestDigest,
 		mcpCallSurface:        options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurface().ManifestDigest || options.ToolSurface.ManifestDigest == ProductControlledMCPToolSurfaceV2().ManifestDigest,
+		workspaceTreeSurface:  options.ToolSurface.ManifestDigest == ProductWorkspaceTreeToolSurface().ManifestDigest,
 		mcpCallFixture:        append(json.RawMessage(nil), r.config.ControlledMCPCallFixture...),
 	}, nil
 }
@@ -207,6 +220,7 @@ type fakeSession struct {
 	skillLoadSurface      bool
 	skillDirectorySurface bool
 	mcpCallSurface        bool
+	workspaceTreeSurface  bool
 	mcpCallFixture        json.RawMessage
 }
 
@@ -265,6 +279,55 @@ func (s *fakeSession) Turn(ctx context.Context, _ string, _ string, _ codex.Turn
 	current, err := call("work_current", map[string]any{})
 	if err != nil {
 		return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, err
+	}
+	if s.workspaceTreeSurface {
+		page, treeErr := call("workspace_files_list", map[string]any{"after_cursor": ""})
+		if treeErr != nil {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
+		}
+		data, ok := page["data"].(map[string]any)
+		entries, entriesOK := data["entries"].([]any)
+		if !ok || !entriesOK || len(entries) == 0 {
+			return TurnResult{State: "failed", Outcome: "workspace_tree_empty", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline workspace tree omitted its seeded source file")
+		}
+		first, ok := entries[0].(map[string]any)
+		path, _ := first["relativePath"].(string)
+		if !ok || path == "" {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline workspace tree returned invalid path metadata")
+		}
+		if _, treeErr = call("workspace_file_read", map[string]any{"relative_path": path}); treeErr != nil {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
+		}
+		revision := nestedNumber(page, "data", "revision")
+		write, treeErr := call("workspace_file_write", map[string]any{"expected_revision": revision, "relative_path": "offline/qualification.txt", "content": "offline workspace tree capability"})
+		if treeErr != nil {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
+		}
+		nextRevision := nestedNumber(write, "receipt", "revision")
+		if nextRevision <= revision {
+			return TurnResult{State: "failed", Outcome: "workspace_tree_revision_not_advanced", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline workspace tree write did not advance its revision")
+		}
+		if _, staleErr := call("workspace_file_write", map[string]any{"expected_revision": revision, "relative_path": "offline/stale.txt", "content": "stale tree writer must be rejected"}); staleErr == nil || staleErr.Error() != "REVISION_CONFLICT" {
+			return TurnResult{State: "failed", Outcome: "workspace_tree_stale_writer_not_rejected", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline workspace tree accepted a stale revision")
+		}
+		if _, treeErr = call("workspace_files_search", map[string]any{"query": "offline workspace tree", "after_cursor": ""}); treeErr != nil {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
+		}
+		snapshot, treeErr := call("workspace_snapshot", map[string]any{"expected_revision": nextRevision})
+		if treeErr != nil {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
+		}
+		artifactID := nestedString(snapshot, "data", "artifactId")
+		if artifactID == "" || nestedString(snapshot, "receipt", "status") != "draft_not_accepted" {
+			return TurnResult{State: "failed", Outcome: "workspace_snapshot_not_draft", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, errors.New("offline workspace snapshot was not returned as a draft Artifact")
+		}
+		if _, treeErr = call("workspace_snapshot_read", map[string]any{"artifact_id": artifactID}); treeErr != nil {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
+		}
+		if _, treeErr = call("workspace_snapshot_file_read", map[string]any{"artifact_id": artifactID, "relative_path": "offline/qualification.txt"}); treeErr != nil {
+			return TurnResult{State: "failed", Outcome: "tool_failure", ToolCalls: calls, StartedAt: started, FinishedAt: time.Now().UTC()}, treeErr
+		}
+		return TurnResult{State: "completed", Outcome: "workspace_tree_snapshot_created", ToolCalls: calls, ProviderEgress: 0, StartedAt: started, FinishedAt: time.Now().UTC()}, nil
 	}
 	if s.skillLoadSurface {
 		skillID, relativePath := firstLoadableSkillReference(current)

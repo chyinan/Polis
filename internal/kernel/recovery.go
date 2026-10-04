@@ -11,6 +11,7 @@ import (
 	"polis/internal/core"
 	"polis/internal/dbgen"
 	"strings"
+	"unicode/utf8"
 )
 
 // VerifyHistoricalWorkerFence attempts no business mutation. It constructs a
@@ -171,15 +172,18 @@ func (k *Kernel) txRecover(ctx context.Context) error {
 		return e
 	}
 	// Files are checked outside the short DB snapshot and before dispatch.
-	rows, e := k.pool.Query(ctx, "SELECT company_id,id,digest FROM artifacts ORDER BY company_id,id")
+	rows, e := k.pool.Query(ctx, "SELECT company_id,id,digest,artifact_kind,bytes FROM artifacts ORDER BY company_id,id")
 	if e != nil {
 		return e
 	}
-	type ref struct{ c, id, digest string }
+	type ref struct {
+		c, id, digest, kind string
+		bytes               int64
+	}
 	var refs []ref
 	for rows.Next() {
 		var r ref
-		if e = rows.Scan(&r.c, &r.id, &r.digest); e != nil {
+		if e = rows.Scan(&r.c, &r.id, &r.digest, &r.kind, &r.bytes); e != nil {
 			rows.Close()
 			return e
 		}
@@ -190,8 +194,12 @@ func (k *Kernel) txRecover(ctx context.Context) error {
 		return e
 	}
 	for _, r := range refs {
-		_, readErr := readBlob(k.root, r.c, r.digest)
-		if readErr == nil {
+		limit := int64(core.MaxContent)
+		if r.kind == "workspace_snapshot" {
+			limit = 8 << 20
+		}
+		content, readErr := readBlobBounded(k.root, r.c, r.digest, limit)
+		if readErr == nil && int64(len(content)) == r.bytes {
 			continue
 		}
 		state := "corrupt"
@@ -199,8 +207,49 @@ func (k *Kernel) txRecover(ctx context.Context) error {
 			state = "missing"
 		}
 		_, e = k.TXWrite(ctx, Scope{r.c}, nil, newID(), "artifact.invalidated", r.id, func(tx pgx.Tx) (Receipt, error) {
-			_, e := tx.Exec(ctx, "UPDATE artifacts SET state=$3,verdict='invalidated' WHERE company_id=$1 AND id=$2", r.c, r.id, state)
+			_, e := tx.Exec(ctx, `UPDATE artifacts SET state=$3,verdict=CASE WHEN artifact_kind='workspace_snapshot' THEN verdict ELSE 'invalidated' END WHERE company_id=$1 AND id=$2`, r.c, r.id, state)
 			return Receipt{ID: r.id, Status: state}, e
+		})
+		if e != nil {
+			return e
+		}
+	}
+	snapshotRows, e := k.pool.Query(ctx, `SELECT DISTINCT a.company_id,a.id,f.digest,f.bytes
+FROM artifacts a JOIN workspace_snapshot_files f ON f.company_id=a.company_id AND f.artifact_id=a.id
+WHERE a.artifact_kind='workspace_snapshot' AND a.state='ready' ORDER BY a.company_id,a.id,f.digest`)
+	if e != nil {
+		return e
+	}
+	type snapshotRef struct {
+		company, artifact, digest string
+		bytes                     int64
+	}
+	var snapshotRefs []snapshotRef
+	for snapshotRows.Next() {
+		var item snapshotRef
+		if e = snapshotRows.Scan(&item.company, &item.artifact, &item.digest, &item.bytes); e != nil {
+			snapshotRows.Close()
+			return e
+		}
+		snapshotRefs = append(snapshotRefs, item)
+	}
+	if e = snapshotRows.Err(); e != nil {
+		snapshotRows.Close()
+		return e
+	}
+	snapshotRows.Close()
+	invalidSnapshots := make(map[string]string)
+	for _, item := range snapshotRefs {
+		content, readErr := readBlobBounded(k.root, item.company, item.digest, workspaceTreeMaxFileBytes)
+		if readErr != nil || int64(len(content)) != item.bytes || !utf8.Valid(content) {
+			invalidSnapshots[item.company+"/"+item.artifact] = item.company
+		}
+	}
+	for key, company := range invalidSnapshots {
+		artifact := strings.TrimPrefix(key, company+"/")
+		_, e = k.TXWrite(ctx, Scope{company}, nil, newID(), "artifact.workspace_snapshot.invalidated", artifact, func(tx pgx.Tx) (Receipt, error) {
+			_, updateErr := tx.Exec(ctx, `UPDATE artifacts SET state='corrupt' WHERE company_id=$1 AND id=$2 AND artifact_kind='workspace_snapshot' AND state='ready'`, company, artifact)
+			return Receipt{ID: artifact, Status: "corrupt"}, updateErr
 		})
 		if e != nil {
 			return e
@@ -213,15 +262,18 @@ func (k *Kernel) txRecover(ctx context.Context) error {
 // All artifact payloads are checked before any epoch, incarnation, event, or
 // artifact mutation is committed.
 func (k *Kernel) txRecoverWithRuntimeCASBinding(ctx context.Context) error {
-	rows, err := k.pool.Query(ctx, "SELECT company_id,id,digest FROM artifacts ORDER BY company_id,id")
+	rows, err := k.pool.Query(ctx, "SELECT company_id,id,digest,artifact_kind,bytes FROM artifacts ORDER BY company_id,id")
 	if err != nil {
 		return err
 	}
-	type ref struct{ company, artifact, digest string }
+	type ref struct {
+		company, artifact, digest, kind string
+		bytes                           int64
+	}
 	refs := make([]ref, 0)
 	for rows.Next() {
 		var r ref
-		if err := rows.Scan(&r.company, &r.artifact, &r.digest); err != nil {
+		if err := rows.Scan(&r.company, &r.artifact, &r.digest, &r.kind, &r.bytes); err != nil {
 			rows.Close()
 			return err
 		}
@@ -233,8 +285,45 @@ func (k *Kernel) txRecoverWithRuntimeCASBinding(ctx context.Context) error {
 	}
 	rows.Close()
 	for _, r := range refs {
-		if _, err := readBlob(k.root, r.company, r.digest); err != nil {
+		limit := int64(core.MaxContent)
+		if r.kind == "workspace_snapshot" {
+			limit = 8 << 20
+		}
+		content, err := readBlobBounded(k.root, r.company, r.digest, limit)
+		if err != nil || int64(len(content)) != r.bytes {
+			if err == nil {
+				err = core.Integrity
+			}
 			return fmt.Errorf("recovery CAS prerequisite failed for artifact %s: %w", r.artifact, err)
+		}
+	}
+	workspaceRows, err := k.pool.Query(ctx, `SELECT company_id,digest,bytes FROM worker_workspace_files
+UNION ALL SELECT company_id,digest,bytes FROM workspace_snapshot_files ORDER BY company_id,digest`)
+	if err != nil {
+		return err
+	}
+	type workspaceRef struct {
+		company, digest string
+		bytes           int64
+	}
+	var workspaceRefs []workspaceRef
+	for workspaceRows.Next() {
+		var item workspaceRef
+		if err = workspaceRows.Scan(&item.company, &item.digest, &item.bytes); err != nil {
+			workspaceRows.Close()
+			return err
+		}
+		workspaceRefs = append(workspaceRefs, item)
+	}
+	if err = workspaceRows.Err(); err != nil {
+		workspaceRows.Close()
+		return err
+	}
+	workspaceRows.Close()
+	for _, item := range workspaceRefs {
+		content, readErr := readBlobBounded(k.root, item.company, item.digest, workspaceTreeMaxFileBytes)
+		if readErr != nil || int64(len(content)) != item.bytes || !utf8.Valid(content) {
+			return fmt.Errorf("recovery CAS prerequisite failed for workspace file digest %s", item.digest)
 		}
 	}
 	return k.txResetFakeState(ctx)

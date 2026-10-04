@@ -120,7 +120,7 @@ func (k *Kernel) txSubmit(ctx context.Context, b Binding, w Task, key string, co
 			return Receipt{}, e
 		}
 		id := newID()
-		_, e = tx.Exec(ctx, "INSERT INTO artifact_staging VALUES($1,$2,$3,$4)", b.scope.company, id, w.ID, expectedDigest)
+		_, e = tx.Exec(ctx, "INSERT INTO artifact_staging(company_id,id,task_id,digest) VALUES($1,$2,$3,$4)", b.scope.company, id, w.ID, expectedDigest)
 		return Receipt{ID: id, Status: "staging"}, e
 	})
 	if e != nil {
@@ -175,7 +175,7 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, b.scope.company, t.ID, id, qualificatio
 func (k *Kernel) TXResolve(ctx context.Context, b Binding, obligation, artifact, key string) (Receipt, error) {
 	// Evidence content must remain readable; a DB ready flag alone is insufficient.
 	var expectedDigest string
-	e := k.pool.QueryRow(ctx, "SELECT digest FROM artifacts WHERE company_id=$1 AND id=$2 AND state='ready'", b.scope.company, artifact).Scan(&expectedDigest)
+	e := k.pool.QueryRow(ctx, "SELECT digest FROM artifacts WHERE company_id=$1 AND id=$2 AND artifact_kind='deliverable' AND state='ready'", b.scope.company, artifact).Scan(&expectedDigest)
 	if errors.Is(e, pgx.ErrNoRows) {
 		return Receipt{}, core.OutOfScope
 	}
@@ -198,7 +198,7 @@ func (k *Kernel) TXResolve(ctx context.Context, b Binding, obligation, artifact,
 			return Receipt{}, core.Denied
 		}
 		var digest string
-		e = tx.QueryRow(ctx, "SELECT digest FROM artifacts WHERE company_id=$1 AND id=$2 AND task_id=$3 AND author=$4 AND state='ready'", b.scope.company, artifact, task, b.employee).Scan(&digest)
+		e = tx.QueryRow(ctx, "SELECT digest FROM artifacts WHERE company_id=$1 AND id=$2 AND task_id=$3 AND author=$4 AND artifact_kind='deliverable' AND state='ready' AND verdict='candidate'", b.scope.company, artifact, task, b.employee).Scan(&digest)
 		if errors.Is(e, pgx.ErrNoRows) {
 			return Receipt{}, core.OutOfScope
 		}
@@ -234,7 +234,7 @@ func (k *Kernel) TXVerify(ctx context.Context, b Binding, id, key string) (Recei
 		return Receipt{}, core.Denied
 	}
 	var digest, author, task, contract string
-	e := k.pool.QueryRow(ctx, "SELECT digest,author,task_id,contract FROM artifacts WHERE company_id=$1 AND id=$2", b.scope.company, id).Scan(&digest, &author, &task, &contract)
+	e := k.pool.QueryRow(ctx, "SELECT digest,author,task_id,contract FROM artifacts WHERE company_id=$1 AND id=$2 AND artifact_kind='deliverable'", b.scope.company, id).Scan(&digest, &author, &task, &contract)
 	if errors.Is(e, pgx.ErrNoRows) {
 		return Receipt{}, core.OutOfScope
 	}
@@ -254,7 +254,7 @@ func (k *Kernel) TXVerify(ctx context.Context, b Binding, id, key string) (Recei
 	}
 	return k.TXWrite(ctx, b.scope, &b, key, "review.submit", []string{id, digest, core.Contract}, func(tx pgx.Tx) (Receipt, error) {
 		var state, currentDigest string
-		e := tx.QueryRow(ctx, "SELECT state,digest FROM artifacts WHERE company_id=$1 AND id=$2", b.scope.company, id).Scan(&state, &currentDigest)
+		e := tx.QueryRow(ctx, "SELECT state,digest FROM artifacts WHERE company_id=$1 AND id=$2 AND artifact_kind='deliverable'", b.scope.company, id).Scan(&state, &currentDigest)
 		if e != nil {
 			return Receipt{}, e
 		}
