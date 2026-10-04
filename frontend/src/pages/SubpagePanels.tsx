@@ -284,6 +284,7 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const pendingEnvironmentPolicy = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   const pendingEnvironmentQualification = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   const pendingEnvironmentPreparation = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
+  const pendingServiceBrowserSession = useRef<Readonly<{jobId: string; requestId: string}> | null>(null);
   if (task === null) return <section className={styles.sectionCard}><EmptyPanel detail="当前快照没有可选任务对象。" title="暂无任务详情" /></section>;
   const downloadArtifact = async () => {
     setDownloadingArtifact(true);
@@ -478,12 +479,18 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const requestServiceBrowserSession = async (jobId: string) => {
     setJobActionError(null);
     setJobActionMessage(null);
+    const pending = pendingServiceBrowserSession.current?.jobId === jobId
+      ? pendingServiceBrowserSession.current
+      : {jobId, requestId: `browser-session-${crypto.randomUUID()}`};
+    pendingServiceBrowserSession.current = pending;
     try {
-      const session = await createServiceBrowserSession.mutateAsync({companyId, jobId, requestId: `browser-session-${crypto.randomUUID()}`});
+      const session = await createServiceBrowserSession.mutateAsync({companyId, jobId, requestId: pending.requestId});
+      pendingServiceBrowserSession.current = null;
       setServiceBrowserSession({jobId, session});
       setJobActionMessage('独立浏览器入口已生成，五分钟后过期；停止服务会立即撤销。');
     } catch (error) {
-      setJobActionError(error instanceof Error ? error.message : '独立浏览器入口创建失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setJobActionError(`浏览会话结果尚未确认：${detail} 若 JobRun 仍可用，重试会复用原请求 ID 取回同一入口。`);
     }
   };
   const taskEvents = overview.recentActivity.filter(event => event.subject.id === task.taskId);

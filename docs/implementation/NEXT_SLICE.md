@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 189, notification command response recovery)
+## Latest continuation status (Slice 190, service browser session retry recovery)
+
+Service JobRun browser-session requests now retain their exact request ID after an ambiguous response. Retrying the same still-live service command can replay the same short-lived session instead of minting another ticket. Workbench errors identify the result as unconfirmed. Frontend production build and diff check pass; no JobRun or browser session was started and no host/provider activity or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-190-service-browser-session-response-recovery/verification.md`.
+
+## Previous continuation status (Slice 189, notification command response recovery)
 
 Local notification route/test and disabled QQ notification-draft commands now refresh notification state after success or error; their Workbench forms preserve the exact request ID for the same-intent retry. Error messages identify the result as unconfirmed and point to refreshed route/delivery state. Frontend production build and diff check pass; no route/draft was changed and no notification was sent. See `evidence/development/r1-r3-implementation-validation-20261004-slice-189-notification-response-refresh/verification.md`.
 
