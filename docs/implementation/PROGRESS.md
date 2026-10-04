@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 194 — lifecycle and MCP registration exact retries
+
+Mission start/pause/resume/cancel controls retain the same request ID when an ambiguous result is retried. Streamable HTTP MCP descriptor registration retains its generated capability ID and request ID for the same descriptor payload. Frontend production build and `git diff --check` pass. No lifecycle or capability command was submitted and no endpoint was accessed. No Worker/provider action or frozen scenario ran; no schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-194-lifecycle-mcp-retries/verification.md`.
+
 ## Slice 193 — Workbench guidance and settings exact retries
 
 Operator guidance, runtime configuration, Company update, and Company archive mutations now retain the exact request ID for a same-payload retry after an ambiguous response. Changed payloads receive different identities; pending IDs clear on success. Frontend production build and `git diff --check` pass. No guidance or setting changed, no Company was archived, and no Worker/provider action or frozen scenario ran. No schema change. Runtime restart and host/account qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-193-workbench-settings-retries/verification.md`.

@@ -560,6 +560,7 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [rationale, setRationale] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const pendingMCPRegistrations = useRef(new Map<string, Readonly<{id: string; requestId: string}>>());
   if (query.isPending) return <div className={styles.emptyState} role="status">正在读取能力候选目录</div>;
   if (query.isError) return <div className={styles.errorState} role="alert">能力目录读取失败：{query.error.message}</div>;
   const requestId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
@@ -587,7 +588,15 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
       const endpoint = new URL(mcpEndpoint.trim()).toString();
       const descriptor = {schemaVersion: 'mcp-streamable-http-descriptor@1', name, transport: mcpTransport, endpoint, protocolVersion: '2026-07-28'};
       const descriptorDigest = await sha256Text(JSON.stringify(descriptor));
-      await registerMCP.mutateAsync({id: `${name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-') || 'mcp'}-${Date.now()}`, name, transport: mcpTransport, command: null, endpoint, args: [], descriptorDigest, requestId: requestId('mcp-register')});
+      const payload = {name, transport: mcpTransport, endpoint, descriptorDigest};
+      const key = JSON.stringify(payload);
+      const pendingRegistration = pendingMCPRegistrations.current.get(key) ?? {
+        id: `${name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-') || 'mcp'}-${crypto.randomUUID()}`,
+        requestId: requestId('mcp-register'),
+      };
+      pendingMCPRegistrations.current.set(key, pendingRegistration);
+      await registerMCP.mutateAsync({id: pendingRegistration.id, name, transport: mcpTransport, command: null, endpoint, args: [], descriptorDigest, requestId: pendingRegistration.requestId});
+      pendingMCPRegistrations.current.delete(key);
       setMessage('Streamable HTTP 定义已登记，协议 profile 固定为 2026-07-28；登记没有访问端点。');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'MCP 登记失败'); }
   }

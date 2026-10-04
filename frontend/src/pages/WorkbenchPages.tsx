@@ -98,17 +98,21 @@ function MissionLifecycleControls({api, companyId, missionId, missionState, clos
   const resume = useResumeMission(api, companyId);
   const cancel = useCancelMission(api, companyId);
   const [message, setMessage] = useState<string | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const busy = start.isPending || pause.isPending || resume.isPending || cancel.isPending;
 
   async function run(action: 'start' | 'pause' | 'resume' | 'cancel'): Promise<void> {
     setMessage(null);
-    const requestId = `mission-${action}-${companyId}-${missionId}-${Date.now()}`;
+    const key = `mission-${action}-${companyId}-${missionId}`;
+    const requestId = pendingRequestIds.current.get(key) ?? `${key}-${crypto.randomUUID()}`;
+    pendingRequestIds.current.set(key, requestId);
     const options = {missionId, requestId};
     try {
       if (action === 'start') await start.mutateAsync(options);
       else if (action === 'pause') await pause.mutateAsync(options);
       else if (action === 'resume') await resume.mutateAsync(options);
       else await cancel.mutateAsync(options);
+      pendingRequestIds.current.delete(key);
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
       setMessage(`命令结果尚未确认：${detail} 请先核对权威 Mission 快照，再继续。`);
