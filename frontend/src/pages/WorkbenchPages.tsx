@@ -99,7 +99,8 @@ function MissionLifecycleControls({api, companyId, missionId, missionState, clos
       else if (action === 'resume') await resume.mutateAsync(options);
       else await cancel.mutateAsync(options);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '使命状态操作失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setMessage(`命令结果尚未确认：${detail} 请先核对权威 Mission 快照，再继续。`);
     }
   }
 

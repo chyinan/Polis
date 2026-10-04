@@ -893,7 +893,7 @@ export function useStartMission(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionCommandOptions, 'companyId'>) => api.startMission({...options, companyId}),
-    onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
   });
 }
 
@@ -969,7 +969,7 @@ export function usePauseMission(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionCommandOptions, 'companyId'>) => api.pauseMission({...options, companyId}),
-    onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
   });
 }
 
@@ -977,7 +977,7 @@ export function useResumeMission(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionCommandOptions, 'companyId'>) => api.resumeMission({...options, companyId}),
-    onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
   });
 }
 

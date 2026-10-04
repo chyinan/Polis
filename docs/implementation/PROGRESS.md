@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 176 — REQ-23 lifecycle response reconciliation
+
+Mission start, pause and resume now invalidate Workbench Company/Mission and activity snapshots after success or error, matching the existing cancel/closeout handling. A committed lifecycle transition whose HTTP response is lost therefore refreshes the displayed state before another action can be chosen. Start/pause/resume UI errors now describe an unconfirmed or conflicting result and direct the operator to the refreshed Mission state. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider action or frozen scenario ran. REQ-23 remains partial pending restart and frozen-scenario qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-176-req23-lifecycle-response-refresh/verification.md`.
+
 ## Slice 175 — REQ-39 ambiguous formal-change and takeover command responses
 
 Mission change create/consider/decline/apply and Task takeover grant/release now invalidate their authoritative Workbench histories after success or failure. Apply also refreshes Mission and Company summaries. This reconciles lost HTTP responses with the persisted `TXWrite` receipt/state rather than leaving a stale action available. Related error messages now say the result is unconfirmed and direct the operator to the refreshed state. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider action or frozen scenario ran. REQ-39 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-175-req39-command-state-refresh/verification.md`.

@@ -203,7 +203,8 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
   const setFailure = (error: unknown) => {
     const conflict = error instanceof CommandApiError && error.status === 409;
     setPhase(conflict ? 'conflict' : 'error');
-      setMessage(error instanceof Error ? error.message : '命令提交失败');
+    const detail = error instanceof Error ? error.message : '命令提交结果未知';
+    setMessage(`${conflict ? '命令冲突' : '命令结果尚未确认'}：${detail} 请先核对权威快照，再按当前 Mission 状态继续。`);
   };
   const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

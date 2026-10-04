@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 175, REQ-39 command response reconciliation)
+## Latest continuation status (Slice 176, REQ-23 lifecycle response reconciliation)
+
+Mission start/pause/resume mutations now refresh company overview and activity queries after both success and failure. Their controls report ambiguous or conflicting command results while the fresh Mission state determines which follow-up action is available. Cancel and closeout already used this settled-state refresh after Slice171. Production frontend build and diff check pass; no tests, Worker/provider action or frozen scenario ran. REQ-23 still needs restart and frozen FT-57–60/72 qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-176-req23-lifecycle-response-refresh/verification.md`.
+
+## Previous continuation status (Slice 175, REQ-39 command response reconciliation)
 
 Mission formal-change commands (create/consider/decline/apply) and human takeover lease commands (grant/release) now refresh their persisted request/lease views after both success and error. Applying a change also refreshes Company and Mission summaries. This lets the Workbench reconcile a command whose server commit succeeded but whose HTTP response was lost; error copy describes the result as unconfirmed and points to refreshed state. Frontend build and diff check pass; no tests, Worker/provider action or frozen scenarios ran. REQ-39 remains partial. See `evidence/development/r1-r3-implementation-validation-20261004-slice-175-req39-command-state-refresh/verification.md`.
 
@@ -28,7 +32,7 @@ Workbench now exposes owner decisions to finish a Mission as `ended_not_met` or 
 
 Schema 101 adds durable closeout intent/report records, `closing` and `ended_not_met` Mission states, and retains the Company Mission slot during closeout. Cancellation first commits the admission fence, disables Routine scheduling and quiesces schedules, then Control stops project Jobs and Workers. Finalization rechecks WorkerSessions, JobRuns and live service leases in the guarded transaction before settling pending obligations, Tasks and Routine occurrences and recording a report. The paused-Mission successor-change path now also records the old Mission's closeout and marks transferred obligations superseded. The Kernel supports explicit terminal outcomes; `succeeded` requires exact independently passed Artifact references, settled Tasks/Obligations, and a recorded owner rationale. Workbench reads the closeout record and recognizes the new states. Local Termux migrated to Schema 101 with Company=0 and WorkerSession=0. Go package/command builds, frontend production build, migration hashes and `git diff --check` pass. No tests or Worker/provider actions ran. REQ-23 remains partial until owner-facing non-cancel decisions and restart/frozen-scenario qualification are complete. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-169-req23-durable-closeout/verification.md`.
 
-Next Slice176: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
+Next Slice177: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
 
 ## Previous continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
 
