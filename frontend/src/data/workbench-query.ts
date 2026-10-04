@@ -985,7 +985,7 @@ export function useCancelMission(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionCommandOptions, 'companyId'>) => api.cancelMission({...options, companyId}),
-    onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
   });
 }
 
@@ -993,7 +993,7 @@ export function useCloseMission(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionCloseoutOptions, 'companyId'>) => api.closeMission({...options, companyId}),
-    onSuccess: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
+    onSettled: async () => invalidateWorkbenchQueries(queryClient, api, companyId),
   });
 }
 

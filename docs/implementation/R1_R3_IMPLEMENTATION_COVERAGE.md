@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-04, Slice 170. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-04, Slice 171. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 171: REQ-23 closeout retry and terminal-state audit (Schema 101)
+
+Exact closeout request retries preserve the original immutable intent and request ID. A new or mismatched request cannot transition a Mission from `closing` or a terminal state; start is draft-only, pause/resume use exact source-state guards, and finalization only writes the stored closeout result from `closing`. Cancellation resume retains compatibility with the legacy cancellation receipt. Workbench now refreshes the authority snapshot on both success and failure of cancel/closeout commands, so a closeout that entered `closing` before a host stop failure becomes resumable without a manual page reload. Frontend production build and `git diff --check` pass. No tests, Worker/provider activity or frozen scenarios were run. REQ-23 remains partial pending restart/frozen-scenario qualification. See `evidence/development/r1-r3-implementation-validation-20261004-slice-171-req23-closeout-retry-audit/verification.md`.
 
 ## Slice 170: REQ-23 owner closeout decisions (Schema 101)
 
