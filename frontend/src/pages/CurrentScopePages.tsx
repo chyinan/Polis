@@ -15,6 +15,17 @@ import styles from '../styles/workbench.module.css';
 
 type ScopePageProps = Readonly<{api: WorkbenchApi; companyId: string}>;
 
+function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
+  const key = JSON.stringify({operation, payload});
+  const requestId = pendingIds.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+  pendingIds.set(key, requestId);
+  return {key, requestId};
+}
+
+function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: string): void {
+  pendingIds.delete(key);
+}
+
 export function FeedbackPage({api, companyId}: ScopePageProps): ReactElement {
   const query = useCompanyOverview(api, companyId);
   const feedbackQuery = useCompanyFeedback(api, companyId);
@@ -560,16 +571,20 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [rationale, setRationale] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const pendingMCPRegistrations = useRef(new Map<string, Readonly<{id: string; requestId: string}>>());
   if (query.isPending) return <div className={styles.emptyState} role="status">正在读取能力候选目录</div>;
   if (query.isError) return <div className={styles.errorState} role="alert">能力目录读取失败：{query.error.message}</div>;
-  const requestId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
   const qualificationFor = (kind: 'skill' | 'mcp', id: string, digest: string) => query.data.qualifications.find(item => item.capabilityKind === kind && item.capabilityId === id && item.versionDigest === digest);
   async function submitSkill(): Promise<void> {
     setMessage(null);
     try {
       if (skillBundleFile === null) throw new Error('请先选择只读 Skill ZIP');
-      await importSkillPackage.mutateAsync({revision: skillRevision, bundleFile: skillBundleFile, requestId: requestId('skill-import')});
+      const contentDigest = await sha256File(skillBundleFile);
+      const payload = {revision: skillRevision, contentDigest};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'skill-import', payload);
+      await importSkillPackage.mutateAsync({revision: skillRevision, bundleFile: skillBundleFile, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('只读 Skill 来源包已解析并固定摘要，候选仍需人工核验、批准和员工绑定；没有运行脚本。');
     } catch (error) { setMessage(error instanceof Error ? error.message : '技能登记失败'); }
   }
@@ -579,7 +594,13 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
       if (mcpTransport === 'stdio') {
         if (mcpBundleFile === null) throw new Error('请先选择受控 stdio MCP ZIP 包');
         if (mcpRevision.trim() === '') throw new Error('请填写包版本');
-        const imported = await importMCPPackage.mutateAsync({serverId: mcpServerToUpdate || null, revision: mcpRevision.trim(), bundleFile: mcpBundleFile, requestId: requestId('mcp-package-import')});
+        const serverId = mcpServerToUpdate || null;
+        const revision = mcpRevision.trim();
+        const contentDigest = await sha256File(mcpBundleFile);
+        const payload = {serverId, revision, contentDigest};
+        const pending = pendingRequestIdentity(pendingRequestIds.current, 'mcp-package-import', payload);
+        const imported = await importMCPPackage.mutateAsync({serverId, revision, bundleFile: mcpBundleFile, requestId: pending.requestId});
+        clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
         setMessage(`受控 stdio MCP 包已固定为候选版本 ${imported.revision}（${imported.manifestDigest}）。上传只解析并保存 CAS 文件，未启动本地程序；仍需元数据核验、人工批准、运行观察和员工绑定。`);
         return;
       }
@@ -592,7 +613,7 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
       const key = JSON.stringify(payload);
       const pendingRegistration = pendingMCPRegistrations.current.get(key) ?? {
         id: `${name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-') || 'mcp'}-${crypto.randomUUID()}`,
-        requestId: requestId('mcp-register'),
+        requestId: `mcp-register-${crypto.randomUUID()}`,
       };
       pendingMCPRegistrations.current.set(key, pendingRegistration);
       await registerMCP.mutateAsync({id: pendingRegistration.id, name, transport: mcpTransport, command: null, endpoint, args: [], descriptorDigest, requestId: pendingRegistration.requestId});
@@ -603,7 +624,10 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
   async function qualifyCapability(kind: 'skill' | 'mcp', id: string): Promise<void> {
     setMessage(null);
     try {
-      const result = await qualify.mutateAsync({capabilityKind: kind, capabilityId: id, requestId: requestId('capability-qualify')});
+      const payload = {capabilityKind: kind, capabilityId: id};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'capability-qualify', payload);
+      const result = await qualify.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       const status = typeof result === 'object' && result !== null && 'status' in result ? String(result.status) : 'recorded';
       const server = kind === 'mcp' ? query.data?.mcpServers.find(item => item.id === id) : undefined;
       const profile = server?.transport === 'streamable_http' ? '固定版本和端点摘要' : '冻结描述';
@@ -613,7 +637,10 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
   async function decideCapability(kind: 'skill' | 'mcp', id: string, qualificationId: string, decision: 'approved' | 'revoked'): Promise<void> {
     setMessage(null);
     try {
-      await decide.mutateAsync({capabilityKind: kind, capabilityId: id, qualificationId, decision, rationale, requestId: requestId('capability-decision')});
+      const payload = {capabilityKind: kind, capabilityId: id, qualificationId, decision, rationale};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'capability-decision', payload);
+      await decide.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage(decision === 'approved' ? '已记录人工批准；能力运行仍被资格门控。' : '已撤销能力并撤销现有员工绑定。');
     } catch (error) { setMessage(error instanceof Error ? error.message : '能力决策失败'); }
   }
@@ -626,28 +653,40 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
     const confirmed = window.confirm('确认以安装所有者身份记录：该历史撤销缺少精确会话清单，现有证据无法证明撤销时的完整 WorkerSession 集合。此复核不会补造清单、不会标记已静止，也不会停止 Worker。');
     if (!confirmed) return;
     try {
-      await reviewRevocation.mutateAsync({revocationId, rationale: rationale.trim(), requestId: requestId('capability-revocation-review')});
+      const payload = {revocationId, rationale: rationale.trim()};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'capability-revocation-review', payload);
+      await reviewRevocation.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('已记录安装所有者复核；历史清单仍不完整，撤销仍未证明静止。');
     } catch (error) { setMessage(error instanceof Error ? error.message : '撤销记录复核失败'); }
   }
   async function approveRuntimeQualificationRecord(runtimeQualificationId: string): Promise<void> {
     setMessage(null);
     try {
-      await approveRuntimeQualification.mutateAsync({runtimeQualificationId, rationale, requestId: requestId('mcp-runtime-approval')});
+      const payload = {runtimeQualificationId, rationale};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'mcp-runtime-approval', payload);
+      await approveRuntimeQualification.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('MCP 运行资格已记录人工审批；员工绑定仍是单独操作，真实 provider 调用仍关闭，主机隔离资格仍需独立验收。');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'MCP 运行资格审批失败'); }
   }
   async function observeMCPRuntimePackage(serverId: string, packageRevisionId: string, capabilityQualificationId: string): Promise<void> {
     setMessage(null);
     try {
-      await observeMCPRuntime.mutateAsync({serverId, packageRevisionId, capabilityQualificationId, requestId: requestId('mcp-runtime-observe')});
+      const payload = {serverId, packageRevisionId, capabilityQualificationId};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'mcp-runtime-observe', payload);
+      await observeMCPRuntime.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('隔离运行观察完成并记录为“待人工批准”；只发现 server/tool schema，没有调用 MCP 工具。员工绑定仍是单独操作。');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'MCP 隔离运行观察失败'); }
   }
   async function observeStreamableHTTPRuntimeSchema(capabilityId: string, capabilityQualificationId: string): Promise<void> {
     setMessage(null);
     try {
-      await observeStreamableHTTPRuntime.mutateAsync({capabilityId, capabilityQualificationId, requestId: requestId('mcp-http-runtime-observe')});
+      const payload = {capabilityId, capabilityQualificationId};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'mcp-http-runtime-observe', payload);
+      await observeStreamableHTTPRuntime.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('已读取固定 HTTPS 端点的 tools/list 并保存 schema 摘要；这次操作没有调用工具。之后仍需人工批准运行资格并单独绑定员工。');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Streamable HTTP MCP 目录观察失败'); }
   }
@@ -655,13 +694,19 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
     if (!selectedEmployee) return;
     setMessage(null);
     try {
-      await bind.mutateAsync({employeeId: selectedEmployee, capabilityKind: kind, capabilityId: id, qualificationId, reason: rationale, requestId: requestId('capability-bind')});
+      const payload = {employeeId: selectedEmployee, capabilityKind: kind, capabilityId: id, qualificationId, reason: rationale};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'capability-bind', payload);
+      await bind.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('已将固定版本绑定到员工身份；接班会保留该绑定，运行资格和 provider 调用仍各自受门控。');
     } catch (error) { setMessage(error instanceof Error ? error.message : '员工绑定失败'); }
   }
   async function unbindCapability(item: NonNullable<typeof query.data>['bindings'][number]): Promise<void> {
     try {
-      await revokeBinding.mutateAsync({employeeId: item.employeeId, capabilityKind: item.capabilityKind, capabilityId: item.capabilityId, qualificationId: item.qualificationId, reason: rationale || 'administrator_revoked', requestId: requestId('capability-unbind')});
+      const payload = {employeeId: item.employeeId, capabilityKind: item.capabilityKind, capabilityId: item.capabilityId, qualificationId: item.qualificationId, reason: rationale || 'administrator_revoked'};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'capability-unbind', payload);
+      await revokeBinding.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage('员工能力绑定已撤销。');
     } catch (error) { setMessage(error instanceof Error ? error.message : '绑定撤销失败'); }
   }
@@ -787,6 +832,17 @@ function MCPRuntimeObservationPanel({packages, servers, qualifications, decision
 
 async function sha256Text(value: string): Promise<string> {
   const bytes = new TextEncoder().encode(value);
+  return sha256Bytes(bytes);
+}
+
+async function sha256File(file: File): Promise<string> {
+  if (file.size < 1 || file.size > 8 * 1024 * 1024) {
+    throw new Error('能力包文件须为 1 字节至 8 MiB。');
+  }
+  return sha256Bytes(new Uint8Array(await file.arrayBuffer()));
+}
+
+async function sha256Bytes(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
 }

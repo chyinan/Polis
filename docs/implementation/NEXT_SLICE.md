@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 194, lifecycle and MCP registration exact retries)
+## Latest continuation status (Slice 195, capability governance exact retries)
+
+Capability package imports, metadata review, approval/revocation, runtime qualification/observation, and employee binding commands now keep their request ID for the exact same payload after an ambiguous response. Package identity keys include the SHA-256 of the selected file bytes. Existing settled refresh remains in place. Frontend production build and diff check pass; no capability command or runtime observation was executed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-195-capability-retries/verification.md`.
+
+## Previous continuation status (Slice 194, lifecycle and MCP registration exact retries)
 
 Mission start/pause/resume/cancel retries now keep the request ID for the same lifecycle intent after an ambiguous response. Streamable HTTP MCP descriptor registration also reuses both its generated capability ID and request ID for the same descriptor payload. Frontend production build and diff check pass; no Mission lifecycle or capability command was submitted and no endpoint was accessed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-194-lifecycle-mcp-retries/verification.md`.
 

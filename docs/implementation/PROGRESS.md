@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 195 — capability governance exact retries
+
+Capability package imports, metadata reviews, decisions, runtime qualification/observations, employee binding and revocation now retain the same request ID after ambiguous outcomes for exact same-payload retries. Skill/MCP package identity includes a SHA-256 over file bytes, so changed file contents create a new operation identity. Frontend production build and `git diff --check` pass. No capability command or runtime observation ran; no Worker/provider action, endpoint access, or frozen scenario occurred. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-195-capability-retries/verification.md`.
+
 ## Slice 194 — lifecycle and MCP registration exact retries
 
 Mission start/pause/resume/cancel controls retain the same request ID when an ambiguous result is retried. Streamable HTTP MCP descriptor registration retains its generated capability ID and request ID for the same descriptor payload. Frontend production build and `git diff --check` pass. No lifecycle or capability command was submitted and no endpoint was accessed. No Worker/provider action or frozen scenario ran; no schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-194-lifecycle-mcp-retries/verification.md`.
