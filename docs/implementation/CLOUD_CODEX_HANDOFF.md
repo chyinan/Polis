@@ -4,13 +4,17 @@ Updated: 2026-10-04
 
 ## Current continuation pointer
 
-The active checkout is synchronized at Slice 206; the latest migration source is Schema 102. Read `docs/implementation/NEXT_SLICE.md` for the current continuation and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the finite approved scope. Recent stages 167–205 advance local REQ-02/13/14/23/25/36/39 implementation and response recovery, add Windows signing integration, and reconcile REQ-29's current shared-Artifact implementation; these do not complete the corresponding frozen qualification. Items requiring owner decisions, real WorkerSessions, provider accounts, publisher certificates, Windows/Linux qualification hosts, browser evidence, or R3 domain evidence remain open as recorded in the coverage ledger. Do not assume an active WorkerSession; delegate Worker work only when a current database read confirms an active session. Do not create or start one to satisfy that condition. The user requires each completed stage to be committed and pushed. Evidence for the latest stages is linked from `NEXT_SLICE.md`.
+The active checkout is synchronized at Slice 207; the latest migration source is Schema 102. Read `docs/implementation/NEXT_SLICE.md` for the current continuation and `docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md` for the finite approved scope. Recent stages 167–205 advance local REQ-02/13/14/23/25/36/39 implementation and response recovery, add Windows signing integration, and reconcile REQ-29's current shared-Artifact implementation; Slice 207 closes a takeover retry/release conflict. These do not complete the corresponding frozen qualifications. Items requiring owner decisions, real WorkerSessions, provider accounts, publisher certificates, Windows/Linux qualification hosts, browser evidence, or R3 domain evidence remain open as recorded in the coverage ledger. Do not assume an active WorkerSession; delegate Worker work only when a current database read confirms an active session. Do not create or start one to satisfy that condition. The user requires each completed stage to be committed and pushed. Evidence for the latest stages is linked from `NEXT_SLICE.md`.
 
-## Latest completed slice (206, handoff pointer synchronization)
+## Latest completed slice (207, REQ-39 pending snapshot safety)
+
+Workbench disables and rejects takeover-lease release while a snapshot return has an unresolved exact-payload retry, retaining the content, frozen digest/revision and request ID until the result settles. This avoids invalidating the same-operation retry path with a competing release. Frontend production build and `git diff --check` pass; no test or lease/snapshot/Worker/provider command ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-207-req39-pending-snapshot-safety/verification.md`.
+
+## Previous completed slice (206, handoff pointer synchronization)
 
 Synchronized the repository's top-level `AGENTS.md` and cloud handoff pointer with the current Slice 205 ledger and latest migration source Schema 102. The coverage ledger remains the authoritative list of open software and external qualification work. Updated old handoff statements to label completed slices as historical and explicitly mark the pre-Slice-151 REQ-29 gap statement as superseded. No code, database, tests, Worker/provider action, or external operation was performed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-206-handoff-pointer-synchronization/verification.md`.
 
-## Previous completed slice (205, REQ-29 audit reconciliation)
+## Historical completed slice (205, REQ-29 audit reconciliation)
 
 The current source audit now correctly distinguishes Slice 151's fake-only @8 same-Mission ready Artifact reads from the still-unmodeled arbitrary directory tree and mutable current-workspace snapshots. Coverage and continuation notes preserve Slice 150 as historical. No code, database, tests, Worker/provider action, or external operation was performed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-205-req29-audit-reconciliation/verification.md`.
 
@@ -206,7 +210,7 @@ Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-1
 
 Use the current finite list in `R1_R3_IMPLEMENTATION_COVERAGE.md`; it contains the open software requirements and keeps them separate from owner-, account-, certificate-, and host-dependent qualification. REQ-02/13/14/15/16/23–27/29/30–39 remain partial in the specific ways listed there. Slice 205 reconciled the REQ-29 audit; Slice 204 added a fail-closed signing integration, but no publisher certificate or qualified Windows release host is available here. R2 Linux host/recovery and remote-workbench qualifications, Windows clean-VM/package checks, and independent R3 content/research quality, cost, recovery and organization-benefit evidence remain separate open work.
 
-Next Slice207: continue from `docs/implementation/NEXT_SLICE.md`; preserve frozen scenario states as `not_run` until those scenarios are actually run, keep quota readiness fail-closed, and only delegate Worker activity after a current database read confirms an active WorkerSession. Do not infer owner policy, provider authority, or host qualification from local builds or source audits.
+Next Slice208: continue from `docs/implementation/NEXT_SLICE.md`; preserve frozen scenario states as `not_run` until those scenarios are actually run, keep quota readiness fail-closed, and only delegate Worker activity after a current database read confirms an active WorkerSession. Do not infer owner policy, provider authority, or host qualification from local builds or source audits.
 
 ## Working conventions
 

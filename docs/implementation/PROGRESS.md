@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 207 — REQ-39 pending snapshot safety
+
+Workbench prevents releasing a takeover lease while the exact snapshot-return payload/request remains unresolved, preserving a same-operation retry path. Frontend production build and `git diff --check` pass; no tests, takeover lease, snapshot command, Worker/provider action or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-207-req39-pending-snapshot-safety/verification.md`.
+
 ## Slice 206 — handoff pointer synchronization
 
 Updated `AGENTS.md` and `CLOUD_CODEX_HANDOFF.md` to point at the current Slice 205 ledger and latest migration source Schema 102. Marked completed slices as historical and corrected the pre-Slice-151 REQ-29 statement. No code, database, tests, Worker/provider action or external operation. See `evidence/development/r1-r3-implementation-validation-20261004-slice-206-handoff-pointer-synchronization/verification.md`.

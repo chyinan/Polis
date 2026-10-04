@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 206, handoff pointer synchronization)
+## Latest continuation status (Slice 207, REQ-39 pending snapshot safety)
+
+Workbench now blocks releasing a Task takeover lease while a snapshot return has an unresolved exact-payload retry, in both the click handler and disabled-button state. The pending return keeps its original content, frozen digest/revision and request ID available until the receipt resolves; users must retry that operation before taking a conflicting lease action. Frontend production build and `git diff --check` pass. No tests, lease or snapshot command, Worker/provider action, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-207-req39-pending-snapshot-safety/verification.md`.
+
+## Previous continuation status (Slice 206, handoff pointer synchronization)
 
 Updated the root `AGENTS.md` and `CLOUD_CODEX_HANDOFF.md` pointers to match the current Slice 205 ledger and latest migration source Schema 102. Older completed-slice notes are now clearly historical, and the old Slice 150 REQ-29 gap statement is marked as superseded by Slice 151. No code, database, tests, Worker/provider action, or external operation was performed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-206-handoff-pointer-synchronization/verification.md`.
 
@@ -148,7 +152,7 @@ Workbench now exposes owner decisions to finish a Mission as `ended_not_met` or 
 
 Schema 101 adds durable closeout intent/report records, `closing` and `ended_not_met` Mission states, and retains the Company Mission slot during closeout. Cancellation first commits the admission fence, disables Routine scheduling and quiesces schedules, then Control stops project Jobs and Workers. Finalization rechecks WorkerSessions, JobRuns and live service leases in the guarded transaction before settling pending obligations, Tasks and Routine occurrences and recording a report. The paused-Mission successor-change path now also records the old Mission's closeout and marks transferred obligations superseded. The Kernel supports explicit terminal outcomes; `succeeded` requires exact independently passed Artifact references, settled Tasks/Obligations, and a recorded owner rationale. Workbench reads the closeout record and recognizes the new states. Local Termux migrated to Schema 101 with Company=0 and WorkerSession=0. Go package/command builds, frontend production build, migration hashes and `git diff --check` pass. No tests or Worker/provider actions ran. REQ-23 remains partial until owner-facing non-cancel decisions and restart/frozen-scenario qualification are complete. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-169-req23-durable-closeout/verification.md`.
 
-Next Slice207: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
+Next Slice208: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
 
 ## Previous continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
 

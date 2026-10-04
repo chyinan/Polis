@@ -157,7 +157,9 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   }
 
   async function release(): Promise<void> {
-    if (activeLease === null || pending) return;
+    // An unresolved snapshot return owns the exact lease/request identity until
+    // its receipt is confirmed. Releasing here could strand a same-payload retry.
+    if (activeLease === null || pending || pendingSnapshotReturn !== null) return;
     setLocalError('');
     const key = `task-takeover-release-${activeLease.leaseId}`;
     try {
@@ -199,7 +201,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
               <strong>冻结版本 {activeLease.baseWorkspaceDigest.slice(0, 16)} · r{activeLease.baseWorkspaceRevision}</strong>
               <span>租约 {activeLease.leaseId} · 需求基线 {activeLease.baseRequirementsSha256.slice(0, 16)}</span>
             </div></div>
-            <div className={styles.recordActions}><button className={styles.commandButton} disabled={pending || missionState !== 'paused'} onClick={() => { void release(); }} type="button">释放租约，不提交 snapshot</button></div>
+            <div className={styles.recordActions}><button className={styles.commandButton} disabled={pending || pendingSnapshotReturn !== null || missionState !== 'paused'} onClick={() => { void release(); }} type="button">释放租约，不提交 snapshot</button></div>
           </div>
           <label className={styles.formLabel}>完整工作区文本 snapshot
             <textarea className={styles.formField} disabled={pendingSnapshotReturn !== null || baseContent === null} rows={10} maxLength={MAX_WORKSPACE_SNAPSHOT_BYTES} value={content} onChange={event => { setContent(event.target.value); setPatchNotice(''); }} placeholder="正在读取冻结工作区文本…" />
@@ -220,7 +222,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
           </div> : null}
           <div className={styles.recordLead}><span>{contentBytes} / 4096 UTF-8 字节</span></div>
           <label className={styles.formLabel}>人工投入秒数（可留空）
-            <input className={styles.formField} inputMode="numeric" max={86400} min={0} value={humanEffortSeconds} onChange={event => setHumanEffortSeconds(event.target.value)} />
+            <input className={styles.formField} disabled={pendingSnapshotReturn !== null} inputMode="numeric" max={86400} min={0} value={humanEffortSeconds} onChange={event => setHumanEffortSeconds(event.target.value)} />
           </label>
           {pendingSnapshotReturn === null ? <button className={styles.commandButton} disabled={!canReturn || loadedLeaseId !== activeLease.leaseId} onClick={() => { void handBack(); }} type="button">{submitSnapshot.isPending ? '正在核对并交还…' : '交还人工 snapshot'}</button> : null}
         </>}
