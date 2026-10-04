@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 184 — REQ-25 capability catalog command reconciliation
+
+All Workbench capability catalog mutations now invalidate the authoritative catalog after success or error. This covers package import/registration, metadata qualification and approval/revocation, incomplete revocation review, MCP runtime qualification/observation, and employee capability binding/unbinding. Frontend production build and `git diff --check` pass; no tests, capability operation, Worker/provider activity, external endpoint observation, or frozen scenario ran. No schema change. Continuing authorization and real capability execution qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-184-req25-capability-response-refresh/verification.md`.
+
 ## Slice 183 — REQ-36 environment command response reconciliation
 
 Project environment policy decisions, executor qualification decisions, and preparation requests now invalidate the persisted environment projection after either success or error. The Workbench retains the exact request ID for retrying the same intent after an ambiguous response; errors direct operators to inspect refreshed state. Frontend production build and `git diff --check` pass; no tests, environment preparation, Worker/provider activity, host qualification, or frozen scenario ran. No schema change. Environment preparation remains unqualified on a real host. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-183-req36-environment-response-refresh/verification.md`.

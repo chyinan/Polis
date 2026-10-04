@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 183, REQ-36 environment command reconciliation)
+## Latest continuation status (Slice 184, REQ-25 capability catalog reconciliation)
+
+Capability package import/registration, metadata qualification and decisions, revocation review, MCP runtime approval/observation, and employee binding changes now refresh the capability catalog after success or error. This keeps persisted approval, binding, and runtime-observation state visible when a response is ambiguous. Frontend production build and diff check pass; no tests, capability operation, Worker/provider action, endpoint observation, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-184-req25-capability-response-refresh/verification.md`.
+
+## Previous continuation status (Slice 183, REQ-36 environment command reconciliation)
 
 Project environment policy decisions, executor qualification decisions, and preparation requests now refresh the persisted environment projection after success or error. Workbench keeps each exact request ID for same-intent retry after an ambiguous response and instructs operators to check refreshed state first. Frontend production build and diff check pass; no tests, environment preparation, Worker/provider action, host qualification, or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-183-req36-environment-response-refresh/verification.md`.
 

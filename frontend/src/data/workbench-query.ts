@@ -49,7 +49,7 @@ export function useImportSkill(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ImportSkillOptions, 'companyId'>) => api.importSkill({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -57,7 +57,7 @@ export function useRegisterMCP(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<RegisterMCPOptions, 'companyId'>) => api.registerMCP({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -532,7 +532,7 @@ export function useImportReadOnlySkillPackage(api: WorkbenchApi, companyId: stri
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: (options: Omit<ImportReadOnlySkillPackageOptions, 'companyId'>) => api.importReadOnlySkillPackage({...options, companyId}),
-		onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+		onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
 	});
 }
 
@@ -540,7 +540,7 @@ export function useImportStdioMCPPackage(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ImportStdioMCPPackageOptions, 'companyId'>) => api.importStdioMCPPackage({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -644,7 +644,7 @@ export function useQualifyCapability(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<QualifyCapabilityOptions, 'companyId'>) => api.qualifyCapability({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -652,7 +652,7 @@ export function useDecideCapability(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<DecideCapabilityOptions, 'companyId'>) => api.decideCapability({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -660,7 +660,7 @@ export function useReviewIncompleteCapabilityRevocation(api: WorkbenchApi, compa
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ReviewCapabilityRevocationOptions, 'companyId'>) => api.reviewIncompleteCapabilityRevocation({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -668,7 +668,7 @@ export function useApproveStdioMCPRuntimeQualification(api: WorkbenchApi, compan
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<Parameters<WorkbenchApi['approveStdioMCPRuntimeQualification']>[0], 'companyId'>) => api.approveStdioMCPRuntimeQualification({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -676,7 +676,7 @@ export function useObserveStdioMCPRuntime(api: WorkbenchApi, companyId: string) 
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: (options: Omit<ObserveStdioMCPRuntimeOptions, 'companyId'>) => api.observeStdioMCPRuntime({...options, companyId}),
-		onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+		onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
 	});
 }
 
@@ -684,7 +684,7 @@ export function useObserveStreamableHTTPMCPRuntime(api: WorkbenchApi, companyId:
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: (options: Omit<ObserveStreamableHTTPMCPRuntimeOptions, 'companyId'>) => api.observeStreamableHTTPMCPRuntime({...options, companyId}),
-		onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+		onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
 	});
 }
 
@@ -692,7 +692,7 @@ export function useBindEmployeeCapability(api: WorkbenchApi, companyId: string) 
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<BindEmployeeCapabilityOptions, 'companyId'>) => api.bindEmployeeCapability({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
@@ -700,7 +700,7 @@ export function useRevokeEmployeeCapability(api: WorkbenchApi, companyId: string
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<BindEmployeeCapabilityOptions, 'companyId'>) => api.revokeEmployeeCapability({...options, companyId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
   });
 }
 
