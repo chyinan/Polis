@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 205 — REQ-29 audit reconciliation
+
+Updated the REQ-29 source map to reflect Slice 151's fake-only @8 same-Mission Artifact listing and exact-ID reads, and clarified the still-missing arbitrary directory/current-workspace snapshot model. Corrected the current coverage and handoff summaries; preserved Slice 150 as historical evidence. No code, database, tests, Worker/provider action or external operation. See `evidence/development/r1-r3-implementation-validation-20261004-slice-205-req29-audit-reconciliation/verification.md`.
+
 ## Slice 200 — JobRun and handover exact retries
 
 Cross-backend handover creation, isolated batch/service JobRun start, and JobRun stop retain exact request IDs after ambiguous results for same-payload retries. Identity includes the full source/target and Task or JobRun scope plus environment/session and script/argument or service configuration. Frontend production build and `git diff --check` pass. No handover or JobRun was created, started, or stopped. No Worker/provider action or frozen scenario ran; no schema change. Host execution remains unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-200-jobrun-retries/verification.md`.

@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 204, Windows signing integration)
+## Latest continuation status (Slice 205, REQ-29 audit reconciliation)
+
+The REQ-29 audit now reflects the Slice 151 implementation: bounded same-Mission ready Artifact discovery/read exists on fake-only @8 with active WorkerSession scope, CAS digest/size checks, UTF-8 bounds and immutable read provenance. Its former “next slice” gap statement is marked historical. The remaining gap is arbitrary directory-tree access and a consistent snapshot of the mutable current workspace; `worker_workspaces` stores one text digest/revision, so those semantics need a separately modeled design and qualification. No code, database, tests, Worker/provider action, or external operation was performed. See `docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md` and `evidence/development/r1-r3-implementation-validation-20261004-slice-205-req29-audit-reconciliation/verification.md`.
+
+## Previous continuation status (Slice 204, Windows signing integration)
 
 Windows Tauri packaging now has an explicit signed-release config and PowerShell wrapper. It requires a valid, unexpired current-user publisher certificate with private key and Code Signing EKU plus Windows SDK SignTool; it signs with SHA-256, timestamps, and verifies Authenticode, failing closed on missing prerequisites. Ordinary development packaging is unchanged. Frontend build and diff check pass; this environment lacks the publisher certificate, Windows host/SDK and packaged PostgreSQL runtime, so no Windows signature or installer was produced. See `evidence/development/r1-r3-implementation-validation-20261004-slice-204-windows-signing-integration/verification.md`.
 
@@ -140,7 +144,7 @@ Workbench now exposes owner decisions to finish a Mission as `ended_not_met` or 
 
 Schema 101 adds durable closeout intent/report records, `closing` and `ended_not_met` Mission states, and retains the Company Mission slot during closeout. Cancellation first commits the admission fence, disables Routine scheduling and quiesces schedules, then Control stops project Jobs and Workers. Finalization rechecks WorkerSessions, JobRuns and live service leases in the guarded transaction before settling pending obligations, Tasks and Routine occurrences and recording a report. The paused-Mission successor-change path now also records the old Mission's closeout and marks transferred obligations superseded. The Kernel supports explicit terminal outcomes; `succeeded` requires exact independently passed Artifact references, settled Tasks/Obligations, and a recorded owner rationale. Workbench reads the closeout record and recognizes the new states. Local Termux migrated to Schema 101 with Company=0 and WorkerSession=0. Go package/command builds, frontend production build, migration hashes and `git diff --check` pass. No tests or Worker/provider actions ran. REQ-23 remains partial until owner-facing non-cancel decisions and restart/frozen-scenario qualification are complete. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-169-req23-durable-closeout/verification.md`.
 
-Next Slice183: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
+Next Slice206: continue source-level closure of the finite open REQ ledger, prioritizing another safely repairable recovery/command gap. Keep frozen qualification states exact (`not_run` until executed), keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
 
 ## Previous continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
 
