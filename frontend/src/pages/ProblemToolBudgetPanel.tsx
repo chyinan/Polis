@@ -6,6 +6,17 @@ import type {CompanyToolCallBudgetView, MissionToolCallBudgetView, ProblemToolCa
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
 
+function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
+  const key = JSON.stringify({operation, payload});
+  const requestId = pendingIds.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+  pendingIds.set(key, requestId);
+  return {key, requestId};
+}
+
+function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: string): void {
+  pendingIds.delete(key);
+}
+
 type Props = Readonly<{api: WorkbenchApi; companyId: string}>;
 
 function stateLabel(state: ProblemToolCallBudgetView['state']): string {
@@ -108,6 +119,7 @@ function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
   const [reserveValue, setReserveValue] = useState('');
   const [reserveReason, setReserveReason] = useState('');
   const [reserveConfirmed, setReserveConfirmed] = useState(false);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const proposed = Number(resultingLimit);
   const canSubmit = confirmed && Number.isSafeInteger(proposed) && proposed > 0 && proposed >= budget.toolCallsUsed
     && proposed - budget.toolCallsUsed >= budget.closingReserveRemaining
@@ -121,13 +133,15 @@ function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 
   async function submit(): Promise<void> {
     if (!canSubmit) return;
-    await change.mutateAsync({
+    const payload = {
       expectedToolCallLimit: budget.toolCallLimit,
       expectedRevision: budget.revision,
       resultingToolCallLimit: proposed,
       reason,
-      requestId: `company-budget-${crypto.randomUUID()}`,
-    });
+    };
+    const pending = pendingRequestIdentity(pendingRequestIds.current, `company-budget-${companyId}`, payload);
+    await change.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     setResultingLimit('');
     setReason('');
     setConfirmed(false);
@@ -135,14 +149,16 @@ function CompanyBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 
   async function submitReserve(): Promise<void> {
     if (!canSetReserve) return;
-    await reserveMutation.mutateAsync({
+    const payload = {
       reservedToolCalls: reservedCalls,
       expectedCompanyToolCallLimit: budget.toolCallLimit,
       expectedCompanyBudgetRevision: budget.revision,
       expectedReserveRevision: budget.closingReserveRevision,
       reason: reserveReason,
-      requestId: `company-reserve-${crypto.randomUUID()}`,
-    });
+    };
+    const pending = pendingRequestIdentity(pendingRequestIds.current, `company-reserve-${companyId}`, payload);
+    await reserveMutation.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     setReserveValue('');
     setReserveReason('');
     setReserveConfirmed(false);
@@ -201,6 +217,7 @@ function MissionBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
   const [reserveValue, setReserveValue] = useState('');
   const [reserveReason, setReserveReason] = useState('');
   const [reserveConfirmed, setReserveConfirmed] = useState(false);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const proposed = Number(resultingLimit);
   const canSubmit = confirmed && Number.isSafeInteger(proposed) && proposed > 0
     && (budget.toolCallLimit === null || proposed > budget.toolCallLimit)
@@ -213,14 +230,16 @@ function MissionBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 
   async function submit(): Promise<void> {
     if (!canSubmit) return;
-    await change.mutateAsync({
+    const payload = {
       missionId: budget.missionId,
       expectedToolCallLimit: budget.toolCallLimit,
       expectedRevision: budget.revision,
       resultingToolCallLimit: proposed,
       reason,
-      requestId: `mission-budget-${crypto.randomUUID()}`,
-    });
+    };
+    const pending = pendingRequestIdentity(pendingRequestIds.current, 'mission-budget', payload);
+    await change.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     setResultingLimit('');
     setReason('');
     setConfirmed(false);
@@ -228,15 +247,17 @@ function MissionBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 
   async function submitReserve(): Promise<void> {
     if (!canSetReserve) return;
-    await reserveMutation.mutateAsync({
+    const payload = {
       missionId: budget.missionId,
       reservedToolCalls: reservedCalls,
       expectedMissionToolCallLimit: budget.toolCallLimit,
       expectedMissionBudgetRevision: budget.revision,
       expectedReserveRevision: budget.closingReserveRevision,
       reason: reserveReason,
-      requestId: `mission-reserve-${crypto.randomUUID()}`,
-    });
+    };
+    const pending = pendingRequestIdentity(pendingRequestIds.current, 'mission-reserve', payload);
+    await reserveMutation.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     setReserveValue('');
     setReserveReason('');
     setReserveConfirmed(false);
@@ -277,6 +298,7 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
   const allocation = useAllocateProblemToolCalls(api, companyId);
   const reserveMutation = useSetProblemToolCallClosingReserve(api, companyId);
   const pendingAllocation = useRef<AllocateProblemToolCallsOptions | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const [additional, setAdditional] = useState('');
   const [reason, setReason] = useState('');
   const [confirmed, setConfirmed] = useState(false);
@@ -314,15 +336,17 @@ function ProblemBudgetRow({api, budget, companyId}: Readonly<{api: WorkbenchApi;
 
   async function submitReserve(): Promise<void> {
     if (!canSubmitReserve) return;
-    await reserveMutation.mutateAsync({
+    const payload = {
       problemKey: budget.problemKey,
       reservedToolCalls: reservedCalls,
       expectedToolCallLimit: budget.toolCallLimit ?? 0,
       expectedBudgetRevision: budget.allocationRevision,
       expectedReserveRevision: budget.closingReserveRevision,
       reason: reserveReason,
-      requestId: `reserve-${crypto.randomUUID()}`,
-    });
+    };
+    const pending = pendingRequestIdentity(pendingRequestIds.current, 'problem-reserve', payload);
+    await reserveMutation.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     setReserveValue('');
     setReserveReason('');
     setReserveConfirmed(false);
@@ -367,6 +391,7 @@ function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchA
   const allocation = useAllocateTaskToolCalls(api, companyId);
   const closeout = useCloseTaskToolBudgetIncomplete(api, companyId);
   const pendingAllocation = useRef<AllocateTaskToolCallsOptions | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   const [additional, setAdditional] = useState('');
   const [reason, setReason] = useState('');
   const [confirmed, setConfirmed] = useState(false);
@@ -406,7 +431,7 @@ function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchA
 
   async function submitCloseIncomplete(): Promise<void> {
     if (!canCloseIncomplete) return;
-    await closeout.mutateAsync({
+    const payload = {
       problemKey: budget.problemKey,
       taskId: task.taskId,
       expectedTaskToolCallLimit: task.toolCallLimit,
@@ -419,8 +444,10 @@ function TaskBudgetRow({api, budget, companyId, task}: Readonly<{api: WorkbenchA
       expectedClosingReserveRemaining: budget.closingReserveRemaining,
       expectedReserveRevision: budget.closingReserveRevision,
       reason: closeoutReason,
-      requestId: `task-close-${crypto.randomUUID()}`,
-    });
+    };
+    const pending = pendingRequestIdentity(pendingRequestIds.current, 'task-budget-close-incomplete', payload);
+    await closeout.mutateAsync({...payload, requestId: pending.requestId});
+    clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
     setCloseoutReason('');
     setCloseoutConfirmed(false);
   }

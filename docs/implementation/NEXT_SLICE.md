@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 198, R3 evidence and research exact retries)
+## Latest continuation status (Slice 199, budget exact retries)
+
+Company/Mission/ProblemKey budget and closing-reserve updates, plus Task incomplete-closeout, now retain exact request IDs for same-payload retries after ambiguous results. Company/Mission/ProblemKey/Task limit or reserve compare-and-swap fields are part of the retry identity; incremental ProblemKey/Task allocations already retain their full request. Frontend build and diff check pass; no budget was changed and no Task was closed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-199-budget-retries/verification.md`.
+
+## Previous continuation status (Slice 198, R3 evidence and research exact retries)
 
 R3 evidence submission, profile qualification decisions, reference review, substantive assessment, and deterministic research simulations now preserve their request ID for the exact same payload after an ambiguous response. Successful responses clear the pending identity. Frontend build and diff check pass; no evidence or qualification was submitted and no simulation ran. See `evidence/development/r1-r3-implementation-validation-20261004-slice-198-r3-evidence-retries/verification.md`.
 

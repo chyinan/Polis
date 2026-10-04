@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 199 — budget exact retries
+
+Company, Mission and ProblemKey budget/reserve changes and Task incomplete closeout retain exact same-payload request IDs after ambiguous outcomes. Their current revision/CAS fields are included in the identity; existing ProblemKey/Task incremental allocations continue retaining the exact complete request. Frontend build and `git diff --check` pass. No budget changed and no Task was closed. No Worker/provider action or frozen scenario ran; no schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-199-budget-retries/verification.md`.
+
 ## Slice 198 — R3 evidence and research exact retries
 
 Evidence submissions, profile qualification decisions, reference reviews, substantive assessments and deterministic research simulations retain their request IDs for exact same-payload retries after ambiguous results; success clears the pending identity. Frontend production build and `git diff --check` pass. No evidence or qualification was submitted and no simulation ran. No Worker/provider action or frozen scenario ran; no schema change. R3 qualification remains `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-198-r3-evidence-retries/verification.md`.
