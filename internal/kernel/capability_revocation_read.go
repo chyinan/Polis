@@ -4,8 +4,10 @@ package kernel
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"polis/internal/core"
 )
 
 const (
@@ -17,28 +19,29 @@ const (
 // revoke-time session snapshots on every catalog read. It needs no
 // process-local cursor or recovery state.
 type CapabilityRevocationStatus struct {
-	CompanyID               string                        `json:"companyId"`
-	RevocationID            string                        `json:"revocationId"`
-	Scope                   string                        `json:"scope"`
-	CapabilityKind          string                        `json:"capabilityKind"`
-	CapabilityID            string                        `json:"capabilityId"`
-	VersionDigest           string                        `json:"versionDigest"`
-	QualificationID         string                        `json:"qualificationId"`
-	EmployeeID              string                        `json:"employeeId,omitempty"`
-	Reason                  string                        `json:"reason"`
-	Actor                   string                        `json:"actor"`
-	AcceptedAt              string                        `json:"acceptedAt"`
-	RevocationAccepted      bool                          `json:"revocationAccepted"`
-	EffectiveForNewDispatch bool                          `json:"effectiveForNewDispatch"`
-	Quiesced                bool                          `json:"quiesced"`
-	AffectedSessionCount    int64                         `json:"affectedSessionCount"`
-	LiveSessionCount        int64                         `json:"liveSessionCount"`
-	Sessions                []CapabilityRevocationSession `json:"sessions"`
-	SessionsTruncated       bool                          `json:"sessionsTruncated"`
-	MCPCallCount            int64                         `json:"mcpCallCount"`
-	DispatchingMCPCallCount int64                         `json:"dispatchingMcpCallCount"`
-	MCPCalls                []CapabilityRevocationMCPCall `json:"mcpCalls"`
-	MCPCallsTruncated       bool                          `json:"mcpCallsTruncated"`
+	CompanyID                string                        `json:"companyId"`
+	RevocationID             string                        `json:"revocationId"`
+	Scope                    string                        `json:"scope"`
+	CapabilityKind           string                        `json:"capabilityKind"`
+	CapabilityID             string                        `json:"capabilityId"`
+	VersionDigest            string                        `json:"versionDigest"`
+	QualificationID          string                        `json:"qualificationId"`
+	EmployeeID               string                        `json:"employeeId,omitempty"`
+	Reason                   string                        `json:"reason"`
+	Actor                    string                        `json:"actor"`
+	AcceptedAt               string                        `json:"acceptedAt"`
+	RevocationAccepted       bool                          `json:"revocationAccepted"`
+	EffectiveForNewDispatch  bool                          `json:"effectiveForNewDispatch"`
+	Quiesced                 bool                          `json:"quiesced"`
+	SessionInventoryComplete bool                          `json:"sessionInventoryComplete"`
+	AffectedSessionCount     int64                         `json:"affectedSessionCount"`
+	LiveSessionCount         int64                         `json:"liveSessionCount"`
+	Sessions                 []CapabilityRevocationSession `json:"sessions"`
+	SessionsTruncated        bool                          `json:"sessionsTruncated"`
+	MCPCallCount             int64                         `json:"mcpCallCount"`
+	DispatchingMCPCallCount  int64                         `json:"dispatchingMcpCallCount"`
+	MCPCalls                 []CapabilityRevocationMCPCall `json:"mcpCalls"`
+	MCPCallsTruncated        bool                          `json:"mcpCallsTruncated"`
 }
 
 type CapabilityRevocationSession struct {
@@ -153,7 +156,27 @@ func populateCapabilityRevocationInventory(ctx context.Context, tx pgx.Tx, statu
 	if err := tx.QueryRow(ctx, `SELECT count(*) FROM capability_revocation_sessions WHERE company_id=$1 AND revocation_id=$2`, status.CompanyID, status.RevocationID).Scan(&snapshotRows); err != nil {
 		return err
 	}
-	useSnapshot := snapshotRows > 0
+	var snapshotScope, snapshotKind, snapshotID, snapshotDigest, snapshotEmployee string
+	var snapshotSessionCount int64
+	snapshotErr := tx.QueryRow(ctx, `SELECT scope,capability_kind,capability_id,version_digest,employee_id,session_count
+FROM capability_revocation_snapshot_completions WHERE company_id=$1 AND revocation_id=$2`, status.CompanyID, status.RevocationID).Scan(
+		&snapshotScope, &snapshotKind, &snapshotID, &snapshotDigest, &snapshotEmployee, &snapshotSessionCount)
+	switch {
+	case errors.Is(snapshotErr, pgx.ErrNoRows):
+		// Schema 73 revocations with at least one immutable session row still
+		// have a complete exact snapshot. Earlier zero-row revocations are
+		// indistinguishable from newer empty snapshots without the receipt.
+		status.SessionInventoryComplete = snapshotRows > 0
+	case snapshotErr != nil:
+		return snapshotErr
+	default:
+		if snapshotScope != status.Scope || snapshotKind != status.CapabilityKind || snapshotID != status.CapabilityID ||
+			snapshotDigest != status.VersionDigest || snapshotEmployee != status.EmployeeID || snapshotSessionCount != snapshotRows {
+			return core.Integrity
+		}
+		status.SessionInventoryComplete = true
+	}
+	useSnapshot := status.SessionInventoryComplete
 	var sessionCountQuery, sessionDetailQuery string
 	if useSnapshot {
 		sessionCountQuery = `SELECT count(*),count(*) FILTER (WHERE w.state<>'stopped')
@@ -267,7 +290,7 @@ ORDER BY i.created_at DESC,i.intent_id LIMIT $4`
 			status.MCPCallsTruncated = true
 		}
 	}
-	status.Quiesced = status.LiveSessionCount == 0 && status.DispatchingMCPCallCount == 0
+	status.Quiesced = status.SessionInventoryComplete && status.LiveSessionCount == 0 && status.DispatchingMCPCallCount == 0
 	return nil
 }
 

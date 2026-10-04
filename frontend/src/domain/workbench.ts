@@ -642,6 +642,7 @@ export type CapabilityRevocationStatusView = Readonly<{
   revocationAccepted: boolean;
   effectiveForNewDispatch: boolean;
   quiesced: boolean;
+  sessionInventoryComplete: boolean;
   affectedSessionCount: number;
   liveSessionCount: number;
   sessions: ReadonlyArray<CapabilityRevocationSessionView>;

@@ -582,9 +582,9 @@ ON CONFLICT(company_id,revocation_id,session_id) DO NOTHING`, companyID, revocat
 		return err
 	}
 	if capabilityKind != "mcp" {
-		return nil
+		return recordCapabilityRevocationSnapshotCompletion(ctx, tx, companyID, revocationID, capabilityKind, capabilityID, versionDigest, employeeID)
 	}
-	_, err := tx.Exec(ctx, `INSERT INTO capability_revocation_mcp_calls(company_id,revocation_id,session_id,intent_id,status_at_revocation)
+	if _, err := tx.Exec(ctx, `INSERT INTO capability_revocation_mcp_calls(company_id,revocation_id,session_id,intent_id,status_at_revocation)
 SELECT i.company_id,$2,i.session_id,i.intent_id,current.status
 FROM mcp_tool_call_intents i
 JOIN capability_revocation_sessions s ON s.company_id=i.company_id AND s.revocation_id=$2 AND s.session_id=i.session_id
@@ -593,8 +593,42 @@ JOIN LATERAL (
  WHERE e.company_id=i.company_id AND e.intent_id=i.intent_id ORDER BY e.event_seq DESC LIMIT 1
 ) current ON true
 WHERE i.company_id=$1 AND i.capability_id=$3 AND ($4='' OR i.employee_id=$4)
-ON CONFLICT(company_id,revocation_id,intent_id) DO NOTHING`, companyID, revocationID, capabilityID, employeeID)
-	return err
+ON CONFLICT(company_id,revocation_id,intent_id) DO NOTHING`, companyID, revocationID, capabilityID, employeeID); err != nil {
+		return err
+	}
+	return recordCapabilityRevocationSnapshotCompletion(ctx, tx, companyID, revocationID, capabilityKind, capabilityID, versionDigest, employeeID)
+}
+
+func recordCapabilityRevocationSnapshotCompletion(ctx context.Context, tx pgx.Tx, companyID, revocationID, capabilityKind, capabilityID, versionDigest, employeeID string) error {
+	var sessionCount int64
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM capability_revocation_sessions WHERE company_id=$1 AND revocation_id=$2`, companyID, revocationID).Scan(&sessionCount); err != nil {
+		return err
+	}
+	scope := "capability"
+	if employeeID != "" {
+		scope = "employee"
+	}
+	tag, err := tx.Exec(ctx, `INSERT INTO capability_revocation_snapshot_completions(
+company_id,revocation_id,scope,capability_kind,capability_id,version_digest,employee_id,session_count)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(company_id,revocation_id) DO NOTHING`,
+		companyID, revocationID, scope, capabilityKind, capabilityID, versionDigest, employeeID, sessionCount)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 1 {
+		return nil
+	}
+	var priorScope, priorKind, priorID, priorDigest, priorEmployee string
+	var priorCount int64
+	if err = tx.QueryRow(ctx, `SELECT scope,capability_kind,capability_id,version_digest,employee_id,session_count
+FROM capability_revocation_snapshot_completions WHERE company_id=$1 AND revocation_id=$2`, companyID, revocationID).Scan(
+		&priorScope, &priorKind, &priorID, &priorDigest, &priorEmployee, &priorCount); err != nil {
+		return err
+	}
+	if priorScope != scope || priorKind != capabilityKind || priorID != capabilityID || priorDigest != versionDigest || priorEmployee != employeeID || priorCount != sessionCount {
+		return core.Integrity
+	}
+	return nil
 }
 
 func validCapabilityKind(kind string) bool { return kind == "skill" || kind == "mcp" }

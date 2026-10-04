@@ -1477,6 +1477,7 @@ function isCapabilityRevocationStatus(value: unknown, companyId: string): value 
     && typeof value.revocationAccepted === 'boolean'
     && typeof value.effectiveForNewDispatch === 'boolean'
     && typeof value.quiesced === 'boolean'
+    && typeof value.sessionInventoryComplete === 'boolean'
     && isNonNegativeSafeInteger(value.affectedSessionCount)
     && isNonNegativeSafeInteger(value.liveSessionCount)
     && Array.isArray(value.sessions) && value.sessions.every(isCapabilityRevocationSession)

@@ -678,16 +678,17 @@ function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: Workbenc
     <section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>审批审计</span><h2 className={styles.sectionTitle}>人工决定记录</h2></div><StatusBadge label={`${query.data.decisions.length} 条`} tone="info" /></div>{query.data.decisions.length > 0 ? <div className={styles.recordList}>{query.data.decisions.map(item => <div className={styles.recordRow} key={item.decisionId}><div className={styles.recordLead}><ShieldCheck aria-hidden="true" size={16} /><div><strong>{item.capabilityKind} / {item.capabilityId} · {item.versionDigest}</strong><span>{item.actor} · {item.qualificationId} · {item.rationale}</span></div></div><StatusBadge label={labelDisplayValue(item.decision)} tone={item.decision === 'approved' ? 'success' : 'danger'} /></div>)}</div> : <div className={styles.emptyState}>尚无人工批准或撤销记录。</div>}</section>
     <section className={styles.sectionCard}>
       <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>REQ-14 / 撤销状态</span><h2 className={styles.sectionTitle}>派发门禁与受影响执行</h2></div><StatusBadge label={`${query.data.revocations.length} 条当前撤销`} tone="info" /></div>
-      <p className={styles.formHint}>接受撤销后会阻止后续派发。只有所有已记录使用该能力的 WorkerSession 均已停止，且没有 dispatching MCP 意图时才显示已静止；结果未知会保留在明细中。此视图从持久化事件和意图重建，目前只读，不会自动停止 Worker。</p>
+      <p className={styles.formHint}>接受撤销后会阻止后续派发。只有会话清单完整、所有受影响 WorkerSession 均已停止，且没有 dispatching MCP 意图时才显示已静止。缺少精确撤销时快照的历史记录会显示需复核；结果未知会保留在明细中。此视图从持久化事件和意图重建，目前只读，不会自动停止 Worker。</p>
       {query.data.revocations.length > 0 ? <div className={styles.recordList}>{query.data.revocations.map(item => <div className={styles.recordRow} key={item.revocationId}>
         <div className={styles.recordLead}><ShieldCheck aria-hidden="true" size={16} /><div>
           <strong>{item.scope === 'employee' ? `${item.employeeId} · ` : ''}{item.capabilityKind} / {item.capabilityId}</strong>
           <span>撤销已接受：{item.revocationAccepted ? '是' : '否'} · 对新派发生效：{item.effectiveForNewDispatch ? '是' : '否'} · {item.acceptedAt}</span>
+          <span>撤销时会话清单：{item.sessionInventoryComplete ? '完整' : '不完整，需复核'}</span>
           <span>WorkerSession：{item.liveSessionCount} 个未停止 / {item.affectedSessionCount} 个受影响 · MCP：{item.dispatchingMcpCallCount} 个派发中 / {item.mcpCallCount} 个意图</span>
           {item.sessions.map(session => <span key={session.sessionId}>会话 {session.sessionId} · {session.employeeId} · 当前 {session.state}{session.stateAtRevocation ? ` / 撤销时 ${session.stateAtRevocation}` : ''} · Skill 加载 {session.skillLoadCount} · MCP 调用 {session.mcpCallCount}</span>)}
           {item.mcpCalls.map(call => <span key={call.intentId}>MCP {call.intentId} · {call.toolName} · 当前 {call.status === 'dispatching' ? '派发中' : call.status === 'completed' ? '已完成' : `结果未知${call.reasonCode ? `（${call.reasonCode}）` : ''}`}{call.statusAtRevocation ? ` / 撤销时 ${call.statusAtRevocation}` : ''}</span>)}
-          {item.sessionsTruncated || item.mcpCallsTruncated ? <span>明细已截断；汇总数量和静止判断仍按完整 ledger 计算。</span> : null}
-        </div></div><StatusBadge label={item.quiesced ? '已静止' : '尚未静止'} tone={item.quiesced ? 'success' : 'warning'} />
+          {item.sessionsTruncated || item.mcpCallsTruncated ? <span>明细已截断；数量汇总仍按完整清单计算。</span> : null}
+        </div></div><StatusBadge label={item.quiesced ? '已静止' : item.sessionInventoryComplete ? '尚未静止' : '需复核'} tone={item.quiesced ? 'success' : 'warning'} />
       </div>)}</div> : <div className={styles.emptyState}>当前没有生效中的能力撤销。</div>}
       {query.data.revocationsTruncated ? <div className={styles.formHint}>当前仅显示最近的 64 条撤销状态。</div> : null}
     </section>
