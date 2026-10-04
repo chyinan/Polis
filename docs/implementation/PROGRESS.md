@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 167 — REQ-02 fixed roles/direct messaging/provider boundary audit
+
+Source audit confirms the fixed roster is Planning, Backend, Frontend and Review. Product-provider execution is restricted to `compat` Tasks owned by Backend, with provider authorization also requiring Employee role `backend`. The product direct-message extension is a pinned 12-tool @7 surface accepted only by the exact zero-egress Fake validator; the real provider path remains pinned to qualified @4. Kernel sends bind the current Task/WorkerSession to an exact same-Mission recipient and persist FYI or actionable-request lifecycle state. Product writes require the database-bound provider WorkerSession to be active. No code/schema change; tests, Worker and provider activity were not run. REQ-02 remains partial pending role-specific product Task contracts and exact real-provider surface qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-167-req02-role-and-provider-boundary-audit/verification.md`.
+
 ## Slice 166 — REQ-13 quota readiness/recovery boundary audit
 
 Source audit found that `waiting_quota` remains fail-closed: actionable-work signals preserve it, reconciliation does not release it, automatic dispatch selects only `wake_pending`, and WorkerSession admission rejects it. There is no production writer for `waiting_quota` in current Go sources and no authoritative provider quota readiness source. `provider_quota_exhausted` is currently a notification reason label only. No automatic release rule can be implemented safely from current evidence. The optional Fake @7 dispatcher still uses a process-local Company cursor and has no shared/global slot accounting. No code/schema change, tests, Worker or provider activity. REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.

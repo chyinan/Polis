@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 166, REQ-13 quota readiness/recovery boundary audit)
+## Latest continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
+
+Source audit confirms the fixed roster is Planning, Backend, Frontend and Review. Product-provider execution is restricted to `compat` Tasks owned by Backend, and provider authorization also requires Employee role `backend`. The product direct-message extension is an exact 12-tool @7 surface admitted only by the zero-egress Fake validator; the real provider adapter and authorization remain pinned to the qualified 7-tool @4 surface. Kernel sends bind the current Task/WorkerSession to an exact same-Mission fixed-roster recipient in `ready` or `working`, and persist FYI or actionable-request lifecycle state. Product writes require the exact database-bound provider WorkerSession to be active. No code/schema change; no tests, Worker or provider activity ran. REQ-02 remains partial pending role-specific executable Task contracts and exact real-provider surface qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-167-req02-role-and-provider-boundary-audit/verification.md`.
+
+Next Slice168: audit REQ-23 Mission activation and safe closeout paths against the persisted WorkerSession lifecycle. Identify any locally implementable state-transition gap without performing Worker actions; keep runtime/recovery qualification separate.
+
+## Previous continuation status (Slice 166, REQ-13 quota readiness/recovery boundary audit)
 
 Source audit confirmed `waiting_quota` is a sticky fail-closed schedule state: actionable signals preserve it, schedule reconciliation preserves it, the auto-dispatch query selects only `wake_pending`, and `TXNewWorker` rejects it. The current production Go sources contain no writer that enters or releases `waiting_quota`, and no authoritative provider quota readiness source exists; `provider_quota_exhausted` appears only as notification text. Therefore there is no safe automatic release decision to implement from current evidence. The Fake @7 auto-dispatcher still has a process-local Company cursor and no shared/global slot accounting. No code or schema change; no tests, Worker or provider activity ran. REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.
-
-Next Slice167: audit the remaining REQ-02 fixed Employee roles and direct-message/product-provider boundaries. Preserve real-provider @4 authorization and the rule that any Worker action requires a database-confirmed active WorkerSession.
 
 ## Previous continuation status (Slice 165, REQ-14 owner-reviewed unresolved disposition)
 
