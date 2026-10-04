@@ -8,7 +8,7 @@ SELECT id FROM employees WHERE company_id=$1 ORDER BY id;
 -- name: ListArtifacts :many
 SELECT a.id,a.digest,a.state,a.verdict FROM artifacts a JOIN tasks t
 ON t.company_id=a.company_id AND t.id=a.task_id
-WHERE a.company_id=$1 AND t.mission_id=$2 ORDER BY a.id;
+WHERE a.company_id=$1 AND t.mission_id=$2 AND a.artifact_kind='deliverable' ORDER BY a.id;
 
 -- name: ListObligations :many
 SELECT o.id,o.state FROM obligations o JOIN tasks t

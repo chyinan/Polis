@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 214 — REQ-29 Mission Artifact projection fence
+
+Kernel Mission snapshots now list only `deliverable` Artifacts through the shared SQL query used by recovery and peer-state projections. Workspace snapshots therefore cannot appear as ordinary delivery Artifacts in consumers that lack an Artifact-kind field. The query source and generated sqlc code stay synchronized. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-214-req29-mission-artifact-projection-fence/verification.md`.
+
 ## Slice 213 — REQ-29 Artifact delivery kind fence
 
 Added an explicit `artifact_kind='deliverable'` predicate to the Artifact delivery-manifest lookup. This keeps the package/manifest route constrained to the same deliverable kind as Workbench Artifact overview/detail and protects the boundary if a future non-deliverable Artifact ever receives a qualification row. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-213-req29-delivery-kind-fence/verification.md`.
