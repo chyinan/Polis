@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 216. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 217. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 217: REQ-39 evidence crosswalk refresh
+
+All eight frozen scenarios mapped to REQ-39 now cite Slice 216's legacy/tree baseline fence evidence. Their dispositions remain `partial`, execution remains `not_run`, and no frozen catalog or scenario record changed. See `evidence/development/r1-r3-implementation-validation-20261005-slice-217-req39-evidence-crosswalk/verification.md`.
 
 ## Slice 216: REQ-39 legacy/tree baseline fence
 

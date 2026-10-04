@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 217 — REQ-39 evidence crosswalk refresh
+
+Added Slice 216's takeover/tree-baseline evidence reference to all eight frozen scenarios mapped to REQ-39. `PP-09`, `UI-45`, `WF-21`–`WF-25`, and `WF-36` remain `partial` / `not_run`; no scenario disposition, execution state, or count changed. JSON parsing and `git diff --check` pass. No tests, code, database, Worker/provider activity, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-217-req39-evidence-crosswalk/verification.md`.
+
 ## Slice 216 — REQ-39 legacy/tree baseline fence
 
 Takeover lease grant and snapshot handback now verify that any existing Schema 103 Task tree is exactly one `workspace.txt`, still in the same Mission-private root, with digest and source revision matching `worker_workspaces`. Legacy Tasks without a tree retain their bounded behavior. Multi-file or divergent trees, including the `formatter.go` product tree, are rejected before an incomplete base can be edited and checked again at handback. `go build ./...` and `git diff --check` pass. No tests, database operation, takeover command, Worker/provider action or frozen scenario ran. REQ-39 remains partial; full tree-manifest leases and multi-file handback remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md`.
