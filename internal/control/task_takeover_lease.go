@@ -38,3 +38,17 @@ func (s *Service) ReleaseTaskTakeoverLease(ctx context.Context, companyID, missi
 	}
 	return s.runtime.TXReleaseTaskTakeoverLease(ctx, s.runtime.LocalScope(companyID), missionID, leaseID, request.RequestID)
 }
+
+func (s *Service) GetTaskTakeoverWorkspaceManifest(ctx context.Context, companyID, missionID, leaseID string) (kernel.TaskTakeoverWorkspaceManifest, error) {
+	if !core.ValidID(companyID) || !core.ValidID(missionID) || !core.ValidID(leaseID) {
+		return kernel.TaskTakeoverWorkspaceManifest{}, core.Malformed
+	}
+	return s.runtime.TaskTakeoverWorkspaceManifest(ctx, s.runtime.LocalScope(companyID), missionID, leaseID)
+}
+
+func (s *Service) ReadTaskTakeoverWorkspaceFile(ctx context.Context, companyID, missionID, leaseID, relativePath string) (kernel.TaskTakeoverWorkspaceFile, error) {
+	if !core.ValidID(companyID) || !core.ValidID(missionID) || !core.ValidID(leaseID) || !kernel.ValidWorkspaceRelativePath(relativePath) {
+		return kernel.TaskTakeoverWorkspaceFile{}, core.Malformed
+	}
+	return s.runtime.ReadTaskTakeoverWorkspaceFile(ctx, s.runtime.LocalScope(companyID), missionID, leaseID, relativePath)
+}

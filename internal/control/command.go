@@ -217,6 +217,11 @@ type TaskTakeoverLeaseService interface {
 	ReleaseTaskTakeoverLease(ctx context.Context, companyID, missionID, leaseID string, request TaskTakeoverLeaseCommand) (kernel.TaskTakeoverLease, error)
 }
 
+type TaskTakeoverWorkspaceReader interface {
+	GetTaskTakeoverWorkspaceManifest(ctx context.Context, companyID, missionID, leaseID string) (kernel.TaskTakeoverWorkspaceManifest, error)
+	ReadTaskTakeoverWorkspaceFile(ctx context.Context, companyID, missionID, leaseID, relativePath string) (kernel.TaskTakeoverWorkspaceFile, error)
+}
+
 type NotificationCommandService interface {
 	ConfigureNotificationRoute(ctx context.Context, companyID string, request ConfigureNotificationRouteRequest) (CommandReceipt, error)
 	TestNotification(ctx context.Context, companyID, requestID string) (NotificationTestReceipt, error)

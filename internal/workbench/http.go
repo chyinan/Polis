@@ -161,6 +161,42 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				return
 			}
 			writeJSON(response, http.StatusOK, items)
+		case "takeover_leases.workspace":
+			response.Header().Set("Cache-Control", "no-store")
+			reader, ok := service.(control.TaskTakeoverWorkspaceReader)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "Task takeover workspace reader is unavailable")
+				return
+			}
+			if len(request.URL.Query()) != 0 {
+				writeError(response, http.StatusBadRequest, "workspace manifest does not accept query parameters")
+				return
+			}
+			manifest, err := reader.GetTaskTakeoverWorkspaceManifest(ctx, path.companyID, path.missionID, path.resourceID)
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "takeover_lease", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, manifest)
+		case "takeover_leases.workspace_file":
+			response.Header().Set("Cache-Control", "no-store")
+			reader, ok := service.(control.TaskTakeoverWorkspaceReader)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "Task takeover workspace reader is unavailable")
+				return
+			}
+			query := request.URL.Query()
+			paths := query["path"]
+			if len(query) != 1 || len(paths) != 1 || !kernel.ValidWorkspaceRelativePath(paths[0]) {
+				writeError(response, http.StatusBadRequest, "one valid workspace relative path is required")
+				return
+			}
+			file, err := reader.ReadTaskTakeoverWorkspaceFile(ctx, path.companyID, path.missionID, path.resourceID, paths[0])
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "takeover_lease", err)
+				return
+			}
+			writeJSON(response, http.StatusOK, file)
 		case "tasks.input_manifest":
 			inputManifestReader, ok := model.(TaskInputManifestReader)
 			if !ok {
@@ -2248,6 +2284,22 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, missionID: missionID, resourceID: leaseID, endpoint: "takeover_leases." + parts[5]}, true
+	}
+	if len(parts) == 6 && parts[1] == "missions" && parts[2] != "" && parts[3] == "takeover-leases" && parts[4] != "" && parts[5] == "workspace" {
+		missionID, missionErr := url.PathUnescape(parts[2])
+		leaseID, leaseErr := url.PathUnescape(parts[4])
+		if missionErr != nil || leaseErr != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, missionID: missionID, resourceID: leaseID, endpoint: "takeover_leases.workspace"}, true
+	}
+	if len(parts) == 7 && parts[1] == "missions" && parts[2] != "" && parts[3] == "takeover-leases" && parts[4] != "" && parts[5] == "workspace" && parts[6] == "file" {
+		missionID, missionErr := url.PathUnescape(parts[2])
+		leaseID, leaseErr := url.PathUnescape(parts[4])
+		if missionErr != nil || leaseErr != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, missionID: missionID, resourceID: leaseID, endpoint: "takeover_leases.workspace_file"}, true
 	}
 	if len(parts) == 6 && parts[1] == "missions" && parts[2] != "" && parts[3] == "change-requests" && parts[4] != "" && (parts[5] == "consider" || parts[5] == "decline" || parts[5] == "apply") {
 		missionID, missionErr := url.PathUnescape(parts[2])

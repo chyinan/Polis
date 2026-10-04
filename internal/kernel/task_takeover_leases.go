@@ -44,7 +44,7 @@ func (k *Kernel) TXCreateTaskTakeoverLease(ctx context.Context, scope Scope, mis
 		} else if err != nil {
 			return Receipt{}, err
 		}
-		treeBinding, treeEntries, err := k.taskTakeoverWorkspaceTreeBindingTX(ctx, tx, scope, missionID, taskID)
+		treeBinding, treeEntries, err := k.taskTakeoverWorkspaceTreeBindingTX(ctx, tx, scope, missionID, taskID, true)
 		if err != nil {
 			return Receipt{}, err
 		}
@@ -202,7 +202,7 @@ func (k *Kernel) TXSubmitTaskTakeoverSnapshot(ctx context.Context, scope Scope, 
 		if currentDigest != input.BaseWorkspaceDigest || currentRevision != input.BaseWorkspaceRevision {
 			return Receipt{}, core.ConflictError{Reason: "Task workspace changed after the takeover lease was granted", CurrentState: "workspace_revision_changed"}
 		}
-		treeBinding, treeEntries, err := k.taskTakeoverWorkspaceTreeBindingTX(ctx, tx, scope, missionID, currentLease.TaskID)
+		treeBinding, treeEntries, err := k.taskTakeoverWorkspaceTreeBindingTX(ctx, tx, scope, missionID, currentLease.TaskID, true)
 		if err != nil {
 			return Receipt{}, err
 		}
@@ -410,10 +410,123 @@ func (k *Kernel) TaskTakeoverLeases(ctx context.Context, scope Scope, missionID 
 	return out, nil
 }
 
+func (k *Kernel) TaskTakeoverWorkspaceManifest(ctx context.Context, scope Scope, missionID, leaseID string) (TaskTakeoverWorkspaceManifest, error) {
+	var out TaskTakeoverWorkspaceManifest
+	if !core.ValidID(missionID) || !core.ValidID(leaseID) {
+		return out, core.Malformed
+	}
+	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+	if err != nil {
+		return out, err
+	}
+	defer tx.Rollback(ctx)
+	lease, entries, err := k.taskTakeoverWorkspaceReadBaselineTX(ctx, tx, scope, missionID, leaseID)
+	if err != nil {
+		return out, err
+	}
+	out = TaskTakeoverWorkspaceManifest{LeaseID: leaseID, MissionID: missionID, TaskID: lease.TaskID, WorkspaceTree: *lease.WorkspaceTree, Entries: entries}
+	if err = appendEvent(ctx, tx, scope, "task.takeover.workspace.manifest.read", map[string]any{
+		"lease_id": leaseID, "mission_id": missionID, "task_id": lease.TaskID, "root_binding_id": lease.WorkspaceTree.RootBindingID,
+		"workspace_revision": lease.WorkspaceTree.Revision, "manifest_sha256": lease.WorkspaceTree.ManifestSHA256,
+		"file_count": lease.WorkspaceTree.FileCount, "bytes": lease.WorkspaceTree.Bytes,
+	}); err != nil {
+		return TaskTakeoverWorkspaceManifest{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return TaskTakeoverWorkspaceManifest{}, err
+	}
+	return out, nil
+}
+
+func (k *Kernel) ReadTaskTakeoverWorkspaceFile(ctx context.Context, scope Scope, missionID, leaseID, relativePath string) (TaskTakeoverWorkspaceFile, error) {
+	var out TaskTakeoverWorkspaceFile
+	if !core.ValidID(missionID) || !core.ValidID(leaseID) || !ValidWorkspaceRelativePath(relativePath) {
+		return out, core.Malformed
+	}
+	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+	if err != nil {
+		return out, err
+	}
+	defer tx.Rollback(ctx)
+	lease, entries, err := k.taskTakeoverWorkspaceReadBaselineTX(ctx, tx, scope, missionID, leaseID)
+	if err != nil {
+		return out, err
+	}
+	var selected *WorkspaceTreeEntry
+	for index := range entries {
+		if entries[index].RelativePath == relativePath {
+			selected = &entries[index]
+			break
+		}
+	}
+	if selected == nil {
+		return out, core.OutOfScope
+	}
+	content, err := readBlobBounded(k.root, scope.company, selected.Digest, workspaceTreeMaxFileBytes)
+	if err != nil || int64(len(content)) != selected.Bytes || !utf8.Valid(content) {
+		return out, core.Integrity
+	}
+	out = TaskTakeoverWorkspaceFile{LeaseID: leaseID, MissionID: missionID, TaskID: lease.TaskID, ManifestSHA256: lease.WorkspaceTree.ManifestSHA256,
+		RelativePath: selected.RelativePath, Digest: selected.Digest, Bytes: selected.Bytes, FileRevision: selected.FileRevision, Revision: lease.WorkspaceTree.Revision,
+		ContentType: selected.ContentType, Content: string(content)}
+	if err = appendEvent(ctx, tx, scope, "task.takeover.workspace.file.read", map[string]any{
+		"lease_id": leaseID, "mission_id": missionID, "task_id": lease.TaskID, "root_binding_id": lease.WorkspaceTree.RootBindingID,
+		"workspace_revision": lease.WorkspaceTree.Revision, "manifest_sha256": lease.WorkspaceTree.ManifestSHA256,
+		"relative_path": selected.RelativePath, "sha256": selected.Digest, "bytes": selected.Bytes,
+	}); err != nil {
+		return TaskTakeoverWorkspaceFile{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return TaskTakeoverWorkspaceFile{}, err
+	}
+	return out, nil
+}
+
+func (k *Kernel) taskTakeoverWorkspaceReadBaselineTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, leaseID string) (TaskTakeoverLease, []WorkspaceTreeEntry, error) {
+	if err := k.guardWithSessionMode(ctx, tx, scope, nil, false); err != nil {
+		return TaskTakeoverLease{}, nil, err
+	}
+	var missionState string
+	if err := tx.QueryRow(ctx, "SELECT state FROM missions WHERE company_id=$1 AND id=$2 FOR SHARE", scope.company, missionID).Scan(&missionState); errors.Is(err, pgx.ErrNoRows) {
+		return TaskTakeoverLease{}, nil, core.OutOfScope
+	} else if err != nil {
+		return TaskTakeoverLease{}, nil, err
+	}
+	if missionState != "paused" {
+		return TaskTakeoverLease{}, nil, core.ConflictError{Reason: "Task takeover workspace reads require a paused Mission", CurrentState: missionState}
+	}
+	lease, state, err := taskTakeoverLeaseForUpdate(ctx, tx, scope, missionID, leaseID)
+	if err != nil {
+		return TaskTakeoverLease{}, nil, err
+	}
+	if state != "granted" {
+		return TaskTakeoverLease{}, nil, core.ConflictError{Reason: "Task takeover workspace reads require an active lease", CurrentState: state}
+	}
+	if lease.WorkspaceTree == nil {
+		return TaskTakeoverLease{}, nil, core.ConflictError{Reason: "Task takeover lease has no frozen Schema 103 workspace tree binding", CurrentState: "workspace_tree_unbound"}
+	}
+	var active bool
+	if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3 AND mission_id=$4)`,
+		scope.company, lease.TaskID, leaseID, missionID).Scan(&active); err != nil {
+		return TaskTakeoverLease{}, nil, err
+	}
+	if !active {
+		return TaskTakeoverLease{}, nil, core.ConflictError{Reason: "Task takeover lease no longer owns its Task slot", CurrentState: "lease_not_active"}
+	}
+	current, entries, err := k.taskTakeoverWorkspaceTreeBindingTX(ctx, tx, scope, missionID, lease.TaskID, false)
+	if err != nil {
+		return TaskTakeoverLease{}, nil, err
+	}
+	if !sameTaskTakeoverWorkspaceTreeBinding(lease.WorkspaceTree, current) {
+		return TaskTakeoverLease{}, nil, core.ConflictError{Reason: "Task workspace no longer matches the lease's frozen manifest", CurrentState: "workspace_tree_revision_changed"}
+	}
+	return lease, entries, nil
+}
+
 // taskTakeoverWorkspaceTreeBindingTX builds the canonical, bounded manifest
 // fingerprint while holding the root row lock. Workspace tree writers update
 // that row in the same transaction, so a lease cannot pin a mixed revision.
-func (k *Kernel) taskTakeoverWorkspaceTreeBindingTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, taskID string) (*TaskTakeoverWorkspaceTreeBinding, []WorkspaceTreeEntry, error) {
+func (k *Kernel) taskTakeoverWorkspaceTreeBindingTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, taskID string, verifyCAS bool) (*TaskTakeoverWorkspaceTreeBinding, []WorkspaceTreeEntry, error) {
 	var rootID, owner, class, rootMission, taskOwner, taskMission string
 	var revision int64
 	err := tx.QueryRow(ctx, `SELECT r.id,r.owner,r.read_write_class,r.mission_id,r.revision,t.owner,t.mission_id
@@ -468,10 +581,12 @@ WHERE company_id=$1 AND workspace_id=$2 ORDER BY relative_path COLLATE "C"`, sco
 	if len(manifestBytes) > 8<<20 {
 		return nil, nil, core.TooLarge
 	}
-	for _, entry := range entries {
-		content, readErr := readBlobBounded(k.root, scope.company, entry.Digest, workspaceTreeMaxFileBytes)
-		if readErr != nil || int64(len(content)) != entry.Bytes || !utf8.Valid(content) {
-			return nil, nil, core.Integrity
+	if verifyCAS {
+		for _, entry := range entries {
+			content, readErr := readBlobBounded(k.root, scope.company, entry.Digest, workspaceTreeMaxFileBytes)
+			if readErr != nil || int64(len(content)) != entry.Bytes || !utf8.Valid(content) {
+				return nil, nil, core.Integrity
+			}
 		}
 	}
 	digest := sha256.Sum256(manifestBytes)

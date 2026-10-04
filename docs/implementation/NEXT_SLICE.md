@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 219, REQ-39 immutable workspace-tree lease binding; Schema 105)
+## Latest continuation status (Slice 220, REQ-39 lease-bound workspace reads)
+
+Added Workbench read routes for a takeover lease's frozen workspace manifest and individual files. The Kernel requires a paused Mission, a granted lease holding the Task slot, and an exact recomputation of the Schema 105 tree binding. Each requested path must exist in that manifest; content comes from digest-checked UTF-8 CAS bytes. Manifest/file reads record lease and baseline provenance in company events. `go build ./...` and `git diff --check` pass. No tests, database operation, lease command, Worker/provider activity or frozen scenario ran. The current UI still reads the single legacy workspace and cannot hand back multiple files. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-220-req39-lease-bound-tree-read-api/verification.md`.
+
+Next Slice221: connect the takeover UI to these lease-bound reads and provide an editor that preserves the full frozen file set; then add bounded whole-tree return and successor input delivery. Preserve frozen execution states as `not_run` until those scenarios actually run. Keep Worker/provider work gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 219, REQ-39 immutable workspace-tree lease binding; Schema 105)
 
 Schema 105 pins the private workspace root ID, tree revision, canonical manifest SHA-256, file count and total bytes to new takeover leases. Grant computes the bounded manifest under a root-row lock and validates each referenced CAS blob; handback recomputes the binding under the same lock and rejects any difference. Legacy Tasks without a Schema 103 root retain null tree-binding fields. The existing one-file `workspace.txt` compatibility condition still applies, so multi-file trees remain rejected pending lease-bound read and handback support. `go build ./...`, migration checksum verification and `git diff --check` pass. No tests, migration application, database operation, lease command, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-219-req39-tree-manifest-binding/verification.md`.
 

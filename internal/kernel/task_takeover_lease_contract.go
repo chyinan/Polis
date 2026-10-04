@@ -59,6 +59,28 @@ type TaskTakeoverWorkspaceTreeBinding struct {
 	Bytes          int64  `json:"bytes"`
 }
 
+type TaskTakeoverWorkspaceManifest struct {
+	LeaseID       string                           `json:"leaseId"`
+	MissionID     string                           `json:"missionId"`
+	TaskID        string                           `json:"taskId"`
+	WorkspaceTree TaskTakeoverWorkspaceTreeBinding `json:"workspaceTree"`
+	Entries       []WorkspaceTreeEntry             `json:"entries"`
+}
+
+type TaskTakeoverWorkspaceFile struct {
+	LeaseID        string `json:"leaseId"`
+	MissionID      string `json:"missionId"`
+	TaskID         string `json:"taskId"`
+	ManifestSHA256 string `json:"manifestSha256"`
+	RelativePath   string `json:"relativePath"`
+	Digest         string `json:"sha256"`
+	Bytes          int64  `json:"bytes"`
+	FileRevision   int64  `json:"fileRevision"`
+	Revision       int64  `json:"workspaceRevision"`
+	ContentType    string `json:"contentType"`
+	Content        string `json:"content"`
+}
+
 type TaskTakeoverDiffSummary struct {
 	Model                  string `json:"model"`
 	BaseWorkspaceDigest    string `json:"baseWorkspaceDigest"`
