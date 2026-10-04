@@ -26,7 +26,7 @@ func (s *PostgresReadStore) GetArtifactDeliveryManifest(ctx context.Context, com
 q.checkpoint_id,q.check_id,q.validation_binding_digest,q.workspace_digest,q.workspace_revision,q.runner_revision,q.created_at
 FROM artifacts a
 JOIN task_validation_artifact_qualifications q ON q.company_id=a.company_id AND q.artifact_id=a.id AND q.task_id=a.task_id
-WHERE a.company_id=$1 AND a.id=$2`, companyID, artifactID).Scan(
+WHERE a.company_id=$1 AND a.id=$2 AND a.artifact_kind='deliverable'`, companyID, artifactID).Scan(
 		&manifest.ArtifactID, &manifest.TaskID, &manifest.Content.SHA256, &byteSize, &manifest.State, &manifest.Verdict,
 		&manifest.Qualification.CheckpointID, &manifest.Qualification.ValidationReceiptID, &manifest.Qualification.TaskValidationBindingDigest,
 		&manifest.Qualification.WorkspaceDigest, &workspaceRevision, &manifest.Qualification.RunnerRevision, &createdAt,

@@ -1,5 +1,9 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
+## Latest continuation status (Slice 213, REQ-29 Artifact delivery kind fence; no migration)
+
+Artifact manifest and package lookup now explicitly require `artifact_kind='deliverable'`, matching the existing Workbench Artifact list/detail boundary. The predicate prevents workspace snapshots from being represented as downloadable deliverables if they ever acquire a qualification row. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-213-req29-delivery-kind-fence/verification.md`.
+
 ## Latest continuation status (Slice 212, REQ-29 frozen traceability refresh; no migration)
 
 Updated the live frozen-scenario crosswalk so CAP-01–06 cite Slice 211's REQ-29 revocation evidence alongside the Schema 103 tree evidence. The six scenarios remain `partial` and `not_run`; all 232 scenario execution states and the disposition counts are unchanged. JSON validation and `git diff --check` pass. No code, database, tests, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-212-req29-traceability-refresh/verification.md`.
@@ -172,7 +176,7 @@ Workbench now exposes owner decisions to finish a Mission as `ended_not_met` or 
 
 Schema 101 adds durable closeout intent/report records, `closing` and `ended_not_met` Mission states, and retains the Company Mission slot during closeout. Cancellation first commits the admission fence, disables Routine scheduling and quiesces schedules, then Control stops project Jobs and Workers. Finalization rechecks WorkerSessions, JobRuns and live service leases in the guarded transaction before settling pending obligations, Tasks and Routine occurrences and recording a report. The paused-Mission successor-change path now also records the old Mission's closeout and marks transferred obligations superseded. The Kernel supports explicit terminal outcomes; `succeeded` requires exact independently passed Artifact references, settled Tasks/Obligations, and a recorded owner rationale. Workbench reads the closeout record and recognizes the new states. Local Termux migrated to Schema 101 with Company=0 and WorkerSession=0. Go package/command builds, frontend production build, migration hashes and `git diff --check` pass. No tests or Worker/provider actions ran. REQ-23 remains partial until owner-facing non-cancel decisions and restart/frozen-scenario qualification are complete. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-169-req23-durable-closeout/verification.md`.
 
-Next Slice213: continue the finite open REQ ledger at a concrete local implementation gap, preserving exact frozen execution states as `not_run` until those scenarios are actually run. Keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
+Next Slice214: continue the finite open REQ ledger at a concrete local implementation gap, preserving exact frozen execution states as `not_run` until those scenarios are actually run. Keep quota readiness fail-closed, and run provider/Worker work only after a current database-confirmed active WorkerSession. Do not infer an organization-wide slot limit from draft files.
 
 ## Previous continuation status (Slice 167, REQ-02 fixed roles/direct messaging/provider boundary audit)
 

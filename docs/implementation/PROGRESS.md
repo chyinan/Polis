@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 213 — REQ-29 Artifact delivery kind fence
+
+Added an explicit `artifact_kind='deliverable'` predicate to the Artifact delivery-manifest lookup. This keeps the package/manifest route constrained to the same deliverable kind as Workbench Artifact overview/detail and protects the boundary if a future non-deliverable Artifact ever receives a qualification row. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-213-req29-delivery-kind-fence/verification.md`.
+
 ## Slice 212 — REQ-29 frozen traceability refresh
 
 Refreshed the live `R1_R3_TRACEABILITY_DISPOSITION.json` crosswalk after Slice 211. CAP-01–06 now each cite the revocation implementation evidence in addition to the logical-tree evidence; all six remain `partial` with execution status `not_run`. All 232 frozen scenario records and disposition counts remain unchanged. JSON validation and `git diff --check` pass; no code, schema, migration, test, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-212-req29-traceability-refresh/verification.md`.
