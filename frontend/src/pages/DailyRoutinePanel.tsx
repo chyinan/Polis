@@ -113,7 +113,8 @@ export function DailyRoutinePanel({api, companyId, mission, employees}: DailyRou
       setMessage('每日职责已保存；到期后会创建 Task，系统不会自动启动 Worker。');
     } catch (error) {
       setIsError(true);
-      setMessage(error instanceof CommandApiError ? error.message : error instanceof Error ? error.message : '每日职责创建失败。');
+      const detail = error instanceof CommandApiError || error instanceof Error ? error.message : '命令结果未知';
+      setMessage(`每日职责结果尚未确认：${detail} 请先核对已刷新的 Routine 列表，再继续。`);
     }
   }
 
@@ -189,7 +190,8 @@ function DailyRoutineRow({api, companyId, missionId, employees, canRepair, routi
       setMessage('旧实例已补充说明并生成 Task。');
     } catch (error) {
       setIsError(true);
-      setMessage(error instanceof CommandApiError ? error.message : error instanceof Error ? error.message : '补充说明失败。');
+      const detail = error instanceof CommandApiError || error instanceof Error ? error.message : '命令结果未知';
+      setMessage(`旧实例补充结果尚未确认：${detail} 请先核对已刷新的 Routine 和 Task 状态，再继续。`);
     }
   }
 

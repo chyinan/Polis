@@ -234,7 +234,7 @@ export function useCreateDailyRoutine(api: WorkbenchApi, companyId: string, miss
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<CreateDailyRoutineOptions, 'companyId' | 'missionId'>) => api.createDailyRoutine({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'daily-routines', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
@@ -246,7 +246,7 @@ export function useSetDailyRoutineTaskInstruction(api: WorkbenchApi, companyId: 
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetDailyRoutineTaskInstructionOptions, 'companyId' | 'missionId'>) => api.setDailyRoutineTaskInstruction({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'daily-routines', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),

@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 180 — REQ-13 Routine command-response reconciliation
+
+Routine creation and legacy Routine task-instruction repair now invalidate Routine history, Company/Mission overview and activity after either success or error. The UI keeps the request ID for an exact retry and labels errors unconfirmed, so operators can check the refreshed Routine/Task state before continuing. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, scheduler iteration, Worker/provider activity or frozen scenario ran. No schema change. REQ-13 materialization and Worker admission qualification remain partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-180-req13-routine-response-refresh/verification.md`.
+
 ## Slice 179 — MissionInput upload response reconciliation
 
 Single-file and directory uploads now invalidate MissionInput history, Company/Mission overview and activity on settle. If a database write committed but the response was lost, the refreshed input history can reveal its durable revision/state before retry or resumption. UI errors now say the outcome is unconfirmed and direct the operator to read the refreshed inputs. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider action or frozen scenario ran. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-179-req23-input-upload-response-refresh/verification.md`.
