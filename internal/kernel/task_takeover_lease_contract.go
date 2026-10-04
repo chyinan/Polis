@@ -32,22 +32,31 @@ type TaskTakeoverLeaseEvent struct {
 }
 
 type TaskTakeoverLease struct {
-	LeaseID                string                   `json:"leaseId"`
-	MissionID              string                   `json:"missionId"`
-	TaskID                 string                   `json:"taskId"`
-	ClientRequestID        string                   `json:"clientRequestId"`
-	BaseRequirementsSHA256 string                   `json:"baseRequirementsSha256"`
-	BaseWorkspaceDigest    string                   `json:"baseWorkspaceDigest"`
-	BaseWorkspaceRevision  int64                    `json:"baseWorkspaceRevision"`
-	State                  string                   `json:"state"`
-	SnapshotInputID        *string                  `json:"snapshotInputId"`
-	SnapshotRevision       *int64                   `json:"snapshotRevision"`
-	SnapshotDigest         *string                  `json:"snapshotDigest"`
-	SnapshotBytes          *int64                   `json:"snapshotBytes"`
-	HumanEffortSeconds     *int64                   `json:"humanEffortSeconds"`
-	DiffSummary            *TaskTakeoverDiffSummary `json:"diffSummary"`
-	CreatedAt              string                   `json:"createdAt"`
-	Events                 []TaskTakeoverLeaseEvent `json:"events"`
+	LeaseID                string                            `json:"leaseId"`
+	MissionID              string                            `json:"missionId"`
+	TaskID                 string                            `json:"taskId"`
+	ClientRequestID        string                            `json:"clientRequestId"`
+	BaseRequirementsSHA256 string                            `json:"baseRequirementsSha256"`
+	BaseWorkspaceDigest    string                            `json:"baseWorkspaceDigest"`
+	BaseWorkspaceRevision  int64                             `json:"baseWorkspaceRevision"`
+	WorkspaceTree          *TaskTakeoverWorkspaceTreeBinding `json:"workspaceTree,omitempty"`
+	State                  string                            `json:"state"`
+	SnapshotInputID        *string                           `json:"snapshotInputId"`
+	SnapshotRevision       *int64                            `json:"snapshotRevision"`
+	SnapshotDigest         *string                           `json:"snapshotDigest"`
+	SnapshotBytes          *int64                            `json:"snapshotBytes"`
+	HumanEffortSeconds     *int64                            `json:"humanEffortSeconds"`
+	DiffSummary            *TaskTakeoverDiffSummary          `json:"diffSummary"`
+	CreatedAt              string                            `json:"createdAt"`
+	Events                 []TaskTakeoverLeaseEvent          `json:"events"`
+}
+
+type TaskTakeoverWorkspaceTreeBinding struct {
+	RootBindingID  string `json:"rootBindingId"`
+	Revision       int64  `json:"revision"`
+	ManifestSHA256 string `json:"manifestSha256"`
+	FileCount      int32  `json:"fileCount"`
+	Bytes          int64  `json:"bytes"`
 }
 
 type TaskTakeoverDiffSummary struct {
