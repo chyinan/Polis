@@ -146,9 +146,9 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
           {pendingSnapshotReturn === null ? <button className={styles.commandButton} disabled={!canReturn || loadedLeaseId !== activeLease.leaseId} onClick={() => { void handBack(); }} type="button">{submitSnapshot.isPending ? '正在核对并交还…' : '交还人工 snapshot'}</button> : null}
         </>}
         {leasesQuery.isError ? <p className={styles.formError} role="alert">接管历史读取失败：{leasesQuery.error.message}</p> : null}
-        {createLease.isError ? <p className={styles.formError} role="alert">接管请求失败：{createLease.error.message}</p> : null}
+        {createLease.isError ? <p className={styles.formError} role="alert">接管请求结果尚未确认：{createLease.error.message} 请核对已刷新的租约状态。</p> : null}
         {submitSnapshot.isError ? <p className={styles.formError} role="alert">snapshot 交还请求未确认：{submitSnapshot.error.message} 请检查上方租约状态，再以相同请求 ID 重试。</p> : null}
-        {releaseLease.isError ? <p className={styles.formError} role="alert">租约释放失败：{releaseLease.error.message}</p> : null}
+        {releaseLease.isError ? <p className={styles.formError} role="alert">租约释放结果尚未确认：{releaseLease.error.message} 请核对已刷新的租约状态。</p> : null}
         {localError !== '' ? <p className={styles.formError} role="alert">{localError}</p> : null}
       </div>
       <div className={styles.recordList}>

@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 175 — REQ-39 ambiguous formal-change and takeover command responses
+
+Mission change create/consider/decline/apply and Task takeover grant/release now invalidate their authoritative Workbench histories after success or failure. Apply also refreshes Mission and Company summaries. This reconciles lost HTTP responses with the persisted `TXWrite` receipt/state rather than leaving a stale action available. Related error messages now say the result is unconfirmed and direct the operator to the refreshed state. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider action or frozen scenario ran. REQ-39 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-175-req39-command-state-refresh/verification.md`.
+
 ## Slice 174 — REQ-39 human takeover snapshot retry recovery (no migration)
 
 The Kernel previously checked `lease.State == granted` before `TXWrite`, so a snapshot accepted by the database but whose response was lost could not replay its exact request receipt after the lease became `returned`. Snapshot submission now routes a non-granted lease through the normal request-fingerprint receipt guard before any CAS write; exact retries return the stored lease projection, while new or mismatched requests still conflict, and new submissions retain the locked `granted` check. Workbench retries now keep the exact snapshot payload and request ID in component state and refresh authoritative lease/change projections after success or failure. `go build ./...`, frontend production build and `git diff --check` pass; the existing Vite large-chunk warning remains. No tests, Worker/provider activity or frozen scenarios ran. REQ-39 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-174-req39-takeover-retry/verification.md`.

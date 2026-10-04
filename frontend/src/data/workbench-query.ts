@@ -455,7 +455,7 @@ export function useCreateMissionChangeRequest(api: WorkbenchApi, companyId: stri
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<CreateMissionChangeRequestOptions, 'companyId' | 'missionId'>) => api.createMissionChangeRequest({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
     ]),
@@ -466,7 +466,7 @@ export function useConsiderMissionChangeRequest(api: WorkbenchApi, companyId: st
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionChangeRequestCommandOptions, 'companyId' | 'missionId'>) => api.considerMissionChangeRequest({...options, companyId, missionId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
   });
 }
 
@@ -474,7 +474,7 @@ export function useDeclineMissionChangeRequest(api: WorkbenchApi, companyId: str
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionChangeRequestCommandOptions, 'companyId' | 'missionId'>) => api.declineMissionChangeRequest({...options, companyId, missionId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
   });
 }
 
@@ -482,7 +482,7 @@ export function useApplyMissionChangeRequest(api: WorkbenchApi, companyId: strin
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<MissionChangeRequestCommandOptions, 'companyId' | 'missionId'>) => api.applyMissionChangeRequest({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'companies']}),
@@ -503,7 +503,7 @@ export function useCreateTaskTakeoverLease(api: WorkbenchApi, companyId: string,
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<CreateTaskTakeoverLeaseOptions, 'companyId' | 'missionId'>) => api.createTaskTakeoverLease({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
     ]),
@@ -525,7 +525,7 @@ export function useReleaseTaskTakeoverLease(api: WorkbenchApi, companyId: string
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<ReleaseTaskTakeoverLeaseOptions, 'companyId' | 'missionId'>) => api.releaseTaskTakeoverLease({...options, companyId, missionId}),
-    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
   });
 }
 

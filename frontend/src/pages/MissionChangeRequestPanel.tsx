@@ -82,16 +82,16 @@ export function MissionChangeRequestPanel({api, companyId, missionId, missionSta
         在变更结论前阻止旧产物清单和下载
       </label>
       {criteria.length > 8 ? <p className={styles.formError} role="alert">最多 8 条验收标准。</p> : null}
-      {createRequest.isError ? <p className={styles.formError} role="alert">变更请求未受理：{createRequest.error.message}</p> : null}
+      {createRequest.isError ? <p className={styles.formError} role="alert">变更请求结果尚未确认：{createRequest.error.message} 请核对已刷新的变更历史。</p> : null}
       <button className={styles.commandButton} disabled={!canCreate || mutationPending} onClick={() => { void submit(); }} type="button">{createRequest.isPending ? '正在登记…' : '登记正式变更'}</button>
       <p className={styles.formHint}>“影响分析”只列出系统能核对的任务、输入、产物和在途写者；它不会自动理解所有自然语言依赖。应用前必须暂停并确认写者停止。</p>
     </div>
     <div className={styles.recordList}>
       {requestsQuery.isPending ? <div className={styles.emptyState} role="status">正在读取需求变更历史</div> : requestsQuery.isError ? <div className={styles.errorState} role="alert">需求变更历史读取失败：{requestsQuery.error.message}</div> : requestsQuery.data.length === 0 ? <div className={styles.emptyState}>当前没有正式需求变更。</div> : requestsQuery.data.map(request => <MissionChangeRequestRecord key={request.changeRequestId} request={request} missionState={missionState} mutationPending={mutationPending} onConsider={() => { void consider(request); }} onDecline={() => { void decline(request); }} onApply={() => { void apply(request); }} />)}
     </div>
-    {considerRequest.isError ? <p className={styles.formError} role="alert">影响复核未完成：{considerRequest.error.message}</p> : null}
-    {declineRequest.isError ? <p className={styles.formError} role="alert">拒绝请求失败：{declineRequest.error.message}</p> : null}
-    {applyRequest.isError ? <p className={styles.formError} role="alert">应用变更失败：{applyRequest.error.message}</p> : null}
+    {considerRequest.isError ? <p className={styles.formError} role="alert">影响复核结果尚未确认：{considerRequest.error.message} 请查看已刷新的请求状态。</p> : null}
+    {declineRequest.isError ? <p className={styles.formError} role="alert">拒绝结果尚未确认：{declineRequest.error.message} 请查看已刷新的请求状态。</p> : null}
+    {applyRequest.isError ? <p className={styles.formError} role="alert">变更应用结果尚未确认：{applyRequest.error.message} 请查看已刷新的 Mission 与请求状态。</p> : null}
   </section>;
 }
 
