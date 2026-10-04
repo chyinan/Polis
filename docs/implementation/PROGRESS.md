@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 179 — MissionInput upload response reconciliation
+
+Single-file and directory uploads now invalidate MissionInput history, Company/Mission overview and activity on settle. If a database write committed but the response was lost, the refreshed input history can reveal its durable revision/state before retry or resumption. UI errors now say the outcome is unconfirmed and direct the operator to read the refreshed inputs. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider action or frozen scenario ran. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-179-req23-input-upload-response-refresh/verification.md`.
+
 ## Slice 178 — Workbench setup/config response reconciliation
 
 Company/Mission creation, Company update/archive, runtime settings and operator-instruction mutations now invalidate their authoritative read models on settle, not only on success. Their error presentations describe an unconfirmed outcome and direct the operator to refresh/check persisted state before repeating the command. Frontend production build and `git diff --check` pass; Vite retains its large-chunk advisory. No tests, Worker/provider activity or frozen scenarios ran. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-178-req23-setup-response-refresh/verification.md`.

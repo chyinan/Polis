@@ -213,12 +213,11 @@ export function useUploadMissionInput(api: WorkbenchApi, companyId: string, miss
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<UploadMissionInputOptions, 'companyId' | 'missionId'>) => api.uploadMissionInput({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-inputs', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
     ]),
-    onError: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-inputs', companyId, missionId]}),
   });
 }
 
@@ -821,12 +820,11 @@ export function useUploadMissionDirectoryInput(api: WorkbenchApi, companyId: str
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<UploadMissionDirectoryInputOptions, 'companyId' | 'missionId'>) => api.uploadMissionDirectoryInput({...options, companyId, missionId}),
-    onSuccess: async () => Promise.all([
+    onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-inputs', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'company-overview', companyId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
     ]),
-    onError: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-inputs', companyId, missionId]}),
   });
 }
 

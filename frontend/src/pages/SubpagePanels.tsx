@@ -103,7 +103,8 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
       setRetryTarget(null);
       setNotice(receipt.displayName + ' 已保存为第 ' + receipt.revision + ' 版。保存不会启动使命，也不代表模型已读取。');
     } catch (error) {
-      setUploadError(error instanceof Error ? error.message : '资料上传失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setUploadError(`资料上传结果尚未确认：${detail} 请先核对已刷新的输入版本，再选择续传或重试。`);
     }
   }
 
@@ -123,7 +124,8 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
       setInputId('');
       setNotice(receipt.displayName + ' 目录快照已保存为第 ' + receipt.revision + ' 版。上传不会启动使命，也不代表模型已读取。');
     } catch (error) {
-      setUploadError(error instanceof Error ? error.message : '目录快照上传失败');
+      const detail = error instanceof Error ? error.message : '命令结果未知';
+      setUploadError(`目录快照结果尚未确认：${detail} 请先核对已刷新的输入版本，再选择续传或重试。`);
     }
   }
 
