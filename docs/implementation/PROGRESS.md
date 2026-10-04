@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 196 — GitHub feedback exact retries
+
+GitHub credential store/delete, backlog updates, source register/probe/decision, read-only poll, and collection-policy commands retain exact request IDs for same-payload retries after ambiguous outcomes. Token matching uses a SHA-256 digest without putting token text in the pending identity key. Frontend production build and `git diff --check` pass. No credential or repository request was made, no poll or collection-policy change ran, and no Worker/provider action or frozen scenario ran. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-196-github-feedback-retries/verification.md`.
+
 ## Slice 195 — capability governance exact retries
 
 Capability package imports, metadata reviews, decisions, runtime qualification/observations, employee binding and revocation now retain the same request ID after ambiguous outcomes for exact same-payload retries. Skill/MCP package identity includes a SHA-256 over file bytes, so changed file contents create a new operation identity. Frontend production build and `git diff --check` pass. No capability command or runtime observation ran; no Worker/provider action, endpoint access, or frozen scenario occurred. No schema change. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-195-capability-retries/verification.md`.

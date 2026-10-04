@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-04)
 
-## Latest continuation status (Slice 195, capability governance exact retries)
+## Latest continuation status (Slice 196, GitHub feedback exact retries)
+
+GitHub credential store/delete, internal backlog updates, source registration/probe/decision, polling, and collection-policy commands now reuse their request ID for the exact same payload after an ambiguous response. Credential identity uses a one-way token digest, not the token text. Existing response refresh remains in place. Frontend production build and diff check pass; no credential, repository request, poll, or policy change was performed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-196-github-feedback-retries/verification.md`.
+
+## Previous continuation status (Slice 195, capability governance exact retries)
 
 Capability package imports, metadata review, approval/revocation, runtime qualification/observation, and employee binding commands now keep their request ID for the exact same payload after an ambiguous response. Package identity keys include the SHA-256 of the selected file bytes. Existing settled refresh remains in place. Frontend production build and diff check pass; no capability command or runtime observation was executed. See `evidence/development/r1-r3-implementation-validation-20261004-slice-195-capability-retries/verification.md`.
 

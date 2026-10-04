@@ -37,6 +37,7 @@ export function FeedbackPage({api, companyId}: ScopePageProps): ReactElement {
   const [backlogStatusChoice, setBacklogStatusChoice] = useState<'open' | 'triaging' | 'waiting' | 'handled' | 'archived'>('triaging');
   const [backlogRationale, setBacklogRationale] = useState('');
   const [backlogMessage, setBacklogMessage] = useState<string | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   if (query.isPending) return <ScopeLoading title="反馈待办" label="正在读取待处理事项" />;
   if (query.isError) return <ScopeError title="反馈待办" message={query.error.message} />;
   const overview = query.data;
@@ -45,7 +46,11 @@ export function FeedbackPage({api, companyId}: ScopePageProps): ReactElement {
   async function saveGitHubCredential(): Promise<void> {
     setGitHubCredentialMessage(null);
     try {
-      await storeGitHubCredential.mutateAsync({token: githubToken, requestId: `github-credential-${crypto.randomUUID()}`});
+      const token = githubToken;
+      const payload = {tokenDigest: await sha256Text(token)};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-credential-store', payload);
+      await storeGitHubCredential.mutateAsync({token, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setGitHubToken('');
       setGitHubCredentialMessage('凭据已保存到本机受保护存储；此操作没有访问 GitHub。');
     } catch (error) {
@@ -55,7 +60,9 @@ export function FeedbackPage({api, companyId}: ScopePageProps): ReactElement {
   async function removeGitHubCredential(): Promise<void> {
     setGitHubCredentialMessage(null);
     try {
-      await deleteGitHubCredential.mutateAsync({requestId: `github-credential-delete-${crypto.randomUUID()}`});
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-credential-delete', {});
+      await deleteGitHubCredential.mutateAsync({requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setGitHubToken('');
       setGitHubCredentialMessage('本机保存的 GitHub 凭据已删除。');
     } catch (error) {
@@ -65,14 +72,16 @@ export function FeedbackPage({api, companyId}: ScopePageProps): ReactElement {
   async function updateBacklogStatus(issue: CompanyFeedbackView['issues'][number]): Promise<void> {
     setBacklogMessage(null);
     try {
-      const receipt = await backlogStatus.mutateAsync({
+      const payload = {
         sourceId: issue.sourceId,
         providerItemId: issue.providerItemId,
         revisionSha256: issue.revisionSha256,
         status: backlogStatusChoice,
         rationale: backlogRationale.trim(),
-        requestId: `github-backlog-${crypto.randomUUID()}`,
-      });
+      };
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-backlog', payload);
+      const receipt = await backlogStatus.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setBacklogMessage(`已更新公司内部待办状态为“${backlogStatusLabel(receipt.status)}”。远端 Issue 状态“${labelDisplayValue(receipt.remoteState)}”未变更。`);
     } catch (error) {
       setBacklogMessage(error instanceof Error ? error.message : '公司待办状态更新失败');
@@ -157,10 +166,14 @@ function GitHubFeedbackSourcesPanel({api, companyId, feedback}: Readonly<{api: W
   const [rationale, setRationale] = useState('');
   const [collectionIntervalSeconds, setCollectionIntervalSeconds] = useState(3600);
   const [message, setMessage] = useState<string | null>(null);
+  const pendingRequestIds = useRef(new Map<string, string>());
   async function registerSource(): Promise<void> {
     setMessage(null);
     try {
-      const result = await register.mutateAsync({repositoryId, owner: owner.trim(), name: name.trim(), requestId: `github-source-${crypto.randomUUID()}`});
+      const payload = {repositoryId, owner: owner.trim(), name: name.trim()};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-source-register', payload);
+      const result = await register.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage(`已登记 ${result.repository}，目前是草案；还需单独探测权限并人工批准。`);
       setRepositoryId(''); setOwner(''); setName('');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'GitHub 来源登记失败'); }
@@ -168,28 +181,40 @@ function GitHubFeedbackSourcesPanel({api, companyId, feedback}: Readonly<{api: W
   async function probeSource(sourceId: string): Promise<void> {
     setMessage(null);
     try {
-      const result = await probe.mutateAsync({sourceId, rationale: rationale.trim(), requestId: `github-probe-${crypto.randomUUID()}`});
+      const payload = {sourceId, rationale: rationale.trim()};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-source-probe', payload);
+      const result = await probe.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage(`权限探测：${labelDisplayValue(result.permissionStatus)} · 覆盖 ${labelDisplayValue(result.coverage)}${result.coverageReason ? ` · ${result.coverageReason}` : ''}`);
     } catch (error) { setMessage(error instanceof Error ? error.message : 'GitHub 权限探测失败'); }
   }
   async function decideSource(sourceId: string, decision: 'approved' | 'paused' | 'revoked'): Promise<void> {
     setMessage(null);
     try {
-      const result = await decide.mutateAsync({sourceId, decision, rationale: rationale.trim(), requestId: `github-decision-${crypto.randomUUID()}`});
+      const payload = {sourceId, decision, rationale: rationale.trim()};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-source-decision', payload);
+      const result = await decide.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage(`${result.repository} 来源状态：${labelDisplayValue(result.state)}。`);
     } catch (error) { setMessage(error instanceof Error ? error.message : 'GitHub 来源决策失败'); }
   }
   async function pollSource(sourceId: string): Promise<void> {
     setMessage(null);
     try {
-      const result = await poll.mutateAsync({sourceId, requestId: `github-poll-${crypto.randomUUID()}`});
+      const payload = {sourceId};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-source-poll', payload);
+      const result = await poll.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       setMessage(`采集 ${labelDisplayValue(result.coverage)}：${result.itemCount} 个 Issue，${result.commentScanCount} 组评论上下文（${labelDisplayValue(result.commentCoverage)}）${result.replayed ? ' · 已复用结果' : ''}${result.coverageReason ? ` · ${result.coverageReason}` : ''}`);
     } catch (error) { setMessage(error instanceof Error ? error.message : 'GitHub 采集失败'); }
   }
   async function setCollection(sourceId: string, enabled: boolean): Promise<void> {
     setMessage(null);
     try {
-      const result = await collectionPolicy.mutateAsync({sourceId, enabled, intervalSeconds: collectionIntervalSeconds, rationale: rationale.trim(), requestId: `github-collection-${crypto.randomUUID()}`});
+      const payload = {sourceId, enabled, intervalSeconds: collectionIntervalSeconds, rationale: rationale.trim()};
+      const pending = pendingRequestIdentity(pendingRequestIds.current, 'github-collection-policy', payload);
+      const result = await collectionPolicy.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds.current, pending.key);
       if (!result.enabled) setMessage('已停用公司级采集策略。已接受的单次请求可能已开始，不会重放。');
       else if (!result.externalEnabled) setMessage('公司级策略已启用；全局 GitHub 只读外发仍关闭，因此不会发送请求。');
       else if (!result.schedulerEnabled) setMessage('公司级策略已启用；此实例的定时采集器仍关闭。');
