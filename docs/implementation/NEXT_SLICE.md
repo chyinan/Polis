@@ -1,5 +1,11 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
+## Latest continuation status (Slice 228, REQ-39 Planning impact-analysis gap audit)
+
+The formal change path persists a deterministic explicit-dependency impact snapshot, but `MissionChangeImpact.NaturalLanguageImpactStatus` is constrained to `not_assessed`, the Workbench labels natural-language dependencies unassessed, and the C-GUIDANCE contract calls for bounded analysis by the fixed Planning role when scope is uncertain. A current read of the local database returned zero WorkerSessions; the backend health endpoint returned ready. No WorkerSession was created or used, no analysis or scenario ran. The eight REQ-39 crosswalk rows now cite this audit and remain `partial` / `not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md`.
+
+Next Slice229: implement a bounded, immutable Planning analysis path bound to a database-confirmed active `emp-planning` WorkerSession, with analysis freshness tied to the exact change/request basis and explicit owner review before applying. Keep it opt-in and fake-only until separately qualified; do not change real-provider @4 authorization or create/start a Worker to satisfy the session prerequisite. Preserve all frozen scenario execution states until they actually run.
+
 ## Latest continuation status (Slice 227, REQ-21 protected-view invalidation)
 
 Protected Workbench API responses with HTTP 401/403 now clear the in-memory React Query cache and remount the active route, removing cached queries and component-local details/editors. A bounded per-endpoint denial latch prevents repeated cache-reset loops and clears after that endpoint succeeds. A terminally closed protected EventSource and successful installation-owner logout trigger the same invalidation. Frontend production build and `git diff --check` pass. UI-09 remains `partial/not_run`; no auth flow, permission revocation or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-227-req21-auth-view-invalidation/verification.md`.

@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 227. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 228. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 228: REQ-39 Planning impact-analysis gap audit
+
+The formal change path calculates and pins explicit Task/input/Artifact/writer impacts, but it does not implement bounded natural-language dependency analysis by the fixed Planning role as required for uncertain scope. The current impact contract and validator hard-code `naturalLanguageImpactStatus: not_assessed`, and the Workbench tells operators that natural-language dependencies were not evaluated. A current read of the local database found zero WorkerSessions; backend health was ready. No Worker was created or used, no analysis was submitted, and no frozen scenario or test ran. The audit is linked from all eight REQ-39 scenarios; each remains `partial` / `not_run`, and all 232 scenarios remain `not_run`. Next Slice229 is a bounded, immutable assessment path tied to a database-confirmed active `emp-planning` WorkerSession and current request basis; keep it opt-in and fake-only until qualification and leave real-provider @4 unchanged. See `evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md`.
 
 ## Slice 227: REQ-21 protected-view invalidation
 

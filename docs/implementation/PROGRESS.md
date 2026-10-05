@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 228 — REQ-39 Planning impact-analysis gap audit
+
+Source review confirmed a remaining REQ-39 gap: formal changes have a deterministic impact snapshot but no bounded Planning-role natural-language assessment; the impact schema validator fixes `naturalLanguageImpactStatus` to `not_assessed`, and the Workbench states that natural-language dependencies remain unassessed. The approved C-GUIDANCE contract assigns uncertain scope to bounded Planning analysis. A current database read found zero WorkerSessions, and the backend health endpoint was ready. No Worker was created or used, no analysis was submitted, and no scenario/test ran. Linked the audit from all eight REQ-39 crosswalk rows, leaving them `partial` / `not_run`; total 232 scenario records unchanged. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md`.
+
 ## Slice 227 — REQ-21 protected-view invalidation
 
 Workbench API HTTP 401/403 responses now clear the in-memory React Query cache and remount the current route, removing query data and component-local details/editors. A bounded endpoint denial latch avoids repeated remounts until a successful response clears it. A terminally closed protected EventSource and successful installation-owner logout use the same invalidation path. Frontend production build and `git diff --check` pass. UI-09 remains `partial/not_run`; no tests, auth flow, permission revocation or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-227-req21-auth-view-invalidation/verification.md`.
