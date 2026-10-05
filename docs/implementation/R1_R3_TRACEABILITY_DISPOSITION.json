@@ -100,4 +100,4214 @@
       "requirements": [
         "REQ-29"
       ],
-      "implementationDisposition": "par
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-29"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-04",
+      "family": "CAP",
+      "scenario": "两个员工对同一可写工作区准入",
+      "requirements": [
+        "REQ-29"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-29"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-05",
+      "family": "CAP",
+      "scenario": "文件读取期间内容变化或大文件截断",
+      "requirements": [
+        "REQ-29"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-29"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-06",
+      "family": "CAP",
+      "scenario": "快照未 ready、已废弃或 GC 并发",
+      "requirements": [
+        "REQ-29"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-29"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-213-req29-delivery-kind-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-214-req29-mission-artifact-projection-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-07",
+      "family": "CAP",
+      "scenario": "扫描技能/配置目录含运行钩子",
+      "requirements": [
+        "REQ-30"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-30"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-08",
+      "family": "CAP",
+      "scenario": "同名集团/项目 Skill 或路径遮蔽",
+      "requirements": [
+        "REQ-30"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-30"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-09",
+      "family": "CAP",
+      "scenario": "Skill 多层加载与重复激活",
+      "requirements": [
+        "REQ-30"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-30"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-10",
+      "family": "CAP",
+      "scenario": "Skill allowed-tools 或正文请求提权",
+      "requirements": [
+        "REQ-30",
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-30",
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-11",
+      "family": "CAP",
+      "scenario": "已批准脚本、缺依赖、未批准 entrypoint",
+      "requirements": [
+        "REQ-30",
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-30",
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-12",
+      "family": "CAP",
+      "scenario": "公共目录更新/撤销与活动任务交错",
+      "requirements": [
+        "REQ-30",
+        "REQ-32"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-30",
+        "REQ-32"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-13",
+      "family": "CAP",
+      "scenario": "仓库/原生 harness 自动发现 skills/MCP 配置",
+      "requirements": [
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-14",
+      "family": "CAP",
+      "scenario": "MCP stdio 子进程文件/env/网络边界",
+      "requirements": [
+        "REQ-31"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-31"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-15",
+      "family": "CAP",
+      "scenario": "Streamable HTTP 认证/跳转/资源请求",
+      "requirements": [
+        "REQ-31"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-31"
+      ],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-16",
+      "family": "CAP",
+      "scenario": "MCP 新/旧协议 profile 与 SDK 兼容",
+      "requirements": [
+        "REQ-31"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-31"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-17",
+      "family": "CAP",
+      "scenario": "工具分页/同名/不同员工目录缓存",
+      "requirements": [
+        "REQ-31"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-31"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-18",
+      "family": "CAP",
+      "scenario": "服务自报 readOnly/idempotent 与真实策略冲突",
+      "requirements": [
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-19",
+      "family": "CAP",
+      "scenario": "新增工具或现有描述/schema 变化",
+      "requirements": [
+        "REQ-32",
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-32",
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-20",
+      "family": "CAP",
+      "scenario": "两个公司/员工使用有状态浏览器或业务 handle",
+      "requirements": [
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-21",
+      "family": "CAP",
+      "scenario": "sampling/elicitation/input_required 等额外请求",
+      "requirements": [
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-22",
+      "family": "CAP",
+      "scenario": "MCP 返回资源链接、媒体、HTML 与超大结果",
+      "requirements": [
+        "REQ-31",
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-31",
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-23",
+      "family": "CAP",
+      "scenario": "MCP 写操作超时、取消 ACK、HTTP200带工具错误",
+      "requirements": [
+        "REQ-31",
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-31",
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-24",
+      "family": "CAP",
+      "scenario": "服务内部 AI 成本不可见或重复内部重试",
+      "requirements": [
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-25",
+      "family": "CAP",
+      "scenario": "同 harness 换模型后恢复能力配置",
+      "requirements": [
+        "REQ-32"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-32"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-26",
+      "family": "CAP",
+      "scenario": "跨 harness 换模型且目标不支持必需能力",
+      "requirements": [
+        "REQ-32"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-32"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-27",
+      "family": "CAP",
+      "scenario": "只读接班中请求脚本/写工具/新增协作",
+      "requirements": [
+        "REQ-32"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-32"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-28",
+      "family": "CAP",
+      "scenario": "撤权/禁用 MCP 与在途/排队调用交错",
+      "requirements": [
+        "REQ-32",
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-32",
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-29",
+      "family": "CAP",
+      "scenario": "员工休眠与空闲 MCP 回收",
+      "requirements": [
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-30",
+      "family": "CAP",
+      "scenario": "MCP 通知/服务发现洪峰",
+      "requirements": [
+        "REQ-34"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-34"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-31",
+      "family": "CAP",
+      "scenario": "整公司备份缺技能包或含旧工具/秘密句柄",
+      "requirements": [
+        "REQ-32"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-32"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "CAP-32",
+      "family": "CAP",
+      "scenario": "资料→技能→MCP→同事→换班→验收闭环",
+      "requirements": [
+        "REQ-32"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-32"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-01",
+      "family": "FT",
+      "scenario": "相同消息重复投递",
+      "requirements": [
+        "REQ-02"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-02"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md"
+      ]
+    },
+    {
+      "id": "FT-02",
+      "family": "FT",
+      "scenario": "DB 提交后、消息发送前崩溃",
+      "requirements": [
+        "REQ-04"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-03",
+      "family": "FT",
+      "scenario": "工具完成但模型连接断线",
+      "requirements": [
+        "REQ-04"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-04",
+      "family": "FT",
+      "scenario": "已派发外部动作但回执丢失",
+      "requirements": [
+        "REQ-04"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-05",
+      "family": "FT",
+      "scenario": "旧 worker 活着但通信失联",
+      "requirements": [
+        "REQ-04"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-06",
+      "family": "FT",
+      "scenario": "旧 epoch 迟交成果",
+      "requirements": [
+        "REQ-04"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-07",
+      "family": "FT",
+      "scenario": "额度归零无法再调用旧模型",
+      "requirements": [
+        "REQ-03",
+        "REQ-04"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-08",
+      "family": "FT",
+      "scenario": "更换模型/供应商",
+      "requirements": [
+        "REQ-03",
+        "REQ-24"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-24"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
+      ]
+    },
+    {
+      "id": "FT-09",
+      "family": "FT",
+      "scenario": "接班包构建后有新消息",
+      "requirements": [
+        "REQ-02",
+        "REQ-03",
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-02",
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md"
+      ]
+    },
+    {
+      "id": "FT-10",
+      "family": "FT",
+      "scenario": "目标模型上下文放不下必需约束",
+      "requirements": [
+        "REQ-03"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-11",
+      "family": "FT",
+      "scenario": "合同或产物在 review 后改变",
+      "requirements": [
+        "REQ-12"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-12",
+      "family": "FT",
+      "scenario": "多公司同时争抢最后预算",
+      "requirements": [
+        "REQ-12",
+        "REQ-16",
+        "REQ-18"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-16"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-13",
+      "family": "FT",
+      "scenario": "内部递归 spawn 绕预算",
+      "requirements": [
+        "REQ-12"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-14",
+      "family": "FT",
+      "scenario": "网络恢复后积压周期任务",
+      "requirements": [
+        "REQ-05",
+        "REQ-11"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-15",
+      "family": "FT",
+      "scenario": "不可信网页/消息要求提权",
+      "requirements": [
+        "REQ-12"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-16",
+      "family": "FT",
+      "scenario": "公司 A 猜中公司 B 的资源 ID",
+      "requirements": [
+        "REQ-06"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-17",
+      "family": "FT",
+      "scenario": "worker shell 绕过文件/工具网关",
+      "requirements": [
+        "REQ-06",
+        "REQ-12",
+        "REQ-26"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-26"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-18",
+      "family": "FT",
+      "scenario": "验证工具缺失/超时",
+      "requirements": [
+        "REQ-12"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-19",
+      "family": "FT",
+      "scenario": "循环依赖与无进展争论",
+      "requirements": [
+        "REQ-02"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-02"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md"
+      ]
+    },
+    {
+      "id": "FT-20",
+      "family": "FT",
+      "scenario": "磁盘低水位/真实 ENOSPC",
+      "requirements": [
+        "REQ-12"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-21",
+      "family": "FT",
+      "scenario": "导入备份内含已完成发布",
+      "requirements": [
+        "REQ-04",
+        "REQ-11",
+        "REQ-17"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-22",
+      "family": "FT",
+      "scenario": "全员被换成资格不足的模型",
+      "requirements": [
+        "REQ-03"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-23",
+      "family": "FT",
+      "scenario": "关闭/重开 UI、事件游标过期",
+      "requirements": [
+        "REQ-07"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-24",
+      "family": "FT",
+      "scenario": "使命期限到达但目标未满足",
+      "requirements": [
+        "REQ-05"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-25",
+      "family": "FT",
+      "scenario": "自动内部验收与有限授权",
+      "requirements": [
+        "REQ-08",
+        "REQ-11"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-26",
+      "family": "FT",
+      "scenario": "冷启动基线对比",
+      "requirements": [
+        "REQ-09"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-27",
+      "family": "FT",
+      "scenario": "假摘要丢失待回复事项",
+      "requirements": [
+        "REQ-03",
+        "REQ-15"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-15"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-28",
+      "family": "FT",
+      "scenario": "退款/补偿或重试被当恢复自动放行",
+      "requirements": [
+        "REQ-08"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-29",
+      "family": "FT",
+      "scenario": "休眠确认前后并发到达新任务",
+      "requirements": [
+        "REQ-10",
+        "REQ-13"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "FT-30",
+      "family": "FT",
+      "scenario": "NOTIFY 丢失、监听连接断开或重启",
+      "requirements": [
+        "REQ-13"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "FT-31",
+      "family": "FT",
+      "scenario": "重复唤醒、FYI、ACK 和消息洪峰",
+      "requirements": [
+        "REQ-10",
+        "REQ-13"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "FT-32",
+      "family": "FT",
+      "scenario": "人工暂停期间收到任务/定时器",
+      "requirements": [
+        "REQ-08",
+        "REQ-13"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "FT-33",
+      "family": "FT",
+      "scenario": "撤权先于最终派发许可消费",
+      "requirements": [
+        "REQ-08",
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-34",
+      "family": "FT",
+      "scenario": "最终许可消费先于撤权",
+      "requirements": [
+        "REQ-07",
+        "REQ-08",
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-35",
+      "family": "FT",
+      "scenario": "许可目标、正文 hash、epoch 或期限被替换",
+      "requirements": [
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-36",
+      "family": "FT",
+      "scenario": "许可提交与网络发送之间进程崩溃",
+      "requirements": [
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-37",
+      "family": "FT",
+      "scenario": "关键事实更正但活动上下文仍有旧假设",
+      "requirements": [
+        "REQ-03",
+        "REQ-15"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-15"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-38",
+      "family": "FT",
+      "scenario": "作者换模型/会话后请求给自己批准",
+      "requirements": [
+        "REQ-01",
+        "REQ-10",
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-39",
+      "family": "FT",
+      "scenario": "同事消息请求抢占/强制新增任务",
+      "requirements": [
+        "REQ-01",
+        "REQ-02",
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-02",
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md"
+      ]
+    },
+    {
+      "id": "FT-40",
+      "family": "FT",
+      "scenario": "清理缓存与新产物引用并发",
+      "requirements": [
+        "REQ-15"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-15"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-41",
+      "family": "FT",
+      "scenario": "删除敏感记忆后导入更旧备份",
+      "requirements": [
+        "REQ-06",
+        "REQ-15"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-15"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-42",
+      "family": "FT",
+      "scenario": "SDK、adapter、scheduler 层层重试",
+      "requirements": [
+        "REQ-09",
+        "REQ-16"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-16"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-43",
+      "family": "FT",
+      "scenario": "同一问题换 task_id 重新申请预算",
+      "requirements": [
+        "REQ-09",
+        "REQ-16"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-16"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-44",
+      "family": "FT",
+      "scenario": "普通开发争抢收尾预留",
+      "requirements": [
+        "REQ-09",
+        "REQ-16"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-16"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-45",
+      "family": "FT",
+      "scenario": "DB 序列化失败或死锁后重试",
+      "requirements": [
+        "REQ-16",
+        "REQ-18"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-16"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-46",
+      "family": "FT",
+      "scenario": "DB COMMIT 成功后客户端未收到响应",
+      "requirements": [
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-47",
+      "family": "FT",
+      "scenario": "运行时/schema 不兼容或迁移中断",
+      "requirements": [
+        "REQ-17",
+        "REQ-18"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-48",
+      "family": "FT",
+      "scenario": "数据库备份存在但引用产物缺失",
+      "requirements": [
+        "REQ-17"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-49",
+      "family": "FT",
+      "scenario": "旧事务晚提交但事件 ID 较小",
+      "requirements": [
+        "REQ-18"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-50",
+      "family": "FT",
+      "scenario": "连接池残留公司上下文/RLS 绕过角色",
+      "requirements": [
+        "REQ-06",
+        "REQ-18"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-51",
+      "family": "FT",
+      "scenario": "多公司事件游标乱序/权限过滤",
+      "requirements": [
+        "REQ-07",
+        "REQ-18"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-52",
+      "family": "FT",
+      "scenario": "所有员工等待无人拥有的事项或调度饥饿",
+      "requirements": [
+        "REQ-05",
+        "REQ-13"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "FT-53",
+      "family": "FT",
+      "scenario": "宿主休眠后跨过期限/预算周期",
+      "requirements": [
+        "REQ-05",
+        "REQ-13"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "FT-54",
+      "family": "FT",
+      "scenario": "native harness 读凭据/绕网关或 provider 切换越域",
+      "requirements": [
+        "REQ-06"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-55",
+      "family": "FT",
+      "scenario": "运行时自修改或聊天伪造管理审批",
+      "requirements": [
+        "REQ-01",
+        "REQ-12"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-56",
+      "family": "FT",
+      "scenario": "控制实例 DB 锁失联但旧 worker 仍活着",
+      "requirements": [
+        "REQ-04",
+        "REQ-17"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-57",
+      "family": "FT",
+      "scenario": "唯一 bootstrap 的并发/重复启动",
+      "requirements": [
+        "REQ-23"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-23"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-58",
+      "family": "FT",
+      "scenario": "缺规划员/无合格后端与暂停占槽",
+      "requirements": [
+        "REQ-23"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-23"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-59",
+      "family": "FT",
+      "scenario": "使命收尾时崩溃、周期任务仍到期",
+      "requirements": [
+        "REQ-23"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-23"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-60",
+      "family": "FT",
+      "scenario": "使命终态后迟到消息/费用/回执",
+      "requirements": [
+        "REQ-23"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-23"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-61",
+      "family": "FT",
+      "scenario": "员工工具自填身份/过期 epoch/越权",
+      "requirements": [
+        "REQ-24"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-24"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
+      ]
+    },
+    {
+      "id": "FT-62",
+      "family": "FT",
+      "scenario": "员工工具重复键、正文冲突、超大或坏格式",
+      "requirements": [
+        "REQ-24"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-24"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
+      ]
+    },
+    {
+      "id": "FT-63",
+      "family": "FT",
+      "scenario": "管理员首次初始化竞态/默认凭据/远端抢注",
+      "requirements": [
+        "REQ-25"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-25"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
+      ]
+    },
+    {
+      "id": "FT-64",
+      "family": "FT",
+      "scenario": "浏览器登出与使命撤权混淆",
+      "requirements": [
+        "REQ-25"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-25"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
+      ]
+    },
+    {
+      "id": "FT-65",
+      "family": "FT",
+      "scenario": "重启后 SecretRef 未解锁或 worker 读取秘密",
+      "requirements": [
+        "REQ-25"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-25"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
+      ]
+    },
+    {
+      "id": "FT-66",
+      "family": "FT",
+      "scenario": "两公司通过不同别名写同一目标",
+      "requirements": [
+        "REQ-26"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-26"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-209-req26-resource-binding-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-67",
+      "family": "FT",
+      "scenario": "接班事实和 company_seq 读取期间有并发提交",
+      "requirements": [
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-68",
+      "family": "FT",
+      "scenario": "新模型在 restoring/validating 尝试写入",
+      "requirements": [
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-69",
+      "family": "FT",
+      "scenario": "staging/固定文件/DB 发布/GC 之间中断",
+      "requirements": [
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-70",
+      "family": "FT",
+      "scenario": "审查测试写缓存或试图修改被审产物",
+      "requirements": [
+        "REQ-26"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-26"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-209-req26-resource-binding-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-71",
+      "family": "FT",
+      "scenario": "候选选择与任务认领/撤权并发",
+      "requirements": [
+        "REQ-12",
+        "REQ-18"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-72",
+      "family": "FT",
+      "scenario": "任务已被其他 worker 认领或使命已关闭",
+      "requirements": [
+        "REQ-18",
+        "REQ-23"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-23"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-73",
+      "family": "FT",
+      "scenario": "读取/确认同事消息后尝试自动清掉责任",
+      "requirements": [
+        "REQ-02",
+        "REQ-24"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-02",
+        "REQ-24"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md"
+      ]
+    },
+    {
+      "id": "FT-74",
+      "family": "FT",
+      "scenario": "员工提合同/记忆变更或伪造 approved",
+      "requirements": [
+        "REQ-12",
+        "REQ-15",
+        "REQ-24"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-15",
+        "REQ-24"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-75",
+      "family": "FT",
+      "scenario": "epoch 激活决定后环境写能力落实失败",
+      "requirements": [
+        "REQ-04",
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-76",
+      "family": "FT",
+      "scenario": "延迟环境 grant 与撤权/换班交错",
+      "requirements": [
+        "REQ-14",
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14",
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-77",
+      "family": "FT",
+      "scenario": "恢复旧 DB 后收到旧 token/许可/事件游标",
+      "requirements": [
+        "REQ-17",
+        "REQ-25"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-25"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
+      ]
+    },
+    {
+      "id": "FT-78",
+      "family": "FT",
+      "scenario": "权限变窄仍尝试原生 resume 或克隆安装",
+      "requirements": [
+        "REQ-06",
+        "REQ-17"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-79",
+      "family": "FT",
+      "scenario": "验证期间目标分支被外部人更新",
+      "requirements": [
+        "REQ-26",
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-26",
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "FT-80",
+      "family": "FT",
+      "scenario": "作者污染验证缓存/测试器或修改候选",
+      "requirements": [
+        "REQ-12",
+        "REQ-26"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-26"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "FT-81",
+      "family": "FT",
+      "scenario": "所有成员等待，旧未读消息反复触发",
+      "requirements": [
+        "REQ-05",
+        "REQ-13"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "FT-82",
+      "family": "FT",
+      "scenario": "日志/消息洪峰与截止/时钟异常交错",
+      "requirements": [
+        "REQ-04",
+        "REQ-16"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-16"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "NT-01",
+      "family": "NT",
+      "scenario": "普通完成/休眠/ACK/自动恢复成功",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-02",
+      "family": "NT",
+      "scenario": "确需接管问题的重复日志与并发事件",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-03",
+      "family": "NT",
+      "scenario": "模型额度归零时触发合法接管通知",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-04",
+      "family": "NT",
+      "scenario": "无近期入站 msg_id 的 QQ 主动消息测试",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-05",
+      "family": "NT",
+      "scenario": "QQ token 过期、403、限流",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-06",
+      "family": "NT",
+      "scenario": "QQ 已接收但本地回执丢失",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-07",
+      "family": "NT",
+      "scenario": "发送前事件已解决/到期/路线被撤销",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-08",
+      "family": "NT",
+      "scenario": "配置导入、GET 刷新、测试按钮",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-09",
+      "family": "NT",
+      "scenario": "QQ群/收件者越域、资料含秘密或恶意链接",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-10",
+      "family": "NT",
+      "scenario": "QQ 回复“同意/继续/加预算”",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-11",
+      "family": "NT",
+      "scenario": "QQ 服务长期失败或重复通知故障",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-12",
+      "family": "NT",
+      "scenario": "daemon/数据库不可用但独立 watch 存活",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-13",
+      "family": "NT",
+      "scenario": "整机断电/断网或 QQ 与 watch 同时失效",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-14",
+      "family": "NT",
+      "scenario": "手机不能访问工作台/链接受限",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-15",
+      "family": "NT",
+      "scenario": "QQ 主动路线与实际账号资格分层",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-16",
+      "family": "NT",
+      "scenario": "C2C/群/环境/AppID 切换与过期 qualification",
+      "requirements": [
+        "REQ-06",
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-17",
+      "family": "NT",
+      "scenario": "PG 失效时禁用外发或撤销 route",
+      "requirements": [
+        "REQ-14",
+        "REQ-28"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "NT-18",
+      "family": "NT",
+      "scenario": "sender 重启、墙钟回拨或离线胶囊过期",
+      "requirements": [
+        "REQ-17",
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-19",
+      "family": "NT",
+      "scenario": "平台响应缺 ID/畸形/权限错误",
+      "requirements": [
+        "REQ-12",
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-20",
+      "family": "NT",
+      "scenario": "故障恢复后同类故障再次出现",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "NT-21",
+      "family": "NT",
+      "scenario": "问题解决/目标撤销与发送许可消费竞争",
+      "requirements": [
+        "REQ-14",
+        "REQ-28"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "NT-22",
+      "family": "NT",
+      "scenario": "主服务/监督事件争抢同一 Bot 或共享外部 Bot",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "PP-01",
+      "family": "PP",
+      "scenario": "首要目标与发布范围",
+      "requirements": [
+        "REQ-01",
+        "REQ-05",
+        "REQ-09",
+        "REQ-11",
+        "REQ-20"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "PP-02",
+      "family": "PP",
+      "scenario": "无作者帮助创建与启动",
+      "requirements": [
+        "REQ-07",
+        "REQ-20",
+        "REQ-21",
+        "REQ-25",
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-25",
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "PP-03",
+      "family": "PP",
+      "scenario": "冷启动及模糊目标",
+      "requirements": [
+        "REQ-05",
+        "REQ-08",
+        "REQ-23",
+        "REQ-35",
+        "REQ-36"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-23",
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "PP-04",
+      "family": "PP",
+      "scenario": "固定团队责任覆盖",
+      "requirements": [
+        "REQ-01",
+        "REQ-12",
+        "REQ-14"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "PP-05",
+      "family": "PP",
+      "scenario": "普通协作快速路径",
+      "requirements": [
+        "REQ-02",
+        "REQ-09",
+        "REQ-13",
+        "REQ-24"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-02",
+        "REQ-13",
+        "REQ-24"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "PP-06",
+      "family": "PP",
+      "scenario": "同使命新工作包",
+      "requirements": [
+        "REQ-05",
+        "REQ-08",
+        "REQ-23",
+        "REQ-41"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-23"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
+      ]
+    },
+    {
+      "id": "PP-07",
+      "family": "PP",
+      "scenario": "实际判断的跨模型接班",
+      "requirements": [
+        "REQ-03",
+        "REQ-04",
+        "REQ-09",
+        "REQ-15",
+        "REQ-32"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-15",
+        "REQ-32"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "PP-08",
+      "family": "PP",
+      "scenario": "安全拒绝与合法近邻",
+      "requirements": [
+        "REQ-08",
+        "REQ-12",
+        "REQ-13",
+        "REQ-14",
+        "REQ-16"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-13",
+        "REQ-14",
+        "REQ-16"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
+      ]
+    },
+    {
+      "id": "PP-09",
+      "family": "PP",
+      "scenario": "费用口径与紧急指导",
+      "requirements": [
+        "REQ-07",
+        "REQ-08",
+        "REQ-16",
+        "REQ-21",
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-16",
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "PP-10",
+      "family": "PP",
+      "scenario": "反馈评论上下文",
+      "requirements": [
+        "REQ-35",
+        "REQ-38",
+        "REQ-41"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "PP-11",
+      "family": "PP",
+      "scenario": "手机接管与可维护退出",
+      "requirements": [
+        "REQ-07",
+        "REQ-17",
+        "REQ-28",
+        "REQ-40"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "PP-12",
+      "family": "PP",
+      "scenario": "组织增益与停止决策",
+      "requirements": [
+        "REQ-02",
+        "REQ-05",
+        "REQ-09",
+        "REQ-10",
+        "REQ-18"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-02"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md"
+      ]
+    },
+    {
+      "id": "UI-01",
+      "family": "UI",
+      "scenario": "人工建公司、保存/创建/启动",
+      "requirements": [
+        "REQ-20"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
+      ]
+    },
+    {
+      "id": "UI-02",
+      "family": "UI",
+      "scenario": "创建请求重复或响应丢失",
+      "requirements": [
+        "REQ-20"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-03",
+      "family": "UI",
+      "scenario": "模板更新或新 CLI 会话出现",
+      "requirements": [
+        "REQ-20"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-04",
+      "family": "UI",
+      "scenario": "活动与休眠员工更换模型",
+      "requirements": [
+        "REQ-20"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-05",
+      "family": "UI",
+      "scenario": "查看/筛选/刷新/悬停休眠员工",
+      "requirements": [
+        "REQ-21",
+        "REQ-22"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-06",
+      "family": "UI",
+      "scenario": "休眠但仍有后台工具、失联但有旧状态",
+      "requirements": [
+        "REQ-07",
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-07",
+      "family": "UI",
+      "scenario": "未知费用、空数据、来源缺失",
+      "requirements": [
+        "REQ-07",
+        "REQ-19",
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-08",
+      "family": "UI",
+      "scenario": "公司 A 请求晚于切换 B 返回",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-09",
+      "family": "UI",
+      "scenario": "退出登录、授权收回、权限变窄",
+      "requirements": [
+        "REQ-21",
+        "REQ-25"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-25"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-227-req21-auth-view-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
+      ]
+    },
+    {
+      "id": "UI-10",
+      "family": "UI",
+      "scenario": "SSE 断流、重复、乱序、权限过滤",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-11",
+      "family": "UI",
+      "scenario": "服务恢复代际变化、游标过期、未知枚举",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-12",
+      "family": "UI",
+      "scenario": "HTTP 202 或长时操作未结束",
+      "requirements": [
+        "REQ-07",
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-13",
+      "family": "UI",
+      "scenario": "写入 ACK 丢失、重复点击、多标签提交",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-14",
+      "family": "UI",
+      "scenario": "确认期间目标或权限 revision 改变",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-15",
+      "family": "UI",
+      "scenario": "过期视图发起暂停/急停、控制端不可达",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-16",
+      "family": "UI",
+      "scenario": "确认弹窗打开时切公司、操作回执晚到",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-17",
+      "family": "UI",
+      "scenario": "作者自审、聊天伪造管理指令",
+      "requirements": [
+        "REQ-20",
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-18",
+      "family": "UI",
+      "scenario": "日志/Markdown 内含脚本、SVG、追踪图片",
+      "requirements": [
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-19",
+      "family": "UI",
+      "scenario": "办公室延期、组织关系可视化",
+      "requirements": [
+        "REQ-22"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-20",
+      "family": "UI",
+      "scenario": "深浅主题、键盘、焦点、对比和 reduced-motion",
+      "requirements": [
+        "REQ-07",
+        "REQ-19"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-21",
+      "family": "UI",
+      "scenario": "320/360/390 与桌面、200% 文字缩放",
+      "requirements": [
+        "REQ-07",
+        "REQ-19"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-22",
+      "family": "UI",
+      "scenario": "大整数金额/版本、多币种与订阅额度",
+      "requirements": [
+        "REQ-07",
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-23",
+      "family": "UI",
+      "scenario": "后端断开或预览 fixture",
+      "requirements": [
+        "REQ-21",
+        "REQ-22"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-24",
+      "family": "UI",
+      "scenario": "长开页面、事件洪峰、分页、输入中更新",
+      "requirements": [
+        "REQ-19",
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-25",
+      "family": "UI",
+      "scenario": "QQ 配置保存、测试外发、启用",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-26",
+      "family": "UI",
+      "scenario": "QQ 平台接受、用户确认与问题解决",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-27",
+      "family": "UI",
+      "scenario": "通知目标披露范围与移动端入口",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-28",
+      "family": "UI",
+      "scenario": "发送失败/问题过期/路线撤回",
+      "requirements": [
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-29",
+      "family": "UI",
+      "scenario": "主动通知来源已确认但账号没有联调",
+      "requirements": [
+        "REQ-21",
+        "REQ-28"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-30",
+      "family": "UI",
+      "scenario": "关闭外发的 sender 回执丢失",
+      "requirements": [
+        "REQ-14",
+        "REQ-21"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-14"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-31",
+      "family": "UI",
+      "scenario": "模型恢复已核对但 OS 写授权仍 pending",
+      "requirements": [
+        "REQ-03",
+        "REQ-27"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-27"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-32",
+      "family": "UI",
+      "scenario": "服务数据恢复代际变化或通知无远端 ID",
+      "requirements": [
+        "REQ-17",
+        "REQ-21"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-33",
+      "family": "UI",
+      "scenario": "公共库扫描/保存/服务资格探测",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-34",
+      "family": "UI",
+      "scenario": "人工建公司批量选择 Skill/MCP 与根权限",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-35",
+      "family": "UI",
+      "scenario": "工具目录或确认弹窗中切换公司",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-36",
+      "family": "UI",
+      "scenario": "已批准配置但连接不可用/资格未验证",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-37",
+      "family": "UI",
+      "scenario": "Skill 更新/工具 schema 变更时提交旧操作",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-38",
+      "family": "UI",
+      "scenario": "接班中挂载/工具能力未落实",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-39",
+      "family": "UI",
+      "scenario": "MCP 描述/图标/返回文件预览含不可信内容",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-40",
+      "family": "UI",
+      "scenario": "空闲工具回收、费用未知与 QQ 接管联动",
+      "requirements": [
+        "REQ-33"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-33"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
+    },
+    {
+      "id": "UI-41",
+      "family": "UI",
+      "scenario": "上传/解析/不支持/实际模型输入",
+      "requirements": [
+        "REQ-35"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "UI-42",
+      "family": "UI",
+      "scenario": "环境准备和依赖变更确认",
+      "requirements": [
+        "REQ-36"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md"
+      ]
+    },
+    {
+      "id": "UI-43",
+      "family": "UI",
+      "scenario": "作业日志和开发服务入口",
+      "requirements": [
+        "REQ-37"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-44",
+      "family": "UI",
+      "scenario": "目标应用浏览器证据与预览",
+      "requirements": [
+        "REQ-38"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-45",
+      "family": "UI",
+      "scenario": "日常指导/需求变更/澄清",
+      "requirements": [
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md"
+      ]
+    },
+    {
+      "id": "UI-46",
+      "family": "UI",
+      "scenario": "人工接管与交还冲突",
+      "requirements": [
+        "REQ-40"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-47",
+      "family": "UI",
+      "scenario": "交付下载/运行说明/用户接受",
+      "requirements": [
+        "REQ-41"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "UI-48",
+      "family": "UI",
+      "scenario": "外部反馈覆盖/去重/终态待办",
+      "requirements": [
+        "REQ-41"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-01",
+      "family": "WF",
+      "scenario": "资料上传与任务绑定",
+      "requirements": [
+        "REQ-35"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "WF-02",
+      "family": "WF",
+      "scenario": "真实图片/PDF表示与换模型",
+      "requirements": [
+        "REQ-35"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "WF-03",
+      "family": "WF",
+      "scenario": "半上传/重复完成/公司切换",
+      "requirements": [
+        "REQ-35"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "WF-04",
+      "family": "WF",
+      "scenario": "恶意ZIP/超限解析/编码问题",
+      "requirements": [
+        "REQ-35"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "WF-05",
+      "family": "WF",
+      "scenario": "附件替换或同名文件",
+      "requirements": [
+        "REQ-35"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    },
+    {
+      "id": "WF-06",
+      "family": "WF",
+      "scenario": "批准的锁文件项目准备",
+      "requirements": [
+        "REQ-36"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-07",
+      "family": "WF",
+      "scenario": "安装钩子或陌生下载目的地",
+      "requirements": [
+        "REQ-36"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-08",
+      "family": "WF",
+      "scenario": "并发ensure或准备中崩溃",
+      "requirements": [
+        "REQ-36"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md"
+      ]
+    },
+    {
+      "id": "WF-09",
+      "family": "WF",
+      "scenario": "项目库/缓存与控制面数据",
+      "requirements": [
+        "REQ-36"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-10",
+      "family": "WF",
+      "scenario": "新增依赖/变更工具链",
+      "requirements": [
+        "REQ-36"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-11",
+      "family": "WF",
+      "scenario": "有限命令成功失败与大输出",
+      "requirements": [
+        "REQ-37"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-12",
+      "family": "WF",
+      "scenario": "服务就绪/端口冲突/地址复用",
+      "requirements": [
+        "REQ-37"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-13",
+      "family": "WF",
+      "scenario": "服务仍被同事借用时员工睡眠",
+      "requirements": [
+        "REQ-37"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-14",
+      "family": "WF",
+      "scenario": "模型断线或宿主重启有旧作业",
+      "requirements": [
+        "REQ-37"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-15",
+      "family": "WF",
+      "scenario": "交互等待/取消/服务到期",
+      "requirements": [
+        "REQ-37"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-16",
+      "family": "WF",
+      "scenario": "搜索/网页读取与来源缺失",
+      "requirements": [
+        "REQ-38"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-17",
+      "family": "WF",
+      "scenario": "操作真实测试应用并捕获证据",
+      "requirements": [
+        "REQ-38"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-18",
+      "family": "WF",
+      "scenario": "热更新预览与冻结验收",
+      "requirements": [
+        "REQ-38"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-19",
+      "family": "WF",
+      "scenario": "预览访问管理接口/认证状态泄漏",
+      "requirements": [
+        "REQ-38"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-20",
+      "family": "WF",
+      "scenario": "跳转/资源/下载越界与视觉缺失",
+      "requirements": [
+        "REQ-38"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-21",
+      "family": "WF",
+      "scenario": "直接指导/回答问题/公司暂停",
+      "requirements": [
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md"
+      ]
+    },
+    {
+      "id": "WF-22",
+      "family": "WF",
+      "scenario": "需求变化和旧批准在途",
+      "requirements": [
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md"
+      ]
+    },
+    {
+      "id": "WF-23",
+      "family": "WF",
+      "scenario": "人工接管与旧写者仍运行",
+      "requirements": [
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md"
+      ]
+    },
+    {
+      "id": "WF-24",
+      "family": "WF",
+      "scenario": "人工补丁过期基线和安全交还",
+      "requirements": [
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md"
+      ]
+    },
+    {
+      "id": "WF-25",
+      "family": "WF",
+      "scenario": "迟到澄清或恶意管理文字",
+      "requirements": [
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md"
+      ]
+    },
+    {
+      "id": "WF-26",
+      "family": "WF",
+      "scenario": "生成可下载可运行交付清单",
+      "requirements": [
+        "REQ-40"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-27",
+      "family": "WF",
+      "scenario": "下载越权/文件丢失/清理竞争",
+      "requirements": [
+        "REQ-40"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-28",
+      "family": "WF",
+      "scenario": "内部通过和用户接受",
+      "requirements": [
+        "REQ-40"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-29",
+      "family": "WF",
+      "scenario": "反馈要求修改/历史验收失效",
+      "requirements": [
+        "REQ-40"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-30",
+      "family": "WF",
+      "scenario": "交付包含秘密/不可导出来源",
+      "requirements": [
+        "REQ-40"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-31",
+      "family": "WF",
+      "scenario": "真实GitHub Issues只读来源",
+      "requirements": [
+        "REQ-41"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-32",
+      "family": "WF",
+      "scenario": "分页中断/同时间更新/列表变化",
+      "requirements": [
+        "REQ-41"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-33",
+      "family": "WF",
+      "scenario": "重复/更新/关闭反馈",
+      "requirements": [
+        "REQ-41"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-34",
+      "family": "WF",
+      "scenario": "已结束使命和独立采集授权",
+      "requirements": [
+        "REQ-41"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-35",
+      "family": "WF",
+      "scenario": "工单洪峰/限流/恶意内容",
+      "requirements": [
+        "REQ-41"
+      ],
+      "implementationDisposition": "implemented",
+      "openRequirements": [],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+      ]
+    },
+    {
+      "id": "WF-36",
+      "family": "WF",
+      "scenario": "完整正常工作闭环：资料→环境→开发→浏览器→指导→交付→反馈",
+      "requirements": [
+        "REQ-35",
+        "REQ-36",
+        "REQ-37",
+        "REQ-38",
+        "REQ-39",
+        "REQ-40",
+        "REQ-41"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-35",
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R2",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-216-req39-tree-baseline-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+      ]
+    }
+  ]
+}
