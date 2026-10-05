@@ -64,6 +64,8 @@ type StdioMCPToolAuthorization struct {
 	Tools                []mcptransport.StdioToolDefinition
 	Transport            string
 	Endpoint             string
+	GrantRevision        int64
+	TargetSHA256         string
 }
 
 func (k *Kernel) TXRecordStdioMCPRuntimeQualification(ctx context.Context, companyID string, input StdioMCPRuntimeObservationInput) (StdioMCPRuntimeQualification, error) {
@@ -482,9 +484,10 @@ func authorizeStdioMCPToolCallInTransaction(ctx context.Context, tx pgx.Tx, bind
 		return authorization, core.Denied
 	}
 	var employeeEvent, employeeDigest, employeeQualification string
-	if err = tx.QueryRow(ctx, `SELECT event,version_digest,qualification_id FROM employee_capability_events
+	var employeeGrantRevision int64
+	if err = tx.QueryRow(ctx, `SELECT event,version_digest,qualification_id,event_seq FROM employee_capability_events
 WHERE company_id=$1 AND employee_id=$2 AND capability_kind='mcp' AND capability_id=$3
-ORDER BY event_seq DESC LIMIT 1`, binding.scope.company, binding.employee, capabilityID).Scan(&employeeEvent, &employeeDigest, &employeeQualification); errors.Is(err, pgx.ErrNoRows) {
+ORDER BY event_seq DESC LIMIT 1`, binding.scope.company, binding.employee, capabilityID).Scan(&employeeEvent, &employeeDigest, &employeeQualification, &employeeGrantRevision); errors.Is(err, pgx.ErrNoRows) {
 		return authorization, core.Denied
 	} else if err != nil {
 		return authorization, err
@@ -599,6 +602,14 @@ FROM mcp_runtime_qualification_records r WHERE r.company_id=$1 AND r.runtime_qua
 	authorization.ProcessSpec = processSpec
 	authorization.Transport = runtimeTransport
 	authorization.Endpoint = runtimeEndpoint
+	authorization.GrantRevision = employeeGrantRevision
+	authorization.TargetSHA256 = fingerprint(struct {
+		CompanyID, EmployeeID, CapabilityID, CapabilityVersion, CapabilityQualificationID string
+		RuntimeQualificationID, Transport, Endpoint, CommandSHA256, PackageManifestSHA256 string
+		ToolName, ToolSchemaSHA256                                                        string
+	}{binding.scope.company, binding.employee, capabilityID, versionDigest, employeeQualification,
+		runtimeQualificationID, runtimeTransport, runtimeEndpoint, runtimeRecord.CommandSHA256, runtimeRecord.PackageManifestSHA256,
+		toolName, toolSchemaSHA256})
 	return authorization, nil
 }
 

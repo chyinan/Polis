@@ -40,8 +40,15 @@ func (process *streamableHTTPMCPProcess) ToolSchemaSHA256() string {
 }
 
 func (process *streamableHTTPMCPProcess) CallTool(ctx context.Context, name string, rawArguments []byte) (mcptransport.StdioToolResult, error) {
+	return mcptransport.StdioToolResult{}, errors.New("MCP dispatch permit is required")
+}
+
+func (process *streamableHTTPMCPProcess) CallToolWithPermit(ctx context.Context, name string, rawArguments []byte, consume func(context.Context) error) (mcptransport.StdioToolResult, error) {
 	if process == nil || process.client == nil || process.closed || ctx == nil || ctx.Err() != nil {
 		return mcptransport.StdioToolResult{}, errors.New("Streamable HTTP MCP Worker client is unavailable")
+	}
+	if consume == nil {
+		return mcptransport.StdioToolResult{}, errors.New("MCP dispatch permit is required")
 	}
 	if os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") != "1" {
 		return mcptransport.StdioToolResult{}, errors.New("Streamable HTTP MCP Worker egress is disabled")
@@ -78,6 +85,9 @@ func (process *streamableHTTPMCPProcess) CallTool(ctx context.Context, name stri
 	}
 	if err = decoder.Decode(new(any)); err != io.EOF {
 		return mcptransport.StdioToolResult{}, errors.New("Streamable HTTP MCP tool arguments contain trailing JSON")
+	}
+	if err = consume(ctx); err != nil {
+		return mcptransport.StdioToolResult{}, err
 	}
 	result, err := process.client.CallTool(ctx, name, arguments, selected.InputSchema)
 	if err != nil {

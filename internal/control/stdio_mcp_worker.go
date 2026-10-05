@@ -20,6 +20,10 @@ type controlledMCPProcess interface {
 	Stop(context.Context) error
 }
 
+type controlledMCPDispatchPermitProcess interface {
+	CallToolWithPermit(context.Context, string, []byte, func(context.Context) error) (mcptransport.StdioToolResult, error)
+}
+
 type controlledMCPProcessFactory interface {
 	Start(context.Context, mcpowner.ProcessSpec) (controlledMCPProcess, error)
 }
@@ -80,12 +84,47 @@ type appContainerControlledMCPFactory struct {
 	sandbox *runner.AppContainerSandbox
 }
 
+type appContainerControlledMCPProcess struct {
+	owner *mcpowner.Owner
+}
+
 func (factory *appContainerControlledMCPFactory) Start(ctx context.Context, spec mcpowner.ProcessSpec) (controlledMCPProcess, error) {
 	owner, err := mcpowner.Start(ctx, factory.sandbox, spec)
 	if owner == nil {
 		return nil, err
 	}
-	return owner, err
+	return &appContainerControlledMCPProcess{owner: owner}, err
+}
+
+func (process *appContainerControlledMCPProcess) CallTool(ctx context.Context, name string, arguments []byte) (mcptransport.StdioToolResult, error) {
+	return mcptransport.StdioToolResult{}, errors.New("MCP dispatch permit is required")
+}
+
+func (process *appContainerControlledMCPProcess) CallToolWithPermit(ctx context.Context, name string, arguments []byte, consume func(context.Context) error) (mcptransport.StdioToolResult, error) {
+	if process == nil || process.owner == nil {
+		return mcptransport.StdioToolResult{}, errors.New("stdio MCP process owner is unavailable")
+	}
+	if consume == nil {
+		return mcptransport.StdioToolResult{}, errors.New("MCP dispatch permit is required")
+	}
+	if err := consume(ctx); err != nil {
+		return mcptransport.StdioToolResult{}, err
+	}
+	return process.owner.CallTool(ctx, name, arguments)
+}
+
+func (process *appContainerControlledMCPProcess) ToolSchemaSHA256() string {
+	if process == nil || process.owner == nil {
+		return ""
+	}
+	return process.owner.ToolSchemaSHA256()
+}
+
+func (process *appContainerControlledMCPProcess) Stop(ctx context.Context) error {
+	if process == nil || process.owner == nil {
+		return nil
+	}
+	return process.owner.Stop(ctx)
 }
 
 func (factory *appContainerControlledMCPFactory) Close() error {
@@ -97,11 +136,15 @@ func (factory *appContainerControlledMCPFactory) Close() error {
 
 type stdioMCPKernel interface {
 	LockStdioMCPPackageServer(context.Context, string, string) (context.Context, func(), error)
-	TXBeginStdioMCPToolCall(context.Context, kernel.Binding, kernel.StdioMCPToolCallIntentInput) (kernel.StdioMCPToolCallRecord, error)
 	AuthorizeStdioMCPToolCall(context.Context, kernel.Binding, string, string, string) (kernel.StdioMCPToolAuthorization, error)
 	TXRecordStdioMCPToolSchemaDrift(context.Context, string, kernel.StdioMCPToolSchemaDriftInput) error
 	TXCompleteStdioMCPToolCall(context.Context, kernel.Binding, string, mcptransport.StdioToolResult) error
 	TXMarkStdioMCPToolCallsUnknownForSession(context.Context, string, string, string) (int, error)
+}
+
+type stdioMCPDispatchPermitKernel interface {
+	TXBeginStdioMCPToolCall(context.Context, kernel.Binding, kernel.StdioMCPToolCallIntentInput) (kernel.StdioMCPToolDispatchPermit, error)
+	TXConsumeStdioMCPToolCallPermit(context.Context, kernel.Binding, kernel.StdioMCPToolDispatchPermitConsumption) (kernel.StdioMCPToolCallRecord, error)
 }
 
 type stdioMCPWorkerState struct {
@@ -127,6 +170,11 @@ func (state *stdioMCPWorkerState) call(ctx context.Context, runtime stdioMCPKern
 	defer state.mu.Unlock()
 	if state.closed || state.blocked || ctx == nil || ctx.Err() != nil || runtime == nil {
 		return nil, errors.New("controlled MCP worker session is unavailable")
+	}
+	permitRuntime, ok := runtime.(stdioMCPDispatchPermitKernel)
+	if !ok {
+		state.blocked = true
+		return nil, errors.New("controlled MCP runtime does not support dispatch permits")
 	}
 	input, err := parseControlledMCPCallArguments(raw)
 	if err != nil {
@@ -162,21 +210,14 @@ func (state *stdioMCPWorkerState) call(ctx context.Context, runtime stdioMCPKern
 		}
 		state.leaseHeld = true
 	}
-	// Treat a failed reservation as potentially committed. TXBegin performs a
-	// post-commit read, so an error can mean a dispatching intent exists even
-	// though this process did not receive its receipt.
-	state.pending = true
-	intent, err := runtime.TXBeginStdioMCPToolCall(ctx, binding, kernel.StdioMCPToolCallIntentInput{
+	callInput := kernel.StdioMCPToolCallIntentInput{
 		ProviderCallID: providerCallID, CapabilityID: input.CapabilityID, ToolName: input.ToolName,
 		ToolSchemaSHA256: input.ToolSchemaSHA256, Arguments: input.Arguments,
-	})
-	if err != nil {
-		state.blocked = true
-		return nil, err
 	}
+	intent := kernel.StdioMCPToolCallRecord{}
 	qualification := authorization.RuntimeQualification
 	processSpec := authorization.ProcessSpec
-	if intent.RuntimeQualificationID != qualification.RuntimeQualificationID || qualification.CapabilityID != input.CapabilityID || qualification.ToolSchemaSHA256 != input.ToolSchemaSHA256 {
+	if qualification.CapabilityID != input.CapabilityID || qualification.ToolSchemaSHA256 != input.ToolSchemaSHA256 {
 		state.blocked = true
 		return nil, errors.New("MCP authorization no longer matches the reserved intent")
 	}
@@ -227,17 +268,51 @@ func (state *stdioMCPWorkerState) call(ctx context.Context, runtime stdioMCPKern
 		}
 		if startErr != nil {
 			state.blocked = true
-			return nil, errors.Join(startErr, recordStdioMCPToolSchemaDrift(ctx, runtime, companyID, intent.RuntimeQualificationID, intent.IntentID+"-schema-drift", startErr))
+			driftRequestID := providerCallID
+			if intent.IntentID != "" {
+				driftRequestID = intent.IntentID + "-schema-drift"
+			}
+			return nil, errors.Join(startErr, recordStdioMCPToolSchemaDrift(ctx, runtime, companyID, qualification.RuntimeQualificationID, driftRequestID, startErr))
 		}
 	}
 	if state.owner == nil || state.owner.ToolSchemaSHA256() != input.ToolSchemaSHA256 {
 		state.blocked = true
 		return nil, errors.New("MCP process owner schema differs from the reserved intent")
 	}
-	result, err := state.owner.CallTool(ctx, input.ToolName, input.Arguments)
+	permitProcess, ok := state.owner.(controlledMCPDispatchPermitProcess)
+	if !ok {
+		state.blocked = true
+		return nil, errors.New("controlled MCP process does not support dispatch permits")
+	}
+	// Issue only after local/runtime preparation has completed, keeping the
+	// short validity window close to the final external dispatch boundary.
+	state.pending = true
+	permit, permitErr := permitRuntime.TXBeginStdioMCPToolCall(ctx, binding, callInput)
+	if permitErr != nil {
+		state.blocked = true
+		return nil, permitErr
+	}
+	if permitErr = kernel.ValidateStdioMCPToolDispatchPermit(permit, callInput, authorization, binding); permitErr != nil {
+		state.blocked = true
+		return nil, permitErr
+	}
+	consume := func(consumeContext context.Context) error {
+		consumed, consumeErr := permitRuntime.TXConsumeStdioMCPToolCallPermit(consumeContext, binding,
+			kernel.StdioMCPToolDispatchPermitConsumption{PermitID: permit.PermitID, Call: callInput})
+		if consumeErr != nil {
+			return consumeErr
+		}
+		intent = consumed
+		return kernel.ValidateStdioMCPToolCallStart(consumed, callInput, authorization, binding)
+	}
+	result, err := permitProcess.CallToolWithPermit(ctx, input.ToolName, input.Arguments, consume)
 	if err != nil {
 		state.blocked = true
-		return nil, errors.Join(err, recordStdioMCPToolSchemaDrift(ctx, runtime, companyID, intent.RuntimeQualificationID, intent.IntentID+"-schema-drift", err))
+		driftRequestID := providerCallID
+		if intent.IntentID != "" {
+			driftRequestID = intent.IntentID + "-schema-drift"
+		}
+		return nil, errors.Join(err, recordStdioMCPToolSchemaDrift(ctx, runtime, companyID, qualification.RuntimeQualificationID, driftRequestID, err))
 	}
 	if err = runtime.TXCompleteStdioMCPToolCall(ctx, binding, intent.IntentID, result); err != nil {
 		state.blocked = true

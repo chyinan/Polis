@@ -52,14 +52,42 @@ func validateStdioMCPToolResult(record StdioMCPToolCallRecord, result mcptranspo
 }
 
 func validateStdioMCPToolCallStart(record StdioMCPToolCallRecord, input StdioMCPToolCallIntentInput, authorization StdioMCPToolAuthorization, binding Binding) error {
-	if record.Status != "dispatching" || record.CompanyID != binding.scope.company || record.SessionID != binding.session || record.EmployeeID != binding.employee ||
+	if record.Status != "dispatching" || record.CompanyID != binding.scope.company || record.SessionID != binding.session || record.EmployeeID != binding.employee || record.TaskID != binding.task ||
 		record.ProviderCallID != input.ProviderCallID || record.CapabilityID != input.CapabilityID || record.ToolName != input.ToolName ||
 		record.ToolSchemaSHA256 != input.ToolSchemaSHA256 || record.ArgumentsSHA256 != digestCapabilityBytes(input.Arguments) ||
-		record.RuntimeQualificationID != authorization.RuntimeQualification.RuntimeQualificationID ||
+		record.RuntimeQualificationID != authorization.RuntimeQualification.RuntimeQualificationID || record.EmployeeEpoch != binding.epoch ||
+		record.GrantRevision != authorization.GrantRevision || record.TargetSHA256 != authorization.TargetSHA256 ||
+		record.InputSHA256 != digestCapabilityBytes(input.Arguments) ||
+		record.DispatchPermitID != stableCapabilityID("mcp-permit", binding.scope.company, binding.session, input.ProviderCallID) ||
+		record.AttemptID != stableCapabilityID("mcp-attempt", binding.scope.company, binding.session, input.ProviderCallID) ||
 		record.CompanyID != authorization.RuntimeQualification.CompanyID {
 		return core.Denied
 	}
 	return nil
+}
+
+func ValidateStdioMCPToolCallStart(record StdioMCPToolCallRecord, input StdioMCPToolCallIntentInput, authorization StdioMCPToolAuthorization, binding Binding) error {
+	return validateStdioMCPToolCallStart(record, input, authorization, binding)
+}
+
+func validateStdioMCPToolDispatchPermit(permit StdioMCPToolDispatchPermit, input StdioMCPToolCallIntentInput, authorization StdioMCPToolAuthorization, binding Binding) error {
+	if permit.Status != "issued" || permit.CompanyID != binding.scope.company || permit.SessionID != binding.session || permit.TaskID != binding.task ||
+		permit.EmployeeID != binding.employee || permit.EmployeeEpoch != binding.epoch || permit.GrantRevision != authorization.GrantRevision ||
+		permit.CapabilityID != input.CapabilityID || permit.CapabilityVersion != authorization.RuntimeQualification.VersionDigest ||
+		permit.CapabilityQualificationID != authorization.RuntimeQualification.CapabilityQualificationID ||
+		permit.RuntimeQualificationID != authorization.RuntimeQualification.RuntimeQualificationID || permit.Transport != authorization.Transport ||
+		permit.ProviderCallID != input.ProviderCallID || permit.ToolName != input.ToolName || permit.ToolSchemaSHA256 != input.ToolSchemaSHA256 ||
+		permit.TargetSHA256 != authorization.TargetSHA256 || permit.InputSHA256 != digestCapabilityBytes(input.Arguments) ||
+		permit.ActionID != stableCapabilityID("mcp-call", binding.scope.company, binding.session, input.ProviderCallID) ||
+		permit.AttemptID != stableCapabilityID("mcp-attempt", binding.scope.company, binding.session, input.ProviderCallID) ||
+		permit.PermitID != stableCapabilityID("mcp-permit", binding.scope.company, binding.session, input.ProviderCallID) {
+		return core.Denied
+	}
+	return nil
+}
+
+func ValidateStdioMCPToolDispatchPermit(permit StdioMCPToolDispatchPermit, input StdioMCPToolCallIntentInput, authorization StdioMCPToolAuthorization, binding Binding) error {
+	return validateStdioMCPToolDispatchPermit(permit, input, authorization, binding)
 }
 
 func validateStdioMCPToolCallOwner(record StdioMCPToolCallRecord, binding Binding) error {
