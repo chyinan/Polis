@@ -34,6 +34,7 @@ type EmployeeTools struct {
 	ReadOnly                           bool
 	ProductSurface                     bool
 	MissionChangeAssessmentSurface     bool
+	CSVInputRangeSurface               bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -108,6 +109,23 @@ func (t EmployeeTools) Call(ctx context.Context, name, callID string, raw []byte
 func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (ToolResult, error) {
 	k, b := t.Kernel, t.Binding
 	switch name {
+	case "csv_read_range":
+		if !t.ProductSurface || !t.CSVInputRangeSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			InputID        string `json:"input_id"`
+			Revision       int64  `json:"revision"`
+			SourceSHA256   string `json:"source_sha256"`
+			ManifestSHA256 string `json:"manifest_sha256"`
+			StartRow       int    `json:"start_row"`
+			MaxRows        int    `json:"max_rows"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		rows, e := k.ReadProductTaskCSVRange(ctx, b, args.InputID, args.Revision, args.SourceSHA256, args.ManifestSHA256, args.StartRow, args.MaxRows)
+		return ToolResult{Data: rows}, e
 	case "mission_change_request_read":
 		if !t.ProductSurface || !t.MissionChangeAssessmentSurface {
 			return ToolResult{}, core.Denied

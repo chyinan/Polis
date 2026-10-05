@@ -133,10 +133,13 @@ func ProductWorkspaceSnapshotRevocationToolSurface() ToolSurface {
 }
 
 const ProductMissionChangeAssessmentToolSurfaceQualification = "polis-product-tool-surface@12"
+const ProductCSVInputRangeToolSurfaceQualification = "polis-product-tool-surface@13"
 
 const (
 	OfflineMissionChangeAssessmentSurfacePurpose        = "offline-mission-change-assessment-tool-surface"
 	OfflineMissionChangeAssessmentSurfaceSimulationMark = "offline-mission-change-assessment-tool-surface-unqualified"
+	OfflineCSVInputRangeSurfacePurpose                  = "offline-csv-input-range-tool-surface"
+	OfflineCSVInputRangeSurfaceSimulationMarker         = "offline-csv-input-range-tool-surface-unqualified"
 	ProductMissionChangeAssessmentManifestDigest        = "cd9f4f852cd5674b1e0660868cb5af628a0186a0f137e8e1778e8fd6809c326d"
 	ProductMissionChangeAssessmentSchemaDigest          = "0be7f09a90c96ed73596617207ed1bac7575c6b8fd56cfe086a5880352c6b28a"
 	ProductMissionChangeAssessmentSchemaBytes           = 6740
@@ -144,6 +147,29 @@ const (
 
 func ProductMissionChangeAssessmentToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithMissionChangeAssessment())
+}
+
+// ProductCSVInputRangeToolSurface is an unqualified fake-only tool revision.
+// The real-provider authorization remains pinned to the existing qualified
+// product surface until its own exact-surface and provider evidence exists.
+func ProductCSVInputRangeToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithCSVRangeRead())
+}
+
+func ValidateOfflineFakeCSVInputRangeSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductCSVInputRangeToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductCSVInputRangeToolSurfaceQualification ||
+		profile.Purpose != OfflineCSVInputRangeSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineCSVInputRangeSurfaceSimulationMarker ||
+		profile.ProductProviderL2Fingerprint != OfflineCSVInputRangeSurfaceSimulationMarker || profile.ToolCallLimit <= 0 ||
+		surface.ToolCount != expected.ToolCount || observed.ToolCount != expected.ToolCount ||
+		surface.ManifestDigest != expected.ManifestDigest || observed.ManifestDigest != expected.ManifestDigest ||
+		surface.AggregateSchemaBytes != expected.AggregateSchemaBytes || observed.AggregateSchemaBytes != expected.AggregateSchemaBytes ||
+		surface.AggregateSchemaDigest != expected.AggregateSchemaDigest || observed.AggregateSchemaDigest != expected.AggregateSchemaDigest {
+		return fmt.Errorf("CSV range-read surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
 }
 
 func ValidateOfflineFakeMissionChangeAssessmentSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

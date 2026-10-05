@@ -55,13 +55,20 @@ func (k *Kernel) TXPrepareProductTaskInputDelivery(ctx context.Context, binding 
 		return "", "", err
 	}
 	verifiedPrompt := canonicalContext.Payload.PromptSection
-	noRequiredInputs := len(input.Payload.Inputs) == 0 && len(input.Payload.Images) == 0 && len(input.Payload.Excluded) == 0
-	refs := make([]intake.ModelInputDeliveryRef, 0, len(input.Payload.Inputs)+len(input.Payload.Images))
+	noRequiredInputs := len(input.Payload.Inputs) == 0 && len(input.Payload.Images) == 0 && len(input.Payload.CSVs) == 0 && len(input.Payload.Excluded) == 0
+	refs := make([]intake.ModelInputDeliveryRef, 0, len(input.Payload.Inputs)+len(input.Payload.Images)+len(input.Payload.CSVs))
 	for _, item := range input.Payload.Inputs {
 		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
 	}
 	for _, item := range input.Payload.Images {
 		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
+	}
+	for _, item := range input.Payload.CSVs {
+		summaryBytes, marshalErr := json.Marshal(item)
+		if marshalErr != nil {
+			return "", "", marshalErr
+		}
+		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, MediaType: item.Reference.MediaType, ByteSize: item.Reference.ByteSize, ContentDigest: item.SourceDigest, Representation: "csv_table_summary", RepresentationBytes: int64(len(summaryBytes))})
 	}
 	refsJSON, err := json.Marshal(refs)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"reflect"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -80,7 +81,7 @@ LIMIT 1`, companyID, taskID).Scan(&phase, &outcome, &workerState, &inputRefsJSON
 	if hasAttempt {
 		directoryArchives, sourceBytes := 0, int64(0)
 		for _, candidate := range manifest.CandidateInputs {
-			if !intake.IsInputArchiveSource(candidate.SourceKind) && !intake.ProviderTextInputEligible(candidate) && !intake.ProviderImageInputEligible(candidate) {
+			if !intake.IsInputArchiveSource(candidate.SourceKind) && !intake.ProviderTextInputEligible(candidate) && !intake.ProviderImageInputEligible(candidate) && !intake.ProviderCSVInputEligible(candidate) {
 				continue
 			}
 			if intake.IsInputArchiveSource(candidate.SourceKind) {
@@ -103,8 +104,16 @@ LIMIT 1`, companyID, taskID).Scan(&phase, &outcome, &workerState, &inputRefsJSON
 				directoryFilesByInputID[candidate.InputID] = files
 			}
 		}
-		canonicalContext, contextErr := intake.PrepareModelInputContext(manifest, digest, contentByInputID)
+		canonicalContext, contextErr := intake.PrepareModelInputContextWithCSVTables(manifest, digest, contentByInputID)
 		if contextErr != nil || canonicalContext.PayloadDigest != payloadDigest {
+			legacyContext, legacyErr := intake.PrepareLegacyModelInputContext(manifest, digest, contentByInputID)
+			if legacyErr != nil || legacyContext.PayloadDigest != payloadDigest {
+				return TaskInputManifestView{}, core.Integrity
+			}
+			canonicalContext = legacyContext
+		}
+		expectedRefs := modelInputDeliveryRefs(canonicalContext)
+		if !reflect.DeepEqual(expectedRefs, inputRefs) || !reflect.DeepEqual(canonicalContext.Excluded, inputExclusions) {
 			return TaskInputManifestView{}, core.Integrity
 		}
 		payloadDigestView = &payloadDigest
@@ -114,4 +123,19 @@ LIMIT 1`, companyID, taskID).Scan(&phase, &outcome, &workerState, &inputRefsJSON
 		return TaskInputManifestView{}, core.Integrity
 	}
 	return view, nil
+}
+
+func modelInputDeliveryRefs(payload intake.ModelInputContext) []intake.ModelInputDeliveryRef {
+	refs := make([]intake.ModelInputDeliveryRef, 0, len(payload.Inputs)+len(payload.Images)+len(payload.CSVs))
+	for _, item := range payload.Inputs {
+		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
+	}
+	for _, item := range payload.Images {
+		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
+	}
+	for _, item := range payload.CSVs {
+		summaryBytes, _ := json.Marshal(item)
+		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, MediaType: item.Reference.MediaType, ByteSize: item.Reference.ByteSize, ContentDigest: item.SourceDigest, Representation: "csv_table_summary", RepresentationBytes: int64(len(summaryBytes))})
+	}
+	return refs
 }

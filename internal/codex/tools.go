@@ -48,6 +48,27 @@ func ProductEmployeeTools() []any {
 	})
 }
 
+// ProductEmployeeToolsWithCSVRangeRead is a separately versioned, fake-only
+// extension. The exact immutable input revision is always derived from the
+// current WorkerSession's Task manifest; callers cannot select a path or host
+// resource, and each bounded raw-cell range is audited by the Kernel.
+func ProductEmployeeToolsWithCSVRangeRead() []any {
+	tools := ProductEmployeeTools()
+	csvTool := productTools([]peerToolDefinition{{
+		"csv_read_range",
+		"Read a bounded raw-field range from one CSV revision in your current Task manifest. Supply the exact input_id, revision, source_sha256 and manifest_sha256 shown in the bound CSV summary. Data rows start at 1; start_row=0 reads the header. Returns raw cell strings and a range digest; formula-like values remain data and are never evaluated. Polis checks your active WorkerSession and records the read.",
+		map[string]any{
+			"input_id":        map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"revision":        map[string]any{"type": "integer", "minimum": 1},
+			"source_sha256":   map[string]any{"type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[a-f0-9]{64}$"},
+			"manifest_sha256": map[string]any{"type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[a-f0-9]{64}$"},
+			"start_row":       map[string]any{"type": "integer", "minimum": 0},
+			"max_rows":        map[string]any{"type": "integer", "minimum": 1, "maximum": 100},
+		},
+	}})
+	return append(tools, csvTool[0])
+}
+
 // ProductEmployeeToolsWithDirectMessaging is a separately versioned product
 // surface. The historical @4, Skill @5 and guidance @6 registries stay fixed.
 func ProductEmployeeToolsWithDirectMessaging() []any {

@@ -36,8 +36,12 @@ func newTaskInputManifestView(companyID, missionID, taskID, digest, deliveryStat
 		if !ok {
 			return TaskInputManifestView{}, errors.New("delivered input reference is outside the manifest candidates")
 		}
-		if candidate.SourceKind == "upload" && (!(intake.ProviderTextInputEligible(candidate) || intake.ProviderImageInputEligible(candidate)) || included.RelativePath != "" || included.MediaType != candidate.MediaType || included.ByteSize != candidate.ByteSize || included.ContentDigest != candidate.ContentDigest) {
-			return TaskInputManifestView{}, errors.New("delivered upload reference differs from its frozen manifest candidate")
+		if candidate.SourceKind == "upload" {
+			validTextOrImage := included.Representation == "" && included.RepresentationBytes == 0 && (intake.ProviderTextInputEligible(candidate) || intake.ProviderImageInputEligible(candidate))
+			validCSVSummary := included.Representation == "csv_table_summary" && included.RepresentationBytes > 0 && included.RepresentationBytes <= intake.MaxModelInputContextBytes && intake.ProviderCSVInputEligible(candidate)
+			if (!validTextOrImage && !validCSVSummary) || included.RelativePath != "" || included.MediaType != candidate.MediaType || included.ByteSize != candidate.ByteSize || included.ContentDigest != candidate.ContentDigest {
+				return TaskInputManifestView{}, errors.New("delivered upload reference differs from its frozen manifest candidate")
+			}
 		}
 		if intake.IsInputArchiveSource(candidate.SourceKind) && included.RelativePath == "" {
 			return TaskInputManifestView{}, errors.New("delivered archive file has no relative path")

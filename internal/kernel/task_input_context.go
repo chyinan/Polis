@@ -35,7 +35,7 @@ func (k *Kernel) ProductTaskInputContext(ctx context.Context, binding Binding) (
 	loadedBytes := int64(0)
 	directoryArchives := 0
 	for _, reference := range manifest.Manifest.CandidateInputs {
-		if !intake.IsInputArchiveSource(reference.SourceKind) && !intake.ProviderTextInputEligible(reference) && !intake.ProviderImageInputEligible(reference) {
+		if !intake.IsInputArchiveSource(reference.SourceKind) && !intake.ProviderTextInputEligible(reference) && !intake.ProviderImageInputEligible(reference) && !intake.ProviderCSVInputEligible(reference) {
 			continue
 		}
 		if intake.IsInputArchiveSource(reference.SourceKind) {
@@ -54,7 +54,7 @@ func (k *Kernel) ProductTaskInputContext(ctx context.Context, binding Binding) (
 		contents[reference.InputID] = content
 		loadedBytes += int64(len(content))
 	}
-	payload, err := intake.PrepareModelInputContext(manifest.Manifest, manifest.Digest, contents)
+	payload, err := intake.PrepareModelInputContextWithCSVTables(manifest.Manifest, manifest.Digest, contents)
 	if err != nil {
 		return ProductTaskInputContext{}, core.Integrity
 	}
