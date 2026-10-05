@@ -432,8 +432,16 @@ func (k *Kernel) MissionChangeRequests(ctx context.Context, scope Scope, mission
 	return out, nil
 }
 
+type missionChangeRequestEventQueryer interface {
+	Query(context.Context, string, ...any) (pgx.Rows, error)
+}
+
 func (k *Kernel) missionChangeRequestEvents(ctx context.Context, scope Scope, changeRequestID string) ([]MissionChangeRequestEvent, error) {
-	rows, err := k.pool.Query(ctx, `SELECT event_id,state,impact_revision,successor_mission_id,reason_code,created_at,details
+	return missionChangeRequestEventsFrom(ctx, k.pool, scope, changeRequestID)
+}
+
+func missionChangeRequestEventsFrom(ctx context.Context, queryer missionChangeRequestEventQueryer, scope Scope, changeRequestID string) ([]MissionChangeRequestEvent, error) {
+	rows, err := queryer.Query(ctx, `SELECT event_id,state,impact_revision,successor_mission_id,reason_code,created_at,details
 FROM mission_change_request_events WHERE company_id=$1 AND change_request_id=$2 ORDER BY event_seq`, scope.company, changeRequestID)
 	if err != nil {
 		return nil, err
@@ -467,6 +475,73 @@ FROM mission_change_request_events WHERE company_id=$1 AND change_request_id=$2 
 		events = append(events, event)
 	}
 	return events, rows.Err()
+}
+
+func missionChangeOpenRequestForTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID string) (MissionChangeRequest, error) {
+	rows, err := tx.Query(ctx, `SELECT r.change_request_id,r.mission_id,r.client_request_id,r.base_requirements_sha256,r.change_summary,r.proposed_title,r.proposed_goal,r.proposed_acceptance_contract,r.block_previous_results,r.created_at,
+latest.state,latest.successor_mission_id,latest.details,impact.revision,impact.impact_sha256,impact.impact
+FROM mission_change_requests r
+JOIN LATERAL (SELECT state,successor_mission_id,details FROM mission_change_request_events e WHERE e.company_id=r.company_id AND e.change_request_id=r.change_request_id ORDER BY event_seq DESC LIMIT 1) latest ON true
+JOIN LATERAL (SELECT revision,impact_sha256,impact FROM mission_change_request_impacts i WHERE i.company_id=r.company_id AND i.change_request_id=r.change_request_id ORDER BY revision DESC LIMIT 1) impact ON true
+WHERE r.company_id=$1 AND r.mission_id=$2 AND latest.state IN ('received','queued','considered')
+ORDER BY r.created_at DESC,r.change_request_id DESC LIMIT 2`, scope.company, missionID)
+	if err != nil {
+		return MissionChangeRequest{}, err
+	}
+	defer rows.Close()
+	var selected *MissionChangeRequest
+	for rows.Next() {
+		if selected != nil {
+			return MissionChangeRequest{}, core.Integrity
+		}
+		var request MissionChangeRequest
+		var acceptanceJSON, impactJSON, latestDetails []byte
+		var impactRevision pgtype.Int8
+		var createdAt time.Time
+		if err = rows.Scan(&request.ID, &request.MissionID, &request.ClientRequestID, &request.BaseRequirementsSHA256, &request.ChangeSummary,
+			&request.ProposedTitle, &request.ProposedGoal, &acceptanceJSON, &request.BlockPreviousResults, &createdAt, &request.State,
+			&request.SuccessorMissionID, &latestDetails, &impactRevision, &request.ImpactSHA256, &impactJSON); err != nil {
+			return MissionChangeRequest{}, err
+		}
+		if len(acceptanceJSON) > 0 {
+			var acceptance taskvalidation.AcceptanceContract
+			if json.Unmarshal(acceptanceJSON, &acceptance) != nil || taskvalidation.ValidateContract(&acceptance) != nil {
+				return MissionChangeRequest{}, core.Integrity
+			}
+			request.ProposedAcceptanceContract = &acceptance
+		}
+		if !impactRevision.Valid || json.Unmarshal(impactJSON, &request.Impact) != nil {
+			return MissionChangeRequest{}, core.Integrity
+		}
+		calculatedImpactDigest, digestErr := missionChangeImpactDigest(request.Impact)
+		if digestErr != nil || calculatedImpactDigest != request.ImpactSHA256 {
+			return MissionChangeRequest{}, core.Integrity
+		}
+		request.ImpactRevision = impactRevision.Int64
+		request.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+		request.InputRevisionMap = []MissionChangeInputRevisionMap{}
+		var latestDetail struct {
+			InputRevisionMap []MissionChangeInputRevisionMap `json:"input_revision_map"`
+		}
+		if len(latestDetails) > 0 && json.Unmarshal(latestDetails, &latestDetail) != nil {
+			return MissionChangeRequest{}, core.Integrity
+		}
+		if latestDetail.InputRevisionMap != nil {
+			request.InputRevisionMap = latestDetail.InputRevisionMap
+		}
+		selected = &request
+	}
+	if err = rows.Err(); err != nil {
+		return MissionChangeRequest{}, err
+	}
+	if selected == nil {
+		return MissionChangeRequest{}, core.OutOfScope
+	}
+	selected.Events, err = missionChangeRequestEventsFrom(ctx, tx, scope, selected.ID)
+	if err != nil {
+		return MissionChangeRequest{}, err
+	}
+	return *selected, nil
 }
 
 func missionChangeBasisTx(ctx context.Context, tx pgx.Tx, scope Scope, missionID string, lock bool) (missionChangeBasis, error) {

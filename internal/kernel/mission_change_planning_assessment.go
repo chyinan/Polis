@@ -232,28 +232,15 @@ func (k *Kernel) MissionChangePlanningContext(ctx context.Context, binding Bindi
 	if err != nil {
 		return MissionChangePlanningContext{}, err
 	}
-	requests, err := k.MissionChangeRequests(ctx, binding.scope, handover.Task.Mission)
-	if err != nil {
-		return MissionChangePlanningContext{}, err
-	}
-	var selected *MissionChangeRequest
-	for i := range requests {
-		if requests[i].State != "received" && requests[i].State != "queued" && requests[i].State != "considered" {
-			continue
-		}
-		if selected != nil {
-			return MissionChangePlanningContext{}, core.Integrity
-		}
-		selected = &requests[i]
-	}
-	if selected == nil {
-		return MissionChangePlanningContext{}, core.OutOfScope
-	}
 	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return MissionChangePlanningContext{}, err
 	}
 	defer tx.Rollback(ctx)
+	selected, err := missionChangeOpenRequestForTX(ctx, tx, binding.scope, handover.Task.Mission)
+	if err != nil {
+		return MissionChangePlanningContext{}, err
+	}
 	basis, err := missionChangeBasisTx(ctx, tx, binding.scope, handover.Task.Mission, false)
 	if err != nil {
 		return MissionChangePlanningContext{}, err
@@ -266,17 +253,23 @@ func (k *Kernel) MissionChangePlanningContext(ctx context.Context, binding Bindi
 	if err != nil {
 		return MissionChangePlanningContext{}, err
 	}
-	selected.BaseRequirementsSHA256 = currentRequirementsSHA256
+	if currentRequirementsSHA256 != selected.BaseRequirementsSHA256 {
+		return MissionChangePlanningContext{}, core.ConflictError{Reason: "requirements or inputs changed after the change request was received", CurrentState: "base_requirements_changed"}
+	}
 	selected.Impact = currentImpact
 	selected.ImpactSHA256 = currentImpactSHA256
-	basisDigest, err := missionChangePlanningAnalysisBasisDigest(*selected, currentImpact)
+	basisDigest, err := missionChangePlanningAnalysisBasisDigest(selected, currentImpact)
+	if err != nil {
+		return MissionChangePlanningContext{}, err
+	}
+	selected.PlanningAssessment, err = missionChangePlanningAssessmentForTX(ctx, tx, binding.scope, selected, currentImpact)
 	if err != nil {
 		return MissionChangePlanningContext{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return MissionChangePlanningContext{}, err
 	}
-	return MissionChangePlanningContext{ChangeRequest: *selected, AnalysisBasisSHA256: basisDigest}, nil
+	return MissionChangePlanningContext{ChangeRequest: selected, AnalysisBasisSHA256: basisDigest}, nil
 }
 
 // TXAssessMissionChangeRequest accepts an immutable bounded analysis only

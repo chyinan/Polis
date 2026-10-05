@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 231 — REQ-39 Planning context snapshot consistency
+
+Planning's `mission_change_request_read` now selects the unique open request, lifecycle events, stored impact receipt and current Mission basis inside one read-only repeatable-read transaction. The tool fails with a conflict when the request's pinned requirements/input digest no longer matches, instead of returning an assessment basis that the write path will reject. `go build ./...`, rebuilt CLI, and `git diff --check` pass. The local stack remains healthy at Schema 108 with zero WorkerSessions; no tests, Worker/provider action, or frozen scenario ran. Added evidence to the eight REQ-39 traceability rows without changing their `partial/not_run` status. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md`.
+
 ## Slice 230 — local development stack recovery
 
 Restarted the local Termux PostgreSQL, deterministic backend, and Vite frontend services. The existing database is Schema 108 with zero Companies, Missions, and WorkerSessions. PostgreSQL is running on port 55432, `/healthz` returns ready on port 8080, and Vite returns HTTP 200 on port 4173. No migration, test, Worker/provider operation, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-230-local-dev-stack-recovery/verification.md`.
