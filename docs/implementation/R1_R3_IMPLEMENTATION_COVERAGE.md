@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 223. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 224. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 224: REQ-23 closeout coverage reconciliation
+
+Reconciled the REQ-23 row against Schema 101 and Slices 169–170. Durable `closing`/`ended_not_met` states, owner decisions, evidence-backed success gates, Job/Worker stop ordering, retryable finalization, obligation/Task/Routine settlement and owner-facing Workbench controls already exist. The outdated “not implemented” wording is removed; REQ-23 remains partial pending restart recovery qualification and FT-57–60/72 scenarios. Slice 224 evidence is now linked from its seven mapped scenarios without changing their `partial` / `not_run` state or any scenario count. JSON validation and `git diff --check` pass; no tests, database, closeout operation, Worker/provider activity or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md`.
 
 ## Slice 223: REQ-39 returned directory input successor trace
 
@@ -846,7 +850,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | 20 | Human defines the fixed roster at company creation | R1 | done-local | R1 qualification |
 | 21 | Truthful frontend state, scope and commands | R1 | partial; existing company-scoped API foundation exists | R1 |
 | 22 | Office/3D remains decoupled from core | R1 | excluded by explicit user scope | Excluded |
-| 23 | Mission activation and safe closeout | R1 | partial; idempotent create/start/pause/resume/cancel use stop/start, and Slice 168 repeats the outstanding WorkerSession/JobRun/service-lease check inside the Company-serialized lifecycle transaction to close the admission race. Formal `closing` / `ended_not_met` outcome, responsibility settlement, and closeout-recovery qualification remain open. See Slice 168 source/build evidence. | R1 |
+| 23 | Mission activation and safe closeout | R1 | partial; Schema 101 and Slices 169–170 add durable `closing`/`ended_not_met` states, owner closeout decisions, evidence-backed success gates, Job/Worker stop ordering, retryable finalization and explicit Task/Obligation/Routine settlement. Workbench supports owner-selected `ended_not_met` or `succeeded`, rationale, exact passed Artifact references and resuming the recorded intent. Slice 168 fences lifecycle admission against outstanding WorkerSessions, JobRuns and service leases. Restart recovery qualification and FT-57–60/72 scenarios remain open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-170-req23-owner-closeout-decisions/verification.md` and Slice 224 reconciliation. | R1 |
 | 24 | Authenticated formal employee operations | R1 | partial; product tool surface exists, current full runtime path is unqualified | R1 |
 | 25 | Explicit administrator and continuing authorization | R1 | partial; local bootstrap uses a terminal-issued one-time code and Argon2id; Schema 97 adds hashed, expiring, revocable owner sessions, HttpOnly/SameSite cookies, login throttling and session-bound double-submit CSRF; the Installation Accounts UI supports bootstrap/login/logout and read-only account observation. Slice 146 verified the flow with HTTP clients against disposable PostgreSQL, not a real browser. Owner-selected setup, local browser/Tauri WebView and remote-browser qualification remain; financial settlement and cross-Company owner mutations remain gated on separately confirmed scope. | R1 |
 | 26 | Company isolation covers shared write targets | R1 | partial; CAS-backed private Task trees are Company/Task/session/epoch/revision fenced; no shared branch/deploy/publish writer exists to bind, and ResourceKey alias handling plus FT-66/FT-70 qualification remain open | R1 |

@@ -1,5 +1,11 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
+## Latest continuation status (Slice 224, REQ-23 closeout coverage reconciliation)
+
+Reconciled the coverage row with the durable closeout state machine and owner controls already implemented in Schema 101/Slices 169–170. `closing` and `ended_not_met`, rationale and acceptance-evidence gates, Job/Worker stop ordering, retryable finalization, Task/Obligation/Routine settlement and Workbench controls are present. REQ-23 remains partial pending restart/recovery qualification and FT-57–60/72 scenarios. Added Slice 224 evidence to its seven scenario rows while preserving `partial` / `not_run` and the 232 total. Crosswalk JSON validation and `git diff --check` pass. No tests, database, closeout operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md`.
+
+Next Slice225: continue a source-backed audit of another open ledger requirement, beginning with REQ-13 scheduling fairness and quota recovery. Preserve scenario statuses and do not perform Worker activity without a current database read confirming an already-active WorkerSession.
+
 ## Latest continuation status (Slice 223, REQ-39 successor directory-input trace)
 
 Source review traced a returned directory snapshot through the existing workflow: the handback creates a ready MissionInput; the change-request impact includes it; successor creation clones its source kind and digest while labeling it `human_takeover`; and the successor Task manifest carries it into the existing verified directory-archive delivery path. The Workbench apply summary now counts these human-returned inputs explicitly. The live crosswalk links Slice 222 and 223 evidence from all eight REQ-39 frozen scenarios; their disposition remains `partial` and execution remains `not_run`, with all 232 scenario records unchanged. `npm run build`, crosswalk JSON validation and `git diff --check` pass. No tests, database operation, change request, Task, Worker/provider activity or frozen scenario ran. REQ-39 remains partial pending natural-language impact assessment and scenario qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md`.
