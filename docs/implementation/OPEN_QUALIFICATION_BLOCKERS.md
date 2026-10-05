@@ -1,6 +1,6 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-06, Slice 264. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-06, Slice 265. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
@@ -31,7 +31,7 @@ These facts rule out session-backed execution in the current database and native
 | REQ-32 | Identity bindings are persisted; product-provider successor admission also requires profile continuity, while successor execution remains unavailable. | Qualified successor WorkerSession/runtime and explicit owner authorization to exercise bound capabilities after handover. |
 | REQ-33 | Truthful capability metadata is implemented; live execution remains unavailable pending runtime qualification. | Qualified host/provider for the exact capability surface plus owner-approved qualification evidence. |
 | REQ-34 | Governance records and dispatch fences exist; stdio MCP package intake enforces exact manifest key names, and stdio responses/arguments reject recursive duplicate JSON object keys. Real-provider execution and exact dispatch-surface qualification remain open. | Qualified provider/host, owner authorization, and active-session evidence for each exposed dispatch surface. |
-| REQ-35 | Slice263 adds bounded CSV parsing and a revision/manifest/digest-bound table summary plus authenticated, capped row-range reads with metadata-only audit events. The range tool exists only on unqualified fake `@13`; real provider `@4` remains unchanged. PDF raster pages and typed image receipts, the full R2 format/provider/runtime matrix, approved fixtures, and authorized active-Worker delivery remain open. | Implement and qualify bounded PDF raster/image receipts on a supported runtime, obtain approved format fixtures, and separately authorize the complete R2 format matrix and active-Worker delivery. |
+| REQ-35 | Slice263 adds bounded CSV summaries and authenticated, capped row-range reads; its tool exists only on unqualified fake `@13`, while real provider `@4` remains unchanged. Slice265 adds bounded extraction of supported embedded PDF image objects into a canonical snapshot, with page/placement/digest metadata and typed image delivery refs. It does not composite full-page rasters, vector text, or backgrounds; unsupported image codecs, the full R2 format/provider/runtime matrix, approved fixtures, and authorized active-Worker delivery remain open. | Complete bounded page rendering and typed image qualification on a supported runtime, obtain approved format fixtures, and separately authorize the complete R2 format matrix and active-Worker delivery. |
 | REQ-39 | Planning assessment and owner review fences are implemented; session-backed and frozen-scenario qualification remain open. | An already-active `emp-planning` WorkerSession confirmed in the database, plus authorized execution of the eight mapped REQ-39 scenarios. |
 
 ## Shared host and authorization gates

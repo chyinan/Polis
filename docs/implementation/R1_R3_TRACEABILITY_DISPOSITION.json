@@ -2667,7 +2667,9 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -2855,7 +2857,9 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -3578,7 +3582,9 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -3712,7 +3718,9 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -3730,7 +3738,9 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -3748,7 +3758,9 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -3766,7 +3778,9 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -3784,7 +3798,9 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     },
     {
@@ -4318,7 +4334,9 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
+        "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md"
       ]
     }
   ]

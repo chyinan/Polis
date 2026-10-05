@@ -61,7 +61,7 @@ func (k *Kernel) TXPrepareProductTaskInputDelivery(ctx context.Context, binding 
 		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
 	}
 	for _, item := range input.Payload.Images {
-		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
+		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest, PageNumber: item.PageNumber, ImageNumber: item.ImageNumber, ImageWidth: item.ImageWidth, ImageHeight: item.ImageHeight})
 	}
 	for _, item := range input.Payload.CSVs {
 		summaryBytes, marshalErr := json.Marshal(item)

@@ -2,7 +2,13 @@
 
 Updated: 2026-10-06
 
-## Current continuation pointer (Slice 264)
+## Current continuation pointer (Slice 265)
+
+The pinned pure-Go PDF parser now yields supported embedded image objects as bounded PNGs in canonical `pdf_snapshot@2` packages. Each image is tied to page/image number, dimensions, digest, page boxes, rotation, and page-space placement; Task context and immutable delivery receipts carry typed image fields checked against the frozen snapshot. Limits are eight decode attempts, 1M pixels and 256 KiB per image, and 960 KiB total. Legacy `@1` snapshots retain their canonical validation path. This does not rasterize/composite complete pages or include vector text/backgrounds, and unsupported image codecs remain omitted. Real-provider image support and the full R2 format/runtime/provider qualification remain open. `go build ./...` and `git diff --check` passed. No tests, DB, Worker, provider, migration, or scenario ran. REQ-35 stays partial; all 232 scenario executions remain `not_run`. Evidence: `docs/implementation/R2_PDF_INPUT_FOUNDATION.md` and `evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md`.
+
+Source remains Schema 110 and runtime remains Schema 108; no migration was applied.
+
+## Previous continuation pointer (Slice 264)
 
 The REQ-29 source audit confirms that `workspace_root` is metadata only, Group membership/shared-root authorization are absent, and snapshot revocation blocks new direct reads without releasing immutable CAS references. Generic orphan collection does not enforce retention, and revoked/corrupt snapshots still count toward the 32-row Task cap. No safe independent implementation can be chosen before owner decisions on root authorization, sharing, writer revocation, and retention plus a qualified native host. The recommended first vertical slice is a read-only Company-root binding on one qualified host with OS-authorized handles, bounded traversal, and digest-pinned snapshots. No code/schema or scenario changed. No tests, DB, Worker, provider, host mount, or frozen scenario ran. See `docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md` and `evidence/development/r1-r3-implementation-validation-20261006-req29-local-audit/verification.md`.
 

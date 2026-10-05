@@ -131,7 +131,7 @@ func modelInputDeliveryRefs(payload intake.ModelInputContext) []intake.ModelInpu
 		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
 	}
 	for _, item := range payload.Images {
-		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest})
+		refs = append(refs, intake.ModelInputDeliveryRef{InputID: item.Reference.InputID, RelativePath: item.RelativePath, MediaType: item.MediaType, ByteSize: item.ByteSize, ContentDigest: item.ContentDigest, PageNumber: item.PageNumber, ImageNumber: item.ImageNumber, ImageWidth: item.ImageWidth, ImageHeight: item.ImageHeight})
 	}
 	for _, item := range payload.CSVs {
 		summaryBytes, _ := json.Marshal(item)

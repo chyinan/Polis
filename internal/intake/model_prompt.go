@@ -40,6 +40,10 @@ type ModelInputImage struct {
 	MediaType     string                  `json:"mediaType"`
 	ByteSize      int64                   `json:"byteSize"`
 	ContentDigest string                  `json:"contentDigest"`
+	PageNumber    int                     `json:"pageNumber,omitempty"`
+	ImageNumber   int                     `json:"imageNumber,omitempty"`
+	ImageWidth    int                     `json:"imageWidth,omitempty"`
+	ImageHeight   int                     `json:"imageHeight,omitempty"`
 	Content       []byte                  `json:"-"`
 }
 
@@ -49,6 +53,10 @@ type ModelInputExclusion struct {
 	MediaType     string `json:"mediaType"`
 	ByteSize      int64  `json:"byteSize"`
 	ContentDigest string `json:"contentDigest"`
+	PageNumber    int    `json:"pageNumber,omitempty"`
+	ImageNumber   int    `json:"imageNumber,omitempty"`
+	ImageWidth    int    `json:"imageWidth,omitempty"`
+	ImageHeight   int    `json:"imageHeight,omitempty"`
 	Reason        string `json:"reason"`
 }
 
@@ -60,6 +68,10 @@ type ModelInputDeliveryRef struct {
 	ContentDigest       string `json:"contentDigest"`
 	Representation      string `json:"representation,omitempty"`
 	RepresentationBytes int64  `json:"representationBytes,omitempty"`
+	PageNumber          int    `json:"pageNumber,omitempty"`
+	ImageNumber         int    `json:"imageNumber,omitempty"`
+	ImageWidth          int    `json:"imageWidth,omitempty"`
+	ImageHeight         int    `json:"imageHeight,omitempty"`
 }
 
 type ModelInputContext struct {
@@ -138,7 +150,7 @@ func prepareModelInputContext(manifest ModelInputManifest, manifestDigest string
 				if !exists || int64(len(content)) != reference.ByteSize || sha256Digest(content) != reference.ContentDigest {
 					return ModelInputContext{}, errors.New("bound image content does not match its manifest reference")
 				}
-				if err := appendModelImage(&prepared, reference, "", reference.MediaType, content, reference.ContentDigest, &usedImageBytes); err != nil {
+				if err := appendModelImage(&prepared, reference, "", reference.MediaType, content, reference.ContentDigest, &usedImageBytes, nil); err != nil {
 					return ModelInputContext{}, err
 				}
 				continue
@@ -170,10 +182,25 @@ func prepareModelInputContext(manifest ModelInputManifest, manifestDigest string
 			if err != nil {
 				return ModelInputContext{}, errors.New("bound input archive failed verification")
 			}
+			var pdfImages map[string]PDFPageImage
+			if reference.SourceKind == "pdf_snapshot" {
+				pdfImages, err = pdfImageMetadataByPath(files)
+				if err != nil {
+					return ModelInputContext{}, errors.New("bound PDF image metadata failed verification")
+				}
+			}
 			for _, file := range files {
 				digest := sha256Digest(file.Content)
 				if isProviderImageMediaType(file.MediaType) {
-					if err := appendModelImage(&prepared, reference, file.RelativePath, file.MediaType, file.Content, digest, &usedImageBytes); err != nil {
+					var visual *PDFPageImage
+					if reference.SourceKind == "pdf_snapshot" {
+						metadata, exists := pdfImages[file.RelativePath]
+						if !exists {
+							return ModelInputContext{}, errors.New("bound PDF image has no page metadata")
+						}
+						visual = &metadata
+					}
+					if err := appendModelImage(&prepared, reference, file.RelativePath, file.MediaType, file.Content, digest, &usedImageBytes, visual); err != nil {
 						return ModelInputContext{}, err
 					}
 					continue
@@ -237,7 +264,8 @@ func VerifyModelInputDeliverySelection(manifest ModelInputManifest, included []M
 		} else if isProviderImageMediaType(item.MediaType) {
 			maxBytes = MaxModelInputImageBytes
 		}
-		if _, exists := seenPaths[key]; exists || strings.TrimSpace(item.MediaType) == "" || item.ByteSize <= 0 || item.ByteSize > maxBytes || !validModelInputDigest(item.ContentDigest) {
+		_, duplicate := seenPaths[key]
+		if !validPDFImageReceiptFields(item.PageNumber, item.ImageNumber, item.ImageWidth, item.ImageHeight) || (item.PageNumber > 0 && item.MediaType != "image/png") || duplicate || strings.TrimSpace(item.MediaType) == "" || item.ByteSize <= 0 || item.ByteSize > maxBytes || !validModelInputDigest(item.ContentDigest) {
 			return errors.New("delivery receipt contains a duplicate or invalid included file")
 		}
 		seenPaths[key] = struct{}{}
@@ -245,7 +273,8 @@ func VerifyModelInputDeliverySelection(manifest ModelInputManifest, included []M
 	}
 	for _, item := range excluded {
 		key := item.InputID + "\x00" + strings.ToLower(item.RelativePath)
-		if _, exists := seenPaths[key]; exists || strings.TrimSpace(item.MediaType) == "" || item.ByteSize <= 0 || !validModelInputDigest(item.ContentDigest) || !validInputExclusionReason(item.Reason) {
+		_, duplicate := seenPaths[key]
+		if !validPDFImageReceiptFields(item.PageNumber, item.ImageNumber, item.ImageWidth, item.ImageHeight) || (item.PageNumber > 0 && item.MediaType != "image/png") || duplicate || strings.TrimSpace(item.MediaType) == "" || item.ByteSize <= 0 || !validModelInputDigest(item.ContentDigest) || !validInputExclusionReason(item.Reason) {
 			return errors.New("delivery receipt contains a duplicate or invalid excluded file")
 		}
 		seenPaths[key] = struct{}{}
@@ -270,13 +299,13 @@ func VerifyModelInputDeliverySelection(manifest ModelInputManifest, included []M
 				if item.RelativePath == "" || !validArchiveInputPath(reference.SourceKind, item.RelativePath) {
 					return errors.New("archive delivery contains an unsafe source path")
 				}
-				files = append(files, deliveryFileSelection{path: item.RelativePath, mediaType: item.MediaType, byteSize: item.ByteSize, digest: item.ContentDigest, included: true})
+				files = append(files, deliveryFileSelection{path: item.RelativePath, mediaType: item.MediaType, byteSize: item.ByteSize, digest: item.ContentDigest, pageNumber: item.PageNumber, imageNumber: item.ImageNumber, imageWidth: item.ImageWidth, imageHeight: item.ImageHeight, included: true})
 			}
 			for _, item := range excludedFiles {
 				if item.RelativePath == "" || !validArchiveInputPath(reference.SourceKind, item.RelativePath) {
 					return errors.New("archive exclusion contains an unsafe source path")
 				}
-				files = append(files, deliveryFileSelection{path: item.RelativePath, mediaType: item.MediaType, byteSize: item.ByteSize, digest: item.ContentDigest, reason: item.Reason})
+				files = append(files, deliveryFileSelection{path: item.RelativePath, mediaType: item.MediaType, byteSize: item.ByteSize, digest: item.ContentDigest, pageNumber: item.PageNumber, imageNumber: item.ImageNumber, imageWidth: item.ImageWidth, imageHeight: item.ImageHeight, reason: item.Reason})
 			}
 			sort.Slice(files, func(i, j int) bool { return files[i].path < files[j].path })
 			if len(files) == 0 {
@@ -299,6 +328,14 @@ func VerifyModelInputDeliverySelection(manifest ModelInputManifest, included []M
 				}
 				expectedFiles[archiveFile.RelativePath] = archiveFile
 			}
+			var pdfImages map[string]PDFPageImage
+			if reference.SourceKind == "pdf_snapshot" {
+				var err error
+				pdfImages, err = pdfImageMetadataByPath(archiveFiles)
+				if err != nil {
+					return errors.New("PDF archive page-image metadata failed verification")
+				}
+			}
 			if len(files) != len(expectedFiles) {
 				return errors.New("archive delivery receipt omits or adds source files")
 			}
@@ -306,6 +343,18 @@ func VerifyModelInputDeliverySelection(manifest ModelInputManifest, included []M
 				archiveFile, ok := expectedFiles[file.path]
 				if !ok || file.mediaType != archiveFile.MediaType || file.byteSize != int64(len(archiveFile.Content)) || file.digest != sha256Digest(archiveFile.Content) {
 					return errors.New("archive delivery receipt differs from the frozen source archive")
+				}
+				if reference.SourceKind == "pdf_snapshot" {
+					visual, isPageImage := pdfImages[file.path]
+					if isPageImage {
+						if file.mediaType != "image/png" || file.pageNumber != visual.PageNumber || file.imageNumber != visual.ImageNumber || file.imageWidth != visual.Width || file.imageHeight != visual.Height {
+							return errors.New("PDF page image receipt differs from its frozen page metadata")
+						}
+					} else if file.pageNumber != 0 || file.imageNumber != 0 || file.imageWidth != 0 || file.imageHeight != 0 {
+						return errors.New("non-image PDF receipt contains page-image metadata")
+					}
+				} else if file.pageNumber != 0 || file.imageNumber != 0 || file.imageWidth != 0 || file.imageHeight != 0 {
+					return errors.New("non-PDF archive receipt contains page-image metadata")
 				}
 			}
 			for _, file := range files {
@@ -490,7 +539,11 @@ func renderModelInputPrompt(input ModelInputContext) string {
 		if item.RelativePath != "" {
 			name = item.RelativePath
 		}
-		fmt.Fprintf(&prompt, "\nAttached untrusted image %s revision %d (%s, %s, %d bytes, sha256 %s). The image bytes are attached to this same Worker turn as image input.\n", item.Reference.InputID, item.Reference.Revision, name, item.MediaType, item.ByteSize, item.ContentDigest)
+		if item.PageNumber > 0 {
+			fmt.Fprintf(&prompt, "\nAttached untrusted PDF image %s revision %d (page %d, image %d, %dx%d pixels; %s, %d bytes, sha256 %s). This is an embedded image object with its original page placement recorded in the immutable PDF extraction manifest; it is not a raster of the complete PDF page. The image bytes are attached to this same Worker turn as image input.\n", item.Reference.InputID, item.Reference.Revision, item.PageNumber, item.ImageNumber, item.ImageWidth, item.ImageHeight, name, item.ByteSize, item.ContentDigest)
+		} else {
+			fmt.Fprintf(&prompt, "\nAttached untrusted image %s revision %d (%s, %s, %d bytes, sha256 %s). The image bytes are attached to this same Worker turn as image input.\n", item.Reference.InputID, item.Reference.Revision, name, item.MediaType, item.ByteSize, item.ContentDigest)
+		}
 	}
 	for _, table := range input.CSVs {
 		fmt.Fprintf(&prompt, "\n--- BEGIN UNTRUSTED CSV TABLE %s revision %d (%s, %d rows, %d columns; delimiter %q, encoding %s; source sha256 %s; manifest %s) ---\n",
@@ -537,12 +590,16 @@ func renderModelInputPrompt(input ModelInputContext) string {
 }
 
 type deliveryFileSelection struct {
-	path      string
-	mediaType string
-	byteSize  int64
-	digest    string
-	reason    string
-	included  bool
+	path        string
+	mediaType   string
+	byteSize    int64
+	digest      string
+	pageNumber  int
+	imageNumber int
+	imageWidth  int
+	imageHeight int
+	reason      string
+	included    bool
 }
 
 func appendModelTextInput(prepared *ModelInputContext, reference ModelInputManifestEntry, relativePath, mediaType string, content []byte, contentDigest string, usedBytes *int64) error {
@@ -555,9 +612,20 @@ func appendModelTextInput(prepared *ModelInputContext, reference ModelInputManif
 	return nil
 }
 
-func appendModelImage(prepared *ModelInputContext, reference ModelInputManifestEntry, relativePath, mediaType string, content []byte, contentDigest string, usedBytes *int64) error {
+func validPDFImageReceiptFields(pageNumber, imageNumber, width, height int) bool {
+	if pageNumber == 0 && imageNumber == 0 && width == 0 && height == 0 {
+		return true
+	}
+	return pageNumber > 0 && pageNumber <= MaxPDFPages && imageNumber > 0 && imageNumber <= maxPDFImagesPerPage && width > 0 && height > 0 && width <= maxPDFImagePixels/height
+}
+
+func appendModelImage(prepared *ModelInputContext, reference ModelInputManifestEntry, relativePath, mediaType string, content []byte, contentDigest string, usedBytes *int64, visual *PDFPageImage) error {
 	if len(content) > MaxModelInputImageBytes || len(prepared.Images) >= MaxModelInputImages || *usedBytes+int64(len(content)) > MaxModelInputImageTotalBytes {
-		prepared.Excluded = append(prepared.Excluded, ModelInputExclusion{InputID: reference.InputID, RelativePath: relativePath, MediaType: mediaType, ByteSize: int64(len(content)), ContentDigest: contentDigest, Reason: "context_limit"})
+		excluded := ModelInputExclusion{InputID: reference.InputID, RelativePath: relativePath, MediaType: mediaType, ByteSize: int64(len(content)), ContentDigest: contentDigest, Reason: "context_limit"}
+		if visual != nil {
+			excluded.PageNumber, excluded.ImageNumber, excluded.ImageWidth, excluded.ImageHeight = visual.PageNumber, visual.ImageNumber, visual.Width, visual.Height
+		}
+		prepared.Excluded = append(prepared.Excluded, excluded)
 		return nil
 	}
 	config, format, err := image.DecodeConfig(bytes.NewReader(content))
@@ -565,7 +633,11 @@ func appendModelImage(prepared *ModelInputContext, reference ModelInputManifestE
 	if err != nil || format != wantFormat || config.Width < 1 || config.Height < 1 || config.Width > 20_000 || config.Height > 20_000 || int64(config.Width)*int64(config.Height) > 100_000_000 {
 		return errors.New("bound image bytes do not match the supported image representation")
 	}
-	prepared.Images = append(prepared.Images, ModelInputImage{Reference: reference, RelativePath: relativePath, MediaType: mediaType, ByteSize: int64(len(content)), ContentDigest: contentDigest, Content: append([]byte(nil), content...)})
+	item := ModelInputImage{Reference: reference, RelativePath: relativePath, MediaType: mediaType, ByteSize: int64(len(content)), ContentDigest: contentDigest, Content: append([]byte(nil), content...)}
+	if visual != nil {
+		item.PageNumber, item.ImageNumber, item.ImageWidth, item.ImageHeight = visual.PageNumber, visual.ImageNumber, visual.Width, visual.Height
+	}
+	prepared.Images = append(prepared.Images, item)
 	*usedBytes += int64(len(content))
 	return nil
 }
