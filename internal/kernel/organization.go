@@ -328,6 +328,31 @@ func ensureCompanyFixedTeamRolesTX(ctx context.Context, tx pgx.Tx, companyID str
 	return nil
 }
 
+// requireCompanyFixedTeamCoverageConfirmationTX keeps Worker admission behind
+// the installation owner's explicit acknowledgment of the exact embedded
+// matrix. The acknowledgment only confirms the fixed mapping; it does not
+// qualify any role or provider surface.
+func requireCompanyFixedTeamCoverageConfirmationTX(ctx context.Context, tx pgx.Tx, companyID string) error {
+	if err := spec.ValidateFixedTeamCoverageDraft(); err != nil {
+		return core.Denied
+	}
+	var confirmedDigest, decision, qualification string
+	err := tx.QueryRow(ctx, `SELECT payload->>'template_sha256',payload->>'decision',payload->>'qualification' FROM events
+WHERE company_id=$1 AND kind='company.team_coverage.confirmed'
+ORDER BY company_seq DESC LIMIT 1`, companyID).Scan(&confirmedDigest, &decision, &qualification)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return core.Denied
+	}
+	if err != nil {
+		return err
+	}
+	if confirmedDigest != spec.FixedTeamCoverageSHA256() ||
+		decision != "installation_owner_confirmed_fixed_team_mapping" || qualification != "unverified" {
+		return core.Denied
+	}
+	return ensureCompanyFixedTeamRolesTX(ctx, tx, companyID)
+}
+
 // TXArchiveCompany archives an idle company without deleting its history or
 // artifacts. Active work must be stopped through the normal command path first.
 func (k *Kernel) TXArchiveCompany(ctx context.Context, companyID, key string) (Receipt, error) {

@@ -245,6 +245,9 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		if e != nil {
 			return Receipt{}, e
 		}
+		if e = requireCompanyFixedTeamCoverageConfirmationTX(ctx, tx, s.company); e != nil {
+			return Receipt{}, e
+		}
 		companyBudget, e := lockCompanyToolCallBudgetTX(ctx, tx, s.company)
 		if e != nil {
 			return Receipt{}, e
