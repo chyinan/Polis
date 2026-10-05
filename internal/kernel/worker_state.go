@@ -83,10 +83,12 @@ func (k *Kernel) TXNewProductProviderWorkerWithToolBudget(ctx context.Context, s
 // productProviderSuccessorReadyTX keeps product Tasks single-attempt by
 // default. It permits a successor generation only when every earlier session
 // is stopped and every prior session has an owner-reviewed memory revalidation
-// in its history. The immediately preceding session must be bound to this Task
-// generation or the generation immediately before it, covering ready-state
-// revalidations recorded before generation advancement was enforced.
-func productProviderSuccessorReadyTX(ctx context.Context, tx pgx.Tx, scope Scope, taskID string, taskGeneration int64, excludedSessionID string) (bool, error) {
+// in its history. A successor also retains the prior session's exact profile
+// until a separately approved cross-profile handover exists. The immediately
+// preceding session must be bound to this Task generation or the generation
+// immediately before it, covering ready-state revalidations recorded before
+// generation advancement was enforced.
+func productProviderSuccessorReadyTX(ctx context.Context, tx pgx.Tx, scope Scope, taskID string, taskGeneration int64, excludedSessionID, profile string) (bool, error) {
 	var live bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_sessions
 WHERE company_id=$1 AND task_id=$2 AND ($3='' OR id<>$3) AND state!='stopped')`, scope.company, taskID, excludedSessionID).Scan(&live); err != nil {
@@ -108,18 +110,18 @@ AND NOT EXISTS(SELECT 1 FROM memory_task_revalidation_events r
 	if unreviewedPriorSession {
 		return false, nil
 	}
-	var priorID, priorState string
+	var priorID, priorState, priorProfile string
 	var priorGeneration int64
-	err := tx.QueryRow(ctx, `SELECT id,state,generation FROM worker_sessions
+	err := tx.QueryRow(ctx, `SELECT id,state,generation,profile FROM worker_sessions
 WHERE company_id=$1 AND task_id=$2 AND ($3='' OR id<>$3)
-ORDER BY generation DESC,id DESC LIMIT 1`, scope.company, taskID, excludedSessionID).Scan(&priorID, &priorState, &priorGeneration)
+ORDER BY generation DESC,id DESC LIMIT 1`, scope.company, taskID, excludedSessionID).Scan(&priorID, &priorState, &priorGeneration, &priorProfile)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return true, nil
 	}
 	if err != nil {
 		return false, err
 	}
-	if priorState != "stopped" || taskGeneration < priorGeneration {
+	if priorState != "stopped" || taskGeneration < priorGeneration || profile == "" || profile != priorProfile {
 		return false, nil
 	}
 	var revalidated bool
@@ -203,7 +205,7 @@ WHERE company_id=$1 AND task_id=$2 ORDER BY generation DESC,id DESC LIMIT 1`, b.
 	if latestSessionID != b.session {
 		return core.Conflict
 	}
-	successorReady, err := productProviderSuccessorReadyTX(ctx, tx, b.scope, task.ID, task.Generation, b.session)
+	successorReady, err := productProviderSuccessorReadyTX(ctx, tx, b.scope, task.ID, task.Generation, b.session, profile)
 	if err != nil {
 		return err
 	}
@@ -355,7 +357,7 @@ WHERE company_id=$1 AND problem_key=$2`, s.company, t.ProblemKey).Scan(&problemT
 			if selectedTask.ID != t.ID {
 				return Receipt{}, core.Conflict
 			}
-			successorReady, err := productProviderSuccessorReadyTX(ctx, tx, s, t.ID, t.Generation, "")
+			successorReady, err := productProviderSuccessorReadyTX(ctx, tx, s, t.ID, t.Generation, "", profile)
 			if err != nil {
 				return Receipt{}, err
 			}
