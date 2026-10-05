@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-06)
 
-## Latest continuation status (Slice 260, REQ-14 controlled MCP dispatch permits)
+## Latest continuation status (Slice 261, REQ-02 semantic team-matrix revision)
+
+The exact reviewed fixed-team matrix now compiles to a typed content-addressed team-matrix revision. Owner-confirmation events retain the exact bytes, and Company summary projections verify the current digest, decision and unverified state before exposing it. The semantic resolver reports assignments but remains human-required while execution is disabled and qualifications are unverified. This is not a per-employee RoleRevision; no semantic task_type-to-TaskKind mapping or admission behavior was added. C-AUTHORITY still needs an approved Task/PlanRevision semantic binding and explicit mapping. Go build, frontend production build and diff check passed; no tests, DB, Worker/provider action or scenario ran. Seven REQ-02 rows remain partial/not_run, all 232 scenarios remain not_run, and 17 open REQs are unchanged. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md.
+
+## Previous continuation status (Slice 260, REQ-14 controlled MCP dispatch permits)
 
 Controlled stdio and Streamable HTTP MCP calls now require an expiring, single-use permit bound to the exact action/attempt, Task and WorkerSession generation, Employee epoch, current binding revision, runtime qualification, target fingerprint, and argument digest. Permit consumption rechecks authority and atomically writes the consumed permit plus immutable `dispatching` intent under the same Company lifecycle guard as revocation. Unused permits expire; consumed calls interrupted by stop remain `outcome_unknown`. This is limited to controlled MCP: general ActionIntent/DispatchPermit and REQ-26 shared-write bindings remain absent. Schema 109 source is committed, but the local runtime remains on Schema 108; no migration, test, Worker/provider call, or scenario ran. REQ-14 remains partial; all 232 scenarios remain `not_run`. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md.
 
@@ -53,7 +57,7 @@ Provider terminal telemetry now records the count of observed Codex thread/token
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice261: continue a concrete local gap in the finite approved ledger, currently including the active REQ-02 role-contract, REQ-13 global-slot, REQ-35 CSV/PDF, and REQ-29 host/shared-root/retention work. Keep owner-policy and host/account qualification gates explicit; preserve all scenario execution states as `not_run`.
+Next Slice262: continue the remaining local gaps in the finite approved ledger. REQ-13 global Worker slots and REQ-35 CSV ranges are in parallel review; PDF page raster, REQ-29 host/shared roots and retention policy remain. Keep owner-policy and host/account gates explicit and preserve scenario execution states as `not_run`.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 
