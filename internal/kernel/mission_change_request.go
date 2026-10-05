@@ -125,10 +125,23 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, scope.company, changeRequestID, mission
 }
 
 func (k *Kernel) TXConsiderMissionChangeRequest(ctx context.Context, scope Scope, missionID, changeRequestID, key string) (MissionChangeRequest, error) {
+	return k.txConsiderMissionChangeRequest(ctx, scope, missionID, changeRequestID, "", key, false)
+}
+
+// TXConsiderMissionChangeRequestWithAssessment binds operator review to the
+// exact Planning assessment the UI displayed.
+func (k *Kernel) TXConsiderMissionChangeRequestWithAssessment(ctx context.Context, scope Scope, missionID, changeRequestID, expectedAssessmentSHA256, key string) (MissionChangeRequest, error) {
+	if !validTaskInputDigest(expectedAssessmentSHA256) {
+		return MissionChangeRequest{}, core.Malformed
+	}
+	return k.txConsiderMissionChangeRequest(ctx, scope, missionID, changeRequestID, expectedAssessmentSHA256, key, true)
+}
+
+func (k *Kernel) txConsiderMissionChangeRequest(ctx context.Context, scope Scope, missionID, changeRequestID, expectedAssessmentSHA256, key string, requireExpectedAssessment bool) (MissionChangeRequest, error) {
 	if !core.ValidID(missionID) || !core.ValidID(changeRequestID) || !core.ValidID(key) {
 		return MissionChangeRequest{}, core.Malformed
 	}
-	receipt, err := k.TXWrite(ctx, scope, nil, key, "mission.change_request.considered", struct{ MissionID, ChangeRequestID string }{missionID, changeRequestID}, func(tx pgx.Tx) (Receipt, error) {
+	receipt, err := k.TXWrite(ctx, scope, nil, key, "mission.change_request.considered", struct{ MissionID, ChangeRequestID, ExpectedAssessmentSHA256 string }{missionID, changeRequestID, expectedAssessmentSHA256}, func(tx pgx.Tx) (Receipt, error) {
 		request, state, err := missionChangeRequestForUpdate(ctx, tx, scope, missionID, changeRequestID)
 		if err != nil {
 			return Receipt{}, err
@@ -157,6 +170,22 @@ func (k *Kernel) TXConsiderMissionChangeRequest(ctx context.Context, scope Scope
 		if !missionChangeSafeBoundary(impact) {
 			return Receipt{}, core.ConflictError{Reason: "a WorkerSession, JobRun, service lease or incomplete input still needs reconciliation", CurrentState: "writers_not_stopped"}
 		}
+		planningAssessment, err := missionChangePlanningAssessmentForTX(ctx, tx, scope, request, impact)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if planningAssessment == nil {
+			return Receipt{}, core.ConflictError{Reason: "the fixed Planning role must assess natural-language change impacts before operator review", CurrentState: "planning_assessment_required"}
+		}
+		if planningAssessment.Status != "current" {
+			return Receipt{}, core.ConflictError{Reason: "the Planning assessment no longer matches the current change basis", CurrentState: "planning_assessment_stale"}
+		}
+		if requireExpectedAssessment && planningAssessment.AssessmentSHA256 != expectedAssessmentSHA256 {
+			return Receipt{}, core.ConflictError{Reason: "the Planning assessment changed after operator review loaded it", CurrentState: "planning_assessment_changed"}
+		}
+		if planningAssessment.RiskLevel != "low" && !request.BlockPreviousResults {
+			return Receipt{}, core.ConflictError{Reason: "high-risk or uncertain change scope requires blocking previous results", CurrentState: "previous_results_must_be_blocked"}
+		}
 		var nextRevision int64
 		if err = tx.QueryRow(ctx, `SELECT COALESCE(max(revision),0)+1 FROM mission_change_request_impacts WHERE company_id=$1 AND change_request_id=$2`, scope.company, changeRequestID).Scan(&nextRevision); err != nil {
 			return Receipt{}, err
@@ -169,11 +198,18 @@ func (k *Kernel) TXConsiderMissionChangeRequest(ctx context.Context, scope Scope
 				return Receipt{}, err
 			}
 		}
-		if err = appendMissionChangeState(ctx, tx, scope, changeRequestID, "considered", int64Pointer(nextRevision), nil, "impact_review_ready", map[string]any{}); err != nil {
+		if err = appendMissionChangeState(ctx, tx, scope, changeRequestID, "considered", int64Pointer(nextRevision), nil, "impact_review_ready", map[string]any{
+			"planning_assessment_id":     planningAssessment.AssessmentID,
+			"planning_assessment_sha256": planningAssessment.AssessmentSHA256,
+			"planning_risk_level":        planningAssessment.RiskLevel,
+		}); err != nil {
 			return Receipt{}, err
 		}
 		if err = appendEvent(ctx, tx, scope, "mission.change_request.considered", map[string]any{
 			"mission_id": missionID, "change_request_id": changeRequestID, "impact_revision": nextRevision, "impact_sha256": impactDigest,
+			"planning_assessment_id":     planningAssessment.AssessmentID,
+			"planning_assessment_sha256": planningAssessment.AssessmentSHA256,
+			"planning_risk_level":        planningAssessment.RiskLevel,
 		}); err != nil {
 			return Receipt{}, err
 		}
@@ -316,6 +352,36 @@ WHERE r.company_id=$1 AND r.mission_id=$2 AND r.change_request_id=$3`, scope.com
 	out.ImpactRevision = impactRevision.Int64
 	out.SuccessorMissionID = successorMissionID
 	out.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+	assessmentTx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return MissionChangeRequest{}, err
+	}
+	defer assessmentTx.Rollback(ctx)
+	assessmentImpact := out.Impact
+	assessmentRequest := out
+	if out.State == "received" || out.State == "queued" || out.State == "considered" {
+		basis, basisErr := missionChangeBasisTx(ctx, assessmentTx, scope, missionID, false)
+		if basisErr != nil {
+			return MissionChangeRequest{}, basisErr
+		}
+		currentRequirementsSHA256, digestErr := missionChangeRequirementsDigest(missionID, basis.Title, basis.Goal, basis.AcceptanceContract, basis.InputRevisions)
+		if digestErr != nil {
+			return MissionChangeRequest{}, digestErr
+		}
+		currentImpact, _, impactErr := missionChangeImpactTx(ctx, assessmentTx, scope, missionID, currentRequirementsSHA256, basis.InputRevisions)
+		if impactErr != nil {
+			return MissionChangeRequest{}, impactErr
+		}
+		assessmentRequest.BaseRequirementsSHA256 = currentRequirementsSHA256
+		assessmentImpact = currentImpact
+	}
+	out.PlanningAssessment, err = missionChangePlanningAssessmentForTX(ctx, assessmentTx, scope, assessmentRequest, assessmentImpact)
+	if err != nil {
+		return MissionChangeRequest{}, err
+	}
+	if err = assessmentTx.Commit(ctx); err != nil {
+		return MissionChangeRequest{}, err
+	}
 	var latestDetail struct {
 		InputRevisionMap []MissionChangeInputRevisionMap `json:"input_revision_map"`
 	}

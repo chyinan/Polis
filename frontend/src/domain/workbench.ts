@@ -1128,6 +1128,26 @@ export type MissionChangeRequestEvent = Readonly<{
   inputRevisionMap: ReadonlyArray<MissionChangeInputRevisionMap>;
 }>;
 
+export type MissionChangePlanningAssessmentView = Readonly<{
+  schemaVersion: 'polis-mission-change-planning-assessment@1';
+  assessmentId: string;
+  revision: number;
+  status: 'current' | 'stale';
+  analysisBasisSha256: string;
+  assessmentSha256: string;
+  riskLevel: 'low' | 'high' | 'uncertain';
+  summary: string;
+  affectedTaskIds: ReadonlyArray<string>;
+  unaffectedTaskIds: ReadonlyArray<string>;
+  uncertainTaskIds: ReadonlyArray<string>;
+  questions: ReadonlyArray<string>;
+  recommendedControls: ReadonlyArray<string>;
+  workerSessionId: string;
+  workerTaskId: string;
+  workerEpoch: number;
+  createdAt: string;
+}>;
+
 export type MissionChangeRequestView = Readonly<{
   changeRequestId: string;
   missionId: string;
@@ -1142,6 +1162,7 @@ export type MissionChangeRequestView = Readonly<{
   impactRevision: number;
   impactSha256: string;
   impact: MissionChangeImpact;
+  planningAssessment: MissionChangePlanningAssessmentView | null;
   successorMissionId: string | null;
   inputRevisionMap: ReadonlyArray<MissionChangeInputRevisionMap>;
   createdAt: string;

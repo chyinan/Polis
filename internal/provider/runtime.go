@@ -132,6 +132,38 @@ func ProductWorkspaceSnapshotRevocationToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithWorkspaceSnapshotRevocation())
 }
 
+const ProductMissionChangeAssessmentToolSurfaceQualification = "polis-product-tool-surface@12"
+
+const (
+	OfflineMissionChangeAssessmentSurfacePurpose        = "offline-mission-change-assessment-tool-surface"
+	OfflineMissionChangeAssessmentSurfaceSimulationMark = "offline-mission-change-assessment-tool-surface-unqualified"
+	ProductMissionChangeAssessmentManifestDigest        = "cd9f4f852cd5674b1e0660868cb5af628a0186a0f137e8e1778e8fd6809c326d"
+	ProductMissionChangeAssessmentSchemaDigest          = "0be7f09a90c96ed73596617207ed1bac7575c6b8fd56cfe086a5880352c6b28a"
+	ProductMissionChangeAssessmentSchemaBytes           = 6740
+)
+
+func ProductMissionChangeAssessmentToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithMissionChangeAssessment())
+}
+
+func ValidateOfflineFakeMissionChangeAssessmentSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductMissionChangeAssessmentToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductMissionChangeAssessmentToolSurfaceQualification ||
+		profile.Purpose != OfflineMissionChangeAssessmentSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineMissionChangeAssessmentSurfaceSimulationMark ||
+		profile.ProductProviderL2Fingerprint != OfflineMissionChangeAssessmentSurfaceSimulationMark || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 25 || expected.ManifestDigest != ProductMissionChangeAssessmentManifestDigest ||
+		expected.AggregateSchemaBytes != ProductMissionChangeAssessmentSchemaBytes || expected.AggregateSchemaDigest != ProductMissionChangeAssessmentSchemaDigest ||
+		surface.ToolCount != 25 || observed.ToolCount != 25 || surface.ManifestDigest != ProductMissionChangeAssessmentManifestDigest ||
+		observed.ManifestDigest != ProductMissionChangeAssessmentManifestDigest || surface.AggregateSchemaBytes != ProductMissionChangeAssessmentSchemaBytes ||
+		observed.AggregateSchemaBytes != ProductMissionChangeAssessmentSchemaBytes || surface.AggregateSchemaDigest != ProductMissionChangeAssessmentSchemaDigest ||
+		observed.AggregateSchemaDigest != ProductMissionChangeAssessmentSchemaDigest {
+		return fmt.Errorf("mission-change assessment surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
+}
+
 func ValidateOfflineFakeWorkspaceSnapshotRevocationSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
 	expected := ProductWorkspaceSnapshotRevocationToolSurface()
 	observed := ToolSurfaceFromTools(surface.Tools)

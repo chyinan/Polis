@@ -184,7 +184,12 @@ export class RealWorkbenchApi implements WorkbenchApi {
     if (action === 'apply' && (options.impactSha256 === undefined || !/^[0-9a-f]{64}$/.test(options.impactSha256))) {
       throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to apply formal change request: the reviewed impact digest is required', options.changeRequestId);
     }
-    const body = action === 'apply' ? {requestId: options.requestId, impactSha256: options.impactSha256} : {requestId: options.requestId};
+    if (action === 'consider' && (options.assessmentSha256 === undefined || !/^[0-9a-f]{64}$/.test(options.assessmentSha256))) {
+      throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to consider formal change request: the current Planning assessment digest is required', options.changeRequestId);
+    }
+    const body = action === 'apply' ? {requestId: options.requestId, impactSha256: options.impactSha256}
+      : action === 'consider' ? {requestId: options.requestId, assessmentSha256: options.assessmentSha256}
+        : {requestId: options.requestId};
     const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/missions/${encodeURIComponent(options.missionId)}/change-requests/${encodeURIComponent(options.changeRequestId)}/${action}`, options.requestId, body);
     const result = validateMissionChangeRequest(raw, options.missionId);
     if (!result.success) {

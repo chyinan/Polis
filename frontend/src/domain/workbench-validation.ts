@@ -85,6 +85,7 @@ import type {
   ServiceBrowserSessionView,
   JobRunView,
   CrossBackendHandoverView,
+  MissionChangePlanningAssessmentView,
   MissionChangeRequestView,
   TaskTakeoverDiffSummaryView,
   TaskTakeoverLeaseView,
@@ -440,6 +441,25 @@ function isMissionChangeRequestEvent(value: unknown): boolean {
     && Array.isArray(value.inputRevisionMap) && value.inputRevisionMap.every(isMissionChangeInputRevisionMap);
 }
 
+function isMissionChangePlanningAssessment(value: unknown): value is MissionChangePlanningAssessmentView {
+  if (!isRecord(value) || value.schemaVersion !== 'polis-mission-change-planning-assessment@1'
+    || !hasString(value, 'assessmentId') || typeof value.revision !== 'number' || !Number.isSafeInteger(value.revision) || value.revision < 1
+    || !isOneOf(value.status, ['current', 'stale'])
+    || typeof value.analysisBasisSha256 !== 'string' || !/^[0-9a-f]{64}$/.test(value.analysisBasisSha256)
+    || typeof value.assessmentSha256 !== 'string' || !/^[0-9a-f]{64}$/.test(value.assessmentSha256)
+    || !isOneOf(value.riskLevel, ['low', 'high', 'uncertain']) || typeof value.summary !== 'string' || value.summary.trim() === '' || value.summary.length > 4096
+    || !Array.isArray(value.affectedTaskIds) || !Array.isArray(value.unaffectedTaskIds) || !Array.isArray(value.uncertainTaskIds)
+    || !Array.isArray(value.questions) || !value.questions.every(item => typeof item === 'string' && item.trim() !== '' && item.length <= 512)
+    || !Array.isArray(value.recommendedControls) || !value.recommendedControls.every(item => typeof item === 'string' && item.trim() !== '' && item.length <= 1024)
+    || !hasString(value, 'workerSessionId') || typeof value.workerTaskId !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(value.workerTaskId)
+    || typeof value.workerEpoch !== 'number' || !Number.isSafeInteger(value.workerEpoch) || value.workerEpoch < 1
+    || !hasString(value, 'createdAt')) return false;
+  const taskIds = [...value.affectedTaskIds, ...value.unaffectedTaskIds, ...value.uncertainTaskIds];
+  return taskIds.length <= 512 && taskIds.every(taskId => typeof taskId === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(taskId))
+    && new Set(taskIds).size === taskIds.length
+    && value.questions.length <= 12 && value.recommendedControls.length <= 12;
+}
+
 function isMissionChangeRequest(value: unknown, missionId: string): value is MissionChangeRequestView {
   return isRecord(value) && hasString(value, 'changeRequestId') && value.missionId === missionId
     && hasString(value, 'clientRequestId')
@@ -452,6 +472,7 @@ function isMissionChangeRequest(value: unknown, missionId: string): value is Mis
     && typeof value.impactRevision === 'number' && Number.isSafeInteger(value.impactRevision) && value.impactRevision > 0
     && typeof value.impactSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.impactSha256)
     && isMissionChangeImpact(value.impact, missionId)
+    && (value.planningAssessment === null || isMissionChangePlanningAssessment(value.planningAssessment))
     && isNullableString(value.successorMissionId)
     && (value.state === 'applied' ? value.successorMissionId !== null : value.successorMissionId === null)
     && Array.isArray(value.inputRevisionMap) && value.inputRevisionMap.every(isMissionChangeInputRevisionMap)

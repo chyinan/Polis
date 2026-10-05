@@ -29,10 +29,10 @@ func (s *Service) ListMissionChangeRequests(ctx context.Context, companyID, miss
 }
 
 func (s *Service) ConsiderMissionChangeRequest(ctx context.Context, companyID, missionID, changeRequestID string, request MissionChangeRequestCommand) (kernel.MissionChangeRequest, error) {
-	if !validMissionChangeRequestCommand(companyID, missionID, changeRequestID, request.RequestID) {
+	if !validMissionChangeRequestCommand(companyID, missionID, changeRequestID, request.RequestID) || !validSHA256Digest(request.AssessmentSHA256) {
 		return kernel.MissionChangeRequest{}, core.Malformed
 	}
-	return s.runtime.TXConsiderMissionChangeRequest(ctx, s.runtime.LocalScope(companyID), missionID, changeRequestID, request.RequestID)
+	return s.runtime.TXConsiderMissionChangeRequestWithAssessment(ctx, s.runtime.LocalScope(companyID), missionID, changeRequestID, request.AssessmentSHA256, request.RequestID)
 }
 
 func (s *Service) DeclineMissionChangeRequest(ctx context.Context, companyID, missionID, changeRequestID string, request MissionChangeRequestCommand) (kernel.MissionChangeRequest, error) {

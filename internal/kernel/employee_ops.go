@@ -33,6 +33,7 @@ type EmployeeTools struct {
 	Phase                              string
 	ReadOnly                           bool
 	ProductSurface                     bool
+	MissionChangeAssessmentSurface     bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -46,11 +47,15 @@ type EmployeeTools struct {
 }
 
 func strictArgs(raw []byte, v any) error {
+	return strictArgsLimit(raw, v, 8192)
+}
+
+func strictArgsLimit(raw []byte, v any, maxBytes int) error {
 	trimmed := bytes.TrimSpace(raw)
 	if len(trimmed) == 0 || trimmed[0] != '{' {
 		return core.Malformed
 	}
-	if len(raw) > 8192 {
+	if maxBytes <= 0 || len(raw) > maxBytes {
 		return core.TooLarge
 	}
 	dec := json.NewDecoder(bytes.NewReader(raw))
@@ -103,6 +108,26 @@ func (t EmployeeTools) Call(ctx context.Context, name, callID string, raw []byte
 func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (ToolResult, error) {
 	k, b := t.Kernel, t.Binding
 	switch name {
+	case "mission_change_request_read":
+		if !t.ProductSurface || !t.MissionChangeAssessmentSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct{}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		planningContext, e := k.MissionChangePlanningContext(ctx, b)
+		return ToolResult{Data: planningContext}, e
+	case "mission_change_impact_assess":
+		if !t.ProductSurface || !t.MissionChangeAssessmentSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args MissionChangePlanningAssessmentInput
+		if e := strictArgsLimit(raw, &args, maxMissionChangeAssessmentBytes); e != nil {
+			return ToolResult{}, e
+		}
+		receipt, e := k.TXAssessMissionChangeRequest(ctx, b, args, key)
+		return ToolResult{Receipt: &receipt}, e
 	case "work_current", "context_read", "workspace_read":
 		var args struct{}
 		if e := strictArgs(raw, &args); e != nil {

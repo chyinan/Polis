@@ -14,6 +14,7 @@ import (
 )
 
 const MissionChangeImpactSchema = "polis-mission-change-impact@1"
+const MissionChangePlanningAssessmentSchema = "polis-mission-change-planning-assessment@1"
 const maxMissionChangeImpactItems = 512
 const maxMissionChangeWorkspaceBytes = 64 * 1024
 
@@ -102,6 +103,43 @@ type MissionChangeImpact struct {
 	NaturalLanguageImpactStatus    string                                `json:"naturalLanguageImpactStatus"`
 }
 
+type MissionChangePlanningAssessmentInput struct {
+	ChangeRequestID     string   `json:"change_request_id"`
+	AnalysisBasisSHA256 string   `json:"analysis_basis_sha256"`
+	RiskLevel           string   `json:"risk_level"`
+	Summary             string   `json:"summary"`
+	AffectedTaskIDs     []string `json:"affected_task_ids"`
+	UnaffectedTaskIDs   []string `json:"unaffected_task_ids"`
+	UncertainTaskIDs    []string `json:"uncertain_task_ids"`
+	Questions           []string `json:"questions"`
+	RecommendedControls []string `json:"recommended_controls"`
+}
+
+type MissionChangePlanningAssessment struct {
+	SchemaVersion       string   `json:"schemaVersion"`
+	AssessmentID        string   `json:"assessmentId"`
+	Revision            int64    `json:"revision"`
+	Status              string   `json:"status"`
+	AnalysisBasisSHA256 string   `json:"analysisBasisSha256"`
+	AssessmentSHA256    string   `json:"assessmentSha256"`
+	RiskLevel           string   `json:"riskLevel"`
+	Summary             string   `json:"summary"`
+	AffectedTaskIDs     []string `json:"affectedTaskIds"`
+	UnaffectedTaskIDs   []string `json:"unaffectedTaskIds"`
+	UncertainTaskIDs    []string `json:"uncertainTaskIds"`
+	Questions           []string `json:"questions"`
+	RecommendedControls []string `json:"recommendedControls"`
+	WorkerSessionID     string   `json:"workerSessionId"`
+	WorkerTaskID        string   `json:"workerTaskId"`
+	WorkerEpoch         int64    `json:"workerEpoch"`
+	CreatedAt           string   `json:"createdAt"`
+}
+
+type MissionChangePlanningContext struct {
+	ChangeRequest       MissionChangeRequest `json:"changeRequest"`
+	AnalysisBasisSHA256 string               `json:"analysisBasisSha256"`
+}
+
 type MissionChangeInputRevisionMap struct {
 	Origin            string `json:"origin"`
 	SourceTaskID      string `json:"sourceTaskId,omitempty"`
@@ -136,6 +174,7 @@ type MissionChangeRequest struct {
 	ImpactRevision             int64                              `json:"impactRevision"`
 	ImpactSHA256               string                             `json:"impactSha256"`
 	Impact                     MissionChangeImpact                `json:"impact"`
+	PlanningAssessment         *MissionChangePlanningAssessment   `json:"planningAssessment"`
 	SuccessorMissionID         *string                            `json:"successorMissionId"`
 	InputRevisionMap           []MissionChangeInputRevisionMap    `json:"inputRevisionMap"`
 	CreatedAt                  string                             `json:"createdAt"`

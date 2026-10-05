@@ -139,6 +139,28 @@ func ProductEmployeeToolsWithWorkspaceSnapshotRevocation() []any {
 	return append(tools, revocationTool[0])
 }
 
+// ProductEmployeeToolsWithMissionChangeAssessment is the isolated fake-only
+// @12 surface. Planning analysis is bound to the current WorkerSession and
+// exact change-request basis; it does not expose a caller-selected identity.
+func ProductEmployeeToolsWithMissionChangeAssessment() []any {
+	tools := ProductEmployeeToolsWithWorkspaceSnapshotRevocation()
+	assessmentTools := productTools([]peerToolDefinition{
+		{"mission_change_request_read", "Read the one open formal change request for your current Mission and the hash of its current bounded impact-analysis basis. Available only to the fixed Planning employee's active WorkerSession.", nil},
+		{"mission_change_impact_assess", "Persist an immutable bounded natural-language impact assessment for the exact request basis returned by mission_change_request_read. Classify every current Task exactly once as affected, unaffected or uncertain; use high or uncertain risk controls to require previous results blocked. Polis binds the receipt to this active Planning WorkerSession.", map[string]any{
+			"change_request_id":     map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"analysis_basis_sha256": map[string]any{"type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[a-f0-9]{64}$"},
+			"risk_level":            map[string]any{"type": "string", "enum": []string{"low", "high", "uncertain"}},
+			"summary":               map[string]any{"type": "string", "minLength": 1, "maxLength": 4096},
+			"affected_task_ids":     boundedStringArray(512, 80),
+			"unaffected_task_ids":   boundedStringArray(512, 80),
+			"uncertain_task_ids":    boundedStringArray(512, 80),
+			"questions":             boundedStringArray(12, 512),
+			"recommended_controls":  boundedStringArray(12, 1024),
+		}},
+	})
+	return append(tools, assessmentTools...)
+}
+
 // ProductEmployeeToolsWithReadOnlySkill is a separately versioned surface.
 // The historical qualified surface above remains byte-for-byte unchanged.
 func ProductEmployeeToolsWithReadOnlySkill() []any {
@@ -330,6 +352,10 @@ func buildTools(definitions []peerToolDefinition, product bool) []any {
 
 func stringArray() map[string]any {
 	return map[string]any{"type": "array", "minItems": 1, "maxItems": 8, "items": map[string]any{"type": "string", "maxLength": 512}}
+}
+
+func boundedStringArray(maxItems, maxLength int) map[string]any {
+	return map[string]any{"type": "array", "maxItems": maxItems, "items": map[string]any{"type": "string", "minLength": 1, "maxLength": maxLength}}
 }
 
 func checkpointProperties() map[string]any {

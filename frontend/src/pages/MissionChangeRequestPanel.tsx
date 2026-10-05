@@ -61,7 +61,8 @@ export function MissionChangeRequestPanel({api, companyId, missionId, missionSta
   }
 
   async function consider(request: MissionChangeRequestView): Promise<void> {
-    const payload = {changeRequestId: request.changeRequestId};
+    if (request.planningAssessment === null || request.planningAssessment.status !== 'current') return;
+    const payload = {changeRequestId: request.changeRequestId, assessmentSha256: request.planningAssessment.assessmentSha256};
     const pending = requestIdentity('mission-change-consider', payload);
     await considerRequest.mutateAsync({...payload, requestId: pending.requestId});
     clearRequestIdentity(pending.key);
@@ -137,21 +138,41 @@ function MissionChangeRequestRecord({request, missionState, mutationPending, onC
       <strong>{request.changeSummary}</strong>
       <span>{request.changeRequestId} · {request.baseRequirementsSha256.slice(0, 12)} · {request.blockPreviousResults ? '旧结果已阻止交付' : '旧结果继续可取'}</span>
       <span>影响快照 rev{request.impactRevision} · {request.impact.inputRevisions.length} 个输入 · {request.impact.tasks.length} 个任务 · {request.impact.artifacts.length} 个产物</span>
-      <span>应用时会复制 {request.inputRevisionMap.filter(item => item.origin === 'mission_input').length} 个最新输入修订、{request.inputRevisionMap.filter(item => item.origin === 'human_takeover').length} 个人工回传 snapshot 和 {request.inputRevisionMap.filter(item => item.origin === 'task_workspace').length} 个未完成工作区快照到后继使命。</span>
       <span>{hasOpenWriters ? `${request.impact.activeWorkerSessions.length} 个 Worker、${request.impact.nonterminalJobRuns.length} 个 Job、${request.impact.activeServiceEndpoints.length} 个服务端点仍需核对。` : '当前快照没有已知在途 Worker、Job 或服务端点。'}</span>
-      <span>自然语言依赖尚未评估；候选后继：{request.proposedTitle} · {request.proposedGoal}</span>
+      <span>候选后继：{request.proposedTitle} · {request.proposedGoal}</span>
+      {request.planningAssessment === null ? <span>等待固定 Planning 角色在活动 WorkerSession 中评估自然语言依赖。</span> : <>
+        <span>Planning 评估 rev{request.planningAssessment.revision} · {planningRiskLabel(request.planningAssessment.riskLevel)} · {request.planningAssessment.status === 'current' ? '依据仍有效' : '依据已变化，需要重新评估'}</span>
+        <span>{request.planningAssessment.summary}</span>
+        <span>受影响任务：{formatTaskIds(request.planningAssessment.affectedTaskIds)} · 未受影响：{formatTaskIds(request.planningAssessment.unaffectedTaskIds)} · 不确定：{formatTaskIds(request.planningAssessment.uncertainTaskIds)}</span>
+        {request.planningAssessment.questions.length > 0 ? <span>待澄清：{request.planningAssessment.questions.join('；')}</span> : null}
+        {request.planningAssessment.recommendedControls.length > 0 ? <span>建议控制：{request.planningAssessment.recommendedControls.join('；')}</span> : null}
+        <span>来源 WorkerSession {request.planningAssessment.workerSessionId} · Task {request.planningAssessment.workerTaskId} · epoch {request.planningAssessment.workerEpoch}</span>
+        {request.planningAssessment.riskLevel !== 'low' && !request.blockPreviousResults ? <span>高风险或不确定范围要求登记时启用旧结果阻止；请拒绝此请求并重新登记后再复核。</span> : null}
+      </>}
       {request.successorMissionId !== null ? <span>后继使命草稿：{request.successorMissionId}</span> : null}
       {request.events.map(event => <span key={event.eventId}>{missionChangeStateLabel(event.state)} · {event.reasonCode} · {event.createdAt}</span>)}
     </div></div>
     <div className={styles.recordActions}>
       <StatusBadge label={missionChangeStateLabel(request.state)} tone={missionChangeStateTone(request.state)} />
       {['received', 'queued', 'considered'].includes(request.state) ? <>
-        <button className={styles.commandButton} disabled={missionState !== 'paused' || mutationPending} onClick={onConsider} type="button">{missionState === 'paused' ? '复核当前影响' : '暂停后复核'}</button>
+        <button className={styles.commandButton} disabled={missionState !== 'paused' || mutationPending || request.planningAssessment?.status !== 'current' || (request.planningAssessment.riskLevel !== 'low' && !request.blockPreviousResults)} onClick={onConsider} type="button">{request.planningAssessment === null ? '等待 Planning 评估' : request.planningAssessment.status !== 'current' ? '等待重新评估' : missionState === 'paused' ? '复核当前影响' : '暂停后复核'}</button>
         <button className={styles.commandButton} disabled={mutationPending} onClick={onDecline} type="button">拒绝变更</button>
       </> : null}
       {request.state === 'considered' ? <button className={styles.commandButton} disabled={missionState !== 'paused' || mutationPending || hasOpenWriters} onClick={onApply} type="button">应用并创建后继使命</button> : null}
     </div>
   </article>;
+}
+
+function planningRiskLabel(risk: NonNullable<MissionChangeRequestView['planningAssessment']>['riskLevel']): string {
+  switch (risk) {
+    case 'low': return '低风险';
+    case 'high': return '高风险';
+    case 'uncertain': return '范围不确定';
+  }
+}
+
+function formatTaskIds(taskIds: ReadonlyArray<string>): string {
+  return taskIds.length === 0 ? '无' : taskIds.join('、');
 }
 
 function missionChangeStateLabel(state: MissionChangeRequestView['state']): string {

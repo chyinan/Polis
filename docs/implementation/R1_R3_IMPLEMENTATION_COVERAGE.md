@@ -1,10 +1,14 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 228. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 229. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
-## Slice 228: REQ-39 Planning impact-analysis gap audit
+## Slice 229: REQ-39 bounded Planning impact assessment (Schema 108)
 
-The formal change path calculates and pins explicit Task/input/Artifact/writer impacts, but it does not implement bounded natural-language dependency analysis by the fixed Planning role as required for uncertain scope. The current impact contract and validator hard-code `naturalLanguageImpactStatus: not_assessed`, and the Workbench tells operators that natural-language dependencies were not evaluated. A current read of the local database found zero WorkerSessions; backend health was ready. No Worker was created or used, no analysis was submitted, and no frozen scenario or test ran. The audit is linked from all eight REQ-39 scenarios; each remains `partial` / `not_run`, and all 232 scenarios remain `not_run`. Next Slice229 is a bounded, immutable assessment path tied to a database-confirmed active `emp-planning` WorkerSession and current request basis; keep it opt-in and fake-only until qualification and leave real-provider @4 unchanged. See `evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md`.
+Formal change requests now have immutable, size-bounded Planning impact receipts guarded by Schema 107 and the Schema 108 re-assessment guard. The database requires an active current-epoch provider WorkerSession for the fixed Planning employee, attached to a working Planning-owned Task in the same Mission with an open request. The basis hash covers the exact request, requirements, inputs, Task workspace revisions, Artifacts and returned takeover snapshots. The receipt partitions every Task into affected, unaffected or uncertain, records bounded questions and controls, and is integrity checked on read. Consideration requires a current receipt and the exact digest displayed to the owner; high-risk or uncertain findings require old results blocked. Product surface @12 is isolated, opt-in and fake-only; real-provider @4 remains unchanged. Go and frontend production builds passed; the local database is at Schema 108 with zero WorkerSessions, and the rebuilt deterministic backend is ready. No Worker or scenario ran. All eight REQ-39 scenarios remain `partial` / `not_run`; all 232 frozen scenarios remain `not_run`. See `evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md`.
+
+## Previous Slice 228: REQ-39 Planning impact-analysis gap audit
+
+The formal change path previously had deterministic explicit-dependency impacts but no Planning-authored natural-language analysis. Slice 228 recorded that gap and confirmed zero local WorkerSessions; no Worker was started. Its audit remains at `evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md`.
 
 ## Slice 227: REQ-21 protected-view invalidation
 

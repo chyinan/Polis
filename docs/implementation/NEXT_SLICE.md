@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 228, REQ-39 Planning impact-analysis gap audit)
+## Latest continuation status (Slice 229, REQ-39 bounded Planning impact assessment; Schema 108)
+
+Formal change requests now accept immutable, bounded natural-language impact assessments from only a database-confirmed active `emp-planning` WorkerSession bound to a working Planning Task in the same Mission. Assessments bind to a digest of the exact request, requirements, inputs, Tasks, Artifacts and returned takeover snapshots; the Workbench marks stale receipts and requires the exact displayed assessment digest for owner review. High-risk or uncertain assessments require previous results blocked. Schema 107 adds the append-only assessment table and DB-side session/epoch/Task/Mission/request guard; Schema 108 lets Planning refresh a still-open considered request after the Mission is resumed. Product tool surface @12 is isolated and opt-in for fake transport; real-provider @4 remains unchanged. Go and frontend production builds pass; Schema 108 is applied locally and the rebuilt deterministic backend is ready. Local DB has zero WorkerSessions, so no Worker or assessment was started. The eight REQ-39 rows remain `partial` / `not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md`.
+
+Next Slice230: continue the finite approved R1–R3 ledger with the next concrete open software or evidence gap. Preserve frozen scenario execution states until they actually run. Perform Worker activity only after a current database query confirms an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 228, REQ-39 Planning impact-analysis gap audit)
 
 The formal change path persists a deterministic explicit-dependency impact snapshot, but `MissionChangeImpact.NaturalLanguageImpactStatus` is constrained to `not_assessed`, the Workbench labels natural-language dependencies unassessed, and the C-GUIDANCE contract calls for bounded analysis by the fixed Planning role when scope is uncertain. A current read of the local database returned zero WorkerSessions; the backend health endpoint returned ready. No WorkerSession was created or used, no analysis or scenario ran. The eight REQ-39 crosswalk rows now cite this audit and remain `partial` / `not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-228-req39-planning-impact-gap/verification.md`.
 
-Next Slice229: implement a bounded, immutable Planning analysis path bound to a database-confirmed active `emp-planning` WorkerSession, with analysis freshness tied to the exact change/request basis and explicit owner review before applying. Keep it opt-in and fake-only until separately qualified; do not change real-provider @4 authorization or create/start a Worker to satisfy the session prerequisite. Preserve all frozen scenario execution states until they actually run.
+Slice 229 completed the bounded, immutable Planning assessment path described here; see the latest continuation status above. Session-backed qualification and frozen scenarios remain open.
 
 ## Latest continuation status (Slice 227, REQ-21 protected-view invalidation)
 
@@ -22,7 +28,7 @@ Reconciled current REQ-13 coverage against Schema 102/Slice 173. Dispatch candid
 
 Reconciled the coverage row with the durable closeout state machine and owner controls already implemented in Schema 101/Slices 169–170. `closing` and `ended_not_met`, rationale and acceptance-evidence gates, Job/Worker stop ordering, retryable finalization, Task/Obligation/Routine settlement and Workbench controls are present. REQ-23 remains partial pending restart/recovery qualification and FT-57–60/72 scenarios. Added Slice 224 evidence to its seven scenario rows while preserving `partial` / `not_run` and the 232 total. Crosswalk JSON validation and `git diff --check` pass. No tests, database, closeout operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md`.
 
-Next Slice228: select the next concrete open software gap from the coverage ledger; retain the database-confirmed active WorkerSession prerequisite for any Worker activity. Preserve scenario statuses and do not perform Worker activity without a current database read confirming an already-active WorkerSession.
+Slice 228's next step was completed in Slice 229 above. Preserve the WorkerSession gate for any later Worker activity.
 
 ## Latest continuation status (Slice 223, REQ-39 successor directory-input trace)
 

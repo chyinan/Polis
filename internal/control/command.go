@@ -53,8 +53,9 @@ type CreateMissionChangeRequestRequest struct {
 }
 
 type MissionChangeRequestCommand struct {
-	RequestID    string `json:"requestId"`
-	ImpactSHA256 string `json:"impactSha256,omitempty"`
+	RequestID        string `json:"requestId"`
+	ImpactSHA256     string `json:"impactSha256,omitempty"`
+	AssessmentSHA256 string `json:"assessmentSha256,omitempty"`
 }
 
 type OperatorInstructionReceipt struct {

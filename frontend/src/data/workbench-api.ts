@@ -118,6 +118,7 @@ export type MissionChangeRequestCommandOptions = Readonly<{
   changeRequestId: string;
   requestId: string;
   impactSha256?: string;
+  assessmentSha256?: string;
 }>;
 
 export type TaskTakeoverLeaseQueryOptions = Readonly<{companyId: string; missionId: string}>;
