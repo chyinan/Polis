@@ -19,11 +19,59 @@ func FixedTeamCoverageSHA256() string {
 	return hex.EncodeToString(digest[:])
 }
 
+// validateFixedTeamCoverageFieldNames rejects keys that Go's struct decoder
+// would otherwise match case-insensitively even though the frontend reads the
+// embedded JSON with case-sensitive property access.
+func validateFixedTeamCoverageFieldNames(data []byte) error {
+	var document map[string]json.RawMessage
+	if err := json.Unmarshal(data, &document); err != nil {
+		return fmt.Errorf("decode fixed team coverage field names: %w", err)
+	}
+	if err := requireExactJSONKeys(document, []string{
+		"document_version", "design_kind", "execution_enabled", "role_changes_at_runtime",
+		"template_requires_human_confirmation", "employee_ids", "coverage", "missing_path",
+		"checker_policy", "trusted_baseline_mutable_by_workers", "guarantees_semantic_independence",
+	}); err != nil {
+		return fmt.Errorf("fixed team coverage top-level fields: %w", err)
+	}
+	var coverage []json.RawMessage
+	if err := json.Unmarshal(document["coverage"], &coverage); err != nil {
+		return fmt.Errorf("decode fixed team coverage assignments: %w", err)
+	}
+	for i, assignment := range coverage {
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(assignment, &fields); err != nil {
+			return fmt.Errorf("decode fixed team coverage assignment %d fields: %w", i+1, err)
+		}
+		if err := requireExactJSONKeys(fields, []string{
+			"task_type", "owner", "eligible_independent_checkers", "acceptance_path", "qualification",
+		}); err != nil {
+			return fmt.Errorf("fixed team coverage assignment %d fields: %w", i+1, err)
+		}
+	}
+	return nil
+}
+
+func requireExactJSONKeys(object map[string]json.RawMessage, expected []string) error {
+	if len(object) != len(expected) {
+		return fmt.Errorf("expected exactly %d fields, got %d", len(expected), len(object))
+	}
+	for _, key := range expected {
+		if _, ok := object[key]; !ok {
+			return fmt.Errorf("missing or non-canonical field %q", key)
+		}
+	}
+	return nil
+}
+
 // ValidateFixedTeamCoverageDraft verifies that the embedded design file still
 // describes the reviewed, non-executable draft. The digest alone identifies
 // bytes; this semantic guard prevents a source edit from making an owner
 // acknowledgment look like qualification or runtime execution permission.
 func ValidateFixedTeamCoverageDraft() error {
+	if err := validateFixedTeamCoverageFieldNames(fixedTeamCoverage); err != nil {
+		return err
+	}
 	var draft struct {
 		DocumentVersion                   string   `json:"document_version"`
 		DesignKind                        string   `json:"design_kind"`
