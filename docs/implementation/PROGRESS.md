@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 230 — local development stack recovery
+
+Restarted the local Termux PostgreSQL, deterministic backend, and Vite frontend services. The existing database is Schema 108 with zero Companies, Missions, and WorkerSessions. PostgreSQL is running on port 55432, `/healthz` returns ready on port 8080, and Vite returns HTTP 200 on port 4173. No migration, test, Worker/provider operation, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-230-local-dev-stack-recovery/verification.md`.
+
 ## Slice 229 — REQ-39 bounded Planning impact assessment (Schema 108)
 
 Added an append-only, bounded Planning assessment receipt tied to the exact formal-change basis and an active, database-confirmed `emp-planning` WorkerSession. Schema 108 checks the current session, employee epoch, working Planning-owned Task, same Mission and open request. The isolated opt-in Fake @12 surface exposes only the bound request read and assessment write; real-provider @4 remains unchanged. Owner consideration requires a current assessment digest, while high-risk or uncertain assessments require old results blocked. The Workbench shows freshness, risk, task groups, questions, controls and session provenance. `go build ./...`, frontend production build, Schema 108 migration, all migration checksums and `git diff --check` pass. The DB has zero WorkerSessions and Companies, so no Worker, assessment, formal change or frozen scenario ran. The eight REQ-39 scenarios remain `partial/not_run`, with all 232 states `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md`.

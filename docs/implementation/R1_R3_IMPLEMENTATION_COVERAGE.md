@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 229. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 230. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 230: local development stack recovery
+
+Restarted the Termux PostgreSQL, deterministic backend and Vite frontend services against the existing Schema 108 database. It remains empty of Companies, Missions and WorkerSessions. Backend health and the frontend root return HTTP 200. No migration, test, Worker/provider operation or frozen scenario ran. This restores the user's local development environment without changing any requirement disposition. See `evidence/development/r1-r3-implementation-validation-20261005-slice-230-local-dev-stack-recovery/verification.md`.
 
 ## Slice 229: REQ-39 bounded Planning impact assessment (Schema 108)
 

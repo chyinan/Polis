@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 229, REQ-39 bounded Planning impact assessment; Schema 108)
+## Latest continuation status (Slice 230, local development stack recovery)
+
+Restarted the Termux PostgreSQL, deterministic backend and Vite development services. The database remains at Schema 108 with zero Companies, Missions and WorkerSessions; backend health and the frontend root both return HTTP 200. No migration, Worker/provider operation, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-230-local-dev-stack-recovery/verification.md`.
+
+Next Slice231: continue the approved finite R1–R3 ledger with a concrete local software or evidence gap. Keep external qualification and frozen scenario states truthful. Worker activity remains gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 229, REQ-39 bounded Planning impact assessment; Schema 108)
 
 Formal change requests now accept immutable, bounded natural-language impact assessments from only a database-confirmed active `emp-planning` WorkerSession bound to a working Planning Task in the same Mission. Assessments bind to a digest of the exact request, requirements, inputs, Tasks, Artifacts and returned takeover snapshots; the Workbench marks stale receipts and requires the exact displayed assessment digest for owner review. High-risk or uncertain assessments require previous results blocked. Schema 107 adds the append-only assessment table and DB-side session/epoch/Task/Mission/request guard; Schema 108 lets Planning refresh a still-open considered request after the Mission is resumed. Product tool surface @12 is isolated and opt-in for fake transport; real-provider @4 remains unchanged. Go and frontend production builds pass; Schema 108 is applied locally and the rebuilt deterministic backend is ready. Local DB has zero WorkerSessions, so no Worker or assessment was started. The eight REQ-39 rows remain `partial` / `not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md`.
 
-Next Slice230: continue the finite approved R1–R3 ledger with the next concrete open software or evidence gap. Preserve frozen scenario execution states until they actually run. Perform Worker activity only after a current database query confirms an already-active WorkerSession; do not create or start one.
+Slice 230 records restoration of the local development services; it does not alter the R1–R3 requirement or scenario dispositions.
 
 ## Previous continuation status (Slice 228, REQ-39 Planning impact-analysis gap audit)
 
