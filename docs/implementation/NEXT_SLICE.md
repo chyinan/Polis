@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 254, REQ-29 legacy workspace/tree writer consistency)
+## Latest continuation status (Slice 255, REQ-25 installation-owner authorization invalidation)
+
+The InstallationOwner page now routes protected provider-account reads and logout responses through the shared 401/403 observer. Authorization rejection clears the local protected view and broadcasts invalidation to same-origin tabs, including when logout is rejected; login, bootstrap, and setup-status checks remain outside this path. `npm run build` in `frontend/` and `git diff --check` passed. No tests, owner session, database, Worker/provider operation, browser qualification, or frozen scenario ran. Six REQ-25 scenario rows remain partial/not_run and all 232 scenarios remain not_run. Browser/Tauri WebView and remote authorization qualification remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md.
+
+## Previous continuation status (Slice 254, REQ-29 legacy workspace/tree writer consistency)
 
 The legacy workspace replacement path now validates an existing private tree root under lock, checks its Task owner/Mission and current writer session/epoch, enforces tree bounds, and atomically mirrors `formatter.go` with the legacy workspace row. Submission fails closed unless the tree has one formatter file whose digest and source revision match that row. The six CAP-01–06 rows remain partial/not_run; all 232 frozen scenarios remain not_run. `go build ./...` and `git diff --check` passed. No tests, database, Worker/provider operation, host qualification, or scenario ran. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md.
 
@@ -29,7 +33,7 @@ Provider terminal telemetry now records the count of observed Codex thread/token
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice250: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
+Next Slice256: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 

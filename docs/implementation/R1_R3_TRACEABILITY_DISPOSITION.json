@@ -1774,7 +1774,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
       ]
     },
     {
@@ -1792,7 +1793,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
       ]
     },
     {
@@ -1810,7 +1812,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
       ]
     },
     {
@@ -2049,7 +2052,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
       ]
     },
     {
@@ -2526,7 +2530,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
       ]
     },
     {
@@ -2912,7 +2917,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-227-req21-auth-view-invalidation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
       ]
     },
     {
