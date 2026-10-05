@@ -137,7 +137,7 @@ function MissionChangeRequestRecord({request, missionState, mutationPending, onC
       <strong>{request.changeSummary}</strong>
       <span>{request.changeRequestId} · {request.baseRequirementsSha256.slice(0, 12)} · {request.blockPreviousResults ? '旧结果已阻止交付' : '旧结果继续可取'}</span>
       <span>影响快照 rev{request.impactRevision} · {request.impact.inputRevisions.length} 个输入 · {request.impact.tasks.length} 个任务 · {request.impact.artifacts.length} 个产物</span>
-      <span>应用时会复制 {request.inputRevisionMap.filter(item => item.origin === 'mission_input').length} 个最新输入修订和 {request.inputRevisionMap.filter(item => item.origin === 'task_workspace').length} 个未完成工作区快照到后继使命。</span>
+      <span>应用时会复制 {request.inputRevisionMap.filter(item => item.origin === 'mission_input').length} 个最新输入修订、{request.inputRevisionMap.filter(item => item.origin === 'human_takeover').length} 个人工回传 snapshot 和 {request.inputRevisionMap.filter(item => item.origin === 'task_workspace').length} 个未完成工作区快照到后继使命。</span>
       <span>{hasOpenWriters ? `${request.impact.activeWorkerSessions.length} 个 Worker、${request.impact.nonterminalJobRuns.length} 个 Job、${request.impact.activeServiceEndpoints.length} 个服务端点仍需核对。` : '当前快照没有已知在途 Worker、Job 或服务端点。'}</span>
       <span>自然语言依赖尚未评估；候选后继：{request.proposedTitle} · {request.proposedGoal}</span>
       {request.successorMissionId !== null ? <span>后继使命草稿：{request.successorMissionId}</span> : null}

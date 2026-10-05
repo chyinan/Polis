@@ -1,5 +1,13 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 223 — REQ-39 returned directory input successor trace
+
+Source review confirmed that a returned directory snapshot is included in formal change impact, cloned into the successor Mission with its archive source kind and digest, bound into the successor Task input manifest, then verified and extracted by the existing directory input delivery path. The Workbench now counts `human_takeover` inputs in its applied-successor summary. All eight REQ-39 crosswalk rows cite Slice 222/223 evidence and remain `partial` / `not_run`; total scenario records remain 232. `npm run build`, crosswalk JSON validation and `git diff --check` pass. No tests, database operation, change request, Worker/provider activity or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md`.
+
+## Slice 222 — REQ-39 bounded directory snapshot handback (Schema 106)
+
+Tree-bound takeover now returns complete bounded directory archives as immutable MissionInputs with exact lease/manifest provenance and added/modified/deleted summaries. Grant preflights the existing 250-file, 7 MiB raw and 8 MiB archive bounds; Schema 106 raises the append-only lease receipt limit to 8 MiB. The Workbench supports editing, adding, deleting and exact-payload retries. Go/frontend builds, migration checksums and `git diff --check` pass. No tests, migration application, database, lease, Worker/provider activity or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md`.
+
 ## Slice 218 — REQ-27 handover sequence fence
 
 Worker Handover assembly reads its base context and optional direct-message, shared Artifact, and MCP projections through separate read paths. The adapter now checks the Company sequence captured by the base Handover against the sequence after assembling all enabled projections, retrying the whole read up to three times. If writes keep racing it, the tool returns a clear conflict and asks the Worker to read current work again, rather than returning a mixed-version context. `go build ./...` and `git diff --check` pass. No tests, database operation, Worker/provider activity, or frozen scenario ran. E-HANDOVER remains unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md`.

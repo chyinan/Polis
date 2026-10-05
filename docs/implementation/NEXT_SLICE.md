@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
+## Latest continuation status (Slice 223, REQ-39 successor directory-input trace)
+
+Source review traced a returned directory snapshot through the existing workflow: the handback creates a ready MissionInput; the change-request impact includes it; successor creation clones its source kind and digest while labeling it `human_takeover`; and the successor Task manifest carries it into the existing verified directory-archive delivery path. The Workbench apply summary now counts these human-returned inputs explicitly. The live crosswalk links Slice 222 and 223 evidence from all eight REQ-39 frozen scenarios; their disposition remains `partial` and execution remains `not_run`, with all 232 scenario records unchanged. `npm run build`, crosswalk JSON validation and `git diff --check` pass. No tests, database operation, change request, Task, Worker/provider activity or frozen scenario ran. REQ-39 remains partial pending natural-language impact assessment and scenario qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md`.
+
+Next Slice224: continue with the next concrete open software requirement in the approved ledger. Keep external qualification and frozen scenario states truthful; perform Worker activity only if a current database read confirms an already-active WorkerSession.
+
 ## Latest continuation status (Slice 222, REQ-39 complete bounded directory handback; Schema 106)
 
 Tree-bound takeover leases now accept complete directory snapshots against the exact pinned manifest. Grant checks that the frozen tree can be represented within the existing directory MissionInput path's 250-file, 7 MiB raw-content and 8 MiB archive bounds. Handback validates UTF-8 files and paths, computes added/modified/deleted paths, stores the canonical archive as an immutable `directory_snapshot` MissionInput, records lease provenance and the diff receipt atomically, and releases the active Task slot. Schema 106 raises the append-only lease receipt archive bound to 8 MiB. The Workbench now edits, adds and deletes files and retries the exact whole-tree payload; edits remain local until handback. `go build ./...`, `npm run build`, migration checksum verification and `git diff --check` pass. No tests, migration application, database operation, lease command, Worker/provider activity or frozen scenario ran. REQ-39 remains partial pending successor-input qualification, natural-language impact assessment and frozen scenarios. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md`.
 
-Next Slice223: trace a returned `directory_snapshot` from the lease receipt through MissionInput selection, formal change application and successor Task delivery. Close any concrete source gap without starting a Worker; preserve frozen execution states as `not_run` until those scenarios actually run. Keep Worker activity gated on a current database read confirming an already-active WorkerSession.
+Slice223 traced this handback through formal change application and successor Task delivery; the UI now shows the returned-snapshot count. See the evidence above; qualification remains open.
 
 ## Latest continuation status (Slice 221, REQ-39 lease-bound multi-file editor)
 
