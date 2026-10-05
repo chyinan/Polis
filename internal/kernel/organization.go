@@ -40,6 +40,9 @@ func (k *Kernel) TXCreateCompanyWithOrganization(ctx context.Context, draft orga
 // the installation owner's acknowledgment of the exact fixed-team draft in
 // the same transaction as Company creation. It never qualifies a role.
 func (k *Kernel) TXCreateCompanyWithOrganizationAndCoverageConfirmation(ctx context.Context, draft organization.CompanyDraft, requestID, confirmationSHA256 string) (Scope, error) {
+	if err := spec.ValidateFixedTeamCoverageDraft(); err != nil {
+		return Scope{}, core.Denied
+	}
 	if err := organization.ValidateCompanyDraft(draft); err != nil {
 		return Scope{}, core.Malformed
 	}
@@ -133,7 +136,9 @@ FROM companies c LEFT JOIN LATERAL (
 	if err = rows.Err(); err != nil {
 		return CompanyDetails{}, err
 	}
-	details.TeamCoverageConfirmed = details.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256() && organization.ValidateFixedTeamRoleAssignments(details.Roster) == nil
+	details.TeamCoverageConfirmed = spec.ValidateFixedTeamCoverageDraft() == nil &&
+		details.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256() &&
+		organization.ValidateFixedTeamRoleAssignments(details.Roster) == nil
 	if err = tx.Commit(ctx); err != nil {
 		return CompanyDetails{}, err
 	}
@@ -169,8 +174,9 @@ FROM companies c LEFT JOIN LATERAL (
 		return nil, err
 	}
 	rows.Close()
+	coverageDraftValid := spec.ValidateFixedTeamCoverageDraft() == nil
 	for i := range companies {
-		if companies[i].TeamCoverageConfirmationSHA256 != spec.FixedTeamCoverageSHA256() {
+		if !coverageDraftValid || companies[i].TeamCoverageConfirmationSHA256 != spec.FixedTeamCoverageSHA256() {
 			continue
 		}
 		if err = ensureCompanyFixedTeamRolesTX(ctx, tx, companies[i].ID); errors.Is(err, core.Denied) {
@@ -202,6 +208,11 @@ func (k *Kernel) TXUpdateCompanyWithOrganizationAndCoverageConfirmation(ctx cont
 func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft organization.CompanyDraft, key, confirmationSHA256 string) (Receipt, error) {
 	if err := organization.ValidateCompanyDraft(draft); err != nil {
 		return Receipt{}, core.Malformed
+	}
+	if confirmationSHA256 != "" {
+		if err := spec.ValidateFixedTeamCoverageDraft(); err != nil {
+			return Receipt{}, core.Denied
+		}
 	}
 	if confirmationSHA256 != "" && (confirmationSHA256 != spec.FixedTeamCoverageSHA256() || !core.ValidID(key)) {
 		return Receipt{}, core.Malformed
