@@ -1,3 +1,7 @@
+## Slice 247 — REQ-27/32 successor profile continuity
+
+Product-provider successors now require the exact prior persisted model profile at both admission and pre-reservation revalidation. The first session and same-profile stopped-session path with owner-reviewed memory revalidation remain unchanged. Cross-profile succession stays denied until an owner-approved transition contract exists; E-HANDOVER thresholds, billing, provider and model qualification remain open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-27/32 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md.
+
 ## Slice 246 — REQ-25 cross-tab owner invalidation
 
 Owner logout and protected 401/403 invalidation now tell other same-origin tabs to clear protected views via BroadcastChannel or a storage-event fallback. The marker contains no credentials and is not rebroadcast. Frontend production build and `git diff --check` pass; the existing large-chunk warning remains. No tests, owner session, DB, Worker/provider, browser/WebView session or scenario ran; six REQ-25 rows remain partial/not_run and all 232 scenarios remain not_run. See `evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md`.

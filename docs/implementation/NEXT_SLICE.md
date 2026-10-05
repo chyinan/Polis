@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 246, REQ-25 cross-tab owner invalidation)
+## Latest continuation status (Slice 247, REQ-27 successor profile continuity)
+
+Product-provider successors now require the exact prior persisted model profile at both admission and pre-reservation revalidation. The first session and same-profile stopped-session path with owner-reviewed memory revalidation remain unchanged. Cross-profile succession stays denied until an owner-approved transition contract exists; E-HANDOVER thresholds, billing, provider and model qualification remain open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-27/32 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md.
 
 Owner logout and protected 401/403 invalidation now notify other same-origin tabs to clear protected views using `BroadcastChannel`, falling back to a storage event. Only a marker is sent; receiving tabs do not rebroadcast. `npm run build` and `git diff --check HEAD^ HEAD` passed, with the existing large-chunk advisory. No tests, owner/DB/Worker/provider/browser session or scenario ran. All six REQ-25 rows remain `partial/not_run`, and all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md`.
 
-Next Slice247: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
+Next Slice248: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
+
+## Previous continuation status (Slice 246, REQ-25 cross-tab owner invalidation)
+
+Owner logout and protected 401/403 invalidation now notify other same-origin tabs to clear protected views. Only a non-sensitive invalidation marker is broadcast, with a storage-event fallback; no credentials are included or rebroadcast. Browser/WebView and remote-auth qualification remain open. Six REQ-25 rows remain partial/not_run; all 232 scenarios remain not_run. See evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md.
 
 ## Previous continuation status (Slice 240, fixed-role company setup UI)
 

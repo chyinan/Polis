@@ -1,12 +1,12 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 246. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 247. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base for Slice246: published Slice245 handoff commit `7d4a74df73bf3a376827aad4870b5aedf1d7e8a8`. Slices242–246 changed source/handoff records only; the host and database observations below were not refreshed.
+- Audit base for Slice247: published Slice246 implementation commit 97db192c9659582e2e5e72e05da21f0617fb3b6e. Slices242–247 changed source/handoff records only; the host and database observations below were not refreshed.
 - Most recent recorded host observation: Android/Termux (`uname` reported Android; Node platform was `android`); `pwsh`, `powershell`, `bwrap`, and `systemd-run` were absent in the Slice235 audit. This is a recorded observation, not a fresh Slice241 host probe.
-- Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slice240 changed only the frontend and handoff records, so it did not refresh the database observation; this remains the latest recorded DB evidence, not a new Slice241 query.
+- Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slices240–247 did not refresh the database observation; this remains the latest recorded evidence, not a fresh query.
 - The checked-in traceability ledger lists 17 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
 
 These facts rule out session-backed execution in the current database and native Windows or delegated Linux qualification here. They do not prove that external accounts, certificates, or hosts do not exist elsewhere; none has been provided or connected for these product qualification tasks in this checkout.
@@ -24,11 +24,11 @@ These facts rule out session-backed execution in the current database and native
 | REQ-24 | The formal employee operation path has not been qualified against an active real or approved session. | An already-active WorkerSession confirmed by a current database query and its qualified runtime/provider surface. |
 | REQ-25 | Owner setup is implemented, and logout/authorization invalidation now clears views across same-origin tabs; local browser/Tauri WebView and remote-browser authorization behavior remain unqualified. | Installation-owner setup decision plus supported browser/WebView qualification environments and explicit remote-access authorization. |
 | REQ-26 | No concrete shared branch/deploy/publish writer exists to fence; an inert ResourceKey registry would not enforce isolation. | A product-approved shared write action and its canonical provider object/account mapping before implementing a binding gate. |
-| REQ-27 | E-HANDOVER cross-model regression and owner-approved budget/threshold evidence remain open. | Authorized model/provider accounts, an active session path, and owner-approved continuity thresholds. |
+| REQ-27 | Product-provider successor admission now requires the prior exact profile; cross-profile transitions remain denied without an owner-approved contract. E-HANDOVER regression and owner-approved budget/threshold evidence remain open. | Authorized model/provider accounts, an active session path, and owner-approved continuity thresholds. |
 | REQ-29 | The logical private Task tree and snapshot paths exist; the legacy `workspace_replace` writer now shares the 512-file, 16 MiB, and path-prefix invariants. Host mounts, company/group shared roots, retention/GC decisions, and CAP-01–06 qualification remain open. | Owner-approved sharing and retention policy, qualified Windows/Linux filesystem hosts, and CAP evidence for each exposed path. |
 | REQ-30 | Read-only Skill loading is implemented on Fake; real provider v5 remains unqualified. | Authorized real-provider account and active WorkerSession on the exact v5 surface. |
 | REQ-31 | Real-provider capability execution, Windows WFP, detached-owner recovery, and R2 Streamable HTTP endpoint/Worker qualification remain open. | Qualified Windows host for WFP, authorized MCP endpoints/accounts, and active database-confirmed WorkerSession for session execution. |
-| REQ-32 | Identity bindings are persisted, but successor execution remains unavailable. | Qualified successor WorkerSession/runtime and explicit owner authorization to exercise bound capabilities after handover. |
+| REQ-32 | Identity bindings are persisted; product-provider successor admission also requires profile continuity, while successor execution remains unavailable. | Qualified successor WorkerSession/runtime and explicit owner authorization to exercise bound capabilities after handover. |
 | REQ-33 | Truthful capability metadata is implemented; live execution remains unavailable pending runtime qualification. | Qualified host/provider for the exact capability surface plus owner-approved qualification evidence. |
 | REQ-34 | Governance records and dispatch fences exist; real-provider execution remains unavailable. | Qualified provider/host, owner authorization, and active-session evidence for each exposed dispatch surface. |
 | REQ-39 | Planning assessment and owner review fences are implemented; session-backed and frozen-scenario qualification remain open. | An already-active `emp-planning` WorkerSession confirmed in the database, plus authorized execution of the eight mapped REQ-39 scenarios. |
