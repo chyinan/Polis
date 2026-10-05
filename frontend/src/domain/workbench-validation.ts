@@ -308,6 +308,38 @@ function isEmployeeDraft(value: unknown): boolean {
     && hasString(value, 'modelProfile');
 }
 
+function isFixedTeamCoverageAssignment(value: unknown): boolean {
+  return isRecord(value)
+    && hasString(value, 'task_type')
+    && hasString(value, 'owner')
+    && Array.isArray(value.eligible_independent_checkers)
+    && value.eligible_independent_checkers.every(checker => typeof checker === 'string')
+    && hasString(value, 'acceptance_path')
+    && value.qualification === 'unverified';
+}
+
+function isFixedTeamCoverageRoleRevision(value: unknown): boolean {
+  if (!isRecord(value) || !isRecord(value.contract)) return false;
+  const contract = value.contract;
+  return typeof value.revision_sha256 === 'string'
+    && /^[a-f0-9]{64}$/.test(value.revision_sha256)
+    && value.owner_decision === 'installation_owner_confirmed_fixed_team_mapping'
+    && value.qualification === 'unverified'
+    && hasString(contract, 'document_version')
+    && contract.design_kind === 'fixed_team_coverage_draft'
+    && contract.execution_enabled === false
+    && contract.role_changes_at_runtime === false
+    && contract.template_requires_human_confirmation === true
+    && Array.isArray(contract.employee_ids)
+    && contract.employee_ids.every(employeeId => typeof employeeId === 'string')
+    && Array.isArray(contract.coverage)
+    && contract.coverage.every(assignment => isFixedTeamCoverageAssignment(assignment))
+    && hasString(contract, 'missing_path')
+    && hasString(contract, 'checker_policy')
+    && contract.trusted_baseline_mutable_by_workers === false
+    && contract.guarantees_semantic_independence === false;
+}
+
 function isCompanySummary(value: unknown): value is CompanySummaryView {
   return isRecord(value)
     && hasString(value, 'id')
@@ -318,7 +350,8 @@ function isCompanySummary(value: unknown): value is CompanySummaryView {
     && value.roster.every(employee => isEmployeeDraft(employee))
     && (value.teamCoverageConfirmed === undefined || typeof value.teamCoverageConfirmed === 'boolean')
     && (value.teamCoverageConfirmationSha256 === undefined || typeof value.teamCoverageConfirmationSha256 === 'string')
-    && (value.teamCoverageConfirmedAt === undefined || typeof value.teamCoverageConfirmedAt === 'string');
+    && (value.teamCoverageConfirmedAt === undefined || typeof value.teamCoverageConfirmedAt === 'string')
+    && (value.teamCoverageRoleRevision === undefined || isFixedTeamCoverageRoleRevision(value.teamCoverageRoleRevision));
 }
 
 function isRuntimeReadiness(value: unknown): boolean {

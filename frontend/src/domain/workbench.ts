@@ -15,6 +15,35 @@ export type EmployeeDraft = Readonly<{
   modelProfile: string;
 }>;
 
+export type FixedTeamCoverageAssignmentView = Readonly<{
+  task_type: string;
+  owner: string;
+  eligible_independent_checkers: ReadonlyArray<string>;
+  acceptance_path: string;
+  qualification: 'unverified';
+}>;
+
+export type FixedTeamCoverageDraftView = Readonly<{
+  document_version: string;
+  design_kind: 'fixed_team_coverage_draft';
+  execution_enabled: false;
+  role_changes_at_runtime: false;
+  template_requires_human_confirmation: true;
+  employee_ids: ReadonlyArray<string>;
+  coverage: ReadonlyArray<FixedTeamCoverageAssignmentView>;
+  missing_path: string;
+  checker_policy: string;
+  trusted_baseline_mutable_by_workers: false;
+  guarantees_semantic_independence: false;
+}>;
+
+export type FixedTeamCoverageRoleRevisionView = Readonly<{
+  revision_sha256: string;
+  owner_decision: 'installation_owner_confirmed_fixed_team_mapping';
+  qualification: 'unverified';
+  contract: FixedTeamCoverageDraftView;
+}>;
+
 export type CompanySummaryView = Readonly<{
   id: string;
   name: string;
@@ -24,6 +53,7 @@ export type CompanySummaryView = Readonly<{
   teamCoverageConfirmed?: boolean;
   teamCoverageConfirmationSha256?: string;
   teamCoverageConfirmedAt?: string;
+  teamCoverageRoleRevision?: FixedTeamCoverageRoleRevisionView;
 }>;
 
 export type RuntimeReadiness = 'configured' | 'missing' | 'invalid' | 'ready' | 'unavailable' | 'restart_required' | 'not_required' | 'not_applicable' | 'deferred';

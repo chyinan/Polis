@@ -3,6 +3,7 @@ package kernel
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"strings"
 
@@ -28,6 +29,7 @@ type CompanyDetails struct {
 	TeamCoverageConfirmed          bool
 	TeamCoverageConfirmationSHA256 string
 	TeamCoverageConfirmedAt        string
+	TeamCoverageRoleRevision       *spec.FixedTeamCoverageRoleRevision
 }
 
 // TXCreateCompanyWithOrganization creates the fixed logical runtime roster in
@@ -86,11 +88,12 @@ ON CONFLICT(company_id,employee_id) DO NOTHING`, draft.ID); err != nil {
 	}
 	if confirmationSHA256 != "" {
 		if err = appendEvent(ctx, tx, scope, "company.team_coverage.confirmed", struct {
-			RequestID      string `json:"request_id"`
-			TemplateSHA256 string `json:"template_sha256"`
-			Decision       string `json:"decision"`
-			Qualification  string `json:"qualification"`
-		}{RequestID: requestID, TemplateSHA256: confirmationSHA256, Decision: "installation_owner_confirmed_fixed_team_mapping", Qualification: "unverified"}); err != nil {
+			RequestID                  string `json:"request_id"`
+			TemplateSHA256             string `json:"template_sha256"`
+			Decision                   string `json:"decision"`
+			Qualification              string `json:"qualification"`
+			TeamCoverageSnapshotBase64 string `json:"team_coverage_snapshot_base64"`
+		}{RequestID: requestID, TemplateSHA256: confirmationSHA256, Decision: spec.FixedTeamCoverageOwnerDecision, Qualification: "unverified", TeamCoverageSnapshotBase64: base64.StdEncoding.EncodeToString(spec.FixedTeamCoverageDraftSnapshot())}); err != nil {
 			return Scope{}, err
 		}
 	}
@@ -98,6 +101,27 @@ ON CONFLICT(company_id,employee_id) DO NOTHING`, draft.ID); err != nil {
 		return Scope{}, err
 	}
 	return scope, nil
+}
+
+func fixedTeamCoverageRoleRevisionFromConfirmation(templateSHA256, decision, qualification, snapshotBase64 string) (*spec.FixedTeamCoverageRoleRevision, error) {
+	if templateSHA256 != spec.FixedTeamCoverageSHA256() ||
+		decision != spec.FixedTeamCoverageOwnerDecision || qualification != "unverified" ||
+		spec.ValidateFixedTeamCoverageDraft() != nil {
+		return nil, nil
+	}
+	snapshot := spec.FixedTeamCoverageDraftSnapshot()
+	if snapshotBase64 != "" {
+		decoded, err := base64.StdEncoding.DecodeString(snapshotBase64)
+		if err != nil {
+			return nil, core.Integrity
+		}
+		snapshot = decoded
+	}
+	revision, err := spec.CompileFixedTeamCoverageRoleRevision(snapshot, templateSHA256, decision, qualification)
+	if err != nil {
+		return nil, core.Integrity
+	}
+	return &revision, nil
 }
 
 // CompanyDetails reads one company and its fixed roster without taking
@@ -112,13 +136,21 @@ func (k *Kernel) CompanyDetails(ctx context.Context, companyID string) (CompanyD
 	}
 	defer tx.Rollback(ctx)
 	details := CompanyDetails{}
+	var coverageDecision, coverageQualification, coverageSnapshotBase64 string
 	if err = tx.QueryRow(ctx, `SELECT c.id,c.name,c.workspace_root,c.state,c.provider,c.model,c.effort,c.profile,
-COALESCE(coverage.payload->>'template_sha256',''),COALESCE(coverage.payload->>'occurred_at','')
+COALESCE(coverage.payload->>'template_sha256',''),COALESCE(coverage.payload->>'occurred_at',''),
+COALESCE(coverage.payload->>'decision',''),COALESCE(coverage.payload->>'qualification',''),
+COALESCE(coverage.payload->>'team_coverage_snapshot_base64','')
 FROM companies c LEFT JOIN LATERAL (
   SELECT payload FROM events WHERE company_id=c.id AND kind='company.team_coverage.confirmed' ORDER BY company_seq DESC LIMIT 1
-) coverage ON TRUE WHERE c.id=$1`, companyID).Scan(&details.ID, &details.Name, &details.WorkspaceRoot, &details.State, &details.Provider, &details.Model, &details.Effort, &details.Profile, &details.TeamCoverageConfirmationSHA256, &details.TeamCoverageConfirmedAt); errors.Is(err, pgx.ErrNoRows) {
+) coverage ON TRUE WHERE c.id=$1`, companyID).Scan(&details.ID, &details.Name, &details.WorkspaceRoot, &details.State, &details.Provider, &details.Model, &details.Effort, &details.Profile, &details.TeamCoverageConfirmationSHA256, &details.TeamCoverageConfirmedAt, &coverageDecision, &coverageQualification, &coverageSnapshotBase64); errors.Is(err, pgx.ErrNoRows) {
 		return CompanyDetails{}, core.OutOfScope
 	} else if err != nil {
+		return CompanyDetails{}, err
+	}
+	details.TeamCoverageRoleRevision, err = fixedTeamCoverageRoleRevisionFromConfirmation(
+		details.TeamCoverageConfirmationSHA256, coverageDecision, coverageQualification, coverageSnapshotBase64)
+	if err != nil {
 		return CompanyDetails{}, err
 	}
 	rows, err := tx.Query(ctx, `SELECT id,display_name,role_name,model_profile FROM employees WHERE company_id=$1 AND enabled ORDER BY id`, companyID)
@@ -136,8 +168,7 @@ FROM companies c LEFT JOIN LATERAL (
 	if err = rows.Err(); err != nil {
 		return CompanyDetails{}, err
 	}
-	details.TeamCoverageConfirmed = spec.ValidateFixedTeamCoverageDraft() == nil &&
-		details.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256() &&
+	details.TeamCoverageConfirmed = details.TeamCoverageRoleRevision != nil &&
 		organization.ValidateFixedTeamRoleAssignments(details.Roster) == nil
 	if err = tx.Commit(ctx); err != nil {
 		return CompanyDetails{}, err
@@ -154,7 +185,9 @@ func (k *Kernel) ListCompanyDetails(ctx context.Context) ([]CompanyDetails, erro
 	}
 	defer tx.Rollback(ctx)
 	rows, err := tx.Query(ctx, `SELECT c.id,c.name,c.workspace_root,c.state,c.provider,c.model,c.effort,c.profile,
-COALESCE(coverage.payload->>'template_sha256',''),COALESCE(coverage.payload->>'occurred_at','')
+COALESCE(coverage.payload->>'template_sha256',''),COALESCE(coverage.payload->>'occurred_at',''),
+COALESCE(coverage.payload->>'decision',''),COALESCE(coverage.payload->>'qualification',''),
+COALESCE(coverage.payload->>'team_coverage_snapshot_base64','')
 FROM companies c LEFT JOIN LATERAL (
   SELECT payload FROM events WHERE company_id=c.id AND kind='company.team_coverage.confirmed' ORDER BY company_seq DESC LIMIT 1
 ) coverage ON TRUE ORDER BY c.id`)
@@ -165,7 +198,13 @@ FROM companies c LEFT JOIN LATERAL (
 	companies := make([]CompanyDetails, 0)
 	for rows.Next() {
 		var company CompanyDetails
-		if err = rows.Scan(&company.ID, &company.Name, &company.WorkspaceRoot, &company.State, &company.Provider, &company.Model, &company.Effort, &company.Profile, &company.TeamCoverageConfirmationSHA256, &company.TeamCoverageConfirmedAt); err != nil {
+		var coverageDecision, coverageQualification, coverageSnapshotBase64 string
+		if err = rows.Scan(&company.ID, &company.Name, &company.WorkspaceRoot, &company.State, &company.Provider, &company.Model, &company.Effort, &company.Profile, &company.TeamCoverageConfirmationSHA256, &company.TeamCoverageConfirmedAt, &coverageDecision, &coverageQualification, &coverageSnapshotBase64); err != nil {
+			return nil, err
+		}
+		company.TeamCoverageRoleRevision, err = fixedTeamCoverageRoleRevisionFromConfirmation(
+			company.TeamCoverageConfirmationSHA256, coverageDecision, coverageQualification, coverageSnapshotBase64)
+		if err != nil {
 			return nil, err
 		}
 		companies = append(companies, company)
@@ -174,9 +213,8 @@ FROM companies c LEFT JOIN LATERAL (
 		return nil, err
 	}
 	rows.Close()
-	coverageDraftValid := spec.ValidateFixedTeamCoverageDraft() == nil
 	for i := range companies {
-		if !coverageDraftValid || companies[i].TeamCoverageConfirmationSHA256 != spec.FixedTeamCoverageSHA256() {
+		if companies[i].TeamCoverageRoleRevision == nil {
 			continue
 		}
 		if err = ensureCompanyFixedTeamRolesTX(ctx, tx, companies[i].ID); errors.Is(err, core.Denied) {
@@ -233,11 +271,12 @@ func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft orga
 				return Receipt{}, err
 			}
 			if err := appendEvent(ctx, tx, Scope{company: draft.ID}, "company.team_coverage.confirmed", struct {
-				RequestID      string `json:"request_id"`
-				TemplateSHA256 string `json:"template_sha256"`
-				Decision       string `json:"decision"`
-				Qualification  string `json:"qualification"`
-			}{RequestID: key, TemplateSHA256: confirmationSHA256, Decision: "installation_owner_confirmed_fixed_team_mapping", Qualification: "unverified"}); err != nil {
+				RequestID                  string `json:"request_id"`
+				TemplateSHA256             string `json:"template_sha256"`
+				Decision                   string `json:"decision"`
+				Qualification              string `json:"qualification"`
+				TeamCoverageSnapshotBase64 string `json:"team_coverage_snapshot_base64"`
+			}{RequestID: key, TemplateSHA256: confirmationSHA256, Decision: spec.FixedTeamCoverageOwnerDecision, Qualification: "unverified", TeamCoverageSnapshotBase64: base64.StdEncoding.EncodeToString(spec.FixedTeamCoverageDraftSnapshot())}); err != nil {
 				return Receipt{}, err
 			}
 			return Receipt{ID: draft.ID, Status: "active"}, nil

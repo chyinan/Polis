@@ -13,10 +13,158 @@ import (
 //go:embed design-v0.4.5/product/TEAM_COVERAGE.json
 var fixedTeamCoverage []byte
 
+// FixedTeamCoverageAssignment is one semantic task-type contract from the
+// reviewed fixed-team matrix. TaskType is intentionally separate from the
+// lower-level persisted TaskKind discriminator.
+type FixedTeamCoverageAssignment struct {
+	TaskType                    string   `json:"task_type"`
+	Owner                       string   `json:"owner"`
+	EligibleIndependentCheckers []string `json:"eligible_independent_checkers"`
+	AcceptancePath              string   `json:"acceptance_path"`
+	Qualification               string   `json:"qualification"`
+}
+
+// FixedTeamCoverageDraft is the exact semantic role matrix compiled from the
+// embedded approved design draft. Its flags and qualification values are
+// retained as authored; compilation does not enable execution or qualify a
+// role.
+type FixedTeamCoverageDraft struct {
+	DocumentVersion                   string                        `json:"document_version"`
+	DesignKind                        string                        `json:"design_kind"`
+	ExecutionEnabled                  bool                          `json:"execution_enabled"`
+	RoleChangesAtRuntime              bool                          `json:"role_changes_at_runtime"`
+	TemplateRequiresHumanConfirmation bool                          `json:"template_requires_human_confirmation"`
+	EmployeeIDs                       []string                      `json:"employee_ids"`
+	Coverage                          []FixedTeamCoverageAssignment `json:"coverage"`
+	MissingPath                       string                        `json:"missing_path"`
+	CheckerPolicy                     string                        `json:"checker_policy"`
+	TrustedBaselineMutableByWorkers   bool                          `json:"trusted_baseline_mutable_by_workers"`
+	GuaranteesSemanticIndependence    bool                          `json:"guarantees_semantic_independence"`
+}
+
+// FixedTeamCoverageRoleRevision binds the owner confirmation to a stable
+// content-addressed team-matrix revision. It is not a per-employee ordinal
+// RoleRevision and the assignment vocabulary remains independent of persisted
+// TaskKind values.
+type FixedTeamCoverageRoleRevision struct {
+	RevisionSHA256 string                 `json:"revision_sha256"`
+	OwnerDecision  string                 `json:"owner_decision"`
+	Qualification  string                 `json:"qualification"`
+	Contract       FixedTeamCoverageDraft `json:"contract"`
+	compiled       bool
+}
+
+// FixedTeamCoverageAdmission is the deterministic result of resolving a
+// semantic task type against a fixed-team draft. Uncovered, unqualified, or
+// globally disabled work always requires a human path.
+type FixedTeamCoverageAdmission struct {
+	TaskType                    string   `json:"task_type"`
+	Owner                       string   `json:"owner"`
+	EligibleIndependentCheckers []string `json:"eligible_independent_checkers"`
+	AcceptancePath              string   `json:"acceptance_path"`
+	Qualification               string   `json:"qualification"`
+	Covered                     bool     `json:"covered"`
+	OwnerMatches                bool     `json:"owner_matches"`
+	RequiresHuman               bool     `json:"requires_human"`
+}
+
+const FixedTeamCoverageOwnerDecision = "installation_owner_confirmed_fixed_team_mapping"
+
 // FixedTeamCoverageSHA256 identifies the exact reviewed team coverage draft.
 func FixedTeamCoverageSHA256() string {
 	digest := sha256.Sum256(fixedTeamCoverage)
 	return hex.EncodeToString(digest[:])
+}
+
+// FixedTeamCoverageDraftSnapshot returns an independent copy of the exact
+// reviewed bytes for durable storage alongside an owner acknowledgment.
+func FixedTeamCoverageDraftSnapshot() []byte {
+	return append([]byte(nil), fixedTeamCoverage...)
+}
+
+// CompileFixedTeamCoverageDraft validates and compiles the exact embedded
+// matrix without translating its semantic task types into runtime TaskKinds.
+func CompileFixedTeamCoverageDraft() (FixedTeamCoverageDraft, error) {
+	if err := ValidateFixedTeamCoverageDraft(); err != nil {
+		return FixedTeamCoverageDraft{}, err
+	}
+	var draft FixedTeamCoverageDraft
+	decoder := json.NewDecoder(bytes.NewReader(fixedTeamCoverage))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&draft); err != nil {
+		return FixedTeamCoverageDraft{}, fmt.Errorf("compile fixed team coverage draft: %w", err)
+	}
+	if err := decoder.Decode(new(any)); err != io.EOF {
+		if err == nil {
+			return FixedTeamCoverageDraft{}, fmt.Errorf("fixed team coverage draft must contain one JSON value")
+		}
+		return FixedTeamCoverageDraft{}, fmt.Errorf("decode trailing fixed team coverage data: %w", err)
+	}
+	return draft, nil
+}
+
+// CompileFixedTeamCoverageRoleRevision verifies a stored owner-confirmation
+// snapshot and compiles it to the exact current semantic contract. A draft
+// acknowledgment is not qualification or execution permission.
+func CompileFixedTeamCoverageRoleRevision(snapshot []byte, revisionSHA256, ownerDecision, qualification string) (FixedTeamCoverageRoleRevision, error) {
+	digest := sha256.Sum256(snapshot)
+	if len(snapshot) == 0 || hex.EncodeToString(digest[:]) != revisionSHA256 ||
+		revisionSHA256 != FixedTeamCoverageSHA256() || !bytes.Equal(snapshot, fixedTeamCoverage) {
+		return FixedTeamCoverageRoleRevision{}, fmt.Errorf("stored fixed team role revision does not match the current reviewed matrix")
+	}
+	if ownerDecision != FixedTeamCoverageOwnerDecision || qualification != "unverified" {
+		return FixedTeamCoverageRoleRevision{}, fmt.Errorf("stored fixed team role revision has an invalid owner decision or qualification")
+	}
+	contract, err := CompileFixedTeamCoverageDraft()
+	if err != nil {
+		return FixedTeamCoverageRoleRevision{}, err
+	}
+	return FixedTeamCoverageRoleRevision{
+		RevisionSHA256: revisionSHA256,
+		OwnerDecision:  ownerDecision,
+		Qualification:  qualification,
+		Contract:       contract,
+		compiled:       true,
+	}, nil
+}
+
+// AdmissionFor resolves only an owner-confirmed revision's semantic task_type vocabulary.
+// Unknown types, owner mismatches, disabled execution, and unqualified roles
+// remain on the human-required path.
+func (revision FixedTeamCoverageRoleRevision) AdmissionFor(taskType, owner string) FixedTeamCoverageAdmission {
+	result := FixedTeamCoverageAdmission{TaskType: taskType, RequiresHuman: true}
+	if !revision.compiled || revision.RevisionSHA256 != FixedTeamCoverageSHA256() || revision.OwnerDecision != FixedTeamCoverageOwnerDecision {
+		return result
+	}
+	for _, assignment := range revision.Contract.Coverage {
+		if assignment.TaskType != taskType {
+			continue
+		}
+		result.Owner = assignment.Owner
+		result.EligibleIndependentCheckers = append([]string(nil), assignment.EligibleIndependentCheckers...)
+		result.AcceptancePath = assignment.AcceptancePath
+		result.Qualification = assignment.Qualification
+		result.Covered = true
+		result.OwnerMatches = owner == assignment.Owner
+		result.RequiresHuman = !result.OwnerMatches || revision.Qualification != "qualified" ||
+			!revision.Contract.ExecutionEnabled || assignment.Qualification != "qualified"
+		return result
+	}
+	return result
+}
+
+// EligibleIndependentChecker checks both the reviewed checker set and the
+// matrix rule that the checker did not author the exact candidate.
+func (assignment FixedTeamCoverageAssignment) EligibleIndependentChecker(checkerID, candidateAuthorID string) bool {
+	if checkerID == "" || candidateAuthorID == "" || checkerID == candidateAuthorID {
+		return false
+	}
+	for _, eligible := range assignment.EligibleIndependentCheckers {
+		if checkerID == eligible {
+			return true
+		}
+	}
+	return false
 }
 
 // validateFixedTeamCoverageFieldNames rejects keys that Go's struct decoder

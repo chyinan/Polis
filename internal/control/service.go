@@ -853,7 +853,7 @@ func (s *Service) UploadMissionInput(ctx context.Context, companyID string, requ
 func companySummary(company kernel.CompanyDetails) CompanySummary {
 	roster := make([]organization.EmployeeDraft, len(company.Roster))
 	copy(roster, company.Roster)
-	return CompanySummary{ID: company.ID, Name: company.Name, WorkspaceRoot: company.WorkspaceRoot, State: company.State, Roster: roster, TeamCoverageConfirmed: company.TeamCoverageConfirmed, TeamCoverageConfirmationSHA256: company.TeamCoverageConfirmationSHA256, TeamCoverageConfirmedAt: company.TeamCoverageConfirmedAt}
+	return CompanySummary{ID: company.ID, Name: company.Name, WorkspaceRoot: company.WorkspaceRoot, State: company.State, Roster: roster, TeamCoverageConfirmed: company.TeamCoverageConfirmed, TeamCoverageConfirmationSHA256: company.TeamCoverageConfirmationSHA256, TeamCoverageConfirmedAt: company.TeamCoverageConfirmedAt, TeamCoverageRoleRevision: company.TeamCoverageRoleRevision}
 }
 
 func providerAuthReadiness(transport string) string {

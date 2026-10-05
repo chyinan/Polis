@@ -123,14 +123,15 @@ type SetHumanInterventionStateRequest struct {
 }
 
 type CompanySummary struct {
-	ID                             string                       `json:"id"`
-	Name                           string                       `json:"name"`
-	WorkspaceRoot                  string                       `json:"workspaceRoot"`
-	State                          string                       `json:"state"`
-	Roster                         []organization.EmployeeDraft `json:"roster"`
-	TeamCoverageConfirmed          bool                         `json:"teamCoverageConfirmed"`
-	TeamCoverageConfirmationSHA256 string                       `json:"teamCoverageConfirmationSha256"`
-	TeamCoverageConfirmedAt        string                       `json:"teamCoverageConfirmedAt"`
+	ID                             string                              `json:"id"`
+	Name                           string                              `json:"name"`
+	WorkspaceRoot                  string                              `json:"workspaceRoot"`
+	State                          string                              `json:"state"`
+	Roster                         []organization.EmployeeDraft        `json:"roster"`
+	TeamCoverageConfirmed          bool                                `json:"teamCoverageConfirmed"`
+	TeamCoverageConfirmationSHA256 string                              `json:"teamCoverageConfirmationSha256"`
+	TeamCoverageConfirmedAt        string                              `json:"teamCoverageConfirmedAt"`
+	TeamCoverageRoleRevision       *spec.FixedTeamCoverageRoleRevision `json:"teamCoverageRoleRevision,omitempty"`
 }
 
 type CommandReceipt struct {
