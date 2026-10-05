@@ -1,3 +1,6 @@
+## Slice 242 — REQ-02 fixed-team draft semantic guard
+
+The embedded TEAM_COVERAGE draft is now checked against its canonical roster, seven owner/checker/acceptance contracts, disabled execution state, unverified qualification flags, and human-confirmation gates. Unknown/missing fields or semantic drift fail closed before Company creation/owner acknowledgment and prevent confirmation projections. Task admission and provider execution remain unchanged. `go build ./...`, `git diff --check`, and JSON parsing pass. No tests, database writes, Company/Worker/provider activity or scenarios ran; 17 REQs remain open and all 232 scenarios remain `not_run`. See `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
 # Current implementation status — approved R1–R3 staged work
 
 ## Slice 241 — qualification handoff audit anchor

@@ -1,10 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 241, qualification handoff audit anchor)
+## Latest continuation status (Slice 242, REQ-02 fixed-team draft semantic guard)
 
-Corrected `OPEN_QUALIFICATION_BLOCKERS.md` to use the current published Slice240 handoff head (`09fec756ec93583f6065488ed700c35dd6718154`) and to label its host and database facts by their actual observation slices. The blocker ledger still lists 17 open software requirements and the 232 frozen scenarios as `not_run`; no qualification gate or scope changed. JSON parsing/count and `git diff --check` pass. No tests, database access, Worker/provider operation, host qualification, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-241-handoff-audit/verification.md`.
+`spec.ValidateFixedTeamCoverageDraft` strictly checks the fixed roster, seven assignment contracts and every fail-closed draft flag. Company creation and owner confirmation reject semantic drift; confirmation projections stay false when the embedded draft is invalid. This is a drift guard only: it does not create executable role contracts, alter Task admission, qualify a provider surface or enable execution. `go build ./...`, `git diff --check HEAD^ HEAD`, and JSON parsing passed. No tests, database operations, Company creation/acknowledgment, Worker/provider operations or frozen scenarios ran. All seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
 
-Next Slice242: continue auditing for a concrete approved local implementation gap; keep recorded external/runtime observations dated and keep all qualification gates open until matching evidence exists.
+Next Slice243: close the logical workspace-tree invariant gap in the legacy `workspace_replace` compatibility writer, keeping host mounts and CAP qualification open.
 
 ## Previous continuation status (Slice 240, fixed-role company setup UI)
 
