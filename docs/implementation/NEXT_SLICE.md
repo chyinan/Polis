@@ -1,10 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 244, REQ-13 company cursor fairness)
+## Latest continuation status (Slice 245, REQ-15 memory overlay permissions)
 
-The dispatcher query now orders candidates by Company ID first and schedule age second, matching the persisted Company-ID cursor. This prevents wraparound from repeatedly choosing the globally oldest schedule and starving other Companies. Quota-blocked/paused eligibility and one-shot session fences are unchanged; no global slot cap or quota source was invented. The isolated implementation commit passed `go build ./...`; integrated `git diff --check` passed. No tests, DB operations, Worker/provider activity or scenario ran. The nine REQ-13 rows remain `partial/not_run`, and all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md`.
+Startup loading and runtime persistence of the memory revocation overlay now share one Company-directory permission validator. Unix directory permissions broadened after startup cause persistence to fail closed with `core.Denied`. This does not qualify restore behavior or a session-bound correction. The isolated implementation commit passed `go build ./...`; integrated `git diff --check` passed. No tests, DB operations, Worker/provider activity or scenario ran. The six REQ-15 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md`.
 
-Next Slice245: apply the runtime permission check to memory revocation-overlay writes when directory permissions change after startup; keep restore qualification open.
+Next Slice246: integrate the cross-tab owner-session invalidation guard while preserving the real browser/WebView qualification gate.
 
 ## Previous continuation status (Slice 240, fixed-role company setup UI)
 

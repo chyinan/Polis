@@ -1,3 +1,6 @@
+## Slice 245 — REQ-15 memory overlay runtime permissions
+
+The memory revocation overlay now uses the same Company-directory permission validator during startup loading and runtime persistence. If Unix permissions are broadened after startup, the write fails closed. `go build ./...` and `git diff --check` pass. No tests, DB, Worker/provider or scenario ran; six REQ-15 rows remain partial/not_run and all 232 scenarios remain not_run. See `evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md`.
 ## Slice 244 — REQ-13 company cursor fairness
 
 Changed the dispatcher ordering so Company ID is the outer fairness key and schedule age is prioritized within each Company, matching the persisted cursor across wraparound. Quota/slot-cap behavior is unchanged. `go build ./...` and `git diff --check` pass. No tests, DB, Worker/provider or scenario ran; nine REQ-13 rows remain partial/not_run and all 232 scenarios remain not_run. See `evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md`.
