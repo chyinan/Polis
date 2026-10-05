@@ -106,11 +106,16 @@ LIMIT 1`, companyID, taskID).Scan(&phase, &outcome, &workerState, &inputRefsJSON
 		}
 		canonicalContext, contextErr := intake.PrepareModelInputContextWithCSVTables(manifest, digest, contentByInputID)
 		if contextErr != nil || canonicalContext.PayloadDigest != payloadDigest {
-			legacyContext, legacyErr := intake.PrepareLegacyModelInputContext(manifest, digest, contentByInputID)
-			if legacyErr != nil || legacyContext.PayloadDigest != payloadDigest {
-				return TaskInputManifestView{}, core.Integrity
+			priorPDFContext, priorPDFErr := intake.PrepareLegacyPDFModelInputContextWithCSVTables(manifest, digest, contentByInputID)
+			if priorPDFErr == nil && priorPDFContext.PayloadDigest == payloadDigest {
+				canonicalContext = priorPDFContext
+			} else {
+				legacyContext, legacyErr := intake.PrepareLegacyModelInputContext(manifest, digest, contentByInputID)
+				if legacyErr != nil || legacyContext.PayloadDigest != payloadDigest {
+					return TaskInputManifestView{}, core.Integrity
+				}
+				canonicalContext = legacyContext
 			}
-			canonicalContext = legacyContext
 		}
 		expectedRefs := modelInputDeliveryRefs(canonicalContext)
 		if !reflect.DeepEqual(expectedRefs, inputRefs) || !reflect.DeepEqual(canonicalContext.Excluded, inputExclusions) {

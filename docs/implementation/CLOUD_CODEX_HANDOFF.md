@@ -2,7 +2,11 @@
 
 Updated: 2026-10-06
 
-## Current continuation pointer (Slice 266)
+## Current continuation pointer (Slice 267)
+
+The PDF image path now rejects stencil masks, unsupported or partially padded codecs, and unpacked samples whose exact per-row byte length does not match image dimensions. Extraction @3 records image omissions and intrinsic-object limitations; @1/@2 snapshots remain canonical for historical verification, while new active delivery omits the older image representation. Full-page rasterization and provider qualification remain open. Build and diff-check passed; tests, DB, Worker, provider, migration, and scenarios did not run. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md.
+
+## Previous continuation pointer (Slice 266)
 
 Streamable HTTP MCP responses are now recursively checked for duplicate JSON object keys before JSON-RPC decoding. The same validator serves direct JSON and SSE responses, covering the envelope and nested tools/schemas/results; the existing shared argument validator was already in place. The change adds no protocol surface or endpoint qualification. `go build ./...` and `git diff --check` passed. No tests, DB, Worker, provider, MCP endpoint, or scenario ran. REQ-31/34 remain partial; all 232 scenario executions remain `not_run`, and 18 software requirements remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md.
 

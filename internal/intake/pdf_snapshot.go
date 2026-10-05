@@ -26,47 +26,57 @@ const (
 	MaxPDFSourceBytes = 6 << 20
 	MaxPDFPages       = 40
 
-	pdfSnapshotRoot         = "pdf"
-	pdfSnapshotOriginalPath = "pdf/original.pdf"
-	pdfSnapshotTextPath     = "pdf/extracted.txt"
-	pdfSnapshotRecordPath   = "pdf/extraction.json"
-	pdfExtractionSchemaV1   = "polis-pdf-extraction@1"
-	pdfExtractionSchema     = "polis-pdf-extraction@2"
-	pdfExtractionParser     = "github.com/giraffesyo/pdf@v0.7.0"
-	pdfImageRepresentation  = "polis-pdf-embedded-image@1"
-	maxPDFExtractDuration   = 8 * time.Second
-	maxPDFStreamBytes       = 1 << 20
-	maxPDFOperatorsPerPage  = 20_000
-	maxPDFGlyphsPerPage     = 16_384
-	maxPDFFormDepth         = 8
-	maxPDFImagesPerPage     = 64
-	maxPDFImageBytesPerPage = 1 << 20
-	maxPDFImagePixels       = 1_000_000
-	maxPDFVisualImages      = 8
-	maxPDFVisualImageBytes  = 256 << 10
-	maxPDFVisualTotalBytes  = 960 << 10
+	pdfSnapshotRoot          = "pdf"
+	pdfSnapshotOriginalPath  = "pdf/original.pdf"
+	pdfSnapshotTextPath      = "pdf/extracted.txt"
+	pdfSnapshotRecordPath    = "pdf/extraction.json"
+	pdfExtractionSchemaV1    = "polis-pdf-extraction@1"
+	pdfExtractionSchemaV2    = "polis-pdf-extraction@2"
+	pdfExtractionSchema      = "polis-pdf-extraction@3"
+	pdfExtractionParser      = "github.com/giraffesyo/pdf@v0.7.0"
+	pdfImageRepresentationV1 = "polis-pdf-embedded-image@1"
+	pdfImageRepresentation   = "polis-pdf-embedded-image@2"
+	pdfAppearanceSemantics   = "intrinsic_embedded_image_object"
+	pdfImageNumberMeaning    = "1_based_page_images_array_ordinal_not_pdf_object_id"
+	pdfAppearanceLimitations = "soft_masks_transparency_color_key_masks_and_rendering_intent_may_not_be_applied"
+	maxPDFExtractDuration    = 8 * time.Second
+	maxPDFStreamBytes        = 1 << 20
+	maxPDFOperatorsPerPage   = 20_000
+	maxPDFGlyphsPerPage      = 16_384
+	maxPDFFormDepth          = 8
+	maxPDFImagesPerPage      = 64
+	maxPDFImageBytesPerPage  = 1 << 20
+	maxPDFImagePixels        = 1_000_000
+	maxPDFVisualImages       = 8
+	maxPDFVisualImageBytes   = 256 << 10
+	maxPDFVisualTotalBytes   = 960 << 10
 )
 
 type PDFExtractionRecord struct {
-	SchemaVersion       string         `json:"schemaVersion"`
-	Parser              string         `json:"parser"`
-	Status              string         `json:"status"`
-	SourceSHA256        string         `json:"sourceSha256"`
-	ExtractedTextSHA256 string         `json:"extractedTextSha256,omitempty"`
-	PageCount           int            `json:"pageCount"`
-	PagesProcessed      int            `json:"pagesProcessed"`
-	TextBytes           int            `json:"textBytes"`
-	TextTruncated       bool           `json:"textTruncated"`
-	PageLimitReached    bool           `json:"pageLimitReached"`
-	ImagePages          int            `json:"imagePages"`
-	ImageRepresentation string         `json:"imageRepresentation,omitempty"`
-	PageImages          []PDFPageImage `json:"pageImages,omitempty"`
-	PageImagesTruncated bool           `json:"pageImagesTruncated,omitempty"`
-	WarningCodes        []string       `json:"warningCodes"`
+	SchemaVersion         string         `json:"schemaVersion"`
+	Parser                string         `json:"parser"`
+	Status                string         `json:"status"`
+	SourceSHA256          string         `json:"sourceSha256"`
+	ExtractedTextSHA256   string         `json:"extractedTextSha256,omitempty"`
+	PageCount             int            `json:"pageCount"`
+	PagesProcessed        int            `json:"pagesProcessed"`
+	TextBytes             int            `json:"textBytes"`
+	TextTruncated         bool           `json:"textTruncated"`
+	PageLimitReached      bool           `json:"pageLimitReached"`
+	ImagePages            int            `json:"imagePages"`
+	ImageRepresentation   string         `json:"imageRepresentation,omitempty"`
+	AppearanceSemantics   string         `json:"appearanceSemantics,omitempty"`
+	AppearanceLimitations string         `json:"appearanceLimitations,omitempty"`
+	ImageNumberMeaning    string         `json:"imageNumberMeaning,omitempty"`
+	PageImages            []PDFPageImage `json:"pageImages,omitempty"`
+	PageImagesTruncated   bool           `json:"pageImagesTruncated,omitempty"`
+	WarningCodes          []string       `json:"warningCodes"`
 }
 
-// PDFPageImage binds one decoded PDF image object to the page and placement
-// where the source paints it. It does not represent a raster of the full page.
+// PDFPageImage binds an intrinsic decoded PDF image object to the page and
+// placement where the parser reports it. ImageNumber is its 1-based ordinal
+// in the parser's Page.Images slice, not a source PDF object identifier. This
+// does not represent a raster of the full page or its complete visible effect.
 type PDFPageImage struct {
 	PageNumber    int             `json:"pageNumber"`
 	ImageNumber   int             `json:"imageNumber"`
@@ -160,6 +170,31 @@ func prepareLegacyPDFMissionInput(filename string, source []byte) (PreparedUploa
 	return packagePDFSnapshot(displayName, files)
 }
 
+func preparePDFMissionInputV2(filename string, source []byte) (PreparedUpload, []byte, error) {
+	displayName, err := safeDisplayName(filename)
+	if err != nil {
+		return PreparedUpload{}, nil, err
+	}
+	if len(source) == 0 || len(source) > MaxPDFSourceBytes {
+		return PreparedUpload{}, nil, &UploadError{ReasonCode: "pdf_source_too_large"}
+	}
+	text, record, pageImages, err := extractPDFRepresentationV2(source)
+	if err != nil {
+		return PreparedUpload{}, nil, err
+	}
+	files := []DirectoryInputFile{{RelativePath: pdfSnapshotOriginalPath, MediaType: "application/pdf", Content: source}}
+	recordBytes, err := json.Marshal(record)
+	if err != nil {
+		return PreparedUpload{}, nil, &UploadError{ReasonCode: "pdf_metadata_invalid"}
+	}
+	files = append(files, DirectoryInputFile{RelativePath: pdfSnapshotRecordPath, MediaType: "application/json", Content: recordBytes})
+	if len(text) > 0 {
+		files = append(files, DirectoryInputFile{RelativePath: pdfSnapshotTextPath, MediaType: "text/plain", Content: []byte(text)})
+	}
+	files = append(files, pageImages...)
+	return packagePDFSnapshot(displayName, files)
+}
+
 func packagePDFSnapshot(displayName string, files []DirectoryInputFile) (PreparedUpload, []byte, error) {
 	snapshot, err := PrepareDirectorySnapshot(files)
 	if err != nil {
@@ -173,15 +208,19 @@ func packagePDFSnapshot(displayName string, files []DirectoryInputFile) (Prepare
 }
 
 func extractPDFText(content []byte) (text string, record PDFExtractionRecord, resultErr error) {
-	text, record, _, resultErr = extractPDF(content, false, pdfExtractionSchemaV1)
+	text, record, _, resultErr = extractPDF(content, false, pdfExtractionSchemaV1, false)
 	return text, record, resultErr
 }
 
 func extractPDFRepresentation(content []byte) (text string, record PDFExtractionRecord, files []DirectoryInputFile, resultErr error) {
-	return extractPDF(content, true, pdfExtractionSchema)
+	return extractPDF(content, true, pdfExtractionSchema, false)
 }
 
-func extractPDF(content []byte, includeImages bool, schemaVersion string) (text string, record PDFExtractionRecord, files []DirectoryInputFile, resultErr error) {
+func extractPDFRepresentationV2(content []byte) (text string, record PDFExtractionRecord, files []DirectoryInputFile, resultErr error) {
+	return extractPDF(content, true, pdfExtractionSchemaV2, true)
+}
+
+func extractPDF(content []byte, includeImages bool, schemaVersion string, legacyV2 bool) (text string, record PDFExtractionRecord, files []DirectoryInputFile, resultErr error) {
 	defer func() {
 		if recover() != nil {
 			text = ""
@@ -224,6 +263,10 @@ func extractPDF(content []byte, includeImages bool, schemaVersion string) (text 
 			warnings[string(warning.Code)] = struct{}{}
 		}
 		if includeImages {
+			if !legacyV2 && page.ImageCount > len(page.Images) {
+				visualTruncated = true
+				warnings["image_representation_omitted"] = struct{}{}
+			}
 			for imageIndex, embedded := range page.Images {
 				if visualAttempts >= maxPDFVisualImages {
 					visualTruncated = true
@@ -233,7 +276,13 @@ func extractPDF(content []byte, includeImages bool, schemaVersion string) (text 
 				if err := ctx.Err(); err != nil {
 					return err
 				}
-				encoded, decodeErr := encodePDFEmbeddedImage(embedded)
+				var encoded []byte
+				var decodeErr error
+				if legacyV2 {
+					encoded, decodeErr = encodePDFEmbeddedImageV2(embedded)
+				} else {
+					encoded, decodeErr = encodePDFEmbeddedImage(embedded)
+				}
 				if err := ctx.Err(); err != nil {
 					return err
 				}
@@ -305,6 +354,13 @@ func extractPDF(content []byte, includeImages bool, schemaVersion string) (text 
 	}
 	if includeImages {
 		record.ImageRepresentation = pdfImageRepresentation
+		if legacyV2 {
+			record.ImageRepresentation = pdfImageRepresentationV1
+		} else {
+			record.AppearanceSemantics = pdfAppearanceSemantics
+			record.AppearanceLimitations = pdfAppearanceLimitations
+			record.ImageNumberMeaning = pdfImageNumberMeaning
+		}
 		record.PageImages = pageImages
 		record.PageImagesTruncated = visualTruncated || pageLimitReached
 		files = imageFiles
@@ -336,6 +392,21 @@ func (buffer *pdfImageLimitBuffer) Write(content []byte) (int, error) {
 }
 
 func encodePDFEmbeddedImage(embedded pdf.Image) ([]byte, error) {
+	if embedded.ImageMask {
+		return nil, errors.New("PDF stencil image masks are unsupported")
+	}
+	switch embedded.Filter {
+	case "":
+		if !pdfRawSamplesHaveExactLength(embedded) {
+			return nil, errors.New("PDF raw image samples are truncated or oversized")
+		}
+	case "DCTDecode":
+	default:
+		// The pinned parser pads short CCITT streams and raw samples. Other
+		// filters are not admitted here until their completeness behavior is
+		// independently verified.
+		return nil, errors.New("PDF image filter is not supported by the strict visual path")
+	}
 	if embedded.Width < 1 || embedded.Height < 1 || embedded.Width > maxPDFImagePixels/embedded.Height {
 		return nil, errors.New("PDF embedded image dimensions exceed their bound")
 	}
@@ -352,6 +423,56 @@ func encodePDFEmbeddedImage(embedded pdf.Image) ([]byte, error) {
 		return nil, err
 	}
 	return append([]byte(nil), output.Bytes()...), nil
+}
+
+// encodePDFEmbeddedImageV2 reproduces the pre-Slice267 decoder behavior only
+// so immutable extraction@2 snapshots can still be verified byte-for-byte.
+func encodePDFEmbeddedImageV2(embedded pdf.Image) ([]byte, error) {
+	if embedded.Width < 1 || embedded.Height < 1 || embedded.Width > maxPDFImagePixels/embedded.Height {
+		return nil, errors.New("PDF embedded image dimensions exceed their bound")
+	}
+	decoded, err := embedded.Decode()
+	if err != nil {
+		return nil, err
+	}
+	bounds := decoded.Bounds()
+	if bounds.Dx() != embedded.Width || bounds.Dy() != embedded.Height || bounds.Dx() < 1 || bounds.Dy() < 1 || bounds.Dx() > maxPDFImagePixels/bounds.Dy() {
+		return nil, errors.New("PDF embedded image decoded dimensions differ")
+	}
+	output := &pdfImageLimitBuffer{limit: maxPDFVisualImageBytes}
+	if err = png.Encode(output, decoded); err != nil {
+		return nil, err
+	}
+	return append([]byte(nil), output.Bytes()...), nil
+}
+
+func pdfRawSamplesHaveExactLength(embedded pdf.Image) bool {
+	if embedded.Width < 1 || embedded.Height < 1 || embedded.Components < 1 || embedded.Width > maxPDFImagePixels/embedded.Height {
+		return false
+	}
+	switch embedded.BitsPerComponent {
+	case 1, 2, 4, 8, 16:
+	default:
+		return false
+	}
+	rowBits := uint64(embedded.Width)
+	if rowBits > ^uint64(0)/uint64(embedded.Components) {
+		return false
+	}
+	rowBits *= uint64(embedded.Components)
+	if rowBits > ^uint64(0)/uint64(embedded.BitsPerComponent) {
+		return false
+	}
+	rowBits *= uint64(embedded.BitsPerComponent)
+	rowBytes := rowBits / 8
+	if rowBits%8 != 0 {
+		rowBytes++
+	}
+	if rowBytes > ^uint64(0)/uint64(embedded.Height) {
+		return false
+	}
+	expectedBytes := rowBytes * uint64(embedded.Height)
+	return expectedBytes == uint64(len(embedded.Data))
 }
 
 func pdfPageRect(value pdf.Rect) PDFPageRect {
@@ -388,14 +509,30 @@ func pdfImageMetadataByPath(files []DirectoryInputFile) (map[string]PDFPageImage
 		return nil, errors.New("PDF snapshot extraction record is missing")
 	}
 	var record PDFExtractionRecord
-	if err := json.Unmarshal(recordBytes, &record); err != nil || record.SchemaVersion != pdfExtractionSchema && record.SchemaVersion != pdfExtractionSchemaV1 || record.PageCount < 1 || record.PagesProcessed < 1 || record.PagesProcessed > MaxPDFPages || record.PagesProcessed > record.PageCount || !validSHA256Digest(record.SourceSHA256) {
+	if err := json.Unmarshal(recordBytes, &record); err != nil || record.SchemaVersion != pdfExtractionSchema && record.SchemaVersion != pdfExtractionSchemaV2 && record.SchemaVersion != pdfExtractionSchemaV1 || record.PageCount < 1 || record.PagesProcessed < 1 || record.PagesProcessed > MaxPDFPages || record.PagesProcessed > record.PageCount || !validSHA256Digest(record.SourceSHA256) {
 		return nil, errors.New("PDF snapshot extraction record is invalid")
 	}
 	original, exists := byPath[pdfSnapshotOriginalPath]
 	if !exists || sha256Digest(original.Content) != record.SourceSHA256 {
 		return nil, errors.New("PDF snapshot source differs from its extraction record")
 	}
-	if record.SchemaVersion == pdfExtractionSchema && record.ImageRepresentation != pdfImageRepresentation || record.SchemaVersion == pdfExtractionSchemaV1 && (record.ImageRepresentation != "" || len(record.PageImages) != 0) || len(record.PageImages) > maxPDFVisualImages {
+	switch record.SchemaVersion {
+	case pdfExtractionSchemaV1:
+		if record.ImageRepresentation != "" || record.AppearanceSemantics != "" || record.AppearanceLimitations != "" || record.ImageNumberMeaning != "" || len(record.PageImages) != 0 {
+			return nil, errors.New("legacy PDF snapshot has unexpected visual metadata")
+		}
+	case pdfExtractionSchemaV2:
+		if record.ImageRepresentation != pdfImageRepresentationV1 || record.AppearanceSemantics != "" || record.AppearanceLimitations != "" || record.ImageNumberMeaning != "" {
+			return nil, errors.New("PDF extraction@2 image representation version is invalid")
+		}
+	case pdfExtractionSchema:
+		if record.ImageRepresentation != pdfImageRepresentation || record.AppearanceSemantics != pdfAppearanceSemantics || record.AppearanceLimitations != pdfAppearanceLimitations || record.ImageNumberMeaning != pdfImageNumberMeaning {
+			return nil, errors.New("PDF extraction@3 image semantics are invalid")
+		}
+	default:
+		return nil, errors.New("PDF extraction schema is not supported")
+	}
+	if len(record.PageImages) > maxPDFVisualImages {
 		return nil, errors.New("PDF snapshot image representation version is invalid")
 	}
 	result := make(map[string]PDFPageImage, len(record.PageImages))
@@ -431,6 +568,24 @@ func pdfImageMetadataByPath(files []DirectoryInputFile) (map[string]PDFPageImage
 		}
 	}
 	return result, nil
+}
+
+func pdfSnapshotUsesCurrentImageSemantics(files []DirectoryInputFile) bool {
+	for _, file := range files {
+		if file.RelativePath != pdfSnapshotRecordPath {
+			continue
+		}
+		var record PDFExtractionRecord
+		if json.Unmarshal(file.Content, &record) != nil {
+			return false
+		}
+		return record.SchemaVersion == pdfExtractionSchema &&
+			record.ImageRepresentation == pdfImageRepresentation &&
+			record.AppearanceSemantics == pdfAppearanceSemantics &&
+			record.AppearanceLimitations == pdfAppearanceLimitations &&
+			record.ImageNumberMeaning == pdfImageNumberMeaning
+	}
+	return false
 }
 
 func appendBoundedPDFText(output *strings.Builder, value string, maxBytes int) bool {
@@ -486,6 +641,8 @@ func verifyPDFSnapshot(prepared PreparedUpload, content []byte) (PreparedUpload,
 	switch schemaVersion {
 	case pdfExtractionSchemaV1:
 		verified, rebuilt, err = prepareLegacyPDFMissionInput(prepared.DisplayName, source)
+	case pdfExtractionSchemaV2:
+		verified, rebuilt, err = preparePDFMissionInputV2(prepared.DisplayName, source)
 	case pdfExtractionSchema:
 		verified, rebuilt, err = preparePDFMissionInput(prepared.DisplayName, "application/pdf", source)
 	default:

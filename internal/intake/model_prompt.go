@@ -85,22 +85,29 @@ type ModelInputContext struct {
 }
 
 func PrepareModelInputContext(manifest ModelInputManifest, manifestDigest string, contentByInputID map[string][]byte) (ModelInputContext, error) {
-	return prepareModelInputContext(manifest, manifestDigest, contentByInputID, false)
+	return prepareModelInputContext(manifest, manifestDigest, contentByInputID, false, true, false)
 }
 
 // PrepareModelInputContextWithCSVTables prepares the revision-bound table
 // representation used by the authenticated Task/Worker delivery path.
 func PrepareModelInputContextWithCSVTables(manifest ModelInputManifest, manifestDigest string, contentByInputID map[string][]byte) (ModelInputContext, error) {
-	return prepareModelInputContext(manifest, manifestDigest, contentByInputID, true)
+	return prepareModelInputContext(manifest, manifestDigest, contentByInputID, true, false, false)
 }
 
 // PrepareLegacyModelInputContext reconstructs the pre-table-range CSV context
 // solely for validating historical append-only delivery receipts.
 func PrepareLegacyModelInputContext(manifest ModelInputManifest, manifestDigest string, contentByInputID map[string][]byte) (ModelInputContext, error) {
-	return PrepareModelInputContext(manifest, manifestDigest, contentByInputID)
+	return prepareModelInputContext(manifest, manifestDigest, contentByInputID, false, true, true)
 }
 
-func prepareModelInputContext(manifest ModelInputManifest, manifestDigest string, contentByInputID map[string][]byte, tableCSV bool) (ModelInputContext, error) {
+// PrepareLegacyPDFModelInputContextWithCSVTables reconstructs historical
+// table-summary deliveries that attached images from PDF extraction@1/@2.
+// It is used only to verify append-only delivery receipts.
+func PrepareLegacyPDFModelInputContextWithCSVTables(manifest ModelInputManifest, manifestDigest string, contentByInputID map[string][]byte) (ModelInputContext, error) {
+	return prepareModelInputContext(manifest, manifestDigest, contentByInputID, true, true, true)
+}
+
+func prepareModelInputContext(manifest ModelInputManifest, manifestDigest string, contentByInputID map[string][]byte, tableCSV, allowLegacyPDFImages, legacyPDFPrompt bool) (ModelInputContext, error) {
 	if err := VerifyModelInputManifest(manifest, manifestDigest); err != nil {
 		return ModelInputContext{}, err
 	}
@@ -183,11 +190,13 @@ func prepareModelInputContext(manifest ModelInputManifest, manifestDigest string
 				return ModelInputContext{}, errors.New("bound input archive failed verification")
 			}
 			var pdfImages map[string]PDFPageImage
+			legacyPDFImageSemantics := false
 			if reference.SourceKind == "pdf_snapshot" {
 				pdfImages, err = pdfImageMetadataByPath(files)
 				if err != nil {
 					return ModelInputContext{}, errors.New("bound PDF image metadata failed verification")
 				}
+				legacyPDFImageSemantics = !pdfSnapshotUsesCurrentImageSemantics(files)
 			}
 			for _, file := range files {
 				digest := sha256Digest(file.Content)
@@ -197,6 +206,16 @@ func prepareModelInputContext(manifest ModelInputManifest, manifestDigest string
 						metadata, exists := pdfImages[file.RelativePath]
 						if !exists {
 							return ModelInputContext{}, errors.New("bound PDF image has no page metadata")
+						}
+						if legacyPDFImageSemantics && !allowLegacyPDFImages {
+							prepared.Excluded = append(prepared.Excluded, ModelInputExclusion{
+								InputID: reference.InputID, RelativePath: file.RelativePath, MediaType: file.MediaType,
+								ByteSize: int64(len(file.Content)), ContentDigest: digest,
+								PageNumber: metadata.PageNumber, ImageNumber: metadata.ImageNumber,
+								ImageWidth: metadata.Width, ImageHeight: metadata.Height,
+								Reason: "representation_not_supported",
+							})
+							continue
 						}
 						visual = &metadata
 					}
@@ -239,7 +258,7 @@ func prepareModelInputContext(manifest ModelInputManifest, manifestDigest string
 		return ModelInputContext{}, err
 	}
 	prepared.PayloadDigest = sha256Digest(encoded)
-	prepared.PromptSection = renderModelInputPrompt(prepared)
+	prepared.PromptSection = renderModelInputPrompt(prepared, legacyPDFPrompt)
 	return prepared, nil
 }
 
@@ -329,12 +348,14 @@ func VerifyModelInputDeliverySelection(manifest ModelInputManifest, included []M
 				expectedFiles[archiveFile.RelativePath] = archiveFile
 			}
 			var pdfImages map[string]PDFPageImage
+			legacyPDFImageSemantics := false
 			if reference.SourceKind == "pdf_snapshot" {
 				var err error
 				pdfImages, err = pdfImageMetadataByPath(archiveFiles)
 				if err != nil {
 					return errors.New("PDF archive page-image metadata failed verification")
 				}
+				legacyPDFImageSemantics = !pdfSnapshotUsesCurrentImageSemantics(archiveFiles)
 			}
 			if len(files) != len(expectedFiles) {
 				return errors.New("archive delivery receipt omits or adds source files")
@@ -373,6 +394,9 @@ func VerifyModelInputDeliverySelection(manifest ModelInputManifest, included []M
 					continue
 				}
 				if isProviderImageMediaType(file.mediaType) {
+					if reference.SourceKind == "pdf_snapshot" && legacyPDFImageSemantics && !file.included && file.reason == "representation_not_supported" {
+						continue
+					}
 					if file.byteSize > MaxModelInputImageBytes || includedImages >= MaxModelInputImages || usedImageBytes+file.byteSize > MaxModelInputImageTotalBytes {
 						if file.included || file.reason != "context_limit" {
 							return errors.New("archive image selection exceeds the bounded vision policy")
@@ -517,7 +541,7 @@ func ProviderImageInputEligible(reference ModelInputManifestEntry) bool {
 	return isProviderImageReference(reference) && reference.ByteSize <= MaxModelInputImageBytes
 }
 
-func renderModelInputPrompt(input ModelInputContext) string {
+func renderModelInputPrompt(input ModelInputContext, legacyPDFPrompt bool) string {
 	var prompt strings.Builder
 	prompt.WriteString("\n\nPolis-bound source inputs\n")
 	fmt.Fprintf(&prompt, "Manifest digest: %s\n", input.ManifestDigest)
@@ -540,7 +564,11 @@ func renderModelInputPrompt(input ModelInputContext) string {
 			name = item.RelativePath
 		}
 		if item.PageNumber > 0 {
-			fmt.Fprintf(&prompt, "\nAttached untrusted PDF image %s revision %d (page %d, image %d, %dx%d pixels; %s, %d bytes, sha256 %s). This is an embedded image object with its original page placement recorded in the immutable PDF extraction manifest; it is not a raster of the complete PDF page. The image bytes are attached to this same Worker turn as image input.\n", item.Reference.InputID, item.Reference.Revision, item.PageNumber, item.ImageNumber, item.ImageWidth, item.ImageHeight, name, item.ByteSize, item.ContentDigest)
+			if legacyPDFPrompt {
+				fmt.Fprintf(&prompt, "\nAttached untrusted PDF image %s revision %d (page %d, image %d, %dx%d pixels; %s, %d bytes, sha256 %s). This is an embedded image object with its original page placement recorded in the immutable PDF extraction manifest; it is not a raster of the complete PDF page. The image bytes are attached to this same Worker turn as image input.\n", item.Reference.InputID, item.Reference.Revision, item.PageNumber, item.ImageNumber, item.ImageWidth, item.ImageHeight, name, item.ByteSize, item.ContentDigest)
+			} else {
+				fmt.Fprintf(&prompt, "\nAttached untrusted PDF image %s revision %d (page %d, parser image ordinal %d, %dx%d pixels; %s, %d bytes, sha256 %s). The ordinal is one-based in this parser's page.Images array and is not an original PDF object ID. These bytes represent only the intrinsic embedded image object; the pinned parser does not expose or apply PDF soft masks/transparency, color-key masks, or rendering intent, so visible appearance may differ. Placement is recorded in the immutable PDF extraction manifest. This is not a raster of the complete PDF page. The image bytes are attached to this same Worker turn as image input.\n", item.Reference.InputID, item.Reference.Revision, item.PageNumber, item.ImageNumber, item.ImageWidth, item.ImageHeight, name, item.ByteSize, item.ContentDigest)
+			}
 		} else {
 			fmt.Fprintf(&prompt, "\nAttached untrusted image %s revision %d (%s, %s, %d bytes, sha256 %s). The image bytes are attached to this same Worker turn as image input.\n", item.Reference.InputID, item.Reference.Revision, name, item.MediaType, item.ByteSize, item.ContentDigest)
 		}

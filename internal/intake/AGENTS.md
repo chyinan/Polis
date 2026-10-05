@@ -1,6 +1,6 @@
 # Mission input contracts
 
-Last verified: 2026-09-24
+Last verified: 2026-10-06
 
 ## Purpose
 
@@ -10,8 +10,8 @@ Keep uploaded originals, derived file trees, and text actually supplied to a Wor
 
 - `PrepareMissionInput` returns the exact bytes to persist. Text, images, and ZIP keep their submitted bytes; a direct PDF becomes a canonical `pdf_snapshot` package that preserves the original PDF, bounded extracted text, and extraction metadata. Always persist the returned bytes, never the raw PDF after preparing it.
 - Nested PDFs inside directory and ZIP snapshots stay as preserved unsupported binary files; only a direct `.pdf` upload invokes extraction.
-- PDF extraction pins `github.com/giraffesyo/pdf@v0.7.0`, caps the source at 6 MiB, parses at most 40 pages with per-stream/operator/glyph/image limits, and caps extracted text at 16 KiB. It may include at most eight supported embedded image objects as PNG, each at most 1,000,000 pixels and 256 KiB, with a 960 KiB total. The immutable PDF extraction record binds each object to its page, dimensions, digest, page geometry and placement; Worker receipts repeat page number, dimensions, path and digest. This is not a complete page raster: vector drawing, page composition and unsupported images remain unavailable, and no OCR is performed. The original PDF stays excluded from Worker input.
-- Preserve canonical verification for historical `polis-pdf-extraction@1` packages while writing the embedded-image `@2` representation for newly prepared PDFs.
+- PDF extraction pins `github.com/giraffesyo/pdf@v0.7.0`, caps the source at 6 MiB, parses at most 40 pages with per-stream/operator/glyph/image limits, and caps extracted text at 16 KiB. It may include at most eight supported embedded image objects as PNG, each at most 1,000,000 pixels and 256 KiB, with a 960 KiB total. The strict visual path accepts exact-length unpacked samples and DCT images, rejects stencil masks and other codecs (including CCITT and JBIG2), and marks image-count mismatches or omitted objects in the extraction record. `ImageNumber` is a one-based ordinal in the parser's page image array, not a source PDF object ID. The immutable record binds each object to its page, dimensions, digest, page geometry and placement; Worker receipts repeat page number, dimensions, path and digest. These bytes represent only an intrinsic embedded-image object: the pinned parser does not expose or apply soft masks/transparency, color-key masks, or rendering intent, so visible appearance may differ. This is not a complete page raster: vector drawing, page composition and unsupported images remain unavailable, and no OCR is performed. The original PDF stays excluded from Worker input.
+- Preserve canonical verification for historical `polis-pdf-extraction@1` and `@2` packages while writing the stricter embedded-image `@3` representation for newly prepared PDFs. The active Task/Worker delivery path excludes embedded images from historical `@1`/`@2` snapshots; their saved receipts remain verifiable.
 - ZIP input is stored as `zip_snapshot` and is never extracted to a host path.
 - Git input is a canonical `git_snapshot` made from a complete locally present commit OID. Import reads blob objects without fetch/checkout and does not use hooks, filters, credential helpers, or remotes. Dirty worktree bytes remain excluded and are called out in the generated source note; submodules, Git LFS payloads, links, and bounded unsupported entries are listed as omissions.
 - `ExtractVerifiedZIPFiles` reads at most 512 entries, 250 files, 7 MiB expanded content, and 8 MiB compressed input. It rejects unsafe/colliding paths, special entries, nested archives, empty files, and invalid size/CRC data.
