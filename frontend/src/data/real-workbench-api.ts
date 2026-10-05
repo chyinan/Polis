@@ -87,15 +87,15 @@ export class RealWorkbenchApi implements WorkbenchApi {
   async createCompany(options: CompanyDraftOptions): Promise<CompanyCommandReceipt> {
     assertCompanyScope(options.id);
     assertRequestID(options.requestId);
-    const raw = await this.post('/companies', options.requestId, {id: options.id, name: options.name, workspaceRoot: options.workspaceRoot, roster: options.roster, requestId: options.requestId});
+    const raw = await this.post('/companies', options.requestId, {id: options.id, name: options.name, workspaceRoot: options.workspaceRoot, roster: options.roster, requestId: options.requestId, teamCoverageConfirmationSha256: options.teamCoverageConfirmationSha256}, options.teamCoverageConfirmationSha256 !== undefined);
     return validateCompanyCommandReceipt(raw, 'company.create');
   }
 
   async updateCompany(options: UpdateCompanyOptions): Promise<CompanyCommandReceipt> {
     assertCompanyScope(options.companyId);
     assertRequestID(options.requestId);
-    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/organization`, options.requestId, {name: options.name, workspaceRoot: options.workspaceRoot, roster: options.roster, requestId: options.requestId});
-    return validateCompanyCommandReceipt(raw, 'company.update');
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/organization`, options.requestId, {name: options.name, workspaceRoot: options.workspaceRoot, roster: options.roster, requestId: options.requestId, teamCoverageConfirmationSha256: options.teamCoverageConfirmationSha256}, options.teamCoverageConfirmationSha256 !== undefined);
+    return validateCompanyCommandReceipt(raw, options.teamCoverageConfirmationSha256 === undefined ? 'company.update' : 'company.team_coverage.confirm');
   }
 
   async archiveCompany(options: ArchiveCompanyOptions): Promise<CompanyCommandReceipt> {

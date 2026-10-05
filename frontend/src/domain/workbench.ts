@@ -21,6 +21,9 @@ export type CompanySummaryView = Readonly<{
   workspaceRoot: string;
   state: CompanyState;
   roster: ReadonlyArray<EmployeeDraft>;
+  teamCoverageConfirmed?: boolean;
+  teamCoverageConfirmationSha256?: string;
+  teamCoverageConfirmedAt?: string;
 }>;
 
 export type RuntimeReadiness = 'configured' | 'missing' | 'invalid' | 'ready' | 'unavailable' | 'restart_required' | 'not_required' | 'not_applicable' | 'deferred';
@@ -1008,7 +1011,7 @@ export type DailyRoutineCommandReceipt = Readonly<{
   resultingState: 'active' | 'instruction_set';
 }>;
 
-export type CompanyCommandType = 'company.create' | 'company.update' | 'company.archive' | 'runtime.settings.update' | 'notification.route.update';
+export type CompanyCommandType = 'company.create' | 'company.update' | 'company.team_coverage.confirm' | 'company.archive' | 'runtime.settings.update' | 'notification.route.update';
 
 export type CompanyCommandResultState = 'active' | 'archived' | 'restart_required' | 'configured' | 'unverified' | 'ready' | 'revoked';
 

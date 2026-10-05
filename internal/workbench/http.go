@@ -1513,6 +1513,21 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		input.ID = path.companyID
+		if input.TeamCoverageConfirmationSHA256 != "" {
+			if !installationauth.IsAuthenticated(ctx) {
+				writeError(response, http.StatusUnauthorized, "installation owner authentication is required to confirm the team coverage draft")
+				return
+			}
+			csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+			csrfValue := ""
+			if csrfCookie != nil {
+				csrfValue = csrfCookie.Value
+			}
+			if request.Header.Get("Origin") == "" || !installationauth.CSRFValid(ctx, csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+				writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+				return
+			}
+		}
 		receipt, err := organizationService.UpdateCompany(ctx, path.companyID, input)
 		if err != nil {
 			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
@@ -2507,6 +2522,21 @@ func serveCompanyCollection(service control.CommandService, response http.Respon
 	if err := decodeJSON(response, request, &input); err != nil {
 		writeCommandErrorForTarget(response, http.StatusBadRequest, input.ID, input.ID, "company", err)
 		return
+	}
+	if input.TeamCoverageConfirmationSHA256 != "" {
+		if !installationauth.IsAuthenticated(ctx) {
+			writeError(response, http.StatusUnauthorized, "installation owner authentication is required to confirm the team coverage draft")
+			return
+		}
+		csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+		csrfValue := ""
+		if csrfCookie != nil {
+			csrfValue = csrfCookie.Value
+		}
+		if request.Header.Get("Origin") == "" || !installationauth.CSRFValid(ctx, csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+			writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+			return
+		}
 	}
 	receipt, err := organizationService.CreateCompany(ctx, input)
 	if err != nil {

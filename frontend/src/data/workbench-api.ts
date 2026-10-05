@@ -15,6 +15,7 @@ export type CompanyDraftOptions = Readonly<{
   workspaceRoot: string;
   roster: ReadonlyArray<EmployeeDraft>;
   requestId: string;
+  teamCoverageConfirmationSha256?: string;
 }>;
 
 export type UpdateCompanyOptions = Readonly<{
@@ -23,6 +24,7 @@ export type UpdateCompanyOptions = Readonly<{
   workspaceRoot: string;
   roster: ReadonlyArray<EmployeeDraft>;
   requestId: string;
+  teamCoverageConfirmationSha256?: string;
 }>;
 
 export type ArchiveCompanyOptions = Readonly<{

@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 236. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 237. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 237: REQ-02 owner acknowledgment of the fixed team matrix
+
+The final Company creation step can submit the exact canonical `TEAM_COVERAGE.json` SHA-256 when the installation owner checks the acknowledgment. The existing Company directory now offers a review panel with the same seven task assignments, independent checkers, acceptance paths, and unverified qualifications before an owner confirms. Backend routes require installation-owner authentication and CSRF validation whenever a digest is present; the exact digest is checked against the embedded canonical file, and the creation acknowledgment is committed atomically with the new Company; the existing-Company action uses its own idempotent event command and leaves organization fields untouched. The event records `qualification: unverified`, and this work does not enable execution or qualify provider/role surfaces. `go build ./...`, `npm run build`, and `git diff --check` pass; the Vite build retains its large-chunk advisory. A read-only Schema 108 query returned zero Companies, Missions, and active WorkerSessions. No owner decision, tests, database writes, Worker/provider operations, or frozen scenarios ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md`. The seven REQ-02 scenarios stay `partial/not_run`, and all 232 frozen scenarios stay `not_run`.
 
 ## Slice 236: REQ-02 fixed team coverage review in company setup
 

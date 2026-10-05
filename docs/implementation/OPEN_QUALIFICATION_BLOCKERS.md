@@ -1,12 +1,12 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 236. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 237. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base: `main` at `5fd07eb7021ad5cd564040150a4aab2ac07f3c7e` (Slice 234, immediately before this audit).
+- Audit base: local `main` at `8e775d8` (Slice 236, immediately before Slice237); remote `origin/main` was `934d86c0cfb855869e6016476646ac9150f32b6d` before this slice.
 - Runtime: Android/Termux (`uname` reports Android; Node platform is `android`). `pwsh`, `powershell`, `bwrap`, and `systemd-run` are not installed in this environment.
-- Read-only local database query: Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions.
+- Read-only local database query during Slice237: Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions.
 - The traceability ledger lists 17 open software requirements. All 232 frozen scenario rows currently have `executionStatus: not_run`.
 
 These facts rule out session-backed execution in the current database and native Windows or delegated Linux qualification here. They do not prove that external accounts, certificates, or hosts do not exist elsewhere; none has been provided or connected for these product qualification tasks in this checkout.
@@ -15,7 +15,7 @@ These facts rule out session-backed execution in the current database and native
 
 | Open requirement | Remaining gate in the approved ledger | Evidence needed to resume |
 |---|---|---|
-| REQ-02 | The New Company wizard now displays all seven `TEAM_COVERAGE.json` assignments and acceptance paths, but the matrix remains a draft with seven unqualified assignments. The UI does not persist approval or enforce executable role contracts; the actual provider role contracts and direct-message surface remain unqualified. | Installation owner confirms the fixed roster/role mapping; separately authorized real-provider account and role-surface qualification. |
+| REQ-02 | Company creation and the existing Company directory can persist the installation owner's acknowledgment of the exact embedded `TEAM_COVERAGE.json` digest. The event leaves all roles unverified and execution disabled. The actual provider role contracts, executable admission gates, and direct-message surface remain unqualified; no owner confirmation has been made in this checkout. | Installation owner reviews and confirms the fixed roster/role mapping in the UI; separately authorized real-provider account and role-surface qualification. |
 | REQ-13 | The Fake-only dispatcher has persisted fairness and per-Task claims, but no owner-backed global slot cap or authoritative quota-ready/release source exists. | Owner decision for the installation-wide cap and a trusted provider quota signal/account source. |
 | REQ-14 | Legacy revocation rows may still need an installation-owner `acknowledged_unresolved` disposition; stop/restart proof depends on runtime host state. | Owner review of each applicable legacy row and host-backed exact stop/recovery evidence. |
 | REQ-15 | Memory overlay restore behavior needs PostgreSQL/Desktop runtime qualification; corrections and revalidation require a session-bound operator path. | A qualified Desktop/PostgreSQL restore host and an already-active, database-confirmed WorkerSession for any session-bound action. |
@@ -42,3 +42,7 @@ These facts rule out session-backed execution in the current database and native
 - **Frozen scenarios and R3 evidence:** all scenario execution remains `not_run`. Scenario runs, real domain outcomes, and organization-benefit evidence require their own authorization, data, and qualified environment.
 
 The source implementation can continue where a concrete local gap remains. Do not infer completion from these prerequisites being documented; keep the requirement and scenario dispositions open until their evidence exists.
+
+## Repository push status
+
+The requested push is a separate repository-authentication dependency. The configured HTTPS remote is readable, but the most recent push attempt failed because Git could not read a GitHub username/credential in this non-interactive environment. No GitHub token or SSH key was present in the local credential configuration checked during the handoff. Local commits remain available on `main`; retry push after an authorized GitHub write credential becomes available. This source-repository credential does not qualify any product provider integration.

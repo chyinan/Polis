@@ -315,7 +315,10 @@ function isCompanySummary(value: unknown): value is CompanySummaryView {
     && hasString(value, 'workspaceRoot')
     && isOneOf(value.state, ['active', 'archived'])
     && Array.isArray(value.roster)
-    && value.roster.every(employee => isEmployeeDraft(employee));
+    && value.roster.every(employee => isEmployeeDraft(employee))
+    && (value.teamCoverageConfirmed === undefined || typeof value.teamCoverageConfirmed === 'boolean')
+    && (value.teamCoverageConfirmationSha256 === undefined || typeof value.teamCoverageConfirmationSha256 === 'string')
+    && (value.teamCoverageConfirmedAt === undefined || typeof value.teamCoverageConfirmedAt === 'string');
 }
 
 function isRuntimeReadiness(value: unknown): boolean {

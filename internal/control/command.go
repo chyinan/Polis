@@ -12,6 +12,7 @@ import (
 	"polis/internal/organization"
 	"polis/internal/provider"
 	"polis/internal/taskvalidation"
+	"polis/spec"
 )
 
 type CreateMissionRequest struct {
@@ -78,12 +79,14 @@ type OperatorInstructionReceipt struct {
 
 type CreateCompanyRequest struct {
 	organization.CompanyDraft
-	RequestID string `json:"requestId"`
+	RequestID                      string `json:"requestId"`
+	TeamCoverageConfirmationSHA256 string `json:"teamCoverageConfirmationSha256,omitempty"`
 }
 
 type UpdateCompanyRequest struct {
 	organization.CompanyDraft
-	RequestID string `json:"requestId"`
+	RequestID                      string `json:"requestId"`
+	TeamCoverageConfirmationSHA256 string `json:"teamCoverageConfirmationSha256,omitempty"`
 }
 
 type UpdateRuntimeSettingsRequest struct {
@@ -120,11 +123,14 @@ type SetHumanInterventionStateRequest struct {
 }
 
 type CompanySummary struct {
-	ID            string                       `json:"id"`
-	Name          string                       `json:"name"`
-	WorkspaceRoot string                       `json:"workspaceRoot"`
-	State         string                       `json:"state"`
-	Roster        []organization.EmployeeDraft `json:"roster"`
+	ID                             string                       `json:"id"`
+	Name                           string                       `json:"name"`
+	WorkspaceRoot                  string                       `json:"workspaceRoot"`
+	State                          string                       `json:"state"`
+	Roster                         []organization.EmployeeDraft `json:"roster"`
+	TeamCoverageConfirmed          bool                         `json:"teamCoverageConfirmed"`
+	TeamCoverageConfirmationSHA256 string                       `json:"teamCoverageConfirmationSha256"`
+	TeamCoverageConfirmedAt        string                       `json:"teamCoverageConfirmedAt"`
 }
 
 type CommandReceipt struct {
@@ -594,6 +600,9 @@ func validateCreateCompanyRequest(request CreateCompanyRequest) error {
 	if err := organization.ValidateCompanyDraft(request.CompanyDraft); err != nil {
 		return core.Malformed
 	}
+	if request.TeamCoverageConfirmationSHA256 != "" && request.TeamCoverageConfirmationSHA256 != spec.FixedTeamCoverageSHA256() {
+		return core.Malformed
+	}
 	return validateRequestID(request.RequestID)
 }
 
@@ -603,6 +612,9 @@ func validateUpdateCompanyRequest(companyID string, request UpdateCompanyRequest
 	}
 	request.ID = companyID
 	if err := organization.ValidateCompanyDraft(request.CompanyDraft); err != nil {
+		return core.Malformed
+	}
+	if request.TeamCoverageConfirmationSHA256 != "" && request.TeamCoverageConfirmationSHA256 != spec.FixedTeamCoverageSHA256() {
 		return core.Malformed
 	}
 	return validateRequestID(request.RequestID)

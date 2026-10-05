@@ -10,26 +10,40 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"polis/internal/core"
 	"polis/internal/organization"
+	"polis/spec"
 )
 
 // CompanyDetails is the authorized organization projection used by product
 // settings and the company switcher. It contains no provider credentials.
 type CompanyDetails struct {
-	ID            string
-	Name          string
-	WorkspaceRoot string
-	State         string
-	Provider      string
-	Model         string
-	Effort        string
-	Profile       string
-	Roster        []organization.EmployeeDraft
+	ID                             string
+	Name                           string
+	WorkspaceRoot                  string
+	State                          string
+	Provider                       string
+	Model                          string
+	Effort                         string
+	Profile                        string
+	Roster                         []organization.EmployeeDraft
+	TeamCoverageConfirmed          bool
+	TeamCoverageConfirmationSHA256 string
+	TeamCoverageConfirmedAt        string
 }
 
 // TXCreateCompanyWithOrganization creates the fixed logical runtime roster in
 // one transaction. It does not start a Mission or provider session.
 func (k *Kernel) TXCreateCompanyWithOrganization(ctx context.Context, draft organization.CompanyDraft) (Scope, error) {
+	return k.TXCreateCompanyWithOrganizationAndCoverageConfirmation(ctx, draft, "", "")
+}
+
+// TXCreateCompanyWithOrganizationAndCoverageConfirmation optionally records
+// the installation owner's acknowledgment of the exact fixed-team draft in
+// the same transaction as Company creation. It never qualifies a role.
+func (k *Kernel) TXCreateCompanyWithOrganizationAndCoverageConfirmation(ctx context.Context, draft organization.CompanyDraft, requestID, confirmationSHA256 string) (Scope, error) {
 	if err := organization.ValidateCompanyDraft(draft); err != nil {
+		return Scope{}, core.Malformed
+	}
+	if confirmationSHA256 != "" && (confirmationSHA256 != spec.FixedTeamCoverageSHA256() || !core.ValidID(requestID)) {
 		return Scope{}, core.Malformed
 	}
 	scope := Scope{company: draft.ID}
@@ -64,6 +78,16 @@ ON CONFLICT(company_id,employee_id) DO NOTHING`, draft.ID); err != nil {
 	}{Name: strings.TrimSpace(draft.Name), WorkspaceRoot: strings.TrimSpace(draft.WorkspaceRoot)}); err != nil {
 		return Scope{}, err
 	}
+	if confirmationSHA256 != "" {
+		if err = appendEvent(ctx, tx, scope, "company.team_coverage.confirmed", struct {
+			RequestID      string `json:"request_id"`
+			TemplateSHA256 string `json:"template_sha256"`
+			Decision       string `json:"decision"`
+			Qualification  string `json:"qualification"`
+		}{RequestID: requestID, TemplateSHA256: confirmationSHA256, Decision: "installation_owner_confirmed_fixed_team_mapping", Qualification: "unverified"}); err != nil {
+			return Scope{}, err
+		}
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return Scope{}, err
 	}
@@ -82,11 +106,16 @@ func (k *Kernel) CompanyDetails(ctx context.Context, companyID string) (CompanyD
 	}
 	defer tx.Rollback(ctx)
 	details := CompanyDetails{}
-	if err = tx.QueryRow(ctx, `SELECT id,name,workspace_root,state,provider,model,effort,profile FROM companies WHERE id=$1`, companyID).Scan(&details.ID, &details.Name, &details.WorkspaceRoot, &details.State, &details.Provider, &details.Model, &details.Effort, &details.Profile); errors.Is(err, pgx.ErrNoRows) {
+	if err = tx.QueryRow(ctx, `SELECT c.id,c.name,c.workspace_root,c.state,c.provider,c.model,c.effort,c.profile,
+COALESCE(coverage.payload->>'template_sha256',''),COALESCE(coverage.payload->>'occurred_at','')
+FROM companies c LEFT JOIN LATERAL (
+  SELECT payload FROM events WHERE company_id=c.id AND kind='company.team_coverage.confirmed' ORDER BY company_seq DESC LIMIT 1
+) coverage ON TRUE WHERE c.id=$1`, companyID).Scan(&details.ID, &details.Name, &details.WorkspaceRoot, &details.State, &details.Provider, &details.Model, &details.Effort, &details.Profile, &details.TeamCoverageConfirmationSHA256, &details.TeamCoverageConfirmedAt); errors.Is(err, pgx.ErrNoRows) {
 		return CompanyDetails{}, core.OutOfScope
 	} else if err != nil {
 		return CompanyDetails{}, err
 	}
+	details.TeamCoverageConfirmed = details.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256()
 	rows, err := tx.Query(ctx, `SELECT id,display_name,role_name,model_profile FROM employees WHERE company_id=$1 AND enabled ORDER BY id`, companyID)
 	if err != nil {
 		return CompanyDetails{}, err
@@ -116,7 +145,11 @@ func (k *Kernel) ListCompanyDetails(ctx context.Context) ([]CompanyDetails, erro
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	rows, err := tx.Query(ctx, `SELECT id,name,workspace_root,state,provider,model,effort,profile FROM companies ORDER BY id`)
+	rows, err := tx.Query(ctx, `SELECT c.id,c.name,c.workspace_root,c.state,c.provider,c.model,c.effort,c.profile,
+COALESCE(coverage.payload->>'template_sha256',''),COALESCE(coverage.payload->>'occurred_at','')
+FROM companies c LEFT JOIN LATERAL (
+  SELECT payload FROM events WHERE company_id=c.id AND kind='company.team_coverage.confirmed' ORDER BY company_seq DESC LIMIT 1
+) coverage ON TRUE ORDER BY c.id`)
 	if err != nil {
 		return nil, err
 	}
@@ -124,9 +157,10 @@ func (k *Kernel) ListCompanyDetails(ctx context.Context) ([]CompanyDetails, erro
 	companies := make([]CompanyDetails, 0)
 	for rows.Next() {
 		var company CompanyDetails
-		if err = rows.Scan(&company.ID, &company.Name, &company.WorkspaceRoot, &company.State, &company.Provider, &company.Model, &company.Effort, &company.Profile); err != nil {
+		if err = rows.Scan(&company.ID, &company.Name, &company.WorkspaceRoot, &company.State, &company.Provider, &company.Model, &company.Effort, &company.Profile, &company.TeamCoverageConfirmationSHA256, &company.TeamCoverageConfirmedAt); err != nil {
 			return nil, err
 		}
+		company.TeamCoverageConfirmed = company.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256()
 		companies = append(companies, company)
 	}
 	if err = rows.Err(); err != nil {
@@ -141,8 +175,45 @@ func (k *Kernel) ListCompanyDetails(ctx context.Context) ([]CompanyDetails, erro
 // TXUpdateCompanyWithOrganization changes non-runtime organization settings
 // and the fixed roster presentation in one scoped transaction.
 func (k *Kernel) TXUpdateCompanyWithOrganization(ctx context.Context, draft organization.CompanyDraft, key string) (Receipt, error) {
+	return k.txUpdateCompanyWithOrganization(ctx, draft, key, "")
+}
+
+// TXUpdateCompanyWithOrganizationAndCoverageConfirmation optionally records
+// the installation owner's acknowledgment of the exact fixed-team draft in
+// the same transaction as the organization update. It never qualifies a role.
+func (k *Kernel) TXUpdateCompanyWithOrganizationAndCoverageConfirmation(ctx context.Context, draft organization.CompanyDraft, key, confirmationSHA256 string) (Receipt, error) {
+	return k.txUpdateCompanyWithOrganization(ctx, draft, key, confirmationSHA256)
+}
+
+func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft organization.CompanyDraft, key, confirmationSHA256 string) (Receipt, error) {
 	if err := organization.ValidateCompanyDraft(draft); err != nil {
 		return Receipt{}, core.Malformed
+	}
+	if confirmationSHA256 != "" && (confirmationSHA256 != spec.FixedTeamCoverageSHA256() || !core.ValidID(key)) {
+		return Receipt{}, core.Malformed
+	}
+	if confirmationSHA256 != "" {
+		return k.TXWrite(ctx, Scope{company: draft.ID}, nil, key, "company.team_coverage.confirm", struct {
+			TemplateSHA256 string
+		}{TemplateSHA256: confirmationSHA256}, func(tx pgx.Tx) (Receipt, error) {
+			var state string
+			if err := tx.QueryRow(ctx, "SELECT state FROM companies WHERE id=$1", draft.ID).Scan(&state); errors.Is(err, pgx.ErrNoRows) {
+				return Receipt{}, core.OutOfScope
+			} else if err != nil {
+				return Receipt{}, err
+			} else if state == "archived" {
+				return Receipt{}, core.Denied
+			}
+			if err := appendEvent(ctx, tx, Scope{company: draft.ID}, "company.team_coverage.confirmed", struct {
+				RequestID      string `json:"request_id"`
+				TemplateSHA256 string `json:"template_sha256"`
+				Decision       string `json:"decision"`
+				Qualification  string `json:"qualification"`
+			}{RequestID: key, TemplateSHA256: confirmationSHA256, Decision: "installation_owner_confirmed_fixed_team_mapping", Qualification: "unverified"}); err != nil {
+				return Receipt{}, err
+			}
+			return Receipt{ID: draft.ID, Status: "active"}, nil
+		})
 	}
 	return k.TXWrite(ctx, Scope{company: draft.ID}, nil, key, "company.update", draft, func(tx pgx.Tx) (Receipt, error) {
 		var state string

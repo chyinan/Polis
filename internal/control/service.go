@@ -16,6 +16,7 @@ import (
 	"polis/internal/domainworkflow"
 	"polis/internal/environment"
 	githubfeedback "polis/internal/feedback/github"
+	"polis/internal/installationauth"
 	"polis/internal/intake"
 	"polis/internal/kernel"
 	"polis/internal/organization"
@@ -512,7 +513,10 @@ func (s *Service) CreateCompany(ctx context.Context, request CreateCompanyReques
 	if err := validateCreateCompanyRequest(request); err != nil {
 		return CommandReceipt{}, err
 	}
-	if _, err := s.runtime.TXCreateCompanyWithOrganization(ctx, request.CompanyDraft); err != nil {
+	if request.TeamCoverageConfirmationSHA256 != "" && !installationauth.IsAuthenticated(ctx) {
+		return CommandReceipt{}, core.Denied
+	}
+	if _, err := s.runtime.TXCreateCompanyWithOrganizationAndCoverageConfirmation(ctx, request.CompanyDraft, request.RequestID, request.TeamCoverageConfirmationSHA256); err != nil {
 		return CommandReceipt{}, err
 	}
 	return commandReceiptForTarget("company.create", request.RequestID, "company", request.ID, "active"), nil
@@ -523,10 +527,17 @@ func (s *Service) UpdateCompany(ctx context.Context, companyID string, request U
 	if err := validateUpdateCompanyRequest(companyID, request); err != nil {
 		return CommandReceipt{}, err
 	}
-	if _, err := s.runtime.TXUpdateCompanyWithOrganization(ctx, request.CompanyDraft, request.RequestID); err != nil {
+	if request.TeamCoverageConfirmationSHA256 != "" && !installationauth.IsAuthenticated(ctx) {
+		return CommandReceipt{}, core.Denied
+	}
+	if _, err := s.runtime.TXUpdateCompanyWithOrganizationAndCoverageConfirmation(ctx, request.CompanyDraft, request.RequestID, request.TeamCoverageConfirmationSHA256); err != nil {
 		return CommandReceipt{}, err
 	}
-	return commandReceiptForTarget("company.update", request.RequestID, "company", companyID, "active"), nil
+	commandType := "company.update"
+	if request.TeamCoverageConfirmationSHA256 != "" {
+		commandType = "company.team_coverage.confirm"
+	}
+	return commandReceiptForTarget(commandType, request.RequestID, "company", companyID, "active"), nil
 }
 
 func (s *Service) ArchiveCompany(ctx context.Context, companyID, requestID string) (CommandReceipt, error) {
@@ -842,7 +853,7 @@ func (s *Service) UploadMissionInput(ctx context.Context, companyID string, requ
 func companySummary(company kernel.CompanyDetails) CompanySummary {
 	roster := make([]organization.EmployeeDraft, len(company.Roster))
 	copy(roster, company.Roster)
-	return CompanySummary{ID: company.ID, Name: company.Name, WorkspaceRoot: company.WorkspaceRoot, State: company.State, Roster: roster}
+	return CompanySummary{ID: company.ID, Name: company.Name, WorkspaceRoot: company.WorkspaceRoot, State: company.State, Roster: roster, TeamCoverageConfirmed: company.TeamCoverageConfirmed, TeamCoverageConfirmationSHA256: company.TeamCoverageConfirmationSHA256, TeamCoverageConfirmedAt: company.TeamCoverageConfirmedAt}
 }
 
 func providerAuthReadiness(transport string) string {

@@ -419,7 +419,7 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
   private readonly overview: CompanyOverviewView = buildFixtureOverview();
 
   async listCompanies(): Promise<ReadonlyArray<CompanySummaryView>> {
-    return [{id: FIXTURE_COMPANY_ID, name: this.overview.company.name, workspaceRoot: 'fixture://workspace', state: 'active', roster: this.overview.employees.map(employee => ({id: employee.employeeId, displayName: employee.displayName, role: employee.role, modelProfile: employee.profile ?? 'unavailable'}))}];
+    return [{id: FIXTURE_COMPANY_ID, name: this.overview.company.name, workspaceRoot: 'fixture://workspace', state: 'active', roster: this.overview.employees.map(employee => ({id: employee.employeeId, displayName: employee.displayName, role: employee.role, modelProfile: employee.profile ?? 'unavailable'})), teamCoverageConfirmed: false, teamCoverageConfirmationSha256: '', teamCoverageConfirmedAt: ''}];
   }
 
   async getRuntimeSettings(options: CompanyScopeOptions): Promise<RuntimeSettingsView> {
