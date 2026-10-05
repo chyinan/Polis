@@ -1188,7 +1188,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -1208,7 +1209,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -1229,7 +1231,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -1250,7 +1253,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -1648,7 +1652,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -1669,7 +1674,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -2213,7 +2219,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -2702,7 +2709,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {
@@ -2779,7 +2787,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md"
       ]
     },
     {

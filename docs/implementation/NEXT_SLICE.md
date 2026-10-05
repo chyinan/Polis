@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-06)
 
-## Latest continuation status (Slice 261, REQ-02 semantic team-matrix revision)
+## Latest continuation status (Slice 262, REQ-13 installation-wide Worker slots)
+
+Schema 110 adds an installation-wide Worker slot policy with no default cap/reserve, immutable revision events, and durable slot-class reservations. Both production admission paths serialize on the singleton policy row and insert the reservation with the WorkerSession; active sessions are counted across Companies. The Installation Owner API and page expose an authenticated, CSRF-protected, revision-checked configuration form. Unconfigured policy keeps admission fail-closed; reducing capacity does not stop existing sessions. `review` and `peer_review` use protected slots. Provider quota readiness and `waiting_quota` release remain unimplemented. Go build, migration-hash validation for 110 migrations, frontend production build, and diff check passed; no tests, DB, Worker/provider action, or scenario ran. REQ-13 remains partial; all 232 scenarios remain `not_run`, and 17 open REQs are unchanged. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-262-req13-installation-worker-slots/verification.md.
+
+## Previous continuation status (Slice 261, REQ-02 semantic team-matrix revision)
 
 The exact reviewed fixed-team matrix now compiles to a typed content-addressed team-matrix revision. Owner-confirmation events retain the exact bytes, and Company summary projections verify the current digest, decision and unverified state before exposing it. The semantic resolver reports assignments but remains human-required while execution is disabled and qualifications are unverified. This is not a per-employee RoleRevision; no semantic task_type-to-TaskKind mapping or admission behavior was added. C-AUTHORITY still needs an approved Task/PlanRevision semantic binding and explicit mapping. Go build, frontend production build and diff check passed; no tests, DB, Worker/provider action or scenario ran. Seven REQ-02 rows remain partial/not_run, all 232 scenarios remain not_run, and 17 open REQs are unchanged. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-261-req02-semantic-role-revision/verification.md.
 
@@ -57,7 +61,7 @@ Provider terminal telemetry now records the count of observed Codex thread/token
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice262: continue the remaining local gaps in the finite approved ledger. REQ-13 global Worker slots and REQ-35 CSV ranges are in parallel review; PDF page raster, REQ-29 host/shared roots and retention policy remain. Keep owner-policy and host/account gates explicit and preserve scenario execution states as `not_run`.
+Next Slice263: integrate the bounded REQ-35 CSV summary and range-read path, then audit remaining PDF page-raster and REQ-29 host/shared-root/retention gaps. Keep the local Schema 108 database separate from Schema 110 source until migration is authorized; preserve all scenario states as `not_run`.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 
