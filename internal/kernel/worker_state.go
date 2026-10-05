@@ -503,7 +503,7 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&budget.Lim
 
 func (k *Kernel) TXConsumeToolCall(ctx context.Context, b Binding, key, name string) (ToolCallBudget, error) {
 	var budget ToolCallBudget
-	sessionWrite := name != "work_current" && name != "context_read" && name != "workspace_read"
+	sessionWrite := name != "work_current" && name != "context_read" && name != "workspace_read" && name != "environment_status"
 	r, e := k.txWrite(ctx, b.scope, &b, key, "worker.tool_call", name, sessionWrite, func(tx pgx.Tx) (Receipt, error) {
 		var taskID, missionID, taskKind string
 		if err := tx.QueryRow(ctx, `SELECT s.task_id,t.mission_id,t.kind FROM worker_sessions s
@@ -543,7 +543,7 @@ WHERE s.company_id=$1 AND s.id=$2`, b.scope.company, b.session).Scan(&taskID, &m
 			}
 			return Receipt{ID: b.session, Status: "mission_budget_rejected"}, nil
 		}
-		if !sessionWrite {
+		if !sessionWrite && name != "environment_status" {
 			var sessionState string
 			if err := tx.QueryRow(ctx, `SELECT state FROM worker_sessions WHERE company_id=$1 AND id=$2`, b.scope.company, b.session).Scan(&sessionState); err != nil {
 				return Receipt{}, err

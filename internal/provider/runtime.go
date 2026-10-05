@@ -134,12 +134,21 @@ func ProductWorkspaceSnapshotRevocationToolSurface() ToolSurface {
 
 const ProductMissionChangeAssessmentToolSurfaceQualification = "polis-product-tool-surface@12"
 const ProductCSVInputRangeToolSurfaceQualification = "polis-product-tool-surface@13"
+const ProductEnvironmentStatusToolSurfaceQualification = "polis-product-tool-surface@14"
+
+const (
+	ProductEnvironmentStatusManifestDigest = "b59ff6acd757764e66c73e1b5e638c3ff1a64a06f44491c919e017f91c48e0af"
+	ProductEnvironmentStatusSchemaDigest   = "513160783bc7effd340097ee55519f6a993a3eb57e3ebccd70bf7884afca5270"
+	ProductEnvironmentStatusSchemaBytes    = 2282
+)
 
 const (
 	OfflineMissionChangeAssessmentSurfacePurpose        = "offline-mission-change-assessment-tool-surface"
 	OfflineMissionChangeAssessmentSurfaceSimulationMark = "offline-mission-change-assessment-tool-surface-unqualified"
 	OfflineCSVInputRangeSurfacePurpose                  = "offline-csv-input-range-tool-surface"
 	OfflineCSVInputRangeSurfaceSimulationMarker         = "offline-csv-input-range-tool-surface-unqualified"
+	OfflineEnvironmentStatusSurfacePurpose              = "offline-environment-status-tool-surface"
+	OfflineEnvironmentStatusSurfaceSimulationMarker     = "offline-environment-status-tool-surface-unqualified"
 	ProductMissionChangeAssessmentManifestDigest        = "cd9f4f852cd5674b1e0660868cb5af628a0186a0f137e8e1778e8fd6809c326d"
 	ProductMissionChangeAssessmentSchemaDigest          = "0be7f09a90c96ed73596617207ed1bac7575c6b8fd56cfe086a5880352c6b28a"
 	ProductMissionChangeAssessmentSchemaBytes           = 6740
@@ -154,6 +163,30 @@ func ProductMissionChangeAssessmentToolSurface() ToolSurface {
 // product surface until its own exact-surface and provider evidence exists.
 func ProductCSVInputRangeToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithCSVRangeRead())
+}
+
+// ProductEnvironmentStatusToolSurface is a fake-only read surface. The
+// qualified real-provider contract remains pinned to @4.
+func ProductEnvironmentStatusToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithEnvironmentStatus())
+}
+
+func ValidateOfflineFakeEnvironmentStatusSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductEnvironmentStatusToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductEnvironmentStatusToolSurfaceQualification ||
+		profile.Purpose != OfflineEnvironmentStatusSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineEnvironmentStatusSurfaceSimulationMarker ||
+		profile.ProductProviderL2Fingerprint != OfflineEnvironmentStatusSurfaceSimulationMarker || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 8 || expected.ManifestDigest != ProductEnvironmentStatusManifestDigest ||
+		expected.AggregateSchemaBytes != ProductEnvironmentStatusSchemaBytes || expected.AggregateSchemaDigest != ProductEnvironmentStatusSchemaDigest ||
+		surface.ToolCount != 8 || observed.ToolCount != 8 || surface.ManifestDigest != ProductEnvironmentStatusManifestDigest ||
+		observed.ManifestDigest != ProductEnvironmentStatusManifestDigest || surface.AggregateSchemaBytes != ProductEnvironmentStatusSchemaBytes ||
+		observed.AggregateSchemaBytes != ProductEnvironmentStatusSchemaBytes || surface.AggregateSchemaDigest != ProductEnvironmentStatusSchemaDigest ||
+		observed.AggregateSchemaDigest != ProductEnvironmentStatusSchemaDigest {
+		return fmt.Errorf("environment status surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
 }
 
 func ValidateOfflineFakeCSVInputRangeSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

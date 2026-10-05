@@ -35,6 +35,7 @@ type EmployeeTools struct {
 	ProductSurface                     bool
 	MissionChangeAssessmentSurface     bool
 	CSVInputRangeSurface               bool
+	EnvironmentStatusSurface           bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -109,6 +110,16 @@ func (t EmployeeTools) Call(ctx context.Context, name, callID string, raw []byte
 func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (ToolResult, error) {
 	k, b := t.Kernel, t.Binding
 	switch name {
+	case "environment_status":
+		if !t.ProductSurface || !t.EnvironmentStatusSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct{}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		status, e := k.ProductTaskEnvironmentStatus(ctx, b)
+		return ToolResult{Data: status}, e
 	case "csv_read_range":
 		if !t.ProductSurface || !t.CSVInputRangeSurface {
 			return ToolResult{}, core.Denied

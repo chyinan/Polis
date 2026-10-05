@@ -69,6 +69,18 @@ func ProductEmployeeToolsWithCSVRangeRead() []any {
 	return append(tools, csvTool[0])
 }
 
+// ProductEmployeeToolsWithEnvironmentStatus is an isolated read-only surface.
+// It does not expose environment preparation or dependency mutation.
+func ProductEmployeeToolsWithEnvironmentStatus() []any {
+	tools := ProductEmployeeTools()
+	environmentTool := productTools([]peerToolDefinition{{
+		"environment_status",
+		"Read bounded environment revision and preparation status for your current Mission. The result contains metadata only; it does not read project files or start preparation.",
+		nil,
+	}})
+	return append(tools, environmentTool[0])
+}
+
 // ProductEmployeeToolsWithDirectMessaging is a separately versioned product
 // surface. The historical @4, Skill @5 and guidance @6 registries stay fixed.
 func ProductEmployeeToolsWithDirectMessaging() []any {

@@ -1,4 +1,10 @@
-## Latest continuation status (Slice 269, REQ-38 service-preview cookie boundary and audit reconciliation)
+## Latest continuation status (Slice 270, REQ-36 Worker environment status)
+
+Added a read-only Worker environment_status tool on isolated fake-only product surface @14. It uses one repeatable-read, read-only database snapshot, verifies the exact bound WorkerSession and Task, and returns at most 50 environment revision summaries for that Task's Mission. The result excludes project/workspace bytes, preparation logs, executor fingerprints, and qualification evidence inputs. The qualified real-provider @4 surface is unchanged. The tool-call budget path classifies this operation as read-only; existing session-state and Company/Mission budget gates still apply.
+
+The environment-status extension is opt-in through POLIS_OFFLINE_ENVIRONMENT_STATUS_ENABLED=1, and only with the real Worker adapter plus fake provider transport. It does not add environment.ensure, dependency mutation, or host preparation. go build ./cmd/polis passes. No tests, migrations, database reads/writes, Worker/provider turns, or frozen scenarios ran. The local runtime remains at recorded Schema 108; migration source remains Schema 110. REQ-36 stays partial, and all 232 frozen scenarios remain not_run.
+
+## Previous continuation status (Slice 269, REQ-38 service-preview cookie boundary and audit reconciliation)
 
 A source-to-spec re-audit found four R1 software requirements omitted from the previous open ledger: REQ-36 Worker environment status/ensure and dependency-change flow; REQ-37 Worker job tools and consumer-bound BorrowerLease; REQ-38 persisted BrowserRun/research operations and browser isolation; REQ-40 durable DeliveryManifest revisions and separate UserDisposition. The requirement-derived crosswalk had therefore marked some missing software scenarios implemented. The live ledger and all 232 crosswalk rows now include these requirements; every frozen execution remains `not_run`.
 
