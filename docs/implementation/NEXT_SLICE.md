@@ -1,10 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 245, REQ-15 memory overlay permissions)
+## Latest continuation status (Slice 246, REQ-25 cross-tab owner invalidation)
 
-Startup loading and runtime persistence of the memory revocation overlay now share one Company-directory permission validator. Unix directory permissions broadened after startup cause persistence to fail closed with `core.Denied`. This does not qualify restore behavior or a session-bound correction. The isolated implementation commit passed `go build ./...`; integrated `git diff --check` passed. No tests, DB operations, Worker/provider activity or scenario ran. The six REQ-15 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md`.
+Owner logout and protected 401/403 invalidation now notify other same-origin tabs to clear protected views using `BroadcastChannel`, falling back to a storage event. Only a marker is sent; receiving tabs do not rebroadcast. `npm run build` and `git diff --check HEAD^ HEAD` passed, with the existing large-chunk advisory. No tests, owner/DB/Worker/provider/browser session or scenario ran. All six REQ-25 rows remain `partial/not_run`, and all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md`.
 
-Next Slice246: integrate the cross-tab owner-session invalidation guard while preserving the real browser/WebView qualification gate.
+Next Slice247: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
 
 ## Previous continuation status (Slice 240, fixed-role company setup UI)
 

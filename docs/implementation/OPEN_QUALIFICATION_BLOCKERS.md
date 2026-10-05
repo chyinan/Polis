@@ -1,10 +1,10 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 245. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 246. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base for Slice245: published Slice244 handoff commit `f61945fc83f6610cbc509ad9e6eb1c16dd137aa9`. Slices242–245 changed source/handoff records only; the host and database observations below were not refreshed.
+- Audit base for Slice246: published Slice245 handoff commit `7d4a74df73bf3a376827aad4870b5aedf1d7e8a8`. Slices242–246 changed source/handoff records only; the host and database observations below were not refreshed.
 - Most recent recorded host observation: Android/Termux (`uname` reported Android; Node platform was `android`); `pwsh`, `powershell`, `bwrap`, and `systemd-run` were absent in the Slice235 audit. This is a recorded observation, not a fresh Slice241 host probe.
 - Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slice240 changed only the frontend and handoff records, so it did not refresh the database observation; this remains the latest recorded DB evidence, not a new Slice241 query.
 - The checked-in traceability ledger lists 17 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
@@ -22,7 +22,7 @@ These facts rule out session-backed execution in the current database and native
 | REQ-16 | ProviderAccount identity/liability, hidden retries, and token/money accounting lack a trusted billing scope. | Owner-confirmed billing mode and liable account identity, provider accounting evidence, and exact retry/charge qualification. |
 | REQ-23 | Durable closeout code is present; restart/recovery and FT-57–60/72 qualification remain open. | Runtime restart/recovery host with representative persisted work and separately authorized frozen-scenario execution. |
 | REQ-24 | The formal employee operation path has not been qualified against an active real or approved session. | An already-active WorkerSession confirmed by a current database query and its qualified runtime/provider surface. |
-| REQ-25 | Owner setup is implemented; local browser/Tauri WebView and remote-browser authorization behavior remain unqualified. | Installation-owner setup decision plus supported browser/WebView qualification environments and explicit remote-access authorization. |
+| REQ-25 | Owner setup is implemented, and logout/authorization invalidation now clears views across same-origin tabs; local browser/Tauri WebView and remote-browser authorization behavior remain unqualified. | Installation-owner setup decision plus supported browser/WebView qualification environments and explicit remote-access authorization. |
 | REQ-26 | No concrete shared branch/deploy/publish writer exists to fence; an inert ResourceKey registry would not enforce isolation. | A product-approved shared write action and its canonical provider object/account mapping before implementing a binding gate. |
 | REQ-27 | E-HANDOVER cross-model regression and owner-approved budget/threshold evidence remain open. | Authorized model/provider accounts, an active session path, and owner-approved continuity thresholds. |
 | REQ-29 | The logical private Task tree and snapshot paths exist; the legacy `workspace_replace` writer now shares the 512-file, 16 MiB, and path-prefix invariants. Host mounts, company/group shared roots, retention/GC decisions, and CAP-01–06 qualification remain open. | Owner-approved sharing and retention policy, qualified Windows/Linux filesystem hosts, and CAP evidence for each exposed path. |
