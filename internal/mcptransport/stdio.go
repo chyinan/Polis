@@ -421,6 +421,9 @@ func decodeStrictStdioJSON(raw []byte, target any) error {
 	if len(raw) == 0 || len(raw) > MaxStdioMessageBytes || !utf8.Valid(raw) || !json.Valid(raw) {
 		return errStdioProtocol
 	}
+	if err := rejectDuplicateJSONKeys(raw); err != nil {
+		return errors.Join(errStdioProtocol, err)
+	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(target); err != nil {

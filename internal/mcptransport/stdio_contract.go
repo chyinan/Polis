@@ -343,6 +343,9 @@ func validateStdioToolArguments(schema stdioInputSchema, arguments json.RawMessa
 	if len(arguments) == 0 || len(arguments) > MaxStdioCallArgumentsBytes {
 		return errors.New("stdio MCP tool arguments are empty or oversized")
 	}
+	if err := rejectDuplicateJSONKeys(arguments); err != nil {
+		return errors.Join(errors.New("stdio MCP tool arguments contain ambiguous JSON"), err)
+	}
 	decoder := json.NewDecoder(bytes.NewReader(arguments))
 	decoder.UseNumber()
 	var values map[string]any
