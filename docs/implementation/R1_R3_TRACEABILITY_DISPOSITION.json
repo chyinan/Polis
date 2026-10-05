@@ -88,7 +88,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -191,7 +192,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -207,7 +209,9 @@
       ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
-      "evidence": []
+      "evidence": [
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+      ]
     },
     {
       "id": "CAP-09",
@@ -223,7 +227,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -243,7 +248,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -263,7 +269,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -283,7 +290,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -301,7 +309,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -319,7 +328,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -337,7 +347,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -355,7 +366,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -373,7 +385,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -391,7 +404,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -412,7 +426,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -430,7 +445,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -448,7 +464,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -468,7 +485,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -488,7 +506,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -506,7 +525,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -524,7 +544,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -542,7 +563,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -560,7 +582,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -581,7 +604,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -599,7 +623,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -617,7 +642,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -635,7 +661,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -653,7 +680,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -677,7 +705,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -816,7 +845,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -866,7 +896,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -985,7 +1016,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1113,7 +1145,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1148,7 +1181,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1167,7 +1201,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1187,7 +1222,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1207,7 +1243,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1226,7 +1263,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1246,7 +1284,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1264,7 +1303,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1282,7 +1322,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1302,7 +1343,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1322,7 +1364,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1350,7 +1393,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1369,7 +1413,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1389,7 +1434,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1408,7 +1454,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1427,7 +1474,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1446,7 +1494,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1465,7 +1514,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1483,7 +1533,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1581,7 +1632,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1601,7 +1653,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1666,7 +1719,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
       ]
     },
     {
@@ -1684,7 +1738,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
       ]
     },
     {
@@ -1702,7 +1757,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
       ]
     },
     {
@@ -1720,7 +1776,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
       ]
     },
     {
@@ -1850,7 +1907,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1869,7 +1927,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1888,7 +1947,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1941,7 +2001,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
       ]
     },
     {
@@ -1968,7 +2029,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -1991,7 +2053,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2011,7 +2074,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2033,7 +2097,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2090,7 +2155,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2128,7 +2194,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2147,7 +2214,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2407,7 +2475,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2473,7 +2542,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2531,7 +2601,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-246-req25-cross-tab-owner-invalidation/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2553,7 +2624,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
       ]
     },
     {
@@ -2573,7 +2645,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2605,7 +2678,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2626,7 +2700,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md"
       ]
     },
     {
@@ -2651,7 +2726,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2678,7 +2754,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2709,7 +2786,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -2772,7 +2850,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3245,7 +3324,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3265,7 +3345,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3298,7 +3379,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3315,7 +3397,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3332,7 +3415,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3349,7 +3433,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3366,7 +3451,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3383,7 +3469,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3400,7 +3487,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {
@@ -3417,7 +3505,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
       ]
     },
     {

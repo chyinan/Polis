@@ -1,3 +1,7 @@
+## Slice 256: REQ-31/34 strict stdio JSON and source audits
+
+The stdio MCP decoder now recursively rejects duplicate JSON object keys in inbound responses, including nested tool definitions and schemas; outgoing tool arguments also reject duplicate keys before validation. This removes last-key-wins ambiguity without changing Streamable HTTP parsing. `go build ./...` and `git diff --check` passed; no tests, database, Worker/provider/MCP endpoint, browser qualification, or frozen scenario ran. The 18 overlapping REQ-31/34 scenario rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Read-only source audits found no other concrete local fail-open in REQ-02/13, REQ-14/15/16, or REQ-27/30/32/33. Host/account/owner and active-session qualification gates remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md. REQ-23 closeout audit: evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md.
+
 ## Slice 255: REQ-25 installation-owner authorization invalidation
 
 The InstallationOwner page now routes protected provider-account reads and logout responses through the shared 401/403 observer. Authorization rejection clears the local protected view and broadcasts invalidation to same-origin tabs, including when logout is rejected; login, bootstrap, and setup-status checks remain outside this path. `npm run build` in `frontend/` and `git diff --check` passed. No tests, owner session, database, Worker/provider operation, browser qualification, or frozen scenario ran. Six REQ-25 scenario rows remain partial/not_run and all 232 scenarios remain not_run. Browser/Tauri WebView and remote authorization qualification remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-255-req25-owner-auth-invalidation/verification.md.
@@ -51,7 +55,7 @@ The legacy `workspace_replace` compatibility path now shares the file-tree trans
 The embedded fixed team coverage JSON now has a strict semantic validator for its canonical employee roster and assignments, disabled execution, immutable runtime roles, unverified qualification, required owner confirmation, checker policy, and trust/independence flags. Company creation and acknowledgment fail closed on drift; detail/switcher projections do not report confirmation from a malformed draft. This protects the draft's current fail-closed meaning and does not create executable role contracts, change Task admission, or qualify any role/provider. `go build ./...`, `git diff --check`, and JSON parsing pass; no tests, database operations, owner action, Worker/provider operation, or frozen scenario ran. The seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 255. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 256. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
 ## Slice 241: qualification handoff audit anchor
 
@@ -688,7 +692,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work (reconciled through Slice 255)
+## Finite remaining work (reconciled through Slice 256)
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Slice summaries above supersede earlier checkpoint details. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
