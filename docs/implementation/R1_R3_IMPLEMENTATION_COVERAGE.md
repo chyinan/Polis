@@ -1,8 +1,12 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 225. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 226. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
-## Slice 225: REQ-13 fairness coverage reconciliation
+## Slice 226: Termux local development environment
+
+The local CLI was rebuilt and Termux PostgreSQL is now at Schema 106. The previous empty Schema 102 database had a recorded migration digest that did not match the checked-in source, so the migration guard refused it. Its full custom-format dump is preserved at `.runtime/termux-pg/backups/polis_r0_termux_schema102-pre-reset-20261005.dump`. With zero Companies, Missions and WorkerSessions confirmed, the schema was reset and the standard migration chain applied to 106; all migration hashes and 106 execution-evidence rows verify. Backend health is ready at `127.0.0.1:8080/healthz`; Vite serves `http://127.0.0.1:4173/`. No tests, Worker/provider activity or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-226-termux-local-dev-env/verification.md`.
+
+## Previous Slice 225: REQ-13 fairness coverage reconciliation
 
 Reconciled the REQ-13 implementation description with Schema 102/Slice 173. The opt-in Fake @7 dispatcher now uses a database-locked shared Company cursor and short-lived per-Task claims, superseding the earlier process-local cursor audit. Owner-backed global slot accounting and an authoritative provider quota readiness/recovery signal remain open; `waiting_quota` stays fail-closed. Slice 225 evidence is linked from all nine mapped scenario rows; dispositions/statuses remain `partial` / `not_run`, and the 232-record total is unchanged. JSON validation and `git diff --check` pass; no tests, database, Worker/provider activity or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md`.
 

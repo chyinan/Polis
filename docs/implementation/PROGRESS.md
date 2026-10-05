@@ -1,6 +1,10 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 225 — REQ-13 fairness coverage reconciliation
+## Slice 226 — Termux local development environment
+
+Rebuilt the local CLI and brought PostgreSQL to Schema 106. The prior empty Schema 102 database had a migration-evidence digest that failed current source verification, so the migration command refused to continue. Preserved a 775 KB custom-format dump at `.runtime/termux-pg/backups/polis_r0_termux_schema102-pre-reset-20261005.dump`, then reset the empty schema and applied the standard migration chain through 106. All 106 migration hashes and evidence rows verify; Companies, Missions and WorkerSessions remain at zero. The backend health endpoint is ready on `127.0.0.1:8080`; Vite serves `http://127.0.0.1:4173/` with HTTP 200. No tests, Worker/provider activity or scenarios ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-226-termux-local-dev-env/verification.md`.
+
+## Previous slice 225 — REQ-13 fairness coverage reconciliation
 
 Reconciled stale REQ-13 descriptions against Schema 102/Slice 173: the optional Fake @7 dispatcher advances a database-persisted shared Company cursor and creates per-Task short-lived claims atomically, replacing the earlier process-local cursor. No owner-backed global concurrency cap or authoritative provider quota readiness/recovery source exists; quota remains fail-closed. Added Slice 225 evidence to all nine mapped frozen scenarios without changing their `partial` / `not_run` statuses; all 232 scenarios remain `not_run`. JSON validation and `git diff --check` pass. No tests, database, Worker/provider activity or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md`.
 
