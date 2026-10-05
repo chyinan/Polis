@@ -393,6 +393,9 @@ func (k *Kernel) persistMemoryRevocationOverlay(overlay MemoryRecordRevocationOv
 			return core.Integrity
 		}
 		if sameMemoryRevocation(prior, overlay) {
+			if err = syncParentDirectory(companyRoot); err != nil && (!parentDirectorySyncUnsupportedAllowed() || !errors.Is(err, ErrParentDirectorySyncUnsupported)) {
+				return err
+			}
 			k.memoryRevocations[key] = prior
 			return nil
 		}
@@ -429,6 +432,9 @@ func (k *Kernel) persistMemoryRevocationOverlay(overlay MemoryRecordRevocationOv
 			if existing, readErr := companyRoot.ReadFile(overlay.RecordID); readErr == nil {
 				var prior MemoryRecordRevocationOverlay
 				if json.Unmarshal(existing, &prior) == nil && validMemoryRevocationOverlay(prior) && sameMemoryRevocation(prior, overlay) {
+					if err = syncParentDirectory(companyRoot); err != nil && (!parentDirectorySyncUnsupportedAllowed() || !errors.Is(err, ErrParentDirectorySyncUnsupported)) {
+						return err
+					}
 					k.memoryRevocations[key] = prior
 					return nil
 				}
@@ -436,7 +442,6 @@ func (k *Kernel) persistMemoryRevocationOverlay(overlay MemoryRecordRevocationOv
 		}
 		return err
 	}
-	k.memoryRevocations[key] = overlay
 	removeErr := companyRoot.Remove(stage)
 	if removeErr != nil && !errors.Is(removeErr, os.ErrNotExist) {
 		// The linked final name is authoritative now; still flush it before
@@ -444,11 +449,15 @@ func (k *Kernel) persistMemoryRevocationOverlay(overlay MemoryRecordRevocationOv
 		if err = syncParentDirectory(companyRoot); err != nil && (!parentDirectorySyncUnsupportedAllowed() || !errors.Is(err, ErrParentDirectorySyncUnsupported)) {
 			return err
 		}
+		k.memoryRevocations[key] = overlay
 		return removeErr
 	}
 	if err = syncParentDirectory(companyRoot); err != nil && (!parentDirectorySyncUnsupportedAllowed() || !errors.Is(err, ErrParentDirectorySyncUnsupported)) {
 		return err
 	}
+	// Do not let the in-memory retry fast path report success until the final
+	// directory entry has passed the durability check above.
+	k.memoryRevocations[key] = overlay
 	return nil
 }
 
