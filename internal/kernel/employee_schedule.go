@@ -33,8 +33,9 @@ type ProductWorkerDispatchCandidate struct {
 }
 
 // NextProductWorkerDispatchCandidate returns one eligible product Task after
-// the optional Company-ID cursor. It prioritizes older EmployeeSchedule rows
-// within that keyset page. A quota-blocked or paused schedule is never eligible;
+// the optional Company-ID cursor. Company-ID ordering keeps cursor wraparound
+// fair; within a Company, older EmployeeSchedule rows are prioritized. A
+// quota-blocked or paused schedule is never eligible;
 // any prior WorkerSession remains a durable one-shot fence.
 func (k *Kernel) NextProductWorkerDispatchCandidate(ctx context.Context, afterCompanyID string) (ProductWorkerDispatchCandidate, bool, error) {
 	return nextProductWorkerDispatchCandidate(ctx, k.pool, afterCompanyID)
@@ -67,7 +68,7 @@ WHERE c.state='active' AND m.state='active'
   AND (SELECT count(*) FROM tasks executable
        WHERE executable.company_id=t.company_id AND executable.mission_id=t.mission_id
          AND executable.owner=$1 AND executable.kind=$2) = 1
-ORDER BY s.updated_at ASC,t.company_id ASC,t.mission_id ASC,t.id ASC
+ORDER BY t.company_id ASC,s.updated_at ASC,t.mission_id ASC,t.id ASC
 LIMIT 1`, core.EmployeeBackendID, core.TaskKindCompat, afterCompanyID).Scan(&candidate.CompanyID, &candidate.MissionID, &candidate.TaskID)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ProductWorkerDispatchCandidate{}, false, nil
