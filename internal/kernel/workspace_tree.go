@@ -189,6 +189,30 @@ FROM worker_workspace_roots r JOIN tasks t ON t.company_id=r.company_id AND t.id
 	return rootID, revision, taskID, nil
 }
 
+// lockWorkspaceTreeForReplaceTX keeps the legacy single-file writer bound to
+// an existing logical tree. Historical workspaces without a tree stay
+// compatible; once a root exists, only its exact current writer may mirror a
+// formatter.go replacement into both representations.
+func lockWorkspaceTreeForReplaceTX(ctx context.Context, tx pgx.Tx, binding Binding) (string, int64, bool, error) {
+	var rootID, class, writerSession, rootOwner, rootMission, taskOwner, taskMission string
+	var revision, writerEpoch int64
+	err := tx.QueryRow(ctx, `SELECT r.id,r.read_write_class,r.revision,r.writer_session_id,r.writer_epoch,r.owner,r.mission_id,t.owner,t.mission_id
+FROM worker_workspace_roots r JOIN tasks t ON t.company_id=r.company_id AND t.id=r.task_id
+WHERE r.company_id=$1 AND r.task_id=$2 FOR UPDATE OF r`, binding.scope.company, binding.task).Scan(
+		&rootID, &class, &revision, &writerSession, &writerEpoch, &rootOwner, &rootMission, &taskOwner, &taskMission)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", 0, false, nil
+	}
+	if err != nil {
+		return "", 0, false, err
+	}
+	if class != "task_private" || rootOwner != binding.employee || taskOwner != binding.employee || rootMission != taskMission ||
+		writerSession != binding.session || writerEpoch != binding.epoch {
+		return "", 0, false, core.StaleEpoch
+	}
+	return rootID, revision, true, nil
+}
+
 func (k *Kernel) ListProductWorkspaceTree(ctx context.Context, binding Binding, afterCursor string) (WorkspaceTreePage, error) {
 	cursor, err := decodeWorkspaceTreeCursor(afterCursor, "")
 	if err != nil {
@@ -505,8 +529,9 @@ func WorkspaceTreeCanSubmit(ctx context.Context, tx pgx.Tx, companyID, taskID st
 		return !rootExists, err
 	}
 	var safe bool
-	err := tx.QueryRow(ctx, `SELECT count(*)=1 AND bool_and(relative_path='formatter.go') FROM worker_workspace_roots r
-JOIN worker_workspace_files f ON f.company_id=r.company_id AND f.workspace_id=r.id
+	err := tx.QueryRow(ctx, `SELECT count(*)=1 AND bool_and(f.relative_path='formatter.go' AND f.digest=w.digest AND f.source_revision=w.revision)
+FROM worker_workspace_roots r JOIN worker_workspace_files f ON f.company_id=r.company_id AND f.workspace_id=r.id
+JOIN worker_workspaces w ON w.company_id=r.company_id AND w.task_id=r.task_id
 WHERE r.company_id=$1 AND r.task_id=$2`, companyID, taskID).Scan(&safe)
 	return safe, err
 }
