@@ -94,7 +94,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
         "docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-req29-local-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-req29-local-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -262,7 +263,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -283,7 +285,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -323,7 +326,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -342,7 +346,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -361,7 +366,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -380,7 +386,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -399,7 +406,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -418,7 +426,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -440,7 +449,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -459,7 +469,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -478,7 +489,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -499,7 +511,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -520,7 +533,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -539,7 +553,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -618,7 +633,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -637,7 +653,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {
@@ -656,7 +673,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md"
       ]
     },
     {

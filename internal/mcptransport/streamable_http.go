@@ -505,6 +505,9 @@ func processSSEEvent(data []string, expectedID uint64) (json.RawMessage, bool, e
 }
 
 func validateJSONRPCResponse(content []byte, expectedID uint64) (json.RawMessage, error) {
+	if err := rejectDuplicateJSONKeys(content); err != nil {
+		return nil, errors.Join(errors.New("MCP server response contains ambiguous JSON"), err)
+	}
 	var response jsonRPCResponse
 	if err := json.Unmarshal(content, &response); err != nil || response.JSONRPC != "2.0" || len(response.ID) == 0 || response.Method != "" {
 		return nil, errors.New("MCP server response is not a JSON-RPC response")

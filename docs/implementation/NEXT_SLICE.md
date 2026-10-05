@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-06)
 
-## Latest continuation status (Slice 265, REQ-35 bounded PDF embedded-image inputs)
+## Latest continuation status (Slice 266, REQ-31/34 Streamable HTTP duplicate-key rejection)
+
+Streamable HTTP MCP responses are now recursively checked for duplicate JSON object keys before JSON-RPC decoding. The same validator serves direct JSON and SSE responses, covering the envelope and nested tools/schemas/results; the existing shared argument validator was already in place. The change adds no protocol surface or endpoint qualification. `go build ./...` and `git diff --check` passed. No tests, DB, Worker, provider, MCP endpoint, or scenario ran. REQ-31/34 remain partial; all 232 scenario executions remain `not_run`, and 18 software requirements remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-266-req31-34-http-strict-json/verification.md.
+
+## Previous continuation status (Slice 265, REQ-35 bounded PDF embedded-image inputs)
 
 The pinned pure-Go PDF parser now yields supported embedded image objects as bounded PNGs in canonical `pdf_snapshot` packages with `polis-pdf-extraction@2` metadata. Each image is tied to page/image number, dimensions, digest, page boxes, rotation, and page-space placement; Task context and immutable delivery receipts carry typed image fields checked against the frozen snapshot. Limits are eight decode attempts, 1M pixels and 256 KiB per image, and 960 KiB total. Legacy extraction-record `@1` snapshots retain their canonical validation path. This does not rasterize/composite complete pages or include vector text/backgrounds, and unsupported image codecs remain omitted. Real-provider image support and the full R2 format/runtime/provider qualification remain open. `go build ./...` and `git diff --check` passed. No tests, DB, Worker, provider, migration, or scenario ran. REQ-35 stays partial; all 232 scenario executions remain `not_run`. Evidence: `docs/implementation/R2_PDF_INPUT_FOUNDATION.md` and `evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md`.
 
@@ -73,7 +77,7 @@ Provider terminal telemetry now records the count of observed Codex thread/token
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice267: finish remaining independent source audits and review Slice266 HTTP duplicate-key rejection, then implement only code paths whose contracts and host boundaries are already defined. REQ-29 host roots/shared visibility/retention require owner policy; REQ-02 semantic task mapping and REQ-13 quota recovery require their missing approved contracts. Preserve the local Schema 108 database while source is Schema 110; do not apply migrations without the required gate. Keep every frozen scenario `not_run` unless separately authorized and executed.
+Next Slice267: harden the Slice265 PDF image path against decoder-filled partial pixels and omitted PDF masks, then continue remaining independent audits. Keep extracted image objects distinct from complete page renders; the PDF parser v0.7.0 does not report soft masks or color-key semantics. REQ-29 host roots/shared visibility/retention require owner policy; REQ-02 semantic task mapping and REQ-13 quota recovery require their missing approved contracts.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 
