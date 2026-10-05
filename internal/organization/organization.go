@@ -90,6 +90,25 @@ func ValidateCompanyDraft(draft CompanyDraft) error {
 	return nil
 }
 
+// ValidateFixedTeamRoleAssignments enforces the role names for the product's
+// fixed logical Employees. Display names and model profiles remain editable.
+func ValidateFixedTeamRoleAssignments(roster []EmployeeDraft) error {
+	expected := DefaultRoster()
+	if len(roster) != len(expected) {
+		return fmt.Errorf("fixed team roster must contain exactly %d employees", len(expected))
+	}
+	roles := make(map[string]string, len(roster))
+	for _, employee := range roster {
+		roles[employee.ID] = strings.TrimSpace(employee.Role)
+	}
+	for _, employee := range expected {
+		if role, ok := roles[employee.ID]; !ok || role != employee.Role {
+			return fmt.Errorf("employee %q must keep the fixed %q role", employee.ID, employee.Role)
+		}
+	}
+	return nil
+}
+
 func knownEmployee(id string) bool {
 	switch id {
 	case EmployeePlanning, EmployeeBackend, EmployeeFrontend, EmployeeReview:

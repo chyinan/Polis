@@ -43,6 +43,9 @@ func (k *Kernel) TXCreateCompanyWithOrganizationAndCoverageConfirmation(ctx cont
 	if err := organization.ValidateCompanyDraft(draft); err != nil {
 		return Scope{}, core.Malformed
 	}
+	if err := organization.ValidateFixedTeamRoleAssignments(draft.Roster); err != nil {
+		return Scope{}, core.Malformed
+	}
 	if confirmationSHA256 != "" && (confirmationSHA256 != spec.FixedTeamCoverageSHA256() || !core.ValidID(requestID)) {
 		return Scope{}, core.Malformed
 	}
@@ -115,7 +118,6 @@ FROM companies c LEFT JOIN LATERAL (
 	} else if err != nil {
 		return CompanyDetails{}, err
 	}
-	details.TeamCoverageConfirmed = details.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256()
 	rows, err := tx.Query(ctx, `SELECT id,display_name,role_name,model_profile FROM employees WHERE company_id=$1 AND enabled ORDER BY id`, companyID)
 	if err != nil {
 		return CompanyDetails{}, err
@@ -131,6 +133,7 @@ FROM companies c LEFT JOIN LATERAL (
 	if err = rows.Err(); err != nil {
 		return CompanyDetails{}, err
 	}
+	details.TeamCoverageConfirmed = details.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256() && organization.ValidateFixedTeamRoleAssignments(details.Roster) == nil
 	if err = tx.Commit(ctx); err != nil {
 		return CompanyDetails{}, err
 	}
@@ -160,11 +163,22 @@ FROM companies c LEFT JOIN LATERAL (
 		if err = rows.Scan(&company.ID, &company.Name, &company.WorkspaceRoot, &company.State, &company.Provider, &company.Model, &company.Effort, &company.Profile, &company.TeamCoverageConfirmationSHA256, &company.TeamCoverageConfirmedAt); err != nil {
 			return nil, err
 		}
-		company.TeamCoverageConfirmed = company.TeamCoverageConfirmationSHA256 == spec.FixedTeamCoverageSHA256()
 		companies = append(companies, company)
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err
+	}
+	rows.Close()
+	for i := range companies {
+		if companies[i].TeamCoverageConfirmationSHA256 != spec.FixedTeamCoverageSHA256() {
+			continue
+		}
+		if err = ensureCompanyFixedTeamRolesTX(ctx, tx, companies[i].ID); errors.Is(err, core.Denied) {
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+		companies[i].TeamCoverageConfirmed = true
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return nil, err
@@ -204,6 +218,9 @@ func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft orga
 			} else if state == "archived" {
 				return Receipt{}, core.Denied
 			}
+			if err := ensureCompanyFixedTeamRolesTX(ctx, tx, draft.ID); err != nil {
+				return Receipt{}, err
+			}
 			if err := appendEvent(ctx, tx, Scope{company: draft.ID}, "company.team_coverage.confirmed", struct {
 				RequestID      string `json:"request_id"`
 				TemplateSHA256 string `json:"template_sha256"`
@@ -224,7 +241,7 @@ func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft orga
 		} else if state == "archived" {
 			return Receipt{}, core.Denied
 		}
-		if err := ensureConfirmedTeamCoverageRolesUnchangedTX(ctx, tx, draft); err != nil {
+		if err := ensureCompanyRuntimeRolesUnchangedTX(ctx, tx, draft); err != nil {
 			return Receipt{}, err
 		}
 		if _, err := tx.Exec(ctx, "UPDATE companies SET name=$2,workspace_root=$3 WHERE id=$1", draft.ID, strings.TrimSpace(draft.Name), strings.TrimSpace(draft.WorkspaceRoot)); err != nil {
@@ -240,20 +257,10 @@ WHERE company_id=$1 AND id=$2 AND enabled`, draft.ID, employee.ID, strings.TrimS
 	})
 }
 
-// ensureConfirmedTeamCoverageRolesUnchangedTX enforces the template's
-// role_changes_at_runtime=false contract after the current fixed-team matrix
-// has been acknowledged. Display names and model profiles remain editable.
-func ensureConfirmedTeamCoverageRolesUnchangedTX(ctx context.Context, tx pgx.Tx, draft organization.CompanyDraft) error {
-	var confirmationSHA256 string
-	err := tx.QueryRow(ctx, `SELECT payload->>'template_sha256' FROM events
-WHERE company_id=$1 AND kind='company.team_coverage.confirmed'
-ORDER BY company_seq DESC LIMIT 1`, draft.ID).Scan(&confirmationSHA256)
-	if errors.Is(err, pgx.ErrNoRows) || (err == nil && confirmationSHA256 != spec.FixedTeamCoverageSHA256()) {
-		return nil
-	}
-	if err != nil {
-		return err
-	}
+// ensureCompanyRuntimeRolesUnchangedTX enforces the template's
+// role_changes_at_runtime=false contract for every Company update, whether or
+// not an installation owner has acknowledged the matrix yet.
+func ensureCompanyRuntimeRolesUnchangedTX(ctx context.Context, tx pgx.Tx, draft organization.CompanyDraft) error {
 	rows, err := tx.Query(ctx, `SELECT id,role_name FROM employees WHERE company_id=$1 AND enabled ORDER BY id`, draft.ID)
 	if err != nil {
 		return err
@@ -281,6 +288,31 @@ ORDER BY company_seq DESC LIMIT 1`, draft.ID).Scan(&confirmationSHA256)
 		if strings.TrimSpace(role) != strings.TrimSpace(employee.Role) {
 			return core.Denied
 		}
+	}
+	return nil
+}
+
+// ensureCompanyFixedTeamRolesTX makes an owner acknowledgment true of the
+// persisted runtime roster, not only the submitted template digest.
+func ensureCompanyFixedTeamRolesTX(ctx context.Context, tx pgx.Tx, companyID string) error {
+	rows, err := tx.Query(ctx, `SELECT id,role_name FROM employees WHERE company_id=$1 AND enabled ORDER BY id`, companyID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	roster := make([]organization.EmployeeDraft, 0, len(organization.DefaultRoster()))
+	for rows.Next() {
+		var employee organization.EmployeeDraft
+		if err = rows.Scan(&employee.ID, &employee.Role); err != nil {
+			return err
+		}
+		roster = append(roster, employee)
+	}
+	if err = rows.Err(); err != nil {
+		return err
+	}
+	if err = organization.ValidateFixedTeamRoleAssignments(roster); err != nil {
+		return core.Denied
 	}
 	return nil
 }

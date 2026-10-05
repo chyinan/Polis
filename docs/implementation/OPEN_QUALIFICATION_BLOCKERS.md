@@ -1,12 +1,12 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 238. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 239. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base: local and remote `main` at `c781f2e990ea1308a8b7add5272c2dbb23f5cfc7` (Slice 237, immediately before Slice238).
+- Audit base: local and remote `main` at `fd074dd0097cf965ccd0432f600de141e0d9e2bf` (Slice 238, immediately before Slice239).
 - Runtime: Android/Termux (`uname` reports Android; Node platform is `android`). `pwsh`, `powershell`, `bwrap`, and `systemd-run` are not installed in this environment.
-- Read-only local database query during Slice237: Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions.
+- Read-only local database query during Slice239: Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions.
 - The traceability ledger lists 17 open software requirements. All 232 frozen scenario rows currently have `executionStatus: not_run`.
 
 These facts rule out session-backed execution in the current database and native Windows or delegated Linux qualification here. They do not prove that external accounts, certificates, or hosts do not exist elsewhere; none has been provided or connected for these product qualification tasks in this checkout.
@@ -15,7 +15,7 @@ These facts rule out session-backed execution in the current database and native
 
 | Open requirement | Remaining gate in the approved ledger | Evidence needed to resume |
 |---|---|---|
-| REQ-02 | Company creation and the existing Company directory can persist the installation owner's acknowledgment of the exact embedded `TEAM_COVERAGE.json` digest. After a current-digest acknowledgment, Slice238 prevents the Company update path from changing enabled roster membership or fixed role names. All roles remain unverified and execution disabled. Provider role contracts, executable admission gates, and the direct-message surface remain unqualified; no owner confirmation has been made in this checkout. | Installation owner reviews and confirms the fixed roster/role mapping in the UI; separately authorized real-provider account and role-surface qualification. |
+| REQ-02 | Company creation now accepts only the four canonical fixed ID/role pairs; existing-company acknowledgment checks the persisted mapping atomically, and company updates cannot change roles before or after acknowledgment. Acknowledgment projections reject stale digests or noncanonical persisted mappings. Roles remain unverified and execution disabled. Provider role contracts, executable admission gates, and direct messaging remain unqualified; no owner confirmation has been made in this checkout. | Installation owner reviews and confirms the fixed roster/role mapping in the UI; separately authorized real-provider account and role-surface qualification. Legacy persisted role mismatches require owner-reviewed reconciliation before acknowledgment. |
 | REQ-13 | The Fake-only dispatcher has persisted fairness and per-Task claims, but no owner-backed global slot cap or authoritative quota-ready/release source exists. | Owner decision for the installation-wide cap and a trusted provider quota signal/account source. |
 | REQ-14 | Legacy revocation rows may still need an installation-owner `acknowledged_unresolved` disposition; stop/restart proof depends on runtime host state. | Owner review of each applicable legacy row and host-backed exact stop/recovery evidence. |
 | REQ-15 | Memory overlay restore behavior needs PostgreSQL/Desktop runtime qualification; corrections and revalidation require a session-bound operator path. | A qualified Desktop/PostgreSQL restore host and an already-active, database-confirmed WorkerSession for any session-bound action. |
