@@ -1,6 +1,10 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 226 — Termux local development environment
+## Slice 227 — REQ-21 protected-view invalidation
+
+Workbench API HTTP 401/403 responses now clear the in-memory React Query cache and remount the current route, removing query data and component-local details/editors. A bounded endpoint denial latch avoids repeated remounts until a successful response clears it. A terminally closed protected EventSource and successful installation-owner logout use the same invalidation path. Frontend production build and `git diff --check` pass. UI-09 remains `partial/not_run`; no tests, auth flow, permission revocation or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-227-req21-auth-view-invalidation/verification.md`.
+
+## Previous slice 226 — Termux local development environment
 
 Rebuilt the local CLI and brought PostgreSQL to Schema 106. The prior empty Schema 102 database had a migration-evidence digest that failed current source verification, so the migration command refused to continue. Preserved a 775 KB custom-format dump at `.runtime/termux-pg/backups/polis_r0_termux_schema102-pre-reset-20261005.dump`, then reset the empty schema and applied the standard migration chain through 106. All 106 migration hashes and evidence rows verify; Companies, Missions and WorkerSessions remain at zero. The backend health endpoint is ready on `127.0.0.1:8080`; Vite serves `http://127.0.0.1:4173/` with HTTP 200. No tests, Worker/provider activity or scenarios ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-226-termux-local-dev-env/verification.md`.
 

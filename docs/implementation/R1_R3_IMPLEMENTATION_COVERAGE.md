@@ -1,8 +1,12 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 226. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 227. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
-## Slice 226: Termux local development environment
+## Slice 227: REQ-21 protected-view invalidation
+
+The browser now clears cached Workbench queries and remounts protected views after API HTTP 401/403, terminal closure of the protected activity stream, or successful installation-owner logout. This removes query-cache data and component-local details/editors; repeated denial responses are deduplicated until a successful response for that endpoint. Slice 227 evidence is linked from UI-09 without changing its `partial/not_run` disposition. Frontend production build and diff checks pass; no tests, logout/auth flow, permission revocation, Worker/provider action or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-227-req21-auth-view-invalidation/verification.md`.
+
+## Previous Slice 226: Termux local development environment
 
 The local CLI was rebuilt and Termux PostgreSQL is now at Schema 106. The previous empty Schema 102 database had a recorded migration digest that did not match the checked-in source, so the migration guard refused it. Its full custom-format dump is preserved at `.runtime/termux-pg/backups/polis_r0_termux_schema102-pre-reset-20261005.dump`. With zero Companies, Missions and WorkerSessions confirmed, the schema was reset and the standard migration chain applied to 106; all migration hashes and 106 execution-evidence rows verify. Backend health is ready at `127.0.0.1:8080/healthz`; Vite serves `http://127.0.0.1:4173/`. No tests, Worker/provider activity or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-226-termux-local-dev-env/verification.md`.
 
@@ -856,7 +860,7 @@ The requirement IDs and test links stay anchored to `spec/design-v0.4.5/tests/tr
 | 18 | One explicit technical baseline and consistent test semantics | R1 | done-local for Go/PostgreSQL baseline; new profiles require qualification | R1–R3 |
 | 19 | Professional, visually verified Workbench | R1 | partial; pages exist, desktop GUI visual evidence is missing | R1 |
 | 20 | Human defines the fixed roster at company creation | R1 | done-local | R1 qualification |
-| 21 | Truthful frontend state, scope and commands | R1 | partial; existing company-scoped API foundation exists | R1 |
+| 21 | Truthful frontend state, scope and commands | R1 | partial; company-scoped API foundation exists. Slice 227 clears the in-memory React Query cache and remounts active Workbench views after protected API 401/403 responses, terminal protected-stream closure or installation-owner logout. UI-09 remains `partial` / `not_run`; full logout, revocation and scope-narrowing qualification remain open | R1 |
 | 22 | Office/3D remains decoupled from core | R1 | excluded by explicit user scope | Excluded |
 | 23 | Mission activation and safe closeout | R1 | partial; Schema 101 and Slices 169–170 add durable `closing`/`ended_not_met` states, owner closeout decisions, evidence-backed success gates, Job/Worker stop ordering, retryable finalization and explicit Task/Obligation/Routine settlement. Workbench supports owner-selected `ended_not_met` or `succeeded`, rationale, exact passed Artifact references and resuming the recorded intent. Slice 168 fences lifecycle admission against outstanding WorkerSessions, JobRuns and service leases. Restart recovery qualification and FT-57–60/72 scenarios remain open. See `evidence/development/r1-r3-implementation-validation-20261004-slice-170-req23-owner-closeout-decisions/verification.md` and Slice 224 reconciliation. | R1 |
 | 24 | Authenticated formal employee operations | R1 | partial; product tool surface exists, current full runtime path is unqualified | R1 |

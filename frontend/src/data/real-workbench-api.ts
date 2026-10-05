@@ -1,5 +1,6 @@
 // pattern: Imperative Shell
 
+import {invalidateProtectedScope, observeProtectedResponse} from '../lib/authorization-state';
 import type {MemoryCorrectionCommandReceiptView} from '../domain/workbench';
 import type {MissionCloseoutOptions} from './workbench-api';
 import type {ProposeMemoryCorrectionOptions, ReviewMemoryCorrectionOptions} from './workbench-api';
@@ -673,6 +674,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
       credentials: 'same-origin',
       headers: this.requestHeaders({'Accept': 'image/png, image/jpeg, text/plain, text/markdown, text/csv, application/json'}),
     });
+    observeProtectedResponse(path, response.status);
     if (!response.ok) {
       let detail = '';
       try {
@@ -1353,6 +1355,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.artifactId);
     const path = `/companies/${encodeURIComponent(options.companyId)}/artifacts/${encodeURIComponent(options.artifactId)}/download`;
     const response = await fetch(`${this.baseUrl}${path}`, {credentials: 'same-origin', headers: this.requestHeaders({'Accept': 'application/zip'})});
+    observeProtectedResponse(path, response.status);
     if (!response.ok) {
       throw new Error(`failed to download artifact delivery package: HTTP ${response.status}`);
     }
@@ -1705,6 +1708,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
 
   private async get(path: string): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}${path}`, {credentials: 'same-origin', headers: this.requestHeaders({'Accept': 'application/json'})});
+    observeProtectedResponse(path, response.status);
     if (!response.ok) {
       let detail = '';
       try {
@@ -1733,6 +1737,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
       headers,
       body: JSON.stringify(body),
     });
+    observeProtectedResponse(path, response.status);
     if (!response.ok) {
       let raw: unknown = null;
       try {
@@ -1756,6 +1761,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
       headers: this.requestHeaders({'Accept': 'application/json', 'X-Request-ID': requestID}),
       body,
     });
+    observeProtectedResponse(path, response.status);
     if (!response.ok) {
       let raw: unknown = null;
       try {
@@ -1930,9 +1936,20 @@ class EventStreamClient {
       params.set('desktop_token', this.sessionToken);
     }
     const path = `${this.baseUrl}/companies/${encodeURIComponent(options.companyId)}/stream?${params.toString()}`;
+    const authorizationScope = `${this.baseUrl}:stream:${options.companyId}`;
     const source = new EventSource(path, {withCredentials: true});
-    source.onopen = () => onStatus?.('open');
-    source.onerror = () => onStatus?.('reconnecting');
+    source.onopen = () => {
+      observeProtectedResponse(authorizationScope, 200);
+      onStatus?.('open');
+    };
+    source.onerror = () => {
+      if (source.readyState === EventSource.CLOSED) {
+        invalidateProtectedScope(authorizationScope);
+        onStatus?.('incompatible');
+        return;
+      }
+      onStatus?.('reconnecting');
+    };
     source.addEventListener('activity', event => {
       const message = event as MessageEvent<string>;
       try {

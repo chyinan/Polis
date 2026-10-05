@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 226, Termux local development environment)
+## Latest continuation status (Slice 227, REQ-21 protected-view invalidation)
+
+Protected Workbench API responses with HTTP 401/403 now clear the in-memory React Query cache and remount the active route, removing cached queries and component-local details/editors. A bounded per-endpoint denial latch prevents repeated cache-reset loops and clears after that endpoint succeeds. A terminally closed protected EventSource and successful installation-owner logout trigger the same invalidation. Frontend production build and `git diff --check` pass. UI-09 remains `partial/not_run`; no auth flow, permission revocation or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-227-req21-auth-view-invalidation/verification.md`.
+
+## Previous continuation status (Slice 226, Termux local development environment)
 
 Rebuilt the local CLI, archived the prior empty Schema 102 database after its migration-evidence hash failed the current source check, then reset its schema and applied the standard migrations through Schema 106. The custom-format backup is at `.runtime/termux-pg/backups/polis_r0_termux_schema102-pre-reset-20261005.dump`; the pre-reset database had zero Companies, Missions and WorkerSessions. All 106 migration hashes/evidence rows verify. The backend health endpoint returns ready at `127.0.0.1:8080/healthz`; Vite serves `http://127.0.0.1:4173/` with HTTP 200. No tests, Worker/provider activity or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-226-termux-local-dev-env/verification.md`.
 
@@ -12,7 +16,7 @@ Reconciled current REQ-13 coverage against Schema 102/Slice 173. Dispatch candid
 
 Reconciled the coverage row with the durable closeout state machine and owner controls already implemented in Schema 101/Slices 169–170. `closing` and `ended_not_met`, rationale and acceptance-evidence gates, Job/Worker stop ordering, retryable finalization, Task/Obligation/Routine settlement and Workbench controls are present. REQ-23 remains partial pending restart/recovery qualification and FT-57–60/72 scenarios. Added Slice 224 evidence to its seven scenario rows while preserving `partial` / `not_run` and the 232 total. Crosswalk JSON validation and `git diff --check` pass. No tests, database, closeout operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md`.
 
-Next Slice227: select the next concrete open software gap from the coverage ledger; retain the database-confirmed active WorkerSession prerequisite for any Worker activity. Preserve scenario statuses and do not perform Worker activity without a current database read confirming an already-active WorkerSession.
+Next Slice228: select the next concrete open software gap from the coverage ledger; retain the database-confirmed active WorkerSession prerequisite for any Worker activity. Preserve scenario statuses and do not perform Worker activity without a current database read confirming an already-active WorkerSession.
 
 ## Latest continuation status (Slice 223, REQ-39 successor directory-input trace)
 

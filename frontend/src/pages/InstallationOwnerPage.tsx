@@ -2,6 +2,7 @@
 
 import {useCallback, useEffect, useMemo, useState, type FormEvent} from 'react';
 import {KeyRound, LogOut, RefreshCw, ShieldCheck} from 'lucide-react';
+import {dispatchAuthorizationInvalidated} from '../lib/authorization-state';
 import styles from './InstallationOwnerPage.module.css';
 
 type OwnerSession = Readonly<{authenticated: boolean; expiresAt: string | null}>;
@@ -156,6 +157,7 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
       const csrf = readCSRFCookie();
       if (csrf === '') throw new Error('找不到 CSRF Cookie，请刷新页面后重试');
       await requestJSON(`${ownerBase}/logout`, {method: 'POST', headers: {'X-Polis-CSRF-Token': csrf}, body: '{}'});
+      dispatchAuthorizationInvalidated();
       setSession({authenticated: false, expiresAt: null});
       setAccounts(null);
       if (window.location.protocol !== 'https:') {

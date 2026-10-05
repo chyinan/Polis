@@ -11,6 +11,7 @@ import type {ActivityStreamStatus, WorkbenchApi} from '../data/workbench-api';
 import type {EmployeeDraft, Freshness} from '../domain/workbench';
 import {labelErrorMessage} from '../domain/display-labels';
 import {getDesktopRuntime, isDesktopHost, listenForDesktopEvent, openDesktopLogs, quitDesktop, requestQuit, restartLocalServices, setLastCompany, type DesktopRuntimeSnapshot} from '../lib/desktop-bridge';
+import {AUTHORIZATION_INVALIDATED_EVENT} from '../lib/authorization-state';
 import {ActivityPage} from '../pages/ActivityPage';
 import {CompanyOverviewPage} from '../pages/CompanyOverviewPage';
 import {CollaborationPage, DecisionsPage, EmployeesPage, EvidencePage, MissionPage, OperationsPage, OrgChartPage, ResourcesPage, SettingsPage, TaskPage} from '../pages/WorkbenchPages';
@@ -31,15 +32,24 @@ function NotAvailablePage() {
 }
 
 export function App() {
-  if (isDesktopHost()) return <DesktopRuntimeGate />;
+  const [authorizationEpoch, setAuthorizationEpoch] = useState(0);
+  useEffect(() => {
+    const clearProtectedView = () => {
+      queryClient.clear();
+      setAuthorizationEpoch(epoch => epoch + 1);
+    };
+    window.addEventListener(AUTHORIZATION_INVALIDATED_EVENT, clearProtectedView);
+    return () => window.removeEventListener(AUTHORIZATION_INVALIDATED_EVENT, clearProtectedView);
+  }, []);
+  if (isDesktopHost()) return <DesktopRuntimeGate key={authorizationEpoch} />;
   const companyId = browserApi.mode === 'real' ? import.meta.env.VITE_WORKBENCH_COMPANY_ID ?? null : FIXTURE_COMPANY_ID;
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        {companyId === null ? <Routes>
+        {companyId === null ? <Routes key={authorizationEpoch}>
           <Route element={<BrowserInstallationPage apiBaseUrl={browserApiBaseUrl} />} path="/group/installation" />
           <Route element={<RealModeSetupPage />} path="*" />
-        </Routes> : <WorkbenchRuntime api={browserApi} apiBaseUrl={browserApiBaseUrl} companyId={companyId} />}
+        </Routes> : <WorkbenchRuntime key={authorizationEpoch} api={browserApi} apiBaseUrl={browserApiBaseUrl} companyId={companyId} />}
       </BrowserRouter>
     </QueryClientProvider>
   );
