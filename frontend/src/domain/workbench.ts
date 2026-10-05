@@ -1126,6 +1126,9 @@ export type MissionChangeRequestEvent = Readonly<{
   reasonCode: string;
   createdAt: string;
   inputRevisionMap: ReadonlyArray<MissionChangeInputRevisionMap>;
+  planningAssessmentId?: string;
+  planningAssessmentSha256?: string;
+  planningRiskLevel?: 'low' | 'high' | 'uncertain';
 }>;
 
 export type MissionChangePlanningAssessmentView = Readonly<{

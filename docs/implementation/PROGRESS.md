@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 233 — REQ-39 owner review state in Workbench
+
+Formal change request event projections now include the Planning assessment ID, digest and risk from owner consideration and final application. The Workbench shows those audit values, compares the current assessment SHA with the latest consideration SHA, disables application when they differ or the receipt is stale, and prompts the owner to reconsider. This makes the Slice232 server fence visible before submission. `go build ./...`, rebuilt CLI, `npm run build` and `git diff --check` pass. Local services are healthy at Schema 108 with zero WorkerSessions; no tests, Worker/provider action or frozen scenario ran. All eight REQ-39 crosswalk rows link this evidence and remain `partial/not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md`.
+
 ## Slice 232 — REQ-39 apply-time Planning assessment fence
 
 Applying a considered Mission change now loads the latest Planning assessment in the same write transaction as the paused-Mission and impact checks. The assessment must remain current, match the exact SHA recorded by the latest owner consideration, and still satisfy the previous-results block rule for high or uncertain risk. A post-resume reassessment therefore requires another exact owner consideration before successor creation. `go build ./...`, rebuilt CLI, and `git diff --check` pass. Schema 108 remains current with zero WorkerSessions; no tests, Worker/provider action, or frozen scenario ran. All eight REQ-39 traceability rows cite the evidence and retain `partial/not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md`.

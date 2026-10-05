@@ -151,13 +151,16 @@ type MissionChangeInputRevisionMap struct {
 }
 
 type MissionChangeRequestEvent struct {
-	EventID            string                          `json:"eventId"`
-	State              string                          `json:"state"`
-	ImpactRevision     *int64                          `json:"impactRevision"`
-	SuccessorMissionID *string                         `json:"successorMissionId"`
-	ReasonCode         string                          `json:"reasonCode"`
-	CreatedAt          string                          `json:"createdAt"`
-	InputRevisionMap   []MissionChangeInputRevisionMap `json:"inputRevisionMap"`
+	EventID                  string                          `json:"eventId"`
+	State                    string                          `json:"state"`
+	ImpactRevision           *int64                          `json:"impactRevision"`
+	SuccessorMissionID       *string                         `json:"successorMissionId"`
+	ReasonCode               string                          `json:"reasonCode"`
+	CreatedAt                string                          `json:"createdAt"`
+	InputRevisionMap         []MissionChangeInputRevisionMap `json:"inputRevisionMap"`
+	PlanningAssessmentID     string                          `json:"planningAssessmentId,omitempty"`
+	PlanningAssessmentSHA256 string                          `json:"planningAssessmentSha256,omitempty"`
+	PlanningRiskLevel        string                          `json:"planningRiskLevel,omitempty"`
 }
 
 type MissionChangeRequest struct {

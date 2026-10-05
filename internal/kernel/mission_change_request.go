@@ -316,13 +316,19 @@ ORDER BY event_seq DESC LIMIT 1`, scope.company, changeRequestID).Scan(&consider
 		if err != nil {
 			return Receipt{}, err
 		}
-		details := map[string]any{"input_revision_map": revisionMap, "base_requirements_sha256": baseDigest, "impact_sha256": storedImpactDigest}
+		details := map[string]any{
+			"input_revision_map": revisionMap, "base_requirements_sha256": baseDigest, "impact_sha256": storedImpactDigest,
+			"planning_assessment_id": planningAssessment.AssessmentID, "planning_assessment_sha256": planningAssessment.AssessmentSHA256,
+			"planning_risk_level": planningAssessment.RiskLevel,
+		}
 		if err = appendMissionChangeState(ctx, tx, scope, changeRequestID, "applied", int64Pointer(revision), &successorMissionID, "successor_mission_created", details); err != nil {
 			return Receipt{}, err
 		}
 		if err = appendEvent(ctx, tx, scope, "mission.change_request.applied", map[string]any{
 			"mission_id": missionID, "change_request_id": changeRequestID, "successor_mission_id": successorMissionID,
 			"base_requirements_sha256": baseDigest, "impact_sha256": storedImpactDigest,
+			"planning_assessment_id": planningAssessment.AssessmentID, "planning_assessment_sha256": planningAssessment.AssessmentSHA256,
+			"planning_risk_level": planningAssessment.RiskLevel,
 		}); err != nil {
 			return Receipt{}, err
 		}
@@ -486,10 +492,22 @@ FROM mission_change_request_events WHERE company_id=$1 AND change_request_id=$2 
 		event.SuccessorMissionID = successorMissionID
 		event.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
 		var data struct {
-			InputRevisionMap []MissionChangeInputRevisionMap `json:"input_revision_map"`
+			InputRevisionMap         []MissionChangeInputRevisionMap `json:"input_revision_map"`
+			PlanningAssessmentID     string                          `json:"planning_assessment_id"`
+			PlanningAssessmentSHA256 string                          `json:"planning_assessment_sha256"`
+			PlanningRiskLevel        string                          `json:"planning_risk_level"`
 		}
 		if len(details) > 0 && json.Unmarshal(details, &data) != nil {
 			return nil, core.Integrity
+		}
+		if data.PlanningAssessmentID != "" || data.PlanningAssessmentSHA256 != "" || data.PlanningRiskLevel != "" {
+			if !core.ValidID(data.PlanningAssessmentID) || !validTaskInputDigest(data.PlanningAssessmentSHA256) ||
+				(data.PlanningRiskLevel != "low" && data.PlanningRiskLevel != "high" && data.PlanningRiskLevel != "uncertain") {
+				return nil, core.Integrity
+			}
+			event.PlanningAssessmentID = data.PlanningAssessmentID
+			event.PlanningAssessmentSHA256 = data.PlanningAssessmentSHA256
+			event.PlanningRiskLevel = data.PlanningRiskLevel
 		}
 		if data.InputRevisionMap != nil {
 			event.InputRevisionMap = data.InputRevisionMap

@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 232, REQ-39 apply-time Planning assessment fence)
+## Latest continuation status (Slice 233, REQ-39 owner review state in Workbench)
+
+Formal change history now exposes the Planning assessment ID, digest and risk level for consideration/application events. The Workbench compares the current assessment digest with the latest owner consideration, disables apply when they differ or are stale, and directs the owner to re-review. This aligns the visible action with Slice232's apply-time server fence. `go build ./...`, rebuilt CLI, `npm run build` and `git diff --check` pass; the local backend and frontend return HTTP 200 at Schema 108, with zero WorkerSessions. No tests, Worker, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md`.
+
+Next Slice234: continue the approved finite R1–R3 ledger with the next concrete local software or evidence gap. Keep external qualification and frozen scenario states truthful. Worker activity remains gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 232, REQ-39 apply-time Planning assessment fence)
 
 The final change-application transaction now reloads the current Planning receipt, confirms its basis remains current, and requires its exact digest to match the latest owner consideration event. It rechecks the high/uncertain-risk block requirement before successor creation. If Planning re-assesses a considered request after Mission resume, the owner must consider that exact new receipt before apply. `go build ./...`, rebuilt CLI, runtime health, and `git diff --check` pass. Schema 108 remains current and WorkerSession count is zero; no tests, Worker, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md`.
 
-Next Slice233: continue the approved finite R1–R3 ledger with the next concrete local software or evidence gap. Keep external qualification and frozen scenario states truthful. Worker activity remains gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+Slice 233 exposes that same assessment-review fence to the owner in the Workbench.
 
 ## Previous continuation status (Slice 231, REQ-39 Planning context snapshot)
 

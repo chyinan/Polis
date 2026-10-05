@@ -438,6 +438,13 @@ function isMissionChangeRequestEvent(value: unknown): boolean {
     && isNullableString(value.successorMissionId)
     && (value.state === 'applied' ? value.successorMissionId !== null : value.successorMissionId === null)
     && hasString(value, 'reasonCode') && hasString(value, 'createdAt')
+    && (value.planningAssessmentId === undefined || hasString(value, 'planningAssessmentId'))
+    && (value.planningAssessmentSha256 === undefined || (typeof value.planningAssessmentSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.planningAssessmentSha256)))
+    && (value.planningRiskLevel === undefined || isOneOf(value.planningRiskLevel, ['low', 'high', 'uncertain']))
+    && ((value.planningAssessmentId === undefined && value.planningAssessmentSha256 === undefined && value.planningRiskLevel === undefined)
+      || (typeof value.planningAssessmentId === 'string' && value.planningAssessmentId.trim() !== ''
+        && typeof value.planningAssessmentSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.planningAssessmentSha256)
+        && isOneOf(value.planningRiskLevel, ['low', 'high', 'uncertain'])))
     && Array.isArray(value.inputRevisionMap) && value.inputRevisionMap.every(isMissionChangeInputRevisionMap);
 }
 

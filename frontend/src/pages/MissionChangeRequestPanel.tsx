@@ -133,6 +133,10 @@ type MissionChangeRequestRecordProps = Readonly<{
 
 function MissionChangeRequestRecord({request, missionState, mutationPending, onConsider, onDecline, onApply}: MissionChangeRequestRecordProps): ReactElement {
   const hasOpenWriters = request.impact.activeWorkerSessions.length > 0 || request.impact.nonterminalJobRuns.length > 0 || request.impact.activeServiceEndpoints.length > 0;
+  const latestConsideration = [...request.events].reverse().find(event => event.state === 'considered');
+  const planningAssessmentReviewed = request.planningAssessment !== null && request.planningAssessment.status === 'current'
+    && latestConsideration?.planningAssessmentSha256 === request.planningAssessment.assessmentSha256;
+  const planningReviewRequired = request.state === 'considered' && !planningAssessmentReviewed;
   return <article className={styles.recordRow}>
     <div className={styles.recordLead}><div>
       <strong>{request.changeSummary}</strong>
@@ -142,6 +146,7 @@ function MissionChangeRequestRecord({request, missionState, mutationPending, onC
       <span>候选后继：{request.proposedTitle} · {request.proposedGoal}</span>
       {request.planningAssessment === null ? <span>等待固定 Planning 角色在活动 WorkerSession 中评估自然语言依赖。</span> : <>
         <span>Planning 评估 rev{request.planningAssessment.revision} · {planningRiskLabel(request.planningAssessment.riskLevel)} · {request.planningAssessment.status === 'current' ? '依据仍有效' : '依据已变化，需要重新评估'}</span>
+        <span>当前评估 SHA-256 {request.planningAssessment.assessmentSha256}</span>
         <span>{request.planningAssessment.summary}</span>
         <span>受影响任务：{formatTaskIds(request.planningAssessment.affectedTaskIds)} · 未受影响：{formatTaskIds(request.planningAssessment.unaffectedTaskIds)} · 不确定：{formatTaskIds(request.planningAssessment.uncertainTaskIds)}</span>
         {request.planningAssessment.questions.length > 0 ? <span>待澄清：{request.planningAssessment.questions.join('；')}</span> : null}
@@ -150,7 +155,8 @@ function MissionChangeRequestRecord({request, missionState, mutationPending, onC
         {request.planningAssessment.riskLevel !== 'low' && !request.blockPreviousResults ? <span>高风险或不确定范围要求登记时启用旧结果阻止；请拒绝此请求并重新登记后再复核。</span> : null}
       </>}
       {request.successorMissionId !== null ? <span>后继使命草稿：{request.successorMissionId}</span> : null}
-      {request.events.map(event => <span key={event.eventId}>{missionChangeStateLabel(event.state)} · {event.reasonCode} · {event.createdAt}</span>)}
+      {request.events.map(event => <span key={event.eventId}>{missionChangeStateLabel(event.state)} · {event.reasonCode} · {event.createdAt}{event.planningAssessmentSha256 ? ` · Planning SHA-256 ${event.planningAssessmentSha256}${event.planningRiskLevel ? ` · ${planningRiskLabel(event.planningRiskLevel)}` : ''}` : ''}</span>)}
+      {planningReviewRequired ? <span>当前 Planning 评估与最近一次业主复核不一致；请在暂停状态重新复核后再应用。</span> : null}
     </div></div>
     <div className={styles.recordActions}>
       <StatusBadge label={missionChangeStateLabel(request.state)} tone={missionChangeStateTone(request.state)} />
@@ -158,7 +164,7 @@ function MissionChangeRequestRecord({request, missionState, mutationPending, onC
         <button className={styles.commandButton} disabled={missionState !== 'paused' || mutationPending || request.planningAssessment?.status !== 'current' || (request.planningAssessment.riskLevel !== 'low' && !request.blockPreviousResults)} onClick={onConsider} type="button">{request.planningAssessment === null ? '等待 Planning 评估' : request.planningAssessment.status !== 'current' ? '等待重新评估' : missionState === 'paused' ? '复核当前影响' : '暂停后复核'}</button>
         <button className={styles.commandButton} disabled={mutationPending} onClick={onDecline} type="button">拒绝变更</button>
       </> : null}
-      {request.state === 'considered' ? <button className={styles.commandButton} disabled={missionState !== 'paused' || mutationPending || hasOpenWriters} onClick={onApply} type="button">应用并创建后继使命</button> : null}
+      {request.state === 'considered' ? <button className={styles.commandButton} disabled={missionState !== 'paused' || mutationPending || hasOpenWriters || planningReviewRequired} onClick={onApply} type="button">{planningReviewRequired ? '需要重新复核' : '应用并创建后继使命'}</button> : null}
     </div>
   </article>;
 }
