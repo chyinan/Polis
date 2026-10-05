@@ -1,10 +1,10 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 239. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 240. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base: local and remote `main` at `fd074dd0097cf965ccd0432f600de141e0d9e2bf` (Slice 238, immediately before Slice239).
+- Audit base: local and remote `main` at `ccafcc11d3d5cc2f63b8d0f7faa0ee02db93d001` (Slice 239, immediately before Slice240).
 - Runtime: Android/Termux (`uname` reports Android; Node platform is `android`). `pwsh`, `powershell`, `bwrap`, and `systemd-run` are not installed in this environment.
 - Read-only local database query during Slice239: Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions.
 - The traceability ledger lists 17 open software requirements. All 232 frozen scenario rows currently have `executionStatus: not_run`.
@@ -15,7 +15,7 @@ These facts rule out session-backed execution in the current database and native
 
 | Open requirement | Remaining gate in the approved ledger | Evidence needed to resume |
 |---|---|---|
-| REQ-02 | Company creation now accepts only the four canonical fixed ID/role pairs; existing-company acknowledgment checks the persisted mapping atomically, and company updates cannot change roles before or after acknowledgment. Acknowledgment projections reject stale digests or noncanonical persisted mappings. Roles remain unverified and execution disabled. Provider role contracts, executable admission gates, and direct messaging remain unqualified; no owner confirmation has been made in this checkout. | Installation owner reviews and confirms the fixed roster/role mapping in the UI; separately authorized real-provider account and role-surface qualification. Legacy persisted role mismatches require owner-reviewed reconciliation before acknowledgment. |
+| REQ-02 | Company creation now accepts only the four canonical fixed ID/role pairs; the wizard presents those roles read-only and includes them in final review. Existing-company acknowledgment checks the persisted mapping atomically, and company updates cannot change roles before or after acknowledgment. Acknowledgment projections reject stale digests or noncanonical persisted mappings. Roles remain unverified and execution disabled. Provider role contracts, executable admission gates, and direct messaging remain unqualified; no owner confirmation has been made in this checkout. | Installation owner reviews and confirms the fixed roster/role mapping in the UI; separately authorized real-provider account and role-surface qualification. Legacy persisted role mismatches require owner-reviewed reconciliation before acknowledgment. |
 | REQ-13 | The Fake-only dispatcher has persisted fairness and per-Task claims, but no owner-backed global slot cap or authoritative quota-ready/release source exists. | Owner decision for the installation-wide cap and a trusted provider quota signal/account source. |
 | REQ-14 | Legacy revocation rows may still need an installation-owner `acknowledged_unresolved` disposition; stop/restart proof depends on runtime host state. | Owner review of each applicable legacy row and host-backed exact stop/recovery evidence. |
 | REQ-15 | Memory overlay restore behavior needs PostgreSQL/Desktop runtime qualification; corrections and revalidation require a session-bound operator path. | A qualified Desktop/PostgreSQL restore host and an already-active, database-confirmed WorkerSession for any session-bound action. |
@@ -45,4 +45,4 @@ The source implementation can continue where a concrete local gap remains. Do no
 
 ## Repository push status
 
-The ordinary local HTTPS `git push` fails because no command-line GitHub credential is configured. The connected GitHub integration confirmed push permission and published the two pending stage commits to `main` in order: Slice236 `56b69a51ea93b7226056bcb508912453365b9690`, then Slice237 `576ebb7476da17e1e6bcdfdb2dd57443c601beab`. Local `main` is now aligned with `origin/main`. No token was copied into local files or environment variables. This repository write credential does not qualify any product provider integration.
+The ordinary local HTTPS `git push` fails because no command-line GitHub credential is configured. The connected GitHub integration confirmed push permission and published the implementation commits for Slices 236 (`56b69a51ea93b7226056bcb508912453365b9690`), 237 (`576ebb7476da17e1e6bcdfdb2dd57443c601beab`), 238 (`7406d45aac38b7bf380ecb4e82db2ac137940feb`), and 239 (`6482bad78cc14b590b8d6c36be5939a141588591`) to `main`; the handoff-pointer reconciliation commits are also in the linear history. The Slice240 audit base was local and remote `main` at `ccafcc11d3d5cc2f63b8d0f7faa0ee02db93d001`. No token was copied into local files or environment variables. This repository write credential does not qualify any product provider integration.

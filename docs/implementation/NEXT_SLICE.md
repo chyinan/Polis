@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 239, REQ-02 fixed roles from creation)
+## Latest continuation status (Slice 240, fixed-role company setup UI)
+
+The New Company wizard now displays each canonical fixed role as read-only and explains that the role belongs to its logical Employee ID. The final review also lists each ID-to-role pair beside the task coverage draft, so the owner can see the actual fixed assignment before acknowledging it. Display names and model profiles remain editable. The frontend production build and `git diff --check` pass; the build retains the existing large-chunk advisory. The local Vite frontend returns HTTP 200. No tests, Company creation, owner acknowledgment, database writes, Worker/provider operations, or frozen scenarios ran. The new evidence is linked to the seven REQ-02 rows and UI-01; all dispositions and all 232 `not_run` statuses are unchanged. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md`.
+
+Next Slice241: continue auditing the approved finite ledger for another concrete local implementation gap while preserving owner, host, account, active-session, and scenario qualification gates. Worker activity still requires a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 239, REQ-02 fixed roles from creation)
 
 The fixed `TEAM_COVERAGE.json` role mapping now applies from Company creation onward, not only after owner acknowledgment. Company creation rejects a role name that differs from the canonical role for each fixed Employee ID. Existing-company acknowledgment checks the persisted enabled roster in the same company transaction before appending the event. Every Company update compares persisted role names with the submitted roster and denies role changes regardless of acknowledgment state. Company detail and switcher projections report the matrix as confirmed only when both the latest digest and persisted canonical roles match; legacy mismatches remain unconfirmed. `go build ./...`, the rebuilt CLI, and `git diff --check` pass. The rebuilt deterministic backend returns ready and the Vite frontend returns HTTP 200. A read-only PostgreSQL transaction confirms Schema 108 and zero Companies, Missions, and WorkerSessions, then rolls back. No tests, owner acknowledgment, database writes, Worker/provider operations, or frozen scenarios ran. The seven REQ-02 scenario rows cite `evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md` and remain `partial/not_run`; all 232 frozen scenarios remain `not_run`.
 
-Next Slice240: continue auditing the approved finite ledger for another concrete local implementation gap while preserving owner, host, account, active-session, and scenario qualification gates. Worker activity still requires a current database read confirming an already-active WorkerSession; do not create or start one.
+Slice240 makes the fixed role mapping read-only in the creation wizard and visible in final review; see the latest continuation status above.
 
 ## Previous continuation status (Slice 238, REQ-02 confirmed-role immutability)
 

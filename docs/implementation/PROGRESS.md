@@ -1,5 +1,25 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 240 — fixed-role company setup UI
+
+The New Company wizard now shows canonical roles as read-only values bound to fixed Employee IDs and lists each ID-to-role pair in final review. Display names and model profiles remain editable. Frontend production build and `git diff --check` pass; the existing large-chunk warning remains. No tests, company creation, owner acknowledgment, database write, Worker/provider operation or scenario ran. UI-01 and the seven REQ-02 rows cite the evidence while all scenario statuses remain `not_run`. See `evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md`.
+
+## Slice 239 — REQ-02 fixed roles from Company creation
+
+New Companies now require canonical fixed Employee ID/role pairs; existing-company acknowledgment verifies the persisted enabled roster in the company transaction; every Company update rejects runtime role changes. Company projections report matrix confirmation only when the current digest and stored canonical roles both match. Go builds, local service readiness and read-only Schema 108 checks pass. No tests, owner acknowledgment, database write, Worker/provider operation or scenario ran. All seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. See `evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md`.
+
+## Slice 238 — REQ-02 confirmed-role immutability
+
+Company updates were first guarded against fixed-role changes after a current-matrix owner acknowledgment, preserving other editable organization settings. Go builds and local service checks pass; the read-only local DB was Schema 108 with no Companies, Missions or WorkerSessions. No tests, owner action, database write, Worker/provider operation or scenario ran. Slice239 extends the role invariant to creation and all Company updates. See `evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md`.
+
+## Slice 237 — REQ-02 owner team-coverage acknowledgment
+
+The Company wizard and existing Company directory accept an explicit installation-owner acknowledgment of the exact embedded fixed-team matrix digest. The event preserves `qualification: unverified` and does not enable execution. Go/frontend builds and local service checks pass; the read-only local database has zero Companies, Missions and WorkerSessions. No owner acknowledgment, database write, tests, Worker/provider action or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md`.
+
+## Slice 236 — REQ-02 fixed-team coverage review
+
+The New Company wizard displays all seven task assignments, acceptance paths, independent checkers and unverified qualification states. This is a review surface only; it records no owner decision or runtime admission. Frontend production build and `git diff --check` pass. No tests, database write, Worker/provider action or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md`.
+
 ## Slice 235 — open qualification dependency audit
 
 Added a requirement-by-requirement blocker matrix for all 17 open software requirements. It records the current Android/Termux and empty Schema 108 database limits, distinguishes those facts from external resource availability that is unknown, and names the owner decision, active session, provider/account, Windows/Linux host, or frozen evidence needed to resume each item. The traceability ledger remains unchanged: 232/232 frozen scenarios are `not_run`. JSON parsing and `git diff --check` pass. No tests, Worker, provider operation, environment preparation, or qualification ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-235-open-qualification-blockers/verification.md`; matrix: `docs/implementation/OPEN_QUALIFICATION_BLOCKERS.md`.

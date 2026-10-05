@@ -636,7 +636,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
@@ -770,7 +771,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
@@ -935,7 +937,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
@@ -1283,7 +1286,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
@@ -1875,7 +1879,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
@@ -2491,7 +2496,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
@@ -2648,7 +2654,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
@@ -2663,7 +2670,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md"
       ]
     },
     {
