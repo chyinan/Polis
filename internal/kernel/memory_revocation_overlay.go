@@ -216,8 +216,8 @@ func (k *Kernel) loadMemoryRevocationOverlayFiles() error {
 		if companyInfo.Mode()&os.ModeSymlink != 0 || !companyInfo.IsDir() {
 			return core.Integrity
 		}
-		if runtime.GOOS != "windows" && companyInfo.Mode().Perm()&0077 != 0 {
-			return core.Denied
+		if err = validateMemoryRevocationDirectoryPermissions(companyInfo); err != nil {
+			return err
 		}
 		companyRoot, openErr := root.OpenRoot(companyID)
 		if openErr != nil {
@@ -298,6 +298,16 @@ func validMemoryRevocationOverlay(overlay MemoryRecordRevocationOverlay) bool {
 	return err == nil
 }
 
+func validateMemoryRevocationDirectoryPermissions(info os.FileInfo) error {
+	if info == nil {
+		return core.Integrity
+	}
+	if runtime.GOOS != "windows" && info.Mode().Perm()&0077 != 0 {
+		return core.Denied
+	}
+	return nil
+}
+
 func memoryRevocationKey(companyID, recordID string) string { return companyID + "\x00" + recordID }
 
 func (k *Kernel) memoryRecordRevocation(companyID, recordID string) (MemoryRecordRevocationOverlay, bool) {
@@ -368,6 +378,9 @@ func (k *Kernel) persistMemoryRevocationOverlay(overlay MemoryRecordRevocationOv
 	}
 	if companyInfo.Mode()&os.ModeSymlink != 0 || !companyInfo.IsDir() {
 		return core.Denied
+	}
+	if err = validateMemoryRevocationDirectoryPermissions(companyInfo); err != nil {
+		return err
 	}
 	companyRoot, err := root.OpenRoot(overlay.CompanyID)
 	if err != nil {
