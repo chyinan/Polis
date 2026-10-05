@@ -88,6 +88,10 @@ import type {
   MissionChangeRequestView,
   TaskTakeoverDiffSummaryView,
   TaskTakeoverLeaseView,
+  TaskTakeoverWorkspaceFileView,
+  TaskTakeoverWorkspaceManifestEntryView,
+  TaskTakeoverWorkspaceManifestView,
+  TaskTakeoverWorkspaceTreeBindingView,
   ProjectEnvironmentRevisionView,
   ProjectEnvironmentPolicyManifestView,
   ProjectServiceDefinitionView,
@@ -468,6 +472,28 @@ function isTakeoverDiffSummary(value: unknown): value is TaskTakeoverDiffSummary
     && typeof value.changed === 'boolean' && value.changed;
 }
 
+function isTaskTakeoverWorkspaceTreeBinding(value: unknown): value is TaskTakeoverWorkspaceTreeBindingView {
+  return isRecord(value) && hasString(value, 'rootBindingId')
+    && typeof value.revision === 'number' && Number.isSafeInteger(value.revision) && value.revision > 0
+    && typeof value.manifestSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.manifestSha256)
+    && typeof value.fileCount === 'number' && Number.isSafeInteger(value.fileCount) && value.fileCount >= 1 && value.fileCount <= 512
+    && typeof value.bytes === 'number' && Number.isSafeInteger(value.bytes) && value.bytes >= 1 && value.bytes <= 16 * 1024 * 1024;
+}
+
+function isWorkspaceRelativePath(value: unknown): value is string {
+  if (typeof value !== 'string' || value.length === 0 || value.length > 1024 || value.startsWith('/') || value.endsWith('/') || value.includes('\\') || value.includes('%') || value.includes(':')) return false;
+  return value.split('/').every(part => part !== '' && part !== '.' && part !== '..' && part.trim() === part && part.length <= 255 && !/[\u0000-\u001f\u007f]/.test(part));
+}
+
+function isTaskTakeoverWorkspaceManifestEntry(value: unknown): value is TaskTakeoverWorkspaceManifestEntryView {
+  return isRecord(value) && isWorkspaceRelativePath(value.relativePath)
+    && typeof value.sha256 === 'string' && /^[0-9a-f]{64}$/.test(value.sha256)
+    && typeof value.bytes === 'number' && Number.isSafeInteger(value.bytes) && value.bytes >= 1 && value.bytes <= 2 * 1024 * 1024
+    && typeof value.fileRevision === 'number' && Number.isSafeInteger(value.fileRevision) && value.fileRevision > 0
+    && typeof value.sourceRevision === 'number' && Number.isSafeInteger(value.sourceRevision) && value.sourceRevision > 0
+    && value.contentType === 'text/utf-8';
+}
+
 function isTaskTakeoverLeaseEvent(value: unknown): boolean {
   return isRecord(value) && hasString(value, 'eventId') && isOneOf(value.state, ['granted', 'returned', 'released'])
     && isNullableString(value.snapshotInputId) && isNullablePositiveInteger(value.snapshotRevision)
@@ -501,6 +527,7 @@ function isTaskTakeoverLease(value: unknown, missionId: string): value is TaskTa
     && typeof value.baseRequirementsSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.baseRequirementsSha256)
     && typeof value.baseWorkspaceDigest === 'string' && /^[0-9a-f]{64}$/.test(value.baseWorkspaceDigest)
     && typeof value.baseWorkspaceRevision === 'number' && Number.isSafeInteger(value.baseWorkspaceRevision) && value.baseWorkspaceRevision > 0
+    && (value.workspaceTree === undefined || isTaskTakeoverWorkspaceTreeBinding(value.workspaceTree))
     && isOneOf(value.state, ['granted', 'returned', 'released'])
     && isNullableString(value.snapshotInputId) && isNullablePositiveInteger(value.snapshotRevision)
     && (value.snapshotDigest === null || (typeof value.snapshotDigest === 'string' && /^[0-9a-f]{64}$/.test(value.snapshotDigest)))
@@ -1188,6 +1215,34 @@ export function validateTaskTakeoverLease(value: unknown, missionId: string): Va
   return isTaskTakeoverLease(value, missionId)
     ? {success: true, value}
     : {success: false, issues: [{path: '', message: 'Task takeover record contains an unknown, malformed, or cross-scope field'}]};
+}
+
+export function validateTaskTakeoverWorkspaceManifest(value: unknown, missionId: string, leaseId: string): ValidationResult<TaskTakeoverWorkspaceManifestView> {
+  if (!isRecord(value) || value.leaseId !== leaseId || value.missionId !== missionId || !hasString(value, 'taskId')
+    || !isTaskTakeoverWorkspaceTreeBinding(value.workspaceTree) || !Array.isArray(value.entries)
+    || !value.entries.every(isTaskTakeoverWorkspaceManifestEntry)) {
+    return {success: false, issues: [{path: '', message: 'takeover workspace manifest contains malformed or cross-scope data'}]};
+  }
+  const entries = value.entries as ReadonlyArray<TaskTakeoverWorkspaceManifestEntryView>;
+  const paths = new Set(entries.map(entry => entry.relativePath));
+  const totalBytes = entries.reduce((total, entry) => total + entry.bytes, 0);
+  if (paths.size !== entries.length || entries.length !== value.workspaceTree.fileCount || totalBytes !== value.workspaceTree.bytes) {
+    return {success: false, issues: [{path: 'entries', message: 'takeover workspace entries differ from the pinned count or byte total'}]};
+  }
+  return {success: true, value: value as TaskTakeoverWorkspaceManifestView};
+}
+
+export function validateTaskTakeoverWorkspaceFile(value: unknown, missionId: string, leaseId: string, relativePath: string, manifestSha256: string): ValidationResult<TaskTakeoverWorkspaceFileView> {
+  if (!isRecord(value) || value.leaseId !== leaseId || value.missionId !== missionId || !hasString(value, 'taskId')
+    || value.manifestSha256 !== manifestSha256 || value.relativePath !== relativePath || !isWorkspaceRelativePath(value.relativePath)
+    || typeof value.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(value.sha256)
+    || typeof value.bytes !== 'number' || !Number.isSafeInteger(value.bytes) || value.bytes < 1 || value.bytes > 2 * 1024 * 1024
+    || typeof value.fileRevision !== 'number' || !Number.isSafeInteger(value.fileRevision) || value.fileRevision < 1
+    || typeof value.workspaceRevision !== 'number' || !Number.isSafeInteger(value.workspaceRevision) || value.workspaceRevision < 1
+    || value.contentType !== 'text/utf-8' || typeof value.content !== 'string' || new TextEncoder().encode(value.content).length !== value.bytes) {
+    return {success: false, issues: [{path: '', message: 'takeover workspace file is malformed, oversized, or outside its frozen manifest'}]};
+  }
+  return {success: true, value: value as TaskTakeoverWorkspaceFileView};
 }
 
 export function validateArtifactDeliveryManifest(value: unknown, companyId: string, artifactId: string): ValidationResult<ArtifactDeliveryManifestResponse> {

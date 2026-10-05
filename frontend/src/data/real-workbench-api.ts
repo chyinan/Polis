@@ -31,7 +31,10 @@ import {validateGitHubFeedbackCollectionPolicyReceipt} from '../domain/workbench
 import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
 import {type ImportStdioMCPPackageOptions, type ObserveStdioMCPRuntimeOptions, type ObserveStreamableHTTPMCPRuntimeOptions, MAX_STDIO_MCP_PACKAGE_BYTES} from './workbench-api';
 import type {ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceLedgerView, DomainEvidenceRecordView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
+import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 import {validateActivityEvent, validateActivityView, validateArtifactDeliveryManifest, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainEvidenceSubstantiveAssessmentRecord, validateDomainProfileQualificationRecord, validateEnvironmentExecutorQualificationReceipt, validateEnvironmentPolicyDecisionReceipt, validateEnvironmentPreparationRun, validateGitHubCredentialReceipt, validateGitHubFeedbackBacklogStatusReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateHumanInterventionCommandReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateMissionInputCommandReceipt, validateMissionInputs, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases, validateWorkspace, validationMessage} from '../domain/workbench-validation';
+import {validateTaskTakeoverWorkspaceFile, validateTaskTakeoverWorkspaceManifest} from '../domain/workbench-validation';
+import type {TaskTakeoverWorkspaceFileQueryOptions, TaskTakeoverWorkspaceManifestQueryOptions} from './workbench-api';
 import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
 
 export class RealWorkbenchApi implements WorkbenchApi {
@@ -189,6 +192,27 @@ export class RealWorkbenchApi implements WorkbenchApi {
     const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/missions/${encodeURIComponent(options.missionId)}/takeover-leases`);
     const result = validateTaskTakeoverLeases(raw, options.missionId);
     if (!result.success) throw new Error(`failed to load human takeover leases: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async getTaskTakeoverWorkspaceManifest(options: TaskTakeoverWorkspaceManifestQueryOptions): Promise<TaskTakeoverWorkspaceManifestView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    assertCompanyScope(options.leaseId);
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/missions/${encodeURIComponent(options.missionId)}/takeover-leases/${encodeURIComponent(options.leaseId)}/workspace`);
+    const result = validateTaskTakeoverWorkspaceManifest(raw, options.missionId, options.leaseId);
+    if (!result.success) throw new Error(`failed to load frozen takeover workspace manifest: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async readTaskTakeoverWorkspaceFile(options: TaskTakeoverWorkspaceFileQueryOptions): Promise<TaskTakeoverWorkspaceFileView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    assertCompanyScope(options.leaseId);
+    const query = new URLSearchParams({path: options.relativePath});
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/missions/${encodeURIComponent(options.missionId)}/takeover-leases/${encodeURIComponent(options.leaseId)}/workspace/file?${query.toString()}`);
+    const result = validateTaskTakeoverWorkspaceFile(raw, options.missionId, options.leaseId, options.relativePath, options.manifestSha256);
+    if (!result.success) throw new Error(`failed to load frozen takeover workspace file: ${validationMessage(result.issues)}`);
     return result.value;
   }
 

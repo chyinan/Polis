@@ -1183,6 +1183,7 @@ export type TaskTakeoverLeaseView = Readonly<{
   baseRequirementsSha256: string;
   baseWorkspaceDigest: string;
   baseWorkspaceRevision: number;
+  workspaceTree?: TaskTakeoverWorkspaceTreeBindingView;
   state: TaskTakeoverLeaseState;
   snapshotInputId: string | null;
   snapshotRevision: number | null;
@@ -1192,6 +1193,45 @@ export type TaskTakeoverLeaseView = Readonly<{
   diffSummary: TaskTakeoverDiffSummaryView | null;
   createdAt: string;
   events: ReadonlyArray<TaskTakeoverLeaseEventView>;
+}>;
+
+export type TaskTakeoverWorkspaceTreeBindingView = Readonly<{
+  rootBindingId: string;
+  revision: number;
+  manifestSha256: string;
+  fileCount: number;
+  bytes: number;
+}>;
+
+export type TaskTakeoverWorkspaceManifestEntryView = Readonly<{
+  relativePath: string;
+  sha256: string;
+  bytes: number;
+  fileRevision: number;
+  sourceRevision: number;
+  contentType: 'text/utf-8';
+}>;
+
+export type TaskTakeoverWorkspaceManifestView = Readonly<{
+  leaseId: string;
+  missionId: string;
+  taskId: string;
+  workspaceTree: TaskTakeoverWorkspaceTreeBindingView;
+  entries: ReadonlyArray<TaskTakeoverWorkspaceManifestEntryView>;
+}>;
+
+export type TaskTakeoverWorkspaceFileView = Readonly<{
+  leaseId: string;
+  missionId: string;
+  taskId: string;
+  manifestSha256: string;
+  relativePath: string;
+  sha256: string;
+  bytes: number;
+  fileRevision: number;
+  workspaceRevision: number;
+  contentType: 'text/utf-8';
+  content: string;
 }>;
 
 export type StatusKey =

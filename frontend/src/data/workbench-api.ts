@@ -7,6 +7,7 @@ import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRe
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentCorrectionView, DomainContentPublicationView} from '../domain/workbench';
 import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DailyRoutineView, DataMode, DomainContentDraftView, DomainContentReviewView, DomainContentReviewSubmissionView, DomainContentSampleEvidenceView, DomainContentSourceEventView, DomainContentSourceStateView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceAreaAssessmentView, DomainEvidenceAreaView, DomainEvidenceItemView, DomainEvidenceLedgerView, DomainEvidencePreviewAttestationView, DomainEvidenceRecordView, DomainEvidenceReviewOutcomeView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, EmployeeDraft, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatus, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackCollectionPolicyReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, HumanInterventionState, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, ServiceBrowserSessionView, StdioMCPPackageRevisionView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
+import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 
 export type CompanyDraftOptions = Readonly<{
   id: string;
@@ -120,6 +121,8 @@ export type MissionChangeRequestCommandOptions = Readonly<{
 }>;
 
 export type TaskTakeoverLeaseQueryOptions = Readonly<{companyId: string; missionId: string}>;
+export type TaskTakeoverWorkspaceManifestQueryOptions = Readonly<{companyId: string; missionId: string; leaseId: string}>;
+export type TaskTakeoverWorkspaceFileQueryOptions = Readonly<{companyId: string; missionId: string; leaseId: string; relativePath: string; manifestSha256: string}>;
 export type CreateTaskTakeoverLeaseOptions = Readonly<{companyId: string; missionId: string; taskId: string; requestId: string}>;
 export type TaskTakeoverSnapshotOptions = Readonly<{
   companyId: string;
@@ -677,6 +680,8 @@ export type WorkbenchApi = Readonly<{
   declineMissionChangeRequest(options: MissionChangeRequestCommandOptions): Promise<MissionChangeRequestView>;
   applyMissionChangeRequest(options: MissionChangeRequestCommandOptions): Promise<MissionChangeRequestView>;
   listTaskTakeoverLeases(options: TaskTakeoverLeaseQueryOptions): Promise<ReadonlyArray<TaskTakeoverLeaseView>>;
+  getTaskTakeoverWorkspaceManifest(options: TaskTakeoverWorkspaceManifestQueryOptions): Promise<TaskTakeoverWorkspaceManifestView>;
+  readTaskTakeoverWorkspaceFile(options: TaskTakeoverWorkspaceFileQueryOptions): Promise<TaskTakeoverWorkspaceFileView>;
   createTaskTakeoverLease(options: CreateTaskTakeoverLeaseOptions): Promise<TaskTakeoverLeaseView>;
   submitTaskTakeoverSnapshot(options: TaskTakeoverSnapshotOptions): Promise<TaskTakeoverLeaseView>;
   releaseTaskTakeoverLease(options: ReleaseTaskTakeoverLeaseOptions): Promise<TaskTakeoverLeaseView>;

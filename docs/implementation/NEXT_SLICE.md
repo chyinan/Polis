@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 220, REQ-39 lease-bound workspace reads)
+## Latest continuation status (Slice 221, REQ-39 lease-bound multi-file editor)
+
+The real Workbench API now validates the pinned manifest and each returned file against lease/Mission IDs, root, revision, manifest digest, path, content digest metadata and UTF-8 byte length. The takeover panel reads the entire frozen file set with bounded concurrency, lets the operator select and edit each file, and keeps edits local; it does not write to the old Task workspace. Single-file `workspace.txt` return still works, while multi-file leases stay non-returnable until the directory-snapshot handback arrives. `npm run build` (`tsc -b` and Vite production build) and `git diff --check` pass; Vite reports an 864.70 kB bundle advisory. No tests, DB, lease command, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-221-req39-multi-file-takeover-editor/verification.md`.
+
+Next Slice222: accept full bounded directory snapshots against the pinned manifest, validate additions/changes/deletions, and persist them as an immutable MissionInput with idempotent lease provenance. Then enable multi-file handback in the panel. Preserve frozen execution states as `not_run` until those scenarios actually run. Keep Worker/provider work gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 220, REQ-39 lease-bound workspace reads)
 
 Added Workbench read routes for a takeover lease's frozen workspace manifest and individual files. The Kernel requires a paused Mission, a granted lease holding the Task slot, and an exact recomputation of the Schema 105 tree binding. Each requested path must exist in that manifest; content comes from digest-checked UTF-8 CAS bytes. Manifest/file reads record lease and baseline provenance in company events. `go build ./...` and `git diff --check` pass. No tests, database operation, lease command, Worker/provider activity or frozen scenario ran. The current UI still reads the single legacy workspace and cannot hand back multiple files. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-220-req39-lease-bound-tree-read-api/verification.md`.
 

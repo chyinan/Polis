@@ -11,6 +11,7 @@ import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, Chan
 import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, CompanyToolCallClosingReserveReceiptView, DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
+import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 
 import type {
   ActivityEvent,
@@ -493,6 +494,14 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
       throw new Error('failed to load fixture human takeover leases: Mission scope not found');
     }
     return [];
+  }
+
+  async getTaskTakeoverWorkspaceManifest(_options: Readonly<{companyId: string; missionId: string; leaseId: string}>): Promise<TaskTakeoverWorkspaceManifestView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'human takeover is unavailable in fixture mode');
+  }
+
+  async readTaskTakeoverWorkspaceFile(_options: Readonly<{companyId: string; missionId: string; leaseId: string; relativePath: string; manifestSha256: string}>): Promise<TaskTakeoverWorkspaceFileView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'human takeover is unavailable in fixture mode');
   }
 
   async createTaskTakeoverLease(_options: CreateTaskTakeoverLeaseOptions): Promise<TaskTakeoverLeaseView> {
