@@ -1,10 +1,10 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 242. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 243. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base for Slice242: published Slice241 handoff commit `b087ca23939335d1dd6962ce974612cbb05f09ff`. Slice241 had reconciled the earlier Slice239 audit anchor with the published Slice240 pointer commit. Slice242 changed only source validation and handoff records; the host and database observations below were not refreshed.
+- Audit base for Slice243: published Slice242 handoff commit `48c41fc126992e3e43e5f101b81ebf4d3f807b6d`. Slice242 changed only source validation and handoff records; the host and database observations below were not refreshed in Slices242–243.
 - Most recent recorded host observation: Android/Termux (`uname` reported Android; Node platform was `android`); `pwsh`, `powershell`, `bwrap`, and `systemd-run` were absent in the Slice235 audit. This is a recorded observation, not a fresh Slice241 host probe.
 - Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slice240 changed only the frontend and handoff records, so it did not refresh the database observation; this remains the latest recorded DB evidence, not a new Slice241 query.
 - The checked-in traceability ledger lists 17 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
@@ -25,7 +25,7 @@ These facts rule out session-backed execution in the current database and native
 | REQ-25 | Owner setup is implemented; local browser/Tauri WebView and remote-browser authorization behavior remain unqualified. | Installation-owner setup decision plus supported browser/WebView qualification environments and explicit remote-access authorization. |
 | REQ-26 | No concrete shared branch/deploy/publish writer exists to fence; an inert ResourceKey registry would not enforce isolation. | A product-approved shared write action and its canonical provider object/account mapping before implementing a binding gate. |
 | REQ-27 | E-HANDOVER cross-model regression and owner-approved budget/threshold evidence remain open. | Authorized model/provider accounts, an active session path, and owner-approved continuity thresholds. |
-| REQ-29 | The logical private Task tree exists, but host mounts, company/group shared roots, retention/GC decisions, and CAP-01–06 qualification remain open. | Owner-approved sharing and retention policy, qualified Windows/Linux filesystem hosts, and CAP evidence for each exposed path. |
+| REQ-29 | The logical private Task tree and snapshot paths exist; the legacy `workspace_replace` writer now shares the 512-file, 16 MiB, and path-prefix invariants. Host mounts, company/group shared roots, retention/GC decisions, and CAP-01–06 qualification remain open. | Owner-approved sharing and retention policy, qualified Windows/Linux filesystem hosts, and CAP evidence for each exposed path. |
 | REQ-30 | Read-only Skill loading is implemented on Fake; real provider v5 remains unqualified. | Authorized real-provider account and active WorkerSession on the exact v5 surface. |
 | REQ-31 | Real-provider capability execution, Windows WFP, detached-owner recovery, and R2 Streamable HTTP endpoint/Worker qualification remain open. | Qualified Windows host for WFP, authorized MCP endpoints/accounts, and active database-confirmed WorkerSession for session execution. |
 | REQ-32 | Identity bindings are persisted, but successor execution remains unavailable. | Qualified successor WorkerSession/runtime and explicit owner authorization to exercise bound capabilities after handover. |

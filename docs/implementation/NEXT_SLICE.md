@@ -1,10 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 242, REQ-02 fixed-team draft semantic guard)
+## Latest continuation status (Slice 243, REQ-29 legacy workspace tree bounds)
 
-`spec.ValidateFixedTeamCoverageDraft` strictly checks the fixed roster, seven assignment contracts and every fail-closed draft flag. Company creation and owner confirmation reject semantic drift; confirmation projections stay false when the embedded draft is invalid. This is a drift guard only: it does not create executable role contracts, alter Task admission, qualify a provider surface or enable execution. `go build ./...`, `git diff --check HEAD^ HEAD`, and JSON parsing passed. No tests, database operations, Company creation/acknowledgment, Worker/provider operations or frozen scenarios ran. All seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
+The legacy `workspace_replace` path now shares the logical file tree writer's max-file, aggregate-byte, and path-prefix conflict validator when a tree root exists. It locks that root and checks the bound WorkerSession/epoch before updating the legacy workspace row and mirrored entry. Task/session/revision gates remain in place; this does not introduce host mounts, shared roots or CAP qualification. `go build ./...`, `git diff --check HEAD^ HEAD`, and a static bound/call-site check passed. No tests, DB operations, Worker/provider operation, host qualification or frozen scenario ran. CAP-01–06 remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md`.
 
-Next Slice243: close the logical workspace-tree invariant gap in the legacy `workspace_replace` compatibility writer, keeping host mounts and CAP qualification open.
+Next Slice244: continue auditing the approved finite ledger for another local implementation gap; keep external host/account/session/scenario gates open.
 
 ## Previous continuation status (Slice 240, fixed-role company setup UI)
 
