@@ -1,6 +1,6 @@
 # REQ-29 authorized shared-file access audit
 
-Updated: 2026-10-05, Slice 211. This source map leaves the frozen v0.4.5 design unchanged.
+Updated: 2026-10-06, Slice 264. This source map leaves the frozen v0.4.5 design unchanged.
 
 ## Frozen requirements checked
 
@@ -26,3 +26,30 @@ CAP-01–06 remain `not_run` as frozen scenarios. Slice 211 performed source/bui
 ## History
 
 Slice 150 identified the missing cross-Task Artifact read. Slice 151 implemented that bounded read path on @8, Slice 208 added the logical private Task tree and immutable draft snapshot model on @10, and Slice 211 added audited source-owner snapshot revocation on @11. This document supersedes the Slice 150 statement that no Worker tool can discover or read another Task's published Artifact; that statement was accurate only before Slice 151. See `evidence/development/r1-r3-implementation-validation-20261003-slice-151-req29-shared-artifact-read/verification.md`, `evidence/development/r1-r3-implementation-validation-20261004-slice-208-req29-workspace-tree/verification.md`, and `evidence/development/r1-r3-implementation-validation-20261005-slice-211-req29-workspace-snapshot-revocation/verification.md`.
+
+## Local source audit (2026-10-06; based on source commit `83592318bc49b6f717d68054da7b213a1fbc63af`)
+
+This audit checked the production Go/SQL paths and the frozen CAP-01–06 contract. It made no code or schema change. The migration source is Schema 110; this audit did not query or modify the local database.
+
+| Area | Present source behavior | Concrete missing contract |
+|---|---|---|
+| Host roots and mounts | `companies.workspace_root` is saved, returned, and shown by the Workbench, but no runtime authorizes it or resolves it to an OS root. Company creation also accepts it as metadata. Linux Node preparation and native Worker launch bind fresh application-managed directories; Windows AppContainer workspaces are likewise application-managed. The Worker logical tree uses Company CAS and relative paths. Git import reads a locally available, selected commit into an immutable snapshot and does not write the source repository. | No owner-authorized root handle/bookmark, canonical host identity, binding revision, read/write capability, revoke path, or Worker mount adapter exists. A path string is not authority. Physical symlink/special-file/TOCTOU protections for a mounted user root therefore do not exist. |
+| Company and Group sharing | Cross-Task published Artifact reads are bounded to another Task in the current active Mission and same Company, and record the exact digest/version and reader session. Workspace snapshot reads are exact-Artifact-ID, same-Mission reads. Neither is a Company-wide shared document root. There is no `groups` table or group membership/resource relation in the migrations. `skill_revisions.publisher_scope='group'` is still keyed by `company_id`; that enum does not create a cross-Company Group identity. | No Company shared-root ACL, Group entity/membership, cross-Company authorization join, revisioned sharing decision, or public-library visibility model exists. Employees in a Company do not gain a new root merely from their Company membership. |
+| Snapshot retention | Task snapshots are immutable `draft_not_accepted` Artifacts with per-file CAS references. Revocation is owner/session/epoch audited and blocks later direct reads; already returned bytes are not recalled. The generic CAS collector defaults to dry-run and, on apply, serializes with CAS writers/company writes and deletes only digest files that no company-owned database row references. | There is no snapshot expiry/retirement policy, owner decision record, retention class, deletion/tombstone lifecycle, or reference-release operation. `workspace_snapshot_files` and Artifact history continue referencing the objects, so generic orphan collection cannot reclaim them. Snapshot creation currently caps the lifetime row count at 32 per Task; revoked/corrupt records still count, and no operation releases a slot. |
+
+### CAP-01–06 implementation boundary
+
+- CAP-01 has bounded private logical-tree and same-Mission published-Artifact discovery/read paths, but no discovery of an owner-authorized host root or Company/Group root.
+- CAP-02 validates logical relative paths and CAS-root handling, but there is no mounted host path on which to exercise OS-level link, special-file, or replacement-race controls.
+- CAP-03 distinguishes a Task-private logical tree from narrowly published same-Mission Artifacts. It has no Company shared-document visibility or Group/public-library ACL.
+- CAP-04 binds private logical-tree writes to one current WorkerSession/epoch and root revision. No shared-root writer exists, so shared-root single-writer arbitration is not implemented.
+- CAP-05 reads immutable CAS digests and checks byte lengths; the filesystem-root consistency/truncation behavior for a live mounted source is absent.
+- CAP-06 has ready-state checks, immutable snapshot references, audited revocation, and a CAS orphan sweep. It has no obsolete/expiry transition or snapshot-reference reclamation policy; the generic collector is not a snapshot-retention engine.
+
+### Recommended next REQ-29 slice
+
+No host mount, Company/Group shared root, or snapshot reclamation behavior is safe to choose from source inspection alone: each needs an owner decision about which root is authorized, who shares it, whether access is read-only or writable, how revocation affects a running writer, and how long immutable snapshots remain retained. Do not make `workspace_root` executable authority or invent a default Group/retention policy.
+
+After those decisions, the narrowest first vertical slice is a **read-only Company root binding** on one explicitly qualified host: owner selection through the OS's native directory authorization mechanism; a durable immutable binding revision and revocation event; a root-handle-based bounded walker that rejects escapes, links and non-regular entries; digest/size-pinned immutable snapshots; and an isolated fake-only read surface. Keep Group sharing, writable mounts, and garbage collection out of that slice. Validate the filesystem races on the target OS before exposing the path to any Worker. The current Termux host is not evidence for Windows or delegated Linux mount qualification.
+
+The audit was source-only. It did not change any frozen CAP row or execution state; CAP-01–06 remain `partial` / `not_run`. See `evidence/development/r1-r3-implementation-validation-20261006-req29-local-audit/verification.md`.

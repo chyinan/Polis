@@ -2,7 +2,13 @@
 
 Updated: 2026-10-06
 
-## Current continuation pointer (Slice 263)
+## Current continuation pointer (Slice 264)
+
+The REQ-29 source audit confirms that `workspace_root` is metadata only, Group membership/shared-root authorization are absent, and snapshot revocation blocks new direct reads without releasing immutable CAS references. Generic orphan collection does not enforce retention, and revoked/corrupt snapshots still count toward the 32-row Task cap. No safe independent implementation can be chosen before owner decisions on root authorization, sharing, writer revocation, and retention plus a qualified native host. The recommended first vertical slice is a read-only Company-root binding on one qualified host with OS-authorized handles, bounded traversal, and digest-pinned snapshots. No code/schema or scenario changed. No tests, DB, Worker, provider, host mount, or frozen scenario ran. See `docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md` and `evidence/development/r1-r3-implementation-validation-20261006-req29-local-audit/verification.md`.
+
+Source remains Schema 110 and runtime remains Schema 108; no migration has been applied.
+
+## Previous continuation pointer (Slice 263)
 
 CSV input now has bounded parsing and a revision/manifest/source-digest-bound table summary. An authenticated backend row-range reader checks the active DB-bound WorkerSession and exact current Task source, caps results by rows and bytes, and audits metadata without cell contents. The tool is isolated to unqualified fake `polis-product-tool-surface@13`; real provider `@4` remains unchanged. PDF raster/image receipts, the full R2 format matrix and runtime/provider qualification, approved fixtures, and authorized active-Worker delivery remain open. Go build, migration hash validation for all 110 migrations, and diff check passed; no tests, DB, Worker, provider, or scenario ran. REQ-35 remains partial; 18 software requirements remain open and all 232 scenarios remain `not_run`. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md.
 

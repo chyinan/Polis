@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-06)
 
-## Latest continuation status (Slice 263, REQ-35 CSV table summary and row ranges)
+## Latest continuation status (Slice 264, REQ-29 host-root and retention audit)
+
+The source audit confirms `companies.workspace_root` is metadata only, Group identity/membership and Company shared-root authorization do not exist, and snapshot revocation does not release immutable CAS references. Generic orphan collection is not a retention policy; revoked/corrupt snapshots continue to count against the 32-row Task bound. No safe owner-independent implementation slice exists until root authorization, sharing, revocation, and retention semantics are decided. After those decisions, the recommended narrow start is an OS-authorized, read-only Company-root binding on one qualified host with handle-based bounded traversal and digest-pinned snapshots. No code or schema changed. No tests, DB, Worker/provider action, host mount, or scenario ran. REQ-29 remains partial; all 232 scenario executions remain `not_run`. Evidence: `docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md` and `evidence/development/r1-r3-implementation-validation-20261006-req29-local-audit/verification.md`.
+
+## Previous continuation status (Slice 263, REQ-35 CSV table summary and row ranges)
 
 CSV input now has bounded parsing and a revision/manifest/source-digest-bound table summary. An authenticated backend row-range reader checks the current Task manifest and exact source, caps responses by rows and bytes, and audits only metadata. The tool is available only in unqualified fake `polis-product-tool-surface@13`; the real provider `@4` surface is unchanged. PDF raster/image receipts, full R2 format/provider/runtime qualification, approved fixtures, and authorized active-Worker delivery remain open. `go build ./...`, migration-hash validation through Schema 110, and `git diff --check` passed. No tests, DB, Worker, provider action, or scenario ran. REQ-35 remains partial; 18 requirements remain open and all 232 scenario executions remain `not_run`. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md.
 
@@ -65,7 +69,7 @@ Provider terminal telemetry now records the count of observed Codex thread/token
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice264: continue the local PDF raster/typed-image-receipt and REQ-29 host/shared-root/retention audits; take only independently safe local source slices and keep owner policy, host access, and runtime qualification gates explicit. Preserve the local Schema 108 database while source is Schema 110; do not apply migrations without the required gate. Keep every frozen scenario `not_run` unless separately authorized and executed.
+Next Slice265: finish the independent PDF and remaining-requirement source audits, then implement only code paths whose contracts and host boundaries are already defined. REQ-29 host roots/shared visibility/retention require owner policy; REQ-02 semantic task mapping and REQ-13 quota recovery require their missing approved contracts. Preserve the local Schema 108 database while source is Schema 110; do not apply migrations without the required gate. Keep every frozen scenario `not_run` unless separately authorized and executed.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 
