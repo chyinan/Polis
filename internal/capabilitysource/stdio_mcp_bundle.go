@@ -180,6 +180,9 @@ func strictMCPJSON(data []byte, target any) error {
 	if !utf8.Valid(data) {
 		return errors.New("manifest is not valid UTF-8")
 	}
+	if err := validateStdioMCPManifestFieldNames(data); err != nil {
+		return err
+	}
 	if err := rejectDuplicateMCPJSONKeys(data); err != nil {
 		return err
 	}
@@ -191,6 +194,23 @@ func strictMCPJSON(data []byte, target any) error {
 	var trailing any
 	if err := decoder.Decode(&trailing); !errors.Is(err, io.EOF) {
 		return errors.New("manifest contains trailing JSON data")
+	}
+	return nil
+}
+
+func validateStdioMCPManifestFieldNames(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil || fields == nil {
+		return errors.New("manifest must be a JSON object")
+	}
+	allowed := map[string]struct{}{
+		"schemaVersion": {}, "name": {}, "serverName": {}, "serverVersion": {},
+		"command": {}, "entryPoint": {}, "args": {},
+	}
+	for key := range fields {
+		if _, ok := allowed[key]; !ok {
+			return errors.New("manifest contains an unknown or non-canonical field")
+		}
 	}
 	return nil
 }
