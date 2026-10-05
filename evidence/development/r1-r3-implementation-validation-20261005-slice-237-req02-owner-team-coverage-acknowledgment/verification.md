@@ -13,6 +13,7 @@ Canonical matrix SHA-256: `8dcd1c20d7b0db14e77b85ff5d4379b2cd8829f24bfd70383a7c2
 - `go build ./...` and `go build -o .runtime/bin/polis ./cmd/polis` passed.
 - `npm run build` in `frontend/` passed (`tsc -b` and Vite production build). Vite reports the existing large-chunk advisory (886.33 kB minified JS).
 - `git diff --check` passed.
+- GitHub push integration published Slice236 (`56b69a51ea93b7226056bcb508912453365b9690`) and Slice237 (`576ebb7476da17e1e6bcdfdb2dd57443c601beab`) as separate commits on `main`; local and remote refs were then aligned.
 - The rebuilt deterministic backend was restarted and returned `{"service":"polis_backend","status":"ready","version":"r0.7"}`; the Vite development frontend returned HTTP 200.
 - Read-only local PostgreSQL transaction returned Schema 108 applied, 0 Companies, 0 Missions, and 0 active WorkerSessions; transaction ended with `ROLLBACK`.
 - The seven mapped REQ-02 scenario rows link this evidence and remain `partial/not_run`; all 232 frozen scenarios remain `not_run`.
