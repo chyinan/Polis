@@ -416,31 +416,8 @@ func (k *Kernel) WriteProductWorkspaceFile(ctx context.Context, binding Binding,
 		if checkErr != nil {
 			return Receipt{}, checkErr
 		}
-		var count int
-		var total int64
-		if checkErr = tx.QueryRow(ctx, `SELECT count(*),COALESCE(sum(bytes),0) FROM worker_workspace_files WHERE company_id=$1 AND workspace_id=$2`, binding.scope.company, rootID).Scan(&count, &total); checkErr != nil {
+		if checkErr = validateWorkspaceTreeFileWriteTX(ctx, tx, binding.scope.company, rootID, path, int64(len(content))); checkErr != nil {
 			return Receipt{}, checkErr
-		}
-		var oldBytes int64
-		checkErr = tx.QueryRow(ctx, `SELECT bytes FROM worker_workspace_files WHERE company_id=$1 AND workspace_id=$2 AND relative_path=$3`, binding.scope.company, rootID, path).Scan(&oldBytes)
-		if checkErr != nil && !errors.Is(checkErr, pgx.ErrNoRows) {
-			return Receipt{}, checkErr
-		}
-		if errors.Is(checkErr, pgx.ErrNoRows) {
-			if count >= workspaceTreeMaxFiles {
-				return Receipt{}, core.TooLarge
-			}
-			var conflict bool
-			if checkErr = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_workspace_files WHERE company_id=$1 AND workspace_id=$2 AND
-(left(relative_path,length($3)+1)=$3||'/' OR left($3,length(relative_path)+1)=relative_path||'/'))`, binding.scope.company, rootID, path).Scan(&conflict); checkErr != nil {
-				return Receipt{}, checkErr
-			}
-			if conflict {
-				return Receipt{}, core.Conflict
-			}
-		}
-		if total-oldBytes+int64(len(content)) > workspaceTreeMaxTotalBytes {
-			return Receipt{}, core.TooLarge
 		}
 		next := revision + 1
 		if _, checkErr = tx.Exec(ctx, `INSERT INTO worker_workspace_files(company_id,workspace_id,relative_path,digest,bytes,file_revision,source_revision,content_type)
@@ -461,6 +438,41 @@ VALUES($1,$2,$3,$4,$5,$6,$6,'text/utf-8') ON CONFLICT(company_id,workspace_id,re
 		}
 		return Receipt{ID: digest, Status: "persisted", Revision: next}, nil
 	})
+}
+
+// validateWorkspaceTreeFileWriteTX enforces the logical tree's aggregate
+// bounds and file/directory exclusivity for every writer, including the legacy
+// formatter.go compatibility path.
+func validateWorkspaceTreeFileWriteTX(ctx context.Context, tx pgx.Tx, companyID, rootID, path string, contentBytes int64) error {
+	var count int
+	var total int64
+	if err := tx.QueryRow(ctx, `SELECT count(*),COALESCE(sum(bytes),0) FROM worker_workspace_files WHERE company_id=$1 AND workspace_id=$2`, companyID, rootID).Scan(&count, &total); err != nil {
+		return err
+	}
+	var oldBytes int64
+	err := tx.QueryRow(ctx, `SELECT bytes FROM worker_workspace_files WHERE company_id=$1 AND workspace_id=$2 AND relative_path=$3`, companyID, rootID, path).Scan(&oldBytes)
+	exists := err == nil
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		return err
+	}
+	if count > workspaceTreeMaxFiles {
+		return core.Integrity
+	}
+	if !exists && count >= workspaceTreeMaxFiles {
+		return core.TooLarge
+	}
+	var conflict bool
+	if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_workspace_files WHERE company_id=$1 AND workspace_id=$2 AND relative_path<>$3 AND
+(left(relative_path,length($3)+1)=$3||'/' OR left($3,length(relative_path)+1)=relative_path||'/'))`, companyID, rootID, path).Scan(&conflict); err != nil {
+		return err
+	}
+	if conflict {
+		return core.Conflict
+	}
+	if total-oldBytes+contentBytes > workspaceTreeMaxTotalBytes {
+		return core.TooLarge
+	}
+	return nil
 }
 
 func (k *Kernel) DeleteProductWorkspaceFile(ctx context.Context, binding Binding, key, path string, expectedRevision int64) (Receipt, error) {

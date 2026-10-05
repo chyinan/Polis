@@ -1226,6 +1226,28 @@ func (k *Kernel) txReplace(ctx context.Context, b Binding, key, expected string,
 				return Receipt{}, stateErr
 			}
 		}
+		var rootID string
+		var rootRevision int64
+		rootExists := false
+		if requireRevision {
+			treeErr := tx.QueryRow(ctx, `SELECT id,revision FROM worker_workspace_roots WHERE company_id=$1 AND task_id=$2 FOR UPDATE`, b.scope.company, b.task).Scan(&rootID, &rootRevision)
+			if treeErr == nil {
+				var writerSession string
+				var writerEpoch int64
+				if treeErr = tx.QueryRow(ctx, `SELECT writer_session_id,writer_epoch FROM worker_workspace_roots WHERE company_id=$1 AND id=$2`, b.scope.company, rootID).Scan(&writerSession, &writerEpoch); treeErr != nil {
+					return Receipt{}, treeErr
+				}
+				if writerSession != b.session || writerEpoch != b.epoch {
+					return Receipt{}, core.StaleEpoch
+				}
+				if treeErr = validateWorkspaceTreeFileWriteTX(ctx, tx, b.scope.company, rootID, "formatter.go", int64(len(content))); treeErr != nil {
+					return Receipt{}, treeErr
+				}
+				rootExists = true
+			} else if !errors.Is(treeErr, pgx.ErrNoRows) {
+				return Receipt{}, treeErr
+			}
+		}
 		var nextRevision int64
 		var tag pgx.Row
 		if requireRevision {
@@ -1244,28 +1266,13 @@ AND s.company_id=$1 AND s.id=$2 AND w.digest=$4 RETURNING w.revision`, b.scope.c
 			}
 			return Receipt{}, e
 		}
-		if requireRevision {
-			var rootID string
-			var rootRevision int64
-			treeErr := tx.QueryRow(ctx, `SELECT id,revision FROM worker_workspace_roots WHERE company_id=$1 AND task_id=$2 FOR UPDATE`, b.scope.company, b.task).Scan(&rootID, &rootRevision)
-			if treeErr == nil {
-				var writerSession string
-				var writerEpoch int64
-				if treeErr = tx.QueryRow(ctx, `SELECT writer_session_id,writer_epoch FROM worker_workspace_roots WHERE company_id=$1 AND id=$2`, b.scope.company, rootID).Scan(&writerSession, &writerEpoch); treeErr != nil {
-					return Receipt{}, treeErr
-				}
-				if writerSession != b.session || writerEpoch != b.epoch {
-					return Receipt{}, core.StaleEpoch
-				}
-				nextTreeRevision := rootRevision + 1
-				if _, treeErr = tx.Exec(ctx, `INSERT INTO worker_workspace_files(company_id,workspace_id,relative_path,digest,bytes,file_revision,source_revision,content_type)
+		if rootExists {
+			nextTreeRevision := rootRevision + 1
+			if _, treeErr := tx.Exec(ctx, `INSERT INTO worker_workspace_files(company_id,workspace_id,relative_path,digest,bytes,file_revision,source_revision,content_type)
 VALUES($1,$2,'formatter.go',$3,$4,$5,$5,'text/utf-8') ON CONFLICT(company_id,workspace_id,relative_path) DO UPDATE SET digest=EXCLUDED.digest,bytes=EXCLUDED.bytes,file_revision=EXCLUDED.file_revision,source_revision=EXCLUDED.source_revision`, b.scope.company, rootID, digest, len(content), nextTreeRevision); treeErr != nil {
-					return Receipt{}, treeErr
-				}
-				if _, treeErr = tx.Exec(ctx, `UPDATE worker_workspace_roots SET revision=$3 WHERE company_id=$1 AND id=$2 AND revision=$4`, b.scope.company, rootID, nextTreeRevision, rootRevision); treeErr != nil {
-					return Receipt{}, treeErr
-				}
-			} else if !errors.Is(treeErr, pgx.ErrNoRows) {
+				return Receipt{}, treeErr
+			}
+			if _, treeErr := tx.Exec(ctx, `UPDATE worker_workspace_roots SET revision=$3 WHERE company_id=$1 AND id=$2 AND revision=$4`, b.scope.company, rootID, nextTreeRevision, rootRevision); treeErr != nil {
 				return Receipt{}, treeErr
 			}
 		}
