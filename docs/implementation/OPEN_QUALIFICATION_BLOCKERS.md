@@ -1,13 +1,13 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 240. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 241. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base: local and remote `main` at `ccafcc11d3d5cc2f63b8d0f7faa0ee02db93d001` (Slice 239, immediately before Slice240).
-- Runtime: Android/Termux (`uname` reports Android; Node platform is `android`). `pwsh`, `powershell`, `bwrap`, and `systemd-run` are not installed in this environment.
-- Read-only local database query during Slice239: Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions.
-- The traceability ledger lists 17 open software requirements. All 232 frozen scenario rows currently have `executionStatus: not_run`.
+- Audit base: local and remote `main` at `09fec756ec93583f6065488ed700c35dd6718154` (Slice240 publication-pointer synchronization; includes implementation commit `b592aa4f839058e53663dac8315a96bb32c0ff2d`). Slice240 itself started at `ccafcc11d3d5cc2f63b8d0f7faa0ee02db93d001`.
+- Most recent recorded host observation: Android/Termux (`uname` reported Android; Node platform was `android`); `pwsh`, `powershell`, `bwrap`, and `systemd-run` were absent in the Slice235 audit. This is a recorded observation, not a fresh Slice241 host probe.
+- Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slice240 changed only the frontend and handoff records, so it did not refresh the database observation; this remains the latest recorded DB evidence, not a new Slice241 query.
+- The checked-in traceability ledger lists 17 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
 
 These facts rule out session-backed execution in the current database and native Windows or delegated Linux qualification here. They do not prove that external accounts, certificates, or hosts do not exist elsewhere; none has been provided or connected for these product qualification tasks in this checkout.
 

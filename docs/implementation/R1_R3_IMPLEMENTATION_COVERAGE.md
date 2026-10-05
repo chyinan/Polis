@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 240. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 241. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 241: qualification handoff audit anchor
+
+Corrected the audit base and observation dates in `OPEN_QUALIFICATION_BLOCKERS.md`: the current published handoff head is Slice240 pointer synchronization `09fec756ec93583f6065488ed700c35dd6718154`, while the latest recorded host and database observations remain from Slices235 and 239. This prevents the old Slice239 implementation base from being mistaken for the current source and avoids presenting earlier environment observations as fresh. The 17 open requirements and all 232 `not_run` scenarios are unchanged. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-241-handoff-audit/verification.md`.
 
 ## Slice 240: fixed-role company setup UI
 
@@ -633,7 +637,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work (reconciled through Slice 240)
+## Finite remaining work (reconciled through Slice 241)
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Slice summaries above supersede earlier checkpoint details. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 

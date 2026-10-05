@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 240, fixed-role company setup UI)
+## Latest continuation status (Slice 241, qualification handoff audit anchor)
+
+Corrected `OPEN_QUALIFICATION_BLOCKERS.md` to use the current published Slice240 handoff head (`09fec756ec93583f6065488ed700c35dd6718154`) and to label its host and database facts by their actual observation slices. The blocker ledger still lists 17 open software requirements and the 232 frozen scenarios as `not_run`; no qualification gate or scope changed. JSON parsing/count and `git diff --check` pass. No tests, database access, Worker/provider operation, host qualification, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-241-handoff-audit/verification.md`.
+
+Next Slice242: continue auditing for a concrete approved local implementation gap; keep recorded external/runtime observations dated and keep all qualification gates open until matching evidence exists.
+
+## Previous continuation status (Slice 240, fixed-role company setup UI)
 
 The New Company wizard now displays each canonical fixed role as read-only and explains that the role belongs to its logical Employee ID. The final review also lists each ID-to-role pair beside the task coverage draft, so the owner can see the actual fixed assignment before acknowledging it. Display names and model profiles remain editable. The frontend production build and `git diff --check` pass; the build retains the existing large-chunk advisory. The local Vite frontend returns HTTP 200. No tests, Company creation, owner acknowledgment, database writes, Worker/provider operations, or frozen scenarios ran. The new evidence is linked to the seven REQ-02 rows and UI-01; all dispositions and all 232 `not_run` statuses are unchanged. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md`.
 
-Next Slice241: continue auditing the approved finite ledger for another concrete local implementation gap while preserving owner, host, account, active-session, and scenario qualification gates. Worker activity still requires a current database read confirming an already-active WorkerSession; do not create or start one.
+Slice241 updates the qualification blocker audit anchor; see the latest continuation status above.
 
 ## Previous continuation status (Slice 239, REQ-02 fixed roles from creation)
 

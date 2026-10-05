@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 241 — qualification handoff audit anchor
+
+Corrected the qualification blocker handoff's stale audit base to the current Slice240 publication-pointer head and identified the actual observation slices for host/database facts. The traceability ledger still lists 17 open software requirements and 232 scenarios, all `not_run`. JSON parsing/count and `git diff --check` pass. No tests, DB access, Worker/provider operation, host qualification or frozen scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-241-handoff-audit/verification.md`.
+
 ## Slice 240 — fixed-role company setup UI
 
 The New Company wizard now shows canonical roles as read-only values bound to fixed Employee IDs and lists each ID-to-role pair in final review. Display names and model profiles remain editable. Frontend production build and `git diff --check` pass; the existing large-chunk warning remains. No tests, company creation, owner acknowledgment, database write, Worker/provider operation or scenario ran. UI-01 and the seven REQ-02 rows cite the evidence while all scenario statuses remain `not_run`. See `evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md`.
