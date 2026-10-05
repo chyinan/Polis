@@ -609,49 +609,14 @@ func (s *Service) GetProjectJobLogs(ctx context.Context, companyID, jobID string
 }
 
 func (s *Service) CreateProjectJobBrowserSession(ctx context.Context, companyID, jobID string, request CreateProjectJobBrowserSessionRequest) (ServiceBrowserSession, error) {
-	if !core.ValidID(companyID) || !core.ValidID(jobID) || validateRequestID(request.RequestID) != nil {
-		return ServiceBrowserSession{}, core.Malformed
+	_ = ctx
+	_ = companyID
+	_ = jobID
+	_ = request
+	return ServiceBrowserSession{}, core.ConflictError{
+		Reason:       "live service preview requires a qualified isolated browser profile and control-network boundary",
+		CurrentState: "browser_preview_unqualified",
 	}
-	s.projectJobsMu.Lock()
-	active := s.projectJobs[jobID]
-	s.projectJobsMu.Unlock()
-	if active == nil || active.companyID != companyID || active.service == nil || active.process == nil {
-		return ServiceBrowserSession{}, core.Denied
-	}
-	active.stopMu.Lock()
-	defer active.stopMu.Unlock()
-	s.projectJobsMu.Lock()
-	shuttingDown := s.projectJobsClosed || s.projectJobs[jobID] != active
-	s.projectJobsMu.Unlock()
-	if shuttingDown {
-		return ServiceBrowserSession{}, core.ConflictError{Reason: "service browser access is unavailable while the JobRun is closing", CurrentState: string(environment.JobOutcomeUnknown)}
-	}
-	job, err := s.runtime.GetJobRun(ctx, companyID, jobID)
-	if err != nil {
-		return ServiceBrowserSession{}, err
-	}
-	if job.Kind != "service" || job.State != string(environment.JobRunning) || job.Readiness != environment.ServiceReady {
-		return ServiceBrowserSession{}, core.ConflictError{Reason: "service browser access requires a running, ready service JobRun", CurrentState: job.State + "/" + job.Readiness}
-	}
-	service := active.service
-	select {
-	case <-service.ready:
-	default:
-		return ServiceBrowserSession{}, core.ConflictError{Reason: "service endpoint readiness has not been confirmed", CurrentState: environment.ServiceNotReady}
-	}
-	service.mu.Lock()
-	defer service.mu.Unlock()
-	if service.failureReason != "" || service.stopUnconfirmed || !service.endpointRecorded {
-		return ServiceBrowserSession{}, core.ConflictError{Reason: "service endpoint is not available for browser access", CurrentState: environment.ServiceUnhealthy}
-	}
-	if service.browserIngress == nil {
-		ingress, ingressErr := NewServiceBrowserIngress(active.process.PID(), service.definition.Probe, service.verifier)
-		if ingressErr != nil {
-			return ServiceBrowserSession{}, errors.Join(core.Denied, ingressErr)
-		}
-		service.browserIngress = ingress
-	}
-	return service.browserIngress.CreateSession(request.RequestID)
 }
 
 func (s *Service) beginProjectJobCommand() (context.Context, func(), ProjectJobExecutor, error) {

@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"polis/internal/environment"
+	"polis/internal/installationauth"
 )
 
 const (
@@ -74,9 +75,9 @@ func NewServiceBrowserIngress(processID int, spec environment.ServiceProbeSpec, 
 	if err := owner.VerifyServiceEndpointOwner(context.Background(), processID, spec.BindAddress, spec.Port); err != nil {
 		return nil, errors.Join(environment.ErrServiceEndpointOwnerUnverified, err)
 	}
-	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	listener, err := listenServiceBrowserLoopback()
 	if err != nil {
-		return nil, errors.New("could not bind the service browser ingress to IPv4 loopback")
+		return nil, errors.New("could not bind the service browser ingress to an isolated IPv4 loopback address")
 	}
 	listenerAddress, ok := listener.Addr().(*net.TCPAddr)
 	if !ok || !listenerAddress.IP.IsLoopback() || listenerAddress.Port < 1 || listenerAddress.Port > 65535 {
@@ -222,6 +223,7 @@ func (ingress *ServiceBrowserIngress) ServeHTTP(response http.ResponseWriter, re
 	request.Header.Del("X-Forwarded-Proto")
 	request.Header.Del("Proxy-Authorization")
 	request.Header.Del("Proxy-Connection")
+	request.Header.Del(installationauth.OwnerCSRFHeaderName)
 	stripServiceBrowserCookie(request, ingress.cookieName)
 	proxyContext, cancel := context.WithTimeout(request.Context(), serviceBrowserMaxRequestDuration)
 	defer cancel()
@@ -320,6 +322,7 @@ func (ingress *ServiceBrowserIngress) newPinnedProxy(connectionOwner environment
 			request.Header.Del("X-Forwarded-For")
 			request.Header.Del("X-Forwarded-Host")
 			request.Header.Del("X-Forwarded-Proto")
+			request.Header.Del(installationauth.OwnerCSRFHeaderName)
 			stripServiceBrowserCookie(request, ingress.cookieName)
 		},
 		ModifyResponse: func(response *http.Response) error {
@@ -349,7 +352,7 @@ func (ingress *ServiceBrowserIngress) newPinnedProxy(connectionOwner environment
 			cookies := response.Header.Values("Set-Cookie")
 			response.Header.Del("Set-Cookie")
 			for _, value := range cookies {
-				if serviceCookieName(value) == ingress.cookieName {
+				if isProtectedServiceBrowserCookie(serviceCookieName(value), ingress.cookieName) {
 					continue
 				}
 				response.Header.Add("Set-Cookie", stripCookieDomain(value))
@@ -493,7 +496,7 @@ func stripServiceBrowserCookie(request *http.Request, cookieName string) {
 	}
 	forwarded := make([]string, 0, len(cookies))
 	for _, cookie := range cookies {
-		if cookie.Name == cookieName {
+		if isProtectedServiceBrowserCookie(cookie.Name, cookieName) {
 			continue
 		}
 		forwarded = append(forwarded, cookie.Name+"="+cookie.Value)
@@ -503,6 +506,32 @@ func stripServiceBrowserCookie(request *http.Request, cookieName string) {
 		return
 	}
 	request.Header.Set("Cookie", strings.Join(forwarded, "; "))
+}
+
+func isProtectedServiceBrowserCookie(name, ingressCookieName string) bool {
+	return name == ingressCookieName || name == installationauth.OwnerSessionCookieName || name == installationauth.OwnerCSRFCookieName
+}
+
+func listenServiceBrowserLoopback() (net.Listener, error) {
+	for attempt := 0; attempt < 16; attempt++ {
+		nonce, _, err := newServiceBrowserSecret()
+		if err != nil {
+			return nil, err
+		}
+		addressBytes, err := hex.DecodeString(nonce[:6])
+		if err != nil || len(addressBytes) != 3 {
+			return nil, errors.New("could not create an isolated service browser address")
+		}
+		if addressBytes[2] == 0 || addressBytes[2] == 255 || addressBytes[0] == 0 && addressBytes[1] == 0 && addressBytes[2] == 1 {
+			continue
+		}
+		address := net.JoinHostPort(net.IPv4(127, addressBytes[0], addressBytes[1], addressBytes[2]).String(), "0")
+		listener, err := net.Listen("tcp4", address)
+		if err == nil {
+			return listener, nil
+		}
+	}
+	return nil, errors.New("could not reserve a randomized isolated IPv4 loopback address")
 }
 
 func serviceCookieName(value string) string {

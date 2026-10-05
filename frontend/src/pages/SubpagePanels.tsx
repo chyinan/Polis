@@ -6,8 +6,7 @@ import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, Emplo
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES} from '../data/workbench-api';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useArtifactDeliveryManifest, useArtifactDetail, useCreateProjectJobBrowserSession, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
-import type {ServiceBrowserSessionView} from '../domain/workbench';
+import {useArtifactDeliveryManifest, useArtifactDetail, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
 import {formatEntityId} from '../domain/activity-presentation';
 import {labelDisplayValue, labelProjectEnvironmentPolicy, labelRole} from '../domain/display-labels';
 import {selectCheckpointForTask} from '../domain/checkpoint-projection';
@@ -327,7 +326,6 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const crossBackendHandoversQuery = useTaskCrossBackendHandovers(api, companyId, task?.taskId ?? null, tab === 'jobs');
   const startProjectJob = useStartTaskJobRun(api);
   const stopProjectJob = useStopTaskJobRun(api);
-  const createServiceBrowserSession = useCreateProjectJobBrowserSession(api);
   const createCrossBackendHandover = useCreateTaskEnvironmentHandover(api);
   const [jobScriptPath, setJobScriptPath] = useState('scripts/build.mjs');
   const [jobArguments, setJobArguments] = useState('');
@@ -337,7 +335,6 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const [handoverTargetRevisionID, setHandoverTargetRevisionID] = useState('');
   const [jobActionMessage, setJobActionMessage] = useState<string | null>(null);
   const [jobActionError, setJobActionError] = useState<string | null>(null);
-  const [serviceBrowserSession, setServiceBrowserSession] = useState<Readonly<{jobId: string; session: ServiceBrowserSessionView}> | null>(null);
   const pendingJobRequestIds = useRef(new Map<string, string>());
   const jobLogsQuery = useTaskJobLogs(api, companyId, selectedJobLogId, tab === 'jobs');
   const environmentPolicy = useDecideProjectEnvironmentPolicy(api, companyId);
@@ -356,7 +353,6 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const pendingEnvironmentPolicy = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   const pendingEnvironmentQualification = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   const pendingEnvironmentPreparation = useRef(new Map<string, string>());
-  const pendingServiceBrowserSession = useRef<Readonly<{jobId: string; requestId: string}> | null>(null);
   if (task === null) return <section className={styles.sectionCard}><EmptyPanel detail="当前快照没有可选任务对象。" title="暂无任务详情" /></section>;
   const downloadArtifact = async () => {
     setDownloadingArtifact(true);
@@ -544,28 +540,10 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       const pending = pendingRequestIdentity(pendingJobRequestIds.current, 'job-stop', payload);
       const receipt = await stopProjectJob.mutateAsync({...payload, requestId: pending.requestId});
       clearPendingRequestIdentity(pendingJobRequestIds.current, pending.key);
-      if (serviceBrowserSession?.jobId === jobId) setServiceBrowserSession(null);
       setJobActionMessage(`JobRun ${formatEntityId(receipt.jobId)}：${labelDisplayValue(receipt.state)}`);
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
       setJobActionError(`JobRun 停止结果尚未确认：${detail} 请先核对已刷新的 JobRun 状态，再继续。`);
-    }
-  };
-  const requestServiceBrowserSession = async (jobId: string) => {
-    setJobActionError(null);
-    setJobActionMessage(null);
-    const pending = pendingServiceBrowserSession.current?.jobId === jobId
-      ? pendingServiceBrowserSession.current
-      : {jobId, requestId: `browser-session-${crypto.randomUUID()}`};
-    pendingServiceBrowserSession.current = pending;
-    try {
-      const session = await createServiceBrowserSession.mutateAsync({companyId, jobId, requestId: pending.requestId});
-      pendingServiceBrowserSession.current = null;
-      setServiceBrowserSession({jobId, session});
-      setJobActionMessage('独立浏览器入口已生成，五分钟后过期；停止服务会立即撤销。');
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : '命令结果未知';
-      setJobActionError(`浏览会话结果尚未确认：${detail} 若 JobRun 仍可用，重试会复用原请求 ID 取回同一入口。`);
     }
   };
   const taskEvents = overview.recentActivity.filter(event => event.subject.id === task.taskId);
@@ -609,8 +587,7 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
           {jobActionMessage ? <p className={styles.formHint} role="status">{jobActionMessage}</p> : null}
           {jobActionError ? <div className={styles.errorState} role="alert">{jobActionError}</div> : null}
           {taskJobs.filter(job => job.kind === 'service' && job.state === 'running' && job.readiness === 'ready').map(job => <div className={styles.formStack} key={`browser-${job.jobId}`}>
-            <button className={styles.textButton} disabled={createServiceBrowserSession.isPending} onClick={() => { void requestServiceBrowserSession(job.jobId); }} type="button">{createServiceBrowserSession.isPending ? '正在创建入口…' : '创建独立浏览器验证入口'}</button>
-            {serviceBrowserSession?.jobId === job.jobId && Date.parse(serviceBrowserSession.session.expiresAt) > Date.now() ? <p className={styles.formHint}>仅供本机访问；有效至 {new Date(serviceBrowserSession.session.expiresAt).toLocaleTimeString()}。停止服务会立即撤销。 <a href={serviceBrowserSession.session.url} rel="noopener noreferrer" target="_blank">在浏览器中打开</a></p> : null}
+            <p className={styles.formHint} role="status">实时预览暂不可用：尚未资格认证隔离浏览器配置和控制面网络隔离。请使用静态产物/截图；预览入口不会打开当前工作台浏览器。</p>
           </div>)}
         </div>
       </article>

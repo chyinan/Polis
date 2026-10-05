@@ -31,7 +31,11 @@
     "REQ-33",
     "REQ-34",
     "REQ-35",
-    "REQ-39"
+    "REQ-36",
+    "REQ-37",
+    "REQ-38",
+    "REQ-39",
+    "REQ-40"
   ],
   "counts": {
     "CAP:partial": 32,
@@ -39,12 +43,12 @@
     "FT:implemented": 31,
     "NT:implemented": 20,
     "NT:partial": 2,
-    "PP:implemented": 2,
-    "PP:partial": 10,
-    "UI:implemented": 35,
-    "UI:partial": 13,
-    "WF:implemented": 25,
-    "WF:partial": 11
+    "PP:implemented": 1,
+    "PP:partial": 11,
+    "UI:implemented": 31,
+    "UI:partial": 17,
+    "WF:partial": 31,
+    "WF:implemented": 5
   },
   "scenarios": [
     {
@@ -2695,7 +2699,8 @@
       "implementationDisposition": "partial",
       "openRequirements": [
         "REQ-23",
-        "REQ-35"
+        "REQ-35",
+        "REQ-36"
       ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
@@ -2706,7 +2711,8 @@
         "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
         "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
         "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -2888,7 +2894,8 @@
       ],
       "implementationDisposition": "partial",
       "openRequirements": [
-        "REQ-35"
+        "REQ-35",
+        "REQ-38"
       ],
       "firstPlannedFullScenario": "R2",
       "executionStatus": "not_run",
@@ -2897,7 +2904,8 @@
         "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
         "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
         "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -2910,12 +2918,15 @@
         "REQ-28",
         "REQ-40"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-40"
+      ],
       "firstPlannedFullScenario": "R2",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3633,13 +3644,16 @@
       "requirements": [
         "REQ-36"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-36"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3649,12 +3663,15 @@
       "requirements": [
         "REQ-37"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-37"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3664,12 +3681,15 @@
       "requirements": [
         "REQ-38"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-38"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3704,12 +3724,15 @@
       "requirements": [
         "REQ-40"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-40"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3854,12 +3877,15 @@
       "requirements": [
         "REQ-36"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-36"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3869,12 +3895,15 @@
       "requirements": [
         "REQ-36"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-36"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3884,13 +3913,16 @@
       "requirements": [
         "REQ-36"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-36"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3900,12 +3932,15 @@
       "requirements": [
         "REQ-36"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-36"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3915,12 +3950,15 @@
       "requirements": [
         "REQ-36"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-36"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3930,12 +3968,15 @@
       "requirements": [
         "REQ-37"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-37"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3945,12 +3986,15 @@
       "requirements": [
         "REQ-37"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-37"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3960,12 +4004,15 @@
       "requirements": [
         "REQ-37"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-37"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3975,12 +4022,15 @@
       "requirements": [
         "REQ-37"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-37"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -3990,12 +4040,15 @@
       "requirements": [
         "REQ-37"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-37"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4005,12 +4058,15 @@
       "requirements": [
         "REQ-38"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-38"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4020,12 +4076,15 @@
       "requirements": [
         "REQ-38"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-38"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4035,12 +4094,15 @@
       "requirements": [
         "REQ-38"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-38"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4050,12 +4112,15 @@
       "requirements": [
         "REQ-38"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-38"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4065,12 +4130,15 @@
       "requirements": [
         "REQ-38"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-38"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4205,12 +4273,15 @@
       "requirements": [
         "REQ-40"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-40"
+      ],
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4220,12 +4291,15 @@
       "requirements": [
         "REQ-40"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-40"
+      ],
       "firstPlannedFullScenario": "R2",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4235,12 +4309,15 @@
       "requirements": [
         "REQ-40"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-40"
+      ],
       "firstPlannedFullScenario": "R2",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4250,12 +4327,15 @@
       "requirements": [
         "REQ-40"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-40"
+      ],
       "firstPlannedFullScenario": "R2",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4265,12 +4345,15 @@
       "requirements": [
         "REQ-40"
       ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-40"
+      ],
       "firstPlannedFullScenario": "R2",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     },
     {
@@ -4364,7 +4447,11 @@
       "implementationDisposition": "partial",
       "openRequirements": [
         "REQ-35",
-        "REQ-39"
+        "REQ-36",
+        "REQ-37",
+        "REQ-38",
+        "REQ-39",
+        "REQ-40"
       ],
       "firstPlannedFullScenario": "R2",
       "executionStatus": "not_run",
@@ -4381,7 +4468,8 @@
         "evidence/development/r1-r3-implementation-validation-20261006-slice-263-req35-csv-table-range/verification.md",
         "docs/implementation/R2_PDF_INPUT_FOUNDATION.md",
         "evidence/development/r1-r3-implementation-validation-20261006-slice-265-req35-pdf-embedded-images/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
       ]
     }
   ]

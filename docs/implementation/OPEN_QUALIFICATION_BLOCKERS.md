@@ -1,15 +1,15 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-06, after the Slice268 final audit. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-06, after Slice269 source-to-spec reconciliation. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Slices267–268 are source-only and add no migration; the last recorded local runtime/database observation remains Schema108. The final Slice268 source audit found no owner- and environment-independent safe code slice; see evidence/development/r1-r3-implementation-validation-20261006-slice-268-final-local-audit/verification.md.
+- Slice269 is source-only and adds no migration; the last recorded local runtime/database observation remains Schema108. A re-audit found four omissions from the software ledger (REQ-36/37/38/40) and corrected their crosswalk dispositions; see evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md.
 
 - Audit base for Slice266: published source commit `53dd3b2b560e3c6cf487ba112728a073e111c9a3` (Schema 110); the HTTP duplicate-key change is source-only and does not affect the last recorded database observation. Schema 110 is the latest migration source; the last recorded local runtime/database observation remains Slice257 at Schema 108, with no Company/Mission/WorkerSession/JobRun events. Schemas 109–110 have not been applied.
 - Most recent recorded host observation: Android/Termux (`uname` reported Android; Node platform was `android`); `pwsh`, `powershell`, `bwrap`, and `systemd-run` were absent in the Slice235 audit. This is a recorded observation, not a fresh Slice241 host probe.
 - Most recent recorded database observation: Slice257 read-only PostgreSQL 18.6 transaction confirmed Goose Schema 108, 0 Companies, 0 Missions, 0 WorkerSessions, and no JobRun events; the transaction rolled back.
-- The checked-in traceability ledger lists 18 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
+- The checked-in traceability ledger lists 22 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
 
 These facts rule out session-backed execution in the current database and native Windows or delegated Linux qualification here. They do not prove that external accounts, certificates, or hosts do not exist elsewhere; none has been provided or connected for these product qualification tasks in this checkout.
 
@@ -34,6 +34,10 @@ These facts rule out session-backed execution in the current database and native
 | REQ-33 | Truthful capability metadata is implemented; live execution remains unavailable pending runtime qualification. | Qualified host/provider for the exact capability surface plus owner-approved qualification evidence. |
 | REQ-34 | Governance records and dispatch fences exist; stdio MCP package intake enforces exact manifest key names, and typed stdio/Streamable HTTP JSON/SSE MCP boundaries reject recursive duplicate keys and case-variant aliases. JSON-RPC outcomes require exactly one result or non-null error; arbitrary maps and schemas retain case-sensitive keys. Real-provider execution and exact dispatch-surface qualification remain open. | Qualified provider/host, owner authorization, and active-session evidence for each exposed dispatch surface. |
 | REQ-35 | Slice263 adds bounded CSV summaries and authenticated, capped row-range reads; its tool exists only on unqualified fake `@13`, while real provider `@4` remains unchanged. Slices265/267 add bounded embedded PDF image inputs; Slice267 rejects incomplete samples, stencil masks, and unverified codecs, marks parser omissions, and records intrinsic-image appearance caveats. It does not render or composite full pages, vector text, or backgrounds. Full R2 format/runtime/provider qualification, approved fixtures, and authorized active-Worker delivery remain open. | After renderer/runtime compatibility and an image-capable profile are qualified, complete bounded page rendering and typed image qualification; obtain approved fixtures and separately authorize the R2 matrix and active-Worker delivery. |
+| REQ-36 | Worker-facing `environment.status/ensure` plus DependencyChange approval and generation of a new lockfile/environment revision are missing. The existing Workbench owner flow cannot stand in for Worker operations. | Owner-defined source/license/script/size/network envelope for autonomous dependency changes; out-of-envelope decisions must block. Then qualify Node/npm/WFP and host behavior. |
+| REQ-37 | Product Workers lack `jobs.start/status/logs/stop`, and the service endpoint lease has no consumer-bound BorrowerLease lifecycle. | Owner-selected peer access scope, permitted consumers, maximum TTL and idle policy; then exact service-generation and native host/restart qualification. |
+| REQ-38 | Search/fetch and persisted BrowserRun operation/evidence are absent. The preview cookie leak is mitigated, but isolated-profile and control-network denial are not qualified. | Owner-approved target URLs, test identity/data and egress policy; isolated Playwright/Chromium host/profile with redirect/subresource/download/WebSocket controls and no management access. |
+| REQ-40 | ZIP is generated from a single Artifact on read; durable DeliveryManifest revisions and separate UserDisposition are absent. | Implement the durable R1 lifecycle; owner selects mission acceptance/feedback deadline policy and provides export/license/source dispositions. |
 | REQ-39 | Planning assessment and owner review fences are implemented; session-backed and frozen-scenario qualification remain open. | An already-active `emp-planning` WorkerSession confirmed in the database, plus authorized execution of the eight mapped REQ-39 scenarios. |
 
 ## Shared host and authorization gates
@@ -44,7 +48,7 @@ These facts rule out session-backed execution in the current database and native
 - **Worker actions:** do not create or start a Worker to satisfy the qualification prerequisites. Proceed only after a current read confirms an already-active WorkerSession; the Slice257 database read reports zero.
 - **Frozen scenarios and R3 evidence:** all scenario execution remains `not_run`. Scenario runs, real domain outcomes, and organization-benefit evidence require their own authorization, data, and qualified environment.
 
-The Slice268 final local audit found no safe owner- and environment-independent source slice among the open requirements. Re-audit if new source evidence identifies a concrete gap; otherwise, continue only when the owner, host, provider/account, active-session, fixture, or scenario gates above are met. Do not infer completion from these prerequisites being documented; keep the requirement and scenario dispositions open until their evidence exists.
+Slice269 supersedes the Slice268 no-further-code-slice claim: source review confirmed local implementation work for REQ-36/37/38/40. Continue those software slices while keeping owner choices, host/provider/account inputs, active-session requirements, fixtures, and scenario gates separate. Do not infer completion from these prerequisites being documented; keep the requirement and scenario dispositions open until their evidence exists.
 
 ## Repository push status
 
