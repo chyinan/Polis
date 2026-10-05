@@ -838,7 +838,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {
@@ -1373,7 +1374,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {
@@ -1391,7 +1393,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {
@@ -1409,7 +1412,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {
@@ -1427,7 +1431,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {
@@ -2098,7 +2103,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {
@@ -2624,7 +2630,8 @@
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {
@@ -2654,7 +2661,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-229-req39-planning-assessment/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md"
       ]
     },
     {

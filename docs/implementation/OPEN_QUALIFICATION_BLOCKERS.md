@@ -1,12 +1,12 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 248. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 249. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base for Slice248: published Slice248 implementation commit 4ab1cd4fd01f7149a5e406b0c561367702b89906. Slices242–248 changed source/handoff records only; the host and database observations below were not refreshed.
+- Audit base for Slice249: published Slice249 implementation commit 93b8cb73c1f54dc8a132ff703f820b83ac11e13a. Slices242–249 changed source/handoff records only; the host and database observations below were not refreshed.
 - Most recent recorded host observation: Android/Termux (`uname` reported Android; Node platform was `android`); `pwsh`, `powershell`, `bwrap`, and `systemd-run` were absent in the Slice235 audit. This is a recorded observation, not a fresh Slice241 host probe.
-- Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slices240–248 did not refresh the database observation; this remains the latest recorded evidence, not a fresh query.
+- Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slices240–249 did not refresh the database observation; this remains the latest recorded evidence, not a fresh query.
 - The checked-in traceability ledger lists 17 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
 
 These facts rule out session-backed execution in the current database and native Windows or delegated Linux qualification here. They do not prove that external accounts, certificates, or hosts do not exist elsewhere; none has been provided or connected for these product qualification tasks in this checkout.
@@ -19,7 +19,7 @@ These facts rule out session-backed execution in the current database and native
 | REQ-13 | The Company-ID cursor now matches candidate ordering, preserving cross-Company fairness across wraparound; the Fake-only dispatcher retains per-Task claims. No owner-backed global slot cap or authoritative quota-ready/release source exists. | Owner decision for the installation-wide cap and a trusted provider quota signal/account source. |
 | REQ-14 | Rebinding after revoke now requires all current Employee sessions stopped and, for MCP capabilities, no dispatching calls. Incomplete legacy inventories additionally require the exact existing acknowledged_unresolved owner review; it does not prove quiescence. Host stop/restart qualification remains open. | Owner review of each applicable legacy row and host-backed exact stop/recovery evidence. |
 | REQ-15 | Memory overlay writes now recheck Company-directory permissions at runtime; restore behavior still needs PostgreSQL/Desktop qualification, and corrections/revalidation still require a session-bound operator path. | A qualified Desktop/PostgreSQL restore host and an already-active, database-confirmed WorkerSession for any session-bound action. |
-| REQ-16 | ProviderAccount identity/liability, hidden retries, and token/money accounting lack a trusted billing scope. | Owner-confirmed billing mode and liable account identity, provider accounting evidence, and exact retry/charge qualification. |
+| REQ-16 | Token telemetry now distinguishes protocol usage updates from missing observation; no dollar amount or account liability is inferred. ProviderAccount liability, hidden retries, and token/money accounting still lack a trusted billing scope. | Owner-confirmed billing mode and liable account identity, provider accounting evidence, and exact retry/charge qualification. |
 | REQ-23 | Durable closeout code is present; restart/recovery and FT-57–60/72 qualification remain open. | Runtime restart/recovery host with representative persisted work and separately authorized frozen-scenario execution. |
 | REQ-24 | The formal employee operation path has not been qualified against an active real or approved session. | An already-active WorkerSession confirmed by a current database query and its qualified runtime/provider surface. |
 | REQ-25 | Owner setup is implemented, and logout/authorization invalidation now clears views across same-origin tabs; local browser/Tauri WebView and remote-browser authorization behavior remain unqualified. | Installation-owner setup decision plus supported browser/WebView qualification environments and explicit remote-access authorization. |

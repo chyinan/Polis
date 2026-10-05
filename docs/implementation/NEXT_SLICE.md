@@ -1,10 +1,15 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 248, REQ-14 capability rebind fence)
+## Latest continuation status (Slice 249, REQ-16 token usage quality)
+
+Provider terminal telemetry now records the count of observed Codex thread/tokenUsage/updated events. With no usage update it stores token_usage as null and quality as unavailable; when updates arrive it records the latest protocol-reported usage and observation scope. Missing telemetry can no longer look like confirmed zero usage. Workbench money remains unavailable; no dollar estimate, billing liability, or hidden retry count is inferred. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-16 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md.
+
+
+## Previous continuation status (Slice 248, REQ-14 capability rebind fence)
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice249: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
+Next Slice250: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 
