@@ -1,3 +1,7 @@
+## Slice 248 — REQ-14 capability rebind fence
+
+Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
+
 ## Slice 247 — REQ-27/32 successor profile continuity
 
 Product-provider successors now require the exact prior persisted model profile at both admission and pre-reservation revalidation. The first session and same-profile stopped-session path with owner-reviewed memory revalidation remain unchanged. Cross-profile succession stays denied until an owner-approved transition contract exists; E-HANDOVER thresholds, billing, provider and model qualification remain open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-27/32 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md.
