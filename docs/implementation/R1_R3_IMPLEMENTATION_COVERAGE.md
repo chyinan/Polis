@@ -1,6 +1,10 @@
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 231. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 232. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+
+## Slice 232: REQ-39 apply-time Planning assessment fence
+
+The final change-application transaction now reloads the latest Planning assessment against its current requirements/input/Task/artifact basis and requires its exact digest to match the assessment recorded at the most recent owner consideration. It also rechecks the block-previous-results gate for high or uncertain risk. Re-assessment after Mission resume invalidates the prior consideration until the owner reviews that exact receipt. Go build and rebuilt CLI pass; Schema 108 is unchanged, the local service is healthy, and there are zero WorkerSessions. No tests, Worker/provider activity or frozen scenario ran. The eight REQ-39 traceability rows cite this evidence and remain `partial/not_run`; all 232 frozen scenarios remain `not_run`. See `evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md`.
 
 ## Slice 231: REQ-39 Planning context snapshot consistency
 

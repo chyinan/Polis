@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 232 — REQ-39 apply-time Planning assessment fence
+
+Applying a considered Mission change now loads the latest Planning assessment in the same write transaction as the paused-Mission and impact checks. The assessment must remain current, match the exact SHA recorded by the latest owner consideration, and still satisfy the previous-results block rule for high or uncertain risk. A post-resume reassessment therefore requires another exact owner consideration before successor creation. `go build ./...`, rebuilt CLI, and `git diff --check` pass. Schema 108 remains current with zero WorkerSessions; no tests, Worker/provider action, or frozen scenario ran. All eight REQ-39 traceability rows cite the evidence and retain `partial/not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-232-req39-apply-assessment-fence/verification.md`.
+
 ## Slice 231 — REQ-39 Planning context snapshot consistency
 
 Planning's `mission_change_request_read` now selects the unique open request, lifecycle events, stored impact receipt and current Mission basis inside one read-only repeatable-read transaction. The tool fails with a conflict when the request's pinned requirements/input digest no longer matches, instead of returning an assessment basis that the write path will reject. `go build ./...`, rebuilt CLI, and `git diff --check` pass. The local stack remains healthy at Schema 108 with zero WorkerSessions; no tests, Worker/provider action, or frozen scenario ran. Added evidence to the eight REQ-39 traceability rows without changing their `partial/not_run` status. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-231-req39-planning-context-snapshot/verification.md`.

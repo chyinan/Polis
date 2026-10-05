@@ -290,6 +290,28 @@ func (k *Kernel) TXApplyMissionChangeRequest(ctx context.Context, scope Scope, m
 		if currentImpactDigest != storedImpactDigest || !missionChangeSafeBoundary(currentImpact) {
 			return Receipt{}, core.ConflictError{Reason: "the Mission changed after impact review; reconsider before applying", CurrentState: "impact_changed"}
 		}
+		planningAssessment, err := missionChangePlanningAssessmentForTX(ctx, tx, scope, request, currentImpact)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if planningAssessment == nil {
+			return Receipt{}, core.ConflictError{Reason: "the fixed Planning role must assess natural-language change impacts before application", CurrentState: "planning_assessment_required"}
+		}
+		if planningAssessment.Status != "current" {
+			return Receipt{}, core.ConflictError{Reason: "the Planning assessment no longer matches the current change basis", CurrentState: "planning_assessment_stale"}
+		}
+		var consideredAssessmentSHA256 string
+		if err = tx.QueryRow(ctx, `SELECT COALESCE(details->>'planning_assessment_sha256','')
+FROM mission_change_request_events WHERE company_id=$1 AND change_request_id=$2
+ORDER BY event_seq DESC LIMIT 1`, scope.company, changeRequestID).Scan(&consideredAssessmentSHA256); err != nil {
+			return Receipt{}, err
+		}
+		if !validTaskInputDigest(consideredAssessmentSHA256) || planningAssessment.AssessmentSHA256 != consideredAssessmentSHA256 {
+			return Receipt{}, core.ConflictError{Reason: "the Planning assessment changed after operator review; reconsider before applying", CurrentState: "planning_assessment_changed"}
+		}
+		if planningAssessment.RiskLevel != "low" && !request.BlockPreviousResults {
+			return Receipt{}, core.ConflictError{Reason: "high-risk or uncertain change scope requires blocking previous results", CurrentState: "previous_results_must_be_blocked"}
+		}
 		successorMissionID, revisionMap, err := k.applyMissionChangeSuccessor(ctx, tx, scope, missionID, changeRequestID, request.ProposedTitle, request.ProposedGoal, request.ProposedAcceptanceContract, currentImpact)
 		if err != nil {
 			return Receipt{}, err
