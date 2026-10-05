@@ -1,6 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-06)
 
-## Latest continuation status (Slice 257, local development runtime refresh)
+## Latest continuation status (Slice 259, REQ-02 fixed-team admission gate)
+
+WorkerSession admission now requires the latest owner confirmation to match the exact embedded fixed-team matrix, the recorded decision to be `installation_owner_confirmed_fixed_team_mapping`, qualification to remain `unverified`, and the enabled persisted employee roster to match the canonical role assignments. The check runs under the same company transaction lock before budget reservation or WorkerSession insertion. It does not define TaskKind-to-semantic-task mappings or qualify any role/provider. `go build ./...` and `git diff --check` passed; no tests, database, Worker, provider, or scenario ran. The seven REQ-02 rows remain partial/not_run, all 232 scenario executions remain `not_run`, and 17 software requirements remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md.
+
+## Previous continuation status (Slice 258, finite-work audit reconciliation)
+
+The remaining-work inventory now separates local implementation gaps from external qualification gates. It corrects REQ-39's stale Slice210 handoff status, records REQ-29 host mount/shared-root/snapshot lifecycle work, and records REQ-35 CSV bounded table reads and PDF page raster work. No source or scenario disposition changed; all scenario executions remain `not_run`. Evidence: docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md.
+
+## Previous continuation status (Slice 257, local development runtime refresh)
 
 Rebuilt `.runtime/bin/polis` from current `main` (Android arm64; embedded VCS revision matches `8ad6f84`) and gracefully restarted the local backend after a read-only check found no Companies, Missions, WorkerSessions, or JobRun events. PostgreSQL reports Schema 108; backend `/healthz` and Vite `/` both return HTTP 200. No Worker, test, provider operation, or frozen scenario ran; all 232 scenarios remain `not_run` and 17 software requirements remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-257-local-dev-refresh/verification.md.
 
