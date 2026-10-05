@@ -224,6 +224,9 @@ func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft orga
 		} else if state == "archived" {
 			return Receipt{}, core.Denied
 		}
+		if err := ensureConfirmedTeamCoverageRolesUnchangedTX(ctx, tx, draft); err != nil {
+			return Receipt{}, err
+		}
 		if _, err := tx.Exec(ctx, "UPDATE companies SET name=$2,workspace_root=$3 WHERE id=$1", draft.ID, strings.TrimSpace(draft.Name), strings.TrimSpace(draft.WorkspaceRoot)); err != nil {
 			return Receipt{}, err
 		}
@@ -235,6 +238,51 @@ WHERE company_id=$1 AND id=$2 AND enabled`, draft.ID, employee.ID, strings.TrimS
 		}
 		return Receipt{ID: draft.ID, Status: "active"}, nil
 	})
+}
+
+// ensureConfirmedTeamCoverageRolesUnchangedTX enforces the template's
+// role_changes_at_runtime=false contract after the current fixed-team matrix
+// has been acknowledged. Display names and model profiles remain editable.
+func ensureConfirmedTeamCoverageRolesUnchangedTX(ctx context.Context, tx pgx.Tx, draft organization.CompanyDraft) error {
+	var confirmationSHA256 string
+	err := tx.QueryRow(ctx, `SELECT payload->>'template_sha256' FROM events
+WHERE company_id=$1 AND kind='company.team_coverage.confirmed'
+ORDER BY company_seq DESC LIMIT 1`, draft.ID).Scan(&confirmationSHA256)
+	if errors.Is(err, pgx.ErrNoRows) || (err == nil && confirmationSHA256 != spec.FixedTeamCoverageSHA256()) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	rows, err := tx.Query(ctx, `SELECT id,role_name FROM employees WHERE company_id=$1 AND enabled ORDER BY id`, draft.ID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	roles := make(map[string]string, len(draft.Roster))
+	for rows.Next() {
+		var employeeID, role string
+		if err = rows.Scan(&employeeID, &role); err != nil {
+			return err
+		}
+		roles[employeeID] = role
+	}
+	if err = rows.Err(); err != nil {
+		return err
+	}
+	if len(roles) != len(draft.Roster) {
+		return core.Integrity
+	}
+	for _, employee := range draft.Roster {
+		role, ok := roles[employee.ID]
+		if !ok {
+			return core.Integrity
+		}
+		if strings.TrimSpace(role) != strings.TrimSpace(employee.Role) {
+			return core.Denied
+		}
+	}
+	return nil
 }
 
 // TXArchiveCompany archives an idle company without deleting its history or

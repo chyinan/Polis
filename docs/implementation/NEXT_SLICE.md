@@ -1,12 +1,18 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 237, REQ-02 owner team-coverage acknowledgment)
+## Latest continuation status (Slice 238, REQ-02 confirmed-role immutability)
+
+Company updates now enforce the fixed matrix's `role_changes_at_runtime=false` rule after an installation owner acknowledges the exact currently embedded `TEAM_COVERAGE.json` digest. In the same company-guarded transaction, the server checks the latest confirmation digest and rejects enabled-roster changes or role-name changes; display names, model profiles, Company name, and workspace path remain editable. This does not qualify a role or enable execution. `go build ./...`, the rebuilt CLI, and `git diff --check` pass. The deterministic backend returns ready and the Vite frontend returns HTTP 200. A read-only PostgreSQL transaction confirms Schema 108, zero Companies, zero Missions, and zero WorkerSessions, then rolls back. No owner acknowledgment, tests, database writes, Worker/provider operations, or frozen scenario ran. The seven REQ-02 scenario rows cite `evidence/development/r1-r3-implementation-validation-20261005-slice-238-req02-confirmed-role-immutability/verification.md` and remain `partial/not_run`; all 232 frozen scenarios remain `not_run`.
+
+Next Slice239: continue auditing the approved finite ledger for another concrete local implementation gap while preserving owner, host, account, active-session, and scenario qualification gates. Worker activity still requires a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 237, REQ-02 owner team-coverage acknowledgment)
 
 The fixed-team matrix is now confirmable both during Company creation and later from the existing Company directory. The existing-Company path exposes all seven canonical task assignments, acceptance paths, independent checkers, and unverified qualification states before an installation owner checks the acknowledgment and submits. The server accepts only the exact embedded `TEAM_COVERAGE.json` SHA-256, requires the authenticated installation-owner session and CSRF verification, and persists the acknowledgment event in the same transaction as Company creation; existing-Company confirmation uses its own idempotent event command and does not rewrite organization settings. The event explicitly leaves qualification `unverified`; execution remains disabled. `go build ./...`, `npm run build`, and `git diff --check` pass. The frontend build still reports its existing large-chunk advisory. A read-only database query confirms Schema 108 with zero Companies, Missions, and active WorkerSessions; no owner acknowledgment, tests, database writes, Worker/provider operations, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-237-req02-owner-team-coverage-acknowledgment/verification.md`.
 
 The seven REQ-02 scenario records remain `partial/not_run`, and all 232 frozen scenarios remain `not_run`. Slice236 and Slice237 are now pushed to origin/main as `56b69a51ea93b7226056bcb508912453365b9690` and `576ebb7476da17e1e6bcdfdb2dd57443c601beab`; local `main` is aligned with origin/main. The non-interactive Git CLI still lacks credentials, so use the connected GitHub write integration for future pushes when needed. Continue only with approved finite-scope source gaps; Worker activity still requires a current database read confirming an already-active WorkerSession, and none is present.
 
-Next Slice238: continue auditing the approved finite ledger for a concrete local implementation gap while preserving all owner, host, account, active-session, and scenario qualification gates.
+Slice238 enforces the acknowledged matrix's fixed role names on the server; see the latest continuation status above.
 
 ## Previous continuation status (Slice 235, open qualification dependency audit)
 
