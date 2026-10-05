@@ -227,10 +227,11 @@ func (k *Kernel) TXBindEmployeeCapability(ctx context.Context, companyID string,
 		if qualificationStatus != "metadata_verified" {
 			return Receipt{}, core.Denied
 		}
-		var currentEventID, currentVersion, currentEvent string
-		err = tx.QueryRow(ctx, `SELECT event_id,version_digest,event FROM employee_capability_events
+		var currentEventID, currentVersion, currentEvent, currentQualificationID, currentReason string
+		err = tx.QueryRow(ctx, `SELECT event_id,version_digest,event,qualification_id,reason FROM employee_capability_events
 WHERE company_id=$1 AND employee_id=$2 AND capability_kind=$3 AND capability_id=$4
-ORDER BY event_seq DESC LIMIT 1`, companyID, input.EmployeeID, input.CapabilityKind, input.CapabilityID).Scan(&currentEventID, &currentVersion, &currentEvent)
+ORDER BY event_seq DESC LIMIT 1`, companyID, input.EmployeeID, input.CapabilityKind, input.CapabilityID).Scan(
+			&currentEventID, &currentVersion, &currentEvent, &currentQualificationID, &currentReason)
 		if err == nil && currentEvent == "bound" {
 			if currentVersion == versionDigest {
 				return Receipt{ID: currentEventID, Status: "bound_unqualified"}, nil
@@ -240,12 +241,124 @@ ORDER BY event_seq DESC LIMIT 1`, companyID, input.EmployeeID, input.CapabilityK
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 			return Receipt{}, err
 		}
+		if currentEvent == "revoked" {
+			if err = ensureRevokedEmployeeCapabilityRebindSafe(ctx, tx, companyID, input.EmployeeID,
+				input.CapabilityKind, input.CapabilityID, currentEventID, currentVersion, currentQualificationID, currentReason); err != nil {
+				return Receipt{}, err
+			}
+		}
 		if _, err = tx.Exec(ctx, `INSERT INTO employee_capability_events(company_id,event_id,employee_id,capability_kind,capability_id,version_digest,qualification_id,event,reason,request_id)
 VALUES($1,$2,$3,$4,$5,$6,$7,'bound',$8,$9)`, companyID, eventID, input.EmployeeID, input.CapabilityKind, input.CapabilityID, versionDigest, input.QualificationID, strings.TrimSpace(input.Reason), input.RequestID); err != nil {
 			return Receipt{}, err
 		}
 		return Receipt{ID: eventID, Status: "bound_unqualified"}, nil
 	})
+}
+
+// ensureRevokedEmployeeCapabilityRebindSafe prevents a fresh Employee binding
+// from reauthorizing sessions that were present before a revoke. The guard runs
+// in the company-locked bind transaction, so Worker admission cannot race it.
+// An incomplete legacy inventory needs its existing owner disposition, but
+// that disposition never substitutes for stopping current sessions or
+// reconciling in-flight MCP calls.
+func ensureRevokedEmployeeCapabilityRebindSafe(ctx context.Context, tx pgx.Tx, companyID, employeeID, capabilityKind, capabilityID, employeeEventID, versionDigest, qualificationID, reason string) error {
+	revocationID := employeeEventID
+	revocationScope := "employee"
+	revocationEmployeeID := employeeID
+	if reason == "capability_revoked" {
+		rows, err := tx.Query(ctx, `SELECT decision_id,qualification_id FROM capability_decisions
+WHERE company_id=$1 AND capability_kind=$2 AND capability_id=$3 AND version_digest=$4 AND decision='revoked'`,
+			companyID, capabilityKind, capabilityID, versionDigest)
+		if err != nil {
+			return err
+		}
+		for rows.Next() {
+			var decisionID, decisionQualificationID string
+			if err = rows.Scan(&decisionID, &decisionQualificationID); err != nil {
+				rows.Close()
+				return err
+			}
+			if stableCapabilityID("ev", decisionID, employeeID) == employeeEventID {
+				revocationID = decisionID
+				revocationScope = "capability"
+				revocationEmployeeID = ""
+				qualificationID = decisionQualificationID
+				break
+			}
+		}
+		rows.Close()
+		if err = rows.Err(); err != nil {
+			return err
+		}
+	}
+
+	var snapshotRows int64
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM capability_revocation_sessions WHERE company_id=$1 AND revocation_id=$2`, companyID, revocationID).Scan(&snapshotRows); err != nil {
+		return err
+	}
+	var mismatchedSnapshotRows int64
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM capability_revocation_sessions
+WHERE company_id=$1 AND revocation_id=$2
+  AND (capability_kind<>$3 OR capability_id<>$4 OR version_digest<>$5 OR ($6='employee' AND employee_id<>$7))`,
+		companyID, revocationID, capabilityKind, capabilityID, versionDigest, revocationScope, revocationEmployeeID).Scan(&mismatchedSnapshotRows); err != nil {
+		return err
+	}
+	if mismatchedSnapshotRows != 0 {
+		return core.Integrity
+	}
+
+	var completionScope, completionKind, completionID, completionDigest, completionEmployee string
+	var completionSessionCount int64
+	completionErr := tx.QueryRow(ctx, `SELECT scope,capability_kind,capability_id,version_digest,employee_id,session_count
+FROM capability_revocation_snapshot_completions WHERE company_id=$1 AND revocation_id=$2`, companyID, revocationID).Scan(
+		&completionScope, &completionKind, &completionID, &completionDigest, &completionEmployee, &completionSessionCount)
+	completeInventory := snapshotRows > 0
+	switch {
+	case errors.Is(completionErr, pgx.ErrNoRows):
+	case completionErr != nil:
+		return completionErr
+	default:
+		if completionScope != revocationScope || completionKind != capabilityKind || completionID != capabilityID ||
+			completionDigest != versionDigest || completionEmployee != revocationEmployeeID || completionSessionCount != snapshotRows {
+			return core.Integrity
+		}
+		completeInventory = true
+	}
+	if !completeInventory {
+		var ownerAcknowledged bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM capability_revocation_owner_reviews
+WHERE company_id=$1 AND revocation_id=$2 AND scope=$3 AND capability_kind=$4 AND capability_id=$5
+  AND version_digest=$6 AND qualification_id=$7 AND employee_id=$8 AND disposition='acknowledged_unresolved')`,
+			companyID, revocationID, revocationScope, capabilityKind, capabilityID, versionDigest, qualificationID, revocationEmployeeID).Scan(&ownerAcknowledged); err != nil {
+			return err
+		}
+		if !ownerAcknowledged {
+			return core.ConflictError{Reason: "legacy capability revocation inventory is incomplete; installation-owner acknowledged_unresolved review is required before rebinding", CurrentState: "inventory_incomplete"}
+		}
+	}
+
+	var liveSession bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_sessions
+WHERE company_id=$1 AND employee_id=$2 AND state<>'stopped')`, companyID, employeeID).Scan(&liveSession); err != nil {
+		return err
+	}
+	if liveSession {
+		return core.ConflictError{Reason: "stop every existing WorkerSession for this Employee before restoring capability access", CurrentState: "worker_session_not_stopped"}
+	}
+	if capabilityKind == "mcp" {
+		var dispatchingCall bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(
+SELECT 1 FROM mcp_tool_call_intents i
+JOIN LATERAL (SELECT status FROM mcp_tool_call_events e WHERE e.company_id=i.company_id AND e.intent_id=i.intent_id ORDER BY e.event_seq DESC LIMIT 1) current ON true
+WHERE i.company_id=$1 AND i.employee_id=$2 AND i.capability_id=$3 AND current.status='dispatching')`,
+			companyID, employeeID, capabilityID).Scan(&dispatchingCall); err != nil {
+			return err
+		}
+		if dispatchingCall {
+			return core.ConflictError{Reason: "reconcile outstanding MCP calls for the revoked capability before rebinding", CurrentState: "mcp_call_dispatching"}
+		}
+	}
+	return nil
 }
 
 func (k *Kernel) TXRevokeEmployeeCapability(ctx context.Context, companyID string, input EmployeeCapabilityBindingInput) (Receipt, error) {
