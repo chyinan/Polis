@@ -1,6 +1,10 @@
 # Current implementation status — approved R1–R3 staged work
 
-## Slice 224 — REQ-23 closeout coverage reconciliation
+## Slice 225 — REQ-13 fairness coverage reconciliation
+
+Reconciled stale REQ-13 descriptions against Schema 102/Slice 173: the optional Fake @7 dispatcher advances a database-persisted shared Company cursor and creates per-Task short-lived claims atomically, replacing the earlier process-local cursor. No owner-backed global concurrency cap or authoritative provider quota readiness/recovery source exists; quota remains fail-closed. Added Slice 225 evidence to all nine mapped frozen scenarios without changing their `partial` / `not_run` statuses; all 232 scenarios remain `not_run`. JSON validation and `git diff --check` pass. No tests, database, Worker/provider activity or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md`.
+
+## Previous slice 224 — REQ-23 closeout coverage reconciliation
 
 Reconciled an outdated REQ-23 gap statement with Schema 101 and Slices 169–170. Durable closeout states, owner outcome controls, exact passed-Artifact success gates, execution stop ordering, retryable finalization and responsibility/Routine settlement exist. REQ-23 remains partial for restart/recovery qualification and FT-57–60/72 scenario execution. Added Slice 224 evidence to all seven mapped crosswalk rows without changing their `partial` / `not_run` state or the 232 scenario total. JSON validation and `git diff --check` pass. No tests, database, closeout operation, Worker/provider activity or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md`.
 
@@ -207,7 +211,7 @@ Source audit confirms the fixed roster is Planning, Backend, Frontend and Review
 
 ## Slice 166 — REQ-13 quota readiness/recovery boundary audit
 
-Source audit found that `waiting_quota` remains fail-closed: actionable-work signals preserve it, reconciliation does not release it, automatic dispatch selects only `wake_pending`, and WorkerSession admission rejects it. There is no production writer for `waiting_quota` in current Go sources and no authoritative provider quota readiness source. `provider_quota_exhausted` is currently a notification reason label only. No automatic release rule can be implemented safely from current evidence. The optional Fake @7 dispatcher still uses a process-local Company cursor and has no shared/global slot accounting. No code/schema change, tests, Worker or provider activity. REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.
+Source audit found that `waiting_quota` remains fail-closed: actionable-work signals preserve it, reconciliation does not release it, automatic dispatch selects only `wake_pending`, and WorkerSession admission rejects it. There is no production writer for `waiting_quota` in current Go sources and no authoritative provider quota readiness source. `provider_quota_exhausted` is currently a notification reason label only. No automatic release rule can be implemented safely from current evidence. Schema 102/Slice 173 superseded the process-local cursor finding with a shared database cursor and per-Task claims; an owner-backed global slot cap and authoritative quota-readiness source remain absent. No code/schema change, tests, Worker or provider activity. REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.
 
 ## Slice 165 — REQ-14 owner-reviewed unresolved disposition
 
@@ -223,7 +227,7 @@ The revocation transaction snapshots matching live WorkerSessions and prior reco
 
 ## Slice 162 — REQ-13 automatic dispatch fairness/quota/WorkerSession boundary audit
 
-Source review confirms the optional automatic dispatcher only accepts the zero-egress Fake @7 runtime, selects at most one `wake_pending` product Task per 30-second iteration, and advances a process-local Company cursor after each attempt. Candidate selection carries IDs only; the normal admission transaction rechecks current database state, rejects paused and `waiting_quota` schedules and any live Employee WorkerSession, creates a durable `restoring` WorkerSession, and the adapter transitions it to `active` before the run loop starts. Thus Worker turns require database-confirmed active-session state. The current local database has no Company or WorkerSession, so none was run. No production quota readiness/recovery writer or automatic `waiting_quota` release was found, and global slots/cross-instance fairness are not provided by the process-local cursor. No tests or Worker activity ran; REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-162-req13-dispatch-boundary-audit/verification.md`.
+Source review confirms the optional automatic dispatcher only accepts the zero-egress Fake @7 runtime, selects at most one `wake_pending` product Task per 30-second iteration, and advances a process-local Company cursor after each attempt. Candidate selection carries IDs only; the normal admission transaction rechecks current database state, rejects paused and `waiting_quota` schedules and any live Employee WorkerSession, creates a durable `restoring` WorkerSession, and the adapter transitions it to `active` before the run loop starts. Thus Worker turns require database-confirmed active-session state. The current local database has no Company or WorkerSession, so none was run. No production quota readiness/recovery writer or automatic `waiting_quota` release was found. Schema 102/Slice 173 later added shared cursor/claim coordination; owner-backed global slot accounting remains open. No tests or Worker activity ran; REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-162-req13-dispatch-boundary-audit/verification.md`.
 
 ## Slice 161 — REQ-15 FT-41 old-backup memory revocation audit
 
@@ -543,7 +547,7 @@ Group Settings exposes a typed desktop toggle backed by Tauri commands. Enabling
 
 `TXNewWorker` now locks the owning EmployeeSchedule in the same transaction as WorkerSession reservation and denies both `paused` and `waiting_quota` states. On successful reservation it atomically records schedule `admitted` with WorkerSession `restoring`; activation advances it to `working`. Reconciliation keeps restoring/validating sessions admitted and treats active/stopping sessions as working; Mission resume uses the same mapping. Dedicated PostgreSQL regressions cover both barriers, reservation and reconciliation. The full schedule suite passed at Schema 70, as did the full Go suite, Linux/Windows amd64 builds and `git diff --check`. Independent re-review found no remaining actionable issue. No real Worker or provider ran. Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-96-worker-admission-barriers/verification.md`.
 
-Fairness and quota readiness/recovery and automatic Worker dispatch remain open under REQ-13.
+REQ-13 now has shared cursor/claim coordination and bounded opt-in Fake @7 dispatch; quota readiness/recovery and an owner-backed global slot cap remain open.
 
 ## Previous Slice 95 — Terminal Mission Routine cleanup and upgrade backfill (Schema 70)
 

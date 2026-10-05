@@ -1,10 +1,14 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 224, REQ-23 closeout coverage reconciliation)
+## Latest continuation status (Slice 225, REQ-13 fairness coverage reconciliation)
+
+Reconciled current REQ-13 coverage against Schema 102/Slice 173. Dispatch candidate selection locks a database-persisted shared Company cursor and creates a short-lived per-Task claim in the same transaction; this supersedes the process-local cursor finding in Slices 162/166. An owner-backed global slot cap and authoritative provider quota readiness/recovery source are still absent, so quota remains fail-closed and automatic dispatch remains opt-in Fake @7. Added Slice 225 evidence to all nine mapped scenarios; all remain `partial` / `not_run` and all 232 frozen scenarios remain `not_run`. JSON validation and `git diff --check` pass. No tests, database operation, Worker/provider activity or scenario ran. See `evidence/development/r1-r3-implementation-validation-20261005-slice-225-req13-fairness-reconciliation/verification.md`.
+
+## Previous continuation status (Slice 224, REQ-23 closeout coverage reconciliation)
 
 Reconciled the coverage row with the durable closeout state machine and owner controls already implemented in Schema 101/Slices 169–170. `closing` and `ended_not_met`, rationale and acceptance-evidence gates, Job/Worker stop ordering, retryable finalization, Task/Obligation/Routine settlement and Workbench controls are present. REQ-23 remains partial pending restart/recovery qualification and FT-57–60/72 scenarios. Added Slice 224 evidence to its seven scenario rows while preserving `partial` / `not_run` and the 232 total. Crosswalk JSON validation and `git diff --check` pass. No tests, database, closeout operation, Worker/provider activity or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-224-req23-closeout-reconciliation/verification.md`.
 
-Next Slice225: continue a source-backed audit of another open ledger requirement, beginning with REQ-13 scheduling fairness and quota recovery. Preserve scenario statuses and do not perform Worker activity without a current database read confirming an already-active WorkerSession.
+Next Slice226: select the next concrete open software gap from the coverage ledger; retain the database-confirmed active WorkerSession prerequisite for any Worker activity. Preserve scenario statuses and do not perform Worker activity without a current database read confirming an already-active WorkerSession.
 
 ## Latest continuation status (Slice 223, REQ-39 successor directory-input trace)
 
@@ -246,7 +250,7 @@ Source audit confirms the fixed roster is Planning, Backend, Frontend and Review
 
 ## Previous continuation status (Slice 166, REQ-13 quota readiness/recovery boundary audit)
 
-Source audit confirmed `waiting_quota` is a sticky fail-closed schedule state: actionable signals preserve it, schedule reconciliation preserves it, the auto-dispatch query selects only `wake_pending`, and `TXNewWorker` rejects it. The current production Go sources contain no writer that enters or releases `waiting_quota`, and no authoritative provider quota readiness source exists; `provider_quota_exhausted` appears only as notification text. Therefore there is no safe automatic release decision to implement from current evidence. The Fake @7 auto-dispatcher still has a process-local Company cursor and no shared/global slot accounting. No code or schema change; no tests, Worker or provider activity ran. REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.
+Source audit confirmed `waiting_quota` is a sticky fail-closed schedule state: actionable signals preserve it, schedule reconciliation preserves it, the auto-dispatch query selects only `wake_pending`, and `TXNewWorker` rejects it. The current production Go sources contain no writer that enters or releases `waiting_quota`, and no authoritative provider quota readiness source exists; `provider_quota_exhausted` appears only as notification text. Therefore there is no safe automatic release decision to implement from current evidence. The process-local cursor finding was superseded by Schema 102/Slice 173, which added a shared database cursor and per-Task claims. No owner-backed global slot cap or trusted quota-readiness source exists. No code or schema change; no tests, Worker or provider activity ran. REQ-13 remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261004-slice-166-req13-quota-readiness-audit/verification.md`.
 
 ## Previous continuation status (Slice 165, REQ-14 owner-reviewed unresolved disposition)
 
@@ -599,7 +603,7 @@ Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-9
 
 ## Previous continuation status (Slice 96, Worker admission barriers; Schema 70)
 
-`TXNewWorker` now locks the owning EmployeeSchedule in the WorkerSession reservation transaction, denies persisted `paused`/`waiting_quota`, and atomically records `admitted` with the new `restoring` WorkerSession. Activation moves the schedule to `working`. Reconciliation distinguishes restoring/validating sessions (admitted) from active/stopping sessions (working); Mission resume uses the same mapping. The dedicated PostgreSQL 18 suite verifies both barriers, the reservation state, and reconciliation; regressions first showed barrier bypass and an admitted schedule incorrectly changing to working. No schema change or provider call was needed. Fairness/quota readiness, Routine-to-Task delivery, and automatic Worker dispatch remain open under REQ-13.
+`TXNewWorker` now locks the owning EmployeeSchedule in the WorkerSession reservation transaction, denies persisted `paused`/`waiting_quota`, and atomically records `admitted` with the new `restoring` WorkerSession. Activation moves the schedule to `working`. Reconciliation distinguishes restoring/validating sessions (admitted) from active/stopping sessions (working); Mission resume uses the same mapping. The dedicated PostgreSQL 18 suite verifies both barriers, the reservation state, and reconciliation; regressions first showed barrier bypass and an admitted schedule incorrectly changing to working. No schema change or provider call was needed. Routine-to-Task delivery and Worker admission qualification remain open; REQ-13 dispatch now has shared cursor/claim coordination, while quota readiness/recovery and a global slot cap remain open.
 
 Evidence: `evidence/development/r1-r3-implementation-validation-20260930-slice-96-worker-admission-barriers/verification.md`.
 
