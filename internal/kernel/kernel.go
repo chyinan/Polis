@@ -376,16 +376,30 @@ func (k *Kernel) txWrite(ctx context.Context, s Scope, b *Binding, key, op strin
 		if !locked {
 			// Do not hold a main-pool transaction while a CAS import owns this ID.
 			_ = tx.Rollback(context.Background())
+			replayTx, replayErr := k.pool.Begin(ctx)
+			if replayErr != nil {
+				return Receipt{}, replayErr
+			}
+			defer replayTx.Rollback(ctx)
+			if replayErr = k.guardWithSessionMode(ctx, replayTx, s, b, sessionWrite); replayErr != nil {
+				return Receipt{}, replayErr
+			}
 			var existingFingerprint string
 			var raw []byte
-			replayErr := k.pool.QueryRow(ctx, "SELECT fingerprint,result FROM receipts WHERE company_id=$1 AND actor=$2 AND key=$3", s.company, actor, key).Scan(&existingFingerprint, &raw)
+			replayErr = replayTx.QueryRow(ctx, "SELECT fingerprint,result FROM receipts WHERE company_id=$1 AND actor=$2 AND key=$3", s.company, actor, key).Scan(&existingFingerprint, &raw)
 			if replayErr == nil {
 				if existingFingerprint != hash {
 					return Receipt{}, core.Conflict
 				}
 				var receipt Receipt
 				replayErr = json.Unmarshal(raw, &receipt)
-				return receipt, replayErr
+				if replayErr != nil {
+					return Receipt{}, replayErr
+				}
+				if replayErr = replayTx.Commit(ctx); replayErr != nil {
+					return Receipt{}, replayErr
+				}
+				return receipt, nil
 			}
 			if errors.Is(replayErr, pgx.ErrNoRows) {
 				return Receipt{}, core.Conflict
