@@ -1,3 +1,7 @@
+## Slice 252 — REQ-24 receipt replay authorization guard
+
+The receipt idempotency path after advisory-lock contention now opens a fresh transaction and reruns the runtime lease, Company lock, binding, Employee epoch, and WorkerSession state checks before reading a receipt. A stale or ended session can no longer obtain an old receipt through that fast path. `go build ./...` and `git diff --check` passed. The six REQ-24 scenario rows remain partial/not_run; all 232 frozen scenarios remain not_run. No tests, database, Worker/provider operation, or scenario ran. Active-session and qualified runtime/provider evidence remain external gates. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md.
+
 ## Slice 251 — REQ-15 memory revocation overlay durability retry
 
 Memory-revocation overlay persistence now completes the required parent-directory sync before adding an existing or newly linked disk record to the in-memory fast path. If the sync fails, a later retry rechecks the disk entry instead of returning success from an unverified cache entry. `go build ./...` and `git diff --check` passed. The six REQ-15 rows remain partial/not_run; all 232 frozen scenarios remain not_run. No tests, database, Worker/provider operation, memory correction, restore, or scenario ran. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md.

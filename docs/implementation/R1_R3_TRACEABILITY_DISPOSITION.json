@@ -762,7 +762,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
       ]
     },
     {
@@ -1712,7 +1713,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
       ]
     },
     {
@@ -1729,7 +1731,8 @@
       "firstPlannedFullScenario": "R1",
       "executionStatus": "not_run",
       "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
       ]
     },
     {
@@ -1937,7 +1940,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-239-req02-fixed-role-contract/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
       ]
     },
     {
@@ -1959,7 +1963,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
       ]
     },
     {
@@ -2570,7 +2575,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-240-fixed-role-setup-ui/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md"
       ]
     },
     {
