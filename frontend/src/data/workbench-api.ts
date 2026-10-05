@@ -134,6 +134,15 @@ export type TaskTakeoverSnapshotOptions = Readonly<{
   content: string;
   humanEffortSeconds: number;
 }>;
+export type TaskTakeoverDirectorySnapshotOptions = Readonly<{
+  companyId: string;
+  missionId: string;
+  leaseId: string;
+  requestId: string;
+  baseWorkspaceTreeSha256: string;
+  files: ReadonlyArray<Readonly<{relativePath: string; content: string}>>;
+  humanEffortSeconds: number;
+}>;
 export type ReleaseTaskTakeoverLeaseOptions = Readonly<{companyId: string; missionId: string; leaseId: string; requestId: string}>;
 
 export type RecordDomainEvidenceOptions = Readonly<{
@@ -684,6 +693,7 @@ export type WorkbenchApi = Readonly<{
   readTaskTakeoverWorkspaceFile(options: TaskTakeoverWorkspaceFileQueryOptions): Promise<TaskTakeoverWorkspaceFileView>;
   createTaskTakeoverLease(options: CreateTaskTakeoverLeaseOptions): Promise<TaskTakeoverLeaseView>;
   submitTaskTakeoverSnapshot(options: TaskTakeoverSnapshotOptions): Promise<TaskTakeoverLeaseView>;
+  submitTaskTakeoverDirectorySnapshot(options: TaskTakeoverDirectorySnapshotOptions): Promise<TaskTakeoverLeaseView>;
   releaseTaskTakeoverLease(options: ReleaseTaskTakeoverLeaseOptions): Promise<TaskTakeoverLeaseView>;
   listCollaboration(options: CompanyScopeOptions): Promise<ReadonlyArray<CollaborationItem>>;
   getWorkspace(options: Readonly<{companyId: string; taskId: string}>): Promise<WorkspaceView>;

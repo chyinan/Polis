@@ -469,6 +469,9 @@ function isTakeoverDiffSummary(value: unknown): value is TaskTakeoverDiffSummary
     && typeof value.baseWorkspaceRevision === 'number' && Number.isSafeInteger(value.baseWorkspaceRevision) && value.baseWorkspaceRevision > 0
     && typeof value.submittedContentDigest === 'string' && /^[0-9a-f]{64}$/.test(value.submittedContentDigest)
     && ['baseBytes', 'submittedBytes', 'removedLines', 'addedLines'].every(key => typeof value[key] === 'number' && Number.isSafeInteger(value[key]) && (value[key] as number) >= 0)
+    && (value.baseWorkspaceTreeSha256 === undefined || (typeof value.baseWorkspaceTreeSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.baseWorkspaceTreeSha256)))
+    && (value.submittedWorkspaceTreeSha256 === undefined || (typeof value.submittedWorkspaceTreeSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.submittedWorkspaceTreeSha256)))
+    && ['addedFiles', 'modifiedFiles', 'deletedFiles'].every(key => value[key] === undefined || (Array.isArray(value[key]) && value[key].every(isWorkspaceRelativePath)))
     && typeof value.changed === 'boolean' && value.changed;
 }
 
@@ -511,7 +514,11 @@ function sameTaskTakeoverDiffSummary(left: unknown, right: unknown): boolean {
   return left.model === right.model && left.baseWorkspaceDigest === right.baseWorkspaceDigest
     && left.baseWorkspaceRevision === right.baseWorkspaceRevision && left.submittedContentDigest === right.submittedContentDigest
     && left.baseBytes === right.baseBytes && left.submittedBytes === right.submittedBytes
-    && left.removedLines === right.removedLines && left.addedLines === right.addedLines && left.changed === right.changed;
+    && left.removedLines === right.removedLines && left.addedLines === right.addedLines && left.changed === right.changed
+    && left.baseWorkspaceTreeSha256 === right.baseWorkspaceTreeSha256 && left.submittedWorkspaceTreeSha256 === right.submittedWorkspaceTreeSha256
+    && JSON.stringify(left.addedFiles ?? []) === JSON.stringify(right.addedFiles ?? [])
+    && JSON.stringify(left.modifiedFiles ?? []) === JSON.stringify(right.modifiedFiles ?? [])
+    && JSON.stringify(left.deletedFiles ?? []) === JSON.stringify(right.deletedFiles ?? []);
 }
 
 function isTaskTakeoverLatestEvent(value: Record<string, unknown>, latest: unknown): boolean {

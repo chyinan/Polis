@@ -18,6 +18,18 @@ type TaskTakeoverSnapshotInput struct {
 	HumanEffortSeconds    int64
 }
 
+type TaskTakeoverDirectorySnapshotFile struct {
+	RelativePath string
+	Content      string
+}
+
+type TaskTakeoverDirectorySnapshotInput struct {
+	RequestID               string
+	BaseWorkspaceTreeSHA256 string
+	Files                   []TaskTakeoverDirectorySnapshotFile
+	HumanEffortSeconds      int64
+}
+
 type TaskTakeoverLeaseEvent struct {
 	EventID            string                   `json:"eventId"`
 	State              string                   `json:"state"`
@@ -82,15 +94,20 @@ type TaskTakeoverWorkspaceFile struct {
 }
 
 type TaskTakeoverDiffSummary struct {
-	Model                  string `json:"model"`
-	BaseWorkspaceDigest    string `json:"baseWorkspaceDigest"`
-	BaseWorkspaceRevision  int64  `json:"baseWorkspaceRevision"`
-	SubmittedContentDigest string `json:"submittedContentDigest"`
-	BaseBytes              int    `json:"baseBytes"`
-	SubmittedBytes         int    `json:"submittedBytes"`
-	RemovedLines           int    `json:"removedLines"`
-	AddedLines             int    `json:"addedLines"`
-	Changed                bool   `json:"changed"`
+	Model                        string   `json:"model"`
+	BaseWorkspaceDigest          string   `json:"baseWorkspaceDigest"`
+	BaseWorkspaceRevision        int64    `json:"baseWorkspaceRevision"`
+	SubmittedContentDigest       string   `json:"submittedContentDigest"`
+	BaseBytes                    int      `json:"baseBytes"`
+	SubmittedBytes               int      `json:"submittedBytes"`
+	RemovedLines                 int      `json:"removedLines"`
+	AddedLines                   int      `json:"addedLines"`
+	Changed                      bool     `json:"changed"`
+	BaseWorkspaceTreeSHA256      string   `json:"baseWorkspaceTreeSha256,omitempty"`
+	SubmittedWorkspaceTreeSHA256 string   `json:"submittedWorkspaceTreeSha256,omitempty"`
+	AddedFiles                   []string `json:"addedFiles,omitempty"`
+	ModifiedFiles                []string `json:"modifiedFiles,omitempty"`
+	DeletedFiles                 []string `json:"deletedFiles,omitempty"`
 }
 
 func taskTakeoverDiffSummary(baseDigest string, baseRevision int64, baseContent, submitted []byte) (TaskTakeoverDiffSummary, error) {

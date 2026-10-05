@@ -2,25 +2,40 @@
 import {useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactElement} from 'react';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useCreateTaskTakeoverLease, useReleaseTaskTakeoverLease, useSubmitTaskTakeoverSnapshot, useTaskTakeoverLeases} from '../data/workbench-query';
+import {useCreateTaskTakeoverLease, useReleaseTaskTakeoverLease, useSubmitTaskTakeoverDirectorySnapshot, useSubmitTaskTakeoverSnapshot, useTaskTakeoverLeases} from '../data/workbench-query';
 import type {CompanyOverviewView, TaskTakeoverLeaseView, TaskTakeoverWorkspaceManifestEntryView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 import {applyWorkspaceTextPatch, MAX_WORKSPACE_PATCH_BYTES, MAX_WORKSPACE_SNAPSHOT_BYTES} from '../domain/workspace-patch';
+import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES} from '../data/workbench-api';
 import styles from '../styles/workbench.module.css';
 
 type PendingSnapshotReturn = Readonly<{
+  kind: 'legacy_text';
   leaseId: string;
   requestId: string;
   baseWorkspaceDigest: string;
   baseWorkspaceRevision: number;
   content: string;
   humanEffortSeconds: number;
+}> | Readonly<{
+  kind: 'workspace_tree';
+  leaseId: string;
+  requestId: string;
+  baseWorkspaceTreeSha256: string;
+  files: ReadonlyArray<Readonly<{relativePath: string; content: string}>>;
+  humanEffortSeconds: number;
 }>;
 
 type TakeoverWorkspaceDraftFile = Readonly<{
-  entry: TaskTakeoverWorkspaceManifestEntryView;
-  baseContent: string;
+  entry: TaskTakeoverWorkspaceManifestEntryView | null;
+  relativePath: string;
+  baseContent: string | null;
   content: string;
 }>;
+
+function isSafeWorkspaceRelativePath(value: string): boolean {
+  return value.length > 0 && value.length <= 1024 && !value.startsWith('/') && !value.endsWith('/') && !value.includes('\\') && !value.includes('%') && !value.includes(':')
+    && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !/[\u0000-\u001f\u007f]/.test(part));
+}
 
 type MissionTakeoverPanelProps = Readonly<{
   api: WorkbenchApi;
@@ -57,7 +72,7 @@ async function loadBoundWorkspaceFiles(api: WorkbenchApi, companyId: string, mis
         || file.fileRevision !== entry.fileRevision || file.workspaceRevision !== manifest.workspaceTree.revision || file.contentType !== entry.contentType) {
         throw new Error(`冻结文件 ${entry.relativePath} 与租约清单不一致。`);
       }
-      loaded[index] = {entry, baseContent: file.content, content: file.content};
+      loaded[index] = {entry, relativePath: entry.relativePath, baseContent: file.content, content: file.content};
     }
   });
   await Promise.all(workers);
@@ -69,6 +84,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const leasesQuery = useTaskTakeoverLeases(api, companyId, missionId);
   const createLease = useCreateTaskTakeoverLease(api, companyId, missionId);
   const submitSnapshot = useSubmitTaskTakeoverSnapshot(api, companyId, missionId);
+  const submitDirectorySnapshot = useSubmitTaskTakeoverDirectorySnapshot(api, companyId, missionId);
   const releaseLease = useReleaseTaskTakeoverLease(api, companyId, missionId);
   const eligibleTasks = useMemo(() => overview.tasks.filter(task => task.state !== 'completed' && task.state !== 'cancelled'), [overview.tasks]);
   const [selectedTaskId, setSelectedTaskId] = useState('');
@@ -77,6 +93,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const [workspaceTreeManifest, setWorkspaceTreeManifest] = useState<TaskTakeoverWorkspaceManifestView | null>(null);
   const [workspaceTreeFiles, setWorkspaceTreeFiles] = useState<ReadonlyArray<TakeoverWorkspaceDraftFile>>([]);
   const [selectedWorkspacePath, setSelectedWorkspacePath] = useState('');
+  const [newWorkspacePath, setNewWorkspacePath] = useState('');
   const [humanEffortSeconds, setHumanEffortSeconds] = useState('');
   const [loadedLeaseId, setLoadedLeaseId] = useState('');
   const [localError, setLocalError] = useState('');
@@ -88,13 +105,23 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   const pendingRequestIds = useRef(new Map<string, string>());
   const taskId = selectedTaskId || eligibleTasks[0]?.taskId || '';
   const activeLease = leasesQuery.data?.find(item => item.taskId === taskId && item.state === 'granted') ?? null;
-  const selectedWorkspaceFile = workspaceTreeFiles.find(file => file.entry.relativePath === selectedWorkspacePath) ?? null;
+  const selectedWorkspaceFile = workspaceTreeFiles.find(file => file.relativePath === selectedWorkspacePath) ?? null;
   const workspaceTreeDraftBytes = workspaceTreeFiles.reduce((total, file) => total + new TextEncoder().encode(file.content).length, 0);
-  const singleFileReturnSupported = workspaceTreeManifest === null || (workspaceTreeManifest.entries.length === 1 && workspaceTreeManifest.entries[0]?.relativePath === 'workspace.txt');
-  const pending = createLease.isPending || submitSnapshot.isPending || releaseLease.isPending;
+  const workspaceTreePathsValid = workspaceTreeFiles.every(file => isSafeWorkspaceRelativePath(file.relativePath))
+    && new Set(workspaceTreeFiles.map(file => file.relativePath.toLowerCase())).size === workspaceTreeFiles.length;
+  const workspaceTreeChanged = workspaceTreeManifest !== null && (workspaceTreeFiles.length !== workspaceTreeManifest.entries.length
+    || workspaceTreeFiles.some(file => file.entry === null || file.content !== file.baseContent));
+  const workspaceTreeReturnValid = workspaceTreeManifest !== null && workspaceTreeFiles.length > 0 && workspaceTreeFiles.length <= MAX_MISSION_DIRECTORY_FILES
+    && workspaceTreePathsValid && workspaceTreeFiles.every(file => {
+      const bytes = new TextEncoder().encode(file.content).length;
+      return bytes > 0 && bytes <= 2 * 1024 * 1024;
+    }) && workspaceTreeDraftBytes <= MAX_MISSION_DIRECTORY_BYTES && workspaceTreeChanged;
+  const pending = createLease.isPending || submitSnapshot.isPending || submitDirectorySnapshot.isPending || releaseLease.isPending;
   const contentBytes = new TextEncoder().encode(content).length;
   const canGrant = api.mode === 'real' && missionState === 'paused' && leasesQuery.data !== undefined && taskId !== '' && activeLease === null && pendingSnapshotReturn === null && !pending;
-  const canReturn = missionState === 'paused' && activeLease !== null && singleFileReturnSupported && baseContent !== null && loadedLeaseId === activeLease.leaseId && content.trim() !== '' && contentBytes <= MAX_WORKSPACE_SNAPSHOT_BYTES && pendingSnapshotReturn === null && !pending;
+  const canReturn = missionState === 'paused' && activeLease !== null && loadedLeaseId === activeLease.leaseId && pendingSnapshotReturn === null && !pending
+    && (workspaceTreeManifest !== null ? workspaceTreeReturnValid
+      : baseContent !== null && content.trim() !== '' && contentBytes <= MAX_WORKSPACE_SNAPSHOT_BYTES);
 
   useEffect(() => {
     if (activeLease === null || loadedLeaseId === activeLease.leaseId) return;
@@ -105,6 +132,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
     setWorkspaceTreeManifest(null);
     setWorkspaceTreeFiles([]);
     setSelectedWorkspacePath('');
+    setNewWorkspacePath('');
     setPatchNotice('');
     setPatchError('');
     setWorkspaceLoadFailed(false);
@@ -113,7 +141,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
         if (!live) return;
         setWorkspaceTreeManifest(manifest);
         setWorkspaceTreeFiles(files);
-        setSelectedWorkspacePath(files[0]?.entry.relativePath ?? '');
+        setSelectedWorkspacePath(files[0]?.relativePath ?? '');
         if (manifest.entries.length === 1 && manifest.entries[0]?.relativePath === 'workspace.txt' && files[0] !== undefined) {
           setBaseContent(files[0].baseContent);
           setContent(files[0].content);
@@ -153,11 +181,39 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   }
 
   function updateTreeFile(path: string, nextContent: string): void {
-    setWorkspaceTreeFiles(files => files.map(file => file.entry.relativePath === path ? {...file, content: nextContent} : file));
+    setWorkspaceTreeFiles(files => files.map(file => file.relativePath === path ? {...file, content: nextContent} : file));
     if (workspaceTreeManifest?.entries.length === 1 && path === 'workspace.txt') {
       setContent(nextContent);
       setPatchNotice('');
     }
+  }
+
+  function addWorkspaceFile(): void {
+    const path = newWorkspacePath.trim();
+    if (!isSafeWorkspaceRelativePath(path)) {
+      setLocalError('新文件路径无效；请使用工作区内的相对路径。');
+      return;
+    }
+    if (workspaceTreeFiles.some(file => file.relativePath.toLowerCase() === path.toLowerCase())) {
+      setLocalError('该路径已存在（路径按大小写折叠检查）。');
+      return;
+    }
+    if (workspaceTreeFiles.length >= MAX_MISSION_DIRECTORY_FILES) {
+      setLocalError(`文件数已达到 ${MAX_MISSION_DIRECTORY_FILES} 个上限。`);
+      return;
+    }
+    setLocalError('');
+    setWorkspaceTreeFiles(files => [...files, {entry: null, relativePath: path, baseContent: null, content: ''}]);
+    setSelectedWorkspacePath(path);
+    setNewWorkspacePath('');
+  }
+
+  function deleteSelectedWorkspaceFile(): void {
+    if (selectedWorkspaceFile === null || workspaceTreeFiles.length <= 1) return;
+    const remaining = workspaceTreeFiles.filter(file => file.relativePath !== selectedWorkspaceFile.relativePath);
+    setWorkspaceTreeFiles(remaining);
+    setSelectedWorkspacePath(remaining[0]?.relativePath ?? '');
+    if (selectedWorkspaceFile.relativePath === 'workspace.txt') setContent('');
   }
 
   function requestIdFor(key: string): string {
@@ -197,9 +253,18 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
       return;
     }
     setLocalError('');
-    const attempt: PendingSnapshotReturn = {
+    const requestId = `task-takeover-return-${activeLease.leaseId}-${crypto.randomUUID()}`;
+    const attempt: PendingSnapshotReturn = workspaceTreeManifest !== null ? {
+      kind: 'workspace_tree',
       leaseId: activeLease.leaseId,
-      requestId: `task-takeover-return-${activeLease.leaseId}-${crypto.randomUUID()}`,
+      requestId,
+      baseWorkspaceTreeSha256: workspaceTreeManifest.workspaceTree.manifestSha256,
+      files: workspaceTreeFiles.map(file => ({relativePath: file.relativePath, content: file.content})),
+      humanEffortSeconds: effort,
+    } : {
+      kind: 'legacy_text',
+      leaseId: activeLease.leaseId,
+      requestId,
       baseWorkspaceDigest: activeLease.baseWorkspaceDigest,
       baseWorkspaceRevision: activeLease.baseWorkspaceRevision,
       content,
@@ -227,7 +292,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
       const patchText = new TextDecoder('utf-8', {fatal: true}).decode(await file.arrayBuffer());
       const applied = applyWorkspaceTextPatch(baseContent, patchText);
       setContent(applied.content);
-      setWorkspaceTreeFiles(files => files.map(item => item.entry.relativePath === 'workspace.txt' ? {...item, content: applied.content} : item));
+      setWorkspaceTreeFiles(files => files.map(item => item.relativePath === 'workspace.txt' ? {...item, content: applied.content} : item));
       setPatchNotice(`补丁已按冻结基线核对：新增 ${applied.addedLines} 行、删除 ${applied.removedLines} 行。下方可对比冻结文本与候选文本。`);
     } catch (error) {
       setPatchError(error instanceof Error ? error.message : '补丁无效，候选内容未更改。');
@@ -237,7 +302,12 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
   async function retrySnapshotReturn(attempt: PendingSnapshotReturn): Promise<void> {
     setLocalError('');
     try {
-      await submitSnapshot.mutateAsync(attempt);
+      if (attempt.kind === 'workspace_tree') {
+        await submitDirectorySnapshot.mutateAsync(attempt);
+      } else {
+        const {kind: _kind, ...legacyAttempt} = attempt;
+        await submitSnapshot.mutateAsync(legacyAttempt);
+      }
       setPendingSnapshotReturn(null);
       setLoadedLeaseId('');
     } catch {
@@ -303,13 +373,20 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
             <p className={styles.formHint}>冻结清单固定了 {workspaceTreeManifest.workspaceTree.fileCount} 个文件、{workspaceTreeManifest.workspaceTree.bytes} 字节；编辑器读取的都是该租约清单中的 CAS 内容。</p>
             <label className={styles.formLabel}>工作区文件
               <select className={styles.formField} disabled={pendingSnapshotReturn !== null} value={selectedWorkspacePath} onChange={event => setSelectedWorkspacePath(event.target.value)}>
-                {workspaceTreeFiles.map(file => <option key={file.entry.relativePath} value={file.entry.relativePath}>{file.entry.relativePath}{file.content === file.baseContent ? '' : ' · 已修改'}</option>)}
+                {workspaceTreeFiles.map(file => <option key={file.relativePath} value={file.relativePath}>{file.relativePath}{file.entry === null ? ' · 新增' : file.content === file.baseContent ? '' : ' · 已修改'}</option>)}
               </select>
             </label>
-            <label className={styles.formLabel}>文件内容 · {selectedWorkspaceFile?.entry.relativePath ?? '正在加载'}
-              <textarea className={styles.formField} disabled={pendingSnapshotReturn !== null || selectedWorkspaceFile === null} rows={12} value={selectedWorkspaceFile?.content ?? ''} onChange={event => { if (selectedWorkspaceFile !== null) updateTreeFile(selectedWorkspaceFile.entry.relativePath, event.target.value); }} placeholder="正在读取租约冻结文件…" />
+            <div className={styles.recordActions}>
+              <label className={styles.formLabel}>新增文件相对路径
+                <input className={styles.formField} disabled={pendingSnapshotReturn !== null || pending} value={newWorkspacePath} onChange={event => setNewWorkspacePath(event.target.value)} placeholder="例如 src/notes.md" />
+              </label>
+              <button className={styles.commandButton} disabled={pendingSnapshotReturn !== null || pending || workspaceTreeFiles.length >= MAX_MISSION_DIRECTORY_FILES} onClick={addWorkspaceFile} type="button">添加空文件</button>
+              <button className={styles.commandButton} disabled={pendingSnapshotReturn !== null || pending || selectedWorkspaceFile === null || workspaceTreeFiles.length <= 1} onClick={deleteSelectedWorkspaceFile} type="button">删除所选文件</button>
+            </div>
+            <label className={styles.formLabel}>文件内容 · {selectedWorkspaceFile?.relativePath ?? '正在加载'}
+              <textarea className={styles.formField} disabled={pendingSnapshotReturn !== null || selectedWorkspaceFile === null} rows={12} value={selectedWorkspaceFile?.content ?? ''} onChange={event => { if (selectedWorkspaceFile !== null) updateTreeFile(selectedWorkspaceFile.relativePath, event.target.value); }} placeholder="正在读取租约冻结文件…" />
             </label>
-            {workspaceTreeManifest.entries.length > 1 ? <p className={styles.formHint}>当前租约包含多个文件；交还按钮会在完整树回传格式接入后开放。现在可以逐个查看和修改文件，所有修改暂留在本面板中。</p> : null}
+            <p className={styles.formHint}>可编辑冻结文件、新增或删除文件。回传是完整目录 snapshot，并按目录输入边界限制为 {MAX_MISSION_DIRECTORY_FILES} 个非空 UTF-8 文件、{MAX_MISSION_DIRECTORY_BYTES} 字节；操作只生成新的 MissionInput，不会写入旧 Task 工作区。</p>
             {workspaceTreeManifest.entries.length === 1 && workspaceTreeManifest.entries[0]?.relativePath === 'workspace.txt' ? <>
               <label className={styles.formLabel}>导入基线补丁（仅限 workspace.txt）
                 <input accept=".diff,.patch,text/plain" className={styles.formField} disabled={pendingSnapshotReturn !== null || baseContent === null || loadedLeaseId !== activeLease.leaseId} onChange={event => { void importPatch(event); }} type="file" />
@@ -343,15 +420,16 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
           </>}
           {patchError !== '' ? <p className={styles.formError} role="alert">{patchError}</p> : null}
           {patchNotice !== '' ? <p className={styles.operationNotice} role="status">{patchNotice}</p> : null}
-          <div className={styles.recordLead}><span>{workspaceTreeManifest !== null && workspaceTreeManifest.entries.length > 1 ? `候选 ${workspaceTreeDraftBytes} / 16777216 UTF-8 字节` : `${contentBytes} / 4096 UTF-8 字节`}</span></div>
+          <div className={styles.recordLead}><span>{workspaceTreeManifest !== null ? `候选 ${workspaceTreeFiles.length} / ${MAX_MISSION_DIRECTORY_FILES} 个文件 · ${workspaceTreeDraftBytes} / ${MAX_MISSION_DIRECTORY_BYTES} UTF-8 字节` : `${contentBytes} / ${MAX_WORKSPACE_SNAPSHOT_BYTES} UTF-8 字节`}</span></div>
           <label className={styles.formLabel}>人工投入秒数（可留空）
             <input className={styles.formField} disabled={pendingSnapshotReturn !== null} inputMode="numeric" max={86400} min={0} value={humanEffortSeconds} onChange={event => setHumanEffortSeconds(event.target.value)} />
           </label>
-          {pendingSnapshotReturn === null ? <button className={styles.commandButton} disabled={!canReturn || loadedLeaseId !== activeLease.leaseId} onClick={() => { void handBack(); }} type="button">{submitSnapshot.isPending ? '正在核对并交还…' : workspaceTreeManifest !== null && workspaceTreeManifest.entries.length > 1 ? '多文件交还尚未就绪' : '交还人工 snapshot'}</button> : null}
+          {pendingSnapshotReturn === null ? <button className={styles.commandButton} disabled={!canReturn || loadedLeaseId !== activeLease.leaseId} onClick={() => { void handBack(); }} type="button">{submitSnapshot.isPending || submitDirectorySnapshot.isPending ? '正在核对并交还…' : '交还人工 snapshot'}</button> : null}
         </>}
         {leasesQuery.isError ? <p className={styles.formError} role="alert">接管历史读取失败：{leasesQuery.error.message}</p> : null}
         {createLease.isError ? <p className={styles.formError} role="alert">接管请求结果尚未确认：{createLease.error.message} 请核对已刷新的租约状态。</p> : null}
         {submitSnapshot.isError ? <p className={styles.formError} role="alert">snapshot 交还请求未确认：{submitSnapshot.error.message} 请检查上方租约状态，再以相同请求 ID 重试。</p> : null}
+        {submitDirectorySnapshot.isError ? <p className={styles.formError} role="alert">目录 snapshot 交还请求未确认：{submitDirectorySnapshot.error.message} 请检查上方租约状态，再以相同请求 ID 重试。</p> : null}
         {releaseLease.isError ? <p className={styles.formError} role="alert">租约释放结果尚未确认：{releaseLease.error.message} 请核对已刷新的租约状态。</p> : null}
         {localError !== '' ? <p className={styles.formError} role="alert">{localError}</p> : null}
       </div>

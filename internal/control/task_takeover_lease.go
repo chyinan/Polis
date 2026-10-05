@@ -52,3 +52,19 @@ func (s *Service) ReadTaskTakeoverWorkspaceFile(ctx context.Context, companyID, 
 	}
 	return s.runtime.ReadTaskTakeoverWorkspaceFile(ctx, s.runtime.LocalScope(companyID), missionID, leaseID, relativePath)
 }
+
+func (s *Service) SubmitTaskTakeoverDirectorySnapshot(ctx context.Context, companyID, missionID, leaseID string, request TaskTakeoverDirectorySnapshotCommand) (kernel.TaskTakeoverLease, error) {
+	if !core.ValidID(companyID) || !core.ValidID(missionID) || !core.ValidID(leaseID) || !core.ValidID(request.RequestID) ||
+		len(request.BaseWorkspaceTreeSHA256) != 64 || len(request.Files) == 0 {
+		return kernel.TaskTakeoverLease{}, core.Malformed
+	}
+	for _, file := range request.Files {
+		if !kernel.ValidWorkspaceRelativePath(file.RelativePath) {
+			return kernel.TaskTakeoverLease{}, core.Malformed
+		}
+	}
+	return s.runtime.TXSubmitTaskTakeoverDirectorySnapshot(ctx, s.runtime.LocalScope(companyID), missionID, leaseID, kernel.TaskTakeoverDirectorySnapshotInput{
+		RequestID: request.RequestID, BaseWorkspaceTreeSHA256: request.BaseWorkspaceTreeSHA256,
+		Files: request.Files, HumanEffortSeconds: request.HumanEffortSeconds,
+	})
+}

@@ -35,7 +35,13 @@ import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} f
 import {validateActivityEvent, validateActivityView, validateArtifactDeliveryManifest, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainEvidenceSubstantiveAssessmentRecord, validateDomainProfileQualificationRecord, validateEnvironmentExecutorQualificationReceipt, validateEnvironmentPolicyDecisionReceipt, validateEnvironmentPreparationRun, validateGitHubCredentialReceipt, validateGitHubFeedbackBacklogStatusReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateHumanInterventionCommandReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateMissionInputCommandReceipt, validateMissionInputs, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases, validateWorkspace, validationMessage} from '../domain/workbench-validation';
 import {validateTaskTakeoverWorkspaceFile, validateTaskTakeoverWorkspaceManifest} from '../domain/workbench-validation';
 import type {TaskTakeoverWorkspaceFileQueryOptions, TaskTakeoverWorkspaceManifestQueryOptions} from './workbench-api';
+import type {TaskTakeoverDirectorySnapshotOptions} from './workbench-api';
 import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
+
+function isSafeWorkspaceRelativePath(value: string): boolean {
+  return value.length > 0 && value.length <= 1024 && !value.startsWith('/') && !value.endsWith('/') && !value.includes('\\') && !value.includes('%') && !value.includes(':')
+    && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !/[\u0000-\u001f\u007f]/.test(part));
+}
 
 export class RealWorkbenchApi implements WorkbenchApi {
   readonly mode = 'real' as const;
@@ -250,6 +256,42 @@ export class RealWorkbenchApi implements WorkbenchApi {
     if (!result.success || result.value.leaseId !== options.leaseId || result.value.state !== 'returned'
       || result.value.baseWorkspaceDigest !== options.baseWorkspaceDigest || result.value.baseWorkspaceRevision !== options.baseWorkspaceRevision) {
       throw new Error(`failed to parse returned human snapshot: ${result.success ? 'lease or frozen base differs from the command' : validationMessage(result.issues)}`);
+    }
+    return result.value;
+  }
+
+  async submitTaskTakeoverDirectorySnapshot(options: TaskTakeoverDirectorySnapshotOptions): Promise<TaskTakeoverLeaseView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    assertCompanyScope(options.leaseId);
+    assertRequestID(options.requestId);
+    let totalBytes = 0;
+    if (!/^[0-9a-f]{64}$/.test(options.baseWorkspaceTreeSha256) || !Number.isSafeInteger(options.humanEffortSeconds)
+      || options.humanEffortSeconds < 0 || options.humanEffortSeconds > 86_400 || options.files.length < 1 || options.files.length > MAX_MISSION_DIRECTORY_FILES) {
+      throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to return workspace tree: the frozen manifest, file count, or effort value is invalid', options.leaseId);
+    }
+    const form = new FormData();
+    form.append('requestId', options.requestId);
+    form.append('baseWorkspaceTreeSha256', options.baseWorkspaceTreeSha256);
+    form.append('humanEffortSeconds', String(options.humanEffortSeconds));
+    for (const file of options.files) {
+      if (!isSafeWorkspaceRelativePath(file.relativePath)) {
+        throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to return workspace tree: a file path is invalid', options.leaseId);
+      }
+      const bytes = new TextEncoder().encode(file.content).length;
+      if (bytes < 1 || bytes > 2 * 1024 * 1024 || totalBytes + bytes > MAX_MISSION_DIRECTORY_BYTES) {
+        throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to return workspace tree: the directory exceeds its file or byte bounds', options.leaseId);
+      }
+      totalBytes += bytes;
+      form.append('paths', file.relativePath);
+      const fileName = file.relativePath.split('/').at(-1) || 'workspace.txt';
+      form.append('files', new Blob([file.content], {type: 'text/plain; charset=utf-8'}), fileName);
+    }
+    const raw = await this.postMultipart(`/companies/${encodeURIComponent(options.companyId)}/missions/${encodeURIComponent(options.missionId)}/takeover-leases/${encodeURIComponent(options.leaseId)}/directory-snapshot`, options.requestId, form, 'failed to return human workspace tree');
+    const result = validateTaskTakeoverLease(raw, options.missionId);
+    if (!result.success || result.value.leaseId !== options.leaseId || result.value.state !== 'returned'
+      || result.value.workspaceTree?.manifestSha256 !== options.baseWorkspaceTreeSha256) {
+      throw new Error(`failed to parse returned human workspace tree: ${result.success ? 'lease or frozen manifest differs from the command' : validationMessage(result.issues)}`);
     }
     return result.value;
   }

@@ -1160,6 +1160,11 @@ export type TaskTakeoverDiffSummaryView = Readonly<{
   removedLines: number;
   addedLines: number;
   changed: boolean;
+  baseWorkspaceTreeSha256?: string;
+  submittedWorkspaceTreeSha256?: string;
+  addedFiles?: ReadonlyArray<string>;
+  modifiedFiles?: ReadonlyArray<string>;
+  deletedFiles?: ReadonlyArray<string>;
 }>;
 
 export type TaskTakeoverLeaseEventView = Readonly<{

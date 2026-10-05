@@ -3,6 +3,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import type {ImportStdioMCPPackageOptions, ObserveStdioMCPRuntimeOptions, ObserveStreamableHTTPMCPRuntimeOptions} from './workbench-api';
+import type {TaskTakeoverDirectorySnapshotOptions} from './workbench-api';
 import type {BindEmployeeCapabilityOptions, CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateMissionChangeRequestOptions, CreateTaskEnvironmentHandoverOptions, CreateOperatorInstructionOptions, CreateTaskTakeoverLeaseOptions, DecideCapabilityOptions, DecideGitHubFeedbackSourceOptions, EnvironmentExecutorQualificationOptions, EnvironmentPolicyDecisionOptions, EnsureEnvironmentOptions, ImportSkillOptions, ImportReadOnlySkillPackageOptions, MissionChangeRequestCommandOptions, MissionChangeRequestQueryOptions, MissionCommandOptions, PollGitHubFeedbackSourceOptions, ProbeGitHubFeedbackSourceOptions, QualifyCapabilityOptions, RecordDomainEvidenceOptions, RecordDomainEvidenceReviewOptions, RecordDomainEvidenceSubstantiveAssessmentOptions, RecordDomainProfileQualificationOptions, RegisterGitHubFeedbackSourceOptions, ReleaseTaskTakeoverLeaseOptions, ReviewCapabilityRevocationOptions, SetGitHubFeedbackBacklogStatusOptions, SetHumanInterventionStateOptions, TaskCrossBackendHandoversQueryOptions, TaskInputManifestQueryOptions, TaskJobLogsQueryOptions, TaskJobRunsQueryOptions, StartTaskJobRunOptions, StopTaskJobRunOptions, TaskTakeoverLeaseQueryOptions, TaskTakeoverSnapshotOptions, UploadMissionDirectoryInputOptions, UploadMissionInputOptions, UpdateCompanyOptions, ArchiveCompanyOptions, RegisterMCPOptions, TestNotificationOptions, UpdateRuntimeSettingsOptions, WorkbenchApi} from './workbench-api';
 import type {ActivityStreamStatus} from './workbench-api';
 import type {MissionCloseoutOptions} from './workbench-api';
@@ -516,6 +517,18 @@ export function useSubmitTaskTakeoverSnapshot(api: WorkbenchApi, companyId: stri
     onSettled: async () => Promise.all([
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
       queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-change-requests', companyId, missionId]}),
+    ]),
+  });
+}
+
+export function useSubmitTaskTakeoverDirectorySnapshot(api: WorkbenchApi, companyId: string, missionId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<TaskTakeoverDirectorySnapshotOptions, 'companyId' | 'missionId'>) => api.submitTaskTakeoverDirectorySnapshot({...options, companyId, missionId}),
+    onSettled: async () => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'task-takeover-leases', companyId, missionId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'mission-inputs', companyId, missionId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'activity', companyId]}),
     ]),
   });
 }

@@ -210,6 +210,13 @@ type TaskTakeoverSnapshotCommand struct {
 	HumanEffortSeconds    int64  `json:"humanEffortSeconds"`
 }
 
+type TaskTakeoverDirectorySnapshotCommand struct {
+	RequestID               string
+	BaseWorkspaceTreeSHA256 string
+	Files                   []kernel.TaskTakeoverDirectorySnapshotFile
+	HumanEffortSeconds      int64
+}
+
 type TaskTakeoverLeaseService interface {
 	ListTaskTakeoverLeases(ctx context.Context, companyID, missionID string) ([]kernel.TaskTakeoverLease, error)
 	CreateTaskTakeoverLease(ctx context.Context, companyID, missionID, taskID string, request TaskTakeoverLeaseCommand) (kernel.TaskTakeoverLease, error)
@@ -220,6 +227,10 @@ type TaskTakeoverLeaseService interface {
 type TaskTakeoverWorkspaceReader interface {
 	GetTaskTakeoverWorkspaceManifest(ctx context.Context, companyID, missionID, leaseID string) (kernel.TaskTakeoverWorkspaceManifest, error)
 	ReadTaskTakeoverWorkspaceFile(ctx context.Context, companyID, missionID, leaseID, relativePath string) (kernel.TaskTakeoverWorkspaceFile, error)
+}
+
+type TaskTakeoverDirectorySnapshotService interface {
+	SubmitTaskTakeoverDirectorySnapshot(ctx context.Context, companyID, missionID, leaseID string, request TaskTakeoverDirectorySnapshotCommand) (kernel.TaskTakeoverLease, error)
 }
 
 type NotificationCommandService interface {

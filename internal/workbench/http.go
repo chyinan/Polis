@@ -1714,6 +1714,27 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, item)
+	case "takeover_leases.directory_snapshot":
+		takeoverService, ok := service.(control.TaskTakeoverDirectorySnapshotService)
+		if !ok {
+			writeCommandError(response, http.StatusNotImplemented, path.companyID, path.resourceID, errors.New("Task takeover directory snapshot service is unavailable"))
+			return
+		}
+		input, err := parseTaskTakeoverDirectorySnapshotUpload(response, request)
+		if errors.Is(err, errTaskTakeoverDirectorySnapshotTooLarge) {
+			writeError(response, http.StatusRequestEntityTooLarge, "Task takeover directory snapshot exceeds the 7 MB and 250 file bounds")
+			return
+		}
+		if err != nil {
+			writeCommandError(response, http.StatusBadRequest, path.companyID, path.resourceID, err)
+			return
+		}
+		item, err := takeoverService.SubmitTaskTakeoverDirectorySnapshot(ctx, path.companyID, path.missionID, path.resourceID, input)
+		if err != nil {
+			writeCommandError(response, commandStatus(err), path.companyID, path.missionID, err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, item)
 	case "missions.inputs.directory":
 		inputService, ok := service.(control.MissionDirectoryInputService)
 		if !ok {
@@ -2277,7 +2298,7 @@ func parsePath(path string) (parsedPath, bool) {
 		}
 		return parsedPath{companyID: companyID, missionID: missionID, resourceID: taskID, endpoint: "tasks.takeover_lease"}, true
 	}
-	if len(parts) == 6 && parts[1] == "missions" && parts[2] != "" && parts[3] == "takeover-leases" && parts[4] != "" && (parts[5] == "snapshot" || parts[5] == "release") {
+	if len(parts) == 6 && parts[1] == "missions" && parts[2] != "" && parts[3] == "takeover-leases" && parts[4] != "" && (parts[5] == "snapshot" || parts[5] == "release" || parts[5] == "directory-snapshot") {
 		missionID, missionErr := url.PathUnescape(parts[2])
 		leaseID, leaseErr := url.PathUnescape(parts[4])
 		if missionErr != nil || leaseErr != nil {

@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"sort"
 	"time"
 	"unicode/utf8"
 
@@ -48,8 +49,13 @@ func (k *Kernel) TXCreateTaskTakeoverLease(ctx context.Context, scope Scope, mis
 		if err != nil {
 			return Receipt{}, err
 		}
-		if treeBinding != nil && !taskTakeoverWorkspaceTreeMatchesLegacy(treeEntries, baseDigest, baseRevision) {
-			return Receipt{}, core.ConflictError{Reason: "human takeover requires one workspace.txt whose digest and source revision match the frozen Task workspace", CurrentState: "workspace_tree_mismatch"}
+		if treeBinding != nil {
+			if treeBinding.FileCount > intake.MaxDirectoryFiles || treeBinding.Bytes > intake.MaxDirectoryBytes {
+				return Receipt{}, core.ConflictError{Reason: "Task workspace tree exceeds the bounded MissionInput return limit", CurrentState: "workspace_tree_not_returnable"}
+			}
+			if _, snapshotErr := k.taskTakeoverPrepareWorkspaceTreeDirectorySnapshot(ctx, scope, taskID, treeEntries); snapshotErr != nil {
+				return Receipt{}, core.ConflictError{Reason: "Task workspace tree cannot be represented as a bounded safe directory MissionInput", CurrentState: "workspace_tree_not_returnable"}
+			}
 		}
 		baseRequirementsDigest, err := missionChangeRequirementsDigest(missionID, basis.Title, basis.Goal, basis.AcceptanceContract, basis.InputRevisions)
 		if err != nil {
@@ -250,6 +256,171 @@ VALUES($1,$2,$3,1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, scope.company, inputID, m
 			"base_workspace_revision": input.BaseWorkspaceRevision, "snapshot_digest": digest, "human_effort_seconds": input.HumanEffortSeconds,
 		}); err != nil {
 			return Receipt{}, err
+		}
+		return Receipt{ID: leaseID, Status: "returned"}, nil
+	})
+	if err != nil {
+		return TaskTakeoverLease{}, err
+	}
+	return k.TaskTakeoverLease(ctx, scope, missionID, receipt.ID)
+}
+
+func (k *Kernel) TXSubmitTaskTakeoverDirectorySnapshot(ctx context.Context, scope Scope, missionID, leaseID string, input TaskTakeoverDirectorySnapshotInput) (TaskTakeoverLease, error) {
+	if !core.ValidID(missionID) || !core.ValidID(leaseID) || !core.ValidID(input.RequestID) || !validSHA256(input.BaseWorkspaceTreeSHA256) ||
+		!validTaskTakeoverHumanEffortSeconds(input.HumanEffortSeconds) || len(input.Files) == 0 || len(input.Files) > intake.MaxDirectoryFiles {
+		return TaskTakeoverLease{}, core.Malformed
+	}
+	lease, err := k.TaskTakeoverLease(ctx, scope, missionID, leaseID)
+	if err != nil {
+		return TaskTakeoverLease{}, err
+	}
+	if lease.WorkspaceTree == nil || lease.WorkspaceTree.ManifestSHA256 != input.BaseWorkspaceTreeSHA256 {
+		return TaskTakeoverLease{}, core.ConflictError{Reason: "directory handback does not match a frozen workspace-tree lease", CurrentState: "workspace_tree_baseline_changed"}
+	}
+	root := "task-" + lease.TaskID
+	files := make([]intake.DirectoryInputFile, 0, len(input.Files))
+	submittedEntries := make([]taskTakeoverReturnedTreeEntry, 0, len(input.Files))
+	var submittedBytes int64
+	for _, file := range input.Files {
+		if !ValidWorkspaceRelativePath(file.RelativePath) || file.Content == "" || len(file.Content) > workspaceTreeMaxFileBytes || !utf8.ValidString(file.Content) {
+			return TaskTakeoverLease{}, core.Malformed
+		}
+		content := []byte(file.Content)
+		submittedBytes += int64(len(content))
+		if submittedBytes > intake.MaxDirectoryBytes {
+			return TaskTakeoverLease{}, core.TooLarge
+		}
+		digest := sha256.Sum256(content)
+		submittedEntries = append(submittedEntries, taskTakeoverReturnedTreeEntry{RelativePath: file.RelativePath, Digest: hex.EncodeToString(digest[:]), Bytes: int64(len(content))})
+		files = append(files, intake.DirectoryInputFile{RelativePath: root + "/" + file.RelativePath, MediaType: "text/plain; charset=utf-8", Content: content})
+	}
+	sort.Slice(submittedEntries, func(i, j int) bool { return submittedEntries[i].RelativePath < submittedEntries[j].RelativePath })
+	prepared, err := intake.PrepareDirectorySnapshot(files)
+	if err != nil {
+		return TaskTakeoverLease{}, err
+	}
+	submittedManifest := taskTakeoverReturnedTreeManifest{Version: "polis-task-takeover-return@1", TaskID: lease.TaskID,
+		BaseManifestSHA256: input.BaseWorkspaceTreeSHA256, Files: submittedEntries}
+	manifestBytes, err := json.Marshal(submittedManifest)
+	if err != nil {
+		return TaskTakeoverLease{}, err
+	}
+	submittedManifestDigest := sha256.Sum256(manifestBytes)
+	submittedManifestSHA256 := hex.EncodeToString(submittedManifestDigest[:])
+	requestFingerprint := fingerprint(struct {
+		MissionID, LeaseID, RequestID, BaseTreeSHA256, SubmittedManifestSHA256, SnapshotDigest string
+		HumanEffortSeconds                                                                     int64
+	}{missionID, leaseID, input.RequestID, input.BaseWorkspaceTreeSHA256, submittedManifestSHA256, prepared.Upload.ContentDigest, input.HumanEffortSeconds})
+	if lease.State != "granted" {
+		receipt, replayErr := k.TXWrite(ctx, scope, nil, input.RequestID, "task.takeover.snapshot.returned", requestFingerprint, func(pgx.Tx) (Receipt, error) {
+			return Receipt{}, core.ConflictError{Reason: "takeover lease is no longer active", CurrentState: lease.State}
+		})
+		if replayErr != nil {
+			return TaskTakeoverLease{}, replayErr
+		}
+		return k.TaskTakeoverLease(ctx, scope, missionID, receipt.ID)
+	}
+	storedDigest, err := k.putBlobWithClaim(ctx, scope.company, prepared.Archive)
+	if err != nil {
+		return TaskTakeoverLease{}, err
+	}
+	if storedDigest != prepared.Upload.ContentDigest {
+		return TaskTakeoverLease{}, core.Integrity
+	}
+	receipt, err := k.TXWrite(ctx, scope, nil, input.RequestID, "task.takeover.snapshot.returned", requestFingerprint, func(tx pgx.Tx) (Receipt, error) {
+		currentLease, state, txErr := taskTakeoverLeaseForUpdate(ctx, tx, scope, missionID, leaseID)
+		if txErr != nil {
+			return Receipt{}, txErr
+		}
+		if state != "granted" || !sameTaskTakeoverWorkspaceTreeBinding(currentLease.WorkspaceTree, lease.WorkspaceTree) || currentLease.WorkspaceTree == nil ||
+			currentLease.WorkspaceTree.ManifestSHA256 != input.BaseWorkspaceTreeSHA256 {
+			return Receipt{}, core.ConflictError{Reason: "takeover lease or frozen workspace-tree baseline changed before handback", CurrentState: state}
+		}
+		basis, txErr := missionChangeBasisTx(ctx, tx, scope, missionID, true)
+		if txErr != nil {
+			return Receipt{}, txErr
+		}
+		if basis.State != "paused" {
+			return Receipt{}, core.ConflictError{Reason: "Mission resumed before the human directory snapshot was returned", CurrentState: basis.State}
+		}
+		baseRequirementsDigest, txErr := missionChangeRequirementsDigest(missionID, basis.Title, basis.Goal, basis.AcceptanceContract, basis.InputRevisions)
+		if txErr != nil {
+			return Receipt{}, txErr
+		}
+		if baseRequirementsDigest != currentLease.BaseRequirementsSHA256 {
+			return Receipt{}, core.ConflictError{Reason: "Mission requirements or inputs changed after the takeover lease was granted", CurrentState: "base_requirements_changed"}
+		}
+		impact, _, txErr := missionChangeImpactTx(ctx, tx, scope, missionID, baseRequirementsDigest, basis.InputRevisions)
+		if txErr != nil {
+			return Receipt{}, txErr
+		}
+		if !missionChangeWritersStopped(impact) {
+			return Receipt{}, core.ConflictError{Reason: "a WorkerSession, JobRun or service lease became active before handback", CurrentState: "writers_not_stopped"}
+		}
+		if open, openErr := missionHasOpenChangeRequestTx(ctx, tx, scope, missionID); openErr != nil {
+			return Receipt{}, openErr
+		} else if open {
+			return Receipt{}, core.ConflictError{Reason: "formal change request opened while the takeover lease was active", CurrentState: "change_request_open"}
+		}
+		var currentDigest string
+		var currentRevision int64
+		if txErr = tx.QueryRow(ctx, "SELECT digest,revision FROM worker_workspaces WHERE company_id=$1 AND task_id=$2", scope.company, currentLease.TaskID).Scan(&currentDigest, &currentRevision); txErr != nil {
+			return Receipt{}, txErr
+		}
+		if currentDigest != currentLease.BaseWorkspaceDigest || currentRevision != currentLease.BaseWorkspaceRevision {
+			return Receipt{}, core.ConflictError{Reason: "Task workspace changed after the takeover lease was granted", CurrentState: "workspace_revision_changed"}
+		}
+		currentTreeBinding, baseEntries, txErr := k.taskTakeoverWorkspaceTreeBindingTX(ctx, tx, scope, missionID, currentLease.TaskID, true)
+		if txErr != nil {
+			return Receipt{}, txErr
+		}
+		if !sameTaskTakeoverWorkspaceTreeBinding(currentLease.WorkspaceTree, currentTreeBinding) || currentTreeBinding == nil {
+			return Receipt{}, core.ConflictError{Reason: "Task workspace tree changed after the takeover lease was granted", CurrentState: "workspace_tree_revision_changed"}
+		}
+		var activeSlot bool
+		if txErr = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3)", scope.company, currentLease.TaskID, leaseID).Scan(&activeSlot); txErr != nil {
+			return Receipt{}, txErr
+		}
+		if !activeSlot {
+			return Receipt{}, core.ConflictError{Reason: "takeover lease no longer owns the Task handback slot", CurrentState: "lease_not_active"}
+		}
+		diffSummary, txErr := taskTakeoverWorkspaceTreeDiffSummary(currentLease, baseEntries, submittedEntries, input.BaseWorkspaceTreeSHA256, submittedManifestSHA256, prepared.Upload.ContentDigest, int(submittedBytes))
+		if txErr != nil {
+			return Receipt{}, txErr
+		}
+		inputID := newID()
+		if _, txErr = tx.Exec(ctx, `INSERT INTO mission_inputs(company_id,input_id,mission_id,revision,request_id,source_kind,display_name,media_type,byte_size,content_digest,state,image_width,image_height,request_fingerprint)
+VALUES($1,$2,$3,1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, scope.company, inputID, missionID, input.RequestID, prepared.Upload.SourceKind, prepared.Upload.DisplayName, prepared.Upload.MediaType, prepared.Upload.ByteSize, prepared.Upload.ContentDigest, string(prepared.Upload.State), prepared.Upload.ImageWidth, prepared.Upload.ImageHeight, requestFingerprint); txErr != nil {
+			return Receipt{}, txErr
+		}
+		var humanEffortSeconds *int32
+		if input.HumanEffortSeconds > 0 {
+			seconds := int32(input.HumanEffortSeconds)
+			humanEffortSeconds = &seconds
+		}
+		diffJSON, marshalErr := json.Marshal(diffSummary)
+		if marshalErr != nil {
+			return Receipt{}, marshalErr
+		}
+		if txErr = appendTaskTakeoverLeaseEvent(ctx, tx, scope, leaseID, "returned", "snapshot_base_verified", input.RequestID,
+			&inputID, int64Pointer(1), &prepared.Upload.ContentDigest, &prepared.Upload.ByteSize, humanEffortSeconds, diffJSON); txErr != nil {
+			return Receipt{}, txErr
+		}
+		if _, txErr = tx.Exec(ctx, "DELETE FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3", scope.company, currentLease.TaskID, leaseID); txErr != nil {
+			return Receipt{}, txErr
+		}
+		if txErr = appendEvent(ctx, tx, scope, "mission.input.human_handover", map[string]any{
+			"mission_id": missionID, "task_id": currentLease.TaskID, "lease_id": leaseID, "input_id": inputID, "revision": 1,
+			"content_digest": prepared.Upload.ContentDigest, "source_kind": prepared.Upload.SourceKind,
+		}); txErr != nil {
+			return Receipt{}, txErr
+		}
+		if txErr = appendEvent(ctx, tx, scope, "task.takeover.returned", map[string]any{
+			"mission_id": missionID, "task_id": currentLease.TaskID, "lease_id": leaseID, "base_workspace_tree_sha256": input.BaseWorkspaceTreeSHA256,
+			"submitted_workspace_tree_sha256": submittedManifestSHA256, "snapshot_digest": prepared.Upload.ContentDigest,
+			"human_effort_seconds": input.HumanEffortSeconds,
+		}); txErr != nil {
+			return Receipt{}, txErr
 		}
 		return Receipt{ID: leaseID, Status: "returned"}, nil
 	})
@@ -597,11 +768,89 @@ func taskTakeoverWorkspaceTreeMatchesLegacy(entries []WorkspaceTreeEntry, digest
 	return len(entries) == 1 && entries[0].RelativePath == "workspace.txt" && entries[0].Digest == digest && entries[0].SourceRevision == revision
 }
 
+func (k *Kernel) taskTakeoverPrepareWorkspaceTreeDirectorySnapshot(ctx context.Context, scope Scope, taskID string, entries []WorkspaceTreeEntry) (intake.PreparedDirectorySnapshot, error) {
+	if len(entries) == 0 || len(entries) > intake.MaxDirectoryFiles {
+		return intake.PreparedDirectorySnapshot{}, core.TooLarge
+	}
+	files := make([]intake.DirectoryInputFile, 0, len(entries))
+	var total int64
+	root := "task-" + taskID
+	for _, entry := range entries {
+		if !ValidWorkspaceRelativePath(entry.RelativePath) || entry.Bytes < 1 || entry.Bytes > workspaceTreeMaxFileBytes {
+			return intake.PreparedDirectorySnapshot{}, core.Malformed
+		}
+		content, err := readBlobBounded(k.root, scope.company, entry.Digest, workspaceTreeMaxFileBytes)
+		if err != nil || int64(len(content)) != entry.Bytes || !utf8.Valid(content) {
+			return intake.PreparedDirectorySnapshot{}, core.Integrity
+		}
+		total += int64(len(content))
+		if total > intake.MaxDirectoryBytes {
+			return intake.PreparedDirectorySnapshot{}, core.TooLarge
+		}
+		files = append(files, intake.DirectoryInputFile{RelativePath: root + "/" + entry.RelativePath, MediaType: "text/plain; charset=utf-8", Content: content})
+	}
+	return intake.PrepareDirectorySnapshot(files)
+}
+
 func sameTaskTakeoverWorkspaceTreeBinding(pinned, current *TaskTakeoverWorkspaceTreeBinding) bool {
 	if pinned == nil || current == nil {
 		return pinned == nil && current == nil
 	}
 	return *pinned == *current
+}
+
+type taskTakeoverReturnedTreeEntry struct {
+	RelativePath string `json:"relativePath"`
+	Digest       string `json:"sha256"`
+	Bytes        int64  `json:"bytes"`
+}
+
+type taskTakeoverReturnedTreeManifest struct {
+	Version            string                          `json:"version"`
+	TaskID             string                          `json:"taskId"`
+	BaseManifestSHA256 string                          `json:"baseManifestSha256"`
+	Files              []taskTakeoverReturnedTreeEntry `json:"files"`
+}
+
+func taskTakeoverWorkspaceTreeDiffSummary(lease TaskTakeoverLease, baseEntries []WorkspaceTreeEntry, submitted []taskTakeoverReturnedTreeEntry,
+	baseManifestSHA256, submittedManifestSHA256, snapshotDigest string, submittedBytes int) (TaskTakeoverDiffSummary, error) {
+	if lease.WorkspaceTree == nil || !validSHA256(baseManifestSHA256) || !validSHA256(submittedManifestSHA256) || !validSHA256(snapshotDigest) {
+		return TaskTakeoverDiffSummary{}, core.Integrity
+	}
+	base := make(map[string]WorkspaceTreeEntry, len(baseEntries))
+	for _, entry := range baseEntries {
+		base[entry.RelativePath] = entry
+	}
+	returned := make(map[string]taskTakeoverReturnedTreeEntry, len(submitted))
+	for _, entry := range submitted {
+		returned[entry.RelativePath] = entry
+	}
+	added, modified, deleted := make([]string, 0), make([]string, 0), make([]string, 0)
+	for path, entry := range returned {
+		old, exists := base[path]
+		if !exists {
+			added = append(added, path)
+		} else if old.Digest != entry.Digest || old.Bytes != entry.Bytes {
+			modified = append(modified, path)
+		}
+	}
+	for path := range base {
+		if _, exists := returned[path]; !exists {
+			deleted = append(deleted, path)
+		}
+	}
+	sort.Strings(added)
+	sort.Strings(modified)
+	sort.Strings(deleted)
+	if len(added)+len(modified)+len(deleted) == 0 {
+		return TaskTakeoverDiffSummary{}, core.ConflictError{Reason: "human workspace tree is unchanged from its frozen baseline", CurrentState: "no_changes"}
+	}
+	return TaskTakeoverDiffSummary{
+		Model: "workspace_tree_manifest_diff@1", BaseWorkspaceDigest: lease.BaseWorkspaceDigest, BaseWorkspaceRevision: lease.BaseWorkspaceRevision,
+		SubmittedContentDigest: snapshotDigest, BaseBytes: int(lease.WorkspaceTree.Bytes), SubmittedBytes: submittedBytes,
+		Changed: true, BaseWorkspaceTreeSHA256: baseManifestSHA256, SubmittedWorkspaceTreeSHA256: submittedManifestSHA256,
+		AddedFiles: added, ModifiedFiles: modified, DeletedFiles: deleted,
+	}, nil
 }
 
 func taskTakeoverLeaseForUpdate(ctx context.Context, tx pgx.Tx, scope Scope, missionID, leaseID string) (TaskTakeoverLease, string, error) {

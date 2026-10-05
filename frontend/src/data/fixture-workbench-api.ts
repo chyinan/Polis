@@ -512,6 +512,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
     throw new CommandApiError('SIMULATED_MODE', 409, 'human takeover is unavailable in fixture mode');
   }
 
+  async submitTaskTakeoverDirectorySnapshot(_options: Readonly<{companyId: string; missionId: string; leaseId: string; requestId: string; baseWorkspaceTreeSha256: string; files: ReadonlyArray<Readonly<{relativePath: string; content: string}>>; humanEffortSeconds: number}>): Promise<TaskTakeoverLeaseView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'human takeover is unavailable in fixture mode');
+  }
+
   async releaseTaskTakeoverLease(_options: ReleaseTaskTakeoverLeaseOptions): Promise<TaskTakeoverLeaseView> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'human takeover is unavailable in fixture mode');
   }
