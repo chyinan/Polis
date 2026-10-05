@@ -3,6 +3,7 @@
 import {useState, type ReactNode} from 'react';
 import {ArrowUpRight, Building2, Database, LockKeyhole, Plus, Radio, Settings2} from 'lucide-react';
 import {Link, useNavigate} from 'react-router-dom';
+import teamCoverage from '../../../spec/design-v0.4.5/product/TEAM_COVERAGE.json';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useCompanyList, useCompanyOverview, useCreateCompany} from '../data/workbench-query';
 import type {CompanyOverviewView, EmployeeDraft} from '../domain/workbench';
@@ -66,6 +67,32 @@ export function GroupOverviewPage({api, companyId}: GroupPageProps) {
 
 type WizardStep = 0 | 1 | 2 | 3 | 4;
 
+const taskTypeLabels: Readonly<Record<string, string>> = {
+  planning: '规划分析',
+  frontend: '前端实现',
+  backend: '后端实现',
+  environment_plan: '环境方案',
+  regression_test_overlay: '回归测试覆盖层',
+  design_change: '设计变更',
+  delivery_assembly: '交付组装',
+};
+
+const acceptancePathLabels: Readonly<Record<string, string>> = {
+  owner_protected_goal_contract: '负责人保护的目标合同',
+  trusted_baseline_plus_independent_review: '可信基线 + 独立复核',
+  current_environment_policy: '当前环境策略',
+  separate_test_quality_review_not_final_production_acceptance: '独立测试质量复核（不能替代最终生产验收）',
+  risk_policy_owner_if_outside_scope: '超出范围时由风险策略负责人处理',
+  immutable_manifest_and_deterministic_checks: '不可变清单 + 确定性检查',
+};
+
+const employeeLabels: Readonly<Record<string, string>> = {
+  'emp-planning': '规划工程师',
+  'emp-backend': '后端工程师',
+  'emp-frontend': '前端工程师',
+  'emp-review': '独立验收员',
+};
+
 export function NewCompanyPage({api}: Readonly<{api: WorkbenchApi}>) {
   const [step, setStep] = useState<WizardStep>(0);
   const [companyId, setCompanyId] = useState('');
@@ -93,10 +120,10 @@ export function NewCompanyPage({api}: Readonly<{api: WorkbenchApi}>) {
     <section className={styles.sectionCard} data-od-id="company-creation-step">
       <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>第 {step + 1} 步 / 5</span><h2 className={styles.sectionTitle}>{steps[step]}</h2></div><StatusBadge label="本地草案" tone="neutral" /></div>
       {step === 0 ? <div className={styles.formStack}><label className={styles.formLabel}>公司 ID<input className={styles.formField} value={companyId} onChange={event => setCompanyId(event.target.value)} placeholder="例如 content-lab" /></label><label className={styles.formLabel}>公司名称<input className={styles.formField} value={name} onChange={event => setName(event.target.value)} placeholder="例如 Polis 内容实验室" /></label><p className={styles.formHint}>创建会保存固定组织，但不会启动使命或调用模型。</p></div> : null}
-      {step === 1 ? <div className={styles.formStack}>{roster.map(employee => <div className={styles.wizardChoice} key={employee.id}><strong>{employee.id}</strong><label className={styles.formLabel}>显示名<input className={styles.formField} value={employee.displayName} onChange={event => updateEmployee(employee.id, 'displayName', event.target.value)} /></label><label className={styles.formLabel}>岗位<input className={styles.formField} value={employee.role} onChange={event => updateEmployee(employee.id, 'role', event.target.value)} /></label><label className={styles.formLabel}>模型配置<input className={styles.formField} value={employee.modelProfile} onChange={event => updateEmployee(employee.id, 'modelProfile', event.target.value)} /></label></div>)}</div> : null}
+      {step === 1 ? <div className={styles.formStack}>{roster.map(employee => <div className={styles.wizardChoice} key={employee.id}><strong>{employee.id}</strong><label className={styles.formLabel}>显示名<input className={styles.formField} value={employee.displayName} onChange={event => updateEmployee(employee.id, 'displayName', event.target.value)} /></label><label className={styles.formLabel}>岗位<input className={styles.formField} value={employee.role} onChange={event => updateEmployee(employee.id, 'role', event.target.value)} /></label><label className={styles.formLabel}>模型配置<input className={styles.formField} value={employee.modelProfile} onChange={event => updateEmployee(employee.id, 'modelProfile', event.target.value)} /></label></div>)}<section aria-label="固定团队任务覆盖草案" className={styles.wizardChoice} data-od-id="company-team-coverage-draft"><div><strong>固定团队任务覆盖（设计草案 v{teamCoverage.document_version}）</strong><p className={styles.formHint}>负责人确认前不作为执行合同。覆盖表中的岗位资格均未验证；按草案要求，任务准入需要先由人工处理。</p></div><div aria-label="七类任务覆盖" className={styles.recordList} role="list">{teamCoverage.coverage.map(coverage => <div className={styles.recordRow} key={coverage.task_type} role="listitem"><div className={styles.recordLead}><div><strong>{taskTypeLabels[coverage.task_type] ?? coverage.task_type} · {coverage.owner}（{employeeLabels[coverage.owner] ?? coverage.owner}）</strong><span>验收路径：{acceptancePathLabels[coverage.acceptance_path] ?? coverage.acceptance_path}；独立复核：{coverage.eligible_independent_checkers.map(checker => employeeLabels[checker] ?? checker).join('、')}</span></div></div><div className={styles.recordMeta}><StatusBadge compact label={coverage.qualification === 'qualified' ? '已资格验证' : '未资格验证'} tone={coverage.qualification === 'qualified' ? 'success' : 'neutral'} /></div></div>)}</div><p className={styles.formHint}>执行开关：{teamCoverage.execution_enabled ? '开启' : '关闭'}。创建公司只登记组织信息，不代表负责人已确认该矩阵，也不会放行真实提供方执行。</p></section></div> : null}
       {step === 2 ? <div className={styles.formStack}><label className={styles.formLabel}>工作区 / 项目目录<input className={styles.formField} value={workspaceRoot} onChange={event => setWorkspaceRoot(event.target.value)} placeholder="例如 C:/workspace/content-lab" /></label><p className={styles.formHint}>只保存授权配置，不扫描任意宿主目录、不运行脚本。</p><div className={styles.wizardGrid}><div className={styles.wizardChoice}><Database aria-hidden="true" className={styles.icon} size={18} /><strong>技能 / MCP</strong><span>当前阶段默认不绑定外部能力。</span><StatusBadge label="默认关闭" tone="neutral" /></div><div className={styles.wizardChoice}><Settings2 aria-hidden="true" className={styles.icon} size={18} /><strong>模型提供方</strong><span>使用现有运行时就绪状态，不在创建时启动。</span><StatusBadge label="不探测" tone="info" /></div></div></div> : null}
       {step === 3 ? <div className={styles.detailRows}><DataRow label="预算口径" value="现有 tool-call 口径；不伪造美元上限" /><DataRow label="保护收尾额" value="由运行时现有语义决定" /><DataRow label="外部动作" value="默认关闭" /><DataRow label="启动状态" value="创建后保持 draft" /></div> : null}
-      {step === 4 ? <div className={styles.detailRows}><DataRow label="公司 ID" value={companyId || '未填写'} /><DataRow label="公司名称" value={name || '未填写'} /><DataRow label="工作区目录" value={workspaceRoot || '未填写'} /><DataRow label="固定员工" value={`${roster.length} 个逻辑员工`} /><DataRow label="外部效果" value="不发送、不探测、不发布" />{createCompany.isError ? <p className={styles.formError} role="alert">创建结果尚未确认：{createCompany.error.message} 请先到集团公司目录核对，再决定是否重试。</p> : null}</div> : null}
+      {step === 4 ? <div className={styles.detailRows}><DataRow label="公司 ID" value={companyId || '未填写'} /><DataRow label="公司名称" value={name || '未填写'} /><DataRow label="工作区目录" value={workspaceRoot || '未填写'} /><DataRow label="固定员工" value={`${roster.length} 个逻辑员工`} /><DataRow label="团队执行准入" value={<StatusBadge compact label="需负责人确认 · 资格未验证" tone="neutral" />} /><DataRow label="外部效果" value="不发送、不探测、不发布" /><p className={styles.formHint}>创建只保存公司和员工设置。TEAM_COVERAGE 草案要求负责人确认；该确认和各岗位资格尚未记录，因此此处不会将创建操作解释为执行授权。</p>{createCompany.isError ? <p className={styles.formError} role="alert">创建结果尚未确认：{createCompany.error.message} 请先到集团公司目录核对，再决定是否重试。</p> : null}</div> : null}
       <div className={styles.wizardActions}><button className={styles.textButton} disabled={step === 0 || createCompany.isPending} onClick={() => setStep((step - 1) as WizardStep)} type="button">上一步</button>{step < 4 ? <button className={styles.commandButton} onClick={() => setStep((step + 1) as WizardStep)} type="button">下一步 <ArrowUpRight aria-hidden="true" size={14} /></button> : <button className={styles.commandButton} disabled={createCompany.isPending} onClick={() => { void submitCompany(); }} type="button">{createCompany.isPending ? '正在创建…' : '创建公司'} <ArrowUpRight aria-hidden="true" size={14} /></button>}</div>
     </section>
   </div>;

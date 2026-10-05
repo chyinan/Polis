@@ -1,6 +1,6 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 235. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 236. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
@@ -15,7 +15,7 @@ These facts rule out session-backed execution in the current database and native
 
 | Open requirement | Remaining gate in the approved ledger | Evidence needed to resume |
 |---|---|---|
-| REQ-02 | The fixed `TEAM_COVERAGE.json` remains a draft with seven unqualified assignments; actual provider role contracts and direct-message surface remain unqualified. | Installation owner confirms the fixed roster/role mapping; separately authorized real-provider account and role-surface qualification. |
+| REQ-02 | The New Company wizard now displays all seven `TEAM_COVERAGE.json` assignments and acceptance paths, but the matrix remains a draft with seven unqualified assignments. The UI does not persist approval or enforce executable role contracts; the actual provider role contracts and direct-message surface remain unqualified. | Installation owner confirms the fixed roster/role mapping; separately authorized real-provider account and role-surface qualification. |
 | REQ-13 | The Fake-only dispatcher has persisted fairness and per-Task claims, but no owner-backed global slot cap or authoritative quota-ready/release source exists. | Owner decision for the installation-wide cap and a trusted provider quota signal/account source. |
 | REQ-14 | Legacy revocation rows may still need an installation-owner `acknowledged_unresolved` disposition; stop/restart proof depends on runtime host state. | Owner review of each applicable legacy row and host-backed exact stop/recovery evidence. |
 | REQ-15 | Memory overlay restore behavior needs PostgreSQL/Desktop runtime qualification; corrections and revalidation require a session-bound operator path. | A qualified Desktop/PostgreSQL restore host and an already-active, database-confirmed WorkerSession for any session-bound action. |

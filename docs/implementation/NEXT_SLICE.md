@@ -1,6 +1,12 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 235, open qualification dependency audit)
+## Latest continuation status (Slice 236, REQ-02 team coverage review)
+
+The New Company wizard now imports the canonical fixed-team coverage matrix and shows each task type's owner, independent checker(s), acceptance path, and unverified qualification. It explains that the template is still a human-confirmation draft and that company creation does not approve or qualify task execution. The seven REQ-02 scenario records link the evidence and remain `partial/not_run`; all 232 frozen scenarios remain `not_run`. Frontend production build and `git diff --check` pass. No tests, database writes, Worker/provider operations, or scenario runs occurred. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-236-req02-team-coverage-review/verification.md`.
+
+Next Slice237: continue auditing the approved finite ledger for a concrete local implementation gap. Keep REQ-02 open until its owner decision, executable role contracts, and real surface qualification exist. Worker activity still requires a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 235, open qualification dependency audit)
 
 Added `docs/implementation/OPEN_QUALIFICATION_BLOCKERS.md`, mapping all 17 open software requirement IDs to the specific owner decisions, current-session, account, host, and scenario evidence still required. Current checkout evidence is Android/Termux with Schema 108, zero Companies/Missions/active WorkerSessions, no `pwsh`, `powershell`, `bwrap`, or `systemd-run` qualification tools, and 232/232 frozen scenarios `not_run`. This documents blockers; it does not close requirements or authorize creating sessions, accounts, or external effects. `git diff --check` and traceability JSON parsing pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-235-open-qualification-blockers/verification.md`.
 
