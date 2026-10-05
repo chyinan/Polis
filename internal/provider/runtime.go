@@ -399,6 +399,7 @@ type TurnResult struct {
 	RetryObservationScope string
 	TurnCompleted         bool
 	Usage                 codex.TokenUsage
+	UsageUpdates          int
 	StartedAt             time.Time
 	FinishedAt            time.Time
 }

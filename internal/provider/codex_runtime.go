@@ -787,7 +787,7 @@ func (s *codexSession) startThreadWithInstructions(ctx context.Context, options 
 func (s *codexSession) Turn(ctx context.Context, thread, prompt string, options codex.TurnOptions, handler ToolHandler) (TurnResult, error) {
 	started := time.Now().UTC()
 	result, err := s.client.TurnWithOptions(ctx, thread, s.config.Effort, prompt, options, handler)
-	return TurnResult{State: result.State, Outcome: codex.ClassifyTurnOutcome(result, err), ToolCalls: result.ToolCalls, ProviderEgress: 1, ReconnectAttemptCount: result.ReconnectAttemptCount, ReconnectRecovered: result.ReconnectRecovered, RetryVisibility: "limited", RetryObservationScope: RetryObservationCodexAppServerWillRetry, TurnCompleted: result.State == "completed", Usage: result.Usage, StartedAt: started, FinishedAt: time.Now().UTC()}, err
+	return TurnResult{State: result.State, Outcome: codex.ClassifyTurnOutcome(result, err), ToolCalls: result.ToolCalls, ProviderEgress: 1, ReconnectAttemptCount: result.ReconnectAttemptCount, ReconnectRecovered: result.ReconnectRecovered, RetryVisibility: "limited", RetryObservationScope: RetryObservationCodexAppServerWillRetry, TurnCompleted: result.State == "completed", Usage: result.Usage, UsageUpdates: result.UsageUpdates, StartedAt: started, FinishedAt: time.Now().UTC()}, err
 }
 func (s *codexSession) Stop(_ context.Context) (runner.StopProof, error) {
 	s.client.Close()

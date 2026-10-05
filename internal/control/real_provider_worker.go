@@ -911,7 +911,12 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 			turnErr = fmt.Errorf("provider turn completed but Task input delivery evidence could not be saved: %w", receiptErr)
 		}
 	}
-	usageRecord := map[string]any{"authorization": worker.authorization, "problem_key": worker.problemKey, "task_tool_call_budget_at_start": worker.taskToolBudget, "effective_turn_tool_call_limit": turnOptions.ToolCallLimit, "token_usage": turn.Usage, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
+	usageRecord := map[string]any{"authorization": worker.authorization, "problem_key": worker.problemKey, "task_tool_call_budget_at_start": worker.taskToolBudget, "effective_turn_tool_call_limit": turnOptions.ToolCallLimit, "token_usage": nil, "token_usage_quality": "unavailable", "token_usage_update_count": turn.UsageUpdates, "tool_calls": turn.ToolCalls, "provider_egress": turn.ProviderEgress, "reconnect_attempt_count": turn.ReconnectAttemptCount, "reconnect_recovered": turn.ReconnectRecovered, "retry_visibility": turn.RetryVisibility, "started_at": turn.StartedAt, "finished_at": turn.FinishedAt}
+	if turn.UsageUpdates > 0 {
+		usageRecord["token_usage"] = turn.Usage
+		usageRecord["token_usage_quality"] = "protocol_reported"
+		usageRecord["token_usage_observation_scope"] = "codex_app_server_thread_token_usage_updated"
+	}
 	if turn.RetryObservationScope != "" {
 		usageRecord["retry_observation_scope"] = turn.RetryObservationScope
 		usageRecord["unobserved_provider_retry_count"] = nil
