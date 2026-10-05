@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 252, REQ-24 receipt replay authorization guard)
+## Latest continuation status (Slice 253, REQ-31/34 exact stdio MCP manifest fields)
+
+The stdio MCP package manifest parser now rejects unknown or case-variant top-level field names before Go struct decoding. Literal duplicate keys remain rejected by the existing recursive check, and `args` remains optional. This keeps the persisted command and entry point aligned with exact-key JSON consumers. The 18 mapped REQ-31/34 rows remain partial/not_run; all 232 frozen scenarios remain not_run. `go build ./...` and `git diff --check` passed. No tests, DB, Worker/provider operation, package import, or frozen scenario ran. Windows WFP/AppContainer and real MCP/provider qualification remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md.
+
+## Previous continuation status (Slice 252, REQ-24 receipt replay authorization guard)
 
 The receipt idempotency path after advisory-lock contention now opens a fresh transaction and reruns the runtime lease, Company lock, binding, Employee epoch, and WorkerSession state checks before reading a receipt. A stale or ended session can no longer obtain an old receipt through that fast path. `go build ./...` and `git diff --check` passed. The six REQ-24 scenario rows remain partial/not_run; all 232 frozen scenarios remain not_run. No tests, database, Worker/provider operation, or scenario ran. Active-session and qualified runtime/provider evidence remain external gates. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-252-req24-replay-auth-guard/verification.md.
 
