@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 234 — REQ-36 environment preparation retry identity
+
+The Ensure Environment action stores its opaque request ID in browser `sessionStorage`, keyed by Company and environment revision. After an ambiguous result, retrying from the same browser tab reuses that ID even if the Task subpage remounts or reloads; receiving a validated receipt clears the entry. When session storage is unavailable, the component retains the existing in-memory retry behavior. Frontend production build and `git diff --check` pass. The local database is Schema 108 with zero active WorkerSessions; no environment preparation, Worker or frozen scenario ran. UI-42 and WF-08 cite the evidence and keep their `implemented/not_run` dispositions. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md`.
+
 ## Slice 233 — REQ-39 owner review state in Workbench
 
 Formal change request event projections now include the Planning assessment ID, digest and risk from owner consideration and final application. The Workbench shows those audit values, compares the current assessment SHA with the latest consideration SHA, disables application when they differ or the receipt is stale, and prompts the owner to reconsider. This makes the Slice232 server fence visible before submission. `go build ./...`, rebuilt CLI, `npm run build` and `git diff --check` pass. Local services are healthy at Schema 108 with zero WorkerSessions; no tests, Worker/provider action or frozen scenario ran. All eight REQ-39 crosswalk rows link this evidence and remain `partial/not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md`.

@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 233, REQ-39 owner review state in Workbench)
+## Latest continuation status (Slice 234, REQ-36 environment preparation retry identity)
+
+Environment preparation now keeps its opaque Ensure RequestID in browser `sessionStorage`, scoped to the Company and environment revision. An ambiguous response can be retried with the exact same RequestID after a route remount or page reload in that tab; a validated receipt clears it. If session storage is unavailable, same-component retries still use the in-memory fallback. Frontend production build and `git diff --check` pass. Schema 108 remains current with zero active WorkerSessions; no preparation request, Worker or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md`.
+
+Next Slice235: continue with a concrete local gap from the finite approved R1–R3 ledger. Keep external qualification and frozen scenario states truthful. Worker activity remains gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 233, REQ-39 owner review state in Workbench)
 
 Formal change history now exposes the Planning assessment ID, digest and risk level for consideration/application events. The Workbench compares the current assessment digest with the latest owner consideration, disables apply when they differ or are stale, and directs the owner to re-review. This aligns the visible action with Slice232's apply-time server fence. `go build ./...`, rebuilt CLI, `npm run build` and `git diff --check` pass; the local backend and frontend return HTTP 200 at Schema 108, with zero WorkerSessions. No tests, Worker, or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-233-req39-review-state-ui/verification.md`.
 
-Next Slice234: continue the approved finite R1–R3 ledger with the next concrete local software or evidence gap. Keep external qualification and frozen scenario states truthful. Worker activity remains gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+Slice 234 preserves exact environment preparation retries across same-tab route and page reloads.
 
 ## Previous continuation status (Slice 232, REQ-39 apply-time Planning assessment fence)
 

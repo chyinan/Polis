@@ -281,6 +281,45 @@ function formatProjectJobLogs(content: string): string {
   }
 }
 
+const environmentPreparationRequestIdPattern = /^environment-ensure-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function environmentPreparationRequestIdKey(companyId: string, revisionId: string): string {
+  return `polis:pending-command:environment-ensure:v1:${encodeURIComponent(companyId)}:${encodeURIComponent(revisionId)}`;
+}
+
+function pendingEnvironmentPreparationRequestId(companyId: string, revisionId: string, requestIds: Map<string, string>): string {
+  const key = environmentPreparationRequestIdKey(companyId, revisionId);
+  const cached = requestIds.get(key);
+  if (cached !== undefined && environmentPreparationRequestIdPattern.test(cached)) return cached;
+  try {
+    const stored = window.sessionStorage.getItem(key);
+    if (stored !== null && environmentPreparationRequestIdPattern.test(stored)) {
+      requestIds.set(key, stored);
+      return stored;
+    }
+  } catch {
+    // Keep retries in memory when browser session storage is unavailable.
+  }
+  const requestId = `environment-ensure-${crypto.randomUUID()}`;
+  requestIds.set(key, requestId);
+  try {
+    window.sessionStorage.setItem(key, requestId);
+  } catch {
+    // The in-memory entry still preserves exact retries for this component lifetime.
+  }
+  return requestId;
+}
+
+function clearPendingEnvironmentPreparationRequestId(companyId: string, revisionId: string, requestId: string, requestIds: Map<string, string>): void {
+  const key = environmentPreparationRequestIdKey(companyId, revisionId);
+  if (requestIds.get(key) === requestId) requestIds.delete(key);
+  try {
+    if (window.sessionStorage.getItem(key) === requestId) window.sessionStorage.removeItem(key);
+  } catch {
+    // A failed cleanup only leaves an opaque request ID until this tab's session ends.
+  }
+}
+
 export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api: WorkbenchApi; companyId: string; overview: CompanyOverviewView; task: TaskSummary | null; tab: TaskSubpageTab}>) {
   const workspaceQuery = useTaskWorkspace(api, companyId, task?.taskId ?? null);
   const projectEnvironmentsQuery = useProjectEnvironments(api, companyId, tab === 'jobs');
@@ -316,7 +355,7 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const [environmentActionError, setEnvironmentActionError] = useState<string | null>(null);
   const pendingEnvironmentPolicy = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   const pendingEnvironmentQualification = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
-  const pendingEnvironmentPreparation = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
+  const pendingEnvironmentPreparation = useRef(new Map<string, string>());
   const pendingServiceBrowserSession = useRef<Readonly<{jobId: string; requestId: string}> | null>(null);
   if (task === null) return <section className={styles.sectionCard}><EmptyPanel detail="当前快照没有可选任务对象。" title="暂无任务详情" /></section>;
   const downloadArtifact = async () => {
@@ -389,18 +428,14 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const requestEnvironmentPreparation = async (revisionId: string) => {
     setEnvironmentActionMessage(null);
     setEnvironmentActionError(null);
-    const fingerprint = JSON.stringify({revisionId});
-    const pending = pendingEnvironmentPreparation.current?.fingerprint === fingerprint
-      ? pendingEnvironmentPreparation.current
-      : {fingerprint, requestId: `environment-ensure-${crypto.randomUUID()}`};
-    pendingEnvironmentPreparation.current = pending;
+    const requestId = pendingEnvironmentPreparationRequestId(companyId, revisionId, pendingEnvironmentPreparation.current);
     try {
-      const run = await ensureEnvironment.mutateAsync({revisionId, requestId: pending.requestId});
-      pendingEnvironmentPreparation.current = null;
+      const run = await ensureEnvironment.mutateAsync({revisionId, requestId});
+      clearPendingEnvironmentPreparationRequestId(companyId, revisionId, requestId, pendingEnvironmentPreparation.current);
       setEnvironmentActionMessage(`准备请求 ${formatEntityId(run.runId)}：${labelDisplayValue(run.state)} · ${labelDisplayValue(run.reasonCode)}`);
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
-      setEnvironmentActionError(`环境准备结果尚未确认：${detail} 已刷新准备记录；同一环境重试会复用原请求 ID。`);
+      setEnvironmentActionError(`环境准备结果尚未确认：${detail} 已刷新准备记录；同一浏览器标签页重试该环境会复用原请求 ID。`);
     }
   };
   const readyJobEnvironments = (projectEnvironmentsQuery.data ?? []).filter(item => item.sourceBindingStatus === 'bound'
