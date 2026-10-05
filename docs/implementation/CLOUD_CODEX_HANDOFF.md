@@ -2,7 +2,11 @@
 
 Updated: 2026-10-06
 
-## Current continuation pointer (Slice 267)
+## Current continuation pointer (Slice 268)
+
+MCP and JSON-RPC typed decoding now rejects recursive duplicate keys and case-variant aliases at struct boundaries across stdio, Streamable HTTP JSON/SSE responses and result parsing, controlled mcp_call envelopes, and the reachable fake listed-tool check. Arbitrary map/schema/data keys preserve case-sensitive semantics. Responses require exactly one result or non-null error; result:null remains valid. No dispatch surface or authorization policy changed. Build and diff-check passed; tests, DB, Worker, provider, endpoint, migration, and scenarios did not run. REQ-31/34 stay partial. The final read-only source audit covered all 18 open software requirements and found no safe owner- and environment-independent code slice remaining; all 232 scenarios remain not_run and open rows remain partial. The listed owner/host/provider/active-session/fixture/scenario gates remain. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-268-req31-34-canonical-mcp-json-fields/verification.md and evidence/development/r1-r3-implementation-validation-20261006-slice-268-final-local-audit/verification.md.
+
+## Previous continuation pointer (Slice 267)
 
 The PDF image path now rejects stencil masks, unsupported or partially padded codecs, and unpacked samples whose exact per-row byte length does not match image dimensions. Extraction @3 records image omissions and intrinsic-object limitations; @1/@2 snapshots remain canonical for historical verification, while new active delivery omits the older image representation. Full-page rasterization and provider qualification remain open. Build and diff-check passed; tests, DB, Worker, provider, migration, and scenarios did not run. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-267-req35-pdf-image-fidelity/verification.md.
 

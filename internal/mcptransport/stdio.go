@@ -346,7 +346,10 @@ func (client *StdioClient) readResponse(requestID uint64) (stdioRPCMessage, erro
 	if err = decodeStrictStdioJSON(line, &message); err != nil {
 		return stdioRPCMessage{}, err
 	}
-	if message.JSONRPC != "2.0" || message.Method != "" || !stdioResponseIDMatches(message.ID, requestID) || len(message.Result) == 0 && message.Error == nil {
+	if err = validateJSONRPCResponseOutcome(line, message.Error != nil); err != nil {
+		return stdioRPCMessage{}, errors.Join(errStdioProtocol, err)
+	}
+	if message.JSONRPC != "2.0" || message.Method != "" || !stdioResponseIDMatches(message.ID, requestID) {
 		return stdioRPCMessage{}, errStdioProtocol
 	}
 	return message, nil
@@ -421,7 +424,7 @@ func decodeStrictStdioJSON(raw []byte, target any) error {
 	if len(raw) == 0 || len(raw) > MaxStdioMessageBytes || !utf8.Valid(raw) || !json.Valid(raw) {
 		return errStdioProtocol
 	}
-	if err := rejectDuplicateJSONKeys(raw); err != nil {
+	if err := ValidateStrictJSONStructKeys(raw, target); err != nil {
 		return errors.Join(errStdioProtocol, err)
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))

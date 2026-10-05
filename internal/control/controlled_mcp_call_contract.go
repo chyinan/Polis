@@ -24,6 +24,9 @@ func parseControlledMCPCallArguments(raw json.RawMessage) (controlledMCPCallArgu
 	if len(raw) == 0 || len(raw) > mcptransport.MaxStdioCallArgumentsBytes+2048 {
 		return parsed, core.Malformed
 	}
+	if err := mcptransport.ValidateStrictJSONStructKeys(raw, &parsed); err != nil {
+		return controlledMCPCallArguments{}, core.Malformed
+	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&parsed); err != nil {

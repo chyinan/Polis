@@ -27,6 +27,9 @@ func PrepareStreamableHTTPToolList(result json.RawMessage) ([]StdioToolDefinitio
 		Tools      json.RawMessage `json:"tools"`
 		NextCursor string          `json:"nextCursor"`
 	}
+	if err := ValidateStrictJSONStructKeys(result, &response); err != nil {
+		return nil, "", errors.Join(errors.New("Streamable HTTP MCP tools/list result has ambiguous fields"), err)
+	}
 	decoder := json.NewDecoder(bytes.NewReader(result))
 	if err := decoder.Decode(&response); err != nil || len(response.Tools) == 0 {
 		return nil, "", errors.New("Streamable HTTP MCP tools/list result is invalid")
@@ -69,6 +72,9 @@ func decodeStreamableHTTPToolListPage(result json.RawMessage) ([]json.RawMessage
 		Tools      json.RawMessage `json:"tools"`
 		NextCursor *string         `json:"nextCursor"`
 	}
+	if err := ValidateStrictJSONStructKeys(result, &response); err != nil {
+		return nil, "", errors.Join(errors.New("Streamable HTTP MCP tools/list page has ambiguous fields"), err)
+	}
 	decoder := json.NewDecoder(bytes.NewReader(result))
 	if err := decoder.Decode(&response); err != nil {
 		return nil, "", errors.New("Streamable HTTP MCP tools/list page is invalid")
@@ -99,6 +105,9 @@ func PrepareStreamableHTTPToolResult(toolName, schemaDigest string, result json.
 		Content           json.RawMessage `json:"content"`
 		StructuredContent json.RawMessage `json:"structuredContent"`
 	}
+	if err := ValidateStrictJSONStructKeys(result, &response); err != nil {
+		return StdioToolResult{}, errors.Join(errors.New("Streamable HTTP MCP tool result has ambiguous fields"), err)
+	}
 	decoder := json.NewDecoder(bytes.NewReader(result))
 	if err := decoder.Decode(&response); err != nil || len(response.Content) == 0 || response.StructuredContent != nil {
 		return StdioToolResult{}, errors.New("Streamable HTTP MCP tool result is outside the text-only profile")
@@ -112,6 +121,9 @@ func PrepareStreamableHTTPToolResult(toolName, schemaDigest string, result json.
 	var content []struct {
 		Type string `json:"type"`
 		Text string `json:"text"`
+	}
+	if err := ValidateStrictJSONStructKeys(response.Content, &content); err != nil {
+		return StdioToolResult{}, errors.Join(errors.New("Streamable HTTP MCP text content has ambiguous fields"), err)
 	}
 	if err := json.Unmarshal(response.Content, &content); err != nil || content == nil || len(content) == 0 || len(content) > maxStreamableHTTPResultContentCount {
 		return StdioToolResult{}, errors.New("Streamable HTTP MCP tool result content is invalid or exceeds its bound")

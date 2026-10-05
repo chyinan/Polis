@@ -494,22 +494,38 @@ func processSSEEvent(data []string, expectedID uint64) (json.RawMessage, bool, e
 	}
 	content := []byte(strings.Join(data, "\n"))
 	var message jsonRPCResponse
+	if err := ValidateStrictJSONStructKeys(content, &message); err != nil {
+		return nil, false, errors.Join(errors.New("MCP SSE event contains ambiguous JSON fields"), err)
+	}
 	if err := json.Unmarshal(content, &message); err != nil || message.JSONRPC != "2.0" {
 		return nil, false, errors.New("MCP SSE event is not a JSON-RPC message")
 	}
 	if message.Method != "" && len(message.ID) == 0 {
 		return nil, false, nil
 	}
-	result, err := validateJSONRPCResponse(content, expectedID)
+	if err := validateJSONRPCResponseOutcome(content, message.Error != nil); err != nil {
+		return nil, false, err
+	}
+	result, err := validateJSONRPCResponseValue(message, expectedID)
 	return result, err == nil, err
 }
 
 func validateJSONRPCResponse(content []byte, expectedID uint64) (json.RawMessage, error) {
-	if err := rejectDuplicateJSONKeys(content); err != nil {
+	var response jsonRPCResponse
+	if err := ValidateStrictJSONStructKeys(content, &response); err != nil {
 		return nil, errors.Join(errors.New("MCP server response contains ambiguous JSON"), err)
 	}
-	var response jsonRPCResponse
-	if err := json.Unmarshal(content, &response); err != nil || response.JSONRPC != "2.0" || len(response.ID) == 0 || response.Method != "" {
+	if err := json.Unmarshal(content, &response); err != nil {
+		return nil, errors.New("MCP server response is not a JSON-RPC response")
+	}
+	if err := validateJSONRPCResponseOutcome(content, response.Error != nil); err != nil {
+		return nil, err
+	}
+	return validateJSONRPCResponseValue(response, expectedID)
+}
+
+func validateJSONRPCResponseValue(response jsonRPCResponse, expectedID uint64) (json.RawMessage, error) {
+	if response.JSONRPC != "2.0" || len(response.ID) == 0 || response.Method != "" {
 		return nil, errors.New("MCP server response is not a JSON-RPC response")
 	}
 	var responseID json.Number

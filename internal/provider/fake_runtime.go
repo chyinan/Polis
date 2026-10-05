@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"polis/internal/codex"
+	"polis/internal/mcptransport"
 	"polis/internal/runner"
 )
 
@@ -468,7 +469,8 @@ func fakeMCPCallListed(workCurrent map[string]any, rawCall json.RawMessage) bool
 		ToolName         string `json:"tool_name"`
 		ToolSchemaSHA256 string `json:"tool_schema_sha256"`
 	}
-	if json.Unmarshal(rawCall, &request) != nil || request.CapabilityID == "" || request.ToolName == "" || request.ToolSchemaSHA256 == "" {
+	if mcptransport.ValidateStrictJSONStructKeys(rawCall, &request) != nil ||
+		json.Unmarshal(rawCall, &request) != nil || request.CapabilityID == "" || request.ToolName == "" || request.ToolSchemaSHA256 == "" {
 		return false
 	}
 	data, ok := workCurrent["data"].(map[string]any)
