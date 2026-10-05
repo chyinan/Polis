@@ -1,3 +1,6 @@
+## Slice 244 — REQ-13 company cursor fairness
+
+Changed the dispatcher ordering so Company ID is the outer fairness key and schedule age is prioritized within each Company, matching the persisted cursor across wraparound. Quota/slot-cap behavior is unchanged. `go build ./...` and `git diff --check` pass. No tests, DB, Worker/provider or scenario ran; nine REQ-13 rows remain partial/not_run and all 232 scenarios remain not_run. See `evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md`.
 ## Slice 243 — REQ-29 legacy workspace tree bounds
 
 The compatibility `workspace_replace` writer now uses the shared logical-tree validation for the 512-file cap, 16 MiB aggregate limit and path-prefix conflicts. It locks the tree root and verifies the bound WorkerSession/epoch before changing the legacy row and mirrored file. `go build ./...` and `git diff --check HEAD^ HEAD` pass. No tests, DB operations, Worker/provider operation or host/CAP qualification ran; CAP-01–06 remain partial and all 232 scenarios remain `not_run`. See `evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md`.

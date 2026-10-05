@@ -1,10 +1,10 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-05, Slice 243. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-05, Slice 244. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 ## Current checkout evidence
 
-- Audit base for Slice243: published Slice242 handoff commit `48c41fc126992e3e43e5f101b81ebf4d3f807b6d`. Slice242 changed only source validation and handoff records; the host and database observations below were not refreshed in Slices242–243.
+- Audit base for Slice244: published Slice243 handoff commit `b488a37f27fc067c4499afb5e6e2561bd2d6f6c4`. Slices242–244 changed source/handoff records only; the host and database observations below were not refreshed.
 - Most recent recorded host observation: Android/Termux (`uname` reported Android; Node platform was `android`); `pwsh`, `powershell`, `bwrap`, and `systemd-run` were absent in the Slice235 audit. This is a recorded observation, not a fresh Slice241 host probe.
 - Most recent recorded database observation: a read-only query during Slice239 found Schema 108, 0 Companies, 0 Missions, and 0 active WorkerSessions. Slice240 changed only the frontend and handoff records, so it did not refresh the database observation; this remains the latest recorded DB evidence, not a new Slice241 query.
 - The checked-in traceability ledger lists 17 open software requirements and 232 frozen scenario rows; the current JSON parse/count confirms every scenario has `executionStatus: not_run`.
@@ -16,7 +16,7 @@ These facts rule out session-backed execution in the current database and native
 | Open requirement | Remaining gate in the approved ledger | Evidence needed to resume |
 |---|---|---|
 | REQ-02 | Company creation now accepts only the four canonical fixed ID/role pairs; the wizard presents those roles read-only and includes them in final review. Existing-company acknowledgment checks the persisted mapping atomically, and company updates cannot change roles before or after acknowledgment. Acknowledgment projections reject stale digests or noncanonical persisted mappings; a strict semantic validator also rejects changes to the embedded draft flags, canonical task assignments, checker policy, or qualification state. Roles remain unverified and execution disabled. Provider role contracts, executable admission gates, and direct messaging remain unqualified; no owner confirmation has been made in this checkout. | Installation owner reviews and confirms the fixed roster/role mapping in the UI; separately authorized real-provider account and role-surface qualification. Legacy persisted role mismatches require owner-reviewed reconciliation before acknowledgment. |
-| REQ-13 | The Fake-only dispatcher has persisted fairness and per-Task claims, but no owner-backed global slot cap or authoritative quota-ready/release source exists. | Owner decision for the installation-wide cap and a trusted provider quota signal/account source. |
+| REQ-13 | The Company-ID cursor now matches candidate ordering, preserving cross-Company fairness across wraparound; the Fake-only dispatcher retains per-Task claims. No owner-backed global slot cap or authoritative quota-ready/release source exists. | Owner decision for the installation-wide cap and a trusted provider quota signal/account source. |
 | REQ-14 | Legacy revocation rows may still need an installation-owner `acknowledged_unresolved` disposition; stop/restart proof depends on runtime host state. | Owner review of each applicable legacy row and host-backed exact stop/recovery evidence. |
 | REQ-15 | Memory overlay restore behavior needs PostgreSQL/Desktop runtime qualification; corrections and revalidation require a session-bound operator path. | A qualified Desktop/PostgreSQL restore host and an already-active, database-confirmed WorkerSession for any session-bound action. |
 | REQ-16 | ProviderAccount identity/liability, hidden retries, and token/money accounting lack a trusted billing scope. | Owner-confirmed billing mode and liable account identity, provider accounting evidence, and exact retry/charge qualification. |

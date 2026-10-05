@@ -1,10 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 243, REQ-29 legacy workspace tree bounds)
+## Latest continuation status (Slice 244, REQ-13 company cursor fairness)
 
-The legacy `workspace_replace` path now shares the logical file tree writer's max-file, aggregate-byte, and path-prefix conflict validator when a tree root exists. It locks that root and checks the bound WorkerSession/epoch before updating the legacy workspace row and mirrored entry. Task/session/revision gates remain in place; this does not introduce host mounts, shared roots or CAP qualification. `go build ./...`, `git diff --check HEAD^ HEAD`, and a static bound/call-site check passed. No tests, DB operations, Worker/provider operation, host qualification or frozen scenario ran. CAP-01–06 remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-243-req29-legacy-tree-invariants/verification.md`.
+The dispatcher query now orders candidates by Company ID first and schedule age second, matching the persisted Company-ID cursor. This prevents wraparound from repeatedly choosing the globally oldest schedule and starving other Companies. Quota-blocked/paused eligibility and one-shot session fences are unchanged; no global slot cap or quota source was invented. The isolated implementation commit passed `go build ./...`; integrated `git diff --check` passed. No tests, DB operations, Worker/provider activity or scenario ran. The nine REQ-13 rows remain `partial/not_run`, and all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md`.
 
-Next Slice244: continue auditing the approved finite ledger for another local implementation gap; keep external host/account/session/scenario gates open.
+Next Slice245: apply the runtime permission check to memory revocation-overlay writes when directory permissions change after startup; keep restore qualification open.
 
 ## Previous continuation status (Slice 240, fixed-role company setup UI)
 
