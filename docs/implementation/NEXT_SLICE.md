@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-06)
 
-## Latest continuation status (Slice 256, REQ-31/34 strict stdio JSON and source audits)
+## Latest continuation status (Slice 257, local development runtime refresh)
+
+Rebuilt `.runtime/bin/polis` from current `main` (Android arm64; embedded VCS revision matches `8ad6f84`) and gracefully restarted the local backend after a read-only check found no Companies, Missions, WorkerSessions, or JobRun events. PostgreSQL reports Schema 108; backend `/healthz` and Vite `/` both return HTTP 200. No Worker, test, provider operation, or frozen scenario ran; all 232 scenarios remain `not_run` and 17 software requirements remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-257-local-dev-refresh/verification.md.
+
+## Previous continuation status (Slice 256, REQ-31/34 strict stdio JSON and source audits)
 
 The stdio MCP decoder now recursively rejects duplicate JSON object keys in inbound responses, including nested tool definitions and schemas; outgoing tool arguments also reject duplicate keys before validation. This removes last-key-wins ambiguity without changing Streamable HTTP parsing. `go build ./...` and `git diff --check` passed; no tests, database, Worker/provider/MCP endpoint, browser qualification, or frozen scenario ran. The 18 overlapping REQ-31/34 scenario rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Read-only source audits found no other concrete local fail-open in REQ-02/13, REQ-14/15/16, or REQ-27/30/32/33. Host/account/owner and active-session qualification gates remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md. REQ-23 closeout audit: evidence/development/r1-r3-implementation-validation-20261005-slice-256-req23-closeout-recovery-audit/verification.md.
 
@@ -37,7 +41,7 @@ Provider terminal telemetry now records the count of observed Codex thread/token
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice257: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
+Next Slice258: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 
