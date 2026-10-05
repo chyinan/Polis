@@ -1,3 +1,7 @@
+## Slice 254 — REQ-29 legacy workspace/tree writer consistency
+
+The legacy workspace replacement path now validates an existing private tree root under lock, checks its Task owner/Mission and current writer session/epoch, enforces tree bounds, and atomically mirrors `formatter.go` with the legacy workspace row. Submission fails closed unless the tree has one formatter file whose digest and source revision match that row. The six CAP-01–06 rows remain partial/not_run; all 232 frozen scenarios remain not_run. `go build ./...` and `git diff --check` passed. No tests, database, Worker/provider operation, host qualification, or scenario ran. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-254-req29-legacy-tree-writer/verification.md.
+
 ## Slice 253 — REQ-31/34 exact stdio MCP manifest fields
 
 The stdio MCP package manifest parser now rejects unknown or case-variant top-level field names before Go struct decoding. Literal duplicate keys remain rejected by the existing recursive check, and `args` remains optional. This keeps the persisted command and entry point aligned with exact-key JSON consumers. The 18 mapped REQ-31/34 rows remain partial/not_run; all 232 frozen scenarios remain not_run. `go build ./...` and `git diff --check` passed. No tests, DB, Worker/provider operation, package import, or frozen scenario ran. Windows WFP/AppContainer and real MCP/provider qualification remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-253-req31-34-mcp-manifest-fields/verification.md.
