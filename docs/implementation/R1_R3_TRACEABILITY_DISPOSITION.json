@@ -1087,7 +1087,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
       ]
     },
     {
@@ -1275,7 +1276,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
       ]
     },
     {
@@ -1341,7 +1343,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
       ]
     },
     {
@@ -1360,7 +1363,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
       ]
     },
     {
@@ -1954,7 +1958,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
       ]
     },
     {
@@ -2610,7 +2615,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-245-memory-overlay-runtime-permissions/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md"
       ]
     },
     {

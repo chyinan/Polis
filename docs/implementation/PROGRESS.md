@@ -1,3 +1,7 @@
+## Slice 251 — REQ-15 memory revocation overlay durability retry
+
+Memory-revocation overlay persistence now completes the required parent-directory sync before adding an existing or newly linked disk record to the in-memory fast path. If the sync fails, a later retry rechecks the disk entry instead of returning success from an unverified cache entry. `go build ./...` and `git diff --check` passed. The six REQ-15 rows remain partial/not_run; all 232 frozen scenarios remain not_run. No tests, database, Worker/provider operation, memory correction, restore, or scenario ran. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-251-req15-overlay-fsync-retry/verification.md.
+
 ## Slice 250 — REQ-02 exact team-coverage JSON fields
 
 The fixed team-coverage validator now requires the exact canonical key names at the top level and on every assignment. This closes a parser mismatch where Go's struct decoder accepted case variants while the frontend reads exact property names. The seven REQ-02 scenario rows remain `partial/not_run`; all 232 frozen scenarios remain `not_run`. `go build ./...` and `git diff --check` passed. No tests, database operations, owner actions, Worker/provider operations, or frozen scenarios ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md`.
