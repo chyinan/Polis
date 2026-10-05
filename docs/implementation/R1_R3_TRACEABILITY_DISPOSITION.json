@@ -1267,7 +1267,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -1288,7 +1289,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -1307,7 +1309,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -1326,7 +1329,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -1368,7 +1372,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -1398,7 +1403,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -1538,7 +1544,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -2103,7 +2110,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-218-req27-handover-sequence-fence/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-247-req27-successor-profile/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -2481,7 +2489,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -2548,7 +2557,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -2651,7 +2661,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -2761,7 +2772,8 @@
         "evidence/development/r1-r3-implementation-validation-20261005-slice-244-req13-company-cursor-fairness/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {
@@ -3332,7 +3344,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-256-stdio-duplicate-json-and-audit/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md"
       ]
     },
     {

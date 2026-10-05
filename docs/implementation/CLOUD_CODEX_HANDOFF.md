@@ -2,7 +2,11 @@
 
 Updated: 2026-10-06
 
-## Current continuation pointer (Slice 257)
+## Current continuation pointer (Slice 260)
+
+Controlled stdio and Streamable HTTP MCP calls now require an expiring, single-use permit bound to the exact action/attempt, Task and WorkerSession generation, Employee epoch, current binding revision, runtime qualification, target fingerprint, and argument digest. Permit consumption rechecks authority and atomically writes the consumed permit plus immutable `dispatching` intent under the same Company lifecycle guard as revocation. Unused permits expire; consumed calls interrupted by stop remain `outcome_unknown`. This is limited to controlled MCP: general ActionIntent/DispatchPermit and REQ-26 shared-write bindings remain absent. Schema 109 source is committed, but the local runtime remains on Schema 108; no migration, test, Worker/provider call, or scenario ran. REQ-14 remains partial; all 232 scenarios remain `not_run`. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md.
+
+The checked-in source is Schema 109, while the local Termux runtime was last built at Slice 257 from Schema 108. Rebuild it from the settled source before relying on the executable; do not apply Schema 109 to the runtime database without the required handoff and migration gate.
 
 Rebuilt `.runtime/bin/polis` from current `main` (Android arm64; embedded VCS revision matches `8ad6f84`) and gracefully restarted the local backend after a read-only check found no Companies, Missions, WorkerSessions, or JobRun events. PostgreSQL reports Schema 108; backend `/healthz` and Vite `/` both return HTTP 200. No Worker, test, provider operation, or frozen scenario ran; all 232 scenarios remain `not_run` and 17 software requirements remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-257-local-dev-refresh/verification.md.
 

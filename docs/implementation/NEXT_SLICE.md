@@ -1,6 +1,10 @@
 # Current handoff — approved R1–R3 implementation (2026-10-06)
 
-## Latest continuation status (Slice 259, REQ-02 fixed-team admission gate)
+## Latest continuation status (Slice 260, REQ-14 controlled MCP dispatch permits)
+
+Controlled stdio and Streamable HTTP MCP calls now require an expiring, single-use permit bound to the exact action/attempt, Task and WorkerSession generation, Employee epoch, current binding revision, runtime qualification, target fingerprint, and argument digest. Permit consumption rechecks authority and atomically writes the consumed permit plus immutable `dispatching` intent under the same Company lifecycle guard as revocation. Unused permits expire; consumed calls interrupted by stop remain `outcome_unknown`. This is limited to controlled MCP: general ActionIntent/DispatchPermit and REQ-26 shared-write bindings remain absent. Schema 109 source is committed, but the local runtime remains on Schema 108; no migration, test, Worker/provider call, or scenario ran. REQ-14 remains partial; all 232 scenarios remain `not_run`. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-260-req14-controlled-mcp-dispatch-permit/verification.md.
+
+## Previous continuation status (Slice 259, REQ-02 fixed-team admission gate)
 
 WorkerSession admission now requires the latest owner confirmation to match the exact embedded fixed-team matrix, the recorded decision to be `installation_owner_confirmed_fixed_team_mapping`, qualification to remain `unverified`, and the enabled persisted employee roster to match the canonical role assignments. The check runs under the same company transaction lock before budget reservation or WorkerSession insertion. It does not define TaskKind-to-semantic-task mappings or qualify any role/provider. `go build ./...` and `git diff --check` passed; no tests, database, Worker, provider, or scenario ran. The seven REQ-02 rows remain partial/not_run, all 232 scenario executions remain `not_run`, and 17 software requirements remain open. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-259-req02-worker-admission-coverage-gate/verification.md.
 
@@ -49,7 +53,7 @@ Provider terminal telemetry now records the count of observed Codex thread/token
 
 Capability rebind after revocation now requires all current WorkerSessions for the Employee to be stopped; MCP capability rebind also requires no dispatching call. If the legacy revoke inventory is incomplete, an existing matching acknowledged_unresolved owner review is required, but that review does not establish quiescence. Exact host stop/restart qualification remains open. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-14 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-248-req14-rebind-revocation-fence/verification.md.
 
-Next Slice258: continue auditing the finite approved ledger for another local gap; keep browser/WebView/remote-auth qualification gates open.
+Next Slice261: continue a concrete local gap in the finite approved ledger, currently including the active REQ-02 role-contract, REQ-13 global-slot, REQ-35 CSV/PDF, and REQ-29 host/shared-root/retention work. Keep owner-policy and host/account qualification gates explicit; preserve all scenario execution states as `not_run`.
 
 ## Previous continuation status (Slice 247, REQ-27 successor profile continuity)
 
