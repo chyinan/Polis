@@ -2,7 +2,7 @@
 
 import {useCallback, useEffect, useMemo, useState, type FormEvent} from 'react';
 import {KeyRound, LogOut, RefreshCw, ShieldCheck} from 'lucide-react';
-import {dispatchAuthorizationInvalidated} from '../lib/authorization-state';
+import {dispatchAuthorizationInvalidated, observeProtectedResponse} from '../lib/authorization-state';
 import styles from './InstallationOwnerPage.module.css';
 
 type OwnerSession = Readonly<{authenticated: boolean; expiresAt: string | null}>;
@@ -23,11 +23,12 @@ class OwnerRequestError extends Error {
   }
 }
 
-async function requestJSON<T>(url: string, init: RequestInit = {}): Promise<T> {
+async function requestJSON<T>(url: string, init: RequestInit = {}, protectedRequest = false): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
   if (init.body !== undefined) headers.set('Content-Type', 'application/json');
   const response = await fetch(url, {...init, cache: 'no-store', credentials: 'include', headers});
+  if (protectedRequest) observeProtectedResponse(url, response.status);
   let body: unknown = null;
   try {
     body = await response.json();
@@ -78,7 +79,7 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
       const current = await requestJSON<OwnerSession>(`${ownerBase}/session`);
       setSession(current);
       if (current.authenticated) {
-        const result = await requestJSON<ObservedProviderAccountList>(`${apiBase}/installation/provider-accounts`);
+        const result = await requestJSON<ObservedProviderAccountList>(`${apiBase}/installation/provider-accounts`, {}, true);
         setAccounts(result.accounts);
         setSetupStatus({initialized: true});
       } else {
@@ -108,7 +109,7 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
     setLoginPassword('');
     const current = await requestJSON<OwnerSession>(`${ownerBase}/session`);
     if (!current.authenticated) throw new Error('密码已验证，但当前浏览器没有保留登录会话 Cookie');
-    const result = await requestJSON<ObservedProviderAccountList>(`${apiBase}/installation/provider-accounts`);
+    const result = await requestJSON<ObservedProviderAccountList>(`${apiBase}/installation/provider-accounts`, {}, true);
     setSession(current);
     setAccounts(result.accounts);
     setSetupStatus({initialized: true});
@@ -156,7 +157,7 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
     try {
       const csrf = readCSRFCookie();
       if (csrf === '') throw new Error('找不到 CSRF Cookie，请刷新页面后重试');
-      await requestJSON(`${ownerBase}/logout`, {method: 'POST', headers: {'X-Polis-CSRF-Token': csrf}, body: '{}'});
+      await requestJSON(`${ownerBase}/logout`, {method: 'POST', headers: {'X-Polis-CSRF-Token': csrf}, body: '{}'}, true);
       dispatchAuthorizationInvalidated();
       setSession({authenticated: false, expiresAt: null});
       setAccounts(null);
