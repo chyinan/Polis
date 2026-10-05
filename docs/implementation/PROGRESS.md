@@ -1,3 +1,7 @@
+## Slice 250 — REQ-02 exact team-coverage JSON fields
+
+The fixed team-coverage validator now requires the exact canonical key names at the top level and on every assignment. This closes a parser mismatch where Go's struct decoder accepted case variants while the frontend reads exact property names. The seven REQ-02 scenario rows remain `partial/not_run`; all 232 frozen scenarios remain `not_run`. `go build ./...` and `git diff --check` passed. No tests, database operations, owner actions, Worker/provider operations, or frozen scenarios ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md`.
+
 ## Slice 249 — REQ-16 token usage quality
 
 Provider terminal telemetry now records the count of observed Codex thread/tokenUsage/updated events. With no usage update it stores token_usage as null and quality as unavailable; when updates arrive it records the latest protocol-reported usage and observation scope. Missing telemetry can no longer look like confirmed zero usage. Workbench money remains unavailable; no dollar estimate, billing liability, or hidden retry count is inferred. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-16 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md.

@@ -1,3 +1,7 @@
+## Slice 250: REQ-02 exact team-coverage JSON keys
+
+The fixed draft semantic validator now verifies exact canonical keys on the top-level object and all seven assignment objects before Go decodes into structs. This prevents case-insensitive Go field matching from accepting a field name that the frontend's case-sensitive property reads ignore. The fix preserves the reviewed roster and assignment checks and does not enable execution or qualify any role. `go build ./...` and `git diff --check` pass. No tests, database operations, owner actions, Worker/provider operations, or frozen scenarios ran. All seven mapped REQ-02 rows cite the evidence and remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-250-req02-exact-json-fields/verification.md`.
+
 ## Slice 249: REQ-16 token usage quality
 
 Provider terminal telemetry now records the count of observed Codex thread/tokenUsage/updated events. With no usage update it stores token_usage as null and quality as unavailable; when updates arrive it records the latest protocol-reported usage and observation scope. Missing telemetry can no longer look like confirmed zero usage. Workbench money remains unavailable; no dollar estimate, billing liability, or hidden retry count is inferred. Go build and diff check pass; no tests, DB, Worker, provider or scenario ran. REQ-16 rows remain partial/not_run and all 232 scenarios remain not_run. Evidence: evidence/development/r1-r3-implementation-validation-20261005-slice-249-req16-token-usage-quality/verification.md.
@@ -27,7 +31,7 @@ The legacy `workspace_replace` compatibility path now shares the file-tree trans
 The embedded fixed team coverage JSON now has a strict semantic validator for its canonical employee roster and assignments, disabled execution, immutable runtime roles, unverified qualification, required owner confirmation, checker policy, and trust/independence flags. Company creation and acknowledgment fail closed on drift; detail/switcher projections do not report confirmation from a malformed draft. This protects the draft's current fail-closed meaning and does not create executable role contracts, change Task admission, or qualify any role/provider. `go build ./...`, `git diff --check`, and JSON parsing pass; no tests, database operations, owner action, Worker/provider operation, or frozen scenario ran. The seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-05, Slice 249. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-05, Slice 250. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
 ## Slice 241: qualification handoff audit anchor
 
@@ -664,7 +668,7 @@ Offline verification passed: Rust tests (45), strict Clippy, Windows MSVC target
 
 The Tauri Supervisor stages a verified PostgreSQL/CAS backup as a separate generation, blocks new Workbench requests, drains admitted requests, and checks active work before stopping services. A separately recorded quiesced state prevents shutdown from being accepted before that check succeeds; forced shutdown requires an explicit allow-active request, while generation cutover never uses it. Spawned PostgreSQL/backend child handles are retained until termination is confirmed; uncertain stop blocks pointer rollback. The switch retains one previous generation and commits the candidate pointer only after backend health succeeds. Failed candidate startup restores the previous pointer. An operator can explicitly switch back through Group Settings; newer data remains on disk. Offline Rust, Windows-target, Go, race and frontend checks pass. The configured Windows PostgreSQL runtime is absent from this checkout, so packaged restore/cutover/rollback and clean-VM behavior remain unverified. Slice 85 implements the local same-manifest sidecar update/rollback path. Evidence: evidence/development/r1-r3-implementation-validation-20260930-slice-84-desktop-generation-cutover/verification.md.
 
-## Finite remaining work (reconciled through Slice 249)
+## Finite remaining work (reconciled through Slice 250)
 
 This is the closed list from the approved plan and REQ ledger; it does not authorize extra feature families. Slice summaries above supersede earlier checkpoint details. Office/3D, dynamic hiring/firing, arbitrary MCP compatibility, and a plugin marketplace remain excluded.
 
