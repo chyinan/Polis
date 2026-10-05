@@ -1,10 +1,16 @@
 # Current handoff — approved R1–R3 implementation (2026-10-05)
 
-## Latest continuation status (Slice 234, REQ-36 environment preparation retry identity)
+## Latest continuation status (Slice 235, open qualification dependency audit)
+
+Added `docs/implementation/OPEN_QUALIFICATION_BLOCKERS.md`, mapping all 17 open software requirement IDs to the specific owner decisions, current-session, account, host, and scenario evidence still required. Current checkout evidence is Android/Termux with Schema 108, zero Companies/Missions/active WorkerSessions, no `pwsh`, `powershell`, `bwrap`, or `systemd-run` qualification tools, and 232/232 frozen scenarios `not_run`. This documents blockers; it does not close requirements or authorize creating sessions, accounts, or external effects. `git diff --check` and traceability JSON parsing pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-235-open-qualification-blockers/verification.md`.
+
+Next Slice236: audit the finite ledger for another concrete local implementation gap; if none remains, continue only as prerequisites arrive and preserve each qualification gate as open. Worker activity still requires a current database read confirming an already-active WorkerSession; do not create or start one.
+
+## Previous continuation status (Slice 234, REQ-36 environment preparation retry identity)
 
 Environment preparation now keeps its opaque Ensure RequestID in browser `sessionStorage`, scoped to the Company and environment revision. An ambiguous response can be retried with the exact same RequestID after a route remount or page reload in that tab; a validated receipt clears it. If session storage is unavailable, same-component retries still use the in-memory fallback. Frontend production build and `git diff --check` pass. Schema 108 remains current with zero active WorkerSessions; no preparation request, Worker or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md`.
 
-Next Slice235: continue with a concrete local gap from the finite approved R1–R3 ledger. Keep external qualification and frozen scenario states truthful. Worker activity remains gated on a current database read confirming an already-active WorkerSession; do not create or start one.
+Slice 235 audits and links the current external qualification prerequisites for every open software requirement.
 
 ## Previous continuation status (Slice 233, REQ-39 owner review state in Workbench)
 

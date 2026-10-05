@@ -1,5 +1,9 @@
 # Current implementation status — approved R1–R3 staged work
 
+## Slice 235 — open qualification dependency audit
+
+Added a requirement-by-requirement blocker matrix for all 17 open software requirements. It records the current Android/Termux and empty Schema 108 database limits, distinguishes those facts from external resource availability that is unknown, and names the owner decision, active session, provider/account, Windows/Linux host, or frozen evidence needed to resume each item. The traceability ledger remains unchanged: 232/232 frozen scenarios are `not_run`. JSON parsing and `git diff --check` pass. No tests, Worker, provider operation, environment preparation, or qualification ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-235-open-qualification-blockers/verification.md`; matrix: `docs/implementation/OPEN_QUALIFICATION_BLOCKERS.md`.
+
 ## Slice 234 — REQ-36 environment preparation retry identity
 
 The Ensure Environment action stores its opaque request ID in browser `sessionStorage`, keyed by Company and environment revision. After an ambiguous result, retrying from the same browser tab reuses that ID even if the Task subpage remounts or reloads; receiving a validated receipt clears the entry. When session storage is unavailable, the component retains the existing in-memory retry behavior. Frontend production build and `git diff --check` pass. The local database is Schema 108 with zero active WorkerSessions; no environment preparation, Worker or frozen scenario ran. UI-42 and WF-08 cite the evidence and keep their `implemented/not_run` dispositions. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-234-req36-ensure-retry-continuity/verification.md`.
