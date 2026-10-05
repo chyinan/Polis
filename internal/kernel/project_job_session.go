@@ -32,6 +32,10 @@ WHERE t.company_id=$1 AND t.id=$2 FOR UPDATE OF t,m,e`, companyID, taskID).Scan(
 	if activeSession {
 		return "", core.Denied
 	}
+	slotClass, err := checkInstallationWorkerSlotCapacityTX(ctx, tx, taskKind)
+	if err != nil {
+		return "", err
+	}
 	var generation int64
 	if err = tx.QueryRow(ctx, `SELECT COALESCE(max(generation),0)+1 FROM worker_sessions WHERE company_id=$1 AND task_id=$2`, companyID, taskID).Scan(&generation); err != nil {
 		return "", err
@@ -42,6 +46,9 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,'active','project_job')`, companyID, sessionID, t
 		if isUniqueViolation(err) {
 			return "", core.Conflict
 		}
+		return "", err
+	}
+	if err = recordInstallationWorkerSlotReservationTX(ctx, tx, companyID, sessionID, slotClass); err != nil {
 		return "", err
 	}
 	return sessionID, nil

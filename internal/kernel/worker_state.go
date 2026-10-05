@@ -241,6 +241,7 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 	}{task, profile, toolCallLimit, productProvider}, func(tx pgx.Tx) (Receipt, error) {
 		var productWorkspaceDigest, productValidationBindingDigest string
 		var productWorkspaceRevision int64
+		var workerSlotClass string
 		t, e := taskRow(ctx, tx, s, task)
 		if e != nil {
 			return Receipt{}, e
@@ -402,6 +403,10 @@ WHERE company_id=$1 AND problem_key=$2`, s.company, t.ProblemKey).Scan(&problemT
 		if occupied {
 			return Receipt{}, core.Denied
 		}
+		workerSlotClass, e = checkInstallationWorkerSlotCapacityTX(ctx, tx, string(t.Kind))
+		if e != nil {
+			return Receipt{}, e
+		}
 		if !taskToolCallLimit.Valid {
 			if _, e = tx.Exec(ctx, `UPDATE tasks SET task_tool_call_limit=$3
 WHERE company_id=$1 AND id=$2 AND task_tool_call_limit IS NULL`, s.company, t.ID, effectiveTaskLimit); e != nil {
@@ -421,6 +426,9 @@ WHERE company_id=$1 AND problem_key=$2 AND tool_call_limit IS NULL`, s.company, 
 		}
 		_, e = tx.Exec(ctx, "INSERT INTO worker_sessions(company_id,id,employee_id,task_id,generation,epoch,incarnation,profile,state,tool_call_limit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'restoring',$9)", s.company, b.session, b.employee, task, t.Generation+1, b.epoch, b.incarnation, profile, toolCallLimit)
 		if e != nil {
+			return Receipt{}, e
+		}
+		if e = recordInstallationWorkerSlotReservationTX(ctx, tx, s.company, b.session, workerSlotClass); e != nil {
 			return Receipt{}, e
 		}
 		if productProvider {

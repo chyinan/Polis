@@ -45,6 +45,10 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		serveObservedProviderAccounts(response, request, service)
 		return
 	}
+	if request.URL.Path == "/api/workbench/installation/worker-slots" {
+		serveInstallationWorkerSlots(response, request, service)
+		return
+	}
 	if request.URL.Path == "/api/workbench/companies" {
 		serveCompanyCollection(service, response, request)
 		return
@@ -1914,6 +1918,57 @@ func serveObservedProviderAccounts(response http.ResponseWriter, request *http.R
 	writeJSON(response, http.StatusOK, accounts)
 }
 
+func serveInstallationWorkerSlots(response http.ResponseWriter, request *http.Request, service control.CommandService) {
+	response.Header().Set("Cache-Control", "no-store")
+	if !desktop.IsInstallationOwnerAuthenticated(request.Context()) && !installationauth.IsAuthenticated(request.Context()) {
+		writeError(response, http.StatusUnauthorized, "installation owner authentication is required")
+		return
+	}
+	slotService, ok := service.(control.InstallationWorkerSlotService)
+	if !ok {
+		writeError(response, http.StatusNotImplemented, "installation Worker slot policy service is unavailable")
+		return
+	}
+	switch request.Method {
+	case http.MethodGet:
+		response.Header().Set("Cache-Control", "no-store")
+		policy, err := slotService.GetInstallationWorkerSlotPolicy(request.Context())
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), "installation", "worker-slots", "installation_policy", err)
+			return
+		}
+		writeJSON(response, http.StatusOK, policy)
+	case http.MethodPost:
+		if !installationauth.IsAuthenticated(request.Context()) {
+			writeError(response, http.StatusUnauthorized, "installation owner session is required to change the Worker slot policy")
+			return
+		}
+		csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+		csrfValue := ""
+		if csrfCookie != nil {
+			csrfValue = csrfCookie.Value
+		}
+		if request.Header.Get("Origin") == "" || !installationauth.CSRFValid(request.Context(), csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+			writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+			return
+		}
+		var input control.InstallationWorkerSlotPolicyRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, "installation", "worker-slots", "installation_policy", err)
+			return
+		}
+		policy, err := slotService.SetInstallationWorkerSlotPolicy(request.Context(), input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), "installation", "worker-slots", "installation_policy", err)
+			return
+		}
+		writeJSON(response, http.StatusOK, policy)
+	default:
+		response.Header().Set("Allow", "GET, POST")
+		writeError(response, http.StatusMethodNotAllowed, "method not allowed")
+	}
+}
+
 func serveActivityStream(model ReadModel, response http.ResponseWriter, request *http.Request, companyID string) {
 	streamer, ok := model.(ActivityStreamer)
 	if !ok {
@@ -2450,6 +2505,8 @@ func decodeJSON(response http.ResponseWriter, request *http.Request, target any)
 
 func commandStatus(err error) int {
 	switch {
+	case errors.Is(err, core.WorkerSlotsUnconfigured), errors.Is(err, core.WorkerSlotsFull):
+		return http.StatusServiceUnavailable
 	case errors.Is(err, control.ErrGitHubFeedbackUnavailable):
 		return http.StatusServiceUnavailable
 	case errors.Is(err, control.ErrGitHubFeedbackCredentialStoreUnavailable):
@@ -2474,7 +2531,7 @@ func commandCode(err error) string {
 	if errors.Is(err, control.ErrGitHubFeedbackCredentialStoreUnavailable) {
 		return "GITHUB_CREDENTIAL_STORE_UNAVAILABLE"
 	}
-	for _, code := range []core.Code{core.Malformed, core.TooLarge, core.OutOfScope, core.StaleEpoch, core.Conflict, core.Denied, core.Integrity, core.ToolCallBudgetExceeded} {
+	for _, code := range []core.Code{core.Malformed, core.TooLarge, core.OutOfScope, core.StaleEpoch, core.Conflict, core.Denied, core.Integrity, core.ToolCallBudgetExceeded, core.WorkerSlotsUnconfigured, core.WorkerSlotsFull} {
 		if errors.Is(err, code) {
 			return string(code)
 		}

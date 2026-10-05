@@ -16,6 +16,17 @@ type ObservedProviderAccount = Readonly<{
   workerSessionCount: number;
 }>;
 type ObservedProviderAccountList = Readonly<{schemaVersion: string; accounts: ReadonlyArray<ObservedProviderAccount>}>;
+type InstallationWorkerSlotPolicy = Readonly<{
+  status: 'unconfigured' | 'configured' | 'over_capacity';
+  configured: boolean;
+  maxActiveSlots?: number;
+  protectedSlots?: number;
+  revision: number;
+  activeSlots: number;
+  ordinaryActiveSlots: number;
+  protectedActiveSlots: number;
+  action?: string;
+}>;
 
 class OwnerRequestError extends Error {
   constructor(message: string, readonly status: number) {
@@ -65,12 +76,33 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
   const [session, setSession] = useState<OwnerSession | null>(null);
   const [setupStatus, setSetupStatus] = useState<OwnerSetupStatus | null>(null);
   const [accounts, setAccounts] = useState<ReadonlyArray<ObservedProviderAccount> | null>(null);
+  const [workerSlots, setWorkerSlots] = useState<InstallationWorkerSlotPolicy | null>(null);
+  const [workerSlotsError, setWorkerSlotsError] = useState<string | null>(null);
+  const [maxActiveSlots, setMaxActiveSlots] = useState('');
+  const [protectedSlots, setProtectedSlots] = useState('');
+  const [workerSlotsRequestID, setWorkerSlotsRequestID] = useState('');
   const [bootstrapCode, setBootstrapCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const loadProtectedOwnerData = useCallback(async () => {
+    const result = await requestJSON<ObservedProviderAccountList>(`${apiBase}/installation/provider-accounts`, {}, true);
+    setAccounts(result.accounts);
+    setSetupStatus({initialized: true});
+    try {
+      const policy = await requestJSON<InstallationWorkerSlotPolicy>(`${apiBase}/installation/worker-slots`, {}, true);
+      setWorkerSlots(policy);
+      setWorkerSlotsError(null);
+      setMaxActiveSlots(policy.configured && policy.maxActiveSlots !== undefined ? String(policy.maxActiveSlots) : '');
+      setProtectedSlots(policy.configured && policy.protectedSlots !== undefined ? String(policy.protectedSlots) : '');
+    } catch (policyError) {
+      setWorkerSlots(null);
+      setWorkerSlotsError(policyError instanceof Error ? policyError.message : '无法读取全局 Worker 槽位策略');
+    }
+  }, [apiBase]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -79,11 +111,11 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
       const current = await requestJSON<OwnerSession>(`${ownerBase}/session`);
       setSession(current);
       if (current.authenticated) {
-        const result = await requestJSON<ObservedProviderAccountList>(`${apiBase}/installation/provider-accounts`, {}, true);
-        setAccounts(result.accounts);
-        setSetupStatus({initialized: true});
+        await loadProtectedOwnerData();
       } else {
         setAccounts(null);
+        setWorkerSlots(null);
+        setWorkerSlotsError(null);
         setSetupStatus(null);
         if (window.location.protocol !== 'https:') {
           try {
@@ -100,7 +132,7 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
     } finally {
       setLoading(false);
     }
-  }, [apiBase, ownerBase]);
+  }, [loadProtectedOwnerData, ownerBase]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -109,10 +141,8 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
     setLoginPassword('');
     const current = await requestJSON<OwnerSession>(`${ownerBase}/session`);
     if (!current.authenticated) throw new Error('密码已验证，但当前浏览器没有保留登录会话 Cookie');
-    const result = await requestJSON<ObservedProviderAccountList>(`${apiBase}/installation/provider-accounts`, {}, true);
     setSession(current);
-    setAccounts(result.accounts);
-    setSetupStatus({initialized: true});
+    await loadProtectedOwnerData();
   }
 
   async function handleLogin(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -161,11 +191,61 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
       dispatchAuthorizationInvalidated();
       setSession({authenticated: false, expiresAt: null});
       setAccounts(null);
+      setWorkerSlots(null);
+      setWorkerSlotsError(null);
       if (window.location.protocol !== 'https:') {
         try { setSetupStatus(await requestJSON<OwnerSetupStatus>(`${ownerBase}/status`)); } catch { setSetupStatus(null); }
       }
     } catch (logoutError) {
       setError(logoutError instanceof Error ? logoutError.message : '退出登录失败');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleWorkerSlotsSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    const max = Number(maxActiveSlots);
+    const protectedCount = Number(protectedSlots);
+    if (!Number.isSafeInteger(max) || max < 1 || !Number.isSafeInteger(protectedCount) || protectedCount < 0 || protectedCount > max) {
+      setWorkerSlotsError('总槽位必须是正整数；保护槽位必须是 0 到总槽位之间的整数。');
+      return;
+    }
+    setSubmitting(true);
+    setWorkerSlotsError(null);
+    const requestID = workerSlotsRequestID || crypto.randomUUID();
+    setWorkerSlotsRequestID(requestID);
+    try {
+      const csrf = readCSRFCookie();
+      if (csrf === '') throw new Error('找不到 CSRF Cookie，请刷新页面后重试');
+      const policy = await requestJSON<InstallationWorkerSlotPolicy>(`${apiBase}/installation/worker-slots`, {
+        method: 'POST',
+        headers: {'X-Polis-CSRF-Token': csrf},
+        body: JSON.stringify({
+          requestId: requestID,
+          expectedRevision: workerSlots?.revision ?? 0,
+          maxActiveSlots: max,
+          protectedSlots: protectedCount,
+        }),
+      }, true);
+      setWorkerSlots(policy);
+      setWorkerSlotsError(null);
+      setWorkerSlotsRequestID('');
+    } catch (policyError) {
+      setWorkerSlotsError(policyError instanceof Error ? policyError.message : '保存 Worker 槽位策略失败');
+      if (policyError instanceof OwnerRequestError && policyError.status === 409) {
+        setWorkerSlotsRequestID('');
+        try {
+          const current = await requestJSON<InstallationWorkerSlotPolicy>(`${apiBase}/installation/worker-slots`, {}, true);
+          setWorkerSlots(current);
+          setMaxActiveSlots(current.configured && current.maxActiveSlots !== undefined ? String(current.maxActiveSlots) : '');
+          setProtectedSlots(current.configured && current.protectedSlots !== undefined ? String(current.protectedSlots) : '');
+        } catch (readError) {
+          setWorkerSlotsError(readError instanceof Error ? readError.message : '无法刷新 Worker 槽位策略');
+        }
+      } else if (policyError instanceof OwnerRequestError && policyError.status < 500) {
+        setWorkerSlotsRequestID('');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -199,6 +279,17 @@ export function InstallationOwnerPage({workbenchApiBaseUrl}: Readonly<{workbench
           </div>}
           <p className={styles.disclaimer}>定位指纹是使用观测，不等同于账单归属证明；此页面不会设置预算、扣款或执行跨公司变更。</p>
         </section>
+        <form className={styles.card} onSubmit={event => { void handleWorkerSlotsSubmit(event); }}>
+          <div className={styles.cardHeading}><div><h2>全局 Worker 并发上限</h2><p>由安装所有者为整个安装明确配置容量。策略未配置时，新 WorkerSession admission 会 fail closed。</p></div><span>{workerSlots?.status ?? '不可用'}</span></div>
+          {workerSlots ? <p className={styles.notice}>当前占用 {workerSlots.activeSlots} / {workerSlots.configured ? workerSlots.maxActiveSlots : '未配置'} 个槽位；普通任务 {workerSlots.ordinaryActiveSlots} 个，保护类任务 {workerSlots.protectedActiveSlots} 个。保护槽位供 review 与 peer-review 工作使用。策略版本：{workerSlots.revision}。</p> : null}
+          {workerSlotsError ? <p className={styles.error} role="alert">{workerSlotsError}</p> : null}
+          {workerSlots?.action ? <p className={styles.help}>{workerSlots.action}</p> : null}
+          {workerSlotsRequestID ? <p className={styles.help}>上一条保存请求结果尚未确认；重试会复用相同请求身份和参数。也可刷新页面读取服务端状态。</p> : null}
+          <label>总活动 Worker 槽位<input className={styles.input} disabled={submitting || workerSlotsRequestID !== ''} inputMode="numeric" min="1" onChange={event => setMaxActiveSlots(event.target.value)} required type="number" value={maxActiveSlots} /></label>
+          <label>保护类槽位<input className={styles.input} disabled={submitting || workerSlotsRequestID !== ''} inputMode="numeric" min="0" onChange={event => setProtectedSlots(event.target.value)} required type="number" value={protectedSlots} /></label>
+          <p className={styles.help}>保护槽位数不会自动选择。降低上限不会停止现有会话；若当前占用超过新上限，状态会显示超容量，新的 admission 保持关闭。</p>
+          <button className={styles.primaryButton} disabled={submitting || workerSlots === null} type="submit">{submitting ? '正在保存…' : '保存全局槽位策略'}</button>
+        </form>
       </> : null}
 
       {!loading && session?.authenticated === false ? <div className={styles.forms}>

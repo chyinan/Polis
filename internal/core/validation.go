@@ -13,14 +13,16 @@ type Code string
 func (c Code) Error() string { return string(c) }
 
 const (
-	Malformed              Code = "MALFORMED_INPUT"
-	TooLarge               Code = "INPUT_TOO_LARGE"
-	OutOfScope             Code = "OUT_OF_SCOPE"
-	StaleEpoch             Code = "STALE_EPOCH"
-	Conflict               Code = "REVISION_CONFLICT"
-	Denied                 Code = "POLICY_DENIED"
-	Integrity              Code = "ARTIFACT_INTEGRITY"
-	ToolCallBudgetExceeded Code = "TOOL_CALL_BUDGET_EXHAUSTED"
+	Malformed               Code = "MALFORMED_INPUT"
+	TooLarge                Code = "INPUT_TOO_LARGE"
+	OutOfScope              Code = "OUT_OF_SCOPE"
+	StaleEpoch              Code = "STALE_EPOCH"
+	Conflict                Code = "REVISION_CONFLICT"
+	Denied                  Code = "POLICY_DENIED"
+	Integrity               Code = "ARTIFACT_INTEGRITY"
+	ToolCallBudgetExceeded  Code = "TOOL_CALL_BUDGET_EXHAUSTED"
+	WorkerSlotsUnconfigured Code = "WORKER_SLOTS_UNCONFIGURED"
+	WorkerSlotsFull         Code = "WORKER_SLOTS_FULL"
 )
 const Contract = "r0-arithmetic@1"
 const MaxContent = 4096
