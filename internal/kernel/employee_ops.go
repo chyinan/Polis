@@ -40,6 +40,7 @@ type EmployeeTools struct {
 	EnvironmentEnsureSurface           bool
 	ReadOnlyJobsSurface                bool
 	BorrowerLeaseSurface               bool
+	BrowserRunSurface                  bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -191,6 +192,45 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		requestID := "job-release-" + fingerprint([]string{b.SessionID(), key, args.LeaseID})[:48]
 		lease, e := k.TXReleaseServiceBorrowerLease(ctx, b, args.LeaseID, requestID)
 		return ToolResult{Data: lease}, e
+	case "browser_run":
+		if !t.ProductSurface || !t.BrowserRunSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			ServiceJobID         string `json:"service_job_id"`
+			ServiceGeneration    int    `json:"service_generation"`
+			TargetOrigin         string `json:"target_origin"`
+			PlanSHA256           string `json:"plan_sha256"`
+			BrowserBuild         string `json:"browser_build"`
+			ExecutionEnvironment string `json:"execution_environment"`
+			InputRevision        string `json:"input_revision"`
+			ViewportWidth        int    `json:"viewport_width"`
+			ViewportHeight       int    `json:"viewport_height"`
+			Locale               string `json:"locale"`
+			Timezone             string `json:"timezone"`
+		}
+		if e := strictArgsLimit(raw, &args, 4096); e != nil {
+			return ToolResult{}, e
+		}
+		input := BrowserRunRequest{ServiceJobID: args.ServiceJobID, ServiceGeneration: args.ServiceGeneration, TargetOrigin: args.TargetOrigin, PlanSHA256: args.PlanSHA256, BrowserBuild: args.BrowserBuild, ExecutionEnvironment: args.ExecutionEnvironment, InputRevision: args.InputRevision, ViewportWidth: args.ViewportWidth, ViewportHeight: args.ViewportHeight, Locale: args.Locale, Timezone: args.Timezone}
+		requestID := "browser-run-" + fingerprint(struct {
+			Session string
+			Input   BrowserRunRequest
+		}{b.SessionID(), input})[:48]
+		run, e := k.TXRequestBrowserRun(ctx, b, input, requestID)
+		return ToolResult{Data: run}, e
+	case "browser_results":
+		if !t.ProductSurface || !t.BrowserRunSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			RunID string `json:"run_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		run, e := k.ProductTaskBrowserRunResults(ctx, b, args.RunID)
+		return ToolResult{Data: run}, e
 	case "environment_status":
 		if !t.ProductSurface || !t.EnvironmentStatusSurface {
 			return ToolResult{}, core.Denied

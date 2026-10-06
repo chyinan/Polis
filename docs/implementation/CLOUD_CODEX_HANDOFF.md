@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 285)
+
+Slice285 adds Schema117 BrowserRun control-plane persistence and fake-only product surface `polis-product-tool-surface@18` with `browser_run` and `browser_results`. Requests are exact Company/Mission/Task/WorkerSession and current service-generation scoped, then persist as `blocked/browser_runtime_unqualified`; HTTPS origin metadata is canonicalized and credentials/query/path fragments are rejected. No URL navigation, browser process, credentials, Provider, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-285-req38-browser-run-control-plane/verification.md`.
+
 ## Current continuation pointer (Slice 284)
 
 Slice284 wires the Schema116 BorrowerLease lifecycle into fake-only product surface `polis-product-tool-surface@17` with `jobs_borrow`, `jobs_touch` and `jobs_release`. The control path revalidates active owner/borrower session scope and the exact ready, unexpired service generation; recovery, session stop and generation changes append revocation events. This remains control-plane only: no service process, provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-284-req37-borrower-lease-tools/verification.md`.

@@ -194,6 +194,39 @@ func TestProductEmployeeBorrowerLeaseSurfaceExtendsReadOnlyJobsWithBoundedLeaseC
 	}
 }
 
+func TestProductEmployeeBrowserRunSurfaceAddsDefaultDeniedControlPlaneTools(t *testing.T) {
+	borrower := ProductEmployeeToolsWithBorrowerLeases()
+	tools := ProductEmployeeToolsWithBrowserRun()
+	if len(borrower) != 12 || len(tools) != 14 {
+		t.Fatalf("borrower/browser tool counts=%d/%d, want 12/14", len(borrower), len(tools))
+	}
+	for index, tool := range borrower {
+		left, err := json.Marshal(tool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		right, err := json.Marshal(tools[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(left) != string(right) {
+			t.Fatalf("borrower tool %d changed while adding BrowserRun", index)
+		}
+	}
+	for index, want := range []string{"polis_browser_run", "polis_browser_results"} {
+		tool, ok := tools[12+index].(map[string]any)
+		if !ok || tool["name"] != want {
+			t.Fatalf("BrowserRun tool %d=%v, want %s", index, tools[12+index], want)
+		}
+		definition, _ := json.Marshal(tool)
+		for _, forbidden := range []string{"cookie", "storageState", "bearer", "download", "websocket"} {
+			if strings.Contains(strings.ToLower(string(definition)), strings.ToLower(forbidden)) {
+				t.Fatalf("%s exposes forbidden browser secret/egress concept %q: %s", want, forbidden, definition)
+			}
+		}
+	}
+}
+
 func TestProductEmployeeEnvironmentEnsureSurfaceExtendsEnvironmentStatusOnly(t *testing.T) {
 	status := ProductEmployeeToolsWithEnvironmentStatus()
 	tools := ProductEmployeeToolsWithEnvironmentEnsure()

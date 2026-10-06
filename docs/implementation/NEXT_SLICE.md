@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 285, REQ-38 BrowserRun control plane)
+
+Added Schema117 immutable BrowserRun identities and append-only events plus fake-only @18 `browser_run`/`browser_results`. The request is bound to the current Task/WorkerSession and current same-Mission service generation, but always records `blocked/browser_runtime_unqualified`; strict HTTPS-origin canonicalization rejects credentials, paths, query strings and fragments. Targeted Kernel/codex/provider/control/db tests and `build ./cmd/...` pass; no browser, service process, Provider, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-285-req38-browser-run-control-plane/verification.md`.
+
+Next local slice: continue REQ-38 research/search/fetch control-plane gaps or remaining REQ-40 source projections; actual Playwright/Chromium, origin, identity, profile, network and external-account qualification remain separate.
+
 ## Latest continuation status (Slice 284, REQ-37 BorrowerLease product surface)
 
 Wired Schema116 BorrowerLease acquire/touch/release into isolated fake-only product surface `polis-product-tool-surface@17`. The new tools require the exact current Task and WorkerSession, never start or stop a service, and preserve @4/@15 immutability. Revoke paths now consume pgx rows before appending events, runtime recovery revokes leases before reconciliation, and reads fail closed on inactive owner or expired service generations. Targeted Kernel/provider/control/db tests and `build ./cmd/...` pass; no runtime database, service process, Provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-284-req37-borrower-lease-tools/verification.md`.
@@ -1486,7 +1492,7 @@ Added an installation-owner/CSRF `delivery/invalidate` command that appends an e
 
 Added Schema115 source and append-only DependencyChange proposal/decision methods. Proposals are canonical, bounded and limited to exact semver dependency versions plus registry hosts already allowed by the base environment policy. Owner approval records intent only; it does not run npm, edit package files, create a lockfile or generate an environment revision. Targeted Go tests, command build and diff checks pass; no migration/runtime database, npm, Worker, executor, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-282-req36-dependency-change-proposal/verification.md`.
 
-Next local slice: continue REQ-37 durable BorrowerLease/jobs lifecycle or REQ-38 BrowserRun persistence/control; DependencyChange materialization remains executor-gated.
+This Slice282 pointer was superseded by later offline slices through Slice285; DependencyChange materialization remains executor-gated.
 ## Latest continuation status (Slice 283, REQ-37 durable BorrowerLease lifecycle)
 
 Added Schema116 immutable BorrowerLease identities/events with same-Mission distinct-Task and exact WorkerSession binding. Acquire is limited to a ready current service generation; TTL is capped at 15 minutes and idle grace at 2 minutes, bounded by endpoint expiry. Release/touch and endpoint/generation revoke paths append lifecycle events without starting/stopping processes. Targeted Kernel tests and command build pass; no migration/runtime database, service process, Provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-283-req37-borrower-leases/verification.md`.

@@ -138,6 +138,7 @@ const ProductEnvironmentStatusToolSurfaceQualification = "polis-product-tool-sur
 const ProductReadOnlyJobsToolSurfaceQualification = "polis-product-tool-surface@15"
 const ProductEnvironmentEnsureToolSurfaceQualification = "polis-product-tool-surface@16"
 const ProductBorrowerLeaseToolSurfaceQualification = "polis-product-tool-surface@17"
+const ProductBrowserRunToolSurfaceQualification = "polis-product-tool-surface@18"
 
 const (
 	ProductEnvironmentStatusManifestDigest = "b59ff6acd757764e66c73e1b5e638c3ff1a64a06f44491c919e017f91c48e0af"
@@ -152,6 +153,9 @@ const (
 	ProductBorrowerLeaseManifestDigest     = "267d40f1fe9266b6974fc1b41bdb8567ec7e695c3ec37f41e3c070030169f1c8"
 	ProductBorrowerLeaseSchemaDigest       = "b59fdc07f682a504a3bc541a6e837c3a142e7e5b99ea33fc2eb0b1029f8e8738"
 	ProductBorrowerLeaseSchemaBytes        = 2966
+	ProductBrowserRunManifestDigest        = "1a954674caea420d4b9445bcf237fb0be4bf04d07634e16c595af0db62913456"
+	ProductBrowserRunSchemaDigest          = "a691aeffad6545d1e618b6eb5c0a2c14152561620fef351e47230f764752a38e"
+	ProductBrowserRunSchemaBytes           = 4071
 )
 
 const (
@@ -167,6 +171,8 @@ const (
 	OfflineEnvironmentEnsureSurfaceSimulationMarker     = "offline-environment-ensure-tool-surface-unqualified"
 	OfflineBorrowerLeaseSurfacePurpose                  = "offline-borrower-lease-tool-surface"
 	OfflineBorrowerLeaseSurfaceSimulationMarker         = "offline-borrower-lease-tool-surface-unqualified"
+	OfflineBrowserRunSurfacePurpose                     = "offline-browser-run-tool-surface"
+	OfflineBrowserRunSurfaceSimulationMarker            = "offline-browser-run-tool-surface-unqualified"
 	ProductMissionChangeAssessmentManifestDigest        = "cd9f4f852cd5674b1e0660868cb5af628a0186a0f137e8e1778e8fd6809c326d"
 	ProductMissionChangeAssessmentSchemaDigest          = "0be7f09a90c96ed73596617207ed1bac7575c6b8fd56cfe086a5880352c6b28a"
 	ProductMissionChangeAssessmentSchemaBytes           = 6740
@@ -200,6 +206,27 @@ func ProductReadOnlyJobsToolSurface() ToolSurface {
 // remains a separately qualified executor capability.
 func ProductBorrowerLeaseToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithBorrowerLeases())
+}
+
+// ProductBrowserRunToolSurface is a fake-only control-plane surface. It can
+// persist a default-denied request and read its result; it never opens a URL.
+func ProductBrowserRunToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithBrowserRun())
+}
+
+func ValidateOfflineFakeBrowserRunSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductBrowserRunToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductBrowserRunToolSurfaceQualification ||
+		profile.Purpose != OfflineBrowserRunSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineBrowserRunSurfaceSimulationMarker ||
+		profile.ProductProviderL2Fingerprint != OfflineBrowserRunSurfaceSimulationMarker || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 14 || expected.ManifestDigest != ProductBrowserRunManifestDigest || expected.AggregateSchemaBytes != ProductBrowserRunSchemaBytes || expected.AggregateSchemaDigest != ProductBrowserRunSchemaDigest ||
+		surface.ToolCount != 14 || observed.ToolCount != 14 || surface.ManifestDigest != ProductBrowserRunManifestDigest || observed.ManifestDigest != ProductBrowserRunManifestDigest ||
+		surface.AggregateSchemaBytes != ProductBrowserRunSchemaBytes || observed.AggregateSchemaBytes != ProductBrowserRunSchemaBytes || surface.AggregateSchemaDigest != ProductBrowserRunSchemaDigest || observed.AggregateSchemaDigest != ProductBrowserRunSchemaDigest {
+		return fmt.Errorf("BrowserRun surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
 }
 
 func ValidateOfflineFakeBorrowerLeaseSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

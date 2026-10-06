@@ -122,6 +122,23 @@ func ValidateRuntimeExecutionAuthorization(authorization ExecutionAuthorization)
 			Tools: ProductBorrowerLeaseToolSurface().Tools,
 		})
 	}
+	if authorization.ProviderMode == "fake" && authorization.ToolSurfaceQualification == ProductBrowserRunToolSurfaceQualification {
+		if err := validateExecutionAuthorizationShape(authorization); err != nil {
+			return err
+		}
+		profile := ExecutionProfile{
+			ToolCallLimit: authorization.ToolCallLimit, Purpose: authorization.Purpose,
+			ExecutionEnvelope:                authorization.ExecutionEnvelope,
+			ToolSurfaceQualification:         authorization.ToolSurfaceQualification,
+			ExactSurfaceExecutionFingerprint: authorization.ExactSurfaceExecutionFingerprint,
+			ProductProviderL2Fingerprint:     authorization.ProductProviderL2Fingerprint,
+		}
+		return ValidateOfflineFakeBrowserRunSurface(authorization.ProviderMode, profile, ToolSurface{
+			ToolCount: authorization.ToolCount, ManifestDigest: authorization.ToolSurfaceDigest,
+			AggregateSchemaBytes: authorization.AggregateSchemaBytes, AggregateSchemaDigest: authorization.AggregateSchemaDigest,
+			Tools: ProductBrowserRunToolSurface().Tools,
+		})
+	}
 	if authorization.ProviderMode == "fake" && authorization.ToolSurfaceQualification == ProductReadOnlyJobsToolSurfaceQualification {
 		if err := validateExecutionAuthorizationShape(authorization); err != nil {
 			return err

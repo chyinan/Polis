@@ -37,6 +37,34 @@ func TestProductBorrowerLeaseSurfaceIsFakeOnlyAndBounded(t *testing.T) {
 	}
 }
 
+func TestProductBrowserRunSurfaceIsFakeOnlyAndDefaultDenied(t *testing.T) {
+	runtime := NewFakeRuntime(FakeRuntimeConfig{BrowserRunSurface: true})
+	surface := ProductBrowserRunToolSurface()
+	profile := runtime.ExecutionProfile()
+	if surface.ToolCount != 14 || profile.ToolSurfaceQualification != ProductBrowserRunToolSurfaceQualification {
+		t.Fatalf("BrowserRun surface/profile=%+v/%+v, want 14/@18", surface, profile)
+	}
+	if err := runtime.Readiness(context.Background()); err != nil {
+		t.Fatalf("explicit BrowserRun Fake Runtime readiness: %v", err)
+	}
+	authorization := validProviderExecutionAuthorization("offline-model", "fake", profile.Purpose, profile.ExecutionEnvelope)
+	authorization.ToolSurfaceDigest = surface.ManifestDigest
+	authorization.ToolSurfaceQualification = profile.ToolSurfaceQualification
+	authorization.ToolCount = surface.ToolCount
+	authorization.AggregateSchemaBytes = surface.AggregateSchemaBytes
+	authorization.AggregateSchemaDigest = surface.AggregateSchemaDigest
+	authorization.ExactSurfaceExecutionFingerprint = profile.ExactSurfaceExecutionFingerprint
+	authorization.ProductProviderL2Fingerprint = profile.ProductProviderL2Fingerprint
+	if err := ValidateRuntimeExecutionAuthorization(authorization); err != nil {
+		t.Fatalf("exact fake BrowserRun authorization was rejected: %v", err)
+	}
+	realAuthorization := authorization
+	realAuthorization.ProviderMode = "real"
+	if err := ValidateRuntimeExecutionAuthorization(realAuthorization); err == nil {
+		t.Fatal("real provider accepted fake-only BrowserRun surface")
+	}
+}
+
 func TestProductReadOnlyJobsSurfaceIsFakeOnlyAndTaskBound(t *testing.T) {
 	runtime := NewFakeRuntime(FakeRuntimeConfig{ReadOnlyJobsSurface: true})
 	surface := ProductReadOnlyJobsToolSurface()

@@ -132,6 +132,32 @@ func ProductEmployeeToolsWithBorrowerLeases() []any {
 	return append(tools, leaseTools...)
 }
 
+// ProductEmployeeToolsWithBrowserRun is a separately versioned, fake-only
+// extension. It records a default-denied BrowserRun request and reads its
+// control-plane result; it does not grant browser, network or credential use.
+func ProductEmployeeToolsWithBrowserRun() []any {
+	tools := ProductEmployeeToolsWithBorrowerLeases()
+	browserTools := productTools([]peerToolDefinition{
+		{"browser_run", "Record one exact BrowserRun request against a current same-Mission service generation. The control plane returns blocked until an isolated browser profile, explicit origin policy and management-network denial are qualified; this call never opens a URL or uses credentials.", map[string]any{
+			"service_job_id":        map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"service_generation":    map[string]any{"type": "integer", "minimum": 1},
+			"target_origin":         map[string]any{"type": "string", "minLength": 9, "maxLength": 256},
+			"plan_sha256":           map[string]any{"type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[a-f0-9]{64}$"},
+			"browser_build":         map[string]any{"type": "string", "minLength": 1, "maxLength": 128},
+			"execution_environment": map[string]any{"type": "string", "minLength": 1, "maxLength": 128},
+			"input_revision":        map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"viewport_width":        map[string]any{"type": "integer", "minimum": 1, "maximum": 4096},
+			"viewport_height":       map[string]any{"type": "integer", "minimum": 1, "maximum": 4096},
+			"locale":                map[string]any{"type": "string", "minLength": 1, "maxLength": 128},
+			"timezone":              map[string]any{"type": "string", "minLength": 1, "maxLength": 128},
+		}},
+		{"browser_results", "Read the latest control-plane result for one exact BrowserRun owned by your current Task and WorkerSession. Browser output and credentials are never inferred from a blocked record.", map[string]any{
+			"run_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+	})
+	return append(tools, browserTools...)
+}
+
 // ProductEmployeeToolsWithDirectMessaging is a separately versioned product
 // surface. The historical @4, Skill @5 and guidance @6 registries stay fixed.
 func ProductEmployeeToolsWithDirectMessaging() []any {

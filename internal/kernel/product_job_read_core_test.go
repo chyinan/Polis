@@ -56,3 +56,16 @@ func TestEmployeeToolsBorrowerLeaseRequiresTheIsolatedWritableSurface(t *testing
 		}
 	}
 }
+
+func TestEmployeeToolsBrowserRunRequiresTheIsolatedSurface(t *testing.T) {
+	for _, name := range []string{"browser_run", "browser_results"} {
+		_, err := (EmployeeTools{}).call(context.Background(), name, "budget-key", []byte(`{}`))
+		if !errors.Is(err, core.Denied) {
+			t.Fatalf("%s without the isolated BrowserRun surface returned %v, want %v", name, err, core.Denied)
+		}
+	}
+	_, err := (EmployeeTools{ProductSurface: true, BrowserRunSurface: true, ReadOnly: true}).call(context.Background(), "browser_run", "budget-key", []byte(`{}`))
+	if !errors.Is(err, core.Denied) {
+		t.Fatalf("browser_run on a read-only worker returned %v, want %v", err, core.Denied)
+	}
+}
