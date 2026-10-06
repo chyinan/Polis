@@ -1,3 +1,11 @@
+## Latest continuation status (Slice 303, REQ-38 ResearchOperation evidence binding)
+
+Succeeded ResearchOperation results now use the canonical operation-evidence
+envelope with same-scope real Artifact digest/state checks. The unavailable
+fake search/fetch backend remains unchanged and no retrieval/network path is
+enabled. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-303-req38-research-evidence-binding/verification.md`.
+
 ## Latest continuation status (Slice 302, REQ-38 BrowserRun evidence binding)
 
 Succeeded BrowserRun reads now fail closed unless their evidence JSON is

@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 303)
+
+Extended the canonical evidence binding to succeeded ResearchOperation
+results. The envelope hash, Company/Mission/Task/Operation scope and real
+ready candidate/passed Artifact digests are checked fail-closed; unavailable
+fake search/fetch remains unchanged. No retrieval, browser, network or
+Provider path was enabled. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-303-req38-research-evidence-binding/verification.md`.
+
 ## Current continuation pointer (Slice 302)
 
 Added fail-closed BrowserRun evidence binding. Succeeded records now require a

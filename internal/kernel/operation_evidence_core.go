@@ -28,6 +28,29 @@ type OperationEvidenceArtifactRef struct {
 	Kind       string `json:"kind"`
 }
 
+type ResearchOperationEvidenceEnvelope struct {
+	EvidenceManifestSHA256 string                    `json:"evidenceManifestSha256"`
+	EvidenceManifest       OperationEvidenceManifest `json:"evidenceManifest"`
+	Payload                json.RawMessage           `json:"payload,omitempty"`
+}
+
+func ValidateResearchOperationEvidenceEnvelope(raw []byte, companyID, missionID, taskID, operationID string) (ResearchOperationEvidenceEnvelope, error) {
+	var envelope ResearchOperationEvidenceEnvelope
+	if err := json.Unmarshal(raw, &envelope); err != nil || !validEnvironmentSHA256(envelope.EvidenceManifestSHA256) {
+		return ResearchOperationEvidenceEnvelope{}, errors.New("research operation evidence envelope is malformed")
+	}
+	canonicalManifest, err := CanonicalOperationEvidenceJSON(mustMarshalOperationEvidenceManifest(envelope.EvidenceManifest))
+	if err != nil || digestCapabilityBytes(canonicalManifest) != envelope.EvidenceManifestSHA256 || ValidateOperationEvidenceManifest(envelope.EvidenceManifest, companyID, missionID, taskID, operationID) != nil {
+		return ResearchOperationEvidenceEnvelope{}, errors.New("research operation evidence envelope is invalid")
+	}
+	return envelope, nil
+}
+
+func mustMarshalOperationEvidenceManifest(manifest OperationEvidenceManifest) []byte {
+	encoded, _ := json.Marshal(manifest)
+	return encoded
+}
+
 // CanonicalOperationEvidenceJSON defines the bytes hashed into
 // evidence_manifest_sha256. Database JSONB and callers must use this same
 // parse-and-marshal form rather than hashing presentation whitespace or key

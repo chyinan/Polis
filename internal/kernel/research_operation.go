@@ -130,6 +130,15 @@ WHERE o.company_id=$1 AND o.operation_id=$2`
 	if !json.Valid(result) {
 		return ResearchOperationRecord{}, core.Integrity
 	}
+	if record.State == "succeeded" {
+		if _, err := ValidateResearchOperationEvidenceEnvelope(result, record.CompanyID, record.MissionID, record.TaskID, record.OperationID); err != nil {
+			return ResearchOperationRecord{}, core.Integrity
+		}
+		var envelope ResearchOperationEvidenceEnvelope
+		if err := json.Unmarshal(result, &envelope); err != nil || validateOperationEvidenceArtifacts(ctx, queryer, envelope.EvidenceManifest) != nil {
+			return ResearchOperationRecord{}, core.Integrity
+		}
+	}
 	record.Result = append(json.RawMessage(nil), result...)
 	record.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
 	return record, nil
