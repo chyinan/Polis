@@ -4,6 +4,7 @@ package runner
 import (
 	"encoding/json"
 	"errors"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -83,7 +84,11 @@ func TestRunReportsNonzeroExit(t *testing.T) {
 
 func TestStartWithWorkingDirClassifiesMissingWorkingDirectory(t *testing.T) {
 	missingDirectory := filepath.Join(t.TempDir(), "missing-cwd")
-	_, err := StartWithWorkingDir("missing-cwd", []string{"/bin/echo", "unused"}, nil, missingDirectory)
+	executable := "/bin/echo"
+	if runtime.GOOS == "windows" {
+		executable = "cmd.exe"
+	}
+	_, err := StartWithWorkingDir("missing-cwd", []string{executable, "unused"}, nil, missingDirectory)
 	var failure *LaunchFailure
 	if !errors.As(err, &failure) || failure.ReasonCode != LaunchReasonCWDMissing || failure.Phase != LaunchPhaseWorkingDirectory || failure.ProcessCreated || failure.PIDPresent {
 		t.Fatalf("unexpected cwd failure: %v", err)
@@ -102,6 +107,15 @@ func TestLaunchFailureClassificationsCoverAccessDeniedAndPipeSetup(t *testing.T)
 	child := ClassifyPostStartFailure(errors.New("child exited"), true, 42, true)
 	if child.ReasonCode != LaunchReasonChildExitedEarly || !child.ProcessCreated || !child.PIDPresent {
 		t.Fatalf("unexpected early-exit classification: %+v", child)
+	}
+}
+
+func TestOSErrorCodeProvidesStableFallbacksForSentinelErrors(t *testing.T) {
+	if code := osErrorCode(os.ErrNotExist); code == nil || *code != 2 {
+		t.Fatalf("not-exist fallback code=%v, want 2", code)
+	}
+	if code := osErrorCode(os.ErrPermission); code == nil || *code != 5 {
+		t.Fatalf("permission fallback code=%v, want 5", code)
 	}
 }
 

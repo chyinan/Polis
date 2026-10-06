@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 280)
+
+Authorized local executor/browser qualification ran the Windows runner test binary and the service-browser ingress suite. Native runner boundary tests passed; one `POLIS_GO_ROOT` sandbox test skipped. Windows Playwright could not reach the WSL randomized loopback ingress, and WSL Chromium installation could not complete, so browser rendering/effective host isolation remain unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-280-executor-browser-qualification/verification.md`.
+
 ## Current continuation pointer (Slice 279)
 
 Slice279 adds fake-only product surface `polis-product-tool-surface@16` with the existing `environment_status` plus bound `environment_ensure`. Exact revision IDs are checked against the current Mission, and WorkerSession/Task/Mission authorization is rechecked inside the same idempotent write transaction and on receipt replay. No host command, package edit, registry/network selection, real provider, migration, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-279-req36-worker-environment-ensure/verification.md`.

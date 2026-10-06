@@ -43,3 +43,6 @@ Selected and implemented a seven-day `awaiting_feedback` window for ready delive
 # Latest checkpoint: Slice279 REQ-36 fake-only Worker environment ensure
 
 Added product surface @16 with bound `environment_ensure`. Exact revision IDs are checked against the current Mission, and WorkerSession/Task/Mission authorization is held in the same idempotent transaction and replay guard. No host command, package edit, registry/network selection, migration, Worker turn, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-279-req36-worker-environment-ensure/verification.md`.
+# Latest checkpoint: Slice280 executor/browser qualification
+
+Authorized local qualification passed the Windows runner test binary and service-browser ingress Go suite. Browser rendering did not qualify because Windows could not reach WSL's randomized loopback ingress and WSL Chromium installation was unavailable. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-280-executor-browser-qualification/verification.md`.

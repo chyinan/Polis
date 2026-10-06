@@ -378,6 +378,14 @@ func osErrorCode(err error) *uint32 {
 	}
 	var errno syscall.Errno
 	if !errors.As(err, &errno) {
+		if errors.Is(err, os.ErrNotExist) {
+			code := uint32(2)
+			return &code
+		}
+		if errors.Is(err, os.ErrPermission) {
+			code := uint32(5)
+			return &code
+		}
 		return nil
 	}
 	value := uint32(errno)
