@@ -263,6 +263,30 @@ type DurableDeliveryManifestCompletionService interface {
 	CompleteDurableDeliveryManifest(ctx context.Context, companyID string, request CompleteDurableDeliveryManifestRequest) (CompleteDurableDeliveryManifestReceipt, error)
 }
 
+type InvalidateDurableDeliveryManifestRequest struct {
+	ArtifactID               string `json:"artifactId"`
+	ExpectedManifestRevision string `json:"expectedManifestRevision"`
+	State                    string `json:"state"`
+	Reason                   string `json:"reason"`
+	RequestID                string `json:"requestId"`
+}
+
+type InvalidateDurableDeliveryManifestReceipt struct {
+	RequestID           string `json:"requestId"`
+	CompanyID           string `json:"companyId"`
+	DeliveryID          string `json:"deliveryId"`
+	ManifestRevision    string `json:"manifestRevision"`
+	DispositionRevision string `json:"dispositionRevision"`
+	State               string `json:"state"`
+	Actor               string `json:"actor"`
+	Reason              string `json:"reason"`
+	CreatedAt           string `json:"createdAt"`
+}
+
+type DurableDeliveryManifestLifecycleService interface {
+	InvalidateDurableDeliveryManifest(ctx context.Context, companyID string, request InvalidateDurableDeliveryManifestRequest) (InvalidateDurableDeliveryManifestReceipt, error)
+}
+
 type TaskTakeoverLeaseCommand struct {
 	RequestID string `json:"requestId"`
 }

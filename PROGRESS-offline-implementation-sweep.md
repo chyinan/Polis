@@ -46,3 +46,6 @@ Added product surface @16 with bound `environment_ensure`. Exact revision IDs ar
 # Latest checkpoint: Slice280 executor/browser qualification
 
 Authorized local qualification passed the Windows runner test binary and service-browser ingress Go suite. Browser rendering did not qualify because Windows could not reach WSL's randomized loopback ingress and WSL Chromium installation was unavailable. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-280-executor-browser-qualification/verification.md`.
+# Latest checkpoint: Slice281 REQ-40 DeliveryManifest invalidation/withdrawal
+
+Added owner/CSRF exact-current invalidation/withdrawal revisions with canonical digest checks, stale/terminal rejection, owner reason persistence and no Artifact/Mission/Task side effect. Targeted Go/TypeScript tests and frontend build passed; one unrelated full validation test remains. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-281-req40-delivery-invalidation/verification.md`.

@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 281)
+
+Slice281 adds owner/CSRF `delivery/invalidate` for exact-current DeliveryManifest revisions, with `invalidated`/`withdrawn` append-only states, owner reason persistence and no Worker/Mission/Task side effect. Artifact content remains immutable; stale/terminal revisions fail closed. Targeted Go/TypeScript tests and frontend build pass; no database runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-281-req40-delivery-invalidation/verification.md`.
+
 ## Current continuation pointer (Slice 280)
 
 Authorized local executor/browser qualification ran the Windows runner test binary and the service-browser ingress suite. Native runner boundary tests passed; one `POLIS_GO_ROOT` sandbox test skipped. Windows Playwright could not reach the WSL randomized loopback ingress, and WSL Chromium installation could not complete, so browser rendering/effective host isolation remain unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-280-executor-browser-qualification/verification.md`.

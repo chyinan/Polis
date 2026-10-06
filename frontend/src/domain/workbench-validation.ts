@@ -57,6 +57,7 @@ import type {
   ArtifactDeliveryManifestResponse,
   DurableDeliveryFeedbackBacklogEventView,
   DurableDeliveryManifestCompletionReceipt,
+  DurableDeliveryManifestInvalidationReceipt,
   DurableDeliveryResponse,
   DurableUserDispositionCommandReceipt,
   UserDispositionDecision,
@@ -1397,6 +1398,17 @@ export function validateDurableDeliveryManifestCompletionReceipt(value: unknown,
     return {success: false, issues: [{path: '', message: 'durable delivery completion receipt is malformed or cross-scoped'}]};
   }
   return {success: true, value: value as unknown as DurableDeliveryManifestCompletionReceipt};
+}
+
+export function validateDurableDeliveryManifestInvalidationReceipt(value: unknown, expected: Readonly<{requestId: string; companyId: string; artifactId: string; expectedManifestRevision: string; state: 'invalidated' | 'withdrawn'; reason: string}>): ValidationResult<DurableDeliveryManifestInvalidationReceipt> {
+  const expectedRevision = isCanonicalPositiveInt64(expected.expectedManifestRevision) ? BigInt(expected.expectedManifestRevision) : null;
+  const returnedRevision = isRecord(value) && typeof value.manifestRevision === 'string' && isCanonicalPositiveInt64(value.manifestRevision) ? BigInt(value.manifestRevision) : null;
+  if (!isRecord(value) || value.requestId !== expected.requestId || value.companyId !== expected.companyId || value.deliveryId !== expected.artifactId
+    || value.state !== expected.state || value.actor !== 'installation-owner' || value.reason !== expected.reason || expectedRevision === null || returnedRevision === null || returnedRevision !== expectedRevision + 1n
+    || value.dispositionRevision !== '1' || !isTimestamp(value.createdAt)) {
+    return {success: false, issues: [{path: '', message: 'durable delivery invalidation receipt is malformed or does not match the submitted intent'}]};
+  }
+  return {success: true, value: value as unknown as DurableDeliveryManifestInvalidationReceipt};
 }
 
 export function validateDurableUserDispositionReceipt(value: unknown, expected: Readonly<{

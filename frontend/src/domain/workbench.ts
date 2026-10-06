@@ -262,6 +262,18 @@ export type DurableDeliveryManifestCompletionReceipt = Readonly<{
   createdAt: string;
 }>;
 
+export type DurableDeliveryManifestInvalidationReceipt = Readonly<{
+  requestId: string;
+  companyId: string;
+  deliveryId: string;
+  manifestRevision: string;
+  dispositionRevision: string;
+  state: 'invalidated' | 'withdrawn';
+  actor: 'installation-owner';
+  reason: string;
+  createdAt: string;
+}>;
+
 export type ProjectEnvironmentPolicyManifestView = Readonly<{
   schemaVersion: 'project-environment-policy@1';
   profileId: 'windows-node-npm@1' | 'linux-node-npm@1';

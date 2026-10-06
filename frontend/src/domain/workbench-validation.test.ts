@@ -1,7 +1,7 @@
 // pattern: Functional Core
 
 import {describe, expect, it} from 'vitest';
-import {isAcceptanceContract, validateActivityView, validateCapabilityCatalog, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateDurableDeliveryManifestCompletionReceipt, validateGitHubCredentialReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateOperatorInstructions, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateServiceBrowserSession, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases} from './workbench-validation';
+import {isAcceptanceContract, validateActivityView, validateCapabilityCatalog, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateDurableDeliveryManifestCompletionReceipt, validateDurableDeliveryManifestInvalidationReceipt, validateGitHubCredentialReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateOperatorInstructions, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateServiceBrowserSession, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases} from './workbench-validation';
 import {validateGitHubFeedbackCollectionPolicyReceipt} from './workbench-validation';
 
 const companyId = 'company-1';
@@ -29,6 +29,21 @@ describe('durable delivery completion receipt', () => {
       state: 'ready', actor: 'system', createdAt: '2026-10-06T00:00:00Z',
     }, {requestId: 'complete-1', companyId, artifactId: 'artifact-1', expectedManifestRevision: '1'});
     expect(result.success).toBe(true);
+  });
+});
+
+describe('durable delivery invalidation receipt', () => {
+  it('accepts only the next manifest revision in the requested scope', () => {
+    const valid = validateDurableDeliveryManifestInvalidationReceipt({
+      requestId: 'invalidate-1', companyId, deliveryId: 'artifact-1', manifestRevision: '3', dispositionRevision: '1',
+      state: 'withdrawn', actor: 'installation-owner', reason: 'owner withdrawal', createdAt: '2026-10-06T00:00:00Z',
+    }, {requestId: 'invalidate-1', companyId, artifactId: 'artifact-1', expectedManifestRevision: '2', state: 'withdrawn', reason: 'owner withdrawal'});
+    expect(valid.success).toBe(true);
+    const stale = validateDurableDeliveryManifestInvalidationReceipt({
+      requestId: 'invalidate-1', companyId, deliveryId: 'artifact-1', manifestRevision: '2', dispositionRevision: '1',
+      state: 'withdrawn', actor: 'installation-owner', reason: 'owner withdrawal', createdAt: '2026-10-06T00:00:00Z',
+    }, {requestId: 'invalidate-1', companyId, artifactId: 'artifact-1', expectedManifestRevision: '2', state: 'withdrawn', reason: 'owner withdrawal'});
+    expect(stale.success).toBe(false);
   });
 });
 
