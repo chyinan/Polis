@@ -2,6 +2,12 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 278)
+
+Slice278 selects and enforces REQ-40 owner policy: ready delivery completion opens a seven-day `awaiting_feedback` window; expiry rejects later disposition writes without implicit acceptance; successful Mission closeout requires explicit latest `accepted` dispositions for all acceptance Artifacts, while `ended_not_met`/`cancelled` do not. Historical backfill stays `not_requested`. Pre-Schema111 runtimes fail closed for successful closeout. No migration, database runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-278-req40-owner-policy/verification.md`.
+
+Owner decisions for REQ-36/37/38 are recorded in `summary/owner-policy-decisions.md`: fixed dependency envelope, same-Mission exact BorrowerLease with 15-minute TTL/2-minute idle grace, and default-deny BrowserRun. These are policy choices, not host/provider/browser qualification.
+
 ## Current continuation pointer (Slice 277)
 
 Slice277 adds fake-only product tool surface `polis-product-tool-surface@15` with read-only `jobs_status` and `jobs_logs`. Kernel reads revalidate the current WorkerSession and exact Company/Task/Session ownership in a repeatable-read transaction; log bytes are digest-verified. The qualified real-provider `@4` surface is unchanged. No `jobs.start/stop`, process control, BorrowerLease, real provider, database runtime, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-277-req37-read-only-jobs/verification.md`.

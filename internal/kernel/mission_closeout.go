@@ -83,6 +83,13 @@ WHERE a.company_id=$1 AND t.mission_id=$2 AND a.id=ANY($3::text[])
 			if matched != len(artifactIDs) {
 				return Receipt{}, core.ConflictError{Reason: "Mission success evidence must reference exact ready Artifacts with an independent passed review", CurrentState: "acceptance_evidence_required"}
 			}
+			acceptedDeliveries, err := missionAcceptedDeliveryArtifactCount(ctx, tx, scope, missionID, artifactIDs)
+			if err != nil {
+				return Receipt{}, err
+			}
+			if err = validateMissionSuccessDeliveryAcceptance(matched == len(artifactIDs), acceptedDeliveries == len(artifactIDs)); err != nil {
+				return Receipt{}, err
+			}
 			if err = tx.QueryRow(ctx, `SELECT count(*) FROM tasks WHERE company_id=$1 AND mission_id=$2 AND state NOT IN ('completed','cancelled')`, scope.company, missionID).Scan(&unsettledTasks); err != nil {
 				return Receipt{}, err
 			}
@@ -185,7 +192,14 @@ WHERE o.company_id=$1 AND t.mission_id=$2 AND o.state NOT IN ('fulfilled','decli
 WHERE a.company_id=$1 AND t.mission_id=$2 AND a.id=ANY($3::text[]) AND a.state='ready' AND a.verdict='passed'`, scope.company, missionID, artifactIDs).Scan(&matched); err != nil {
 				return Receipt{}, err
 			}
-			if unsettledTasks != 0 || unresolvedObligations != 0 || matched != len(artifactIDs) {
+			acceptedDeliveries, err := missionAcceptedDeliveryArtifactCount(ctx, tx, scope, missionID, artifactIDs)
+			if err != nil {
+				return Receipt{}, err
+			}
+			if err = validateMissionSuccessDeliveryAcceptance(matched == len(artifactIDs), acceptedDeliveries == len(artifactIDs)); err != nil {
+				return Receipt{}, err
+			}
+			if unsettledTasks != 0 || unresolvedObligations != 0 {
 				return Receipt{}, core.ConflictError{Reason: "Mission success requires all Tasks and Obligations settled and the recorded acceptance Artifacts still independently passed", CurrentState: "acceptance_unresolved"}
 			}
 		} else {
@@ -247,4 +261,32 @@ WHERE s.company_id=$1 AND s.employee_id IN (
 		}
 		return Receipt{ID: missionID, Status: requestedOutcome}, nil
 	})
+}
+
+func missionAcceptedDeliveryArtifactCount(ctx context.Context, tx pgx.Tx, scope Scope, missionID string, artifactIDs []string) (int, error) {
+	if len(artifactIDs) == 0 {
+		return 0, nil
+	}
+	var tableAvailable bool
+	if err := tx.QueryRow(ctx, "SELECT to_regclass('public.delivery_manifest_revisions') IS NOT NULL").Scan(&tableAvailable); err != nil {
+		return 0, err
+	}
+	if !tableAvailable {
+		return 0, nil
+	}
+	var accepted int
+	err := tx.QueryRow(ctx, `SELECT count(*)::int
+FROM unnest($3::text[]) AS requested(artifact_id)
+WHERE EXISTS (
+ SELECT 1
+ FROM delivery_manifest_revisions m
+ WHERE m.company_id=$1 AND m.mission_id=$2 AND m.delivery_id=requested.artifact_id AND m.artifact_id=requested.artifact_id AND m.state='ready'
+   AND m.revision=(SELECT max(latest.revision) FROM delivery_manifest_revisions latest WHERE latest.company_id=m.company_id AND latest.delivery_id=m.delivery_id AND latest.artifact_id=m.artifact_id)
+   AND EXISTS (
+    SELECT 1 FROM delivery_user_dispositions d
+    WHERE d.company_id=m.company_id AND d.delivery_id=m.delivery_id AND d.manifest_revision=m.revision AND d.state='accepted'
+      AND d.revision=(SELECT max(latestDisposition.revision) FROM delivery_user_dispositions latestDisposition WHERE latestDisposition.company_id=d.company_id AND latestDisposition.delivery_id=d.delivery_id AND latestDisposition.manifest_revision=d.manifest_revision)
+   )
+)`, scope.company, missionID, artifactIDs).Scan(&accepted)
+	return accepted, err
 }

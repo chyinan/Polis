@@ -1,3 +1,11 @@
+## Latest continuation status (Slice 278, REQ-40 owner policy decisions)
+
+Selected and enforced the operational owner policy: a completed ready DeliveryManifest opens a seven-day `awaiting_feedback` window; deadline expiry is derived and blocks later disposition writes without implicit acceptance; Mission `succeeded` closeout requires current ready delivery evidence plus an explicit latest `accepted` disposition for every acceptance Artifact, while `ended_not_met`/`cancelled` remain available without user acceptance. Historical backfill remains `not_requested`. Pre-Schema111 runtimes fail closed for successful closeout rather than certifying an acceptance they cannot read. Targeted Kernel tests and `build ./cmd/...` pass; no migration, database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-278-req40-owner-policy/verification.md`.
+
+Next local slice: apply the same least-privilege owner-policy treatment to REQ-36/37/38 only where it produces source-level gates or projections; native executor, BorrowerLease enforcement, BrowserRun and external-provider qualification remain separate.
+
+Owner policy defaults are recorded in `summary/owner-policy-decisions.md`: fixed dependency envelope, same-Mission exact BorrowerLease with 15-minute TTL/2-minute idle grace, and default-deny BrowserRun origins/identity/egress.
+
 ## Latest continuation status (Slice 277, REQ-37 fake-only read-only JobRun surface)
 
 Added isolated fake-only product surface `polis-product-tool-surface@15` with `polis_jobs_status` and `polis_jobs_logs`. Kernel reads are bounded to the current Company, Task and WorkerSession, use a read-only repeatable-read transaction, and verify persisted log-manifest SHA-256 before returning bytes. The existing qualified `@4` surface is unchanged. `jobs.start`, `jobs.stop`, process control, service endpoint BorrowerLease, owner policy, native executor qualification and real-provider execution remain open. Targeted Go tests and adapter-readiness verification pass; no Worker, process, database runtime, provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-277-req37-read-only-jobs/verification.md`.

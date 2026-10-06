@@ -144,10 +144,11 @@ VALUES($1,$2,$3,$4,$5,$6,'ready',$7,$8,$9)`, companyID, artifactID, newRevision,
 			return Receipt{}, err
 		}
 		dispositionRequestID := productDeliveryManifestDispositionRequestID(command.RequestID)
+		feedbackDeadline := createdAt.Add(productDeliveryFeedbackWindow)
 		if _, err = tx.Exec(ctx, `INSERT INTO delivery_user_dispositions(
 company_id,delivery_id,revision,manifest_revision,state,actor,reason,request_id,feedback_deadline,created_at)
-VALUES($1,$2,1,$3,'not_requested',$4,$5,$6,NULL,$7)`, companyID, artifactID, newRevision, productDeliveryManifestCompletionActor,
-			"Manifest was completed from verified immutable evidence; user feedback is not requested.", dispositionRequestID, createdAt); err != nil {
+VALUES($1,$2,1,$3,'awaiting_feedback',$4,$5,$6,$7,$8)`, companyID, artifactID, newRevision, productDeliveryManifestCompletionActor,
+			"Manifest was completed from verified immutable evidence; explicit user feedback is requested for seven days.", dispositionRequestID, feedbackDeadline, createdAt); err != nil {
 			return Receipt{}, err
 		}
 		return Receipt{ID: artifactID, Status: "ready", Revision: newRevision}, nil
@@ -172,7 +173,7 @@ FROM delivery_user_dispositions WHERE company_id=$1 AND request_id=$2`, companyI
 	if err != nil {
 		return ProductDeliveryManifestCompletionReceipt{}, err
 	}
-	if result.CompanyID != companyID || result.DeliveryID != command.ArtifactID || result.ManifestRevision != strconv.FormatInt(writeReceipt.Revision, 10) || result.State != "not_requested" || result.Actor != productDeliveryManifestCompletionActor {
+	if result.CompanyID != companyID || result.DeliveryID != command.ArtifactID || result.ManifestRevision != strconv.FormatInt(writeReceipt.Revision, 10) || result.State != "awaiting_feedback" || result.Actor != productDeliveryManifestCompletionActor {
 		return ProductDeliveryManifestCompletionReceipt{}, core.Integrity
 	}
 	result.RequestID = command.RequestID

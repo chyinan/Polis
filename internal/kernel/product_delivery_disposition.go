@@ -139,10 +139,11 @@ FOR UPDATE OF a,t`, companyID, command.ArtifactID).Scan(
 
 		var latestDispositionRevision int64
 		var latestDispositionState string
-		err = tx.QueryRow(ctx, `SELECT revision,state
+		var latestDispositionDeadline *time.Time
+		err = tx.QueryRow(ctx, `SELECT revision,state,feedback_deadline
 FROM delivery_user_dispositions
 WHERE company_id=$1 AND delivery_id=$2 AND manifest_revision=$3
-ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manifestRevision).Scan(&latestDispositionRevision, &latestDispositionState)
+ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manifestRevision).Scan(&latestDispositionRevision, &latestDispositionState, &latestDispositionDeadline)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return Receipt{}, core.Integrity
 		}
@@ -154,6 +155,13 @@ ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manif
 		}
 		if latestDispositionState != "not_requested" && latestDispositionState != "awaiting_feedback" && latestDispositionState != "accepted" && latestDispositionState != "changes_requested" {
 			return Receipt{}, core.ConflictError{Reason: "delivery disposition is not writable in its current state", CurrentState: latestDispositionState}
+		}
+		var databaseNow time.Time
+		if err = tx.QueryRow(ctx, "SELECT clock_timestamp()").Scan(&databaseNow); err != nil {
+			return Receipt{}, err
+		}
+		if productDeliveryFeedbackExpired(latestDispositionState, latestDispositionDeadline, databaseNow.UTC()) {
+			return Receipt{}, core.ConflictError{Reason: "delivery feedback window has expired", CurrentState: "feedback_expired"}
 		}
 
 		nextDispositionRevision := latestDispositionRevision + 1
