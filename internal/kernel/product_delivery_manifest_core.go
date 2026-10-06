@@ -73,6 +73,13 @@ func productDeliveryChangeRoute(missionState string) string {
 	}
 }
 
+func productDeliveryDispositionRoute(missionState, dispositionState string) string {
+	if dispositionState != "changes_requested" {
+		return ""
+	}
+	return productDeliveryChangeRoute(missionState)
+}
+
 func buildReadyProductDeliveryManifest(input readyProductDeliveryManifestInput) (durableProductDeliveryManifest, []byte, string, error) {
 	if !core.ValidID(input.CompanyID) || !core.ValidID(input.MissionID) || !core.ValidID(input.TaskID) || !core.ValidID(input.ArtifactID) ||
 		input.Revision <= 1 || input.ArtifactBytes <= 0 || input.ArtifactBytes > 64*1024*1024 || !validSHA256(input.ArtifactSHA256) ||
@@ -115,12 +122,22 @@ func buildReadyProductDeliveryManifest(input readyProductDeliveryManifestInput) 
 			return durableProductDeliveryManifest{}, nil, "", fmt.Errorf("delivery manifest section %q is invalid", section.Key)
 		}
 	}
-	manifestBytes, err := json.Marshal(manifest)
+	manifestBytes, err := marshalDurableProductDeliveryManifest(manifest)
 	if err != nil {
 		return durableProductDeliveryManifest{}, nil, "", err
 	}
 	digest := sha256.Sum256(manifestBytes)
 	return manifest, manifestBytes, hex.EncodeToString(digest[:]), nil
+}
+
+func marshalDurableProductDeliveryManifest(manifest durableProductDeliveryManifest) ([]byte, error) {
+	var buffer bytes.Buffer
+	encoder := json.NewEncoder(&buffer)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(manifest); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSuffix(buffer.Bytes(), []byte{'\n'}), nil
 }
 
 func validateStoredProductDeliveryManifest(rawJSON []byte, storedSHA256, companyID, missionID, taskID, artifactID string, revision int64, state string) (durableProductDeliveryManifest, error) {
@@ -134,7 +151,7 @@ func validateStoredProductDeliveryManifest(rawJSON []byte, storedSHA256, company
 	if err := decoder.Decode(&trailing); !errors.Is(err, io.EOF) {
 		return durableProductDeliveryManifest{}, fmt.Errorf("durable delivery manifest has trailing data")
 	}
-	canonical, err := json.Marshal(manifest)
+	canonical, err := marshalDurableProductDeliveryManifest(manifest)
 	if err != nil {
 		return durableProductDeliveryManifest{}, err
 	}
@@ -185,7 +202,18 @@ func validateReadyProductDeliveryEvidence(evidence readyProductDeliveryEvidence)
 			return fmt.Errorf("delivery evidence reference, digest, or detail is invalid")
 		}
 	}
+	if !validContentAddressedDeliveryDeclaration(evidence.Limitations, "polis.delivery.limitations@") || !validContentAddressedDeliveryDeclaration(evidence.LicenseSource, "polis.delivery.license-source@") {
+		return fmt.Errorf("delivery limitation or license/source evidence is not content-addressed")
+	}
 	return nil
+}
+
+func validContentAddressedDeliveryDeclaration(evidence deliveryManifestEvidence, referencePrefix string) bool {
+	if !strings.HasPrefix(evidence.Reference, referencePrefix) {
+		return false
+	}
+	digest := sha256.Sum256([]byte(evidence.Detail))
+	return hex.EncodeToString(digest[:]) == evidence.Digest
 }
 
 func validDeliveryManifestReference(value string) bool {

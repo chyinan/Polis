@@ -154,10 +154,14 @@ func canonicalDurableDeliveryManifest(manifest DurableDeliveryManifestView) ([]b
 	if manifest.SchemaVersion != DurableDeliveryManifestSchema || !core.ValidID(manifest.DeliveryID) || manifestRevision <= 0 || revisionErr != nil || !core.ValidID(manifest.CompanyID) || !core.ValidID(manifest.MissionID) || !core.ValidID(manifest.TaskID) || !core.ValidID(manifest.ArtifactID) || !validDurableDeliveryState(manifest.State) || manifest.Artifact.FileName != "artifact.bin" || byteSize <= 0 || byteSize > 64*1024*1024 || byteSizeErr != nil || !validDeliverySHA256(manifest.Artifact.SHA256) || timeErr != nil || !validDurableDeliverySections(manifest.Sections, manifest.State) {
 		return nil, "", errors.New("durable delivery manifest is incomplete or invalid")
 	}
-	encoded, err := json.Marshal(manifest)
+	var buffer bytes.Buffer
+	encoder := json.NewEncoder(&buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(manifest)
 	if err != nil {
 		return nil, "", err
 	}
+	encoded := bytes.TrimSuffix(buffer.Bytes(), []byte{'\n'})
 	hash := sha256.Sum256(encoded)
 	return encoded, hex.EncodeToString(hash[:]), nil
 }

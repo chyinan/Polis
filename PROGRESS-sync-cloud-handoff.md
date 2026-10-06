@@ -26,10 +26,10 @@
 - `C:\Users\chyinan\.agents\skills\using-git-worktrees\SKILL.md` — 隔离 worktree 与干净基线验证
 
 ## 当前进度
-REQ-40 ready Manifest 完成命令、owner/CSRF 路由、Mission 生命周期路由和 terminal backlog Schema 112 已实现；已完成验证、提交并推送。
+REQ-40 ready Manifest 完成命令、owner/CSRF 路由、Mission 生命周期路由和 terminal backlog Schema 112/113 已实现；代码审查发现的问题已修复，正在收集修复后的验证并追加推送。
 
 ## 下一步
-等待用户实际检查；确认后按 focused-problem-solver 收尾并删除本次进度文件。
+重跑修复后的目标测试、diff/hash/build，提交并推送审查修复；之后等待用户实际检查。
 
 ## 发现的关键信息
 - 远端默认分支是 `main`，最新提交为 `91b1520`（Slice 272）。

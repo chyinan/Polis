@@ -1,11 +1,10 @@
-// pattern: Functional Core
+// pattern: Imperative Shell
 package kernel
 
 import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -90,7 +89,7 @@ func persistInitialProductDeliveryManifest(
 			return fmt.Errorf("delivery manifest section detail exceeds 512 bytes")
 		}
 	}
-	manifestBytes, err := json.Marshal(manifest)
+	manifestBytes, err := marshalDurableProductDeliveryManifest(manifest)
 	if err != nil {
 		return err
 	}

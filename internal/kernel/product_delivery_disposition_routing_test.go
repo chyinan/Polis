@@ -26,3 +26,11 @@ func TestProductDeliveryChangeRoutingRejectsUnknownMissionState(t *testing.T) {
 		t.Fatalf("productDeliveryChangeRoute(draft) = %q, want empty", got)
 	}
 }
+
+func TestProductDeliveryDispositionRouteLeavesAcceptedAlone(t *testing.T) {
+	for _, missionState := range []string{"active", "paused", "succeeded", "ended_not_met", "cancelled"} {
+		if got := productDeliveryDispositionRoute(missionState, "accepted"); got != "" {
+			t.Errorf("productDeliveryDispositionRoute(%q, accepted) = %q, want empty", missionState, got)
+		}
+	}
+}

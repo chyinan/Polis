@@ -24,8 +24,8 @@ func TestBuildReadyProductDeliveryManifestBindsAllEvidence(t *testing.T) {
 			SourceInputs:     deliveryManifestEvidence{Reference: "task_input_manifests/task-1/1", Digest: stringsRepeatForTest('b', 64), Detail: "fixed input manifest"},
 			EnvironmentBuild: deliveryManifestEvidence{Reference: "task_validation_bindings/task-1", Digest: stringsRepeatForTest('c', 64), Detail: "runner=product@1"},
 			RunInstructions:  deliveryManifestEvidence{Reference: "task_plan/task-1", Digest: stringsRepeatForTest('d', 64), Detail: "go test ./..."},
-			Limitations:      deliveryManifestEvidence{Reference: "polis.delivery.limitations@1", Digest: stringsRepeatForTest('e', 64), Detail: "local deterministic qualification only"},
-			LicenseSource:    deliveryManifestEvidence{Reference: "polis.delivery.license-source@1", Digest: stringsRepeatForTest('f', 64), Detail: "source attribution is included in the evidence record"},
+			Limitations:      deliveryManifestEvidence{Reference: "polis.delivery.limitations@1", Digest: digestForTest("local deterministic qualification only"), Detail: "local deterministic qualification only"},
+			LicenseSource:    deliveryManifestEvidence{Reference: "polis.delivery.license-source@1", Digest: digestForTest("source attribution is included in the evidence record"), Detail: "source attribution is included in the evidence record"},
 		},
 	}
 
@@ -80,7 +80,7 @@ func TestBuildReadyProductDeliveryManifestRejectsMissingEvidence(t *testing.T) {
 			EnvironmentBuild: deliveryManifestEvidence{Reference: "task_validation_bindings/task-1", Digest: stringsRepeatForTest('c', 64), Detail: "runner=product@1"},
 			RunInstructions:  deliveryManifestEvidence{Reference: "task_plan/task-1", Digest: stringsRepeatForTest('d', 64), Detail: "go test ./..."},
 			Limitations:      deliveryManifestEvidence{Reference: "polis.delivery.limitations@1", Digest: stringsRepeatForTest('e', 64), Detail: "local deterministic qualification only"},
-			LicenseSource:    deliveryManifestEvidence{Reference: "polis.delivery.license-source@1", Digest: stringsRepeatForTest('f', 64)},
+			LicenseSource:    deliveryManifestEvidence{Reference: "polis.delivery.license-source@1", Digest: digestForTest("license/source")},
 		},
 	}
 
@@ -95,4 +95,9 @@ func stringsRepeatForTest(value byte, count int) string {
 		result[index] = value
 	}
 	return string(result)
+}
+
+func digestForTest(value string) string {
+	digest := sha256.Sum256([]byte(value))
+	return hex.EncodeToString(digest[:])
 }

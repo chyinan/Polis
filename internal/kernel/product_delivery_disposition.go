@@ -168,7 +168,7 @@ ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manif
 		if err = tx.QueryRow(ctx, `SELECT state FROM missions WHERE company_id=$1 AND id=$2 FOR UPDATE`, companyID, storedMissionID).Scan(&missionState); err != nil {
 			return Receipt{}, err
 		}
-		switch productDeliveryChangeRoute(missionState) {
+		switch productDeliveryDispositionRoute(missionState, command.State) {
 		case "mission_change_request":
 			if err = appendDeliveryMissionChangeRequestTX(ctx, tx, Scope{company: companyID}, storedMissionID, command.ArtifactID, nextDispositionRevision, command.Reason, command.RequestID); err != nil {
 				return Receipt{}, err
@@ -308,7 +308,7 @@ func validateReadyProductDeliveryManifest(rawJSON, storedSHA256, companyID, arti
 	if _, err = time.Parse(time.RFC3339Nano, out.CreatedAt); err != nil {
 		return core.Integrity
 	}
-	canonical, err := json.Marshal(*out)
+	canonical, err := marshalDurableProductDeliveryManifest(*out)
 	if err != nil {
 		return core.Integrity
 	}
