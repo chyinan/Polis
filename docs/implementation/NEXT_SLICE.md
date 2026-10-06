@@ -1,4 +1,14 @@
-## Latest continuation status (Slice 271, REQ-40 durable delivery foundation)
+## Latest continuation status (Slice 272, REQ-40 explicit user disposition)
+
+Added an installation-owner authenticated, CSRF-protected command to append explicit `accepted` or `changes_requested` dispositions. It uses an idempotent company-scoped write, checks the exact ready manifest/disposition revisions, revalidates the Artifact's passed verification and qualification evidence, and records `installation-owner` server-side. The Workbench validates the exact receipt and refreshes only that delivery record. It never treats preview, ZIP download, notification, or internal validation as user acceptance.
+
+Only ready, currently qualified Artifacts can receive a disposition; the current publisher still creates only `assembling` manifests, so there is not yet an actionable delivery. `awaiting_feedback` remains closed pending finite deadline/expiry policy. A change request only records the user's decision here; it does not create a revision Task or route terminal-Mission feedback to Company backlog. Mission closeout is unchanged, and REQ-40 remains partial.
+
+`go build ./...`, `npm run build`, and `git diff --check` pass. No tests, migration, DB, Worker, provider, browser, or scenario ran. Source remains Schema111, recorded runtime remains Schema108, and all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-272-req40-user-disposition-command/verification.md`.
+
+Next local slice: add a verified path that can produce a complete ready Manifest from immutable source/build/instruction/limitation/license evidence, then route `changes_requested` by Mission lifecycle without resurrecting terminal Missions.
+
+## Previous continuation status (Slice 271, REQ-40 durable delivery foundation)
 
 Schema 111 now defines append-only DeliveryManifest revisions and separate UserDisposition events, each bound to the exact Company/Mission/Task/Artifact/revision. New product Artifact publication stores revision 1 and the initial `not_requested` disposition atomically with Artifact qualification. The durable record remains `assembling` and lists which source/input, environment/build, instructions, limitations, license/source, and feedback sections are unavailable; only the Artifact inventory and existing validation evidence are present. Workbench adds a strict read-only lifecycle endpoint and Task view; the existing authenticated Artifact ZIP contract remains separate.
 

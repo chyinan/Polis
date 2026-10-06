@@ -31,17 +31,22 @@ import type {GitHubFeedbackCollectionPolicyReceipt} from '../domain/workbench';
 import {validateGitHubFeedbackCollectionPolicyReceipt} from '../domain/workbench-validation';
 import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
 import {type ImportStdioMCPPackageOptions, type ObserveStdioMCPRuntimeOptions, type ObserveStreamableHTTPMCPRuntimeOptions, MAX_STDIO_MCP_PACKAGE_BYTES} from './workbench-api';
-import type {ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceLedgerView, DomainEvidenceRecordView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, DurableDeliveryResponse, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
+import type {ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceLedgerView, DomainEvidenceRecordView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, DurableDeliveryResponse, DurableUserDispositionCommandReceipt, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, RuntimeSettingsView, TaskTakeoverLeaseView, WorkspaceView} from '../domain/workbench';
 import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
-import {validateActivityEvent, validateActivityView, validateArtifactDeliveryManifest, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainEvidenceSubstantiveAssessmentRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateEnvironmentExecutorQualificationReceipt, validateEnvironmentPolicyDecisionReceipt, validateEnvironmentPreparationRun, validateGitHubCredentialReceipt, validateGitHubFeedbackBacklogStatusReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateHumanInterventionCommandReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateMissionInputCommandReceipt, validateMissionInputs, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases, validateWorkspace, validationMessage} from '../domain/workbench-validation';
+import {validateActivityEvent, validateActivityView, validateArtifactDeliveryManifest, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainEvidenceSubstantiveAssessmentRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateDurableUserDispositionReceipt, validateEnvironmentExecutorQualificationReceipt, validateEnvironmentPolicyDecisionReceipt, validateEnvironmentPreparationRun, validateGitHubCredentialReceipt, validateGitHubFeedbackBacklogStatusReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateHumanInterventionCommandReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateMissionInputCommandReceipt, validateMissionInputs, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases, validateWorkspace, validationMessage} from '../domain/workbench-validation';
 import {validateTaskTakeoverWorkspaceFile, validateTaskTakeoverWorkspaceManifest} from '../domain/workbench-validation';
 import type {TaskTakeoverWorkspaceFileQueryOptions, TaskTakeoverWorkspaceManifestQueryOptions} from './workbench-api';
 import type {TaskTakeoverDirectorySnapshotOptions} from './workbench-api';
-import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
+import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type RecordDurableUserDispositionOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
 
 function isSafeWorkspaceRelativePath(value: string): boolean {
   return value.length > 0 && value.length <= 1024 && !value.startsWith('/') && !value.endsWith('/') && !value.includes('\\') && !value.includes('%') && !value.includes(':')
     && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !/[\u0000-\u001f\u007f]/.test(part));
+}
+
+function isCanonicalPositiveInt64(value: string): boolean {
+  const maxInt64 = '9223372036854775807';
+  return /^[1-9]\d{0,18}$/.test(value) && (value.length < maxInt64.length || value <= maxInt64);
 }
 
 export class RealWorkbenchApi implements WorkbenchApi {
@@ -1366,6 +1371,45 @@ export class RealWorkbenchApi implements WorkbenchApi {
     const manifestBytes = new TextEncoder().encode(JSON.stringify(result.value.manifest));
     if (await sha256Hex(manifestBytes) !== result.value.manifestSha256) {
       throw new Error('durable delivery manifest checksum does not match');
+    }
+    return result.value;
+  }
+
+  async recordDurableUserDisposition(options: RecordDurableUserDispositionOptions): Promise<DurableUserDispositionCommandReceipt> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.artifactId);
+    assertRequestID(options.requestId);
+    const reason = options.reason.trim().replace(/^\u0085+|\u0085+$/gu, '');
+    if (!isCanonicalPositiveInt64(options.expectedManifestRevision)
+      || !isCanonicalPositiveInt64(options.expectedDispositionRevision)
+      || (options.state !== 'accepted' && options.state !== 'changes_requested')
+      || reason === '' || new TextEncoder().encode(reason).byteLength > 4096) {
+      throw new Error('durable user disposition requires current decimal revisions, an explicit decision, and a reason');
+    }
+    const raw = await this.post(
+      `/companies/${encodeURIComponent(options.companyId)}/artifacts/${encodeURIComponent(options.artifactId)}/delivery/disposition`,
+      options.requestId,
+      {
+        requestId: options.requestId,
+        expectedManifestRevision: options.expectedManifestRevision,
+        expectedDispositionRevision: options.expectedDispositionRevision,
+        state: options.state,
+        reason,
+      },
+      true,
+    );
+    const result = validateDurableUserDispositionReceipt(raw, {
+      requestId: options.requestId,
+      companyId: options.companyId,
+      artifactId: options.artifactId,
+      deliveryId: options.expectedDeliveryId,
+      manifestRevision: options.expectedManifestRevision,
+      dispositionRevision: options.expectedDispositionRevision,
+      state: options.state,
+      reason,
+    });
+    if (!result.success) {
+      throw new Error(`failed to record durable user disposition: ${validationMessage(result.issues)}`);
     }
     return result.value;
   }

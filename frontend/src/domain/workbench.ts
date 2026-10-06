@@ -184,6 +184,7 @@ export type ArtifactDeliveryManifestResponse = Readonly<{
 
 export type DurableDeliverySectionState = 'available' | 'unavailable' | 'missing' | 'not_requested';
 export type UserDispositionState = 'not_requested' | 'awaiting_feedback' | 'accepted' | 'changes_requested';
+export type UserDispositionDecision = Extract<UserDispositionState, 'accepted' | 'changes_requested'>;
 
 export type DurableDeliverySectionView = Readonly<{
   key: string;
@@ -220,6 +221,18 @@ export type DurableDeliveryResponse = Readonly<{
   manifest: DurableDeliveryManifestView;
   manifestSha256: string;
   userDisposition: DurableUserDispositionView;
+}>;
+
+export type DurableUserDispositionCommandReceipt = Readonly<{
+  requestId: string;
+  companyId: string;
+  deliveryId: string;
+  manifestRevision: string;
+  dispositionRevision: string;
+  state: UserDispositionDecision;
+  actor: string;
+  reason: string;
+  createdAt: string;
 }>;
 
 export type ProjectEnvironmentPolicyManifestView = Readonly<{

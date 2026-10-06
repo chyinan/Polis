@@ -1,12 +1,12 @@
 // pattern: Imperative Shell
 
 import {BadgeCheck, Check, FileCheck2, FolderOpen, Handshake, History, LockKeyhole, MessageSquare, Settings2, ShieldAlert, Wrench} from 'lucide-react';
-import {useRef, useState, type ChangeEvent, type ReactNode} from 'react';
-import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, EmployeeSummary, JobRunView, ProjectEnvironmentRevisionView, TaskSummary} from '../domain/workbench';
+import {useRef, useState, type ChangeEvent, type FormEvent, type ReactNode} from 'react';
+import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, EmployeeSummary, JobRunView, ProjectEnvironmentRevisionView, TaskSummary, UserDispositionDecision} from '../domain/workbench';
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES} from '../data/workbench-api';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useArtifactDeliveryManifest, useArtifactDetail, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDurableDelivery, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
+import {useArtifactDeliveryManifest, useArtifactDetail, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDurableDelivery, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useRecordDurableUserDisposition, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
 import {formatEntityId} from '../domain/activity-presentation';
 import {labelDisplayValue, labelProjectEnvironmentPolicy, labelRole} from '../domain/display-labels';
 import {selectCheckpointForTask} from '../domain/checkpoint-projection';
@@ -30,11 +30,54 @@ function DataRow({label, value, mono = false}: Readonly<{label: string; value: R
   return <div className={styles.detailRow}><span className={styles.fieldLabel}>{label}</span><span className={mono ? styles.detailValueMono : styles.detailValue}>{value}</span></div>;
 }
 
-function DurableDeliveryLifecycle({artifactId, query}: Readonly<{artifactId: string | null; query: ReturnType<typeof useDurableDelivery>}>) {
+function DurableDeliveryLifecycle({api, companyId, artifactId, query, pendingRequestIds}: Readonly<{api: WorkbenchApi; companyId: string; artifactId: string | null; query: ReturnType<typeof useDurableDelivery>; pendingRequestIds: Map<string, string>}>) {
+  const dispositionMutation = useRecordDurableUserDisposition(api, companyId);
+  const [dispositionDecision, setDispositionDecision] = useState<UserDispositionDecision | ''>('');
+  const [dispositionReason, setDispositionReason] = useState('');
+  const [dispositionMessage, setDispositionMessage] = useState<string | null>(null);
   const delivery = query.data;
   const sectionStateLabels: Readonly<Record<string, string>> = {available: '已提供', unavailable: '不可用', missing: '缺失', not_requested: '未请求'};
   const deliveryStateLabels: Readonly<Record<string, string>> = {assembling: '组装中', ready: '就绪', invalidated: '已失效', withdrawn: '已撤回'};
   const dispositionLabels: Readonly<Record<string, string>> = {not_requested: '未请求', awaiting_feedback: '等待反馈', accepted: '已接受', changes_requested: '请求修改'};
+
+  async function submitDisposition(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    if (artifactId === null || delivery === undefined || delivery.manifest.state !== 'ready') return;
+    if (dispositionDecision === '') {
+      setDispositionMessage('请选择接受交付或请求修改。');
+      return;
+    }
+    const reason = dispositionReason.trim();
+    if (reason === '') {
+      setDispositionMessage('请填写本次用户态度的理由。');
+      return;
+    }
+    if (new TextEncoder().encode(reason).byteLength > 4096) {
+      setDispositionMessage('理由最多可包含 4096 个 UTF-8 字节，请缩短后再提交。');
+      return;
+    }
+    const intent = {
+      companyId,
+      artifactId,
+      expectedManifestRevision: delivery.manifest.revision,
+      expectedDispositionRevision: delivery.userDisposition.revision,
+      expectedDeliveryId: delivery.manifest.deliveryId,
+      state: dispositionDecision,
+      reason,
+    };
+    const pending = pendingRequestIdentity(pendingRequestIds, 'durable-user-disposition', intent);
+    setDispositionMessage(null);
+    try {
+      await dispositionMutation.mutateAsync({...intent, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds, pending.key);
+      setDispositionDecision('');
+      setDispositionReason('');
+      setDispositionMessage('用户态度回执已收到，正在刷新对应的持久交付记录。');
+    } catch (error) {
+      setDispositionMessage(`${error instanceof Error ? error.message : '用户态度提交失败'}；保留了本次选择和理由，原样重试会复用同一 request ID。`);
+    }
+  }
+
   return <section className={styles.formStack} data-testid="durable-delivery-lifecycle">
     <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>持久交付记录</span><h3 className={styles.sectionTitle}>交付状态与用户态度</h3></div></div>
     <p className={styles.formHint}>这是独立于 Artifact 内部验收的只读记录。查看预览、下载 ZIP 或收到通知都不会改变用户态度。</p>
@@ -58,12 +101,34 @@ function DurableDeliveryLifecycle({artifactId, query}: Readonly<{artifactId: str
       <div className={styles.detailRows}>
         <DataRow label="用户态度（独立记录）" value={dispositionLabels[delivery.userDisposition.state] ?? delivery.userDisposition.state} />
         <DataRow label="态度 revision / 对应清单 revision" value={`${delivery.userDisposition.revision} / ${delivery.userDisposition.manifestRevision}`} mono />
-        <DataRow label="记录者" value={delivery.userDisposition.actor || '未记录'} />
+        <DataRow label="记录者" value={delivery.userDisposition.actor === 'installation-owner' ? '安装所有者（installation-owner）' : delivery.userDisposition.actor || '未记录'} />
         <DataRow label="理由 / 说明" value={delivery.userDisposition.reason || '未记录'} />
         <DataRow label="反馈期限" value={delivery.userDisposition.feedbackDeadline || '未设置'} />
         <DataRow label="request ID" value={delivery.userDisposition.requestId || '未记录'} mono />
         <DataRow label="记录时间" value={delivery.userDisposition.createdAt || '未记录'} mono />
       </div>
+      {delivery.manifest.state === 'ready' && api.mode === 'real' && api.recordDurableUserDisposition ? <form className={styles.formStack} data-testid="durable-user-disposition-form" onSubmit={event => void submitDisposition(event)}>
+        <h4 className={styles.sectionTitle}>提交用户态度</h4>
+        <p className={styles.formHint}>决定将绑定当前清单 revision {delivery.manifest.revision} 与态度 revision {delivery.userDisposition.revision}。提交只记录用户态度；不会关闭使命、创建任务或触发 Worker。</p>
+        <label className={styles.formLabel}>决定
+          <select className={styles.formField} required value={dispositionDecision} disabled={dispositionMutation.isPending} onChange={event => { setDispositionDecision(event.target.value as UserDispositionDecision | ''); setDispositionMessage(null); }}>
+            <option value="">请选择</option>
+            <option value="accepted">接受此交付</option>
+            <option value="changes_requested">请求修改</option>
+          </select>
+        </label>
+        <label className={styles.formLabel}>理由
+          <textarea className={styles.formField} rows={3} maxLength={4096} required value={dispositionReason} disabled={dispositionMutation.isPending} onChange={event => { setDispositionReason(event.target.value); setDispositionMessage(null); }} />
+        </label>
+        <button className={styles.commandButton} data-testid="durable-user-disposition-submit" disabled={dispositionMutation.isPending || dispositionDecision === '' || dispositionReason.trim() === ''} type="submit">
+          {dispositionMutation.isPending ? '正在提交…' : dispositionDecision === 'accepted' ? '提交接受决定' : dispositionDecision === 'changes_requested' ? '提交修改请求' : '提交用户态度'}
+        </button>
+        {dispositionMessage ? <div className={dispositionMutation.isError ? styles.errorState : styles.formHint} role={dispositionMutation.isError ? 'alert' : 'status'}>{dispositionMessage}</div> : null}
+      </form> : null}
+      {delivery.manifest.state === 'assembling' ? <p className={styles.formHint} role="status">当前清单仍在组装中；只有持久交付清单进入 ready 状态后，才能提交接受或请求修改。</p> : null}
+      {delivery.manifest.state === 'invalidated' || delivery.manifest.state === 'withdrawn' ? <p className={styles.formHint} role="status">当前交付清单已失效或撤回，不能基于此 revision 提交用户态度。</p> : null}
+      {delivery.manifest.state === 'ready' && (api.mode !== 'real' || !api.recordDurableUserDisposition) ? <p className={styles.formHint} role="status">当前数据源不支持提交用户态度；现有态度保持只读。</p> : null}
+      {delivery.manifest.state === 'ready' ? <p className={styles.formHint}>查看 Artifact 预览和下载 ZIP 不会提交、接受或请求修改这项用户态度。</p> : null}
     </> : null}
   </section>;
 }
@@ -374,6 +439,7 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const [jobActionMessage, setJobActionMessage] = useState<string | null>(null);
   const [jobActionError, setJobActionError] = useState<string | null>(null);
   const pendingJobRequestIds = useRef(new Map<string, string>());
+  const pendingDurableDispositionRequestIds = useRef(new Map<string, string>());
   const jobLogsQuery = useTaskJobLogs(api, companyId, selectedJobLogId, tab === 'jobs');
   const environmentPolicy = useDecideProjectEnvironmentPolicy(api, companyId);
   const environmentExecutorQualification = useDecideProjectEnvironmentExecutorQualification(api, companyId);
@@ -701,7 +767,7 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       {artifactForTask !== null && deliveryManifestQuery.isPending ? <div className={styles.emptyState}>正在读取 ZIP Manifest</div> : null}
       {artifactForTask !== null && deliveryManifestQuery.isError ? <div className={styles.errorState} role="alert">ZIP Manifest 不可用：{deliveryManifestQuery.error.message}</div> : null}
       {deliveryManifestQuery.data ? <><div className={styles.detailRows}><DataRow label="ZIP Manifest SHA-256" value={deliveryManifestQuery.data.manifestSha256} mono /><DataRow label="内容摘要" value={deliveryManifestQuery.data.manifest.content.sha256} mono /><DataRow label="内容大小" value={deliveryManifestQuery.data.manifest.content.byteSize + ' bytes'} /><DataRow label="检查点 / 验证回执" value={`${deliveryManifestQuery.data.manifest.qualification.checkpointId} / ${deliveryManifestQuery.data.manifest.qualification.validationReceiptId}`} mono /><DataRow label="工作区版本 / Runner" value={`${deliveryManifestQuery.data.manifest.qualification.workspaceRevision} / ${deliveryManifestQuery.data.manifest.qualification.runnerRevision}`} /></div><button className={styles.textButton} disabled={downloadingArtifact} onClick={() => { void downloadArtifact(); }} type="button">{downloadingArtifact ? '正在准备 ZIP…' : '下载 Artifact ZIP（含校验清单）'}</button>{artifactDownloadError ? <div className={styles.errorState} role="alert">{artifactDownloadError}</div> : null}</> : null}
-      <DurableDeliveryLifecycle artifactId={artifactForTask?.artifactId ?? null} query={durableDeliveryQuery} />
+      <DurableDeliveryLifecycle key={`${companyId}:${artifactForTask?.artifactId ?? 'none'}`} api={api} companyId={companyId} artifactId={artifactForTask?.artifactId ?? null} query={durableDeliveryQuery} pendingRequestIds={pendingDurableDispositionRequestIds.current} />
     </article>
     <article className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>验收边界</span><h2 className={styles.sectionTitle}>验收不是预览</h2></div><ShieldAlert aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.detailRows}><DataRow label="验收状态" value={labelDisplayValue(task.acceptance)} /><DataRow label="合同版本" value={task.contractRevisionId ?? '不可得'} mono /><DataRow label="检查点" value={checkpoint?.checkpointId ?? '暂无检查点'} mono /><DataRow label="预览状态" value="未提供" /><DataRow label="最终验收" value={task.acceptance === 'passed' ? '已通过' : '未通过'}/></div></article>
   </section>;

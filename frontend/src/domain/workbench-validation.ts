@@ -56,6 +56,8 @@ import type {
   CollaborationItem,
   ArtifactDeliveryManifestResponse,
   DurableDeliveryResponse,
+  DurableUserDispositionCommandReceipt,
+  UserDispositionDecision,
   ArtifactDetailView,
   WorkspaceView,
   OperationsView,
@@ -112,6 +114,12 @@ export type ValidationResult<T> =
 
 const MAX_TASK_INPUT_DELIVERY_REFS = 12;
 const ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/;
+const MAX_INT64_DECIMAL = '9223372036854775807';
+
+function isCanonicalPositiveInt64(value: unknown): value is string {
+  return typeof value === 'string' && /^[1-9]\d{0,18}$/.test(value)
+    && (value.length < MAX_INT64_DECIMAL.length || value <= MAX_INT64_DECIMAL);
+}
 
 const ACTIVITY_EVENT_KINDS: ReadonlyArray<ActivityEventKind> = [
   'mission_created', 'mission_started', 'mission_cancelled', 'provider_turn_completed', 'provider_turn_failed', 'provider_runtime_initialization_failed', 'provider_runtime_thread_start_failed',
@@ -1101,7 +1109,7 @@ function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId
   return typeof value.manifestSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.manifestSha256)
     && manifest.schemaVersion === 'polis-durable-delivery-manifest@1'
     && hasString(manifest, 'deliveryId')
-    && typeof manifest.revision === 'string' && /^[1-9]\d{0,15}$/.test(manifest.revision)
+    && isCanonicalPositiveInt64(manifest.revision)
     && manifest.companyId === companyId
     && hasString(manifest, 'missionId')
     && hasString(manifest, 'taskId')
@@ -1112,7 +1120,7 @@ function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId
     && typeof artifact.sha256 === 'string' && /^[0-9a-f]{64}$/.test(artifact.sha256)
     && sectionsValid
     && hasString(manifest, 'createdAt')
-    && typeof disposition.revision === 'string' && /^[1-9]\d{0,15}$/.test(disposition.revision)
+    && isCanonicalPositiveInt64(disposition.revision)
     && disposition.manifestRevision === manifest.revision
     && isOneOf(disposition.state, ['not_requested', 'awaiting_feedback', 'accepted', 'changes_requested'])
     && typeof disposition.actor === 'string'
@@ -1367,6 +1375,48 @@ export function validateDurableDelivery(value: unknown, companyId: string, artif
   return isDurableDeliveryResponse(value, companyId, artifactId)
     ? {success: true, value}
     : {success: false, issues: [{path: '', message: 'durable delivery response contains an unknown, malformed, or cross-scope field'}]};
+}
+
+export function validateDurableUserDispositionReceipt(value: unknown, expected: Readonly<{
+  requestId: string;
+  companyId: string;
+  artifactId: string;
+  deliveryId: string;
+  manifestRevision: string;
+  dispositionRevision: string;
+  state: UserDispositionDecision;
+  reason: string;
+}>): ValidationResult<DurableUserDispositionCommandReceipt> {
+  const nextDispositionRevision = incrementDecimalRevision(expected.dispositionRevision);
+  if (!isRecord(value)
+    || value.requestId !== expected.requestId
+    || value.companyId !== expected.companyId
+    || expected.artifactId === ''
+    || value.deliveryId !== expected.deliveryId
+    || value.manifestRevision !== expected.manifestRevision
+    || nextDispositionRevision === null
+    || value.dispositionRevision !== nextDispositionRevision
+    || value.state !== expected.state
+    || value.actor !== 'installation-owner'
+    || value.reason !== expected.reason
+    || !isTimestamp(value.createdAt)) {
+    return {success: false, issues: [{path: '', message: 'durable user disposition receipt is malformed or does not match the submitted intent'}]};
+  }
+  return {success: true, value: value as unknown as DurableUserDispositionCommandReceipt};
+}
+
+function incrementDecimalRevision(value: string): string | null {
+  if (!isCanonicalPositiveInt64(value)) return null;
+  const digits = value.split('');
+  for (let index = digits.length - 1; index >= 0; index -= 1) {
+    if (digits[index] !== '9') {
+      digits[index] = String(Number(digits[index]) + 1);
+      return digits.join('');
+    }
+    digits[index] = '0';
+  }
+  const next = digits.length < 19 ? `1${digits.join('')}` : null;
+  return isCanonicalPositiveInt64(next) ? next : null;
 }
 
 export function validateOperations(value: unknown): ValidationResult<OperationsView> {

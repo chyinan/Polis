@@ -1,0 +1,289 @@
+// pattern: Functional Core
+package kernel
+
+import (
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"math"
+	"strconv"
+	"strings"
+	"time"
+	"unicode/utf8"
+
+	"github.com/jackc/pgx/v5"
+	"polis/internal/core"
+)
+
+// ProductDeliveryDispositionCommand is an optimistic-concurrency command for
+// appending the installation owner's disposition of one ready delivery.
+type ProductDeliveryDispositionCommand struct {
+	ArtifactID                  string `json:"artifactId"`
+	ExpectedManifestRevision    int64  `json:"expectedManifestRevision"`
+	ExpectedDispositionRevision int64  `json:"expectedDispositionRevision"`
+	State                       string `json:"state"`
+	Reason                      string `json:"reason"`
+	RequestID                   string `json:"requestId"`
+}
+
+// ProductDeliveryDispositionReceipt is the durable receipt returned after the
+// disposition row and its TXWrite receipt have committed together.
+type ProductDeliveryDispositionReceipt struct {
+	RequestID           string `json:"requestId"`
+	CompanyID           string `json:"companyId"`
+	DeliveryID          string `json:"deliveryId"`
+	ManifestRevision    string `json:"manifestRevision"`
+	DispositionRevision string `json:"dispositionRevision"`
+	State               string `json:"state"`
+	Actor               string `json:"actor"`
+	Reason              string `json:"reason"`
+	CreatedAt           string `json:"createdAt"`
+}
+
+const productDeliveryDispositionActor = "installation-owner"
+
+// RecordProductDeliveryDisposition appends one owner disposition under the
+// company lifecycle guard. It has no worker or external-service side effects.
+func (k *Kernel) RecordProductDeliveryDisposition(ctx context.Context, companyID string, command ProductDeliveryDispositionCommand) (ProductDeliveryDispositionReceipt, error) {
+	if k == nil || ctx == nil || !core.ValidID(companyID) || !core.ValidID(command.ArtifactID) || !core.ValidID(command.RequestID) ||
+		command.ExpectedManifestRevision <= 0 || command.ExpectedDispositionRevision <= 0 ||
+		(command.State != "accepted" && command.State != "changes_requested") {
+		return ProductDeliveryDispositionReceipt{}, core.Malformed
+	}
+	reason := strings.TrimSpace(command.Reason)
+	if !utf8.ValidString(reason) || strings.ContainsRune(reason, '\x00') || len(reason) == 0 || len(reason) > 4096 {
+		return ProductDeliveryDispositionReceipt{}, core.Malformed
+	}
+	command.Reason = reason
+	if command.ExpectedManifestRevision == math.MaxInt64 || command.ExpectedDispositionRevision == math.MaxInt64 {
+		return ProductDeliveryDispositionReceipt{}, core.Conflict
+	}
+
+	const operation = "delivery.user_disposition.record"
+	writeReceipt, err := k.TXWrite(ctx, k.LocalScope(companyID), nil, command.RequestID, operation, command, func(tx pgx.Tx) (Receipt, error) {
+		var manifest durableProductDeliveryManifest
+		var manifestRevision int64
+		var storedMissionID, storedTaskID, storedArtifactID, storedState, storedSHA256, manifestJSON string
+		err := tx.QueryRow(ctx, `SELECT r.revision,r.mission_id,r.task_id,r.artifact_id,r.state,r.manifest::text,r.manifest_sha256
+FROM delivery_manifest_revisions r
+WHERE r.company_id=$1 AND r.delivery_id=$2 AND r.artifact_id=$2
+ORDER BY r.revision DESC LIMIT 1 FOR UPDATE OF r`, companyID, command.ArtifactID).Scan(
+			&manifestRevision, &storedMissionID, &storedTaskID, &storedArtifactID, &storedState, &manifestJSON, &storedSHA256,
+		)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		}
+		if err != nil {
+			return Receipt{}, err
+		}
+		if storedArtifactID != command.ArtifactID || manifestRevision != command.ExpectedManifestRevision {
+			return Receipt{}, core.Conflict
+		}
+		if storedState != "ready" {
+			return Receipt{}, core.ConflictError{Reason: "delivery manifest is not ready", CurrentState: storedState}
+		}
+		if err := validateReadyProductDeliveryManifest(manifestJSON, storedSHA256, companyID, command.ArtifactID, manifestRevision, storedMissionID, storedTaskID, storedState, &manifest); err != nil {
+			return Receipt{}, err
+		}
+
+		var artifactTaskID, artifactMissionID, artifactDigest, artifactState, artifactVerdict, artifactKind string
+		var artifactBytes int64
+		err = tx.QueryRow(ctx, `SELECT a.task_id,t.mission_id,a.digest,a.bytes,a.state,a.verdict,a.artifact_kind
+FROM artifacts a
+JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id
+WHERE a.company_id=$1 AND a.id=$2
+FOR UPDATE OF a,t`, companyID, command.ArtifactID).Scan(
+			&artifactTaskID, &artifactMissionID, &artifactDigest, &artifactBytes, &artifactState, &artifactVerdict, &artifactKind,
+		)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		}
+		if err != nil {
+			return Receipt{}, err
+		}
+		if artifactTaskID != storedTaskID || artifactMissionID != storedMissionID || artifactKind != "deliverable" {
+			return Receipt{}, core.Integrity
+		}
+		if artifactState != "ready" || artifactVerdict != "passed" {
+			return Receipt{}, core.ConflictError{Reason: "delivery Artifact has not passed independent verification", CurrentState: artifactState + "/" + artifactVerdict}
+		}
+		manifestBytes, byteErr := strconv.ParseInt(manifest.Artifact.ByteSize, 10, 64)
+		if byteErr != nil || manifestBytes != artifactBytes || manifest.Artifact.SHA256 != artifactDigest {
+			return Receipt{}, core.Integrity
+		}
+		if err = requireProductDeliveryQualification(ctx, tx, companyID, storedMissionID, storedTaskID, command.ArtifactID, artifactDigest); err != nil {
+			return Receipt{}, err
+		}
+
+		var deliveryBlocked bool
+		if err = tx.QueryRow(ctx, `SELECT EXISTS(
+ SELECT 1 FROM mission_change_requests r
+ JOIN LATERAL (
+  SELECT state FROM mission_change_request_events e
+  WHERE e.company_id=r.company_id AND e.change_request_id=r.change_request_id
+  ORDER BY e.event_seq DESC LIMIT 1
+ ) latest ON true
+ WHERE r.company_id=$1 AND r.mission_id=$2 AND r.block_previous_results
+   AND latest.state NOT IN ('declined','superseded')
+)`, companyID, storedMissionID).Scan(&deliveryBlocked); err != nil {
+			return Receipt{}, err
+		}
+		if deliveryBlocked {
+			return Receipt{}, core.ConflictError{Reason: "artifact delivery is blocked by an unresolved formal requirement change", CurrentState: "change_review"}
+		}
+
+		var latestDispositionRevision int64
+		var latestDispositionState string
+		err = tx.QueryRow(ctx, `SELECT revision,state
+FROM delivery_user_dispositions
+WHERE company_id=$1 AND delivery_id=$2 AND manifest_revision=$3
+ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manifestRevision).Scan(&latestDispositionRevision, &latestDispositionState)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.Integrity
+		}
+		if err != nil {
+			return Receipt{}, err
+		}
+		if latestDispositionRevision != command.ExpectedDispositionRevision {
+			return Receipt{}, core.Conflict
+		}
+		if latestDispositionState != "not_requested" && latestDispositionState != "awaiting_feedback" && latestDispositionState != "accepted" && latestDispositionState != "changes_requested" {
+			return Receipt{}, core.ConflictError{Reason: "delivery disposition is not writable in its current state", CurrentState: latestDispositionState}
+		}
+
+		nextDispositionRevision := latestDispositionRevision + 1
+		_, err = tx.Exec(ctx, `INSERT INTO delivery_user_dispositions(
+ company_id,delivery_id,revision,manifest_revision,state,actor,reason,request_id,feedback_deadline,created_at
+) VALUES($1,$2,$3,$4,$5,$6,$7,$8,NULL,clock_timestamp())`,
+			companyID, command.ArtifactID, nextDispositionRevision, manifestRevision, command.State, productDeliveryDispositionActor, command.Reason, command.RequestID)
+		if err != nil {
+			return Receipt{}, err
+		}
+		return Receipt{ID: command.ArtifactID, Status: command.State, Revision: nextDispositionRevision}, nil
+	})
+	if err != nil {
+		return ProductDeliveryDispositionReceipt{}, err
+	}
+	if writeReceipt.ID != command.ArtifactID || writeReceipt.Status != command.State || writeReceipt.Revision <= 1 {
+		return ProductDeliveryDispositionReceipt{}, core.Integrity
+	}
+
+	var result ProductDeliveryDispositionReceipt
+	var createdAt time.Time
+	err = k.pool.QueryRow(ctx, `SELECT request_id,company_id,delivery_id,manifest_revision::text,revision::text,state,actor,reason,created_at
+FROM delivery_user_dispositions
+WHERE company_id=$1 AND request_id=$2`, companyID, command.RequestID).Scan(
+		&result.RequestID, &result.CompanyID, &result.DeliveryID, &result.ManifestRevision, &result.DispositionRevision,
+		&result.State, &result.Actor, &result.Reason, &createdAt,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ProductDeliveryDispositionReceipt{}, core.Integrity
+	}
+	if err != nil {
+		return ProductDeliveryDispositionReceipt{}, err
+	}
+	if result.RequestID != command.RequestID || result.CompanyID != companyID || result.DeliveryID != command.ArtifactID ||
+		result.ManifestRevision != strconv.FormatInt(command.ExpectedManifestRevision, 10) || result.State != command.State ||
+		result.Actor != productDeliveryDispositionActor || result.Reason != command.Reason ||
+		result.DispositionRevision != strconv.FormatInt(writeReceipt.Revision, 10) {
+		return ProductDeliveryDispositionReceipt{}, core.Integrity
+	}
+	result.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+	return result, nil
+}
+
+func validateReadyProductDeliveryManifest(rawJSON, storedSHA256, companyID, artifactID string, revision int64, missionID, taskID, state string, out *durableProductDeliveryManifest) error {
+	decoder := json.NewDecoder(bytes.NewBufferString(rawJSON))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(out); err != nil {
+		return core.Integrity
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); !errors.Is(err, io.EOF) {
+		return core.Integrity
+	}
+	if out.SchemaVersion != durableProductDeliveryManifestSchema || out.DeliveryID != artifactID || out.ArtifactID != artifactID ||
+		out.Revision != strconv.FormatInt(revision, 10) || out.CompanyID != companyID || out.MissionID != missionID ||
+		out.TaskID != taskID || out.State != state || out.Artifact.FileName != "artifact.bin" || !validSHA256(out.Artifact.SHA256) {
+		return core.Integrity
+	}
+	byteSize, err := strconv.ParseInt(out.Artifact.ByteSize, 10, 64)
+	if err != nil || byteSize <= 0 || byteSize > 64*1024*1024 || strconv.FormatInt(byteSize, 10) != out.Artifact.ByteSize {
+		return core.Integrity
+	}
+	if !validReadyProductDeliverySections(out.Sections) {
+		return core.Integrity
+	}
+	if _, err = time.Parse(time.RFC3339Nano, out.CreatedAt); err != nil {
+		return core.Integrity
+	}
+	canonical, err := json.Marshal(*out)
+	if err != nil {
+		return core.Integrity
+	}
+	digest := sha256.Sum256(canonical)
+	if hex.EncodeToString(digest[:]) != storedSHA256 {
+		return core.Integrity
+	}
+	return nil
+}
+
+func validReadyProductDeliverySections(sections []durableProductDeliveryManifestSection) bool {
+	required := [...]string{"source_inputs", "environment_build", "file_inventory", "run_instructions", "verification", "limitations", "license_source", "feedback"}
+	if len(sections) != len(required) {
+		return false
+	}
+	for index, section := range sections {
+		if section.Key != required[index] || section.Detail == "" || len(section.Detail) > 512 {
+			return false
+		}
+		switch section.State {
+		case "available", "unavailable", "missing", "not_requested":
+		default:
+			return false
+		}
+		if index != len(required)-1 && section.State != "available" {
+			return false
+		}
+	}
+	return sections[2].State == "available" && sections[4].State == "available"
+}
+
+func requireProductDeliveryQualification(ctx context.Context, tx pgx.Tx, companyID, missionID, taskID, artifactID, artifactDigest string) error {
+	var checkpointRaw []byte
+	var checkpointID, checkID, sessionID, bindingDigest, workspaceDigest, runnerRevision string
+	var workspaceRevision int64
+	err := tx.QueryRow(ctx, `SELECT q.checkpoint_id,q.check_id,q.session_id,q.validation_binding_digest,q.workspace_digest,q.workspace_revision,q.runner_revision,cp.data
+FROM task_validation_artifact_qualifications q
+JOIN task_validation_bindings b ON b.company_id=q.company_id AND b.task_id=q.task_id
+JOIN worker_sessions s ON s.company_id=q.company_id AND s.id=q.session_id AND s.task_id=q.task_id
+JOIN worker_checkpoints cp ON cp.company_id=q.company_id AND cp.id=q.checkpoint_id AND cp.session_id=q.session_id AND cp.digest=q.workspace_digest
+JOIN worker_checks wc ON wc.company_id=q.company_id AND wc.id=q.check_id AND wc.session_id=q.session_id AND wc.digest=q.workspace_digest AND wc.phase='product' AND wc.passed
+WHERE q.company_id=$1 AND q.task_id=$2 AND q.artifact_id=$3 AND b.mission_id=$4
+  AND b.configuration_digest=q.validation_binding_digest AND b.runner_revision=q.runner_revision
+  AND q.workspace_digest=$5`, companyID, taskID, artifactID, missionID, artifactDigest).Scan(
+		&checkpointID, &checkID, &sessionID, &bindingDigest, &workspaceDigest, &workspaceRevision, &runnerRevision, &checkpointRaw,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return core.Integrity
+	}
+	if err != nil {
+		return err
+	}
+	var checkpoint Checkpoint
+	if err = json.Unmarshal(checkpointRaw, &checkpoint); err != nil {
+		return core.Integrity
+	}
+	if checkpoint.Kind != CheckpointQualified || checkpoint.FinalizationState != "current" || checkpoint.ValidationStatus != "PASS" ||
+		checkpoint.TaskValidationBindingDigest != bindingDigest || checkpoint.WorkspaceDigest != workspaceDigest ||
+		checkpoint.WorkspaceRevision != workspaceRevision || checkpoint.SessionID != sessionID || checkpoint.Epoch <= 0 ||
+		len(checkpoint.EvidenceRefs) == 0 || checkpointID == "" || checkID == "" || runnerRevision == "" {
+		return fmt.Errorf("%w: delivery qualification checkpoint mismatch", core.Integrity)
+	}
+	return nil
+}

@@ -3755,7 +3755,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-272-req40-user-disposition-command/verification.md"
       ]
     },
     {
@@ -4333,7 +4334,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-272-req40-user-disposition-command/verification.md"
       ]
     },
     {
@@ -4352,7 +4354,8 @@
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
         "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-272-req40-user-disposition-command/verification.md"
       ]
     },
     {

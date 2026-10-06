@@ -2,7 +2,11 @@
 
 Updated: 2026-10-06
 
-## Current continuation pointer (Slice 271)
+## Current continuation pointer (Slice 272)
+
+Slice272 adds an installation-owner authenticated, CSRF-protected append command for explicit `accepted` / `changes_requested` UserDisposition, bound by optimistic manifest and disposition revisions. Kernel uses company-scoped TXWrite idempotency, verifies canonical Manifest SHA, exact Company/Mission/Task/Artifact scope, Artifact `ready/passed`, persisted validation qualification, and formal change-request blockers, then appends the next disposition event with server-selected actor. Workbench only offers the form for `ready`, validates the command receipt, and refreshes that delivery query after success. Current Artifact publication still yields `assembling`, so these commands have no ready target yet. `awaiting_feedback` stays disabled pending deadline/expiry policy; no revision-task/backlog routing, Mission closeout, notification, or Worker side effect was added. `go build ./...`, `npm run build`, and `git diff --check` pass. No tests, migration, DB, Worker/provider/browser, or scenarios ran. Source Schema111; recorded runtime Schema108; all 232 scenarios remain `not_run`. REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-272-req40-user-disposition-command/verification.md`.
+
+## Previous continuation pointer (Slice 271)
 
 Schema111 adds append-only durable DeliveryManifest revision and independent UserDisposition records, bound to Company/Mission/Task/Artifact/revision. New product Artifact publication writes revision 1 `assembling` and disposition `not_requested` in the Artifact qualification transaction. Workbench exposes a strict read-only lifecycle view; the existing authenticated Artifact ZIP contract remains separate. `go build ./...`, frontend production build, migration hash checks, and `git diff --check` pass. No tests, migration, database, Worker/provider/browser operation, or frozen scenario ran. REQ-40 remains partial; existing pre-Schema111 Artifacts are not backfilled, required source/build/instructions/license sections remain unavailable, and there are no explicit feedback/acceptance/change commands or owner policy. Runtime remains Schema108, source migrations are Schema111, and all 232 frozen scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md`.
 

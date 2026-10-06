@@ -78,13 +78,13 @@ func (s *PostgresReadStore) GetDurableArtifactDeliveryLifecycle(ctx context.Cont
 	var rawManifest string
 	var manifestSHA256 string
 	var storedRevision, storedMissionID, storedTaskID, storedArtifactID, storedState string
-	var artifactDigest, artifactState string
+	var artifactDigest, artifactState, artifactVerdict string
 	var artifactBytes int64
 	var disposition DurableDeliveryUserDispositionView
 	var dispositionCreatedAt time.Time
 	var feedbackDeadline pgtype.Timestamptz
 	err = tx.QueryRow(ctx, `SELECT r.revision::text,r.mission_id,r.task_id,r.artifact_id,r.state,r.manifest::text,r.manifest_sha256,
-	a.digest,a.bytes,a.state,
+	a.digest,a.bytes,a.state,a.verdict,
  d.revision::text,d.manifest_revision::text,d.state,d.actor,COALESCE(d.reason,''),COALESCE(d.request_id,''),d.feedback_deadline,d.created_at
 FROM delivery_manifest_revisions r
 JOIN artifacts a ON a.company_id=r.company_id AND a.id=r.artifact_id AND a.task_id=r.task_id
@@ -97,7 +97,7 @@ JOIN LATERAL (
 	WHERE r.company_id=$1 AND r.delivery_id=$2 AND r.artifact_id=$2
 	ORDER BY r.revision DESC LIMIT 1`, companyID, artifactID).Scan(
 		&storedRevision, &storedMissionID, &storedTaskID, &storedArtifactID, &storedState, &rawManifest, &manifestSHA256,
-		&artifactDigest, &artifactBytes, &artifactState,
+		&artifactDigest, &artifactBytes, &artifactState, &artifactVerdict,
 		&disposition.Revision, &disposition.ManifestRevision, &disposition.State, &disposition.Actor,
 		&disposition.Reason, &disposition.RequestID, &feedbackDeadline, &dispositionCreatedAt,
 	)
@@ -119,7 +119,7 @@ JOIN LATERAL (
 	}
 	_, digest, err := canonicalDurableDeliveryManifest(manifest)
 	manifestByteSize, _ := strconv.ParseInt(manifest.Artifact.ByteSize, 10, 64)
-	if err != nil || digest != manifestSHA256 || manifest.CompanyID != companyID || manifest.ArtifactID != artifactID || manifest.DeliveryID != artifactID || manifest.Revision != storedRevision || manifest.MissionID != storedMissionID || manifest.TaskID != storedTaskID || manifest.ArtifactID != storedArtifactID || manifest.State != storedState || artifactDigest != manifest.Artifact.SHA256 || artifactBytes != manifestByteSize || ((manifest.State == "assembling" || manifest.State == "ready") && artifactState != "ready") {
+	if err != nil || digest != manifestSHA256 || manifest.CompanyID != companyID || manifest.ArtifactID != artifactID || manifest.DeliveryID != artifactID || manifest.Revision != storedRevision || manifest.MissionID != storedMissionID || manifest.TaskID != storedTaskID || manifest.ArtifactID != storedArtifactID || manifest.State != storedState || artifactDigest != manifest.Artifact.SHA256 || artifactBytes != manifestByteSize || ((manifest.State == "assembling" || manifest.State == "ready") && artifactState != "ready") || (manifest.State == "ready" && artifactVerdict != "passed") {
 		return DurableDeliveryLifecycleResponse{}, core.Integrity
 	}
 	var deliveryBlocked bool

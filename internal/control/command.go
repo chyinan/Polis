@@ -59,6 +59,27 @@ type MissionChangeRequestCommand struct {
 	AssessmentSHA256 string `json:"assessmentSha256,omitempty"`
 }
 
+type RecordDurableDeliveryDispositionRequest struct {
+	ArtifactID                  string `json:"artifactId"`
+	ExpectedManifestRevision    string `json:"expectedManifestRevision"`
+	ExpectedDispositionRevision string `json:"expectedDispositionRevision"`
+	State                       string `json:"state"`
+	Reason                      string `json:"reason"`
+	RequestID                   string `json:"requestId"`
+}
+
+type DurableDeliveryDispositionReceipt struct {
+	RequestID           string `json:"requestId"`
+	CompanyID           string `json:"companyId"`
+	DeliveryID          string `json:"deliveryId"`
+	ManifestRevision    string `json:"manifestRevision"`
+	DispositionRevision string `json:"dispositionRevision"`
+	State               string `json:"state"`
+	Actor               string `json:"actor"`
+	Reason              string `json:"reason"`
+	CreatedAt           string `json:"createdAt"`
+}
+
 type OperatorInstructionReceipt struct {
 	InstructionID         string                                      `json:"instructionId"`
 	MissionID             *string                                     `json:"missionId"`
@@ -204,6 +225,10 @@ type MissionChangeRequestService interface {
 	ConsiderMissionChangeRequest(ctx context.Context, companyID, missionID, changeRequestID string, request MissionChangeRequestCommand) (kernel.MissionChangeRequest, error)
 	DeclineMissionChangeRequest(ctx context.Context, companyID, missionID, changeRequestID string, request MissionChangeRequestCommand) (kernel.MissionChangeRequest, error)
 	ApplyMissionChangeRequest(ctx context.Context, companyID, missionID, changeRequestID string, request MissionChangeRequestCommand) (kernel.MissionChangeRequest, error)
+}
+
+type DurableDeliveryDispositionService interface {
+	RecordDurableDeliveryDisposition(ctx context.Context, companyID string, request RecordDurableDeliveryDispositionRequest) (DurableDeliveryDispositionReceipt, error)
 }
 
 type TaskTakeoverLeaseCommand struct {

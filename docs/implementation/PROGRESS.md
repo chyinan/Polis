@@ -1,4 +1,10 @@
-## Latest continuation status (Slice 271, REQ-40 durable delivery foundation)
+## Latest continuation status (Slice 272, REQ-40 explicit user disposition)
+
+Added an installation-owner authenticated, CSRF-protected append command for explicit `accepted` or `changes_requested` disposition on the exact ready Manifest/disposition revision. The Kernel rechecks the canonical Manifest digest, Artifact scope and `ready/passed` state, persisted qualification evidence, and formal change-request blocker; it records a server-selected actor and idempotent receipt. Workbench validates the receipt and refreshes only the matching delivery record. Downloads, previews, notifications, and internal validation remain independent.
+
+The command cannot yet be used with newly published Artifacts because their Manifest remains `assembling`. `awaiting_feedback` stays closed until deadline/expiry policy exists. `changes_requested` is recorded but is not yet routed to a revision Task or terminal-Mission Company backlog. No Mission closeout behavior was added; REQ-40 remains partial. `go build ./...`, `npm run build`, and `git diff --check` pass. No tests or migrations were run/applied; runtime remains Schema108, source Schema111, and all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-272-req40-user-disposition-command/verification.md`.
+
+## Previous continuation status (Slice 271, REQ-40 durable delivery foundation)
 
 Schema 111 now defines append-only DeliveryManifest revisions and separate UserDisposition events, each bound to the exact Company/Mission/Task/Artifact/revision. New product Artifact publication stores revision 1 and the initial `not_requested` disposition atomically with Artifact qualification. The durable record remains `assembling` and lists which source/input, environment/build, instructions, limitations, license/source, and feedback sections are unavailable; only the Artifact inventory and existing validation evidence are present. Workbench adds a strict read-only lifecycle endpoint and Task view; the existing authenticated Artifact ZIP contract remains separate.
 
