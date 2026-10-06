@@ -193,6 +193,9 @@ function DurableDeliveryLifecycle({api, companyId, artifactId, query, pendingReq
       {(delivery.dispositionHistory?.length ?? 0) > 0 ? <div className={styles.recordList} aria-label="交付用户态度历史">
         {delivery.dispositionHistory?.map(item => <div className={styles.recordRow} key={`disposition-${item.revision}`}><div className={styles.recordLead}><MessageSquare aria-hidden="true" size={16} /><div><strong>Disposition revision {item.revision} · {dispositionLabels[item.state] ?? item.state}</strong><span>对应 Manifest {item.manifestRevision} · {item.createdAt}</span></div></div><div className={styles.recordMeta}><span>{item.actor}</span><code>{item.requestId}</code></div></div>)}
       </div> : null}
+      {(delivery.revisionRoutes?.length ?? 0) > 0 ? <div className={styles.recordList} aria-label="交付 revision 路由">
+        {delivery.revisionRoutes?.map(route => <div className={styles.recordRow} key={`route-${route.routeId}`}><div className={styles.recordLead}><History aria-hidden="true" size={16} /><div><strong>Revision route · {route.state}</strong><span>Manifest {route.manifestRevision} / disposition {route.dispositionRevision} · {route.createdAt}</span><span>ChangeRequest {route.changeRequestId}{route.successorMissionId ? ` · successor Mission ${route.successorMissionId}` : ''}{route.taskId ? ` · Task ${route.taskId}` : ''}</span></div></div><div className={styles.recordMeta}><code>{route.reasonCode}</code></div></div>)}
+      </div> : null}
       {delivery.manifest.state === 'ready' && api.mode === 'real' && api.recordDurableUserDisposition ? <form className={styles.formStack} data-testid="durable-user-disposition-form" onSubmit={event => void submitDisposition(event)}>
         <h4 className={styles.sectionTitle}>提交用户态度</h4>
         <p className={styles.formHint}>决定将绑定当前清单 revision {delivery.manifest.revision} 与态度 revision {delivery.userDisposition.revision}。提交只记录用户态度；不会关闭使命、创建任务或触发 Worker。</p>

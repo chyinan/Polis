@@ -76,6 +76,20 @@ type DurableDeliveryManifestHistoryView struct {
 	ManifestSHA256 string                      `json:"manifestSha256"`
 }
 
+type DurableDeliveryRevisionRouteView struct {
+	RouteID             string `json:"routeId"`
+	DeliveryID          string `json:"deliveryId"`
+	ManifestRevision    string `json:"manifestRevision"`
+	DispositionRevision string `json:"dispositionRevision"`
+	MissionID           string `json:"missionId"`
+	ChangeRequestID     string `json:"changeRequestId"`
+	State               string `json:"state"`
+	SuccessorMissionID  string `json:"successorMissionId"`
+	TaskID              string `json:"taskId"`
+	ReasonCode          string `json:"reasonCode"`
+	CreatedAt           string `json:"createdAt"`
+}
+
 type DurableDeliveryLifecycleResponse struct {
 	Manifest           DurableDeliveryManifestView               `json:"manifest"`
 	ManifestSHA256     string                                    `json:"manifestSha256"`
@@ -83,6 +97,7 @@ type DurableDeliveryLifecycleResponse struct {
 	FeedbackBacklog    []DurableDeliveryFeedbackBacklogEventView `json:"feedbackBacklog"`
 	ManifestHistory    []DurableDeliveryManifestHistoryView      `json:"manifestHistory"`
 	DispositionHistory []DurableDeliveryUserDispositionView      `json:"dispositionHistory"`
+	RevisionRoutes     []DurableDeliveryRevisionRouteView        `json:"revisionRoutes"`
 }
 
 type DurableArtifactDeliveryLifecycleReader interface {
@@ -168,6 +183,8 @@ JOIN LATERAL (
 	manifestHistory := make([]DurableDeliveryManifestHistoryView, 0, 8)
 	dispositionHistory := make([]DurableDeliveryUserDispositionView, 0, 8)
 	manifestRevisions := make(map[string]struct{}, 8)
+	manifestByRevision := make(map[string]DurableDeliveryManifestView, 8)
+	dispositionRevisions := make(map[string]map[string]struct{}, 8)
 	manifestRows, err := tx.Query(ctx, `SELECT revision::text,mission_id,task_id,artifact_id,state,manifest::text,manifest_sha256
 FROM delivery_manifest_revisions WHERE company_id=$1 AND delivery_id=$2 AND artifact_id=$2
 ORDER BY revision DESC LIMIT 32`, companyID, artifactID)
@@ -198,6 +215,7 @@ ORDER BY revision DESC LIMIT 32`, companyID, artifactID)
 			return DurableDeliveryLifecycleResponse{}, core.Integrity
 		}
 		manifestRevisions[historical.Revision] = struct{}{}
+		manifestByRevision[historical.Revision] = historical
 		manifestHistory = append(manifestHistory, DurableDeliveryManifestHistoryView{Manifest: historical, ManifestSHA256: storedSHA256})
 	}
 	if err = manifestRows.Err(); err != nil {
@@ -230,6 +248,10 @@ FROM delivery_user_dispositions WHERE company_id=$1 AND delivery_id=$2 ORDER BY 
 			dispositionRows.Close()
 			return DurableDeliveryLifecycleResponse{}, core.Integrity
 		}
+		if dispositionRevisions[item.ManifestRevision] == nil {
+			dispositionRevisions[item.ManifestRevision] = make(map[string]struct{}, 8)
+		}
+		dispositionRevisions[item.ManifestRevision][item.Revision] = struct{}{}
 		dispositionHistory = append(dispositionHistory, item)
 	}
 	if err = dispositionRows.Err(); err != nil {
@@ -237,6 +259,57 @@ FROM delivery_user_dispositions WHERE company_id=$1 AND delivery_id=$2 ORDER BY 
 		return DurableDeliveryLifecycleResponse{}, err
 	}
 	dispositionRows.Close()
+	revisionRoutes := make([]DurableDeliveryRevisionRouteView, 0, 8)
+	var routeTablesAvailable bool
+	if err = tx.QueryRow(ctx, "SELECT to_regclass('public.delivery_revision_routes') IS NOT NULL AND to_regclass('public.delivery_revision_route_events') IS NOT NULL").Scan(&routeTablesAvailable); err != nil {
+		return DurableDeliveryLifecycleResponse{}, err
+	}
+	if routeTablesAvailable {
+		routeRows, routeErr := tx.Query(ctx, `SELECT r.route_id,r.delivery_id,r.manifest_revision::text,r.disposition_revision::text,r.mission_id,r.change_request_id,d.state,e.state,COALESCE(e.successor_mission_id,''),COALESCE(e.task_id,''),e.reason_code,e.created_at
+FROM delivery_revision_routes r
+JOIN delivery_manifest_revisions m ON m.company_id=r.company_id AND m.delivery_id=r.delivery_id AND m.revision=r.manifest_revision AND m.mission_id=r.mission_id
+JOIN delivery_user_dispositions d ON d.company_id=r.company_id AND d.delivery_id=r.delivery_id AND d.manifest_revision=r.manifest_revision AND d.revision=r.disposition_revision
+JOIN LATERAL (SELECT state,successor_mission_id,task_id,reason_code,created_at FROM delivery_revision_route_events WHERE company_id=r.company_id AND route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE r.company_id=$1 AND r.delivery_id=$2
+ORDER BY r.created_at DESC,r.route_id DESC LIMIT 16`, companyID, artifactID)
+		if routeErr != nil {
+			return DurableDeliveryLifecycleResponse{}, routeErr
+		}
+		for routeRows.Next() {
+			var route DurableDeliveryRevisionRouteView
+			var dispositionState string
+			var createdAt time.Time
+			if err = routeRows.Scan(&route.RouteID, &route.DeliveryID, &route.ManifestRevision, &route.DispositionRevision, &route.MissionID, &route.ChangeRequestID, &dispositionState, &route.State, &route.SuccessorMissionID, &route.TaskID, &route.ReasonCode, &createdAt); err != nil {
+				routeRows.Close()
+				return DurableDeliveryLifecycleResponse{}, err
+			}
+			route.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+			historical, manifestOK := manifestByRevision[route.ManifestRevision]
+			validState := route.State == "change_request_pending" || route.State == "successor_mission_created" || route.State == "revision_task_ready"
+			if !core.ValidID(route.RouteID) || route.DeliveryID != artifactID || dispositionState != "changes_requested" || (manifestOK && historical.MissionID != route.MissionID) || !core.ValidID(route.ChangeRequestID) || !validState || route.ReasonCode == "" {
+				routeRows.Close()
+				return DurableDeliveryLifecycleResponse{}, core.Integrity
+			}
+			if route.State == "change_request_pending" && (route.SuccessorMissionID != "" || route.TaskID != "") {
+				routeRows.Close()
+				return DurableDeliveryLifecycleResponse{}, core.Integrity
+			}
+			if route.State == "successor_mission_created" && (route.SuccessorMissionID == "" || route.TaskID != "") {
+				routeRows.Close()
+				return DurableDeliveryLifecycleResponse{}, core.Integrity
+			}
+			if route.State == "revision_task_ready" && (route.SuccessorMissionID == "" || !core.ValidID(route.TaskID)) {
+				routeRows.Close()
+				return DurableDeliveryLifecycleResponse{}, core.Integrity
+			}
+			revisionRoutes = append(revisionRoutes, route)
+		}
+		if err = routeRows.Err(); err != nil {
+			routeRows.Close()
+			return DurableDeliveryLifecycleResponse{}, err
+		}
+		routeRows.Close()
+	}
 	var backlogTableAvailable bool
 	if err = tx.QueryRow(ctx, "SELECT to_regclass('public.delivery_feedback_backlog_events') IS NOT NULL").Scan(&backlogTableAvailable); err != nil {
 		return DurableDeliveryLifecycleResponse{}, err
@@ -274,7 +347,7 @@ ORDER BY event_seq DESC LIMIT 32`, companyID, artifactID)
 	if err = tx.Commit(ctx); err != nil {
 		return DurableDeliveryLifecycleResponse{}, err
 	}
-	return DurableDeliveryLifecycleResponse{Manifest: manifest, ManifestSHA256: manifestSHA256, UserDisposition: disposition, FeedbackBacklog: feedbackBacklog, ManifestHistory: manifestHistory, DispositionHistory: dispositionHistory}, nil
+	return DurableDeliveryLifecycleResponse{Manifest: manifest, ManifestSHA256: manifestSHA256, UserDisposition: disposition, FeedbackBacklog: feedbackBacklog, ManifestHistory: manifestHistory, DispositionHistory: dispositionHistory, RevisionRoutes: revisionRoutes}, nil
 }
 
 func validateDurableDeliveryFeedbackBacklogEvent(event DurableDeliveryFeedbackBacklogEventView, artifactID, missionID, taskID, manifestRevision string) bool {

@@ -237,6 +237,20 @@ export type DurableDeliveryManifestHistoryView = Readonly<{
   manifestSha256: string;
 }>;
 
+export type DurableDeliveryRevisionRouteView = Readonly<{
+  routeId: string;
+  deliveryId: string;
+  manifestRevision: string;
+  dispositionRevision: string;
+  missionId: string;
+  changeRequestId: string;
+  state: 'change_request_pending' | 'successor_mission_created' | 'revision_task_ready';
+  successorMissionId: string;
+  taskId: string;
+  reasonCode: string;
+  createdAt: string;
+}>;
+
 export type DurableDeliveryResponse = Readonly<{
   manifest: DurableDeliveryManifestView;
   manifestSha256: string;
@@ -244,6 +258,7 @@ export type DurableDeliveryResponse = Readonly<{
   feedbackBacklog: ReadonlyArray<DurableDeliveryFeedbackBacklogEventView>;
   manifestHistory?: ReadonlyArray<DurableDeliveryManifestHistoryView>;
   dispositionHistory?: ReadonlyArray<DurableUserDispositionView>;
+  revisionRoutes?: ReadonlyArray<DurableDeliveryRevisionRouteView>;
 }>;
 
 export type DurableUserDispositionCommandReceipt = Readonly<{

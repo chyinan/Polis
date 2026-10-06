@@ -1,8 +1,14 @@
+## Latest continuation status (Slice 289, REQ-40 revision-route projection)
+
+Added the optional Schema119 `revisionRoutes` read projection. It joins immutable Manifest/disposition rows, validates `changes_requested`, bounds results to 16 and renders pending/successor/task-ready states read-only in Workbench; pre-Schema119 responses remain compatible. Workbench Go test, direct TypeScript/Vite builds and diff check pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-289-req40-revision-route-projection/verification.md`.
+
+Next local slice: audit remaining REQ-40 historical/terminal feedback policy edges; native qualification and external acceptance remain separate.
+
 ## Latest continuation status (Slice 288, REQ-40 delivery revision routes)
 
 Added Schema119 append-only delivery revision routes. A live-Mission `changes_requested` disposition now links its exact Manifest/disposition to the formal MissionChangeRequest; Apply records the successor Mission and successor product Task preparation records `revision_task_ready`. The current Mission never receives a parallel executable Task; terminal feedback remains backlog-only. Kernel/db tests, migration hash and `build ./cmd/...` pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-288-req40-delivery-revision-routes/verification.md`.
 
-Next local slice: expose/read the revision-route projection if needed, then audit remaining REQ-40 policy edges; real workflow qualification remains separate.
+This Slice288 pointer was superseded by Slice289, which adds the revision-route read projection; real workflow qualification remains separate.
 
 ## Latest continuation status (Slice 287, REQ-40 delivery history projection)
 

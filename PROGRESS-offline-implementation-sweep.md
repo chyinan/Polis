@@ -70,3 +70,6 @@ Extended the read-only durable delivery projection with bounded Manifest revisio
 # Latest checkpoint: Slice288 REQ-40 delivery revision routes
 
 Added Schema119 append-only delivery revision routes linking live-Mission `changes_requested` feedback to formal MissionChangeRequest, successor Mission creation and successor product Task preparation. No parallel current-Mission Task is created; terminal feedback remains backlog-only. Kernel/db tests, migration hash and `build ./cmd/...` pass; no runtime database, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-288-req40-delivery-revision-routes/verification.md`.
+# Latest checkpoint: Slice289 REQ-40 revision-route read projection
+
+Added optional Schema119 `revisionRoutes` read projection with immutable Manifest/disposition joins, `changes_requested` validation, bounded latest-16 route events and read-only Workbench rendering. Direct TypeScript/Vite and Workbench Go checks pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-289-req40-revision-route-projection/verification.md`.

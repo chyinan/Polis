@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 289)
+
+Slice289 adds the optional Schema119 `revisionRoutes` read projection to durable delivery lifecycle responses. It joins immutable Manifest/disposition rows, validates `changes_requested`, bounds results to 16 and renders pending/successor/task-ready states read-only; pre-Schema119 responses remain compatible. No database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-289-req40-revision-route-projection/verification.md`.
+
 ## Current continuation pointer (Slice 288)
 
 Slice288 adds Schema119 append-only delivery revision routes. Live-Mission `changes_requested` now links the exact Manifest/disposition to the formal MissionChangeRequest, then records `successor_mission_created` and `revision_task_ready` at the existing Apply/Prepare boundaries. Current-Mission parallel Tasks are not created; terminal feedback remains Company backlog. No runtime database, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-288-req40-delivery-revision-routes/verification.md`.

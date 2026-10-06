@@ -1131,6 +1131,17 @@ function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId
     && isOneOf(item.state, ['not_requested', 'awaiting_feedback', 'accepted', 'changes_requested'])
     && typeof item.actor === 'string' && typeof item.reason === 'string' && typeof item.requestId === 'string'
     && typeof item.feedbackDeadline === 'string' && typeof item.createdAt === 'string'));
+  const revisionRoutes = value.revisionRoutes;
+  const revisionRoutesValid = revisionRoutes === undefined || (Array.isArray(revisionRoutes) && revisionRoutes.length <= 16 && revisionRoutes.every(item => {
+    if (!isRecord(item) || typeof item.routeId !== 'string' || typeof item.deliveryId !== 'string' || item.deliveryId !== artifactId
+      || typeof item.manifestRevision !== 'string' || !isCanonicalPositiveInt64(item.manifestRevision)
+      || typeof item.dispositionRevision !== 'string' || !isCanonicalPositiveInt64(item.dispositionRevision)
+      || typeof item.missionId !== 'string' || item.missionId !== manifest.missionId || typeof item.changeRequestId !== 'string' || typeof item.reasonCode !== 'string' || typeof item.createdAt !== 'string'
+      || !isOneOf(item.state, ['change_request_pending', 'successor_mission_created', 'revision_task_ready'])) return false;
+    if (item.state === 'change_request_pending') return item.successorMissionId === '' && item.taskId === '';
+    if (item.state === 'successor_mission_created') return typeof item.successorMissionId === 'string' && item.successorMissionId.length > 0 && item.taskId === '';
+    return typeof item.successorMissionId === 'string' && item.successorMissionId.length > 0 && typeof item.taskId === 'string' && item.taskId.length > 0;
+  }));
   if (!isRecord(artifact) || !Array.isArray(manifest.sections) || !hasString(manifest, 'revision')) return false;
   const byteSize = typeof artifact.byteSize === 'string' && /^[1-9]\d*$/.test(artifact.byteSize) ? Number(artifact.byteSize) : Number.NaN;
   const sectionKeys = new Set<string>();
@@ -1158,6 +1169,7 @@ function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId
     && feedbackBacklogValid
     && manifestHistoryValid
     && dispositionHistoryValid
+    && revisionRoutesValid
     && hasString(manifest, 'createdAt')
     && isCanonicalPositiveInt64(disposition.revision)
     && disposition.manifestRevision === manifest.revision
