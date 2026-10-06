@@ -150,6 +150,27 @@ WHERE b.company_id=$1 AND b.run_id=$2`
 	if !json.Valid(evidence) {
 		return BrowserRunRecord{}, core.Integrity
 	}
+	if record.State == "succeeded" {
+		canonicalEvidence, canonicalErr := CanonicalOperationEvidenceJSON(evidence)
+		if canonicalErr != nil || !validCapabilityDigest(record.EvidenceManifestSHA) || digestCapabilityBytes(canonicalEvidence) != record.EvidenceManifestSHA {
+			return BrowserRunRecord{}, core.Integrity
+		}
+		var manifest OperationEvidenceManifest
+		if err := json.Unmarshal(canonicalEvidence, &manifest); err != nil || ValidateOperationEvidenceManifest(manifest, record.CompanyID, record.MissionID, record.TaskID, record.RunID) != nil {
+			return BrowserRunRecord{}, core.Integrity
+		}
+		for _, artifact := range manifest.Artifacts {
+			var artifactTaskID, artifactMissionID, artifactDigest, artifactState, artifactVerdict string
+			if err := queryer.QueryRow(ctx, `SELECT a.task_id,t.mission_id,a.digest,a.state,a.verdict
+FROM artifacts a JOIN tasks t ON t.company_id=a.company_id AND t.id=a.task_id
+WHERE a.company_id=$1 AND a.id=$2`, record.CompanyID, artifact.ArtifactID).Scan(&artifactTaskID, &artifactMissionID, &artifactDigest, &artifactState, &artifactVerdict); err != nil {
+				return BrowserRunRecord{}, core.Integrity
+			}
+			if artifactTaskID != record.TaskID || artifactMissionID != record.MissionID || artifactDigest != artifact.Digest || artifactState != "ready" || (artifactVerdict != "candidate" && artifactVerdict != "passed") {
+				return BrowserRunRecord{}, core.Integrity
+			}
+		}
+	}
 	record.Evidence = append(json.RawMessage(nil), evidence...)
 	record.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
 	return record, nil

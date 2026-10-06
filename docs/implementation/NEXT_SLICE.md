@@ -1,3 +1,12 @@
+## Latest continuation status (Slice 302, REQ-38 BrowserRun evidence binding)
+
+Succeeded BrowserRun reads now fail closed unless their evidence JSON is
+canonicalized/content-addressed, same-scope and references real ready
+candidate/passed Artifact rows with matching digests.
+No browser/network execution or external source retrieval was enabled.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-302-req38-operation-evidence-binding/verification.md`.
+
 ## Latest continuation status (Slice 301, REQ-02 TaskRevision Workbench projection)
 
 TaskSummary now optionally exposes the latest durable semantic TaskRevision and

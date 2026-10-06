@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 302)
+
+Added fail-closed BrowserRun evidence binding. Succeeded records now require a
+canonicalized, content-addressed, same Company/Mission/Task/Run evidence
+manifest whose real Artifact rows match scope/digest and ready candidate/passed
+state; blocked records remain explicit. No browser, network, credential,
+Provider or external-account path was enabled. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-302-req38-operation-evidence-binding/verification.md`.
+
 ## Current continuation pointer (Slice 301)
 
 Added the optional read-only TaskSummary semantic TaskRevision projection.

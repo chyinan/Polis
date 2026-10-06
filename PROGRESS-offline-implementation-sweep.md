@@ -142,4 +142,13 @@ migration/runtime/Worker/provider/browser/external account/scenario ran.
 Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-301-req02-task-revision-projection/verification.md`.
 
+# Latest checkpoint: Slice302 REQ-38 BrowserRun evidence binding
+
+Succeeded BrowserRun reads now require a canonicalized/content-addressed,
+same-scope evidence manifest whose real ready candidate/passed Artifact rows
+match the references; malformed or cross-scope
+success evidence fails closed. Full Go tests and command build pass; no browser,
+network, Worker/provider, external account or scenario ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-302-req38-operation-evidence-binding/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

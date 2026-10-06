@@ -1,3 +1,11 @@
+## Latest continuation status (Slice 302, REQ-38 BrowserRun evidence binding)
+
+Succeeded BrowserRun reads now require a canonicalized/content-addressed,
+same-scope evidence manifest whose real ready candidate/passed Artifact rows
+match the references; malformed or cross-scope
+success evidence fails closed. Full Go tests and command build pass; no browser,
+network, Worker/provider, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-302-req38-operation-evidence-binding/verification.md`.
+
 ## Latest continuation status (Slice 301, REQ-02 TaskRevision Workbench projection)
 
 TaskSummary now optionally shows the latest durable semantic TaskRevision and
