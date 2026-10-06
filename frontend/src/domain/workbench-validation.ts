@@ -707,7 +707,12 @@ function isOperations(value: unknown): value is OperationsView {
     && hasString(value, 'postgresqlStatus')
     && hasString(value, 'casStatus')
     && hasString(value, 'eventStreamStatus')
-    && isNullableString(value.lastRuntimeError);
+    && isNullableString(value.lastRuntimeError)
+    && (value.genericActionIntents === undefined || (Array.isArray(value.genericActionIntents) && value.genericActionIntents.length <= 32 && value.genericActionIntents.every(item => isRecord(item)
+      && hasString(item, 'intentId') && hasString(item, 'taskId') && hasString(item, 'sessionId') && hasString(item, 'actionKind') && hasString(item, 'resourceKey')
+      && typeof item.targetSha256 === 'string' && /^[0-9a-f]{64}$/.test(item.targetSha256)
+      && typeof item.inputSha256 === 'string' && /^[0-9a-f]{64}$/.test(item.inputSha256)
+      && hasString(item, 'idempotencyKey') && item.state === 'denied' && hasString(item, 'reasonCode') && hasString(item, 'actor') && hasString(item, 'requestId') && hasString(item, 'createdAt'))));
 }
 
 function isNotifications(value: unknown): value is NotificationsView {
@@ -1500,8 +1505,8 @@ function incrementDecimalRevision(value: string): string | null {
   return isCanonicalPositiveInt64(next) ? next : null;
 }
 
-export function validateOperations(value: unknown): ValidationResult<OperationsView> {
-  return isOperations(value) ? {success: true, value} : {success: false, issues: [{path: '', message: 'operations response contains an unknown or malformed field'}]};
+export function validateOperations(value: unknown, companyId: string): ValidationResult<OperationsView> {
+  return isOperations(value) && value.companyId === companyId ? {success: true, value} : {success: false, issues: [{path: '', message: 'operations response contains an unknown, malformed, or cross-company field'}]};
 }
 
 export function validateNotifications(value: unknown): ValidationResult<NotificationsView> {

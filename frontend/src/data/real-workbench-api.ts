@@ -361,7 +361,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
   async getOperations(options: CompanyScopeOptions): Promise<OperationsView> {
     assertCompanyScope(options.companyId);
     const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/operations`);
-    const result = validateOperations(raw);
+    const result = validateOperations(raw, options.companyId);
     if (!result.success) {
       throw new Error(`failed to load operations: ${validationMessage(result.issues)}`);
     }

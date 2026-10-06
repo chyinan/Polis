@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 296)
+
+Slice296 adds optional Schema120 generic ActionIntent denied-audit projection to Workbench Operations. Latest denied events are Company-scoped and bounded before limiting; only ResourceKey/digest metadata is exposed and older schemas omit the field. No external action, Provider, browser, database runtime, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-296-action-intent-operations-projection/verification.md`.
+
 ## Current continuation pointer (Slice 295)
 
 Slice295 extends optional Schema121 EmployeeSummary RoleRevision readback with role name, semantic task types/kinds, owner decision and qualification metadata. Old schemas return null; malformed detail fails closed and no execution qualification changes. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-295-role-revision-detail-projection/verification.md`.

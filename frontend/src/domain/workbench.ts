@@ -469,6 +469,7 @@ export type OperationsView = Readonly<{
   casStatus: string;
   eventStreamStatus: string;
   lastRuntimeError: string | null;
+  genericActionIntents?: ReadonlyArray<Readonly<{intentId: string; taskId: string; sessionId: string; actionKind: string; resourceKey: string; targetSha256: string; inputSha256: string; idempotencyKey: string; state: 'denied'; reasonCode: string; actor: string; requestId: string; createdAt: string}>>;
 }>;
 
 export type NotificationRouteView = Readonly<{

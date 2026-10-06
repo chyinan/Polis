@@ -1553,3 +1553,8 @@ Next local slice: continue remaining owner-independent read/validation gaps; kee
 Extended optional EmployeeSummary RoleRevision readback with role name, semantic task types/kinds, owner decision and qualification metadata. Company/Employee scope, malformed detail rejection and old-Schema null compatibility are enforced; frontend validation binds detail to the summary. Workbench Go test, frontend 50/50 validation, TypeScript/Vite builds and diff check pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-295-role-revision-detail-projection/verification.md`.
 
 Next local slice: continue remaining owner-independent RoleRevision/TaskRevision read/validation gaps; executable role admission remains disabled.
+## Latest continuation status (Slice 296, ActionIntent Operations projection)
+
+Added optional Schema120 generic ActionIntent denied-audit projection to Workbench Operations. It is Company-scoped, latest-event filtered before the bounded limit, digest-only and compatible with older schemas. Workbench Go test, frontend 50/50 validation, TypeScript/Vite builds and diff check pass; no external action, Provider, browser, database runtime, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-296-action-intent-operations-projection/verification.md`.
+
+Next local slice: audit remaining governance/read projections; generic action-specific permits remain default-denied without a concrete writer policy.

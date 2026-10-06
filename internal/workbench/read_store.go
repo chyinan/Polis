@@ -417,6 +417,39 @@ func (s *PostgresReadStore) GetOperations(ctx context.Context, companyID string)
 	} else if !errors.Is(err, pgx.ErrNoRows) {
 		return OperationsView{}, err
 	}
+	actionIntents := make([]GenericActionIntentView, 0, 16)
+	var actionIntentTableAvailable bool
+	if err = tx.QueryRow(ctx, "SELECT to_regclass('public.generic_action_intents') IS NOT NULL AND to_regclass('public.generic_action_intent_events') IS NOT NULL").Scan(&actionIntentTableAvailable); err != nil {
+		return OperationsView{}, err
+	}
+	if actionIntentTableAvailable {
+		rows, queryErr := tx.Query(ctx, `SELECT i.intent_id,i.task_id,i.session_id,i.action_kind,i.resource_key,i.target_sha256,i.input_sha256,i.idempotency_key,e.state,e.reason_code,e.actor,e.request_id,i.created_at
+FROM generic_action_intents i
+JOIN LATERAL (SELECT state,reason_code,actor,request_id FROM generic_action_intent_events WHERE company_id=i.company_id AND intent_id=i.intent_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE i.company_id=$1 AND e.state='denied' ORDER BY i.created_at DESC,i.intent_id DESC LIMIT 32`, companyID)
+		if queryErr != nil {
+			return OperationsView{}, queryErr
+		}
+		for rows.Next() {
+			var item GenericActionIntentView
+			var createdAt time.Time
+			if err = rows.Scan(&item.IntentID, &item.TaskID, &item.SessionID, &item.ActionKind, &item.ResourceKey, &item.TargetSHA256, &item.InputSHA256, &item.IdempotencyKey, &item.State, &item.ReasonCode, &item.Actor, &item.RequestID, &createdAt); err != nil {
+				rows.Close()
+				return OperationsView{}, err
+			}
+			if item.State != "denied" || !core.ValidID(item.IntentID) || !core.ValidID(item.TaskID) || !core.ValidID(item.SessionID) || item.ResourceKey == "" || len(item.TargetSHA256) != 64 || len(item.InputSHA256) != 64 || item.ReasonCode == "" {
+				rows.Close()
+				return OperationsView{}, core.Integrity
+			}
+			item.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+			actionIntents = append(actionIntents, item)
+		}
+		if err = rows.Err(); err != nil {
+			rows.Close()
+			return OperationsView{}, err
+		}
+		rows.Close()
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return OperationsView{}, err
 	}
@@ -432,7 +465,7 @@ func (s *PostgresReadStore) GetOperations(ctx context.Context, companyID string)
 			casStatus = "ready"
 		}
 	}
-	return OperationsView{CompanyID: companyID, ToolCallsUsed: stringValue(used), ToolCallsLimit: limitText, ToolBudgetQuality: quality, InputTokens: nil, OutputTokens: nil, ElapsedRuntime: nil, WorkerCount: stringValue(workers), PostgreSQLStatus: "ready", CASStatus: casStatus, EventStreamStatus: "ready", LastRuntimeError: lastError}, nil
+	return OperationsView{CompanyID: companyID, ToolCallsUsed: stringValue(used), ToolCallsLimit: limitText, ToolBudgetQuality: quality, InputTokens: nil, OutputTokens: nil, ElapsedRuntime: nil, WorkerCount: stringValue(workers), PostgreSQLStatus: "ready", CASStatus: casStatus, EventStreamStatus: "ready", LastRuntimeError: lastError, GenericActionIntents: actionIntents}, nil
 }
 
 // HasActiveWork is used only for the desktop graceful-quit guard. It reads

@@ -90,5 +90,8 @@ Added optional Schema121 `EmployeeSummary.roleRevision` projection with determin
 # Latest checkpoint: Slice295 RoleRevision detail projection
 
 Extended optional EmployeeSummary RoleRevision readback with role name, semantic task types/kinds, owner decision and qualification metadata. Company/Employee scope, malformed detail rejection and old-Schema compatibility are enforced; frontend validation and builds pass. No database runtime, owner action, Worker/provider, browser, account or scenario ran. Evidence: evidence/development/r1-r3-implementation-validation-20261007-slice-295-req02-role-revision-detail-projection/verification.md.
+# Latest checkpoint: Slice296 ActionIntent Operations projection
+
+Added optional Schema120 generic ActionIntent denied-audit projection to Workbench Operations. It is Company-scoped, latest-event filtered before the bounded limit, digest-only and old-Schema compatible. Workbench Go test, frontend validation/build and diff check pass; no external action, Provider, browser, database runtime, account or scenario ran. Evidence: evidence/development/r1-r3-implementation-validation-20261007-slice-296-action-intent-operations-projection/verification.md.
 
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

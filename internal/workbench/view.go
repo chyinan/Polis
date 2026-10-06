@@ -296,18 +296,35 @@ type ArtifactDetailView struct {
 }
 
 type OperationsView struct {
-	CompanyID         string  `json:"companyId"`
-	ToolCallsUsed     string  `json:"toolCallsUsed"`
-	ToolCallsLimit    string  `json:"toolCallsLimit"`
-	ToolBudgetQuality string  `json:"toolBudgetQuality"`
-	InputTokens       *string `json:"inputTokens"`
-	OutputTokens      *string `json:"outputTokens"`
-	ElapsedRuntime    *string `json:"elapsedRuntime"`
-	WorkerCount       string  `json:"workerCount"`
-	PostgreSQLStatus  string  `json:"postgresqlStatus"`
-	CASStatus         string  `json:"casStatus"`
-	EventStreamStatus string  `json:"eventStreamStatus"`
-	LastRuntimeError  *string `json:"lastRuntimeError"`
+	CompanyID            string                    `json:"companyId"`
+	ToolCallsUsed        string                    `json:"toolCallsUsed"`
+	ToolCallsLimit       string                    `json:"toolCallsLimit"`
+	ToolBudgetQuality    string                    `json:"toolBudgetQuality"`
+	InputTokens          *string                   `json:"inputTokens"`
+	OutputTokens         *string                   `json:"outputTokens"`
+	ElapsedRuntime       *string                   `json:"elapsedRuntime"`
+	WorkerCount          string                    `json:"workerCount"`
+	PostgreSQLStatus     string                    `json:"postgresqlStatus"`
+	CASStatus            string                    `json:"casStatus"`
+	EventStreamStatus    string                    `json:"eventStreamStatus"`
+	LastRuntimeError     *string                   `json:"lastRuntimeError"`
+	GenericActionIntents []GenericActionIntentView `json:"genericActionIntents,omitempty"`
+}
+
+type GenericActionIntentView struct {
+	IntentID       string `json:"intentId"`
+	TaskID         string `json:"taskId"`
+	SessionID      string `json:"sessionId"`
+	ActionKind     string `json:"actionKind"`
+	ResourceKey    string `json:"resourceKey"`
+	TargetSHA256   string `json:"targetSha256"`
+	InputSHA256    string `json:"inputSha256"`
+	IdempotencyKey string `json:"idempotencyKey"`
+	State          string `json:"state"`
+	ReasonCode     string `json:"reasonCode"`
+	Actor          string `json:"actor"`
+	RequestID      string `json:"requestId"`
+	CreatedAt      string `json:"createdAt"`
 }
 
 type NotificationRouteView struct {

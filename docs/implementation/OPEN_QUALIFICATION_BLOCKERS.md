@@ -2,6 +2,8 @@
 
 Updated: 2026-10-06, after Slice272 REQ-40 explicit UserDisposition command. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
+Slice296 adds optional generic ActionIntent denied-audit readback in Operations; permits and external actions remain unavailable. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-296-action-intent-operations-projection/verification.md`.
+
 Slice295 extends optional RoleRevision readback with semantic detail while keeping qualification unverified and execution disabled. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-295-role-revision-detail-projection/verification.md`.
 
 Slice294 tightens frontend RoleRevision digest validation; execution qualification remains open. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.
