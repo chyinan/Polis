@@ -361,6 +361,22 @@ type EnsureEnvironmentRequest struct {
 	RequestID string `json:"requestId"`
 }
 
+type ProposeDependencyChangeRequest struct {
+	MissionID      string            `json:"missionId"`
+	BaseRevisionID string            `json:"baseRevisionId"`
+	RegistryHosts  []string          `json:"registryHosts"`
+	Dependencies   map[string]string `json:"dependencies"`
+	Rationale      string            `json:"rationale"`
+	RequestID      string            `json:"requestId"`
+}
+
+type DecideDependencyChangeRequest struct {
+	ProposalID string `json:"proposalId"`
+	Decision   string `json:"decision"`
+	Rationale  string `json:"rationale"`
+	RequestID  string `json:"requestId"`
+}
+
 type StartProjectJobRequest struct {
 	TaskID                string   `json:"taskId"`
 	SessionID             string   `json:"sessionId"`
@@ -386,6 +402,11 @@ type EnvironmentLifecycleService interface {
 	DecideProjectEnvironmentPolicy(ctx context.Context, companyID, revisionID string, request EnvironmentPolicyDecisionRequest) (kernel.Receipt, error)
 	DecideProjectEnvironmentExecutorQualification(ctx context.Context, companyID, revisionID string, request EnvironmentExecutorQualificationRequest) (kernel.Receipt, error)
 	EnsureProjectEnvironment(ctx context.Context, companyID, revisionID string, request EnsureEnvironmentRequest) (kernel.EnvironmentPreparationRun, error)
+}
+
+type DependencyChangeService interface {
+	ProposeDependencyChange(ctx context.Context, companyID string, request ProposeDependencyChangeRequest) (kernel.DependencyChangeProposalRecord, error)
+	DecideDependencyChange(ctx context.Context, companyID string, request DecideDependencyChangeRequest) (kernel.DependencyChangeProposalRecord, error)
 }
 
 type ProjectJobLifecycleService interface {

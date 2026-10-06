@@ -49,3 +49,6 @@ Authorized local qualification passed the Windows runner test binary and service
 # Latest checkpoint: Slice281 REQ-40 DeliveryManifest invalidation/withdrawal
 
 Added owner/CSRF exact-current invalidation/withdrawal revisions with canonical digest checks, stale/terminal rejection, owner reason persistence and no Artifact/Mission/Task side effect. Targeted Go/TypeScript tests and frontend build passed; one unrelated full validation test remains. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-281-req40-delivery-invalidation/verification.md`.
+# Latest checkpoint: Slice282 REQ-36 DependencyChange proposal/approval
+
+Added Schema115 append-only DependencyChange proposal and decision intent. The fixed envelope validates exact semver dependencies and base-policy registry hosts; owner approval does not run npm or generate a lockfile/environment revision. Targeted Go tests/build/diff checks pass; no migration/runtime database, npm, Worker, executor, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-282-req36-dependency-change-proposal/verification.md`.

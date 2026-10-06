@@ -1476,3 +1476,8 @@ With explicit user authorization, the Windows amd64 runner test binary was execu
 ## Latest continuation status (Slice 281, REQ-40 DeliveryManifest invalidation/withdrawal)
 
 Added an installation-owner/CSRF `delivery/invalidate` command that appends an exact-revision `invalidated` or `withdrawn` Manifest revision. It preserves Artifact bytes, rejects stale/terminal revisions, persists the owner actor/reason in the new audit row, resets feedback to `not_requested` for the non-deliverable revision and has no Worker/Mission/Task/external side effect. Targeted Go/TypeScript tests, frontend build and diff checks pass; one unrelated pre-existing full validation test remains. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-281-req40-delivery-invalidation/verification.md`.
+## Latest continuation status (Slice 282, REQ-36 DependencyChange proposal/approval)
+
+Added Schema115 source and append-only DependencyChange proposal/decision methods. Proposals are canonical, bounded and limited to exact semver dependency versions plus registry hosts already allowed by the base environment policy. Owner approval records intent only; it does not run npm, edit package files, create a lockfile or generate an environment revision. Targeted Go tests, command build and diff checks pass; no migration/runtime database, npm, Worker, executor, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-282-req36-dependency-change-proposal/verification.md`.
+
+Next local slice: continue REQ-37 durable BorrowerLease/jobs lifecycle or REQ-38 BrowserRun persistence/control; DependencyChange materialization remains executor-gated.

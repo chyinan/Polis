@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 282)
+
+Slice282 adds Schema115 source and append-only DependencyChange proposal/decision methods. The fixed envelope validates exact semver dependency versions and existing registry hosts; owner approval records intent only and cannot run npm or generate a new environment revision. No migration/runtime database, npm, Worker, executor, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-282-req36-dependency-change-proposal/verification.md`.
+
 ## Current continuation pointer (Slice 281)
 
 Slice281 adds owner/CSRF `delivery/invalidate` for exact-current DeliveryManifest revisions, with `invalidated`/`withdrawn` append-only states, owner reason persistence and no Worker/Mission/Task side effect. Artifact content remains immutable; stale/terminal revisions fail closed. Targeted Go/TypeScript tests and frontend build pass; no database runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-281-req40-delivery-invalidation/verification.md`.
