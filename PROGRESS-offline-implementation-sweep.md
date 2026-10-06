@@ -112,4 +112,15 @@ no durable revision, Worker/provider execution, database runtime, browser,
 external account or scenario ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-298-req02-task-revision-binding/verification.md`.
 
+# Latest checkpoint: Slice299 REQ-02 durable semantic TaskRevision context
+
+Schema122 now persists the exact product compat/Backend semantic binding at
+Worker admission when available. The row is append-only, FK-bound to the Task
+and RoleRevision, idempotent and read-back verified; it remains
+unverified/human-gated and absence of Schema122 skips only the optional write
+while the Schema121 admission gate remains required. Full Go tests,
+build and diff check pass; no migration/runtime/Worker/provider/browser action
+ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-299-req02-task-semantic-revisions/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

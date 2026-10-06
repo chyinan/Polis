@@ -2,6 +2,17 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 299)
+
+Added Schema122 append-only `task_semantic_revisions` context. The product
+Worker admission transaction records the exact `compat`/Backend Task binding
+to the owner-confirmed RoleRevision when the optional table exists, with
+idempotent insert/replay and same-transaction read-back. Rows remain
+`unverified`/`requires_human=true`; this does not authorize execution. Absence
+of Schema122 skips only this optional write; the existing Schema121 admission
+gate remains required. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-299-req02-task-semantic-revisions/verification.md`.
+
 ## Current continuation pointer (Slice 298)
 
 Added the pure, content-addressed REQ-02 semantic TaskRevision binding from a

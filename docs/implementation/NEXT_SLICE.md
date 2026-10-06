@@ -1,3 +1,17 @@
+## Latest continuation status (Slice 299, REQ-02 durable semantic TaskRevision context)
+
+Schema122 now stores append-only semantic TaskRevision context for the exact
+product `compat`/Backend Task at Worker admission when the optional table is
+available. RoleRevision/Task identity, binding digest, human gate and
+unverified qualification are persisted with immutable provenance; absence of
+Schema122 skips only this optional write while the existing Schema121 gate
+remains required. No execution authorization was added. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-299-req02-task-semantic-revisions/verification.md`.
+
+Next source work remains limited to the approved durable Task/PlanRevision
+approval/qualification contract; Provider and runtime qualification remain
+separate.
+
 ## Latest continuation status (Slice 298, REQ-02 semantic TaskRevision binding)
 
 Added the pure, content-addressed semantic TaskRevision resolver for the

@@ -1,3 +1,13 @@
+## Latest continuation status (Slice 299, REQ-02 durable semantic TaskRevision context)
+
+Schema122 now persists the exact product compat/Backend semantic binding at
+Worker admission when available. The row is append-only, FK-bound to the Task
+and RoleRevision, idempotent and read-back verified; it remains
+unverified/human-gated and absence of Schema122 skips only the optional write
+while the Schema121 admission gate remains required. Full Go tests,
+build and diff check pass; no migration/runtime/Worker/provider/browser action
+ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-299-req02-task-semantic-revisions/verification.md`.
+
 ## Latest continuation status (Slice 298, REQ-02 semantic TaskRevision binding)
 
 Added a pure content-addressed binding from fixed-team RoleRevision to an
