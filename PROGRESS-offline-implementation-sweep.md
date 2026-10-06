@@ -64,3 +64,6 @@ Added Schema117 BrowserRun identities/events and fake-only @18 `browser_run`/`br
 # Latest checkpoint: Slice286 REQ-38 research/search/fetch unavailable control plane
 
 Added Schema118 ResearchOperation identities/events and fake-only @19 `research_search`/`research_fetch`. Search/HTTPS fetch requests persist explicit `unavailable/research_backend_unavailable` with zero Provider egress and never call web, HTTP, MCP or browser backends. Targeted Kernel/codex/provider/control/db tests and `build ./cmd/...` pass; no external web, Provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-286-req38-research-unavailable-control-plane/verification.md`.
+# Latest checkpoint: Slice287 REQ-40 delivery revision/disposition history projection
+
+Extended the read-only durable delivery projection with bounded Manifest revision and UserDisposition histories, binding every item to current Company/Artifact/Mission/Task, stored digest and known revision identities. Added frontend validation and read-only rendering; direct TypeScript/Vite builds and Workbench Go test pass. No database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-287-req40-delivery-history-projection/verification.md`.

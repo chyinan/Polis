@@ -71,11 +71,18 @@ type DurableDeliveryFeedbackBacklogEventView struct {
 	CreatedAt           string `json:"createdAt"`
 }
 
+type DurableDeliveryManifestHistoryView struct {
+	Manifest       DurableDeliveryManifestView `json:"manifest"`
+	ManifestSHA256 string                      `json:"manifestSha256"`
+}
+
 type DurableDeliveryLifecycleResponse struct {
-	Manifest        DurableDeliveryManifestView               `json:"manifest"`
-	ManifestSHA256  string                                    `json:"manifestSha256"`
-	UserDisposition DurableDeliveryUserDispositionView        `json:"userDisposition"`
-	FeedbackBacklog []DurableDeliveryFeedbackBacklogEventView `json:"feedbackBacklog"`
+	Manifest           DurableDeliveryManifestView               `json:"manifest"`
+	ManifestSHA256     string                                    `json:"manifestSha256"`
+	UserDisposition    DurableDeliveryUserDispositionView        `json:"userDisposition"`
+	FeedbackBacklog    []DurableDeliveryFeedbackBacklogEventView `json:"feedbackBacklog"`
+	ManifestHistory    []DurableDeliveryManifestHistoryView      `json:"manifestHistory"`
+	DispositionHistory []DurableDeliveryUserDispositionView      `json:"dispositionHistory"`
 }
 
 type DurableArtifactDeliveryLifecycleReader interface {
@@ -158,6 +165,78 @@ JOIN LATERAL (
 		return DurableDeliveryLifecycleResponse{}, core.Integrity
 	}
 	feedbackBacklog := make([]DurableDeliveryFeedbackBacklogEventView, 0, 8)
+	manifestHistory := make([]DurableDeliveryManifestHistoryView, 0, 8)
+	dispositionHistory := make([]DurableDeliveryUserDispositionView, 0, 8)
+	manifestRevisions := make(map[string]struct{}, 8)
+	manifestRows, err := tx.Query(ctx, `SELECT revision::text,mission_id,task_id,artifact_id,state,manifest::text,manifest_sha256
+FROM delivery_manifest_revisions WHERE company_id=$1 AND delivery_id=$2 AND artifact_id=$2
+ORDER BY revision DESC LIMIT 32`, companyID, artifactID)
+	if err != nil {
+		return DurableDeliveryLifecycleResponse{}, err
+	}
+	for manifestRows.Next() {
+		var revision, missionID, taskID, storedArtifactID, state, raw, storedSHA256 string
+		if err = manifestRows.Scan(&revision, &missionID, &taskID, &storedArtifactID, &state, &raw, &storedSHA256); err != nil {
+			manifestRows.Close()
+			return DurableDeliveryLifecycleResponse{}, err
+		}
+		var historical DurableDeliveryManifestView
+		decoder := json.NewDecoder(bytes.NewBufferString(raw))
+		decoder.DisallowUnknownFields()
+		if err = decoder.Decode(&historical); err != nil {
+			manifestRows.Close()
+			return DurableDeliveryLifecycleResponse{}, core.Integrity
+		}
+		var trailingHistorical any
+		if err = decoder.Decode(&trailingHistorical); !errors.Is(err, io.EOF) {
+			manifestRows.Close()
+			return DurableDeliveryLifecycleResponse{}, core.Integrity
+		}
+		_, historicalSHA256, canonicalErr := canonicalDurableDeliveryManifest(historical)
+		if canonicalErr != nil || historicalSHA256 != storedSHA256 || historical.Revision != revision || historical.CompanyID != companyID || historical.DeliveryID != artifactID || historical.MissionID != missionID || historical.TaskID != taskID || historical.ArtifactID != storedArtifactID || historical.State != state || historical.Artifact.SHA256 != artifactDigest || historical.Artifact.ByteSize != strconv.FormatInt(artifactBytes, 10) {
+			manifestRows.Close()
+			return DurableDeliveryLifecycleResponse{}, core.Integrity
+		}
+		manifestRevisions[historical.Revision] = struct{}{}
+		manifestHistory = append(manifestHistory, DurableDeliveryManifestHistoryView{Manifest: historical, ManifestSHA256: storedSHA256})
+	}
+	if err = manifestRows.Err(); err != nil {
+		manifestRows.Close()
+		return DurableDeliveryLifecycleResponse{}, err
+	}
+	manifestRows.Close()
+	dispositionRows, err := tx.Query(ctx, `SELECT revision::text,manifest_revision::text,state,actor,reason,request_id,feedback_deadline,created_at
+FROM delivery_user_dispositions WHERE company_id=$1 AND delivery_id=$2 ORDER BY revision DESC LIMIT 32`, companyID, artifactID)
+	if err != nil {
+		return DurableDeliveryLifecycleResponse{}, err
+	}
+	for dispositionRows.Next() {
+		var item DurableDeliveryUserDispositionView
+		var feedbackDeadline pgtype.Timestamptz
+		var createdAt time.Time
+		if err = dispositionRows.Scan(&item.Revision, &item.ManifestRevision, &item.State, &item.Actor, &item.Reason, &item.RequestID, &feedbackDeadline, &createdAt); err != nil {
+			dispositionRows.Close()
+			return DurableDeliveryLifecycleResponse{}, err
+		}
+		item.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+		if feedbackDeadline.Valid {
+			item.FeedbackDeadline = feedbackDeadline.Time.UTC().Format(time.RFC3339Nano)
+		}
+		if !validDurableDeliveryDisposition(item) {
+			dispositionRows.Close()
+			return DurableDeliveryLifecycleResponse{}, core.Integrity
+		}
+		if _, ok := manifestRevisions[item.ManifestRevision]; !ok {
+			dispositionRows.Close()
+			return DurableDeliveryLifecycleResponse{}, core.Integrity
+		}
+		dispositionHistory = append(dispositionHistory, item)
+	}
+	if err = dispositionRows.Err(); err != nil {
+		dispositionRows.Close()
+		return DurableDeliveryLifecycleResponse{}, err
+	}
+	dispositionRows.Close()
 	var backlogTableAvailable bool
 	if err = tx.QueryRow(ctx, "SELECT to_regclass('public.delivery_feedback_backlog_events') IS NOT NULL").Scan(&backlogTableAvailable); err != nil {
 		return DurableDeliveryLifecycleResponse{}, err
@@ -195,7 +274,7 @@ ORDER BY event_seq DESC LIMIT 32`, companyID, artifactID)
 	if err = tx.Commit(ctx); err != nil {
 		return DurableDeliveryLifecycleResponse{}, err
 	}
-	return DurableDeliveryLifecycleResponse{Manifest: manifest, ManifestSHA256: manifestSHA256, UserDisposition: disposition, FeedbackBacklog: feedbackBacklog}, nil
+	return DurableDeliveryLifecycleResponse{Manifest: manifest, ManifestSHA256: manifestSHA256, UserDisposition: disposition, FeedbackBacklog: feedbackBacklog, ManifestHistory: manifestHistory, DispositionHistory: dispositionHistory}, nil
 }
 
 func validateDurableDeliveryFeedbackBacklogEvent(event DurableDeliveryFeedbackBacklogEventView, artifactID, missionID, taskID, manifestRevision string) bool {

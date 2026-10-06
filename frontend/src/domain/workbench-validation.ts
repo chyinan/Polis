@@ -1106,6 +1106,31 @@ function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId
     && item.manifestRevision === manifest.revision
     && item.status === 'open' && item.actor === 'system' && hasString(item, 'reason') && typeof item.reason === 'string' && item.reason.length > 0
     && hasString(item, 'requestId') && hasString(item, 'createdAt'));
+  const manifestHistory = value.manifestHistory;
+  const dispositionHistory = value.dispositionHistory;
+  const currentArtifactForHistory = isRecord(artifact) ? artifact : undefined;
+  const manifestHistoryRevisions = new Set<string>();
+  const manifestHistoryValid = manifestHistory === undefined || (Array.isArray(manifestHistory) && manifestHistory.length <= 32 && manifestHistory.every(item => {
+    if (currentArtifactForHistory === undefined || !isRecord(item) || !isRecord(item.manifest) || typeof item.manifestSha256 !== 'string' || !/^[0-9a-f]{64}$/.test(item.manifestSha256)) return false;
+    const historical = item.manifest;
+    const historicalArtifact = historical.artifact;
+    if (!isRecord(historicalArtifact) || historical.schemaVersion !== 'polis-durable-delivery-manifest@1' || historical.deliveryId !== artifactId
+      || historical.companyId !== companyId || historical.missionId !== manifest.missionId || historical.taskId !== manifest.taskId || historical.artifactId !== artifactId
+      || typeof historical.revision !== 'string' || !isCanonicalPositiveInt64(historical.revision) || manifestHistoryRevisions.has(historical.revision)
+      || !isOneOf(historical.state, ['assembling', 'ready', 'invalidated', 'withdrawn']) || historicalArtifact.fileName !== 'artifact.bin'
+      || historicalArtifact.byteSize !== currentArtifactForHistory.byteSize || historicalArtifact.sha256 !== currentArtifactForHistory.sha256 || typeof historical.createdAt !== 'string'
+      || !Array.isArray(historical.sections) || historical.sections.length > 64) return false;
+    manifestHistoryRevisions.add(historical.revision);
+    return historical.sections.every(section => isRecord(section) && typeof section.key === 'string' && section.key.length > 0 && section.key.length <= 120
+      && typeof section.detail === 'string' && section.detail.length <= 4096
+      && isOneOf(section.state, ['available', 'unavailable', 'missing', 'not_requested']));
+  }));
+  const dispositionHistoryValid = dispositionHistory === undefined || (Array.isArray(dispositionHistory) && dispositionHistory.length <= 32 && dispositionHistory.every(item => isRecord(item)
+    && typeof item.revision === 'string' && isCanonicalPositiveInt64(item.revision)
+    && typeof item.manifestRevision === 'string' && isCanonicalPositiveInt64(item.manifestRevision) && manifestHistoryRevisions.has(item.manifestRevision)
+    && isOneOf(item.state, ['not_requested', 'awaiting_feedback', 'accepted', 'changes_requested'])
+    && typeof item.actor === 'string' && typeof item.reason === 'string' && typeof item.requestId === 'string'
+    && typeof item.feedbackDeadline === 'string' && typeof item.createdAt === 'string'));
   if (!isRecord(artifact) || !Array.isArray(manifest.sections) || !hasString(manifest, 'revision')) return false;
   const byteSize = typeof artifact.byteSize === 'string' && /^[1-9]\d*$/.test(artifact.byteSize) ? Number(artifact.byteSize) : Number.NaN;
   const sectionKeys = new Set<string>();
@@ -1131,6 +1156,8 @@ function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId
     && typeof artifact.sha256 === 'string' && /^[0-9a-f]{64}$/.test(artifact.sha256)
     && sectionsValid
     && feedbackBacklogValid
+    && manifestHistoryValid
+    && dispositionHistoryValid
     && hasString(manifest, 'createdAt')
     && isCanonicalPositiveInt64(disposition.revision)
     && disposition.manifestRevision === manifest.revision

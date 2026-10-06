@@ -232,11 +232,18 @@ export type DurableDeliveryFeedbackBacklogEventView = Readonly<{
   createdAt: string;
 }>;
 
+export type DurableDeliveryManifestHistoryView = Readonly<{
+  manifest: DurableDeliveryManifestView;
+  manifestSha256: string;
+}>;
+
 export type DurableDeliveryResponse = Readonly<{
   manifest: DurableDeliveryManifestView;
   manifestSha256: string;
   userDisposition: DurableUserDispositionView;
   feedbackBacklog: ReadonlyArray<DurableDeliveryFeedbackBacklogEventView>;
+  manifestHistory?: ReadonlyArray<DurableDeliveryManifestHistoryView>;
+  dispositionHistory?: ReadonlyArray<DurableUserDispositionView>;
 }>;
 
 export type DurableUserDispositionCommandReceipt = Readonly<{

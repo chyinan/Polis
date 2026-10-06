@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 287, REQ-40 delivery history projection)
+
+Extended the durable delivery lifecycle read projection with bounded Manifest revision and UserDisposition histories. Server and frontend validation bind history items to the immutable Company/Artifact/Mission/Task identity, stored digests, Artifact bytes and known revisions; the Workbench renders them without lifecycle side effects. Workbench Go test, direct TypeScript/Vite builds and diff check pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-287-req40-delivery-history-projection/verification.md`.
+
+Next local slice: audit remaining REQ-40 revision-task/terminal feedback policy gaps; native qualification and external delivery acceptance remain separate.
+
 ## Latest continuation status (Slice 286, REQ-38 research/search/fetch unavailable control plane)
 
 Added Schema118 ResearchOperation identities/events and fake-only @19 `research_search`/`research_fetch`. Inputs are normalized as data, bound to the current Task/WorkerSession, and persist `unavailable/research_backend_unavailable` with zero Provider egress; no web, HTTP, MCP or browser backend is called. Targeted Kernel/codex/provider/control/db tests and `build ./cmd/...` pass; no external web, Provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-286-req38-research-unavailable-control-plane/verification.md`.

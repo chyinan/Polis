@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 287)
+
+Slice287 extends the REQ-40 durable delivery read projection with bounded Manifest revision and UserDisposition histories. Backend and frontend validation rebind history to Company/Artifact/Mission/Task, stored digests, Artifact bytes and known revision identities; the Workbench renders the history read-only. No delivery command, database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-287-req40-delivery-history-projection/verification.md`.
+
 ## Current continuation pointer (Slice 286)
 
 Slice286 adds Schema118 ResearchOperation control-plane persistence and fake-only product surface `polis-product-tool-surface@19` with `research_search` and `research_fetch`. Search/HTTPS fetch inputs are bounded and stored as explicit `unavailable/research_backend_unavailable` results with `provider_egress=0`; no query or URL is sent to any backend. No external web, Provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-286-req38-research-unavailable-control-plane/verification.md`.

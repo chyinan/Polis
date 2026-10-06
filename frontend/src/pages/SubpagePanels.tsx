@@ -1,6 +1,6 @@
 // pattern: Imperative Shell
 
-import {BadgeCheck, Check, FileCheck2, FolderOpen, Handshake, History, LockKeyhole, MessageSquare, Settings2, ShieldAlert, Wrench} from 'lucide-react';
+import {BadgeCheck, Check, FileCheck2, FileText, FolderOpen, Handshake, History, LockKeyhole, MessageSquare, Settings2, ShieldAlert, Wrench} from 'lucide-react';
 import {useRef, useState, type ChangeEvent, type FormEvent, type ReactNode} from 'react';
 import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, EmployeeSummary, JobRunView, ProjectEnvironmentRevisionView, TaskSummary, UserDispositionDecision} from '../domain/workbench';
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
@@ -186,6 +186,12 @@ function DurableDeliveryLifecycle({api, companyId, artifactId, query, pendingReq
           <div className={styles.recordLead}><MessageSquare aria-hidden="true" size={16} /><div><strong>请求修改 · {item.createdAt}</strong><span>{item.reason}</span><span>Manifest revision {item.manifestRevision} · disposition revision {item.dispositionRevision}</span><span>Mission {item.missionId} · Task {item.taskId}</span></div></div>
           <div className={styles.recordMeta}><code title={item.requestId}>{item.requestId}</code></div>
         </div>)}
+      </div> : null}
+      {(delivery.manifestHistory?.length ?? 0) > 0 ? <div className={styles.recordList} aria-label="交付清单 revision 历史">
+        {delivery.manifestHistory?.map(item => <div className={styles.recordRow} key={`manifest-${item.manifest.revision}`}><div className={styles.recordLead}><FileText aria-hidden="true" size={16} /><div><strong>Manifest revision {item.manifest.revision} · {deliveryStateLabels[item.manifest.state] ?? item.manifest.state}</strong><span>{item.manifest.createdAt}</span></div></div><div className={styles.recordMeta}><code>{item.manifestSha256}</code></div></div>)}
+      </div> : null}
+      {(delivery.dispositionHistory?.length ?? 0) > 0 ? <div className={styles.recordList} aria-label="交付用户态度历史">
+        {delivery.dispositionHistory?.map(item => <div className={styles.recordRow} key={`disposition-${item.revision}`}><div className={styles.recordLead}><MessageSquare aria-hidden="true" size={16} /><div><strong>Disposition revision {item.revision} · {dispositionLabels[item.state] ?? item.state}</strong><span>对应 Manifest {item.manifestRevision} · {item.createdAt}</span></div></div><div className={styles.recordMeta}><span>{item.actor}</span><code>{item.requestId}</code></div></div>)}
       </div> : null}
       {delivery.manifest.state === 'ready' && api.mode === 'real' && api.recordDurableUserDisposition ? <form className={styles.formStack} data-testid="durable-user-disposition-form" onSubmit={event => void submitDisposition(event)}>
         <h4 className={styles.sectionTitle}>提交用户态度</h4>
