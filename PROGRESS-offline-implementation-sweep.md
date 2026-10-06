@@ -22,10 +22,10 @@
 - `summary/req40-delivery-completion-ui.md` — Slice 276 owner completion UI/API summary
 
 ## 当前进度
-已完成需求筛选；REQ-40 Company backlog 只读投影、历史 Artifact backfill 管理路径和 assembling delivery completion UI/API 均已实现并通过目标测试/build。
+已完成需求筛选；REQ-40 Company backlog 只读投影、历史 Artifact backfill 管理路径和 assembling delivery completion UI/API 均已实现并通过目标测试/build。当前未发现可在不猜测 owner policy 的前提下继续推进的明确代码闭环。
 
 ## 下一步
-提交并推送 Slice 276；保留前端测试文件中三个既有无关失败及 PostgreSQL/runtime backfill 未执行的记录。
+Slice 274–276 已提交并推送；保留前端测试文件中三个既有无关失败及 PostgreSQL/runtime backfill 未执行的记录。下一步需要 owner policy 决策后再继续。
 
 ## 发现的关键信息
 - REQ-36/37/38 与部分 REQ-40 工作需要 owner policy、真实主机、账号或运行时迁移，当前不应猜测。
