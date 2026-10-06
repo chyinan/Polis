@@ -2,6 +2,16 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 298)
+
+Added the pure, content-addressed REQ-02 semantic TaskRevision binding from a
+fixed-team RoleRevision to an explicit `task_type`/owner/TaskKind tuple.
+Mismatches return distinct reason codes; exact matches remain
+`qualification=unverified` and `requires_human=true`. No durable revision,
+Worker admission, Provider execution or external qualification was enabled.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-298-req02-task-revision-binding/verification.md`.
+
 ## Current continuation pointer (Slice 297)
 
 Aligned stale offline test fixtures with the current CreateMission, one-shot

@@ -103,4 +103,13 @@ build pass; no production behavior, database runtime, Worker/provider,
 browser, external account, MCP endpoint or frozen scenario ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-297-offline-test-contracts/verification.md`.
 
+# Latest checkpoint: Slice298 REQ-02 semantic TaskRevision binding
+
+Added a pure content-addressed binding from fixed-team RoleRevision to an
+explicit semantic task_type/owner/TaskKind tuple. Mismatch reason codes are
+deterministic and exact matches remain unverified/human-gated. Spec tests pass;
+no durable revision, Worker/provider execution, database runtime, browser,
+external account or scenario ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-298-req02-task-revision-binding/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

@@ -1,3 +1,11 @@
+## Latest continuation status (Slice 298, REQ-02 semantic TaskRevision binding)
+
+Added a pure content-addressed binding from fixed-team RoleRevision to an
+explicit semantic task_type/owner/TaskKind tuple. Mismatch reason codes are
+deterministic and exact matches remain unverified/human-gated; no durable
+revision, Worker/provider execution, database runtime, browser, external
+account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-298-req02-task-revision-binding/verification.md`.
+
 ## Latest continuation status (Slice 297, offline test-contract alignment)
 
 Stale offline fixtures now match the current bounded mission-command input,

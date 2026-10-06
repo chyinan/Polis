@@ -1,3 +1,15 @@
+## Latest continuation status (Slice 298, REQ-02 semantic TaskRevision binding)
+
+Added the pure, content-addressed semantic TaskRevision resolver for the
+fixed-team RoleRevision. It checks explicit `task_type`, owner and TaskKind
+identity, reports mismatch reason codes, and keeps every result
+`unverified`/`requires_human=true`; no Worker/provider execution or durable
+revision lifecycle was enabled. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-298-req02-task-revision-binding/verification.md`.
+
+Next source work must remain within the approved semantic contract; durable
+Task/PlanRevision lifecycle and qualification are still separate gates.
+
 ## Latest continuation status (Slice 297, offline test-contract alignment)
 
 Stale offline fixtures now match the current bounded mission-command input,

@@ -155,6 +155,8 @@ func CompileFixedTeamCoverageRoleRevision(snapshot []byte, revisionSHA256, owner
 // remain on the human-required path.
 func (revision FixedTeamCoverageRoleRevision) AdmissionFor(taskType, owner string) FixedTeamCoverageAdmission {
 	result := FixedTeamCoverageAdmission{TaskType: taskType, RequiresHuman: true}
+	taskRevision := revision.TaskRevisionFor(taskType, owner, FixedTeamCoverageTaskKind(taskType))
+	result.RequiresHuman = taskRevision.RequiresHuman
 	if !revision.compiled || revision.RevisionSHA256 != FixedTeamCoverageSHA256() || revision.OwnerDecision != FixedTeamCoverageOwnerDecision {
 		return result
 	}
