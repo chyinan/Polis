@@ -80,6 +80,34 @@ type DurableDeliveryDispositionReceipt struct {
 	CreatedAt           string `json:"createdAt"`
 }
 
+type DeliveryManifestEvidenceRequest struct {
+	Reference string `json:"reference"`
+	Digest    string `json:"digest"`
+	Detail    string `json:"detail"`
+}
+
+type CompleteDurableDeliveryManifestRequest struct {
+	ArtifactID               string                          `json:"artifactId"`
+	ExpectedManifestRevision string                          `json:"expectedManifestRevision"`
+	RequestID                string                          `json:"requestId"`
+	SourceInputs             DeliveryManifestEvidenceRequest `json:"sourceInputs"`
+	EnvironmentBuild         DeliveryManifestEvidenceRequest `json:"environmentBuild"`
+	RunInstructions          DeliveryManifestEvidenceRequest `json:"runInstructions"`
+	Limitations              DeliveryManifestEvidenceRequest `json:"limitations"`
+	LicenseSource            DeliveryManifestEvidenceRequest `json:"licenseSource"`
+}
+
+type CompleteDurableDeliveryManifestReceipt struct {
+	RequestID           string `json:"requestId"`
+	CompanyID           string `json:"companyId"`
+	DeliveryID          string `json:"deliveryId"`
+	ManifestRevision    string `json:"manifestRevision"`
+	DispositionRevision string `json:"dispositionRevision"`
+	State               string `json:"state"`
+	Actor               string `json:"actor"`
+	CreatedAt           string `json:"createdAt"`
+}
+
 type OperatorInstructionReceipt struct {
 	InstructionID         string                                      `json:"instructionId"`
 	MissionID             *string                                     `json:"missionId"`
@@ -229,6 +257,10 @@ type MissionChangeRequestService interface {
 
 type DurableDeliveryDispositionService interface {
 	RecordDurableDeliveryDisposition(ctx context.Context, companyID string, request RecordDurableDeliveryDispositionRequest) (DurableDeliveryDispositionReceipt, error)
+}
+
+type DurableDeliveryManifestCompletionService interface {
+	CompleteDurableDeliveryManifest(ctx context.Context, companyID string, request CompleteDurableDeliveryManifestRequest) (CompleteDurableDeliveryManifestReceipt, error)
 }
 
 type TaskTakeoverLeaseCommand struct {

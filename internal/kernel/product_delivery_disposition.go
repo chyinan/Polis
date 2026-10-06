@@ -1,4 +1,4 @@
-// pattern: Functional Core
+// pattern: Imperative Shell
 package kernel
 
 import (
@@ -164,6 +164,25 @@ ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manif
 		if err != nil {
 			return Receipt{}, err
 		}
+		var missionState string
+		if err = tx.QueryRow(ctx, `SELECT state FROM missions WHERE company_id=$1 AND id=$2 FOR UPDATE`, companyID, storedMissionID).Scan(&missionState); err != nil {
+			return Receipt{}, err
+		}
+		switch productDeliveryChangeRoute(missionState) {
+		case "mission_change_request":
+			if err = appendDeliveryMissionChangeRequestTX(ctx, tx, Scope{company: companyID}, storedMissionID, command.ArtifactID, nextDispositionRevision, command.Reason, command.RequestID); err != nil {
+				return Receipt{}, err
+			}
+		case "company_backlog":
+			backlogRequestID := "delivery-feedback-" + fingerprint(command.RequestID)[:48]
+			if _, err = tx.Exec(ctx, `INSERT INTO delivery_feedback_backlog_events(
+company_id, event_id, delivery_id, manifest_revision, disposition_revision, mission_id, task_id, artifact_id, status, reason, actor, request_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$3,'open',$8,'system',$9)`, companyID, newID(), command.ArtifactID, manifestRevision, nextDispositionRevision, storedMissionID, storedTaskID, command.Reason, backlogRequestID); err != nil {
+				return Receipt{}, err
+			}
+		default:
+			return Receipt{}, core.ConflictError{Reason: "delivery changes cannot be routed while the Mission is not active, paused, or terminal", CurrentState: missionState}
+		}
 		return Receipt{ID: command.ArtifactID, Status: command.State, Revision: nextDispositionRevision}, nil
 	})
 	if err != nil {
@@ -195,6 +214,73 @@ WHERE company_id=$1 AND request_id=$2`, companyID, command.RequestID).Scan(
 	}
 	result.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
 	return result, nil
+}
+
+func appendDeliveryMissionChangeRequestTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, artifactID string, dispositionRevision int64, reason, dispositionRequestID string) error {
+	basis, err := missionChangeBasisTx(ctx, tx, scope, missionID, true)
+	if err != nil {
+		return err
+	}
+	if basis.State != "active" && basis.State != "paused" {
+		return core.ConflictError{Reason: "formal changes require an active or paused Mission", CurrentState: basis.State}
+	}
+	if basis.AcceptanceContract == nil {
+		return core.ConflictError{Reason: "delivery change routing requires the Mission acceptance contract", CurrentState: "acceptance_contract_missing"}
+	}
+	openRequest, err := missionHasOpenChangeRequestTx(ctx, tx, scope, missionID)
+	if err != nil {
+		return err
+	}
+	if openRequest {
+		return core.ConflictError{Reason: "this Mission already has a pending formal change request", CurrentState: "change_request_open"}
+	}
+	baseDigest, err := missionChangeRequirementsDigest(missionID, basis.Title, basis.Goal, basis.AcceptanceContract, basis.InputRevisions)
+	if err != nil {
+		return err
+	}
+	impact, impactDigest, err := missionChangeImpactTx(ctx, tx, scope, missionID, baseDigest, basis.InputRevisions)
+	if err != nil {
+		return err
+	}
+	changeRequestID := newID()
+	clientRequestID := "delivery-change-" + fingerprint(dispositionRequestID)[:48]
+	const changeSummaryPrefix = "Delivery changes requested: "
+	changeSummaryRunes := []rune(reason)
+	for len(changeSummaryPrefix)+len(string(changeSummaryRunes)) > core.MaxContent {
+		changeSummaryRunes = changeSummaryRunes[:len(changeSummaryRunes)-1]
+	}
+	changeSummary := changeSummaryPrefix + string(changeSummaryRunes)
+	proposedAcceptanceJSON, err := json.Marshal(basis.AcceptanceContract)
+	if err != nil {
+		return err
+	}
+	if _, err = tx.Exec(ctx, `INSERT INTO mission_change_requests(company_id,change_request_id,mission_id,client_request_id,base_requirements_sha256,change_summary,proposed_title,proposed_goal,proposed_acceptance_contract,block_previous_results)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,true)`, scope.company, changeRequestID, missionID, clientRequestID, baseDigest, changeSummary, basis.Title, basis.Goal, proposedAcceptanceJSON); err != nil {
+		return err
+	}
+	if err = insertMissionChangeImpact(ctx, tx, scope, changeRequestID, 1, impactDigest, impact); err != nil {
+		return err
+	}
+	if err = insertMissionChangeOutputBlocks(ctx, tx, scope, changeRequestID, impact); err != nil {
+		return err
+	}
+	if err = appendMissionChangeState(ctx, tx, scope, changeRequestID, "received", int64Pointer(1), nil, "delivery_changes_requested", map[string]any{
+		"delivery_id": artifactID, "disposition_revision": dispositionRevision,
+	}); err != nil {
+		return err
+	}
+	if basis.State == "active" {
+		if err = appendMissionChangeState(ctx, tx, scope, changeRequestID, "queued", int64Pointer(1), nil, "awaiting_safe_boundary", map[string]any{
+			"delivery_id": artifactID, "disposition_revision": dispositionRevision,
+		}); err != nil {
+			return err
+		}
+	}
+	return appendEvent(ctx, tx, scope, "mission.change_request.created", map[string]any{
+		"mission_id": missionID, "change_request_id": changeRequestID, "base_requirements_sha256": baseDigest,
+		"impact_sha256": impactDigest, "block_previous_results": true, "delivery_id": artifactID,
+		"disposition_revision": dispositionRevision,
+	})
 }
 
 func validateReadyProductDeliveryManifest(rawJSON, storedSHA256, companyID, artifactID string, revision int64, missionID, taskID, state string, out *durableProductDeliveryManifest) error {

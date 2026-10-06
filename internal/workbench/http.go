@@ -646,6 +646,38 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "artifacts.delivery.complete":
+		response.Header().Set("Cache-Control", "no-store")
+		if !installationauth.IsAuthenticated(ctx) {
+			writeError(response, http.StatusUnauthorized, "installation owner authentication is required")
+			return
+		}
+		csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+		csrfValue := ""
+		if csrfCookie != nil {
+			csrfValue = csrfCookie.Value
+		}
+		if request.Header.Get("Origin") == "" || !installationauth.CSRFValid(ctx, csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+			writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+			return
+		}
+		completionService, ok := service.(control.DurableDeliveryManifestCompletionService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "artifact_delivery_manifest_completion", errors.New("durable delivery manifest completion service is unavailable"))
+			return
+		}
+		var input control.CompleteDurableDeliveryManifestRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "artifact_delivery_manifest_completion", err)
+			return
+		}
+		input.ArtifactID = path.resourceID
+		receipt, err := completionService.CompleteDurableDeliveryManifest(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "artifact_delivery_manifest_completion", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "company.budget.closing_reserve":
 		response.Header().Set("Cache-Control", "no-store")
 		budgetService, ok := service.(control.ProblemToolBudgetService)
@@ -2452,6 +2484,13 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: artifactID, endpoint: "artifacts.delivery.disposition"}, true
+	}
+	if len(parts) == 5 && parts[1] == "artifacts" && parts[2] != "" && parts[3] == "delivery" && parts[4] == "complete" {
+		artifactID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: artifactID, endpoint: "artifacts.delivery.complete"}, true
 	}
 	if len(parts) != 4 || parts[1] != "missions" || parts[2] == "" || parts[3] == "" {
 		if len(parts) == 4 && parts[2] != "" && parts[1] == "artifacts" && (parts[3] == "manifest" || parts[3] == "download" || parts[3] == "delivery") {
