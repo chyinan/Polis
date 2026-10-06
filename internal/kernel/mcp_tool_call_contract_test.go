@@ -30,14 +30,25 @@ func TestValidateStdioMCPToolCallStartRequiresCurrentOneShotIntent(t *testing.T)
 		ProviderCallID: "provider-call-1", CapabilityID: "capability-1", ToolName: "lookup",
 		ToolSchemaSHA256: repeatDigest('a'), Arguments: arguments,
 	}
-	authorization := StdioMCPToolAuthorization{RuntimeQualification: StdioMCPRuntimeQualification{CompanyID: "company-1", RuntimeQualificationID: "runtime-1"}}
+	authorization := StdioMCPToolAuthorization{
+		RuntimeQualification: StdioMCPRuntimeQualification{CompanyID: "company-1", RuntimeQualificationID: "runtime-1"},
+		GrantRevision:        1,
+		TargetSHA256:         repeatDigest('b'),
+	}
 	record := StdioMCPToolCallRecord{
 		CompanyID: "company-1", SessionID: "session-1", EmployeeID: "employee-1",
 		Status: "dispatching", ProviderCallID: input.ProviderCallID, CapabilityID: input.CapabilityID,
 		ToolName: input.ToolName, ToolSchemaSHA256: input.ToolSchemaSHA256,
 		ArgumentsSHA256: digestCapabilityBytes(arguments), RuntimeQualificationID: "runtime-1",
 	}
-	binding := Binding{scope: Scope{company: "company-1"}, employee: "employee-1", session: "session-1"}
+	binding := Binding{scope: Scope{company: "company-1"}, task: "task-1", employee: "employee-1", session: "session-1", epoch: 1}
+	record.TaskID = binding.task
+	record.EmployeeEpoch = binding.epoch
+	record.GrantRevision = authorization.GrantRevision
+	record.TargetSHA256 = authorization.TargetSHA256
+	record.InputSHA256 = digestCapabilityBytes(arguments)
+	record.DispatchPermitID = stableCapabilityID("mcp-permit", binding.scope.company, binding.session, input.ProviderCallID)
+	record.AttemptID = stableCapabilityID("mcp-attempt", binding.scope.company, binding.session, input.ProviderCallID)
 	if err := validateStdioMCPToolCallStart(record, input, authorization, binding); err != nil {
 		t.Fatalf("valid one-shot dispatch record rejected: %v", err)
 	}
