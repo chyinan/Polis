@@ -174,6 +174,15 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, companyID, jobEventID, input.JobID, jobState, 
 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, companyID, endpointEventID, input.JobID, input.Generation, input.BindAddress, int(input.Port), input.Readiness, input.SourceRevisionSHA256, input.HealthcheckSHA256, input.LeaseExpiresAt, input.ProbedAt); err != nil {
 			return Receipt{}, err
 		}
+		if input.Readiness == environment.ServiceRevoked {
+			if _, err = revokeServiceBorrowerLeasesTX(ctx, tx, companyID, input.JobID, input.Generation, "service endpoint revoked"); err != nil {
+				return Receipt{}, err
+			}
+		} else if exists && input.Generation > previousGeneration {
+			if _, err = revokeServiceBorrowerLeasesTX(ctx, tx, companyID, input.JobID, previousGeneration, "service generation changed"); err != nil {
+				return Receipt{}, err
+			}
+		}
 		return Receipt{ID: endpointEventID, Status: input.Readiness}, nil
 	})
 }

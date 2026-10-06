@@ -12,6 +12,7 @@ import (
 	"polis/internal/core"
 	"polis/internal/runner"
 	"polis/internal/taskvalidation"
+	"strconv"
 )
 
 type ToolResult struct {
@@ -38,6 +39,7 @@ type EmployeeTools struct {
 	EnvironmentStatusSurface           bool
 	EnvironmentEnsureSurface           bool
 	ReadOnlyJobsSurface                bool
+	BorrowerLeaseSurface               bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -149,6 +151,46 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		logs, e := k.ProductTaskJobLogs(ctx, b, args.JobID)
 		return ToolResult{Data: logs}, e
+	case "jobs_borrow":
+		if !t.ProductSurface || !t.BorrowerLeaseSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			JobID      string `json:"job_id"`
+			Generation int    `json:"generation"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		requestID := "job-borrow-" + fingerprint([]string{b.SessionID(), key, args.JobID, strconv.Itoa(args.Generation)})[:48]
+		lease, e := k.TXAcquireServiceBorrowerLease(ctx, b, ServiceBorrowerLeaseAcquireInput{JobID: args.JobID, Generation: args.Generation}, requestID)
+		return ToolResult{Data: lease}, e
+	case "jobs_touch":
+		if !t.ProductSurface || !t.BorrowerLeaseSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			LeaseID string `json:"lease_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		requestID := "job-touch-" + fingerprint([]string{b.SessionID(), key, args.LeaseID})[:48]
+		lease, e := k.TXTouchServiceBorrowerLease(ctx, b, args.LeaseID, requestID)
+		return ToolResult{Data: lease}, e
+	case "jobs_release":
+		if !t.ProductSurface || !t.BorrowerLeaseSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			LeaseID string `json:"lease_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		requestID := "job-release-" + fingerprint([]string{b.SessionID(), key, args.LeaseID})[:48]
+		lease, e := k.TXReleaseServiceBorrowerLease(ctx, b, args.LeaseID, requestID)
+		return ToolResult{Data: lease}, e
 	case "environment_status":
 		if !t.ProductSurface || !t.EnvironmentStatusSurface {
 			return ToolResult{}, core.Denied

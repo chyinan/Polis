@@ -52,3 +52,9 @@ Added owner/CSRF exact-current invalidation/withdrawal revisions with canonical 
 # Latest checkpoint: Slice282 REQ-36 DependencyChange proposal/approval
 
 Added Schema115 append-only DependencyChange proposal and decision intent. The fixed envelope validates exact semver dependencies and base-policy registry hosts; owner approval does not run npm or generate a lockfile/environment revision. Targeted Go tests/build/diff checks pass; no migration/runtime database, npm, Worker, executor, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-282-req36-dependency-change-proposal/verification.md`.
+# Latest checkpoint: Slice283 REQ-37 durable BorrowerLease lifecycle
+
+Added Schema116 append-only BorrowerLease identities/events with same-Mission distinct-Task and exact WorkerSession scope, bounded TTL/idle, release/touch and endpoint/generation revoke paths. No service process, native host, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-283-req37-borrower-leases/verification.md`.
+# Latest checkpoint: Slice284 REQ-37 BorrowerLease product surface and recovery hardening
+
+Added fake-only product surface @17 with `jobs_borrow`, `jobs_touch` and `jobs_release`; lease operations remain same-Mission and exact Task+WorkerSession bound, while service start/stop stays outside the surface. Revoke helpers now close pgx row streams before writes, recovery revokes leases before worker reconciliation, owner/generation validity is checked on touch/release, and endpoint/idle bounds are persisted consistently. Targeted Kernel/provider/control/db tests and `build ./cmd/...` pass; no service process, native host, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-284-req37-borrower-lease-tools/verification.md`.

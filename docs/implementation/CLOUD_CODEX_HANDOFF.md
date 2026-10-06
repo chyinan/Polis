@@ -2,6 +2,14 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 284)
+
+Slice284 wires the Schema116 BorrowerLease lifecycle into fake-only product surface `polis-product-tool-surface@17` with `jobs_borrow`, `jobs_touch` and `jobs_release`. The control path revalidates active owner/borrower session scope and the exact ready, unexpired service generation; recovery, session stop and generation changes append revocation events. This remains control-plane only: no service process, provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-284-req37-borrower-lease-tools/verification.md`.
+
+## Current continuation pointer (Slice 283)
+
+Slice283 adds Schema116 durable BorrowerLease identities/events with exact same-Mission Task/WorkerSession scope, 15-minute TTL, 2-minute idle grace and endpoint/generation revoke paths. It is control-plane lifecycle only; no service process, arbitrary command, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-283-req37-borrower-leases/verification.md`.
+
 ## Current continuation pointer (Slice 282)
 
 Slice282 adds Schema115 source and append-only DependencyChange proposal/decision methods. The fixed envelope validates exact semver dependency versions and existing registry hosts; owner approval records intent only and cannot run npm or generate a new environment revision. No migration/runtime database, npm, Worker, executor, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-282-req36-dependency-change-proposal/verification.md`.

@@ -144,6 +144,24 @@ func (k *Kernel) txResetFakeState(ctx context.Context) error {
 	if e = rows.Err(); e != nil {
 		return e
 	}
+	workerRows, e := tx.Query(ctx, "SELECT company_id,id FROM worker_sessions WHERE state!='stopped' ORDER BY company_id,id")
+	if e != nil {
+		return e
+	}
+	type recoverableWorkerSession struct{ companyID, sessionID string }
+	var workerSessions []recoverableWorkerSession
+	for workerRows.Next() {
+		var session recoverableWorkerSession
+		if e = workerRows.Scan(&session.companyID, &session.sessionID); e != nil {
+			workerRows.Close()
+			return e
+		}
+		workerSessions = append(workerSessions, session)
+	}
+	workerRows.Close()
+	if e = workerRows.Err(); e != nil {
+		return e
+	}
 	_, e = tx.Exec(ctx, "UPDATE employees SET epoch=epoch+1")
 	if e != nil {
 		return e
@@ -151,6 +169,11 @@ func (k *Kernel) txResetFakeState(ctx context.Context) error {
 	_, e = tx.Exec(ctx, "UPDATE worker_sessions SET state='reconcile_required' WHERE state!='stopped'")
 	if e != nil {
 		return e
+	}
+	for _, session := range workerSessions {
+		if _, e = revokeServiceBorrowerLeasesForSessionTX(ctx, tx, session.companyID, session.sessionID, "runtime recovery requires worker reconciliation"); e != nil {
+			return e
+		}
 	}
 	_, e = tx.Exec(ctx, "UPDATE tasks t SET state='ready',generation=generation+1 WHERE state='working' AND NOT EXISTS(SELECT 1 FROM worker_sessions s WHERE s.company_id=t.company_id AND s.task_id=t.id AND s.state!='stopped')")
 	if e != nil {

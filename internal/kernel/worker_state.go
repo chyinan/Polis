@@ -866,6 +866,9 @@ func (k *Kernel) TXBeginStop(ctx context.Context, b Binding) error {
 			return Receipt{}, e
 		}
 		_, e := tx.Exec(ctx, "UPDATE worker_sessions SET state='stopping' WHERE company_id=$1 AND id=$2 AND state NOT IN ('stopped','reconcile_required')", b.scope.company, b.session)
+		if e == nil {
+			_, e = revokeServiceBorrowerLeasesForSessionTX(ctx, tx, b.scope.company, b.session, "worker session stopping")
+		}
 		return Receipt{ID: b.session, Status: "stopping"}, e
 	})
 	return e
@@ -891,6 +894,9 @@ func (k *Kernel) TXFinalizeWorkerBeforeProcess(ctx context.Context, b Binding, r
 		}
 		if tag.RowsAffected() != 1 {
 			return Receipt{}, core.Conflict
+		}
+		if _, e = revokeServiceBorrowerLeasesForSessionTX(ctx, tx, b.scope.company, b.session, "worker session stopped"); e != nil {
+			return Receipt{}, e
 		}
 		return Receipt{ID: b.session, Status: "stopped"}, nil
 	})
@@ -932,6 +938,9 @@ FROM worker_sessions WHERE company_id=$1 AND id=$2`, b.scope.company, b.session)
 		}
 		if tag.RowsAffected() != 1 {
 			return Receipt{}, core.Denied
+		}
+		if _, e = revokeServiceBorrowerLeasesForSessionTX(ctx, tx, b.scope.company, b.session, "worker session stopped"); e != nil {
+			return Receipt{}, e
 		}
 		if _, e = reconcileEmployeeScheduleTX(ctx, tx, b.scope, b.employee); e != nil {
 			return Receipt{}, e

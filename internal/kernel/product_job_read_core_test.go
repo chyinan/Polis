@@ -41,3 +41,18 @@ func TestEmployeeToolsReadOnlyJobsRequiresTheIsolatedProductSurface(t *testing.T
 		}
 	}
 }
+
+func TestEmployeeToolsBorrowerLeaseRequiresTheIsolatedWritableSurface(t *testing.T) {
+	for _, name := range []string{"jobs_borrow", "jobs_touch", "jobs_release"} {
+		_, err := (EmployeeTools{}).call(context.Background(), name, "budget-key", []byte(`{}`))
+		if !errors.Is(err, core.Denied) {
+			t.Fatalf("%s without the isolated borrower lease surface returned %v, want %v", name, err, core.Denied)
+		}
+	}
+	for _, name := range []string{"jobs_borrow", "jobs_touch", "jobs_release"} {
+		_, err := (EmployeeTools{ProductSurface: true, BorrowerLeaseSurface: true, ReadOnly: true}).call(context.Background(), name, "budget-key", []byte(`{}`))
+		if !errors.Is(err, core.Denied) {
+			t.Fatalf("%s on a read-only worker returned %v, want %v", name, err, core.Denied)
+		}
+	}
+}

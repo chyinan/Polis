@@ -112,6 +112,26 @@ func ProductEmployeeToolsWithReadOnlyJobs() []any {
 	return append(tools, jobTools...)
 }
 
+// ProductEmployeeToolsWithBorrowerLeases is a separately versioned, fake-only
+// extension. It exposes only the bounded consumer lease lifecycle; service
+// start/stop and arbitrary process control remain outside the surface.
+func ProductEmployeeToolsWithBorrowerLeases() []any {
+	tools := ProductEmployeeToolsWithReadOnlyJobs()
+	leaseTools := productTools([]peerToolDefinition{
+		{"jobs_borrow", "Borrow one exact ready service generation for your current Task and WorkerSession. Polis enforces same-Mission scope, a distinct owner Task, endpoint expiry and bounded TTL; this records a lease only and does not start a service.", map[string]any{
+			"job_id":     map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"generation": map[string]any{"type": "integer", "minimum": 1},
+		}},
+		{"jobs_touch", "Refresh the bounded idle grace for one exact borrower lease owned by your current Task and WorkerSession. Polis never extends the service endpoint lease.", map[string]any{
+			"lease_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+		{"jobs_release", "Release one exact borrower lease owned by your current Task and WorkerSession. Releasing a lease never stops or mutates the owner service.", map[string]any{
+			"lease_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+	})
+	return append(tools, leaseTools...)
+}
+
 // ProductEmployeeToolsWithDirectMessaging is a separately versioned product
 // surface. The historical @4, Skill @5 and guidance @6 registries stay fixed.
 func ProductEmployeeToolsWithDirectMessaging() []any {

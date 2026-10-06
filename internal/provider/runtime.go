@@ -137,6 +137,7 @@ const ProductCSVInputRangeToolSurfaceQualification = "polis-product-tool-surface
 const ProductEnvironmentStatusToolSurfaceQualification = "polis-product-tool-surface@14"
 const ProductReadOnlyJobsToolSurfaceQualification = "polis-product-tool-surface@15"
 const ProductEnvironmentEnsureToolSurfaceQualification = "polis-product-tool-surface@16"
+const ProductBorrowerLeaseToolSurfaceQualification = "polis-product-tool-surface@17"
 
 const (
 	ProductEnvironmentStatusManifestDigest = "b59ff6acd757764e66c73e1b5e638c3ff1a64a06f44491c919e017f91c48e0af"
@@ -148,6 +149,9 @@ const (
 	ProductEnvironmentEnsureManifestDigest = "79698775c34e1c6ba4f5f664d3729a55a033807606fa6262099bf57d811a4fc7"
 	ProductEnvironmentEnsureSchemaDigest   = "d533c6f3d06e91063c59ba3826bbaede8f292894fa16f4493bb348445979065a"
 	ProductEnvironmentEnsureSchemaBytes    = 2431
+	ProductBorrowerLeaseManifestDigest     = "267d40f1fe9266b6974fc1b41bdb8567ec7e695c3ec37f41e3c070030169f1c8"
+	ProductBorrowerLeaseSchemaDigest       = "b59fdc07f682a504a3bc541a6e837c3a142e7e5b99ea33fc2eb0b1029f8e8738"
+	ProductBorrowerLeaseSchemaBytes        = 2966
 )
 
 const (
@@ -161,6 +165,8 @@ const (
 	OfflineReadOnlyJobsSurfaceSimulationMarker          = "offline-read-only-jobs-tool-surface-unqualified"
 	OfflineEnvironmentEnsureSurfacePurpose              = "offline-environment-ensure-tool-surface"
 	OfflineEnvironmentEnsureSurfaceSimulationMarker     = "offline-environment-ensure-tool-surface-unqualified"
+	OfflineBorrowerLeaseSurfacePurpose                  = "offline-borrower-lease-tool-surface"
+	OfflineBorrowerLeaseSurfaceSimulationMarker         = "offline-borrower-lease-tool-surface-unqualified"
 	ProductMissionChangeAssessmentManifestDigest        = "cd9f4f852cd5674b1e0660868cb5af628a0186a0f137e8e1778e8fd6809c326d"
 	ProductMissionChangeAssessmentSchemaDigest          = "0be7f09a90c96ed73596617207ed1bac7575c6b8fd56cfe086a5880352c6b28a"
 	ProductMissionChangeAssessmentSchemaBytes           = 6740
@@ -187,6 +193,28 @@ func ProductEnvironmentStatusToolSurface() ToolSurface {
 // real-provider contract remains pinned to @4.
 func ProductReadOnlyJobsToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithReadOnlyJobs())
+}
+
+// ProductBorrowerLeaseToolSurface is a fake-only extension. The control-plane
+// lease records are testable offline; starting or keeping a service alive
+// remains a separately qualified executor capability.
+func ProductBorrowerLeaseToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithBorrowerLeases())
+}
+
+func ValidateOfflineFakeBorrowerLeaseSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductBorrowerLeaseToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductBorrowerLeaseToolSurfaceQualification ||
+		profile.Purpose != OfflineBorrowerLeaseSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineBorrowerLeaseSurfaceSimulationMarker ||
+		profile.ProductProviderL2Fingerprint != OfflineBorrowerLeaseSurfaceSimulationMarker || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 12 || expected.ManifestDigest != ProductBorrowerLeaseManifestDigest || expected.AggregateSchemaBytes != ProductBorrowerLeaseSchemaBytes || expected.AggregateSchemaDigest != ProductBorrowerLeaseSchemaDigest ||
+		surface.ToolCount != 12 || observed.ToolCount != 12 || surface.ManifestDigest != ProductBorrowerLeaseManifestDigest || observed.ManifestDigest != ProductBorrowerLeaseManifestDigest ||
+		surface.AggregateSchemaBytes != ProductBorrowerLeaseSchemaBytes || observed.AggregateSchemaBytes != ProductBorrowerLeaseSchemaBytes || surface.AggregateSchemaDigest != ProductBorrowerLeaseSchemaDigest || observed.AggregateSchemaDigest != ProductBorrowerLeaseSchemaDigest {
+		return fmt.Errorf("borrower lease surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
 }
 
 func ValidateOfflineFakeReadOnlyJobsSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

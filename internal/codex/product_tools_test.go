@@ -147,6 +147,53 @@ func TestProductEmployeeReadOnlyJobsSurfaceAddsOnlyBoundedStatusAndLogs(t *testi
 	}
 }
 
+func TestProductEmployeeBorrowerLeaseSurfaceExtendsReadOnlyJobsWithBoundedLeaseCalls(t *testing.T) {
+	readOnly := ProductEmployeeToolsWithReadOnlyJobs()
+	tools := ProductEmployeeToolsWithBorrowerLeases()
+	if len(readOnly) != 9 || len(tools) != 12 {
+		t.Fatalf("read-only-jobs/borrower-lease tool counts=%d/%d, want 9/12", len(readOnly), len(tools))
+	}
+	for index, tool := range readOnly {
+		readOnlyJSON, err := json.Marshal(tool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		currentJSON, err := json.Marshal(tools[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(readOnlyJSON) != string(currentJSON) {
+			t.Fatalf("read-only job tool %d changed while adding the borrower-lease surface", index)
+		}
+	}
+	for index, want := range []string{"polis_jobs_borrow", "polis_jobs_touch", "polis_jobs_release"} {
+		tool, ok := tools[9+index].(map[string]any)
+		if !ok || tool["name"] != want {
+			t.Fatalf("borrower lease tool %d=%v, want %s", index, tools[9+index], want)
+		}
+		schema, ok := tool["inputSchema"].(map[string]any)
+		if !ok || schema["additionalProperties"] != false {
+			t.Fatalf("%s schema is not closed: %v", want, tool["inputSchema"])
+		}
+		properties, ok := schema["properties"].(map[string]any)
+		if !ok {
+			t.Fatalf("%s schema properties missing: %v", want, schema)
+		}
+		if want == "polis_jobs_borrow" && (properties["job_id"] == nil || properties["generation"] == nil) {
+			t.Fatalf("%s must require exact job_id and generation: %v", want, schema)
+		}
+		if want != "polis_jobs_borrow" && properties["lease_id"] == nil {
+			t.Fatalf("%s must require an exact lease_id: %v", want, schema)
+		}
+		definition, _ := json.Marshal(tool)
+		for _, forbidden := range []string{"command", "process", "cookie", "origin"} {
+			if strings.Contains(strings.ToLower(string(definition)), forbidden) {
+				t.Fatalf("%s suggests an out-of-scope capability %q: %s", want, forbidden, definition)
+			}
+		}
+	}
+}
+
 func TestProductEmployeeEnvironmentEnsureSurfaceExtendsEnvironmentStatusOnly(t *testing.T) {
 	status := ProductEmployeeToolsWithEnvironmentStatus()
 	tools := ProductEmployeeToolsWithEnvironmentEnsure()

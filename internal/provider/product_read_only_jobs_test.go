@@ -6,6 +6,37 @@ import (
 	"testing"
 )
 
+func TestProductBorrowerLeaseSurfaceIsFakeOnlyAndBounded(t *testing.T) {
+	runtime := NewFakeRuntime(FakeRuntimeConfig{BorrowerLeaseSurface: true})
+	surface := ProductBorrowerLeaseToolSurface()
+	profile := runtime.ExecutionProfile()
+	if surface.ToolCount != 12 || profile.ToolSurfaceQualification != ProductBorrowerLeaseToolSurfaceQualification {
+		t.Fatalf("borrower lease surface/profile=%+v/%+v, want 12/@17", surface, profile)
+	}
+	if err := runtime.Readiness(context.Background()); err != nil {
+		t.Fatalf("explicit borrower lease Fake Runtime readiness: %v", err)
+	}
+	authorization := validProviderExecutionAuthorization("offline-model", "fake", profile.Purpose, profile.ExecutionEnvelope)
+	authorization.ToolSurfaceDigest = surface.ManifestDigest
+	authorization.ToolSurfaceQualification = profile.ToolSurfaceQualification
+	authorization.ToolCount = surface.ToolCount
+	authorization.AggregateSchemaBytes = surface.AggregateSchemaBytes
+	authorization.AggregateSchemaDigest = surface.AggregateSchemaDigest
+	authorization.ExactSurfaceExecutionFingerprint = profile.ExactSurfaceExecutionFingerprint
+	authorization.ProductProviderL2Fingerprint = profile.ProductProviderL2Fingerprint
+	if err := ValidateRuntimeExecutionAuthorization(authorization); err != nil {
+		t.Fatalf("exact fake borrower lease authorization was rejected: %v", err)
+	}
+	realAuthorization := authorization
+	realAuthorization.ProviderMode = "real"
+	if err := ValidateRuntimeExecutionAuthorization(realAuthorization); err == nil {
+		t.Fatal("real provider accepted fake-only borrower lease surface")
+	}
+	if err := ValidateOfflineFakeBorrowerLeaseSurface("real", profile, surface); err == nil {
+		t.Fatal("borrower lease surface passed the non-fake validator")
+	}
+}
+
 func TestProductReadOnlyJobsSurfaceIsFakeOnlyAndTaskBound(t *testing.T) {
 	runtime := NewFakeRuntime(FakeRuntimeConfig{ReadOnlyJobsSurface: true})
 	surface := ProductReadOnlyJobsToolSurface()
