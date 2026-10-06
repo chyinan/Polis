@@ -1,3 +1,4 @@
+// pattern: Functional Core
 package spec
 
 import (
@@ -59,6 +60,7 @@ type FixedTeamCoverageRoleRevision struct {
 // globally disabled work always requires a human path.
 type FixedTeamCoverageAdmission struct {
 	TaskType                    string   `json:"task_type"`
+	TaskKind                    string   `json:"task_kind"`
 	Owner                       string   `json:"owner"`
 	EligibleIndependentCheckers []string `json:"eligible_independent_checkers"`
 	AcceptancePath              string   `json:"acceptance_path"`
@@ -66,6 +68,26 @@ type FixedTeamCoverageAdmission struct {
 	Covered                     bool     `json:"covered"`
 	OwnerMatches                bool     `json:"owner_matches"`
 	RequiresHuman               bool     `json:"requires_human"`
+}
+
+// FixedTeamCoverageTaskKind is the owner-selected semantic-to-runtime
+// vocabulary bridge. It is descriptive only: execution remains disabled until
+// a separately qualified Role/TaskRevision policy enables an admission path.
+func FixedTeamCoverageTaskKind(taskType string) string {
+	switch taskType {
+	case "planning", "design_change":
+		return "bootstrap_plan"
+	case "frontend":
+		return "peer_frontend"
+	case "backend":
+		return "compat"
+	case "environment_plan", "delivery_assembly":
+		return "compute"
+	case "regression_test_overlay":
+		return "review"
+	default:
+		return ""
+	}
 }
 
 const FixedTeamCoverageOwnerDecision = "installation_owner_confirmed_fixed_team_mapping"
@@ -140,6 +162,7 @@ func (revision FixedTeamCoverageRoleRevision) AdmissionFor(taskType, owner strin
 		if assignment.TaskType != taskType {
 			continue
 		}
+		result.TaskKind = FixedTeamCoverageTaskKind(taskType)
 		result.Owner = assignment.Owner
 		result.EligibleIndependentCheckers = append([]string(nil), assignment.EligibleIndependentCheckers...)
 		result.AcceptancePath = assignment.AcceptancePath

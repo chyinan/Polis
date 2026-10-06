@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 291)
+
+Slice291 adds an explicit descriptive bridge from the fixed team coverage `task_type` vocabulary to persisted TaskKind values. Unknown types remain unmapped and every resolved admission remains `requires_human=true`; no Worker admission or execution capability changed. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-291-req02-semantic-task-kind-bridge/verification.md`.
+
 ## Current continuation pointer (Slice 290)
 
 Slice290 adds Schema120 generic ActionIntent default-deny persistence. Strict ResourceKey/target/input/idempotency validation and exact Task/WorkerSession scope are enforced; requests persist `denied/generic_dispatch_permit_unavailable` and never receive a generic DispatchPermit. No external action, Provider, browser, database runtime or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-290-req14-generic-action-intent-deny-foundation/verification.md`.

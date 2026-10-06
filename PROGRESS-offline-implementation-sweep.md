@@ -76,3 +76,6 @@ Added optional Schema119 `revisionRoutes` read projection with immutable Manifes
 # Latest checkpoint: Slice290 REQ-14 generic ActionIntent deny foundation
 
 Added Schema120 generic ActionIntent append-only records/events with strict ResourceKey/digest/idempotency and exact Task/WorkerSession scope. Generic requests remain explicitly denied and no generic DispatchPermit/external action is issued. Kernel test and `build ./cmd/...` pass; no external action, Provider, browser, database runtime or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-290-req14-generic-action-intent-deny-foundation/verification.md`.
+# Latest checkpoint: Slice291 REQ-02 semantic TaskKind bridge
+
+Added descriptive fixed-team `task_type` to persisted TaskKind mapping. Unknown types remain unmapped and all admission results stay human-gated; no Worker/provider execution was enabled. Spec test and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-291-req02-semantic-task-kind-bridge/verification.md`.

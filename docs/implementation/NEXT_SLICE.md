@@ -1528,3 +1528,8 @@ This Slice282 pointer was superseded by later offline slices through Slice285; D
 Added Schema116 immutable BorrowerLease identities/events with same-Mission distinct-Task and exact WorkerSession binding. Acquire is limited to a ready current service generation; TTL is capped at 15 minutes and idle grace at 2 minutes, bounded by endpoint expiry. Release/touch and endpoint/generation revoke paths append lifecycle events without starting/stopping processes. Targeted Kernel tests and command build pass; no migration/runtime database, service process, Provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-283-req37-borrower-leases/verification.md`.
 
 This Slice283 pointer was superseded by Slice284, which adds the fake-only @17 consumer-facing BorrowerLease projection. Native service/restart qualification remains separate.
+## Latest continuation status (Slice 291, REQ-02 semantic TaskKind bridge)
+
+Added an explicit fixed-team `task_type` to persisted TaskKind bridge. Unknown types remain unmapped and all results stay human-gated; Worker admission, provider execution and role qualification are unchanged. Spec test, `build ./cmd/...` and diff check pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-291-req02-semantic-task-kind-bridge/verification.md`.
+
+Next local slice: audit remaining owner-independent semantic role/task revision gaps; keep executable admission disabled until qualification.
