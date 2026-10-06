@@ -50,14 +50,14 @@ func TestStreamableHTTPMCPWorkerChecksSchemaAndArgumentsBeforeCall(t *testing.T)
 		toolResult: json.RawMessage(`{"content":[{"type":"text","text":"untrusted fixture data"}]}`),
 	}
 	process := newStreamableHTTPMCPProcess(client, digest)
-	result, err := process.CallTool(context.Background(), "lookup", []byte(`{"key":"fixture"}`))
+	result, err := process.CallToolWithPermit(context.Background(), "lookup", []byte(`{"key":"fixture"}`), func(context.Context) error { return nil })
 	if err != nil || result.ContentBoundary != mcptransport.StreamableHTTPResultContentBoundary || result.Content[0].Text != "untrusted fixture data" {
 		t.Fatalf("Streamable HTTP Worker result=%+v error=%v", result, err)
 	}
 	if client.listCalls != 1 || client.callCalls != 1 || client.callName != "lookup" || client.callArgs["key"] != "fixture" || len(client.callSchema) == 0 {
 		t.Fatalf("Streamable HTTP Worker client calls=%d/%d name=%q args=%v schema=%s", client.listCalls, client.callCalls, client.callName, client.callArgs, client.callSchema)
 	}
-	if _, err = process.CallTool(context.Background(), "lookup", []byte(`{"key":7}`)); err == nil || client.callCalls != 1 {
+	if _, err = process.CallToolWithPermit(context.Background(), "lookup", []byte(`{"key":7}`), func(context.Context) error { return nil }); err == nil || client.callCalls != 1 {
 		t.Fatalf("invalid argument reached remote call: calls=%d error=%v", client.callCalls, err)
 	}
 }
@@ -72,7 +72,7 @@ func TestStreamableHTTPMCPWorkerBlocksSchemaDriftBeforeCall(t *testing.T) {
 	}
 	client := &fakeStreamableHTTPMCPClient{toolList: changedToolList}
 	process := newStreamableHTTPMCPProcess(client, approvedDigest)
-	_, err = process.CallTool(context.Background(), "lookup", []byte(`{"key":"fixture"}`))
+	_, err = process.CallToolWithPermit(context.Background(), "lookup", []byte(`{"key":"fixture"}`), func(context.Context) error { return nil })
 	var drift *mcptransport.ToolSchemaDriftError
 	if !errors.As(err, &drift) || client.callCalls != 0 || drift.ObservedDigest == approvedDigest {
 		t.Fatalf("changed remote schema was not blocked before call: err=%v calls=%d drift=%+v", err, client.callCalls, drift)
@@ -92,7 +92,7 @@ func TestStreamableHTTPMCPWorkerRejectsErrorAndMediaResults(t *testing.T) {
 	} {
 		client := &fakeStreamableHTTPMCPClient{toolList: toolList, toolResult: json.RawMessage(rawResult)}
 		process := newStreamableHTTPMCPProcess(client, digest)
-		if _, err = process.CallTool(context.Background(), "lookup", []byte(`{"key":"fixture"}`)); err == nil {
+		if _, err = process.CallToolWithPermit(context.Background(), "lookup", []byte(`{"key":"fixture"}`), func(context.Context) error { return nil }); err == nil {
 			t.Fatalf("unsupported result was accepted: %s", rawResult)
 		}
 	}

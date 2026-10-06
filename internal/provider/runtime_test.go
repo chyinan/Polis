@@ -37,6 +37,12 @@ func TestCodexRuntimeReservationLifecycleClosesWithoutReleasingEligibility(t *te
 		Purpose: ProductReservationBridgeQualificationPurpose, AllowancePath: allowance,
 		MediumLimit: 1, HighLimit: 0, ToolCallLimit: 16,
 	})
+	if err := runtime.captureGeneralCodexAuthIdentity(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err := runtime.captureCodexAccountIdentity(context.Background()); err != nil {
+		t.Fatal(err)
+	}
 	authorization := validProviderExecutionAuthorization("gpt-5.6-luna", "real", ProductReservationBridgeQualificationPurpose, "offline-reservation-bridge@1")
 	reservation, err := runtime.Reserve(context.Background(), authorization)
 	if err != nil {

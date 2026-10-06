@@ -1,3 +1,16 @@
+## Latest continuation status (Slice 297, offline test-contract alignment)
+
+Stale offline fixtures now match the current bounded mission-command input,
+one-shot MCP dispatch-permit lifecycle, Streamable HTTP permit callback and
+Codex identity-readiness prerequisite. The full Go package suite, command build
+and diff check pass. No production behavior, database runtime, Worker/provider,
+browser, external account, MCP endpoint or frozen scenario ran. Process-level
+MCP tests use an explicit fake permit callback and do not qualify a real
+endpoint. Remaining work is gated by
+executable Role/TaskRevision/provider qualification, action-specific generic
+policy, native executor/browser/research implementation and runtime or
+external qualification. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-297-offline-test-contracts/verification.md`.
+
 ## Latest continuation status (Slice 276, REQ-40 delivery completion UI/API)
 
 The real Workbench now exposes the owner-authenticated delivery completion command for assembling Artifacts. It collects bounded evidence, validates a ready/system receipt and refreshes the durable delivery read model; it does not imply user acceptance or execution. Targeted frontend tests, direct TypeScript/Vite builds and diff checks pass. No database runtime, Worker/provider, browser or frozen scenario ran. REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-276-req40-delivery-completion-ui/verification.md`.

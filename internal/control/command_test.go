@@ -22,7 +22,7 @@ func TestMissionCommandValidationRejectsMissingHumanInputs(t *testing.T) {
 }
 
 func TestMissionCommandValidationAcceptsBoundedInputs(t *testing.T) {
-	request := CreateMissionRequest{Title: "title", Goal: "goal", RequestID: "request-1"}
+	request := CreateMissionRequest{Title: "title", Goal: "goal", ProtocolToolCallLimit: 8, RequestID: "request-1"}
 	if err := validateCreateMissionRequest(request); err != nil {
 		t.Fatalf("valid request returned %v", err)
 	}

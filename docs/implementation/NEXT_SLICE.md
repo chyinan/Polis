@@ -1,3 +1,18 @@
+## Latest continuation status (Slice 297, offline test-contract alignment)
+
+Stale offline fixtures now match the current bounded mission-command input,
+one-shot MCP dispatch-permit issue/consume lifecycle, Streamable HTTP permit
+callback, and Codex identity-readiness prerequisite. The full Go package suite,
+command build and diff check pass. No production behavior, database runtime,
+Worker/provider, browser, external account, MCP endpoint or frozen scenario ran.
+Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-297-offline-test-contracts/verification.md`.
+
+The full offline Go test suite has no production-contract failure. Process-level
+MCP tests still use an explicit fake permit callback and do not qualify a real
+endpoint. Continue only with separately gated executable Role/TaskRevision
+semantics, action-specific generic policy, native executor/browser/research
+implementation and runtime or external qualification.
+
 ## Latest continuation status (Slice 290, REQ-14 generic ActionIntent deny foundation)
 
 Added Schema120 generic ActionIntent append-only records/events with strict ResourceKey/digest/idempotency and exact Task/WorkerSession scope. The only current outcome is explicit `denied/generic_dispatch_permit_unavailable`; no generic permit or external action is issued. Kernel test and `build ./cmd/...` pass; no external action, Provider, browser, database runtime or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-290-req14-generic-action-intent-deny-foundation/verification.md`.

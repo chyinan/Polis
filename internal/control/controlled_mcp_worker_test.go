@@ -3,10 +3,15 @@ package control
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
+	"strings"
 	"testing"
+	"unsafe"
 
 	"polis/internal/kernel"
 	"polis/internal/mcpowner"
@@ -14,17 +19,19 @@ import (
 )
 
 type controlledMCPKernelFixture struct {
-	order       *[]string
-	intent      kernel.StdioMCPToolCallRecord
-	authority   kernel.StdioMCPToolAuthorization
-	beginErr    error
-	resultErr   error
-	unknownErr  error
-	driftDigest string
-	lockErr     error
-	lockHeld    bool
-	lockRelease func()
-	lockMissing []string
+	order        *[]string
+	intent       kernel.StdioMCPToolCallRecord
+	authority    kernel.StdioMCPToolAuthorization
+	beginErr     error
+	issuedPermit kernel.StdioMCPToolDispatchPermit
+	permitIssued bool
+	resultErr    error
+	unknownErr   error
+	driftDigest  string
+	lockErr      error
+	lockHeld     bool
+	lockRelease  func()
+	lockMissing  []string
 }
 
 func (fixture *controlledMCPKernelFixture) LockStdioMCPPackageServer(ctx context.Context, _, _ string) (context.Context, func(), error) {
@@ -40,19 +47,127 @@ func (fixture *controlledMCPKernelFixture) LockStdioMCPPackageServer(ctx context
 	}, nil
 }
 
-func (fixture *controlledMCPKernelFixture) TXBeginStdioMCPToolCall(_ context.Context, _ kernel.Binding, _ kernel.StdioMCPToolCallIntentInput) (kernel.StdioMCPToolCallRecord, error) {
+func fixtureMCPStableID(prefix string, values ...string) string {
+	digest := sha256.Sum256([]byte(strings.Join(values, "\x00")))
+	return fmt.Sprintf("%s-%s", prefix, hex.EncodeToString(digest[:])[:32])
+}
+
+func fixtureMCPArgumentsDigest(arguments []byte) string {
+	digest := sha256.Sum256(arguments)
+	return hex.EncodeToString(digest[:])
+}
+
+func normalizeControlledMCPAuthorization(authorization *kernel.StdioMCPToolAuthorization) {
+	authorization.RuntimeQualification.CompanyID = "company-1"
+	if authorization.GrantRevision == 0 {
+		authorization.GrantRevision = 1
+	}
+	if authorization.TargetSHA256 == "" {
+		authorization.TargetSHA256 = strings.Repeat("b", 64)
+	}
+}
+
+func setKernelPrivateString(field reflect.Value, value string) {
+	reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().SetString(value)
+}
+
+func setKernelPrivateInt64(field reflect.Value, value int64) {
+	reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().SetInt(value)
+}
+
+func fixtureBinding() kernel.Binding {
+	var binding kernel.Binding
+	value := reflect.ValueOf(&binding).Elem()
+	setKernelPrivateString(value.FieldByName("task"), "task-1")
+	setKernelPrivateString(value.FieldByName("employee"), "emp-backend")
+	setKernelPrivateString(value.FieldByName("session"), "session-1")
+	setKernelPrivateInt64(value.FieldByName("epoch"), 1)
+	setKernelPrivateString(value.FieldByName("scope").FieldByName("company"), "company-1")
+	return binding
+}
+
+func (fixture *controlledMCPKernelFixture) TXBeginStdioMCPToolCall(_ context.Context, binding kernel.Binding, input kernel.StdioMCPToolCallIntentInput) (kernel.StdioMCPToolDispatchPermit, error) {
 	if !fixture.lockHeld {
 		fixture.lockMissing = append(fixture.lockMissing, "intent")
 	}
 	*fixture.order = append(*fixture.order, "intent")
-	return fixture.intent, fixture.beginErr
+	normalizeControlledMCPAuthorization(&fixture.authority)
+	if fixture.beginErr != nil {
+		fixture.permitIssued = false
+		return kernel.StdioMCPToolDispatchPermit{}, fixture.beginErr
+	}
+	permit := kernel.StdioMCPToolDispatchPermit{
+		CompanyID:                 bindingCompanyID(binding),
+		PermitID:                  fixtureMCPStableID("mcp-permit", bindingCompanyID(binding), bindingSessionID(binding), input.ProviderCallID),
+		ActionID:                  fixtureMCPStableID("mcp-call", bindingCompanyID(binding), bindingSessionID(binding), input.ProviderCallID),
+		AttemptID:                 fixtureMCPStableID("mcp-attempt", bindingCompanyID(binding), bindingSessionID(binding), input.ProviderCallID),
+		SessionID:                 bindingSessionID(binding),
+		EmployeeID:                bindingEmployeeID(binding),
+		TaskID:                    bindingTaskID(binding),
+		EmployeeEpoch:             bindingEpoch(binding),
+		GrantRevision:             fixture.authority.GrantRevision,
+		CapabilityID:              input.CapabilityID,
+		CapabilityVersion:         fixture.authority.RuntimeQualification.VersionDigest,
+		CapabilityQualificationID: fixture.authority.RuntimeQualification.CapabilityQualificationID,
+		RuntimeQualificationID:    fixture.authority.RuntimeQualification.RuntimeQualificationID,
+		Transport:                 fixture.authority.Transport,
+		ProviderCallID:            input.ProviderCallID,
+		ToolName:                  input.ToolName,
+		ToolSchemaSHA256:          input.ToolSchemaSHA256,
+		TargetSHA256:              fixture.authority.TargetSHA256,
+		InputSHA256:               fixtureMCPArgumentsDigest(input.Arguments),
+		Status:                    "issued",
+	}
+	fixture.issuedPermit = permit
+	fixture.permitIssued = true
+	return permit, nil
 }
+
+func (fixture *controlledMCPKernelFixture) TXConsumeStdioMCPToolCallPermit(_ context.Context, binding kernel.Binding, input kernel.StdioMCPToolDispatchPermitConsumption) (kernel.StdioMCPToolCallRecord, error) {
+	if !fixture.permitIssued || input.PermitID != fixture.issuedPermit.PermitID {
+		return kernel.StdioMCPToolCallRecord{}, errors.New("fixture consumed a permit other than the issued permit")
+	}
+	permit := fixture.issuedPermit
+	fixture.permitIssued = false
+	call := input.Call
+	if permit.ProviderCallID != call.ProviderCallID || permit.CapabilityID != call.CapabilityID || permit.ToolName != call.ToolName || permit.ToolSchemaSHA256 != call.ToolSchemaSHA256 || permit.InputSHA256 != fixtureMCPArgumentsDigest(call.Arguments) {
+		return kernel.StdioMCPToolCallRecord{}, errors.New("fixture permit does not match the consumed call")
+	}
+	return kernel.StdioMCPToolCallRecord{
+		CompanyID:              permit.CompanyID,
+		IntentID:               permit.ActionID,
+		SessionID:              permit.SessionID,
+		EmployeeID:             permit.EmployeeID,
+		CapabilityID:           permit.CapabilityID,
+		RuntimeQualificationID: permit.RuntimeQualificationID,
+		DispatchPermitID:       permit.PermitID,
+		AttemptID:              permit.AttemptID,
+		TaskID:                 permit.TaskID,
+		WorkerGeneration:       permit.WorkerGeneration,
+		EmployeeEpoch:          permit.EmployeeEpoch,
+		GrantRevision:          permit.GrantRevision,
+		TargetSHA256:           permit.TargetSHA256,
+		InputSHA256:            permit.InputSHA256,
+		ProviderCallID:         permit.ProviderCallID,
+		ToolName:               permit.ToolName,
+		ToolSchemaSHA256:       permit.ToolSchemaSHA256,
+		ArgumentsSHA256:        permit.InputSHA256,
+		Status:                 "dispatching",
+	}, nil
+}
+
+func bindingCompanyID(kernel.Binding) string  { return "company-1" }
+func bindingSessionID(kernel.Binding) string  { return "session-1" }
+func bindingEmployeeID(kernel.Binding) string { return "emp-backend" }
+func bindingTaskID(kernel.Binding) string     { return "task-1" }
+func bindingEpoch(kernel.Binding) int64       { return 1 }
 
 func (fixture *controlledMCPKernelFixture) AuthorizeStdioMCPToolCall(_ context.Context, _ kernel.Binding, _, _, _ string) (kernel.StdioMCPToolAuthorization, error) {
 	if !fixture.lockHeld {
 		fixture.lockMissing = append(fixture.lockMissing, "authorize")
 	}
 	*fixture.order = append(*fixture.order, "authorize")
+	normalizeControlledMCPAuthorization(&fixture.authority)
 	return fixture.authority, nil
 }
 
@@ -94,6 +209,15 @@ func (process *controlledMCPProcessFixture) CallTool(_ context.Context, _ string
 	*process.order = append(*process.order, "call")
 	process.callCount++
 	return process.result, process.callErr
+}
+func (process *controlledMCPProcessFixture) CallToolWithPermit(ctx context.Context, name string, arguments []byte, consume func(context.Context) error) (mcptransport.StdioToolResult, error) {
+	if consume == nil {
+		return mcptransport.StdioToolResult{}, errors.New("MCP dispatch permit is required")
+	}
+	if err := consume(ctx); err != nil {
+		return mcptransport.StdioToolResult{}, err
+	}
+	return process.CallTool(ctx, name, arguments)
 }
 func (process *controlledMCPProcessFixture) ToolSchemaSHA256() string { return process.digest }
 func (process *controlledMCPProcessFixture) Stop(context.Context) error {
@@ -188,7 +312,7 @@ func (observer *orderedMCPObserverFixture) Close() error {
 }
 
 func controlledMCPAuthorization(runtimeID, capabilityID, schema, commandDigest, packageDigest string) kernel.StdioMCPToolAuthorization {
-	return kernel.StdioMCPToolAuthorization{
+	authorization := kernel.StdioMCPToolAuthorization{
 		RuntimeQualification: kernel.StdioMCPRuntimeQualification{
 			CompanyID: "company-1", RuntimeQualificationID: runtimeID, CapabilityID: capabilityID,
 			ToolSchemaSHA256: schema, CommandSHA256: commandDigest, PackageManifestSHA256: packageDigest,
@@ -199,6 +323,8 @@ func controlledMCPAuthorization(runtimeID, capabilityID, schema, commandDigest, 
 		},
 		Tools: []mcptransport.StdioToolDefinition{{Name: "lookup"}},
 	}
+	normalizeControlledMCPAuthorization(&authorization)
+	return authorization
 }
 
 func TestControlledMCPWorkerCallAuthorizesCallsAndCompletesInOrder(t *testing.T) {
@@ -217,11 +343,11 @@ func TestControlledMCPWorkerCallAuthorizesCallsAndCompletesInOrder(t *testing.T)
 	process := &controlledMCPProcessFixture{order: &order, digest: schema, result: result}
 	factory := &controlledMCPFactoryFixture{order: &order, process: process}
 	state := &stdioMCPWorkerState{}
-	binding := kernel.Binding{}
+	binding := fixtureBinding()
 	arguments := json.RawMessage(`{"key":"sample"}`)
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
 	response, err := state.call(context.Background(), kernelFixture, factory, "company-1", binding, "provider-call-1", request)
-	if err != nil || string(response) == "" || !reflect.DeepEqual(order, []string{"authorize", "intent", "owner_start", "call", "complete"}) {
+	if err != nil || string(response) == "" || !reflect.DeepEqual(order, []string{"authorize", "owner_start", "intent", "call", "complete"}) {
 		t.Fatalf("controlled MCP dispatch order=%v response=%s err=%v", order, response, err)
 	}
 	var decoded mcptransport.StdioToolResult
@@ -247,7 +373,7 @@ func TestControlledMCPWorkerHoldsPackageFenceThroughToolCompletion(t *testing.T)
 	factory := &controlledMCPFactoryFixture{order: &order, process: process, lockHeld: func() bool { return kernelFixture.lockHeld }}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "provider-call-fenced", request); err != nil {
+	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "provider-call-fenced", request); err != nil {
 		t.Fatal(err)
 	}
 	if len(kernelFixture.lockMissing) != 0 || factory.lockMiss || process.lockMiss || kernelFixture.lockHeld {
@@ -266,7 +392,7 @@ func TestControlledMCPWorkerDoesNotReserveIntentWhenPackageImportOwnsFence(t *te
 	kernelFixture := &controlledMCPKernelFixture{order: &order, lockErr: lockErr}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, &controlledMCPFactoryFixture{order: &order}, "company-1", kernel.Binding{}, "provider-call-lock-conflict", request); !errors.Is(err, lockErr) {
+	if _, err := state.call(context.Background(), kernelFixture, &controlledMCPFactoryFixture{order: &order}, "company-1", fixtureBinding(), "provider-call-lock-conflict", request); !errors.Is(err, lockErr) {
 		t.Fatalf("MCP call while package import owns lock error=%v, want %v", err, lockErr)
 	}
 	if len(order) != 0 || state.pending || state.blocked {
@@ -291,12 +417,12 @@ func TestControlledMCPWorkerDispatchesStreamableHTTPThroughQualifiedEndpoint(t *
 	factory := &controlledMCPFactoryFixture{order: &order, process: process}
 	state := &stdioMCPWorkerState{allowStreamableHTTP: true}
 	request := json.RawMessage(`{"capability_id":"mcp-http-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	response, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "http-provider-call", request)
+	response, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "http-provider-call", request)
 	if err != nil || len(response) == 0 {
 		t.Fatalf("Streamable HTTP MCP Worker call response=%s error=%v", response, err)
 	}
 	if factory.remoteURL != "https://mcp.example.com/v1/mcp" || factory.remoteHash != schema || factory.lockMiss ||
-		!reflect.DeepEqual(order, []string{"authorize", "intent", "http_start", "call", "complete"}) {
+		!reflect.DeepEqual(order, []string{"authorize", "http_start", "intent", "call", "complete"}) {
 		t.Fatalf("Streamable HTTP Worker dispatch used unexpected endpoint/order: endpoint=%q schema=%q lockMiss=%t order=%v", factory.remoteURL, factory.remoteHash, factory.lockMiss, order)
 	}
 	state.quiesce()
@@ -318,7 +444,7 @@ func TestControlledMCPWorkerDoesNotReserveIntentWhenHTTPGateIsDisabled(t *testin
 	}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-http-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, &controlledMCPFactoryFixture{order: &order}, "company-1", kernel.Binding{}, "http-disabled-call", request); err == nil {
+	if _, err := state.call(context.Background(), kernelFixture, &controlledMCPFactoryFixture{order: &order}, "company-1", fixtureBinding(), "http-disabled-call", request); err == nil {
 		t.Fatal("Streamable HTTP Worker egress gate was ignored")
 	}
 	if !reflect.DeepEqual(order, []string{"authorize"}) || state.pending || state.blocked {
@@ -383,17 +509,17 @@ func TestControlledMCPWorkerQuiesceStopsOwnerBeforeUnknownSweep(t *testing.T) {
 	}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "provider-call-1", request); err == nil || !state.pending {
+	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "provider-call-1", request); err == nil || !state.pending {
 		t.Fatalf("ambiguous MCP call result err=%v pending=%t", err, state.pending)
 	}
 	state.quiesce()
-	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "provider-call-2", request); err == nil {
+	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "provider-call-2", request); err == nil {
 		t.Fatal("quiesced session admitted another MCP call")
 	}
 	if err := state.stopAfterWorkerStop(context.Background(), kernelFixture, "company-1", "session-1"); err != nil {
 		t.Fatalf("owner stop and unknown reconciliation: %v", err)
 	}
-	if !reflect.DeepEqual(order, []string{"authorize", "intent", "owner_start", "call", "owner_stop", "unknown"}) {
+	if !reflect.DeepEqual(order, []string{"authorize", "owner_start", "intent", "call", "owner_stop", "unknown"}) {
 		t.Fatalf("MCP cleanup order=%v", order)
 	}
 }
@@ -411,7 +537,7 @@ func TestControlledMCPWorkerSchemaDriftRevokesRuntimeBeforeCleanup(t *testing.T)
 	}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "provider-call-1", request); err == nil {
+	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "provider-call-1", request); err == nil {
 		t.Fatal("schema-drifted MCP call was accepted")
 	}
 	if kernelFixture.driftDigest != observed || !state.blocked || !state.pending {
@@ -421,7 +547,7 @@ func TestControlledMCPWorkerSchemaDriftRevokesRuntimeBeforeCleanup(t *testing.T)
 	if err := state.stopAfterWorkerStop(context.Background(), kernelFixture, "company-1", "session-1"); err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(order, []string{"authorize", "intent", "owner_start", "call", "schema_drift", "owner_stop", "unknown"}) {
+	if !reflect.DeepEqual(order, []string{"authorize", "owner_start", "intent", "call", "schema_drift", "owner_stop", "unknown"}) {
 		t.Fatalf("schema drift cleanup order=%v", order)
 	}
 }
@@ -430,23 +556,25 @@ func TestControlledMCPWorkerKeepsCommittedIntentUnknownWhenBeginReadFails(t *tes
 	const digest = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 	order := []string{}
 	kernelFixture := &controlledMCPKernelFixture{
-		order:    &order,
-		intent:   kernel.StdioMCPToolCallRecord{IntentID: "intent-ambiguous", Status: "dispatching", CapabilityID: "mcp-1", RuntimeQualificationID: "runtime-1", ToolName: "lookup", ToolSchemaSHA256: digest},
-		beginErr: errors.New("post-commit intent read failed"),
+		order:     &order,
+		intent:    kernel.StdioMCPToolCallRecord{IntentID: "intent-ambiguous", Status: "dispatching", CapabilityID: "mcp-1", RuntimeQualificationID: "runtime-1", ToolName: "lookup", ToolSchemaSHA256: digest},
+		authority: controlledMCPAuthorization("runtime-1", "mcp-1", digest, "command-1", "package-1"),
+		beginErr:  errors.New("post-commit intent read failed"),
 	}
+	process := &controlledMCPProcessFixture{order: &order, digest: digest}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, &controlledMCPFactoryFixture{order: &order}, "company-1", kernel.Binding{}, "provider-call-1", request); err == nil {
+	if _, err := state.call(context.Background(), kernelFixture, &controlledMCPFactoryFixture{order: &order, process: process}, "company-1", fixtureBinding(), "provider-call-1", request); err == nil {
 		t.Fatal("ambiguous intent reservation failure was accepted")
 	}
 	if !state.pending || !state.blocked {
-		t.Fatalf("ambiguous intent reservation must block and remain pending: pending=%t blocked=%t", state.pending, state.blocked)
+		t.Fatalf("ambiguous intent reservation must block and remain pending: pending=%t blocked=%t order=%v", state.pending, state.blocked, order)
 	}
 	state.quiesce()
 	if err := state.stopAfterWorkerStop(context.Background(), kernelFixture, "company-1", "session-1"); err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(order, []string{"authorize", "intent", "unknown"}) {
+	if !reflect.DeepEqual(order, []string{"authorize", "owner_start", "intent", "owner_stop", "unknown"}) {
 		t.Fatalf("ambiguous reservation reconciliation order=%v", order)
 	}
 }
@@ -464,16 +592,16 @@ func TestControlledMCPWorkerDoesNotReuseOwnerAcrossRuntimeQualificationChanges(t
 	factory := &controlledMCPFactoryFixture{order: &order, process: process}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "provider-call-1", request); err != nil {
+	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "provider-call-1", request); err != nil {
 		t.Fatal(err)
 	}
 	kernelFixture.intent.IntentID = "intent-2"
 	kernelFixture.intent.RuntimeQualificationID = "runtime-2"
 	kernelFixture.authority = controlledMCPAuthorization("runtime-2", "mcp-1", digest, "command-2", "package-2")
-	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "provider-call-2", request); err == nil {
+	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "provider-call-2", request); err == nil {
 		t.Fatal("WorkerSession reused an owner after runtime qualification and pinned package changed")
 	}
-	if process.callCount != 1 || !state.blocked || !state.pending {
+	if process.callCount != 1 || !state.blocked || state.pending {
 		t.Fatalf("stale owner was reused or current intent not fenced: calls=%d blocked=%t pending=%t", process.callCount, state.blocked, state.pending)
 	}
 }
@@ -492,17 +620,17 @@ func TestControlledMCPWorkerAuditsStartupSchemaDrift(t *testing.T) {
 	factory := &controlledMCPFactoryFixture{order: &order, startErr: &mcptransport.ToolSchemaDriftError{ObservedDigest: observed}}
 	state := &stdioMCPWorkerState{}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", kernel.Binding{}, "provider-call-1", request); err == nil {
+	if _, err := state.call(context.Background(), kernelFixture, factory, "company-1", fixtureBinding(), "provider-call-1", request); err == nil {
 		t.Fatal("startup schema drift was accepted")
 	}
-	if kernelFixture.driftDigest != observed || !state.blocked || !state.pending {
-		t.Fatalf("startup schema drift was not audited and fenced: digest=%q blocked=%t pending=%t", kernelFixture.driftDigest, state.blocked, state.pending)
+	if kernelFixture.driftDigest != observed || !state.blocked || state.pending {
+		t.Fatalf("startup schema drift was not audited and fenced: digest=%q blocked=%t pending=%t order=%v", kernelFixture.driftDigest, state.blocked, state.pending, order)
 	}
 	state.quiesce()
 	if err := state.stopAfterWorkerStop(context.Background(), kernelFixture, "company-1", "session-1"); err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(order, []string{"authorize", "intent", "owner_start", "schema_drift", "unknown"}) {
+	if !reflect.DeepEqual(order, []string{"authorize", "owner_start", "schema_drift"}) {
 		t.Fatalf("startup drift cleanup order=%v", order)
 	}
 }
@@ -528,10 +656,10 @@ func TestControlledMCPWorkerOwnerLeaseRejectsConcurrentSessionBeforeIntent(t *te
 	firstState := &stdioMCPWorkerState{ownerLease: lease}
 	secondState := &stdioMCPWorkerState{ownerLease: lease}
 	request := json.RawMessage(`{"capability_id":"mcp-1","tool_name":"lookup","tool_schema_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","arguments":{"key":"sample"}}`)
-	if _, err := firstState.call(context.Background(), firstKernel, &controlledMCPFactoryFixture{order: &firstOrder, process: firstProcess}, "company-1", kernel.Binding{}, "provider-first", request); err != nil {
+	if _, err := firstState.call(context.Background(), firstKernel, &controlledMCPFactoryFixture{order: &firstOrder, process: firstProcess}, "company-1", fixtureBinding(), "provider-first", request); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := secondState.call(context.Background(), secondKernel, &controlledMCPFactoryFixture{order: &secondOrder, process: secondProcess}, "company-1", kernel.Binding{}, "provider-second", request); !errors.Is(err, errStdioMCPProcessOwnerBusy) {
+	if _, err := secondState.call(context.Background(), secondKernel, &controlledMCPFactoryFixture{order: &secondOrder, process: secondProcess}, "company-1", fixtureBinding(), "provider-second", request); !errors.Is(err, errStdioMCPProcessOwnerBusy) {
 		t.Fatalf("concurrent MCP owner call error=%v, want busy error", err)
 	}
 	if !reflect.DeepEqual(secondOrder, []string{"authorize"}) || secondState.pending || secondState.blocked {
@@ -543,7 +671,7 @@ func TestControlledMCPWorkerOwnerLeaseRejectsConcurrentSessionBeforeIntent(t *te
 	if err := firstState.stopAfterWorkerStop(context.Background(), firstKernel, "company-1", "session-first"); !errors.Is(err, stopErr) {
 		t.Fatalf("unconfirmed owner stop error=%v", err)
 	}
-	if _, err := secondState.call(context.Background(), secondKernel, &controlledMCPFactoryFixture{order: &secondOrder, process: secondProcess}, "company-1", kernel.Binding{}, "provider-second", request); !errors.Is(err, errStdioMCPProcessOwnerBusy) {
+	if _, err := secondState.call(context.Background(), secondKernel, &controlledMCPFactoryFixture{order: &secondOrder, process: secondProcess}, "company-1", fixtureBinding(), "provider-second", request); !errors.Is(err, errStdioMCPProcessOwnerBusy) {
 		t.Fatalf("owner lease released before stop confirmation: %v", err)
 	}
 	if !reflect.DeepEqual(secondOrder, []string{"authorize", "authorize"}) {
@@ -553,7 +681,7 @@ func TestControlledMCPWorkerOwnerLeaseRejectsConcurrentSessionBeforeIntent(t *te
 	if err := firstState.stopAfterWorkerStop(context.Background(), firstKernel, "company-1", "session-first"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := secondState.call(context.Background(), secondKernel, &controlledMCPFactoryFixture{order: &secondOrder, process: secondProcess}, "company-1", kernel.Binding{}, "provider-second", request); err != nil {
+	if _, err := secondState.call(context.Background(), secondKernel, &controlledMCPFactoryFixture{order: &secondOrder, process: secondProcess}, "company-1", fixtureBinding(), "provider-second", request); err != nil {
 		t.Fatalf("MCP owner lease was not released after confirmed stop: %v", err)
 	}
 	secondState.quiesce()

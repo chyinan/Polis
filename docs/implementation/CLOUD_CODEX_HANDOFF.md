@@ -1,6 +1,23 @@
 # Polis cloud Codex handoff
 
-Updated: 2026-10-06
+Updated: 2026-10-07
+
+## Current continuation pointer (Slice 297)
+
+Aligned stale offline test fixtures with the current CreateMission, one-shot
+MCP dispatch-permit, Streamable HTTP permit-callback, and Codex identity
+readiness contracts. Production behavior and qualification gates are
+unchanged. The full Go package suite and command build pass; no database
+runtime, Worker/provider, browser, external account, MCP endpoint or frozen
+scenario ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-297-offline-test-contracts/verification.md`.
+
+The full offline Go test suite is clean; process-level MCP tests use an
+explicit fake permit callback and do not qualify a real endpoint. Remaining work is gated by executable
+Role/TaskRevision/provider qualification, action-specific generic action
+policy, native executor/service recovery, isolated BrowserRun/research
+execution and evidence binding, migration/runtime qualification, and external
+account/provider/scenario evidence.
 
 ## Current continuation pointer (Slice 296)
 
