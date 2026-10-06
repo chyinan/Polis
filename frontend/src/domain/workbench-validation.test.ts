@@ -107,6 +107,7 @@ describe('formal mission change requests', () => {
     proposedTitle: 'API revision', proposedGoal: 'Return an empty list when no records exist.',
     proposedAcceptanceContract: {revision: 'text-acceptance@1', required_text: ['Task summary:', 'Empty results:']},
     blockPreviousResults: true, state: 'queued', impactRevision: 1, impactSha256: 'b'.repeat(64),
+    planningAssessment: null,
     impact: {
       schemaVersion: 'polis-mission-change-impact@1', missionId: 'mission-1', baseRequirementsSha256: 'a'.repeat(64),
       inputRevisions: [{inputId: 'input-1', revision: 2, contentDigest: 'c'.repeat(64), state: 'usable'}],
@@ -766,6 +767,20 @@ describe('Workbench view validation', () => {
       ...employee, schedule: {state: 'executing', workGeneration: '3', checkedGeneration: '1', nextDueAt: null, pauseReason: ''},
     }), companyId);
 
+    expect(valid.success, JSON.stringify(valid)).toBe(true);
+    expect(invalid.success).toBe(false);
+  });
+
+  it('accepts only a SHA-256 Employee RoleRevision digest', () => {
+    const employee = {
+      employeeId: 'emp-planning', displayName: 'Planning', role: 'planning', roleRevision: 'a'.repeat(64), epoch: '1',
+      sessionId: null, sessionState: null, profile: null, currentTask: null,
+      status: {primary: 'sleeping', tone: 'neutral', reason: 'No pending work.', activeModelRequests: '不可得', inFlightTools: '不可得', observedAt: meta.observedAt},
+      schedule: null, toolBudget: {limit: null, used: null, remaining: null, quality: 'unavailable'},
+      qualification: {status: 'unverified', evidenceId: null, policyRevision: null}, openObligationCount: '0',
+    };
+    const valid = validateCompanyOverview(companyOverviewWithEmployee(employee), companyId);
+    const invalid = validateCompanyOverview(companyOverviewWithEmployee({...employee, roleRevision: 'not-a-digest'}), companyId);
     expect(valid.success, JSON.stringify(valid)).toBe(true);
     expect(invalid.success).toBe(false);
   });

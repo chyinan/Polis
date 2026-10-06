@@ -85,3 +85,6 @@ Added Schema121 immutable per-employee RoleRevision rows written with fixed-team
 # Latest checkpoint: Slice293 REQ-02 RoleRevision projection
 
 Added optional Schema121 `EmployeeSummary.roleRevision` projection with deterministic latest-revision selection and old-Schema null compatibility. Workbench test and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-293-req02-role-revision-projection/verification.md`.
+# Latest checkpoint: Slice294 RoleRevision frontend boundary
+
+Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

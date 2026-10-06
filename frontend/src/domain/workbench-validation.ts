@@ -840,7 +840,7 @@ function isEmployeeSummary(value: unknown): value is EmployeeSummary {
   return hasString(value, 'employeeId')
     && hasString(value, 'displayName')
     && hasString(value, 'role')
-    && isNullableString(value.roleRevision)
+    && (value.roleRevision === null || (typeof value.roleRevision === 'string' && /^[0-9a-f]{64}$/.test(value.roleRevision)))
     && hasString(value, 'epoch')
     && isNullableString(value.sessionId)
     && isNullableString(value.sessionState)

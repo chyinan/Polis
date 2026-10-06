@@ -1543,3 +1543,8 @@ Next local slice: audit remaining semantic role/task revision read projections; 
 Added optional Schema121 `EmployeeSummary.roleRevision` read projection with deterministic latest-revision selection and old-Schema null compatibility. Workbench Go test, `build ./cmd/...` and diff check pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-293-req02-role-revision-projection/verification.md`.
 
 Next local slice: audit remaining owner-independent RoleRevision/TaskRevision read and validation gaps; keep executable admission disabled.
+## Latest continuation status (Slice 294, RoleRevision frontend boundary)
+
+Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.
+
+Next local slice: continue remaining owner-independent read/validation gaps; keep executable role admission and generic external action permits disabled.

@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 294)
+
+Slice294 tightens frontend EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrects a stale MissionChangeRequest fixture. Full validation tests (50/50), TypeScript and Vite builds pass; no backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.
+
 ## Current continuation pointer (Slice 293)
 
 Slice293 adds optional Schema121 `EmployeeSummary.roleRevision` projection, selecting the latest Company/Employee revision and returning null on older schemas. It is read-only and does not affect admission or execution. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-293-req02-role-revision-projection/verification.md`.
