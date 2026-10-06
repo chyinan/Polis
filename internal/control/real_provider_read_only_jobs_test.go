@@ -18,3 +18,14 @@ func TestReadOnlyJobsFakeSurfacePassesAdapterReadinessWithoutRealProvider(t *tes
 		t.Fatalf("fake read-only jobs adapter readiness: %v", err)
 	}
 }
+
+func TestEnvironmentEnsureFakeSurfacePassesAdapterReadinessWithoutRealProvider(t *testing.T) {
+	runtime := provider.NewFakeRuntime(provider.FakeRuntimeConfig{EnvironmentEnsureSurface: true})
+	adapter, err := NewRealProviderWorkerLaunchQualificationAdapter(runtime)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := adapter.Readiness(context.Background()); err != nil {
+		t.Fatalf("fake environment ensure adapter readiness: %v", err)
+	}
+}

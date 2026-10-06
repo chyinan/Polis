@@ -36,6 +36,7 @@ type EmployeeTools struct {
 	MissionChangeAssessmentSurface     bool
 	CSVInputRangeSurface               bool
 	EnvironmentStatusSurface           bool
+	EnvironmentEnsureSurface           bool
 	ReadOnlyJobsSurface                bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
@@ -111,6 +112,19 @@ func (t EmployeeTools) Call(ctx context.Context, name, callID string, raw []byte
 func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (ToolResult, error) {
 	k, b := t.Kernel, t.Binding
 	switch name {
+	case "environment_ensure":
+		if !t.ProductSurface || !t.EnvironmentEnsureSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			RevisionID string `json:"revision_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		requestID := "env-ensure-" + fingerprint([]string{b.SessionID(), key, args.RevisionID})[:48]
+		run, e := k.ProductTaskEnvironmentEnsure(ctx, b, args.RevisionID, requestID)
+		return ToolResult{Data: run}, e
 	case "jobs_status":
 		if !t.ProductSurface || !t.ReadOnlyJobsSurface {
 			return ToolResult{}, core.Denied

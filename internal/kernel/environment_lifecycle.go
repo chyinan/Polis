@@ -337,12 +337,48 @@ func (k *Kernel) TXRequestEnvironmentPreparation(ctx context.Context, companyID,
 	if err != nil {
 		return EnvironmentPreparationRun{}, err
 	}
+	return k.txRequestEnvironmentPreparation(ctx, companyID, revisionID, requestID, nil, sourceVerified)
+}
+
+// TXRequestProductTaskEnvironmentPreparation rechecks the WorkerSession and
+// Mission/Task binding inside the same write transaction that records the
+// preparation request.
+func (k *Kernel) TXRequestProductTaskEnvironmentPreparation(ctx context.Context, binding Binding, revisionID, requestID string) (EnvironmentPreparationRun, error) {
+	if !core.ValidID(binding.scope.company) || !core.ValidID(binding.task) || !core.ValidID(binding.session) || !core.ValidID(revisionID) || !core.ValidID(requestID) {
+		return EnvironmentPreparationRun{}, core.Malformed
+	}
+	sourceVerified, err := k.verifyProjectEnvironmentSource(ctx, binding.scope.company, revisionID)
+	if err != nil {
+		return EnvironmentPreparationRun{}, err
+	}
+	return k.txRequestEnvironmentPreparation(ctx, binding.scope.company, revisionID, requestID, &binding, sourceVerified)
+}
+
+func (k *Kernel) txRequestEnvironmentPreparation(ctx context.Context, companyID, revisionID, requestID string, binding *Binding, sourceVerified bool) (EnvironmentPreparationRun, error) {
 	runID := stableCapabilityID("env-run", companyID, requestID)
 	eventID := stableCapabilityID("env-event", companyID, requestID)
 	scope := k.LocalScope(companyID)
-	receipt, err := k.TXWrite(ctx, scope, nil, requestID, "environment.preparation.request", []string{revisionID}, func(tx pgx.Tx) (Receipt, error) {
+	receipt, err := k.TXWrite(ctx, scope, binding, requestID, "environment.preparation.request", []string{revisionID}, func(tx pgx.Tx) (Receipt, error) {
 		if err := ensureEnvironmentCompanyWritable(ctx, tx, companyID); err != nil {
 			return Receipt{}, err
+		}
+		if binding != nil {
+			if _, err := k.checkSession(ctx, tx, *binding, false); err != nil {
+				return Receipt{}, err
+			}
+			var currentTaskID, currentMissionID, revisionMissionID string
+			if err := tx.QueryRow(ctx, `SELECT s.task_id,t.mission_id,r.mission_id
+FROM worker_sessions s
+JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+JOIN project_environment_revisions r ON r.company_id=s.company_id AND r.revision_id=$3
+WHERE s.company_id=$1 AND s.id=$2`, companyID, binding.session, revisionID).Scan(&currentTaskID, &currentMissionID, &revisionMissionID); errors.Is(err, pgx.ErrNoRows) {
+				return Receipt{}, core.OutOfScope
+			} else if err != nil {
+				return Receipt{}, err
+			}
+			if err := validateProductTaskEnvironmentEnsureScope(*binding, revisionMissionID, currentMissionID, currentTaskID); err != nil {
+				return Receipt{}, err
+			}
 		}
 		var profileID, policyDigest, toolchainDigest string
 		var policyManifest []byte

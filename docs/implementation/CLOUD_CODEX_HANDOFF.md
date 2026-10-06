@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 279)
+
+Slice279 adds fake-only product surface `polis-product-tool-surface@16` with the existing `environment_status` plus bound `environment_ensure`. Exact revision IDs are checked against the current Mission, and WorkerSession/Task/Mission authorization is rechecked inside the same idempotent write transaction and on receipt replay. No host command, package edit, registry/network selection, real provider, migration, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-279-req36-worker-environment-ensure/verification.md`.
+
 ## Current continuation pointer (Slice 278)
 
 Slice278 selects and enforces REQ-40 owner policy: ready delivery completion opens a seven-day `awaiting_feedback` window; expiry rejects later disposition writes without implicit acceptance; successful Mission closeout requires explicit latest `accepted` dispositions for all acceptance Artifacts, while `ended_not_met`/`cancelled` do not. Historical backfill stays `not_requested`. Pre-Schema111 runtimes fail closed for successful closeout. No migration, database runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-278-req40-owner-policy/verification.md`.

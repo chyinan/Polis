@@ -36,3 +36,29 @@ func TestProductReadOnlyJobsSurfaceIsFakeOnlyAndTaskBound(t *testing.T) {
 		t.Fatal("read-only jobs surface passed the non-fake validator")
 	}
 }
+
+func TestProductEnvironmentEnsureSurfaceIsFakeOnlyAndIncludesStatus(t *testing.T) {
+	runtime := NewFakeRuntime(FakeRuntimeConfig{EnvironmentEnsureSurface: true})
+	surface := ProductEnvironmentEnsureToolSurface()
+	profile := runtime.ExecutionProfile()
+	if surface.ToolCount != 9 || profile.ToolSurfaceQualification != ProductEnvironmentEnsureToolSurfaceQualification {
+		t.Fatalf("environment ensure surface/profile=%+v/%+v, want 9/@16", surface, profile)
+	}
+	if err := runtime.Readiness(context.Background()); err != nil {
+		t.Fatalf("explicit environment ensure Fake Runtime readiness: %v", err)
+	}
+	authorization := validProviderExecutionAuthorization("offline-model", "fake", profile.Purpose, profile.ExecutionEnvelope)
+	authorization.ToolSurfaceDigest = surface.ManifestDigest
+	authorization.ToolSurfaceQualification = profile.ToolSurfaceQualification
+	authorization.ToolCount = surface.ToolCount
+	authorization.AggregateSchemaBytes = surface.AggregateSchemaBytes
+	authorization.AggregateSchemaDigest = surface.AggregateSchemaDigest
+	authorization.ExactSurfaceExecutionFingerprint = profile.ExactSurfaceExecutionFingerprint
+	authorization.ProductProviderL2Fingerprint = profile.ProductProviderL2Fingerprint
+	if err := ValidateRuntimeExecutionAuthorization(authorization); err != nil {
+		t.Fatalf("exact fake environment ensure authorization was rejected: %v", err)
+	}
+	if err := ValidateRuntimeExecutionAuthorization(func() ExecutionAuthorization { copy := authorization; copy.ProviderMode = "real"; return copy }()); err == nil {
+		t.Fatal("real provider accepted the fake-only environment ensure surface")
+	}
+}

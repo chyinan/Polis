@@ -144,3 +144,13 @@ ORDER BY r.created_at DESC,r.revision_id LIMIT $11`, binding.scope.company,
 	}
 	return result, nil
 }
+
+// ProductTaskEnvironmentEnsure records one idempotent preparation request for
+// an environment revision in the current Task's Mission. It never selects a
+// host, executor, package command or network policy from Worker input.
+func (k *Kernel) ProductTaskEnvironmentEnsure(ctx context.Context, binding Binding, revisionID, requestID string) (EnvironmentPreparationRun, error) {
+	if !core.ValidID(binding.scope.company) || !core.ValidID(binding.task) || !core.ValidID(binding.session) || !core.ValidID(revisionID) || !core.ValidID(requestID) {
+		return EnvironmentPreparationRun{}, core.Malformed
+	}
+	return k.TXRequestProductTaskEnvironmentPreparation(ctx, binding, revisionID, requestID)
+}

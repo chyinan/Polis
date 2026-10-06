@@ -1465,3 +1465,8 @@ External provider business egress, QQ/webhook sends, auto-update, startup-with-W
 # Current handoff - R0.8 CAPABILITY CATALOG FOUNDATION closeout (2026-09-22)
 
 R0.8 first vertical is **PASSED_OFFLINE_AND_LOCAL**. Skill candidate and MCP definition metadata can be registered and read through the Company-scoped catalog. No scripts, dependencies, MCP processes/endpoints, OAuth or QQ sends are executed. Next capability work requires a separately bounded slice for controlled local manifest import and capability binding/qualification.
+## Latest continuation status (Slice 279, REQ-36 fake-only Worker environment ensure)
+
+Added isolated fake-only product surface `polis-product-tool-surface@16`, extending @14 with `polis_environment_ensure`. It accepts only an exact revision ID from the current Mission's environment catalog and rechecks WorkerSession/Task/Mission binding inside the same idempotent write transaction, including receipt replay. It does not expose host commands, package edits, registry selection or network policy; Control/Workbench executor gates remain authoritative and real provider @4 is unchanged. Targeted Go tests and adapter readiness pass; no migration, runtime database, Worker turn, host executor, provider, browser or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-279-req36-worker-environment-ensure/verification.md`.
+
+Next local slice: keep REQ-36 DependencyChange proposal/approval separate from environment preparation; only the selected fixed envelope may be autonomous. Native executor qualification remains open.

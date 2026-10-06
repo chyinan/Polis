@@ -81,6 +81,21 @@ func ProductEmployeeToolsWithEnvironmentStatus() []any {
 	return append(tools, environmentTool[0])
 }
 
+// ProductEmployeeToolsWithEnvironmentEnsure extends the fake-only environment
+// status surface with a bound preparation request. It does not expose host
+// commands, package edits, or executor selection.
+func ProductEmployeeToolsWithEnvironmentEnsure() []any {
+	tools := ProductEmployeeToolsWithEnvironmentStatus()
+	ensureTool := productTools([]peerToolDefinition{{
+		"environment_ensure",
+		"Request preparation for one exact environment revision in your current Mission. The request is bound to this WorkerSession, idempotent, and returns a preparation receipt; host execution remains controlled by the environment policy and qualified executor.",
+		map[string]any{
+			"revision_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		},
+	}})
+	return append(tools, ensureTool[0])
+}
+
 // ProductEmployeeToolsWithReadOnlyJobs is an isolated, fake-only extension.
 // It exposes bounded reads for an exact job owned by the current Task; job
 // lifecycle mutation remains outside this surface.

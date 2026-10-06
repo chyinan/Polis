@@ -147,6 +147,39 @@ func TestProductEmployeeReadOnlyJobsSurfaceAddsOnlyBoundedStatusAndLogs(t *testi
 	}
 }
 
+func TestProductEmployeeEnvironmentEnsureSurfaceExtendsEnvironmentStatusOnly(t *testing.T) {
+	status := ProductEmployeeToolsWithEnvironmentStatus()
+	tools := ProductEmployeeToolsWithEnvironmentEnsure()
+	if len(status) != 8 || len(tools) != 9 {
+		t.Fatalf("environment status/ensure tool counts=%d/%d, want 8/9", len(status), len(tools))
+	}
+	for index, tool := range status {
+		statusJSON, err := json.Marshal(tool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		currentJSON, err := json.Marshal(tools[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(statusJSON) != string(currentJSON) {
+			t.Fatalf("environment status tool %d changed while adding ensure", index)
+		}
+	}
+	tool, ok := tools[8].(map[string]any)
+	if !ok || tool["name"] != "polis_environment_ensure" {
+		t.Fatalf("environment ensure tool=%v, want polis_environment_ensure", tools[8])
+	}
+	schema, ok := tool["inputSchema"].(map[string]any)
+	if !ok || schema["additionalProperties"] != false {
+		t.Fatalf("environment ensure schema is not closed: %v", tool["inputSchema"])
+	}
+	properties, ok := schema["properties"].(map[string]any)
+	if !ok || properties["revision_id"] == nil {
+		t.Fatalf("environment ensure must require an exact revision_id: %v", schema)
+	}
+}
+
 func TestControlledMCPToolSurfaceAddsOnlyBoundedCallContract(t *testing.T) {
 	legacy := ProductEmployeeTools()
 	tools := ProductEmployeeToolsWithControlledMCP()
