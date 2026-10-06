@@ -616,21 +616,26 @@ type taskRow struct {
 }
 
 type employeeRow struct {
-	ID                     string
-	RoleRevision           string
-	Epoch                  int64
-	SessionID              string
-	SessionTask            string
-	SessionState           string
-	Profile                string
-	SessionEpoch           int64
-	ToolLimit              int64
-	ToolUsed               int64
-	ScheduleState          pgtype.Text
-	ScheduleWorkGeneration pgtype.Int8
-	ScheduleCheckedGen     pgtype.Int8
-	ScheduleNextDueAt      pgtype.Timestamptz
-	SchedulePauseReason    string
+	ID                        string
+	RoleRevision              string
+	RoleRevisionRole          string
+	RoleRevisionTaskTypes     string
+	RoleRevisionTaskKinds     string
+	RoleRevisionDecision      string
+	RoleRevisionQualification string
+	Epoch                     int64
+	SessionID                 string
+	SessionTask               string
+	SessionState              string
+	Profile                   string
+	SessionEpoch              int64
+	ToolLimit                 int64
+	ToolUsed                  int64
+	ScheduleState             pgtype.Text
+	ScheduleWorkGeneration    pgtype.Int8
+	ScheduleCheckedGen        pgtype.Int8
+	ScheduleNextDueAt         pgtype.Timestamptz
+	SchedulePauseReason       string
 }
 
 type revisionRow struct {
@@ -953,7 +958,7 @@ LEFT JOIN LATERAL (
 
 WHERE e.company_id=$1 ORDER BY e.id`
 	if roleRevisionAvailable {
-		query = `SELECT e.id,COALESCE(role.revision_sha256,''),e.epoch,
+		query = `SELECT e.id,COALESCE(role.revision_sha256,''),COALESCE(role.role_name,''),COALESCE(role.task_types::text,'[]'),COALESCE(role.task_kinds::text,'[]'),COALESCE(role.owner_decision,''),COALESCE(role.qualification,''),e.epoch,
 COALESCE(ws.id,''),COALESCE(ws.task_id,''),COALESCE(ws.state,''),COALESCE(ws.profile,''),
 COALESCE(ws.epoch,e.epoch),COALESCE(ws.tool_call_limit,0),COALESCE(ws.tool_calls_used,0),
 es.state,es.work_generation,es.checked_generation,es.next_due_at,COALESCE(es.pause_reason,'')
@@ -982,7 +987,7 @@ WHERE e.company_id=$1 ORDER BY e.id`
 		var item employeeRow
 		var scanErr error
 		if roleRevisionAvailable {
-			scanErr = rows.Scan(&item.ID, &item.RoleRevision, &item.Epoch, &item.SessionID, &item.SessionTask, &item.SessionState, &item.Profile, &item.SessionEpoch, &item.ToolLimit, &item.ToolUsed,
+			scanErr = rows.Scan(&item.ID, &item.RoleRevision, &item.RoleRevisionRole, &item.RoleRevisionTaskTypes, &item.RoleRevisionTaskKinds, &item.RoleRevisionDecision, &item.RoleRevisionQualification, &item.Epoch, &item.SessionID, &item.SessionTask, &item.SessionState, &item.Profile, &item.SessionEpoch, &item.ToolLimit, &item.ToolUsed,
 				&item.ScheduleState, &item.ScheduleWorkGeneration, &item.ScheduleCheckedGen, &item.ScheduleNextDueAt, &item.SchedulePauseReason)
 		} else {
 			scanErr = rows.Scan(&item.ID, &item.Epoch, &item.SessionID, &item.SessionTask, &item.SessionState, &item.Profile, &item.SessionEpoch, &item.ToolLimit, &item.ToolUsed,
@@ -993,6 +998,12 @@ WHERE e.company_id=$1 ORDER BY e.id`
 		}
 		if item.ScheduleState.Valid && (!item.ScheduleWorkGeneration.Valid || !item.ScheduleCheckedGen.Valid) {
 			return nil, fmt.Errorf("employee schedule generation is incomplete")
+		}
+		if item.RoleRevision != "" {
+			var taskTypes, taskKinds []string
+			if taskTypesErr := json.Unmarshal([]byte(item.RoleRevisionTaskTypes), &taskTypes); taskTypesErr != nil || json.Unmarshal([]byte(item.RoleRevisionTaskKinds), &taskKinds) != nil || item.RoleRevisionRole == "" || item.RoleRevisionDecision != "installation_owner_confirmed_fixed_team_mapping" || item.RoleRevisionQualification != "unverified" {
+				return nil, fmt.Errorf("employee role revision is malformed")
+			}
 		}
 		items = append(items, item)
 	}
@@ -1339,7 +1350,14 @@ func employeeViews(rows []employeeRow, tasks []taskRow, obligations []Obligation
 		if row.RoleRevision != "" {
 			roleRevision = pointer(row.RoleRevision)
 		}
-		views = append(views, EmployeeSummary{EmployeeID: row.ID, DisplayName: row.ID, Role: employeeRole(row.ID), RoleRevision: roleRevision, Epoch: stringValue(row.Epoch), SessionID: sessionID, SessionState: sessionState, Profile: profile, CurrentTask: currentTask, Status: EmployeeStatusView{Primary: status, Tone: tone, Reason: reason, ActiveModelRequests: "不可得", InFlightTools: "不可得", ObservedAt: observedAt}, Schedule: employeeScheduleView(row), ToolBudget: ToolBudgetView{Limit: limit, Used: used, Remaining: remaining, Quality: budgetQuality(row.SessionID)}, Qualification: QualificationView{Status: "unverified", EvidenceID: nil, PolicyRevision: nil}, OpenObligationCount: stringValue(openCount)})
+		var roleRevisionDetail *EmployeeRoleRevisionView
+		if row.RoleRevision != "" {
+			var taskTypes, taskKinds []string
+			if json.Unmarshal([]byte(row.RoleRevisionTaskTypes), &taskTypes) == nil && json.Unmarshal([]byte(row.RoleRevisionTaskKinds), &taskKinds) == nil {
+				roleRevisionDetail = &EmployeeRoleRevisionView{RevisionSHA256: row.RoleRevision, EmployeeID: row.ID, RoleName: row.RoleRevisionRole, TaskTypes: taskTypes, TaskKinds: taskKinds, OwnerDecision: row.RoleRevisionDecision, Qualification: row.RoleRevisionQualification}
+			}
+		}
+		views = append(views, EmployeeSummary{EmployeeID: row.ID, DisplayName: row.ID, Role: employeeRole(row.ID), RoleRevision: roleRevision, RoleRevisionDetail: roleRevisionDetail, Epoch: stringValue(row.Epoch), SessionID: sessionID, SessionState: sessionState, Profile: profile, CurrentTask: currentTask, Status: EmployeeStatusView{Primary: status, Tone: tone, Reason: reason, ActiveModelRequests: "不可得", InFlightTools: "不可得", ObservedAt: observedAt}, Schedule: employeeScheduleView(row), ToolBudget: ToolBudgetView{Limit: limit, Used: used, Remaining: remaining, Quality: budgetQuality(row.SessionID)}, Qualification: QualificationView{Status: "unverified", EvidenceID: nil, PolicyRevision: nil}, OpenObligationCount: stringValue(openCount)})
 		switch status {
 		case "working":
 			team.Working = incrementString(team.Working)

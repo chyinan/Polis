@@ -1548,3 +1548,8 @@ Next local slice: audit remaining owner-independent RoleRevision/TaskRevision re
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.
 
 Next local slice: continue remaining owner-independent read/validation gaps; keep executable role admission and generic external action permits disabled.
+## Latest continuation status (Slice 295, RoleRevision detail projection)
+
+Extended optional EmployeeSummary RoleRevision readback with role name, semantic task types/kinds, owner decision and qualification metadata. Company/Employee scope, malformed detail rejection and old-Schema null compatibility are enforced; frontend validation binds detail to the summary. Workbench Go test, frontend 50/50 validation, TypeScript/Vite builds and diff check pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-295-role-revision-detail-projection/verification.md`.
+
+Next local slice: continue remaining owner-independent RoleRevision/TaskRevision read/validation gaps; executable role admission remains disabled.

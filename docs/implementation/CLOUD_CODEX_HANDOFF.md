@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 295)
+
+Slice295 extends optional Schema121 EmployeeSummary RoleRevision readback with role name, semantic task types/kinds, owner decision and qualification metadata. Old schemas return null; malformed detail fails closed and no execution qualification changes. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-295-role-revision-detail-projection/verification.md`.
+
 ## Current continuation pointer (Slice 294)
 
 Slice294 tightens frontend EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrects a stale MissionChangeRequest fixture. Full validation tests (50/50), TypeScript and Vite builds pass; no backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

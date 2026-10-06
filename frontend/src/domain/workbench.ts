@@ -1486,6 +1486,7 @@ export type EmployeeSummary = Readonly<{
   displayName: string;
   role: string;
   roleRevision: string | null;
+  roleRevisionDetail?: Readonly<{revisionSha256: string; employeeId: string; roleName: string; taskTypes: ReadonlyArray<string>; taskKinds: ReadonlyArray<string>; ownerDecision: string; qualification: 'unverified'}>;
   epoch: string;
   sessionId: string | null;
   sessionState: string | null;

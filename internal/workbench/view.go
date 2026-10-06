@@ -75,21 +75,32 @@ type EmployeeScheduleView struct {
 	PauseReason       string  `json:"pauseReason"`
 }
 
+type EmployeeRoleRevisionView struct {
+	RevisionSHA256 string   `json:"revisionSha256"`
+	EmployeeID     string   `json:"employeeId"`
+	RoleName       string   `json:"roleName"`
+	TaskTypes      []string `json:"taskTypes"`
+	TaskKinds      []string `json:"taskKinds"`
+	OwnerDecision  string   `json:"ownerDecision"`
+	Qualification  string   `json:"qualification"`
+}
+
 type EmployeeSummary struct {
-	EmployeeID          string                `json:"employeeId"`
-	DisplayName         string                `json:"displayName"`
-	Role                string                `json:"role"`
-	RoleRevision        *string               `json:"roleRevision"`
-	Epoch               string                `json:"epoch"`
-	SessionID           *string               `json:"sessionId"`
-	SessionState        *string               `json:"sessionState"`
-	Profile             *string               `json:"profile"`
-	CurrentTask         *EntityRef            `json:"currentTask"`
-	Status              EmployeeStatusView    `json:"status"`
-	Schedule            *EmployeeScheduleView `json:"schedule"`
-	ToolBudget          ToolBudgetView        `json:"toolBudget"`
-	Qualification       QualificationView     `json:"qualification"`
-	OpenObligationCount string                `json:"openObligationCount"`
+	EmployeeID          string                    `json:"employeeId"`
+	DisplayName         string                    `json:"displayName"`
+	Role                string                    `json:"role"`
+	RoleRevision        *string                   `json:"roleRevision"`
+	RoleRevisionDetail  *EmployeeRoleRevisionView `json:"roleRevisionDetail,omitempty"`
+	Epoch               string                    `json:"epoch"`
+	SessionID           *string                   `json:"sessionId"`
+	SessionState        *string                   `json:"sessionState"`
+	Profile             *string                   `json:"profile"`
+	CurrentTask         *EntityRef                `json:"currentTask"`
+	Status              EmployeeStatusView        `json:"status"`
+	Schedule            *EmployeeScheduleView     `json:"schedule"`
+	ToolBudget          ToolBudgetView            `json:"toolBudget"`
+	Qualification       QualificationView         `json:"qualification"`
+	OpenObligationCount string                    `json:"openObligationCount"`
 }
 
 type TaskSummary struct {

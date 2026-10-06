@@ -841,6 +841,14 @@ function isEmployeeSummary(value: unknown): value is EmployeeSummary {
     && hasString(value, 'displayName')
     && hasString(value, 'role')
     && (value.roleRevision === null || (typeof value.roleRevision === 'string' && /^[0-9a-f]{64}$/.test(value.roleRevision)))
+    && (value.roleRevisionDetail === undefined || (isRecord(value.roleRevisionDetail)
+      && typeof value.roleRevisionDetail.revisionSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.roleRevisionDetail.revisionSha256)
+      && value.roleRevisionDetail.revisionSha256 === value.roleRevision
+      && value.roleRevisionDetail.employeeId === value.employeeId && typeof value.roleRevisionDetail.roleName === 'string'
+      && Array.isArray(value.roleRevisionDetail.taskTypes) && value.roleRevisionDetail.taskTypes.every(item => typeof item === 'string')
+      && Array.isArray(value.roleRevisionDetail.taskKinds) && value.roleRevisionDetail.taskKinds.every(item => typeof item === 'string')
+      && value.roleRevisionDetail.ownerDecision === 'installation_owner_confirmed_fixed_team_mapping'
+      && value.roleRevisionDetail.qualification === 'unverified'))
     && hasString(value, 'epoch')
     && isNullableString(value.sessionId)
     && isNullableString(value.sessionState)
