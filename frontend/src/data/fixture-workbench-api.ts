@@ -18,6 +18,7 @@ import type {
   ActivityView,
   ArtifactDeliveryManifestResponse,
   ArtifactDetailView,
+  DurableDeliveryResponse,
   CapabilityCatalogView,
   CollaborationItem,
   CompanyCommandReceipt,
@@ -534,6 +535,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
 
   async getArtifactDeliveryManifest(_options: Readonly<{companyId: string; artifactId: string}>): Promise<ArtifactDeliveryManifestResponse> {
     throw new Error('fixture snapshot has no qualified artifact delivery manifest');
+  }
+
+  async getDurableDelivery(_options: Readonly<{companyId: string; artifactId: string}>): Promise<DurableDeliveryResponse> {
+    throw new Error('fixture snapshot has no durable delivery lifecycle; load it from the real company ledger');
   }
 
   async downloadArtifactPackage(_options: Readonly<{companyId: string; artifactId: string}>): Promise<Blob> {

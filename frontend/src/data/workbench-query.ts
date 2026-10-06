@@ -875,6 +875,15 @@ export function useArtifactDeliveryManifest(api: WorkbenchApi, companyId: string
   });
 }
 
+export function useDurableDelivery(api: WorkbenchApi, companyId: string, artifactId: string | null) {
+  return useQuery({
+    queryKey: ['workbench', api.mode, 'durable-delivery', companyId, artifactId],
+    queryFn: () => api.getDurableDelivery({companyId, artifactId: artifactId as string}),
+    enabled: artifactId !== null,
+    staleTime: 5_000,
+  });
+}
+
 export function useOperations(api: WorkbenchApi, companyId: string) {
   return useQuery({
     queryKey: ['workbench', api.mode, 'operations', companyId],

@@ -1,8 +1,14 @@
-## Latest continuation status (Slice 270, REQ-36 Worker environment status)
+## Latest continuation status (Slice 271, REQ-40 durable delivery foundation)
+
+Schema 111 now defines append-only DeliveryManifest revisions and separate UserDisposition events, each bound to the exact Company/Mission/Task/Artifact/revision. New product Artifact publication stores revision 1 and the initial `not_requested` disposition atomically with Artifact qualification. The durable record remains `assembling` and lists which source/input, environment/build, instructions, limitations, license/source, and feedback sections are unavailable; only the Artifact inventory and existing validation evidence are present. Workbench adds a strict read-only lifecycle endpoint and Task view; the existing authenticated Artifact ZIP contract remains separate.
+
+`go build ./...`, the frontend production build, all 111 migration hash checks, and `git diff --check` pass. No tests were added or run; Schema 111 was not applied, and no database, Worker, provider, browser, or frozen scenario was used. REQ-40 remains partial; no feedback request/acceptance/change command or Mission acceptance policy was added. Existing pre-Schema-111 Artifacts are not backfilled. The recorded local runtime remains Schema 108; source migrations are Schema 111, and all 232 frozen scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md`.
+
+## Previous continuation status (Slice 270, REQ-36 Worker environment status)
 
 Added a read-only Worker environment_status tool on isolated fake-only product surface @14. It uses one repeatable-read, read-only database snapshot, verifies the exact bound WorkerSession and Task, and returns at most 50 environment revision summaries for that Task's Mission. The result excludes project/workspace bytes, preparation logs, executor fingerprints, and qualification evidence inputs. The qualified real-provider @4 surface is unchanged. The tool-call budget path classifies this operation as read-only; existing session-state and Company/Mission budget gates still apply.
 
-The environment-status extension is opt-in through POLIS_OFFLINE_ENVIRONMENT_STATUS_ENABLED=1, and only with the real Worker adapter plus fake provider transport. It does not add environment.ensure, dependency mutation, or host preparation. go build ./cmd/polis passes. No tests, migrations, database reads/writes, Worker/provider turns, or frozen scenarios ran. The local runtime remains at recorded Schema 108; migration source remains Schema 110. REQ-36 stays partial, and all 232 frozen scenarios remain not_run.
+The environment-status extension is opt-in through POLIS_OFFLINE_ENVIRONMENT_STATUS_ENABLED=1, and only with the real Worker adapter plus fake provider transport. It does not add environment.ensure, dependency mutation, or host preparation. go build ./cmd/polis passes. No tests, migrations, database reads/writes, Worker/provider turns, or frozen scenarios ran. At Slice 270 the local runtime remained at recorded Schema 108 and migration source was Schema 110. REQ-36 stays partial, and all 232 frozen scenarios remain not_run.
 
 ## Previous continuation status (Slice 269, REQ-38 service-preview cookie boundary and audit reconciliation)
 

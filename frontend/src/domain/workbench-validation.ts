@@ -55,6 +55,7 @@ import type {
   OperatorInstructionView,
   CollaborationItem,
   ArtifactDeliveryManifestResponse,
+  DurableDeliveryResponse,
   ArtifactDetailView,
   WorkspaceView,
   OperationsView,
@@ -1081,6 +1082,46 @@ function isArtifactDeliveryManifestResponse(value: unknown, companyId: string, a
     && hasString(manifest, 'createdAt');
 }
 
+function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId: string): value is DurableDeliveryResponse {
+  if (!isRecord(value) || !isRecord(value.manifest) || !isRecord(value.userDisposition)) return false;
+  const manifest = value.manifest;
+  const artifact = manifest.artifact;
+  const disposition = value.userDisposition;
+  if (!isRecord(artifact) || !Array.isArray(manifest.sections) || !hasString(manifest, 'revision')) return false;
+  const byteSize = typeof artifact.byteSize === 'string' && /^[1-9]\d*$/.test(artifact.byteSize) ? Number(artifact.byteSize) : Number.NaN;
+  const sectionKeys = new Set<string>();
+  const sectionsValid = manifest.sections.length <= 64 && manifest.sections.every(section => {
+    if (!isRecord(section) || typeof section.key !== 'string' || section.key.length === 0 || section.key.length > 120
+      || typeof section.detail !== 'string' || section.detail.length > 4096
+      || !isOneOf(section.state, ['available', 'unavailable', 'missing', 'not_requested'])) return false;
+    if (sectionKeys.has(section.key)) return false;
+    sectionKeys.add(section.key);
+    return true;
+  });
+  return typeof value.manifestSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.manifestSha256)
+    && manifest.schemaVersion === 'polis-durable-delivery-manifest@1'
+    && hasString(manifest, 'deliveryId')
+    && typeof manifest.revision === 'string' && /^[1-9]\d{0,15}$/.test(manifest.revision)
+    && manifest.companyId === companyId
+    && hasString(manifest, 'missionId')
+    && hasString(manifest, 'taskId')
+    && manifest.artifactId === artifactId
+    && isOneOf(manifest.state, ['assembling', 'ready', 'invalidated', 'withdrawn'])
+    && artifact.fileName === 'artifact.bin'
+    && Number.isSafeInteger(byteSize) && byteSize <= 64 * 1024 * 1024
+    && typeof artifact.sha256 === 'string' && /^[0-9a-f]{64}$/.test(artifact.sha256)
+    && sectionsValid
+    && hasString(manifest, 'createdAt')
+    && typeof disposition.revision === 'string' && /^[1-9]\d{0,15}$/.test(disposition.revision)
+    && disposition.manifestRevision === manifest.revision
+    && isOneOf(disposition.state, ['not_requested', 'awaiting_feedback', 'accepted', 'changes_requested'])
+    && typeof disposition.actor === 'string'
+    && typeof disposition.reason === 'string'
+    && typeof disposition.requestId === 'string'
+    && typeof disposition.feedbackDeadline === 'string'
+    && typeof disposition.createdAt === 'string';
+}
+
 function isTeamSummary(value: unknown): boolean {
   return isRecord(value)
     && hasString(value, 'total')
@@ -1320,6 +1361,12 @@ export function validateArtifactDeliveryManifest(value: unknown, companyId: stri
   return isArtifactDeliveryManifestResponse(value, companyId, artifactId)
     ? {success: true, value}
     : {success: false, issues: [{path: '', message: 'artifact delivery manifest contains an unknown, malformed, or cross-scope field'}]};
+}
+
+export function validateDurableDelivery(value: unknown, companyId: string, artifactId: string): ValidationResult<DurableDeliveryResponse> {
+  return isDurableDeliveryResponse(value, companyId, artifactId)
+    ? {success: true, value}
+    : {success: false, issues: [{path: '', message: 'durable delivery response contains an unknown, malformed, or cross-scope field'}]};
 }
 
 export function validateOperations(value: unknown): ValidationResult<OperationsView> {

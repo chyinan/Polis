@@ -2,7 +2,15 @@
 
 Updated: 2026-10-06
 
-## Current continuation pointer (Slice 268)
+## Current continuation pointer (Slice 271)
+
+Schema111 adds append-only durable DeliveryManifest revision and independent UserDisposition records, bound to Company/Mission/Task/Artifact/revision. New product Artifact publication writes revision 1 `assembling` and disposition `not_requested` in the Artifact qualification transaction. Workbench exposes a strict read-only lifecycle view; the existing authenticated Artifact ZIP contract remains separate. `go build ./...`, frontend production build, migration hash checks, and `git diff --check` pass. No tests, migration, database, Worker/provider/browser operation, or frozen scenario ran. REQ-40 remains partial; existing pre-Schema111 Artifacts are not backfilled, required source/build/instructions/license sections remain unavailable, and there are no explicit feedback/acceptance/change commands or owner policy. Runtime remains Schema108, source migrations are Schema111, and all 232 frozen scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md`.
+
+## Previous continuation pointer (Slice 270)
+
+Added the read-only fake-only @14 Worker `environment_status` tool. It uses a repeatable-read snapshot and returns at most 50 environment revision summaries for the bound Task's Mission; the qualified real-provider @4 surface remains unchanged. No tests, migration, database reads/writes, Worker/provider turns, or scenarios ran. Runtime remained Schema108; source migration at that point was Schema110. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-270-req36-worker-environment-status/verification.md`.
+
+## Historical continuation pointer (Slice 268)
 
 MCP and JSON-RPC typed decoding now rejects recursive duplicate keys and case-variant aliases at struct boundaries across stdio, Streamable HTTP JSON/SSE responses and result parsing, controlled mcp_call envelopes, and the reachable fake listed-tool check. Arbitrary map/schema/data keys preserve case-sensitive semantics. Responses require exactly one result or non-null error; result:null remains valid. No dispatch surface or authorization policy changed. Build and diff-check passed; tests, DB, Worker, provider, endpoint, migration, and scenarios did not run. REQ-31/34 stay partial. The final read-only source audit covered all 18 open software requirements and found no safe owner- and environment-independent code slice remaining; all 232 scenarios remain not_run and open rows remain partial. The listed owner/host/provider/active-session/fixture/scenario gates remain. Evidence: evidence/development/r1-r3-implementation-validation-20261006-slice-268-req31-34-canonical-mcp-json-fields/verification.md and evidence/development/r1-r3-implementation-validation-20261006-slice-268-final-local-audit/verification.md.
 

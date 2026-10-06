@@ -51,8 +51,9 @@ func (e productDeliveryPhaseError) Unwrap() error { return e.err }
 
 // TXSubmitTaskDelivery is the single explicit final-delivery operation for a
 // product Task. Staging and CAS are recoverable prerequisites; checkpoint,
-// Artifact qualification, Artifact publication metadata and candidate state
-// commit atomically under TXWrite's company lifecycle guard.
+// Artifact qualification, initial durable DeliveryManifest and
+// UserDisposition, and candidate state commit atomically under TXWrite's
+// company lifecycle guard.
 func (k *Kernel) TXSubmitTaskDelivery(ctx context.Context, b Binding, w Task, key string, content []byte) (Receipt, ProductDeliveryResult, error) {
 	return k.txSubmitTaskDelivery(ctx, b, w, key, content, nil)
 }
@@ -194,6 +195,9 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, b.scope.company, task.ID, artifactID, c
 		}
 		if err = invokeProductDeliveryFault(fault, productDeliveryAfterArtifactPersist); err != nil {
 			return Receipt{}, productDeliveryPhaseError{phase: "publication", err: err}
+		}
+		if checkErr = persistInitialProductDeliveryManifest(ctx, tx, b.scope.company, task.Mission, task.ID, artifactID, len(content), digest, checkpointID, qualification); checkErr != nil {
+			return Receipt{}, productDeliveryPhaseError{phase: "publication", err: checkErr}
 		}
 		if _, checkErr = tx.Exec(ctx, "UPDATE tasks SET state='candidate' WHERE company_id=$1 AND id=$2 AND state='working'", b.scope.company, task.ID); checkErr != nil {
 			return Receipt{}, productDeliveryPhaseError{phase: "publication", err: checkErr}

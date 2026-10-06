@@ -11,7 +11,7 @@
     "spec/design-v0.4.5/tests/product_scenario_catalog.json",
     "spec/design-v0.4.5/product/TEST_RELEASE_APPLICABILITY.json"
   ],
-  "method": "Disposition is inherited from the live REQ coverage ledger: any scenario mapped to an open software-closure REQ is partial; otherwise its mapped REQs are treated as implemented. This is a requirement-level code/evidence crosswalk, not proof that an exact planned scenario passed.",
+  "method": "Disposition is inherited from the live REQ coverage ledger: any scenario mapped to an open software-closure REQ is partial; otherwise its mapped REQs are treated as implemented. This is a requirement-level code/evidence crosswalk, not proof that an exact planned scenario passed. Derived scenario mapping was reconciled for UI-46 (takeover/return belongs to REQ-39) and UI-47 (delivery/acceptance belongs to REQ-40); the frozen catalogs and source traceability file were left unchanged.",
   "executionStatusRule": "The frozen design catalogs and release-applicability ledger remain unchanged; every exact planned scenario remains not_run.",
   "openSoftwareRequirements": [
     "REQ-02",
@@ -45,8 +45,8 @@
     "NT:partial": 2,
     "PP:implemented": 1,
     "PP:partial": 11,
-    "UI:implemented": 31,
-    "UI:partial": 17,
+    "UI:implemented": 30,
+    "UI:partial": 18,
     "WF:partial": 31,
     "WF:implemented": 5
   },
@@ -3724,6 +3724,27 @@
       "family": "UI",
       "scenario": "人工接管与交还冲突",
       "requirements": [
+        "REQ-39"
+      ],
+      "implementationDisposition": "partial",
+      "openRequirements": [
+        "REQ-39"
+      ],
+      "firstPlannedFullScenario": "R1",
+      "executionStatus": "not_run",
+      "evidence": [
+        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-202-req39-bounded-patch-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261004-slice-207-req39-pending-snapshot-safety/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-222-req39-directory-snapshot-handback/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261005-slice-223-req39-successor-delivery/verification.md"
+      ]
+    },
+    {
+      "id": "UI-47",
+      "family": "UI",
+      "scenario": "交付下载/运行说明/用户接受",
+      "requirements": [
         "REQ-40"
       ],
       "implementationDisposition": "partial",
@@ -3734,22 +3755,7 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
-      ]
-    },
-    {
-      "id": "UI-47",
-      "family": "UI",
-      "scenario": "交付下载/运行说明/用户接受",
-      "requirements": [
-        "REQ-41"
-      ],
-      "implementationDisposition": "implemented",
-      "openRequirements": [],
-      "firstPlannedFullScenario": "R1",
-      "executionStatus": "not_run",
-      "evidence": [
-        "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
       ]
     },
     {
@@ -4288,7 +4294,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
       ]
     },
     {
@@ -4306,7 +4313,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
       ]
     },
     {
@@ -4324,7 +4332,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
       ]
     },
     {
@@ -4342,7 +4351,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
       ]
     },
     {
@@ -4360,7 +4370,8 @@
       "executionStatus": "not_run",
       "evidence": [
         "docs/implementation/R1_R3_IMPLEMENTATION_COVERAGE.md",
-        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md"
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md",
+        "evidence/development/r1-r3-implementation-validation-20261006-slice-271-req40-durable-delivery-foundation/verification.md"
       ]
     },
     {

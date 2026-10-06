@@ -6,7 +6,7 @@ import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, Emplo
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES} from '../data/workbench-api';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useArtifactDeliveryManifest, useArtifactDetail, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
+import {useArtifactDeliveryManifest, useArtifactDetail, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDurableDelivery, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
 import {formatEntityId} from '../domain/activity-presentation';
 import {labelDisplayValue, labelProjectEnvironmentPolicy, labelRole} from '../domain/display-labels';
 import {selectCheckpointForTask} from '../domain/checkpoint-projection';
@@ -28,6 +28,44 @@ function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: strin
 
 function DataRow({label, value, mono = false}: Readonly<{label: string; value: ReactNode; mono?: boolean}>) {
   return <div className={styles.detailRow}><span className={styles.fieldLabel}>{label}</span><span className={mono ? styles.detailValueMono : styles.detailValue}>{value}</span></div>;
+}
+
+function DurableDeliveryLifecycle({artifactId, query}: Readonly<{artifactId: string | null; query: ReturnType<typeof useDurableDelivery>}>) {
+  const delivery = query.data;
+  const sectionStateLabels: Readonly<Record<string, string>> = {available: '已提供', unavailable: '不可用', missing: '缺失', not_requested: '未请求'};
+  const deliveryStateLabels: Readonly<Record<string, string>> = {assembling: '组装中', ready: '就绪', invalidated: '已失效', withdrawn: '已撤回'};
+  const dispositionLabels: Readonly<Record<string, string>> = {not_requested: '未请求', awaiting_feedback: '等待反馈', accepted: '已接受', changes_requested: '请求修改'};
+  return <section className={styles.formStack} data-testid="durable-delivery-lifecycle">
+    <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>持久交付记录</span><h3 className={styles.sectionTitle}>交付状态与用户态度</h3></div></div>
+    <p className={styles.formHint}>这是独立于 Artifact 内部验收的只读记录。查看预览、下载 ZIP 或收到通知都不会改变用户态度。</p>
+    {artifactId === null ? <EmptyPanel detail="当前任务没有 Artifact，因此没有可查询的持久 DeliveryManifest 或 UserDisposition。" title="暂无持久交付记录" /> : null}
+    {artifactId !== null && query.isPending ? <div className={styles.emptyState}>正在读取持久交付记录</div> : null}
+    {artifactId !== null && query.isError ? <div className={styles.errorState} role="alert">持久交付记录不可用：{query.error.message}</div> : null}
+    {delivery ? <>
+      <div className={styles.detailRows}>
+        <DataRow label="Delivery ID / revision" value={`${delivery.manifest.deliveryId} / ${delivery.manifest.revision}`} mono />
+        <DataRow label="交付状态" value={`${deliveryStateLabels[delivery.manifest.state] ?? delivery.manifest.state}（${delivery.manifest.state}）`} />
+        <DataRow label="Artifact 文件 / 大小" value={`${delivery.manifest.artifact.fileName} · ${delivery.manifest.artifact.byteSize} bytes`} />
+        <DataRow label="Artifact SHA-256" value={delivery.manifest.artifact.sha256} mono />
+        <DataRow label="持久 Manifest SHA-256" value={delivery.manifestSha256} mono />
+      </div>
+      <div className={styles.recordList} aria-label="交付章节状态">
+        {delivery.manifest.sections.length === 0 ? <div className={styles.emptyState}>清单尚未记录章节状态。</div> : delivery.manifest.sections.map(section => <div className={styles.recordRow} key={section.key}>
+          <div className={styles.recordLead}><FileCheck2 aria-hidden="true" size={16} /><div><strong>{section.key}</strong><span>{section.detail || '没有附加说明'}</span></div></div>
+          <StatusBadge label={sectionStateLabels[section.state] ?? section.state} tone={section.state === 'available' ? 'success' : section.state === 'missing' ? 'warning' : 'neutral'} />
+        </div>)}
+      </div>
+      <div className={styles.detailRows}>
+        <DataRow label="用户态度（独立记录）" value={dispositionLabels[delivery.userDisposition.state] ?? delivery.userDisposition.state} />
+        <DataRow label="态度 revision / 对应清单 revision" value={`${delivery.userDisposition.revision} / ${delivery.userDisposition.manifestRevision}`} mono />
+        <DataRow label="记录者" value={delivery.userDisposition.actor || '未记录'} />
+        <DataRow label="理由 / 说明" value={delivery.userDisposition.reason || '未记录'} />
+        <DataRow label="反馈期限" value={delivery.userDisposition.feedbackDeadline || '未设置'} />
+        <DataRow label="request ID" value={delivery.userDisposition.requestId || '未记录'} mono />
+        <DataRow label="记录时间" value={delivery.userDisposition.createdAt || '未记录'} mono />
+      </div>
+    </> : null}
+  </section>;
 }
 
 function EmptyPanel({title, detail}: Readonly<{title: string; detail: string}>) {
@@ -340,9 +378,12 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const environmentPolicy = useDecideProjectEnvironmentPolicy(api, companyId);
   const environmentExecutorQualification = useDecideProjectEnvironmentExecutorQualification(api, companyId);
   const ensureEnvironment = useEnsureProjectEnvironment(api, companyId);
-  const artifactForTask = task === null ? null : overview.artifacts.find(item => item.taskId === task.taskId) ?? null;
+  const taskArtifacts = task === null ? [] : overview.artifacts.filter(item => item.taskId === task.taskId);
+  const [selectedArtifactId, setSelectedArtifactId] = useState<string | null>(null);
+  const artifactForTask = taskArtifacts.find(item => item.artifactId === selectedArtifactId) ?? taskArtifacts[0] ?? null;
   const artifactQuery = useArtifactDetail(api, companyId, artifactForTask?.artifactId ?? null);
   const deliveryManifestQuery = useArtifactDeliveryManifest(api, companyId, artifactForTask?.artifactId ?? null);
+  const durableDeliveryQuery = useDurableDelivery(api, companyId, artifactForTask?.artifactId ?? null);
   const [downloadingArtifact, setDownloadingArtifact] = useState(false);
   const [artifactDownloadError, setArtifactDownloadError] = useState<string | null>(null);
   const [environmentRationale, setEnvironmentRationale] = useState('');
@@ -641,9 +682,27 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       {task.kind === 'compat' ? <TaskInputManifestPanel api={api} companyId={companyId} taskId={task.taskId} /> : null}
     </section>;
   }
-  const artifacts = overview.artifacts.filter(artifact => artifact.taskId === task.taskId);
+  const artifacts = taskArtifacts;
   return <section className={styles.detailGrid}>
-    <article className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>浏览器 / 产物</span><h2 className={styles.sectionTitle}>测试与预览边界</h2></div><FolderOpen aria-hidden="true" className={styles.icon} size={18} /></div>{artifacts.length > 0 ? <div className={styles.recordList}>{artifacts.map(artifact => <div className={styles.recordRow} key={artifact.artifactId}><div className={styles.recordLead}><BadgeCheck aria-hidden="true" size={16} /><div><strong>{formatEntityId(artifact.artifactId)}</strong><span>{artifact.digest} · {artifact.bytes}</span></div></div><StatusBadge label={labelDisplayValue(artifact.verdict)} tone={artifact.verdict === 'passed' ? 'success' : artifact.verdict === 'failed' ? 'danger' : 'warning'} /></div>)}</div> : <EmptyPanel detail="当前只读数据没有该任务的预览地址或产物。" title="暂无可预览产物" />}{artifactQuery.isPending ? <div className={styles.emptyState}>正在读取产物内容</div> : artifactQuery.isError ? <div className={styles.errorState} role="alert">产物读取失败：{artifactQuery.error.message}</div> : artifactQuery.data ? <div className={styles.detailRows}><DataRow label="内容是否可用" value={artifactQuery.data.contentAvailable ? '是' : '否'} /><DataRow label="内容预览" value={artifactQuery.data.content || '内容不可得'} /></div> : null}{deliveryManifestQuery.isPending ? <div className={styles.emptyState}>正在读取交付清单</div> : deliveryManifestQuery.isError ? <div className={styles.errorState} role="alert">交付清单不可用：{deliveryManifestQuery.error.message}</div> : deliveryManifestQuery.data ? <><div className={styles.detailRows}><DataRow label="Manifest SHA-256" value={deliveryManifestQuery.data.manifestSha256} mono /><DataRow label="内容摘要" value={deliveryManifestQuery.data.manifest.content.sha256} mono /><DataRow label="内容大小" value={deliveryManifestQuery.data.manifest.content.byteSize + ' bytes'} /><DataRow label="检查点 / 验证回执" value={`${deliveryManifestQuery.data.manifest.qualification.checkpointId} / ${deliveryManifestQuery.data.manifest.qualification.validationReceiptId}`} mono /><DataRow label="工作区版本 / Runner" value={`${deliveryManifestQuery.data.manifest.qualification.workspaceRevision} / ${deliveryManifestQuery.data.manifest.qualification.runnerRevision}`} /></div><button className={styles.textButton} disabled={downloadingArtifact} onClick={() => { void downloadArtifact(); }} type="button">{downloadingArtifact ? '正在准备交付包…' : '下载含完整 Manifest 的 ZIP'}</button>{artifactDownloadError ? <div className={styles.errorState} role="alert">{artifactDownloadError}</div> : null}</> : null}</article>
+    <article className={styles.sectionCard}>
+      <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>浏览器 / 产物</span><h2 className={styles.sectionTitle}>测试与预览边界</h2></div><FolderOpen aria-hidden="true" className={styles.icon} size={18} /></div>
+      {artifacts.length > 1 ? <label className={styles.formLabel}>查看 Artifact 的详情、预览和下载
+        <select className={styles.formField} onChange={event => setSelectedArtifactId(event.target.value)} value={artifactForTask?.artifactId ?? ''}>
+          {artifacts.map(item => <option key={item.artifactId} value={item.artifactId}>{formatEntityId(item.artifactId)} · {labelDisplayValue(item.verdict)}</option>)}
+        </select>
+      </label> : null}
+      {artifacts.length > 0 ? <div className={styles.recordList}>{artifacts.map(item => <div className={styles.recordRow} key={item.artifactId}>
+        <div className={styles.recordLead}><BadgeCheck aria-hidden="true" size={16} /><div><strong>{formatEntityId(item.artifactId)}</strong><span>{item.digest} · {item.bytes}</span></div></div>
+        <StatusBadge label={labelDisplayValue(item.verdict)} tone={item.verdict === 'passed' ? 'success' : item.verdict === 'failed' ? 'danger' : 'warning'} />
+      </div>)}</div> : <EmptyPanel detail="当前只读数据没有该任务的预览地址或产物。" title="暂无可预览产物" />}
+      {artifactForTask !== null && artifactQuery.isPending ? <div className={styles.emptyState}>正在读取产物内容</div> : null}
+      {artifactForTask !== null && artifactQuery.isError ? <div className={styles.errorState} role="alert">产物读取失败：{artifactQuery.error.message}</div> : null}
+      {artifactForTask !== null && artifactQuery.data ? <div className={styles.detailRows}><DataRow label="内容是否可用" value={artifactQuery.data.contentAvailable ? '是' : '否'} /><DataRow label="内容预览" value={artifactQuery.data.content || '内容不可得'} /></div> : null}
+      {artifactForTask !== null && deliveryManifestQuery.isPending ? <div className={styles.emptyState}>正在读取 ZIP Manifest</div> : null}
+      {artifactForTask !== null && deliveryManifestQuery.isError ? <div className={styles.errorState} role="alert">ZIP Manifest 不可用：{deliveryManifestQuery.error.message}</div> : null}
+      {deliveryManifestQuery.data ? <><div className={styles.detailRows}><DataRow label="ZIP Manifest SHA-256" value={deliveryManifestQuery.data.manifestSha256} mono /><DataRow label="内容摘要" value={deliveryManifestQuery.data.manifest.content.sha256} mono /><DataRow label="内容大小" value={deliveryManifestQuery.data.manifest.content.byteSize + ' bytes'} /><DataRow label="检查点 / 验证回执" value={`${deliveryManifestQuery.data.manifest.qualification.checkpointId} / ${deliveryManifestQuery.data.manifest.qualification.validationReceiptId}`} mono /><DataRow label="工作区版本 / Runner" value={`${deliveryManifestQuery.data.manifest.qualification.workspaceRevision} / ${deliveryManifestQuery.data.manifest.qualification.runnerRevision}`} /></div><button className={styles.textButton} disabled={downloadingArtifact} onClick={() => { void downloadArtifact(); }} type="button">{downloadingArtifact ? '正在准备 ZIP…' : '下载 Artifact ZIP（含校验清单）'}</button>{artifactDownloadError ? <div className={styles.errorState} role="alert">{artifactDownloadError}</div> : null}</> : null}
+      <DurableDeliveryLifecycle artifactId={artifactForTask?.artifactId ?? null} query={durableDeliveryQuery} />
+    </article>
     <article className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>验收边界</span><h2 className={styles.sectionTitle}>验收不是预览</h2></div><ShieldAlert aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.detailRows}><DataRow label="验收状态" value={labelDisplayValue(task.acceptance)} /><DataRow label="合同版本" value={task.contractRevisionId ?? '不可得'} mono /><DataRow label="检查点" value={checkpoint?.checkpointId ?? '暂无检查点'} mono /><DataRow label="预览状态" value="未提供" /><DataRow label="最终验收" value={task.acceptance === 'passed' ? '已通过' : '未通过'}/></div></article>
   </section>;
 }

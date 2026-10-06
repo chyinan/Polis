@@ -462,6 +462,20 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			response.Header().Set("Cache-Control", "no-store")
 			response.Header().Set("X-Polis-Manifest-SHA256", manifest.ManifestSHA256)
 			writeJSON(response, http.StatusOK, manifest)
+		case "artifacts.delivery":
+			lifecycleReader, ok := model.(DurableArtifactDeliveryLifecycleReader)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "durable artifact delivery lifecycle reader is unavailable")
+				return
+			}
+			lifecycle, err := lifecycleReader.GetDurableArtifactDeliveryLifecycle(ctx, path.companyID, path.resourceID)
+			if err != nil {
+				writeModelError(response, err)
+				return
+			}
+			response.Header().Set("Cache-Control", "no-store")
+			response.Header().Set("X-Polis-Manifest-SHA256", lifecycle.ManifestSHA256)
+			writeJSON(response, http.StatusOK, lifecycle)
 		case "artifacts.download":
 			deliveryReader, ok := model.(ArtifactDeliveryReader)
 			if !ok {
@@ -2401,7 +2415,7 @@ func parsePath(path string) (parsedPath, bool) {
 		return parsedPath{companyID: companyID, missionID: missionID, resourceID: requestID, endpoint: "mission_change_requests." + parts[5]}, true
 	}
 	if len(parts) != 4 || parts[1] != "missions" || parts[2] == "" || parts[3] == "" {
-		if len(parts) == 4 && parts[2] != "" && parts[1] == "artifacts" && (parts[3] == "manifest" || parts[3] == "download") {
+		if len(parts) == 4 && parts[2] != "" && parts[1] == "artifacts" && (parts[3] == "manifest" || parts[3] == "download" || parts[3] == "delivery") {
 			resourceID, err := url.PathUnescape(parts[2])
 			if err != nil {
 				return parsedPath{}, false

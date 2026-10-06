@@ -182,6 +182,46 @@ export type ArtifactDeliveryManifestResponse = Readonly<{
   manifestSha256: string;
 }>;
 
+export type DurableDeliverySectionState = 'available' | 'unavailable' | 'missing' | 'not_requested';
+export type UserDispositionState = 'not_requested' | 'awaiting_feedback' | 'accepted' | 'changes_requested';
+
+export type DurableDeliverySectionView = Readonly<{
+  key: string;
+  state: DurableDeliverySectionState;
+  detail: string;
+}>;
+
+export type DurableDeliveryManifestView = Readonly<{
+  schemaVersion: 'polis-durable-delivery-manifest@1';
+  deliveryId: string;
+  revision: string;
+  companyId: string;
+  missionId: string;
+  taskId: string;
+  artifactId: string;
+  state: 'assembling' | 'ready' | 'invalidated' | 'withdrawn';
+  artifact: Readonly<{fileName: 'artifact.bin'; byteSize: string; sha256: string}>;
+  sections: ReadonlyArray<DurableDeliverySectionView>;
+  createdAt: string;
+}>;
+
+export type DurableUserDispositionView = Readonly<{
+  revision: string;
+  manifestRevision: string;
+  state: UserDispositionState;
+  actor: string;
+  reason: string;
+  requestId: string;
+  feedbackDeadline: string;
+  createdAt: string;
+}>;
+
+export type DurableDeliveryResponse = Readonly<{
+  manifest: DurableDeliveryManifestView;
+  manifestSha256: string;
+  userDisposition: DurableUserDispositionView;
+}>;
+
 export type ProjectEnvironmentPolicyManifestView = Readonly<{
   schemaVersion: 'project-environment-policy@1';
   profileId: 'windows-node-npm@1' | 'linux-node-npm@1';
