@@ -1,3 +1,7 @@
+## Latest continuation status (Slice 275, REQ-40 historical Manifest backfill)
+
+Added an explicit idempotent management path to backfill missing durable Manifest/UserDisposition rows for legacy deliverable/ready Artifacts. The backfill remains `assembling`/`not_requested` and preserves missing evidence; it does not claim ready, accepted, qualified or completed. No management DSN/runtime operation ran; REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-275-req40-historical-backfill/verification.md`.
+
 ## Latest continuation status (Slice 274, REQ-40 Company backlog read projection)
 
 The durable delivery Workbench lifecycle now includes a bounded `feedbackBacklog` read projection for Schema113 terminal delivery events. The read store is Company/Artifact scoped, caps results at 32 `open` records and validates identity/revisions/actor/reason before returning them; a pre-Schema114 runtime without the optional table yields an empty backlog. Schema114 adds the delivery-leading index; frontend runtime validation and the Task panel render the records without lifecycle side effects. No runtime database, Worker/provider, browser or frozen scenario ran. REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-274-req40-backlog-read-projection/verification.md`.

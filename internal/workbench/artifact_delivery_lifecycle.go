@@ -245,10 +245,13 @@ func validDurableDeliverySections(sections []DurableDeliveryManifestSection, man
 			return false
 		}
 	}
-	if sections[2].State != "available" || sections[4].State != "available" {
+	if sections[2].State != "available" {
 		return false
 	}
 	if manifestState == "ready" {
+		if sections[4].State != "available" {
+			return false
+		}
 		for index, section := range sections {
 			if index != 7 && section.State != "available" {
 				return false

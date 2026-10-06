@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 275, REQ-40 historical Manifest backfill)
+
+Added the explicit `polis delivery-backfill COMPANY REQUEST_ID` management path. It idempotently appends `assembling` revision 1 and `not_requested` UserDisposition only for existing deliverable/ready Artifacts without a durable Manifest, preserving unavailable provenance/build/instruction/verification/limitation/license sections. It never infers ready, accepted, qualified or Mission completion. The command requires an explicit management DSN/blob-root invocation and was not run; Go targeted tests/build and diff checks pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-275-req40-historical-backfill/verification.md`.
+
+Next local slice: review the remaining REQ-40 owner policy gates; do not invent feedback deadlines, closeout acceptance or revision-task semantics.
+
 ## Latest continuation status (Slice 274, REQ-40 Company backlog read projection)
 
 Added a read-only `feedbackBacklog` projection to the durable Artifact delivery lifecycle. The Go read store selects at most 32 current-delivery events and fails closed on cross-scope IDs, noncanonical revisions, non-open status, invalid actor/reason or malformed request IDs; it also tolerates a pre-Schema114 runtime by returning an empty backlog when the optional table is absent. Workbench validation requires the scoped array and the Task delivery panel displays the records without creating Tasks, waking Missions or changing terminal state. Schema 114 adds the delivery-leading index; no database runtime, Worker/provider, browser or external account action ran, and all 232 frozen scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-274-req40-backlog-read-projection/verification.md`.

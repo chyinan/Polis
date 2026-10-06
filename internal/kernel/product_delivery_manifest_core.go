@@ -55,6 +55,16 @@ type readyProductDeliveryManifestInput struct {
 	Evidence           readyProductDeliveryEvidence
 }
 
+type historicalProductDeliveryManifestInput struct {
+	CompanyID      string
+	MissionID      string
+	TaskID         string
+	ArtifactID     string
+	ArtifactBytes  int
+	ArtifactSHA256 string
+	CreatedAt      time.Time
+}
+
 func validateProductDeliveryManifestCompletionCommand(command ProductDeliveryManifestCompletionCommand) error {
 	if !core.ValidID(command.ArtifactID) || !core.ValidID(command.RequestID) || command.ExpectedManifestRevision <= 0 || command.ExpectedManifestRevision == math.MaxInt64 {
 		return fmt.Errorf("invalid delivery manifest completion command")
@@ -128,6 +138,40 @@ func buildReadyProductDeliveryManifest(input readyProductDeliveryManifestInput) 
 	}
 	digest := sha256.Sum256(manifestBytes)
 	return manifest, manifestBytes, hex.EncodeToString(digest[:]), nil
+}
+
+func buildHistoricalProductDeliveryManifest(input historicalProductDeliveryManifestInput) (durableProductDeliveryManifest, []byte, string, error) {
+	if !core.ValidID(input.CompanyID) || !core.ValidID(input.MissionID) || !core.ValidID(input.TaskID) || !core.ValidID(input.ArtifactID) || input.ArtifactBytes <= 0 || input.ArtifactBytes > 64*1024*1024 || !validSHA256(input.ArtifactSHA256) || input.CreatedAt.IsZero() {
+		return durableProductDeliveryManifest{}, nil, "", fmt.Errorf("invalid historical delivery manifest identity")
+	}
+	byteSize := strconv.Itoa(input.ArtifactBytes)
+	manifest := durableProductDeliveryManifest{
+		SchemaVersion: durableProductDeliveryManifestSchema, DeliveryID: input.ArtifactID, Revision: "1",
+		CompanyID: input.CompanyID, MissionID: input.MissionID, TaskID: input.TaskID, ArtifactID: input.ArtifactID, State: "assembling",
+		Artifact: durableProductDeliveryArtifact{FileName: "artifact.bin", ByteSize: byteSize, SHA256: input.ArtifactSHA256},
+		Sections: []durableProductDeliveryManifestSection{
+			{Key: "source_inputs", State: "unavailable", Detail: "Historical backfill has no captured source-input provenance."},
+			{Key: "environment_build", State: "unavailable", Detail: "Historical backfill has no captured environment/build evidence."},
+			{Key: "file_inventory", State: "available", Detail: fmt.Sprintf("artifact.bin; bytes=%s; sha256=%s", byteSize, input.ArtifactSHA256)},
+			{Key: "run_instructions", State: "unavailable", Detail: "Historical backfill has no captured reproducible run instructions."},
+			{Key: "verification", State: "unavailable", Detail: "Historical backfill does not infer independent delivery qualification."},
+			{Key: "limitations", State: "unavailable", Detail: "Historical backfill has no reviewed limitation declaration."},
+			{Key: "license_source", State: "unavailable", Detail: "Historical backfill has no captured license/source declaration."},
+			{Key: "feedback", State: "not_requested", Detail: "No user feedback has been requested; download or preview is not acceptance."},
+		},
+		CreatedAt: input.CreatedAt.UTC().Format(time.RFC3339Nano),
+	}
+	for _, section := range manifest.Sections {
+		if !validDeliveryManifestDetail(section.Detail) {
+			return durableProductDeliveryManifest{}, nil, "", fmt.Errorf("historical delivery manifest section %q is invalid", section.Key)
+		}
+	}
+	raw, err := marshalDurableProductDeliveryManifest(manifest)
+	if err != nil {
+		return durableProductDeliveryManifest{}, nil, "", err
+	}
+	digest := sha256.Sum256(raw)
+	return manifest, raw, hex.EncodeToString(digest[:]), nil
 }
 
 func marshalDurableProductDeliveryManifest(manifest durableProductDeliveryManifest) ([]byte, error) {

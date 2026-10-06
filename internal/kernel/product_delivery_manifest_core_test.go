@@ -64,6 +64,24 @@ func TestBuildReadyProductDeliveryManifestBindsAllEvidence(t *testing.T) {
 	}
 }
 
+func TestBuildHistoricalProductDeliveryManifestPreservesMissingEvidence(t *testing.T) {
+	manifest, raw, digest, err := buildHistoricalProductDeliveryManifest(historicalProductDeliveryManifestInput{
+		CompanyID: "company-1", MissionID: "mission-1", TaskID: "task-1", ArtifactID: "artifact-1",
+		ArtifactBytes: 128, ArtifactSHA256: stringsRepeatForTest('a', 64), CreatedAt: time.Date(2026, 10, 6, 1, 2, 3, 4, time.UTC),
+	})
+	if err != nil {
+		t.Fatalf("buildHistoricalProductDeliveryManifest() error = %v", err)
+	}
+	if manifest.Revision != "1" || manifest.State != "assembling" || len(raw) == 0 || len(digest) != 64 {
+		t.Fatalf("historical manifest identity = revision=%q state=%q raw=%d digest=%q", manifest.Revision, manifest.State, len(raw), digest)
+	}
+	for _, section := range manifest.Sections {
+		if section.Key != "file_inventory" && section.Key != "verification" && section.Key != "feedback" && section.State != "unavailable" {
+			t.Fatalf("historical section %q state=%q, want unavailable", section.Key, section.State)
+		}
+	}
+}
+
 func TestBuildReadyProductDeliveryManifestRejectsMissingEvidence(t *testing.T) {
 	input := readyProductDeliveryManifestInput{
 		CompanyID:          "company-1",

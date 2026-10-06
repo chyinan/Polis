@@ -43,7 +43,7 @@ func run() error {
 		select {}
 	}
 	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: polis migrate | migrate-to VERSION | migration-status | migration-attempt-status | sidecar-info | serve | cas-collect [flags] | recovery-backup OUTPUT_DIRECTORY | recovery-backup-verify PACKAGE_DIRECTORY | recovery-backup-restore PACKAGE_DIRECTORY BLOB_ROOT | recovery-generation-verify PACKAGE_DIRECTORY BLOB_ROOT | linux-node-toolchain-sha256 | import-git COMPANY MISSION REPOSITORY_PATH COMMIT_ID REQUEST_ID [INPUT_ID] | create COMPANY MISSION | start COMPANY MISSION | status COMPANY MISSION")
+		return fmt.Errorf("usage: polis migrate | migrate-to VERSION | migration-status | migration-attempt-status | sidecar-info | serve | cas-collect [flags] | recovery-backup OUTPUT_DIRECTORY | recovery-backup-verify PACKAGE_DIRECTORY | recovery-backup-restore PACKAGE_DIRECTORY BLOB_ROOT | recovery-generation-verify PACKAGE_DIRECTORY BLOB_ROOT | linux-node-toolchain-sha256 | import-git COMPANY MISSION REPOSITORY_PATH COMMIT_ID REQUEST_ID [INPUT_ID] | delivery-backfill COMPANY REQUEST_ID | create COMPANY MISSION | start COMPANY MISSION | status COMPANY MISSION")
 	}
 	if os.Args[1] == "sidecar-info" {
 		if len(os.Args) != 2 {
@@ -142,6 +142,25 @@ func run() error {
 			return statusErr
 		}
 		return json.NewEncoder(os.Stdout).Encode(records)
+	}
+	if os.Args[1] == "delivery-backfill" {
+		if len(os.Args) != 4 {
+			return fmt.Errorf("usage: polis delivery-backfill COMPANY REQUEST_ID")
+		}
+		if dsn == "" || os.Getenv("POLIS_BLOB_ROOT") == "" {
+			return fmt.Errorf("POLIS_DSN and POLIS_BLOB_ROOT are required")
+		}
+		root := os.Getenv("POLIS_BLOB_ROOT")
+		runtime, err := kernel.Open(ctx, dsn, root)
+		if err != nil {
+			return err
+		}
+		defer runtime.Close()
+		result, err := runtime.TXBackfillProductDeliveryManifests(ctx, runtime.LocalScope(os.Args[2]), os.Args[3])
+		if err != nil {
+			return err
+		}
+		return json.NewEncoder(os.Stdout).Encode(result)
 	}
 	if len(os.Args) != 4 {
 		return fmt.Errorf("company and mission required")
