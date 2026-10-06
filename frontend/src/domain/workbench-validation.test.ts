@@ -198,6 +198,32 @@ function companyOverviewWithEmployee(employee: unknown): Readonly<Record<string,
 }
 
 describe('Workbench view validation', () => {
+  it('accepts only an unverified human-gated TaskRevision projection', () => {
+    const employee = {
+      employeeId: 'emp-backend', displayName: 'Backend', role: 'backend', roleRevision: null, epoch: '1',
+      sessionId: null, sessionState: null, profile: null, currentTask: null,
+      status: {primary: 'sleeping', tone: 'neutral', reason: 'No pending work.', activeModelRequests: '0', inFlightTools: '0', observedAt: meta.observedAt},
+      schedule: null, toolBudget: {limit: null, used: null, remaining: null, quality: 'unavailable'},
+      qualification: {status: 'unverified', evidenceId: null, policyRevision: null}, openObligationCount: '0',
+    };
+    const semanticRevision = {
+      taskId: 'task-1', revision: '1', bindingSha256: 'a'.repeat(64), roleRevisionSha256: 'b'.repeat(64),
+      taskType: 'backend', taskKind: 'compat', ownerEmployeeId: 'emp-backend', qualification: 'unverified',
+      requiresHuman: true, reasonCode: 'task_revision_unqualified', decision: 'approved',
+      decisionRationale: 'owner reviewed the task contract', decisionActor: 'local-owner', decisionRequestId: 'decision-1', decisionCreatedAt: '2026-10-07T00:00:00Z',
+    } as const;
+    const base = companyOverviewWithEmployee(employee);
+    const task = {taskId: 'task-1', title: 'compat', kind: 'compat', state: 'ready', ownerEmployeeId: 'emp-backend', generation: '1', contractRevisionId: null, workspaceRevision: null, acceptance: 'not_started', dependencyLabel: null, semanticRevision};
+    const valid = validateCompanyOverview({...base, tasks: [task]}, companyId);
+    const invalid = validateCompanyOverview({...base, tasks: [{...task, semanticRevision: {...semanticRevision, requiresHuman: false}}]}, companyId);
+    const proposed = validateCompanyOverview({...base, tasks: [{...task, semanticRevision: {...semanticRevision, decision: 'proposed', decisionRationale: '', decisionActor: '', decisionRequestId: '', decisionCreatedAt: ''}}]}, companyId);
+    const crossTask = validateCompanyOverview({...base, tasks: [{...task, semanticRevision: {...semanticRevision, taskId: 'other-task'}}]}, companyId);
+    expect(valid.success, JSON.stringify(valid)).toBe(true);
+    expect(invalid.success).toBe(false);
+    expect(proposed.success, JSON.stringify(proposed)).toBe(true);
+    expect(crossTask.success).toBe(false);
+  });
+
   it('accepts the R3 profiles only while qualification and execution remain closed', () => {
     const contentProfile = {
       id: 'content-operations-reference', revision: 'content-operations@1', domain: 'content_operations',

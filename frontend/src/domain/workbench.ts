@@ -1513,6 +1513,25 @@ export type TaskSummary = Readonly<{
   workspaceRevision: string | null;
   acceptance: 'not_started' | 'candidate' | 'passed' | 'failed' | 'inconclusive';
   dependencyLabel: string | null;
+  semanticRevision?: TaskSemanticRevisionView | null;
+}>;
+
+export type TaskSemanticRevisionView = Readonly<{
+  taskId: string;
+  revision: string;
+  bindingSha256: string;
+  roleRevisionSha256: string;
+  taskType: string;
+  taskKind: string;
+  ownerEmployeeId: string;
+  qualification: 'unverified';
+  requiresHuman: true;
+  reasonCode: 'task_revision_unqualified';
+  decision: 'proposed' | 'approved' | 'rejected' | 'revoked';
+  decisionRationale: string;
+  decisionActor: string;
+  decisionRequestId: string;
+  decisionCreatedAt: string;
 }>;
 
 export type ContractRevisionSummary = Readonly<{

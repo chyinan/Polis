@@ -125,6 +125,7 @@ describe('RealWorkbenchApi', () => {
       changeSummary: 'Define empty-result behavior.', proposedTitle: 'API revision', proposedGoal: 'Return an empty result list.',
       proposedAcceptanceContract: {revision: 'text-acceptance@1' as const, required_text: ['Task summary:', 'Empty results:']},
       blockPreviousResults: true, state: 'queued', impactRevision: 1, impactSha256: 'b'.repeat(64), impact,
+      planningAssessment: null,
       successorMissionId: null, inputRevisionMap: [], createdAt: '2026-09-26T00:00:00Z',
       events: [{eventId: 'event-1', state: 'queued', impactRevision: 1, successorMissionId: null, reasonCode: 'awaiting_safe_boundary', createdAt: '2026-09-26T00:00:00Z', inputRevisionMap: []}],
     };
@@ -604,12 +605,12 @@ describe('RealWorkbenchApi', () => {
     const api = new RealWorkbenchApi('/api/workbench');
 
     const acceptanceContract = {revision: 'text-acceptance@1' as const, required_text: ['Mission ID: {{mission_id}}']};
-    const receipt = await api.createMission({companyId: 'company-1', title: 'goal', goal: 'body', acceptanceContract, requestId: 'request-1'});
+    const receipt = await api.createMission({companyId: 'company-1', title: 'goal', goal: 'body', acceptanceContract, protocolToolCallLimit: 16, requestId: 'request-1'});
 
     expect(receipt.targetId).toBe('mission-1');
     expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/missions', expect.objectContaining({
       method: 'POST',
-      body: JSON.stringify({title: 'goal', goal: 'body', acceptanceContract, requestId: 'request-1'}),
+      body: JSON.stringify({title: 'goal', goal: 'body', acceptanceContract, protocolToolCallLimit: 16, requestId: 'request-1'}),
     }));
   });
 

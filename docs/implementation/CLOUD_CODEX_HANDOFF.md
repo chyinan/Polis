@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 301)
+
+Added the optional read-only TaskSummary semantic TaskRevision projection.
+Company/Mission/Task scope, Task owner/kind alignment, digest/qualification
+validation and latest decision state are checked in the read store; older
+schemas remain compatible. Frontend validation and display are read-only, with
+no approval or execution control. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-301-req02-task-revision-projection/verification.md`.
+
 ## Current continuation pointer (Slice 300)
 
 Added the monotonic TaskRevision owner-decision lifecycle and Schema123

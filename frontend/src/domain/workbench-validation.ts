@@ -80,6 +80,7 @@ import type {
   StatusKey,
   StatusTone,
   TaskSummary,
+  TaskSemanticRevisionView,
   ViewMeta,
   MissionCommandReceipt,
   MissionCommandType,
@@ -657,11 +658,11 @@ function isCollaborationItem(value: unknown): value is CollaborationItem {
   return isRecord(value)
     && hasString(value, 'messageId')
     && hasString(value, 'missionId')
-    && hasString(value, 'taskId')
+    && typeof value.taskId === 'string' && value.taskId !== ''
     && hasString(value, 'senderEmployeeId')
     && hasString(value, 'recipientEmployeeId')
     && hasString(value, 'content')
-    && hasString(value, 'kind')
+    && typeof value.kind === 'string' && value.kind !== ''
     && hasString(value, 'deliveryState')
     && isNullableString(value.contractRevisionId)
     && isNullableString(value.obligationId)
@@ -912,18 +913,42 @@ function isContractRevision(value: unknown): value is ContractRevisionSummary {
     && isNullableString(value.accepterEmployeeId);
 }
 
-function isTaskSummary(value: unknown): value is TaskSummary {
+function isTaskSemanticRevision(value: unknown): value is TaskSemanticRevisionView {
   return isRecord(value)
     && hasString(value, 'taskId')
+    && typeof value.revision === 'string' && /^[1-9][0-9]*$/.test(value.revision)
+    && typeof value.bindingSha256 === 'string' && /^[a-f0-9]{64}$/.test(value.bindingSha256)
+    && typeof value.roleRevisionSha256 === 'string' && /^[a-f0-9]{64}$/.test(value.roleRevisionSha256)
+    && hasString(value, 'taskType')
+    && hasString(value, 'taskKind')
+    && typeof value.ownerEmployeeId === 'string' && value.ownerEmployeeId !== ''
+    && value.qualification === 'unverified'
+    && value.requiresHuman === true
+    && value.reasonCode === 'task_revision_unqualified'
+    && isOneOf(value.decision, ['proposed', 'approved', 'rejected', 'revoked'])
+    && typeof value.decisionRationale === 'string'
+    && typeof value.decisionActor === 'string'
+    && typeof value.decisionRequestId === 'string'
+    && typeof value.decisionCreatedAt === 'string';
+}
+
+function isTaskSemanticRevisionForTask(value: unknown, taskId: string, ownerEmployeeId: string, taskKind: string): value is TaskSemanticRevisionView | null {
+  return value === null || (isTaskSemanticRevision(value) && value.taskId === taskId && value.ownerEmployeeId === ownerEmployeeId && value.taskKind === taskKind);
+}
+
+function isTaskSummary(value: unknown): value is TaskSummary {
+  return isRecord(value)
+    && typeof value.taskId === 'string' && value.taskId !== ''
     && hasString(value, 'title')
-    && hasString(value, 'kind')
+    && typeof value.kind === 'string' && value.kind !== ''
     && isOneOf(value.state, ['ready', 'working', 'candidate', 'completed', 'blocked', 'cancelled'])
-    && hasString(value, 'ownerEmployeeId')
+    && typeof value.ownerEmployeeId === 'string' && value.ownerEmployeeId !== ''
     && hasString(value, 'generation')
     && isNullableString(value.contractRevisionId)
     && isNullableString(value.workspaceRevision)
     && isOneOf(value.acceptance, ['not_started', 'candidate', 'passed', 'failed', 'inconclusive'])
-    && isNullableString(value.dependencyLabel);
+    && isNullableString(value.dependencyLabel)
+    && (!('semanticRevision' in value) || isTaskSemanticRevisionForTask(value.semanticRevision, value.taskId, value.ownerEmployeeId, value.kind));
 }
 
 function isObligationSummary(value: unknown): value is ObligationSummary {

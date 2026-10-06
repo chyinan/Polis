@@ -132,4 +132,14 @@ execution. Targeted DB/spec/control/workbench/kernel tests pass; no migration,
 Worker/provider/browser/external account or scenario ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-300-req02-task-revision-decisions/verification.md`.
 
+# Latest checkpoint: Slice301 REQ-02 TaskRevision Workbench projection
+
+TaskSummary now optionally shows the latest durable semantic TaskRevision and
+owner decision. Scope, Task owner/kind, digest, qualification and decision
+validation fail closed; old schemas remain compatible and the UI is read-only.
+Frontend 146/146 tests, build, full Go tests and command build pass; no
+migration/runtime/Worker/provider/browser/external account/scenario ran.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-301-req02-task-revision-projection/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

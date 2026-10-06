@@ -1,3 +1,11 @@
+## Latest continuation status (Slice 301, REQ-02 TaskRevision Workbench projection)
+
+TaskSummary now optionally exposes the latest durable semantic TaskRevision and
+owner decision. The read store fails closed on malformed/cross-scope data and
+older schemas remain compatible; frontend rendering is read-only and does not
+approve or execute anything. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-301-req02-task-revision-projection/verification.md`.
+
 ## Latest continuation status (Slice 300, REQ-02 TaskRevision owner-decision lifecycle)
 
 Schema123 now stores append-only owner decisions for exact semantic

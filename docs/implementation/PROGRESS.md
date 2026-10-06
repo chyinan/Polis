@@ -1,3 +1,12 @@
+## Latest continuation status (Slice 301, REQ-02 TaskRevision Workbench projection)
+
+TaskSummary now optionally shows the latest durable semantic TaskRevision and
+owner decision. Scope, Task owner/kind, digest, qualification and decision
+validation fail closed; old schemas remain compatible and the UI is read-only.
+Frontend 146/146 tests, build, full Go tests and command build pass; no
+migration/runtime/Worker/provider/browser/external account/scenario ran.
+Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-301-req02-task-revision-projection/verification.md`.
+
 ## Latest continuation status (Slice 300, REQ-02 TaskRevision owner-decision lifecycle)
 
 Added Schema123 append-only owner decisions and a pure monotonic state machine

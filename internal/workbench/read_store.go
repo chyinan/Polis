@@ -777,6 +777,10 @@ LIMIT 1`, companyID).Scan(&mission.ID, &mission.Title, &mission.Goal, &mission.S
 	if err != nil {
 		return CompanyOverviewView{}, err
 	}
+	taskSemanticRevisions, err := readTaskSemanticRevisions(ctx, tx, companyID, mission.ID)
+	if err != nil {
+		return CompanyOverviewView{}, err
+	}
 	employees, err := readEmployees(ctx, tx, companyID)
 	if err != nil {
 		return CompanyOverviewView{}, err
@@ -822,7 +826,7 @@ LIMIT 1`, companyID).Scan(&mission.ID, &mission.Title, &mission.Goal, &mission.S
 	currentContract := currentRevision(revisions)
 	taskViews := make([]TaskSummary, 0, len(tasks))
 	for _, task := range tasks {
-		taskViews = append(taskViews, taskView(task, taskRevisions, workspaces, artifacts, reviews))
+		taskViews = append(taskViews, taskView(task, taskRevisions, taskSemanticRevisions, workspaces, artifacts, reviews))
 	}
 	obligationViews := make([]ObligationSummary, 0, len(obligations))
 	for _, obligation := range obligations {
@@ -969,6 +973,62 @@ func readTasks(ctx context.Context, tx pgx.Tx, companyID, missionID string) ([]t
 		items = append(items, item)
 	}
 	return items, rows.Err()
+}
+
+func readTaskSemanticRevisions(ctx context.Context, tx pgx.Tx, companyID, missionID string) (map[string]TaskSemanticRevisionView, error) {
+	result := make(map[string]TaskSemanticRevisionView)
+	if missionID == "unavailable" {
+		return result, nil
+	}
+	var revisionAvailable, decisionAvailable bool
+	if err := tx.QueryRow(ctx, "SELECT to_regclass('public.task_semantic_revisions') IS NOT NULL").Scan(&revisionAvailable); err != nil {
+		return nil, err
+	}
+	if !revisionAvailable {
+		return result, nil
+	}
+	if err := tx.QueryRow(ctx, "SELECT to_regclass('public.task_semantic_revision_decisions') IS NOT NULL").Scan(&decisionAvailable); err != nil {
+		return nil, err
+	}
+	query := `SELECT r.task_id,t.owner,t.kind,r.revision::text,r.binding_sha256,r.role_revision_sha256,r.task_type,r.task_kind,r.owner_employee_id,r.qualification,r.requires_human,r.reason_code,
+'proposed','', '', '', ''
+FROM task_semantic_revisions r JOIN tasks t ON t.company_id=r.company_id AND t.id=r.task_id
+WHERE r.company_id=$1 AND t.mission_id=$2 ORDER BY r.task_id,r.revision DESC`
+	if decisionAvailable {
+		query = `SELECT r.task_id,t.owner,t.kind,r.revision::text,r.binding_sha256,r.role_revision_sha256,r.task_type,r.task_kind,r.owner_employee_id,r.qualification,r.requires_human,r.reason_code,
+COALESCE(d.decision,'proposed'),COALESCE(d.rationale,''),COALESCE(d.actor,''),COALESCE(d.request_id,''),COALESCE(d.created_at::text,'')
+FROM task_semantic_revisions r JOIN tasks t ON t.company_id=r.company_id AND t.id=r.task_id
+LEFT JOIN LATERAL (
+ SELECT decision,rationale,actor,request_id,created_at
+ FROM task_semantic_revision_decisions
+ WHERE company_id=r.company_id AND task_id=r.task_id AND revision=r.revision AND binding_sha256=r.binding_sha256
+ ORDER BY event_seq DESC LIMIT 1
+) d ON true
+WHERE r.company_id=$1 AND t.mission_id=$2 ORDER BY r.task_id,r.revision DESC`
+	}
+	rows, err := tx.Query(ctx, query, companyID, missionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var item TaskSemanticRevisionView
+		var taskOwner, taskKind string
+		if err := rows.Scan(&item.TaskID, &taskOwner, &taskKind, &item.Revision, &item.BindingSHA256, &item.RoleRevisionSHA256, &item.TaskType, &item.TaskKind, &item.OwnerEmployeeID, &item.Qualification, &item.RequiresHuman, &item.ReasonCode, &item.Decision, &item.DecisionRationale, &item.DecisionActor, &item.DecisionRequestID, &item.DecisionCreatedAt); err != nil {
+			return nil, err
+		}
+		if _, exists := result[item.TaskID]; exists {
+			continue
+		}
+		if taskOwner != item.OwnerEmployeeID || taskKind != item.TaskKind || !validDeliverySHA256(item.BindingSHA256) || !validDeliverySHA256(item.RoleRevisionSHA256) || item.Revision == "" || item.TaskType == "" || item.TaskKind == "" || item.OwnerEmployeeID == "" || item.Qualification != "unverified" || !item.RequiresHuman || item.ReasonCode != "task_revision_unqualified" || (item.Decision != "proposed" && item.Decision != "approved" && item.Decision != "rejected" && item.Decision != "revoked") {
+			return nil, core.Integrity
+		}
+		if _, err := strconv.ParseInt(item.Revision, 10, 64); err != nil {
+			return nil, core.Integrity
+		}
+		result[item.TaskID] = item
+	}
+	return result, rows.Err()
 }
 
 func readEmployees(ctx context.Context, tx pgx.Tx, companyID string) ([]employeeRow, error) {
@@ -1313,7 +1373,7 @@ func currentRevision(rows []revisionRow) *ContractRevisionSummary {
 	return &view
 }
 
-func taskView(row taskRow, revisions map[string]taskRevisionRow, workspaces map[string]workspaceRow, artifacts []artifactRow, reviews map[string]string) TaskSummary {
+func taskView(row taskRow, revisions map[string]taskRevisionRow, semanticRevisions map[string]TaskSemanticRevisionView, workspaces map[string]workspaceRow, artifacts []artifactRow, reviews map[string]string) TaskSummary {
 	var contractID *string
 	if revision, exists := revisions[row.ID]; exists {
 		contractID = pointer(revision.ContractID)
@@ -1346,7 +1406,12 @@ func taskView(row taskRow, revisions map[string]taskRevisionRow, workspaces map[
 			}
 		}
 	}
-	return TaskSummary{TaskID: row.ID, Title: row.Kind, Kind: row.Kind, State: mapTaskState(row.State), OwnerEmployeeID: row.Owner, Generation: stringValue(row.Generation), ContractRevisionID: contractID, WorkspaceRevision: workspaceRevision, Acceptance: mapAcceptance(acceptance), DependencyLabel: nil}
+	var semanticRevision *TaskSemanticRevisionView
+	if item, exists := semanticRevisions[row.ID]; exists {
+		copy := item
+		semanticRevision = &copy
+	}
+	return TaskSummary{TaskID: row.ID, Title: row.Kind, Kind: row.Kind, State: mapTaskState(row.State), OwnerEmployeeID: row.Owner, Generation: stringValue(row.Generation), ContractRevisionID: contractID, WorkspaceRevision: workspaceRevision, Acceptance: mapAcceptance(acceptance), DependencyLabel: nil, SemanticRevision: semanticRevision}
 }
 
 func employeeViews(rows []employeeRow, tasks []taskRow, obligations []ObligationSummary, observedAt string) ([]EmployeeSummary, TeamSummary, ResourceSummary) {

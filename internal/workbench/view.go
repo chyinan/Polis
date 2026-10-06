@@ -104,16 +104,35 @@ type EmployeeSummary struct {
 }
 
 type TaskSummary struct {
-	TaskID             string  `json:"taskId"`
-	Title              string  `json:"title"`
-	Kind               string  `json:"kind"`
-	State              string  `json:"state"`
-	OwnerEmployeeID    string  `json:"ownerEmployeeId"`
-	Generation         string  `json:"generation"`
-	ContractRevisionID *string `json:"contractRevisionId"`
-	WorkspaceRevision  *string `json:"workspaceRevision"`
-	Acceptance         string  `json:"acceptance"`
-	DependencyLabel    *string `json:"dependencyLabel"`
+	TaskID             string                    `json:"taskId"`
+	Title              string                    `json:"title"`
+	Kind               string                    `json:"kind"`
+	State              string                    `json:"state"`
+	OwnerEmployeeID    string                    `json:"ownerEmployeeId"`
+	Generation         string                    `json:"generation"`
+	ContractRevisionID *string                   `json:"contractRevisionId"`
+	WorkspaceRevision  *string                   `json:"workspaceRevision"`
+	Acceptance         string                    `json:"acceptance"`
+	DependencyLabel    *string                   `json:"dependencyLabel"`
+	SemanticRevision   *TaskSemanticRevisionView `json:"semanticRevision,omitempty"`
+}
+
+type TaskSemanticRevisionView struct {
+	TaskID             string `json:"taskId"`
+	Revision           string `json:"revision"`
+	BindingSHA256      string `json:"bindingSha256"`
+	RoleRevisionSHA256 string `json:"roleRevisionSha256"`
+	TaskType           string `json:"taskType"`
+	TaskKind           string `json:"taskKind"`
+	OwnerEmployeeID    string `json:"ownerEmployeeId"`
+	Qualification      string `json:"qualification"`
+	RequiresHuman      bool   `json:"requiresHuman"`
+	ReasonCode         string `json:"reasonCode"`
+	Decision           string `json:"decision"`
+	DecisionRationale  string `json:"decisionRationale"`
+	DecisionActor      string `json:"decisionActor"`
+	DecisionRequestID  string `json:"decisionRequestId"`
+	DecisionCreatedAt  string `json:"decisionCreatedAt"`
 }
 
 type ContractRevisionSummary struct {
