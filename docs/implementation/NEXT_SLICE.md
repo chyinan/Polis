@@ -1538,3 +1538,8 @@ Next local slice: audit remaining owner-independent semantic role/task revision 
 Added Schema121 immutable per-employee RoleRevision rows from fixed-team owner confirmation. Rows bind the reviewed matrix digest, role name, semantic task types and descriptive TaskKinds while remaining `unverified`; Worker admission and provider execution remain gated. Spec/db tests and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-292-req02-role-revisions/verification.md`.
 
 Next local slice: audit remaining semantic role/task revision read projections; keep executable admission disabled until qualification.
+## Latest continuation status (Slice 293, REQ-02 RoleRevision projection)
+
+Added optional Schema121 `EmployeeSummary.roleRevision` read projection with deterministic latest-revision selection and old-Schema null compatibility. Workbench Go test, `build ./cmd/...` and diff check pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-293-req02-role-revision-projection/verification.md`.
+
+Next local slice: audit remaining owner-independent RoleRevision/TaskRevision read and validation gaps; keep executable admission disabled.

@@ -82,3 +82,6 @@ Added descriptive fixed-team `task_type` to persisted TaskKind mapping. Unknown 
 # Latest checkpoint: Slice292 REQ-02 per-employee RoleRevision persistence
 
 Added Schema121 immutable per-employee RoleRevision rows written with fixed-team owner confirmation. Rows bind the reviewed matrix digest, role name, semantic task types and descriptive TaskKinds while remaining `unverified`; Worker admission and provider execution stay gated. Spec/db tests and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-292-req02-role-revisions/verification.md`.
+# Latest checkpoint: Slice293 REQ-02 RoleRevision projection
+
+Added optional Schema121 `EmployeeSummary.roleRevision` projection with deterministic latest-revision selection and old-Schema null compatibility. Workbench test and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-293-req02-role-revision-projection/verification.md`.

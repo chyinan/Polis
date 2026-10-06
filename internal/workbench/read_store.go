@@ -617,6 +617,7 @@ type taskRow struct {
 
 type employeeRow struct {
 	ID                     string
+	RoleRevision           string
 	Epoch                  int64
 	SessionID              string
 	SessionTask            string
@@ -933,7 +934,11 @@ func readTasks(ctx context.Context, tx pgx.Tx, companyID, missionID string) ([]t
 }
 
 func readEmployees(ctx context.Context, tx pgx.Tx, companyID string) ([]employeeRow, error) {
-	rows, err := tx.Query(ctx, `SELECT e.id,e.epoch,
+	var roleRevisionAvailable bool
+	if err := tx.QueryRow(ctx, "SELECT to_regclass('public.employee_role_revisions') IS NOT NULL").Scan(&roleRevisionAvailable); err != nil {
+		return nil, err
+	}
+	query := `SELECT e.id,e.epoch,
 COALESCE(ws.id,''),COALESCE(ws.task_id,''),COALESCE(ws.state,''),COALESCE(ws.profile,''),
 COALESCE(ws.epoch,e.epoch),COALESCE(ws.tool_call_limit,0),COALESCE(ws.tool_calls_used,0),
 es.state,es.work_generation,es.checked_generation,es.next_due_at,COALESCE(es.pause_reason,'')
@@ -945,7 +950,29 @@ LEFT JOIN LATERAL (
   WHERE company_id=e.company_id AND employee_id=e.id
   ORDER BY (state!='stopped') DESC,epoch DESC,id DESC LIMIT 1
 ) ws ON true
-WHERE e.company_id=$1 ORDER BY e.id`, companyID)
+
+WHERE e.company_id=$1 ORDER BY e.id`
+	if roleRevisionAvailable {
+		query = `SELECT e.id,COALESCE(role.revision_sha256,''),e.epoch,
+COALESCE(ws.id,''),COALESCE(ws.task_id,''),COALESCE(ws.state,''),COALESCE(ws.profile,''),
+COALESCE(ws.epoch,e.epoch),COALESCE(ws.tool_call_limit,0),COALESCE(ws.tool_calls_used,0),
+es.state,es.work_generation,es.checked_generation,es.next_due_at,COALESCE(es.pause_reason,'')
+FROM employees e
+LEFT JOIN LATERAL (
+ SELECT revision_sha256 FROM employee_role_revisions
+ WHERE company_id=e.company_id AND employee_id=e.id
+ ORDER BY created_at DESC,revision_sha256 DESC LIMIT 1
+) role ON true
+LEFT JOIN employee_schedules es ON es.company_id=e.company_id AND es.employee_id=e.id
+LEFT JOIN LATERAL (
+  SELECT id,task_id,state,profile,epoch,tool_call_limit,tool_calls_used
+  FROM worker_sessions
+  WHERE company_id=e.company_id AND employee_id=e.id
+  ORDER BY (state!='stopped') DESC,epoch DESC,id DESC LIMIT 1
+) ws ON true
+WHERE e.company_id=$1 ORDER BY e.id`
+	}
+	rows, err := tx.Query(ctx, query, companyID)
 	if err != nil {
 		return nil, err
 	}
@@ -953,9 +980,16 @@ WHERE e.company_id=$1 ORDER BY e.id`, companyID)
 	items := make([]employeeRow, 0)
 	for rows.Next() {
 		var item employeeRow
-		if err := rows.Scan(&item.ID, &item.Epoch, &item.SessionID, &item.SessionTask, &item.SessionState, &item.Profile, &item.SessionEpoch, &item.ToolLimit, &item.ToolUsed,
-			&item.ScheduleState, &item.ScheduleWorkGeneration, &item.ScheduleCheckedGen, &item.ScheduleNextDueAt, &item.SchedulePauseReason); err != nil {
-			return nil, err
+		var scanErr error
+		if roleRevisionAvailable {
+			scanErr = rows.Scan(&item.ID, &item.RoleRevision, &item.Epoch, &item.SessionID, &item.SessionTask, &item.SessionState, &item.Profile, &item.SessionEpoch, &item.ToolLimit, &item.ToolUsed,
+				&item.ScheduleState, &item.ScheduleWorkGeneration, &item.ScheduleCheckedGen, &item.ScheduleNextDueAt, &item.SchedulePauseReason)
+		} else {
+			scanErr = rows.Scan(&item.ID, &item.Epoch, &item.SessionID, &item.SessionTask, &item.SessionState, &item.Profile, &item.SessionEpoch, &item.ToolLimit, &item.ToolUsed,
+				&item.ScheduleState, &item.ScheduleWorkGeneration, &item.ScheduleCheckedGen, &item.ScheduleNextDueAt, &item.SchedulePauseReason)
+		}
+		if scanErr != nil {
+			return nil, scanErr
 		}
 		if item.ScheduleState.Valid && (!item.ScheduleWorkGeneration.Valid || !item.ScheduleCheckedGen.Valid) {
 			return nil, fmt.Errorf("employee schedule generation is incomplete")
@@ -1301,7 +1335,11 @@ func employeeViews(rows []employeeRow, tasks []taskRow, obligations []Obligation
 			}
 		}
 		limit, used, remaining := employeeBudget(row)
-		views = append(views, EmployeeSummary{EmployeeID: row.ID, DisplayName: row.ID, Role: employeeRole(row.ID), RoleRevision: nil, Epoch: stringValue(row.Epoch), SessionID: sessionID, SessionState: sessionState, Profile: profile, CurrentTask: currentTask, Status: EmployeeStatusView{Primary: status, Tone: tone, Reason: reason, ActiveModelRequests: "不可得", InFlightTools: "不可得", ObservedAt: observedAt}, Schedule: employeeScheduleView(row), ToolBudget: ToolBudgetView{Limit: limit, Used: used, Remaining: remaining, Quality: budgetQuality(row.SessionID)}, Qualification: QualificationView{Status: "unverified", EvidenceID: nil, PolicyRevision: nil}, OpenObligationCount: stringValue(openCount)})
+		var roleRevision *string
+		if row.RoleRevision != "" {
+			roleRevision = pointer(row.RoleRevision)
+		}
+		views = append(views, EmployeeSummary{EmployeeID: row.ID, DisplayName: row.ID, Role: employeeRole(row.ID), RoleRevision: roleRevision, Epoch: stringValue(row.Epoch), SessionID: sessionID, SessionState: sessionState, Profile: profile, CurrentTask: currentTask, Status: EmployeeStatusView{Primary: status, Tone: tone, Reason: reason, ActiveModelRequests: "不可得", InFlightTools: "不可得", ObservedAt: observedAt}, Schedule: employeeScheduleView(row), ToolBudget: ToolBudgetView{Limit: limit, Used: used, Remaining: remaining, Quality: budgetQuality(row.SessionID)}, Qualification: QualificationView{Status: "unverified", EvidenceID: nil, PolicyRevision: nil}, OpenObligationCount: stringValue(openCount)})
 		switch status {
 		case "working":
 			team.Working = incrementString(team.Working)

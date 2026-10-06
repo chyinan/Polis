@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 293)
+
+Slice293 adds optional Schema121 `EmployeeSummary.roleRevision` projection, selecting the latest Company/Employee revision and returning null on older schemas. It is read-only and does not affect admission or execution. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-293-req02-role-revision-projection/verification.md`.
+
 ## Current continuation pointer (Slice 292)
 
 Slice292 adds Schema121 immutable per-employee RoleRevision rows written with fixed-team owner confirmation. Rows bind the reviewed matrix digest, role name, semantic task types and descriptive TaskKinds while remaining `unverified`; Worker admission and provider execution are unchanged. No database runtime, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-292-req02-role-revisions/verification.md`.
