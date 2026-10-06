@@ -324,6 +324,9 @@ ORDER BY event_seq DESC LIMIT 1`, scope.company, changeRequestID).Scan(&consider
 		if err = appendMissionChangeState(ctx, tx, scope, changeRequestID, "applied", int64Pointer(revision), &successorMissionID, "successor_mission_created", details); err != nil {
 			return Receipt{}, err
 		}
+		if err = appendDeliveryRevisionRouteSuccessorTX(ctx, tx, scope, changeRequestID, successorMissionID); err != nil {
+			return Receipt{}, err
+		}
 		if err = appendEvent(ctx, tx, scope, "mission.change_request.applied", map[string]any{
 			"mission_id": missionID, "change_request_id": changeRequestID, "successor_mission_id": successorMissionID,
 			"base_requirements_sha256": baseDigest, "impact_sha256": storedImpactDigest,

@@ -67,3 +67,6 @@ Added Schema118 ResearchOperation identities/events and fake-only @19 `research_
 # Latest checkpoint: Slice287 REQ-40 delivery revision/disposition history projection
 
 Extended the read-only durable delivery projection with bounded Manifest revision and UserDisposition histories, binding every item to current Company/Artifact/Mission/Task, stored digest and known revision identities. Added frontend validation and read-only rendering; direct TypeScript/Vite builds and Workbench Go test pass. No database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-287-req40-delivery-history-projection/verification.md`.
+# Latest checkpoint: Slice288 REQ-40 delivery revision routes
+
+Added Schema119 append-only delivery revision routes linking live-Mission `changes_requested` feedback to formal MissionChangeRequest, successor Mission creation and successor product Task preparation. No parallel current-Mission Task is created; terminal feedback remains backlog-only. Kernel/db tests, migration hash and `build ./cmd/...` pass; no runtime database, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-288-req40-delivery-revision-routes/verification.md`.

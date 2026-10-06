@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 288, REQ-40 delivery revision routes)
+
+Added Schema119 append-only delivery revision routes. A live-Mission `changes_requested` disposition now links its exact Manifest/disposition to the formal MissionChangeRequest; Apply records the successor Mission and successor product Task preparation records `revision_task_ready`. The current Mission never receives a parallel executable Task; terminal feedback remains backlog-only. Kernel/db tests, migration hash and `build ./cmd/...` pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-288-req40-delivery-revision-routes/verification.md`.
+
+Next local slice: expose/read the revision-route projection if needed, then audit remaining REQ-40 policy edges; real workflow qualification remains separate.
+
 ## Latest continuation status (Slice 287, REQ-40 delivery history projection)
 
 Extended the durable delivery lifecycle read projection with bounded Manifest revision and UserDisposition histories. Server and frontend validation bind history items to the immutable Company/Artifact/Mission/Task identity, stored digests, Artifact bytes and known revisions; the Workbench renders them without lifecycle side effects. Workbench Go test, direct TypeScript/Vite builds and diff check pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-287-req40-delivery-history-projection/verification.md`.

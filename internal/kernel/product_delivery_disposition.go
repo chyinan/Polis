@@ -178,7 +178,7 @@ ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manif
 		}
 		switch productDeliveryDispositionRoute(missionState, command.State) {
 		case "mission_change_request":
-			if err = appendDeliveryMissionChangeRequestTX(ctx, tx, Scope{company: companyID}, storedMissionID, command.ArtifactID, nextDispositionRevision, command.Reason, command.RequestID); err != nil {
+			if err = appendDeliveryMissionChangeRequestTX(ctx, tx, Scope{company: companyID}, storedMissionID, command.ArtifactID, manifestRevision, nextDispositionRevision, command.Reason, command.RequestID); err != nil {
 				return Receipt{}, err
 			}
 		case "company_backlog":
@@ -224,7 +224,7 @@ WHERE company_id=$1 AND request_id=$2`, companyID, command.RequestID).Scan(
 	return result, nil
 }
 
-func appendDeliveryMissionChangeRequestTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, artifactID string, dispositionRevision int64, reason, dispositionRequestID string) error {
+func appendDeliveryMissionChangeRequestTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, artifactID string, manifestRevision, dispositionRevision int64, reason, dispositionRequestID string) error {
 	basis, err := missionChangeBasisTx(ctx, tx, scope, missionID, true)
 	if err != nil {
 		return err
@@ -284,11 +284,71 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,true)`, scope.company, changeRequestID, missio
 			return err
 		}
 	}
+	routeID := stableCapabilityID("delivery-revision-route", scope.company, dispositionRequestID)
+	if _, err = tx.Exec(ctx, `INSERT INTO delivery_revision_routes(
+company_id,route_id,delivery_id,manifest_revision,disposition_revision,mission_id,change_request_id)
+VALUES($1,$2,$3,$4,$5,$6,$7)`, scope.company, routeID, artifactID, manifestRevision, dispositionRevision, missionID, changeRequestID); err != nil {
+		return err
+	}
+	routeEventID := stableCapabilityID("delivery-revision-route-event", scope.company, routeID, "pending")
+	routeRequestID := "delivery-route-pending-" + fingerprint(dispositionRequestID)[:48]
+	if _, err = tx.Exec(ctx, `INSERT INTO delivery_revision_route_events(company_id,event_id,route_id,state,reason_code,request_id)
+VALUES($1,$2,$3,'change_request_pending','delivery_changes_requested',$4)`, scope.company, routeEventID, routeID, routeRequestID); err != nil {
+		return err
+	}
 	return appendEvent(ctx, tx, scope, "mission.change_request.created", map[string]any{
 		"mission_id": missionID, "change_request_id": changeRequestID, "base_requirements_sha256": baseDigest,
 		"impact_sha256": impactDigest, "block_previous_results": true, "delivery_id": artifactID,
 		"disposition_revision": dispositionRevision,
 	})
+}
+
+func appendDeliveryRevisionRouteSuccessorTX(ctx context.Context, tx pgx.Tx, scope Scope, changeRequestID, successorMissionID string) error {
+	var routeID, state string
+	err := tx.QueryRow(ctx, `SELECT r.route_id,latest.state
+FROM delivery_revision_routes r
+JOIN LATERAL (SELECT state FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON true
+WHERE r.company_id=$1 AND r.change_request_id=$2 FOR UPDATE OF r`, scope.company, changeRequestID).Scan(&routeID, &state)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if state == "successor_mission_created" || state == "revision_task_ready" {
+		return nil
+	}
+	if state != "change_request_pending" {
+		return core.ConflictError{Reason: "delivery revision route is not awaiting successor Mission", CurrentState: state}
+	}
+	eventID := stableCapabilityID("delivery-revision-route-event", scope.company, routeID, "successor", successorMissionID)
+	requestID := "delivery-route-successor-" + fingerprint([]string{changeRequestID, successorMissionID})[:48]
+	_, err = tx.Exec(ctx, `INSERT INTO delivery_revision_route_events(company_id,event_id,route_id,state,successor_mission_id,reason_code,request_id)
+VALUES($1,$2,$3,'successor_mission_created',$4,'successor_mission_created',$5)`, scope.company, eventID, routeID, successorMissionID, requestID)
+	return err
+}
+
+func appendDeliveryRevisionRouteTaskTX(ctx context.Context, tx pgx.Tx, scope Scope, successorMissionID, taskID string) error {
+	var routeID, state string
+	err := tx.QueryRow(ctx, `SELECT r.route_id,latest.state
+FROM delivery_revision_routes r
+JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r`, scope.company, successorMissionID, successorMissionID).Scan(&routeID, &state)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if state == "revision_task_ready" {
+		return nil
+	}
+	eventID := stableCapabilityID("delivery-revision-route-event", scope.company, routeID, "task", taskID)
+	requestID := "delivery-route-task-" + fingerprint([]string{routeID, taskID})[:48]
+	_, err = tx.Exec(ctx, `INSERT INTO delivery_revision_route_events(company_id,event_id,route_id,state,successor_mission_id,task_id,reason_code,request_id)
+VALUES($1,$2,$3,'revision_task_ready',$4,$5,'revision_task_ready',$6)`, scope.company, eventID, routeID, successorMissionID, taskID, requestID)
+	return err
 }
 
 func validateReadyProductDeliveryManifest(rawJSON, storedSHA256, companyID, artifactID string, revision int64, missionID, taskID, state string, out *durableProductDeliveryManifest) error {

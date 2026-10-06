@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 288)
+
+Slice288 adds Schema119 append-only delivery revision routes. Live-Mission `changes_requested` now links the exact Manifest/disposition to the formal MissionChangeRequest, then records `successor_mission_created` and `revision_task_ready` at the existing Apply/Prepare boundaries. Current-Mission parallel Tasks are not created; terminal feedback remains Company backlog. No runtime database, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-288-req40-delivery-revision-routes/verification.md`.
+
 ## Current continuation pointer (Slice 287)
 
 Slice287 extends the REQ-40 durable delivery read projection with bounded Manifest revision and UserDisposition histories. Backend and frontend validation rebind history to Company/Artifact/Mission/Task, stored digests, Artifact bytes and known revision identities; the Workbench renders the history read-only. No delivery command, database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-287-req40-delivery-history-projection/verification.md`.

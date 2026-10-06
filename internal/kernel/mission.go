@@ -208,6 +208,9 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, s.company, taskID, missionID, validationBindin
 		if _, err := tx.Exec(ctx, "INSERT INTO worker_workspaces(company_id,task_id,digest) VALUES($1,$2,$3)", s.company, taskID, digest); err != nil {
 			return Receipt{}, err
 		}
+		if err = appendDeliveryRevisionRouteTaskTX(ctx, tx, s, missionID, taskID); err != nil {
+			return Receipt{}, err
+		}
 		return Receipt{ID: taskID, Status: "ready"}, nil
 	})
 	if err != nil {
