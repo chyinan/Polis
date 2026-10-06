@@ -79,3 +79,6 @@ Added Schema120 generic ActionIntent append-only records/events with strict Reso
 # Latest checkpoint: Slice291 REQ-02 semantic TaskKind bridge
 
 Added descriptive fixed-team `task_type` to persisted TaskKind mapping. Unknown types remain unmapped and all admission results stay human-gated; no Worker/provider execution was enabled. Spec test and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-291-req02-semantic-task-kind-bridge/verification.md`.
+# Latest checkpoint: Slice292 REQ-02 per-employee RoleRevision persistence
+
+Added Schema121 immutable per-employee RoleRevision rows written with fixed-team owner confirmation. Rows bind the reviewed matrix digest, role name, semantic task types and descriptive TaskKinds while remaining `unverified`; Worker admission and provider execution stay gated. Spec/db tests and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-292-req02-role-revisions/verification.md`.

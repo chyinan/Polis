@@ -1533,3 +1533,8 @@ This Slice283 pointer was superseded by Slice284, which adds the fake-only @17 c
 Added an explicit fixed-team `task_type` to persisted TaskKind bridge. Unknown types remain unmapped and all results stay human-gated; Worker admission, provider execution and role qualification are unchanged. Spec test, `build ./cmd/...` and diff check pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-291-req02-semantic-task-kind-bridge/verification.md`.
 
 Next local slice: audit remaining owner-independent semantic role/task revision gaps; keep executable admission disabled until qualification.
+## Latest continuation status (Slice 292, REQ-02 per-employee RoleRevision persistence)
+
+Added Schema121 immutable per-employee RoleRevision rows from fixed-team owner confirmation. Rows bind the reviewed matrix digest, role name, semantic task types and descriptive TaskKinds while remaining `unverified`; Worker admission and provider execution remain gated. Spec/db tests and `build ./cmd/...` pass; no runtime database, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-292-req02-role-revisions/verification.md`.
+
+Next local slice: audit remaining semantic role/task revision read projections; keep executable admission disabled until qualification.

@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 292)
+
+Slice292 adds Schema121 immutable per-employee RoleRevision rows written with fixed-team owner confirmation. Rows bind the reviewed matrix digest, role name, semantic task types and descriptive TaskKinds while remaining `unverified`; Worker admission and provider execution are unchanged. No database runtime, owner action, Worker/provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-292-req02-role-revisions/verification.md`.
+
 ## Current continuation pointer (Slice 291)
 
 Slice291 adds an explicit descriptive bridge from the fixed team coverage `task_type` vocabulary to persisted TaskKind values. Unknown types remain unmapped and every resolved admission remains `requires_human=true`; no Worker admission or execution capability changed. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-291-req02-semantic-task-kind-bridge/verification.md`.

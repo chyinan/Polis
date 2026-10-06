@@ -2,6 +2,8 @@
 
 Updated: 2026-10-06, after Slice272 REQ-40 explicit UserDisposition command. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
+Slice292 adds Schema121 per-employee RoleRevision persistence from fixed-team owner confirmation, still `unverified` and non-executable. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-292-req02-role-revisions/verification.md`.
+
 Slice291 adds a descriptive fixed-team semantic `task_type` to TaskKind bridge while preserving human-gated, unqualified admission. Executable RoleRevision/TaskRevision mapping remains unqualified. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-291-req02-semantic-task-kind-bridge/verification.md`.
 
 Slice290 adds Schema120 generic ActionIntent default-deny persistence. Generic resource policy and DispatchPermit issuance remain unavailable; no external action is exposed. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-290-req14-generic-action-intent-deny-foundation/verification.md`.

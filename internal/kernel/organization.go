@@ -4,6 +4,7 @@ package kernel
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"strings"
 
@@ -96,6 +97,9 @@ ON CONFLICT(company_id,employee_id) DO NOTHING`, draft.ID); err != nil {
 		}{RequestID: requestID, TemplateSHA256: confirmationSHA256, Decision: spec.FixedTeamCoverageOwnerDecision, Qualification: "unverified", TeamCoverageSnapshotBase64: base64.StdEncoding.EncodeToString(spec.FixedTeamCoverageDraftSnapshot())}); err != nil {
 			return Scope{}, err
 		}
+		if err = persistFixedTeamRoleRevisionsTX(ctx, tx, draft.ID); err != nil {
+			return Scope{}, err
+		}
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return Scope{}, err
@@ -109,15 +113,14 @@ func fixedTeamCoverageRoleRevisionFromConfirmation(templateSHA256, decision, qua
 		spec.ValidateFixedTeamCoverageDraft() != nil {
 		return nil, nil
 	}
-	snapshot := spec.FixedTeamCoverageDraftSnapshot()
-	if snapshotBase64 != "" {
-		decoded, err := base64.StdEncoding.DecodeString(snapshotBase64)
-		if err != nil {
-			return nil, core.Integrity
-		}
-		snapshot = decoded
+	if snapshotBase64 == "" {
+		return nil, core.Integrity
 	}
-	revision, err := spec.CompileFixedTeamCoverageRoleRevision(snapshot, templateSHA256, decision, qualification)
+	decoded, err := base64.StdEncoding.DecodeString(snapshotBase64)
+	if err != nil {
+		return nil, core.Integrity
+	}
+	revision, err := spec.CompileFixedTeamCoverageRoleRevision(decoded, templateSHA256, decision, qualification)
 	if err != nil {
 		return nil, core.Integrity
 	}
@@ -279,6 +282,9 @@ func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft orga
 			}{RequestID: key, TemplateSHA256: confirmationSHA256, Decision: spec.FixedTeamCoverageOwnerDecision, Qualification: "unverified", TeamCoverageSnapshotBase64: base64.StdEncoding.EncodeToString(spec.FixedTeamCoverageDraftSnapshot())}); err != nil {
 				return Receipt{}, err
 			}
+			if err := persistFixedTeamRoleRevisionsTX(ctx, tx, draft.ID); err != nil {
+				return Receipt{}, err
+			}
 			return Receipt{ID: draft.ID, Status: "active"}, nil
 		})
 	}
@@ -305,6 +311,74 @@ WHERE company_id=$1 AND id=$2 AND enabled`, draft.ID, employee.ID, strings.TrimS
 		}
 		return Receipt{ID: draft.ID, Status: "active"}, nil
 	})
+}
+
+func persistFixedTeamRoleRevisionsTX(ctx context.Context, tx pgx.Tx, companyID string) error {
+	revision, err := spec.CompileFixedTeamCoverageRoleRevision(spec.FixedTeamCoverageDraftSnapshot(), spec.FixedTeamCoverageSHA256(), spec.FixedTeamCoverageOwnerDecision, "unverified")
+	var confirmationSeq int64
+var confirmationDigest, confirmationDecision, confirmationQualification, confirmationSnapshot string
+	if err = tx.QueryRow(ctx, `SELECT company_seq,payload->>'template_sha256',payload->>'decision',payload->>'qualification',COALESCE(payload->>'team_coverage_snapshot_base64','')
+FROM events WHERE company_id=$1 AND kind='company.team_coverage.confirmed' ORDER BY company_seq DESC LIMIT 1`, companyID).Scan(&confirmationSeq, &confirmationDigest, &confirmationDecision, &confirmationQualification, &confirmationSnapshot); err != nil {
+		return err
+	}
+	compiledRevision, compileErr := fixedTeamCoverageRoleRevisionFromConfirmation(confirmationDigest, confirmationDecision, confirmationQualification, confirmationSnapshot)
+	if compileErr != nil || compiledRevision == nil {
+		return core.Denied
+	}
+	revision = *compiledRevision
+	type employeeRole struct{ id, role string }
+	rows, err := tx.Query(ctx, "SELECT id,role_name FROM employees WHERE company_id=$1 AND enabled ORDER BY id", companyID)
+	if err != nil {
+		return err
+	}
+	roles := make([]employeeRole, 0, len(revision.Contract.EmployeeIDs))
+	for rows.Next() {
+		var role employeeRole
+		if err = rows.Scan(&role.id, &role.role); err != nil {
+			rows.Close()
+			return err
+		}
+		roles = append(roles, role)
+	}
+	rows.Close()
+	if err = rows.Err(); err != nil {
+		return err
+	}
+	for _, role := range roles {
+		taskTypes := make([]string, 0, 2)
+		taskKinds := make([]string, 0, 2)
+		for _, assignment := range revision.Contract.Coverage {
+			if assignment.Owner != role.id {
+				continue
+			}
+			taskTypes = append(taskTypes, assignment.TaskType)
+			if taskKind := spec.FixedTeamCoverageTaskKind(assignment.TaskType); taskKind != "" {
+				taskKinds = append(taskKinds, taskKind)
+			}
+		}
+		taskTypesJSON, marshalErr := json.Marshal(taskTypes)
+		if marshalErr != nil {
+			return marshalErr
+		}
+		taskKindsJSON, marshalErr := json.Marshal(taskKinds)
+		if marshalErr != nil {
+			return marshalErr
+		}
+		if _, err = tx.Exec(ctx, `INSERT INTO employee_role_revisions(company_id,employee_id,revision_sha256,confirmation_company_seq,role_name,task_types,task_kinds,owner_decision,qualification)
+VALUES($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb,$8,$9) ON CONFLICT(company_id,employee_id,revision_sha256) DO NOTHING`, companyID, role.id, revision.RevisionSHA256, confirmationSeq, role.role, taskTypesJSON, taskKindsJSON, revision.OwnerDecision, revision.Qualification); err != nil {
+			return err
+		}
+		var storedConfirmationSeq int64
+		var storedRole, storedTaskTypes, storedTaskKinds, storedDecision, storedQualification string
+		if err = tx.QueryRow(ctx, `SELECT confirmation_company_seq,role_name,task_types::text,task_kinds::text,owner_decision,qualification
+FROM employee_role_revisions WHERE company_id=$1 AND employee_id=$2 AND revision_sha256=$3`, companyID, role.id, revision.RevisionSHA256).Scan(&storedConfirmationSeq, &storedRole, &storedTaskTypes, &storedTaskKinds, &storedDecision, &storedQualification); err != nil {
+			return err
+		}
+		if storedConfirmationSeq <= 0 || storedRole != role.role || storedTaskTypes != string(taskTypesJSON) || storedTaskKinds != string(taskKindsJSON) || storedDecision != revision.OwnerDecision || storedQualification != revision.Qualification {
+			return core.Integrity
+		}
+	}
+	return nil
 }
 
 // ensureCompanyRuntimeRolesUnchangedTX enforces the template's
@@ -389,7 +463,10 @@ ORDER BY company_seq DESC LIMIT 1`, companyID).Scan(&confirmedDigest, &decision,
 		decision != "installation_owner_confirmed_fixed_team_mapping" || qualification != "unverified" {
 		return core.Denied
 	}
-	return ensureCompanyFixedTeamRolesTX(ctx, tx, companyID)
+	if err := ensureCompanyFixedTeamRolesTX(ctx, tx, companyID); err != nil {
+		return err
+	}
+	return persistFixedTeamRoleRevisionsTX(ctx, tx, companyID)
 }
 
 // TXArchiveCompany archives an idle company without deleting its history or
