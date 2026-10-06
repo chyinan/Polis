@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 286, REQ-38 research/search/fetch unavailable control plane)
+
+Added Schema118 ResearchOperation identities/events and fake-only @19 `research_search`/`research_fetch`. Inputs are normalized as data, bound to the current Task/WorkerSession, and persist `unavailable/research_backend_unavailable` with zero Provider egress; no web, HTTP, MCP or browser backend is called. Targeted Kernel/codex/provider/control/db tests and `build ./cmd/...` pass; no external web, Provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-286-req38-research-unavailable-control-plane/verification.md`.
+
+Next local slice: continue REQ-40 source projections or audit remaining REQ-38 evidence-binding gaps; real search/fetch backend, egress policy and browser qualification remain separate.
+
 ## Latest continuation status (Slice 285, REQ-38 BrowserRun control plane)
 
 Added Schema117 immutable BrowserRun identities and append-only events plus fake-only @18 `browser_run`/`browser_results`. The request is bound to the current Task/WorkerSession and current same-Mission service generation, but always records `blocked/browser_runtime_unqualified`; strict HTTPS-origin canonicalization rejects credentials, paths, query strings and fragments. Targeted Kernel/codex/provider/control/db tests and `build ./cmd/...` pass; no browser, service process, Provider, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-285-req38-browser-run-control-plane/verification.md`.

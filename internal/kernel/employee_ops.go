@@ -41,6 +41,7 @@ type EmployeeTools struct {
 	ReadOnlyJobsSurface                bool
 	BorrowerLeaseSurface               bool
 	BrowserRunSurface                  bool
+	ResearchOperationSurface           bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -231,6 +232,32 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		run, e := k.ProductTaskBrowserRunResults(ctx, b, args.RunID)
 		return ToolResult{Data: run}, e
+	case "research_search":
+		if !t.ProductSurface || !t.ResearchOperationSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			Query string `json:"query"`
+		}
+		if e := strictArgsLimit(raw, &args, 4096); e != nil {
+			return ToolResult{}, e
+		}
+		requestID := "research-search-" + fingerprint([]string{b.SessionID(), key, args.Query})[:48]
+		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, Query: args.Query}, requestID)
+		return ToolResult{Data: record}, e
+	case "research_fetch":
+		if !t.ProductSurface || !t.ResearchOperationSurface || t.ReadOnly {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			TargetURL string `json:"target_url"`
+		}
+		if e := strictArgsLimit(raw, &args, 4096); e != nil {
+			return ToolResult{}, e
+		}
+		requestID := "research-fetch-" + fingerprint([]string{b.SessionID(), key, args.TargetURL})[:48]
+		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindFetch, TargetURL: args.TargetURL}, requestID)
+		return ToolResult{Data: record}, e
 	case "environment_status":
 		if !t.ProductSurface || !t.EnvironmentStatusSurface {
 			return ToolResult{}, core.Denied

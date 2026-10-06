@@ -41,6 +41,17 @@ func TestBrowserRunFakeSurfacePassesAdapterReadinessWithoutRealProvider(t *testi
 	}
 }
 
+func TestResearchOperationsFakeSurfacePassesAdapterReadinessWithoutRealProvider(t *testing.T) {
+	runtime := provider.NewFakeRuntime(provider.FakeRuntimeConfig{ResearchOperationsSurface: true})
+	adapter, err := NewRealProviderWorkerLaunchQualificationAdapter(runtime)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := adapter.Readiness(context.Background()); err != nil {
+		t.Fatalf("fake research operations adapter readiness: %v", err)
+	}
+}
+
 func TestEnvironmentEnsureFakeSurfacePassesAdapterReadinessWithoutRealProvider(t *testing.T) {
 	runtime := provider.NewFakeRuntime(provider.FakeRuntimeConfig{EnvironmentEnsureSurface: true})
 	adapter, err := NewRealProviderWorkerLaunchQualificationAdapter(runtime)

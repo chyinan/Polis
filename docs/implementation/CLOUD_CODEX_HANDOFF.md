@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 286)
+
+Slice286 adds Schema118 ResearchOperation control-plane persistence and fake-only product surface `polis-product-tool-surface@19` with `research_search` and `research_fetch`. Search/HTTPS fetch inputs are bounded and stored as explicit `unavailable/research_backend_unavailable` results with `provider_egress=0`; no query or URL is sent to any backend. No external web, Provider, browser, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-286-req38-research-unavailable-control-plane/verification.md`.
+
 ## Current continuation pointer (Slice 285)
 
 Slice285 adds Schema117 BrowserRun control-plane persistence and fake-only product surface `polis-product-tool-surface@18` with `browser_run` and `browser_results`. Requests are exact Company/Mission/Task/WorkerSession and current service-generation scoped, then persist as `blocked/browser_runtime_unqualified`; HTTPS origin metadata is canonicalized and credentials/query/path fragments are rejected. No URL navigation, browser process, credentials, Provider, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-285-req38-browser-run-control-plane/verification.md`.

@@ -69,3 +69,12 @@ func TestEmployeeToolsBrowserRunRequiresTheIsolatedSurface(t *testing.T) {
 		t.Fatalf("browser_run on a read-only worker returned %v, want %v", err, core.Denied)
 	}
 }
+
+func TestEmployeeToolsResearchOperationsRequireTheIsolatedWritableSurface(t *testing.T) {
+	for _, name := range []string{"research_search", "research_fetch"} {
+		_, err := (EmployeeTools{}).call(context.Background(), name, "budget-key", []byte(`{}`))
+		if !errors.Is(err, core.Denied) {
+			t.Fatalf("%s without the isolated research surface returned %v, want %v", name, err, core.Denied)
+		}
+	}
+}

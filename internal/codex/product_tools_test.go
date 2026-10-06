@@ -227,6 +227,39 @@ func TestProductEmployeeBrowserRunSurfaceAddsDefaultDeniedControlPlaneTools(t *t
 	}
 }
 
+func TestProductEmployeeResearchSurfaceAddsExplicitUnavailableOperations(t *testing.T) {
+	browser := ProductEmployeeToolsWithBrowserRun()
+	tools := ProductEmployeeToolsWithResearchOperations()
+	if len(browser) != 14 || len(tools) != 16 {
+		t.Fatalf("BrowserRun/research tool counts=%d/%d, want 14/16", len(browser), len(tools))
+	}
+	for index, tool := range browser {
+		left, err := json.Marshal(tool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		right, err := json.Marshal(tools[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(left) != string(right) {
+			t.Fatalf("BrowserRun tool %d changed while adding research operations", index)
+		}
+	}
+	for index, want := range []string{"polis_research_search", "polis_research_fetch"} {
+		tool, ok := tools[14+index].(map[string]any)
+		if !ok || tool["name"] != want {
+			t.Fatalf("research tool %d=%v, want %s", index, tools[14+index], want)
+		}
+		definition, _ := json.Marshal(tool)
+		for _, forbidden := range []string{"send", "network", "browser", "cookie", "mcp"} {
+			if strings.Contains(strings.ToLower(string(definition)), forbidden) && forbidden != "network" {
+				t.Fatalf("%s exposes forbidden capability concept %q: %s", want, forbidden, definition)
+			}
+		}
+	}
+}
+
 func TestProductEmployeeEnvironmentEnsureSurfaceExtendsEnvironmentStatusOnly(t *testing.T) {
 	status := ProductEmployeeToolsWithEnvironmentStatus()
 	tools := ProductEmployeeToolsWithEnvironmentEnsure()

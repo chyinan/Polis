@@ -158,6 +158,22 @@ func ProductEmployeeToolsWithBrowserRun() []any {
 	return append(tools, browserTools...)
 }
 
+// ProductEmployeeToolsWithResearchOperations is a separately versioned,
+// fake-only extension. It records explicit unavailable search/fetch intents;
+// it does not provide an internet, MCP or browser egress path.
+func ProductEmployeeToolsWithResearchOperations() []any {
+	tools := ProductEmployeeToolsWithBrowserRun()
+	researchTools := productTools([]peerToolDefinition{
+		{"research_search", "Record a bounded search request for the current Task. The local product has no search backend in this surface, so the result is explicitly unavailable and no query is sent anywhere.", map[string]any{
+			"query": map[string]any{"type": "string", "minLength": 1, "maxLength": 4096},
+		}},
+		{"research_fetch", "Record a bounded HTTPS page-read request for the current Task. The local product has no fetch backend in this surface, so the result is explicitly unavailable and no URL is opened.", map[string]any{
+			"target_url": map[string]any{"type": "string", "minLength": 9, "maxLength": 4096},
+		}},
+	})
+	return append(tools, researchTools...)
+}
+
 // ProductEmployeeToolsWithDirectMessaging is a separately versioned product
 // surface. The historical @4, Skill @5 and guidance @6 registries stay fixed.
 func ProductEmployeeToolsWithDirectMessaging() []any {

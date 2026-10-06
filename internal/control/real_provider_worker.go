@@ -171,6 +171,9 @@ func (a *RealProviderWorkerAdapter) Readiness(ctx context.Context) error {
 	if profile.ToolSurfaceQualification == provider.ProductBrowserRunToolSurfaceQualification && a.runtime.Mode() == "fake" {
 		return provider.ValidateOfflineFakeBrowserRunSurface(a.runtime.Mode(), profile, a.runtime.ToolSurface())
 	}
+	if profile.ToolSurfaceQualification == provider.ProductResearchOperationsToolSurfaceQualification && a.runtime.Mode() == "fake" {
+		return provider.ValidateOfflineFakeResearchOperationsSurface(a.runtime.Mode(), profile, a.runtime.ToolSurface())
+	}
 	if profile.ToolSurfaceQualification == provider.ProductReadOnlyJobsToolSurfaceQualification && a.runtime.Mode() == "fake" {
 		return provider.ValidateOfflineFakeReadOnlyJobsSurface(a.runtime.Mode(), profile, a.runtime.ToolSurface())
 	}
@@ -893,6 +896,12 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 		((profile.ToolSurfaceQualification == provider.ProductBorrowerLeaseToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductBorrowerLeaseToolSurface().ManifestDigest) ||
 			(profile.ToolSurfaceQualification == provider.ProductBrowserRunToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductBrowserRunToolSurface().ManifestDigest))
 	browserRunSurface := profile.ToolSurfaceQualification == provider.ProductBrowserRunToolSurfaceQualification && a.runtime.Mode() == "fake" && a.runtime.ToolSurface().ManifestDigest == provider.ProductBrowserRunToolSurface().ManifestDigest
+	researchOperationsSurface := profile.ToolSurfaceQualification == provider.ProductResearchOperationsToolSurfaceQualification && a.runtime.Mode() == "fake" && a.runtime.ToolSurface().ManifestDigest == provider.ProductResearchOperationsToolSurface().ManifestDigest
+	if profile.ToolSurfaceQualification == provider.ProductResearchOperationsToolSurfaceQualification && a.runtime.Mode() == "fake" && a.runtime.ToolSurface().ManifestDigest == provider.ProductResearchOperationsToolSurface().ManifestDigest {
+		readOnlyJobsSurface = true
+		borrowerLeaseSurface = true
+		browserRunSurface = true
+	}
 	environmentEnsureSurface := profile.ToolSurfaceQualification == provider.ProductEnvironmentEnsureToolSurfaceQualification && a.runtime.Mode() == "fake" && a.runtime.ToolSurface().ManifestDigest == provider.ProductEnvironmentEnsureToolSurface().ManifestDigest
 	environmentStatusSurface := (profile.ToolSurfaceQualification == provider.ProductEnvironmentStatusToolSurfaceQualification && a.runtime.Mode() == "fake" && a.runtime.ToolSurface().ManifestDigest == provider.ProductEnvironmentStatusToolSurface().ManifestDigest) || environmentEnsureSurface
 	workspaceSnapshotRevocationSurface := profile.ToolSurfaceQualification == provider.ProductWorkspaceSnapshotRevocationToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductWorkspaceSnapshotRevocationToolSurface().ManifestDigest
@@ -920,7 +929,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 		skillLoadSurface := (profile.ToolSurfaceQualification == provider.ProductSkillToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillToolSurface().ManifestDigest) ||
 			(profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest)
 		skillDirectorySurface := profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest
-		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, ReadOnlyJobsSurface: readOnlyJobsSurface, BorrowerLeaseSurface: borrowerLeaseSurface, BrowserRunSurface: browserRunSurface, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, EnvironmentEnsureSurface: environmentEnsureSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
+		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, ReadOnlyJobsSurface: readOnlyJobsSurface, BorrowerLeaseSurface: borrowerLeaseSurface, BrowserRunSurface: browserRunSurface, ResearchOperationSurface: researchOperationsSurface, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, EnvironmentEnsureSurface: environmentEnsureSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
 		result := tools.Call(ctx, name, callID, raw)
 		encoded, _ := json.Marshal(result)
 		return encoded, false

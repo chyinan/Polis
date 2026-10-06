@@ -65,6 +65,34 @@ func TestProductBrowserRunSurfaceIsFakeOnlyAndDefaultDenied(t *testing.T) {
 	}
 }
 
+func TestProductResearchOperationsSurfaceIsFakeOnlyAndUnavailable(t *testing.T) {
+	runtime := NewFakeRuntime(FakeRuntimeConfig{ResearchOperationsSurface: true})
+	surface := ProductResearchOperationsToolSurface()
+	profile := runtime.ExecutionProfile()
+	if surface.ToolCount != 16 || profile.ToolSurfaceQualification != ProductResearchOperationsToolSurfaceQualification {
+		t.Fatalf("research operations surface/profile=%+v/%+v, want 16/@19", surface, profile)
+	}
+	if err := runtime.Readiness(context.Background()); err != nil {
+		t.Fatalf("explicit research operations Fake Runtime readiness: %v", err)
+	}
+	authorization := validProviderExecutionAuthorization("offline-model", "fake", profile.Purpose, profile.ExecutionEnvelope)
+	authorization.ToolSurfaceDigest = surface.ManifestDigest
+	authorization.ToolSurfaceQualification = profile.ToolSurfaceQualification
+	authorization.ToolCount = surface.ToolCount
+	authorization.AggregateSchemaBytes = surface.AggregateSchemaBytes
+	authorization.AggregateSchemaDigest = surface.AggregateSchemaDigest
+	authorization.ExactSurfaceExecutionFingerprint = profile.ExactSurfaceExecutionFingerprint
+	authorization.ProductProviderL2Fingerprint = profile.ProductProviderL2Fingerprint
+	if err := ValidateRuntimeExecutionAuthorization(authorization); err != nil {
+		t.Fatalf("exact fake research operations authorization was rejected: %v", err)
+	}
+	realAuthorization := authorization
+	realAuthorization.ProviderMode = "real"
+	if err := ValidateRuntimeExecutionAuthorization(realAuthorization); err == nil {
+		t.Fatal("real provider accepted fake-only research operations surface")
+	}
+}
+
 func TestProductReadOnlyJobsSurfaceIsFakeOnlyAndTaskBound(t *testing.T) {
 	runtime := NewFakeRuntime(FakeRuntimeConfig{ReadOnlyJobsSurface: true})
 	surface := ProductReadOnlyJobsToolSurface()
