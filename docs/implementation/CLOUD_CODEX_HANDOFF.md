@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 290)
+
+Slice290 adds Schema120 generic ActionIntent default-deny persistence. Strict ResourceKey/target/input/idempotency validation and exact Task/WorkerSession scope are enforced; requests persist `denied/generic_dispatch_permit_unavailable` and never receive a generic DispatchPermit. No external action, Provider, browser, database runtime or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-290-req14-generic-action-intent-deny-foundation/verification.md`.
+
 ## Current continuation pointer (Slice 289)
 
 Slice289 adds the optional Schema119 `revisionRoutes` read projection to durable delivery lifecycle responses. It joins immutable Manifest/disposition rows, validates `changes_requested`, bounds results to 16 and renders pending/successor/task-ready states read-only; pre-Schema119 responses remain compatible. No database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-289-req40-revision-route-projection/verification.md`.

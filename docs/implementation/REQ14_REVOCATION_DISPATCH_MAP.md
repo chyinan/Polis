@@ -1,8 +1,8 @@
 # REQ-14 capability revocation dispatch map
 
 Updated: 2026-10-06
-Status: Slice 260 adds expiring one-shot permits for controlled MCP dispatch; automatic Worker stop/restart reconciliation remains wired for Schema 73 snapshots and recorded-use fallback for currently active pre-Schema-73 revocations.
-Schema: 109.
+Status: Slice 260 adds expiring one-shot permits for controlled MCP dispatch; Slice290 adds a generic ActionIntent audit/deny foundation without issuing generic DispatchPermits. Automatic Worker stop/restart reconciliation remains wired for Schema 73 snapshots and recorded-use fallback for currently active pre-Schema-73 revocations.
+Schema: 120.
 
 ## Contract boundary
 
@@ -36,7 +36,7 @@ The catalog projection reports currently effective revocations. The automatic st
 
 ## Next implementation boundary
 
-The permit implementation currently covers the controlled MCP path. The repository has no general ActionIntent/DispatchPermit model or ResourceKey/ResourceBinding path for shared branch, deploy, or publish writers. REQ-26 resource fencing needs an owner-approved action and canonical provider-object/account mapping before it can be implemented safely. PostgreSQL migration/runtime behavior and host/provider qualification remain unverified.
+The permit implementation currently covers the controlled MCP path. Schema120 now persists generic ActionIntent requests and explicit denied events with canonical ResourceKey/target/input/idempotency scope, but does not issue generic DispatchPermits or perform shared/external writes. The ResourceKey/ResourceBinding path for shared branch, deploy, or publish writers remains open; REQ-26 resource fencing still needs an owner-approved action and canonical provider-object/account mapping before it can be implemented safely. PostgreSQL migration/runtime behavior and host/provider qualification remain unverified.
 
 Next, qualify the automatic stop path against disposable PostgreSQL and controlled Worker fixtures when verification is authorized. Reconcile legacy superseded revocations only if additional durable evidence can be collected without misrepresenting the revoke-time snapshot. Keep provider, QQ, MCP endpoint, and production qualification actions disabled unless separately authorized.
 

@@ -73,3 +73,6 @@ Added Schema119 append-only delivery revision routes linking live-Mission `chang
 # Latest checkpoint: Slice289 REQ-40 revision-route read projection
 
 Added optional Schema119 `revisionRoutes` read projection with immutable Manifest/disposition joins, `changes_requested` validation, bounded latest-16 route events and read-only Workbench rendering. Direct TypeScript/Vite and Workbench Go checks pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-289-req40-revision-route-projection/verification.md`.
+# Latest checkpoint: Slice290 REQ-14 generic ActionIntent deny foundation
+
+Added Schema120 generic ActionIntent append-only records/events with strict ResourceKey/digest/idempotency and exact Task/WorkerSession scope. Generic requests remain explicitly denied and no generic DispatchPermit/external action is issued. Kernel test and `build ./cmd/...` pass; no external action, Provider, browser, database runtime or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-290-req14-generic-action-intent-deny-foundation/verification.md`.

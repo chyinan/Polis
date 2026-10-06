@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 290, REQ-14 generic ActionIntent deny foundation)
+
+Added Schema120 generic ActionIntent append-only records/events with strict ResourceKey/digest/idempotency and exact Task/WorkerSession scope. The only current outcome is explicit `denied/generic_dispatch_permit_unavailable`; no generic permit or external action is issued. Kernel test and `build ./cmd/...` pass; no external action, Provider, browser, database runtime or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-290-req14-generic-action-intent-deny-foundation/verification.md`.
+
+Next local slice: continue remaining owner-independent governance/read projections; generic resource policy and DispatchPermit issuance stay default-denied pending action-specific contracts.
+
 ## Latest continuation status (Slice 289, REQ-40 revision-route projection)
 
 Added the optional Schema119 `revisionRoutes` read projection. It joins immutable Manifest/disposition rows, validates `changes_requested`, bounds results to 16 and renders pending/successor/task-ready states read-only in Workbench; pre-Schema119 responses remain compatible. Workbench Go test, direct TypeScript/Vite builds and diff check pass; no database runtime, Worker/provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-289-req40-revision-route-projection/verification.md`.
