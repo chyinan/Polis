@@ -1,3 +1,7 @@
+## Latest continuation status (Slice 274, REQ-40 Company backlog read projection)
+
+Workbench now reads and displays the Schema 113 terminal delivery feedback backlog as a bounded, Company/Artifact-scoped read projection. The read path caps results at 32 `open` events and validates scope, canonical revisions, actor, reason and request identity in Go; frontend validation requires the projection and the Task delivery panel renders it without lifecycle side effects. Targeted frontend validation, frontend build, Go package compile, command build, DB/hash tests and diff checks passed. The broader frontend test file retains three unrelated Mission-change/tool-limit fixture failures. No database runtime, Worker/provider, browser, external account or frozen scenario ran. REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-274-req40-backlog-read-projection/verification.md`.
+
 ## Latest continuation status (Slice 273, REQ-40 ready Manifest and lifecycle routing)
 
 The current assembling delivery can now be completed only through an installation-owner authenticated, CSRF-protected command that appends a canonical `ready` Manifest revision from bound immutable source-input, validation/build, run-instruction, limitation and license/source evidence. The command is idempotent through the company `TXWrite` boundary, verifies Artifact `ready/passed` and the independent qualification rows, and leaves the initial UserDisposition as `not_requested`.

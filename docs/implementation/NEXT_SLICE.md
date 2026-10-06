@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 274, REQ-40 Company backlog read projection)
+
+Added a read-only `feedbackBacklog` projection to the durable Artifact delivery lifecycle. The Go read store selects at most 32 current-delivery events and fails closed on cross-scope IDs, noncanonical revisions, non-open status, invalid actor/reason or malformed request IDs; it also tolerates a pre-Schema114 runtime by returning an empty backlog when the optional table is absent. Workbench validation requires the scoped array and the Task delivery panel displays the records without creating Tasks, waking Missions or changing terminal state. Schema 114 adds the delivery-leading index; no database runtime, Worker/provider, browser or external account action ran, and all 232 frozen scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-274-req40-backlog-read-projection/verification.md`.
+
+Next local slice: continue only with REQ-40 policy/read gaps that do not require inventing owner decisions; deadline/expiry, closeout acceptance, revision-task routing and historical backfill remain gated.
+
 ## Latest continuation status (Slice 273, REQ-40 ready Manifest and lifecycle routing)
 
 Added a verified, owner-authenticated and CSRF-protected completion command for the current `assembling` DeliveryManifest. It rechecks the exact immutable source-input manifest digest, validation-binding configuration/runner, validation contract digest, passed Artifact qualification and canonical current Manifest before appending a complete `ready` revision; the initial disposition for that revision remains `not_requested`. Source/build/instruction evidence is bound to existing immutable records, while limitations and license/source declarations are explicit bounded evidence sections. No download, preview, notification or user disposition is inferred.

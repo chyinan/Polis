@@ -660,6 +660,24 @@ describe('RealWorkbenchApi', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/artifacts/artifact-1/download', expect.objectContaining({credentials: 'same-origin'}));
   });
 
+  it('treats a legacy durable delivery response without backlog as an empty backlog', async () => {
+    const manifest = {
+      schemaVersion: 'polis-durable-delivery-manifest@1', deliveryId: 'artifact-1', revision: '1', companyId: 'company-1',
+      missionId: 'mission-1', taskId: 'task-1', artifactId: 'artifact-1', state: 'assembling',
+      artifact: {fileName: 'artifact.bin', byteSize: '1', sha256: 'a'.repeat(64)},
+      sections: [{key: 'file_inventory', state: 'available', detail: 'artifact'}], createdAt: '2026-10-06T00:00:00Z',
+    };
+    const manifestSha256 = await sha256Hex(new TextEncoder().encode(JSON.stringify(manifest)));
+    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => ({
+      manifest, manifestSha256,
+      userDisposition: {revision: '1', manifestRevision: '1', state: 'not_requested', actor: 'system', reason: 'not requested', requestId: 'request-1', feedbackDeadline: '', createdAt: '2026-10-06T00:00:00Z'},
+    })});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+
+    await expect(api.getDurableDelivery({companyId: 'company-1', artifactId: 'artifact-1'})).resolves.toMatchObject({feedbackBacklog: []});
+  });
+
   it('sends the desktop session token with delivery manifest and package requests', async () => {
     const artifact = new TextEncoder().encode('qualified artifact payload');
     const manifest = {

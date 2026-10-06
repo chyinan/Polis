@@ -1,10 +1,26 @@
 // pattern: Functional Core
 
 import {describe, expect, it} from 'vitest';
-import {isAcceptanceContract, validateActivityView, validateCapabilityCatalog, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainProfileQualificationRecord, validateGitHubCredentialReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateOperatorInstructions, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateServiceBrowserSession, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases} from './workbench-validation';
+import {isAcceptanceContract, validateActivityView, validateCapabilityCatalog, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateGitHubCredentialReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateOperatorInstructions, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateServiceBrowserSession, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases} from './workbench-validation';
 import {validateGitHubFeedbackCollectionPolicyReceipt} from './workbench-validation';
 
 const companyId = 'company-1';
+
+describe('durable delivery backlog projection', () => {
+  it('rejects a lifecycle response that omits the scoped feedback backlog', () => {
+    const result = validateDurableDelivery({
+      manifest: {
+        schemaVersion: 'polis-durable-delivery-manifest@1', deliveryId: 'artifact-1', revision: '1', companyId,
+        missionId: 'mission-1', taskId: 'task-1', artifactId: 'artifact-1', state: 'assembling',
+        artifact: {fileName: 'artifact.bin', byteSize: '1', sha256: 'a'.repeat(64)},
+        sections: [{key: 'file_inventory', state: 'available', detail: 'artifact'}], createdAt: '2026-10-06T00:00:00Z',
+      },
+      manifestSha256: 'b'.repeat(64),
+      userDisposition: {revision: '1', manifestRevision: '1', state: 'not_requested', actor: 'system', reason: 'not requested', requestId: 'request-1', feedbackDeadline: '', createdAt: '2026-10-06T00:00:00Z'},
+    }, companyId, 'artifact-1');
+    expect(result.success).toBe(false);
+  });
+});
 
 describe('operator instruction responses', () => {
   it('accepts the immutable response projection and clarification state', () => {

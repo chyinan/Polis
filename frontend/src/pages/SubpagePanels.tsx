@@ -107,6 +107,13 @@ function DurableDeliveryLifecycle({api, companyId, artifactId, query, pendingReq
         <DataRow label="request ID" value={delivery.userDisposition.requestId || '未记录'} mono />
         <DataRow label="记录时间" value={delivery.userDisposition.createdAt || '未记录'} mono />
       </div>
+      {delivery.feedbackBacklog.length > 0 ? <div className={styles.recordList} aria-label="交付修改 backlog">
+        <h4 className={styles.sectionTitle}>终态使命修改 backlog</h4>
+        {delivery.feedbackBacklog.map(item => <div className={styles.recordRow} key={item.eventId}>
+          <div className={styles.recordLead}><MessageSquare aria-hidden="true" size={16} /><div><strong>请求修改 · {item.createdAt}</strong><span>{item.reason}</span><span>Manifest revision {item.manifestRevision} · disposition revision {item.dispositionRevision}</span><span>Mission {item.missionId} · Task {item.taskId}</span></div></div>
+          <div className={styles.recordMeta}><code title={item.requestId}>{item.requestId}</code></div>
+        </div>)}
+      </div> : null}
       {delivery.manifest.state === 'ready' && api.mode === 'real' && api.recordDurableUserDisposition ? <form className={styles.formStack} data-testid="durable-user-disposition-form" onSubmit={event => void submitDisposition(event)}>
         <h4 className={styles.sectionTitle}>提交用户态度</h4>
         <p className={styles.formHint}>决定将绑定当前清单 revision {delivery.manifest.revision} 与态度 revision {delivery.userDisposition.revision}。提交只记录用户态度；不会关闭使命、创建任务或触发 Worker。</p>

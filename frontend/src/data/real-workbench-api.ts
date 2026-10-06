@@ -44,6 +44,12 @@ function isSafeWorkspaceRelativePath(value: string): boolean {
     && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !/[\u0000-\u001f\u007f]/.test(part));
 }
 
+function normalizeDurableDeliveryResponse(value: unknown): unknown {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return value;
+  const record = value as Record<string, unknown>;
+  return Object.hasOwn(record, 'feedbackBacklog') ? value : {...record, feedbackBacklog: []};
+}
+
 function isCanonicalPositiveInt64(value: string): boolean {
   const maxInt64 = '9223372036854775807';
   return /^[1-9]\d{0,18}$/.test(value) && (value.length < maxInt64.length || value <= maxInt64);
@@ -1364,7 +1370,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
     assertCompanyScope(options.companyId);
     assertCompanyScope(options.artifactId);
     const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/artifacts/${encodeURIComponent(options.artifactId)}/delivery`);
-    const result = validateDurableDelivery(raw, options.companyId, options.artifactId);
+    const result = validateDurableDelivery(normalizeDurableDeliveryResponse(raw), options.companyId, options.artifactId);
     if (!result.success) {
       throw new Error(`failed to load durable artifact delivery: ${validationMessage(result.issues)}`);
     }

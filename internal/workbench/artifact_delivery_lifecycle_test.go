@@ -38,3 +38,18 @@ func TestCanonicalDurableDeliveryManifestDoesNotHTMLEscapeEvidence(t *testing.T)
 		t.Fatalf("canonical manifest HTML-escaped evidence detail: %s", encoded)
 	}
 }
+
+func TestValidateDurableDeliveryFeedbackBacklogEventBindsDeliveryScope(t *testing.T) {
+	event := DurableDeliveryFeedbackBacklogEventView{
+		EventID: "event-1", DeliveryID: "artifact-1", ManifestRevision: "2", DispositionRevision: "1",
+		MissionID: "mission-1", TaskID: "task-1", ArtifactID: "artifact-1", Status: "open", Actor: "system",
+		Reason: "please revise", RequestID: "request-1", CreatedAt: "2026-10-06T00:00:00Z",
+	}
+	if !validateDurableDeliveryFeedbackBacklogEvent(event, "artifact-1", "mission-1", "task-1", "2") {
+		t.Fatal("valid scoped feedback backlog event was rejected")
+	}
+	event.TaskID = "task-other"
+	if validateDurableDeliveryFeedbackBacklogEvent(event, "artifact-1", "mission-1", "task-1", "2") {
+		t.Fatal("cross-task feedback backlog event was accepted")
+	}
+}

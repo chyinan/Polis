@@ -56,10 +56,26 @@ type DurableDeliveryUserDispositionView struct {
 	CreatedAt        string `json:"createdAt"`
 }
 
+type DurableDeliveryFeedbackBacklogEventView struct {
+	EventID             string `json:"eventId"`
+	DeliveryID          string `json:"deliveryId"`
+	ManifestRevision    string `json:"manifestRevision"`
+	DispositionRevision string `json:"dispositionRevision"`
+	MissionID           string `json:"missionId"`
+	TaskID              string `json:"taskId"`
+	ArtifactID          string `json:"artifactId"`
+	Status              string `json:"status"`
+	Reason              string `json:"reason"`
+	Actor               string `json:"actor"`
+	RequestID           string `json:"requestId"`
+	CreatedAt           string `json:"createdAt"`
+}
+
 type DurableDeliveryLifecycleResponse struct {
-	Manifest        DurableDeliveryManifestView        `json:"manifest"`
-	ManifestSHA256  string                             `json:"manifestSha256"`
-	UserDisposition DurableDeliveryUserDispositionView `json:"userDisposition"`
+	Manifest        DurableDeliveryManifestView               `json:"manifest"`
+	ManifestSHA256  string                                    `json:"manifestSha256"`
+	UserDisposition DurableDeliveryUserDispositionView        `json:"userDisposition"`
+	FeedbackBacklog []DurableDeliveryFeedbackBacklogEventView `json:"feedbackBacklog"`
 }
 
 type DurableArtifactDeliveryLifecycleReader interface {
@@ -141,10 +157,50 @@ JOIN LATERAL (
 	if !validDurableDeliveryDisposition(disposition) || disposition.ManifestRevision != manifest.Revision {
 		return DurableDeliveryLifecycleResponse{}, core.Integrity
 	}
+	feedbackBacklog := make([]DurableDeliveryFeedbackBacklogEventView, 0, 8)
+	var backlogTableAvailable bool
+	if err = tx.QueryRow(ctx, "SELECT to_regclass('public.delivery_feedback_backlog_events') IS NOT NULL").Scan(&backlogTableAvailable); err != nil {
+		return DurableDeliveryLifecycleResponse{}, err
+	}
+	if backlogTableAvailable {
+		rows, err := tx.Query(ctx, `SELECT event_id,delivery_id,manifest_revision::text,disposition_revision::text,mission_id,task_id,artifact_id,status,reason,actor,request_id,created_at
+FROM delivery_feedback_backlog_events
+WHERE company_id=$1 AND delivery_id=$2
+ORDER BY event_seq DESC LIMIT 32`, companyID, artifactID)
+		if err != nil {
+			return DurableDeliveryLifecycleResponse{}, err
+		}
+		for rows.Next() {
+			var event DurableDeliveryFeedbackBacklogEventView
+			var createdAt time.Time
+			if err = rows.Scan(&event.EventID, &event.DeliveryID, &event.ManifestRevision, &event.DispositionRevision, &event.MissionID, &event.TaskID, &event.ArtifactID, &event.Status, &event.Reason, &event.Actor, &event.RequestID, &createdAt); err != nil {
+				rows.Close()
+				return DurableDeliveryLifecycleResponse{}, err
+			}
+			event.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+			manifestRevision, manifestRevisionErr := strconv.ParseInt(event.ManifestRevision, 10, 64)
+			dispositionRevision, dispositionRevisionErr := strconv.ParseInt(event.DispositionRevision, 10, 64)
+			if !validateDurableDeliveryFeedbackBacklogEvent(event, artifactID, manifest.MissionID, manifest.TaskID, manifest.Revision) || manifestRevisionErr != nil || manifestRevision <= 0 || strconv.FormatInt(manifestRevision, 10) != event.ManifestRevision || dispositionRevisionErr != nil || dispositionRevision <= 0 || strconv.FormatInt(dispositionRevision, 10) != event.DispositionRevision {
+				rows.Close()
+				return DurableDeliveryLifecycleResponse{}, core.Integrity
+			}
+			feedbackBacklog = append(feedbackBacklog, event)
+		}
+		if err = rows.Err(); err != nil {
+			rows.Close()
+			return DurableDeliveryLifecycleResponse{}, err
+		}
+		rows.Close()
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return DurableDeliveryLifecycleResponse{}, err
 	}
-	return DurableDeliveryLifecycleResponse{Manifest: manifest, ManifestSHA256: manifestSHA256, UserDisposition: disposition}, nil
+	return DurableDeliveryLifecycleResponse{Manifest: manifest, ManifestSHA256: manifestSHA256, UserDisposition: disposition, FeedbackBacklog: feedbackBacklog}, nil
+}
+
+func validateDurableDeliveryFeedbackBacklogEvent(event DurableDeliveryFeedbackBacklogEventView, artifactID, missionID, taskID, manifestRevision string) bool {
+	return event.DeliveryID == artifactID && event.ArtifactID == artifactID && event.MissionID == missionID && event.TaskID == taskID &&
+		core.ValidID(event.EventID) && core.ValidID(event.MissionID) && core.ValidID(event.TaskID) && event.Status == "open" && event.Actor == "system" && event.Reason != "" && core.ValidID(event.RequestID) && event.ManifestRevision == manifestRevision
 }
 
 func canonicalDurableDeliveryManifest(manifest DurableDeliveryManifestView) ([]byte, string, error) {

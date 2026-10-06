@@ -55,6 +55,7 @@ import type {
   OperatorInstructionView,
   CollaborationItem,
   ArtifactDeliveryManifestResponse,
+  DurableDeliveryFeedbackBacklogEventView,
   DurableDeliveryResponse,
   DurableUserDispositionCommandReceipt,
   UserDispositionDecision,
@@ -1091,10 +1092,18 @@ function isArtifactDeliveryManifestResponse(value: unknown, companyId: string, a
 }
 
 function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId: string): value is DurableDeliveryResponse {
-  if (!isRecord(value) || !isRecord(value.manifest) || !isRecord(value.userDisposition)) return false;
+  if (!isRecord(value) || !isRecord(value.manifest) || !isRecord(value.userDisposition) || !Array.isArray(value.feedbackBacklog)) return false;
   const manifest = value.manifest;
   const artifact = manifest.artifact;
   const disposition = value.userDisposition;
+  const feedbackBacklogValid = value.feedbackBacklog.length <= 32 && value.feedbackBacklog.every((item): item is DurableDeliveryFeedbackBacklogEventView => isRecord(item)
+    && hasString(item, 'eventId') && hasString(item, 'deliveryId') && item.deliveryId === artifactId
+    && hasString(item, 'manifestRevision') && isCanonicalPositiveInt64(item.manifestRevision)
+    && hasString(item, 'dispositionRevision') && isCanonicalPositiveInt64(item.dispositionRevision)
+    && hasString(item, 'missionId') && item.missionId === manifest.missionId && hasString(item, 'taskId') && item.taskId === manifest.taskId && item.artifactId === artifactId
+    && item.manifestRevision === manifest.revision
+    && item.status === 'open' && item.actor === 'system' && hasString(item, 'reason') && typeof item.reason === 'string' && item.reason.length > 0
+    && hasString(item, 'requestId') && hasString(item, 'createdAt'));
   if (!isRecord(artifact) || !Array.isArray(manifest.sections) || !hasString(manifest, 'revision')) return false;
   const byteSize = typeof artifact.byteSize === 'string' && /^[1-9]\d*$/.test(artifact.byteSize) ? Number(artifact.byteSize) : Number.NaN;
   const sectionKeys = new Set<string>();
@@ -1119,6 +1128,7 @@ function isDurableDeliveryResponse(value: unknown, companyId: string, artifactId
     && Number.isSafeInteger(byteSize) && byteSize <= 64 * 1024 * 1024
     && typeof artifact.sha256 === 'string' && /^[0-9a-f]{64}$/.test(artifact.sha256)
     && sectionsValid
+    && feedbackBacklogValid
     && hasString(manifest, 'createdAt')
     && isCanonicalPositiveInt64(disposition.revision)
     && disposition.manifestRevision === manifest.revision

@@ -217,10 +217,26 @@ export type DurableUserDispositionView = Readonly<{
   createdAt: string;
 }>;
 
+export type DurableDeliveryFeedbackBacklogEventView = Readonly<{
+  eventId: string;
+  deliveryId: string;
+  manifestRevision: string;
+  dispositionRevision: string;
+  missionId: string;
+  taskId: string;
+  artifactId: string;
+  status: 'open';
+  reason: string;
+  actor: 'system';
+  requestId: string;
+  createdAt: string;
+}>;
+
 export type DurableDeliveryResponse = Readonly<{
   manifest: DurableDeliveryManifestView;
   manifestSha256: string;
   userDisposition: DurableUserDispositionView;
+  feedbackBacklog: ReadonlyArray<DurableDeliveryFeedbackBacklogEventView>;
 }>;
 
 export type DurableUserDispositionCommandReceipt = Readonly<{

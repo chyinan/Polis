@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 274)
+
+Slice274 adds the missing read side of terminal delivery feedback: `DurableDeliveryLifecycleResponse.feedbackBacklog` is loaded from Schema113 with Company/Artifact scope, a 32-event bound and fail-closed validation, then displayed in the existing Workbench delivery panel. The read path returns an empty backlog when the optional table is absent on a pre-Schema114 runtime; Schema114 adds a delivery-leading index. It has no Task, Worker, Mission or notification side effect. Targeted frontend validation, frontend build, Go compile/build, DB/hash checks and diff-check passed; no database runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-274-req40-backlog-read-projection/verification.md`.
+
 ## Current continuation pointer (Slice 273)
 
 Slice273 adds the verified path that Slice272 required: an installation-owner authenticated, CSRF-protected completion command appends a complete `ready` DeliveryManifest revision from immutable source-input, validation/build, run-instruction, limitation and license/source evidence. It refuses stale/forged current manifests, cross-scope Artifact rows, unpassed Artifacts, missing qualification, mismatched task-input/validation-contract digests and malformed evidence. The new revision starts with `not_requested`; no acceptance is inferred from completion, preview, download or notification.
