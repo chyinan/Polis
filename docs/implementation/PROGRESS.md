@@ -1,3 +1,11 @@
+## Latest continuation status (Slice 300, REQ-02 TaskRevision owner-decision lifecycle)
+
+Added Schema123 append-only owner decisions and a pure monotonic state machine
+for exact TaskRevision bindings. Only proposed→approved/rejected and
+approved→revoked are allowed; decisions remain unverified and do not authorize
+execution. Targeted DB/spec/control/workbench/kernel tests pass; no migration,
+Worker/provider/browser/external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-300-req02-task-revision-decisions/verification.md`.
+
 ## Latest continuation status (Slice 299, REQ-02 durable semantic TaskRevision context)
 
 Schema122 now persists the exact product compat/Backend semantic binding at

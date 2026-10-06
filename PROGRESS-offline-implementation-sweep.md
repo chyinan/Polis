@@ -123,4 +123,13 @@ build and diff check pass; no migration/runtime/Worker/provider/browser action
 ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-299-req02-task-semantic-revisions/verification.md`.
 
+# Latest checkpoint: Slice300 REQ-02 TaskRevision owner-decision lifecycle
+
+Added the Schema123 append-only owner decision ledger and pure monotonic state
+machine for exact TaskRevision bindings. Only proposed→approved/rejected and
+approved→revoked are allowed; decisions remain unverified and do not authorize
+execution. Targeted DB/spec/control/workbench/kernel tests pass; no migration,
+Worker/provider/browser/external account or scenario ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-300-req02-task-revision-decisions/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

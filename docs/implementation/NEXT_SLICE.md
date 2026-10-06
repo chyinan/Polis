@@ -1,3 +1,15 @@
+## Latest continuation status (Slice 300, REQ-02 TaskRevision owner-decision lifecycle)
+
+Schema123 now stores append-only owner decisions for exact semantic
+TaskRevision bindings. The monotonic lifecycle is
+`proposed -> approved|rejected -> (approved only) revoked`; no `qualified`
+state or execution grant is introduced. The Kernel command is exposed through
+an installation-owner/CSRF Workbench route. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-300-req02-task-revision-decisions/verification.md`.
+
+Next source work is limited to qualification evidence and any explicitly
+approved admission policy; no Provider/runtime action is implied.
+
 ## Latest continuation status (Slice 299, REQ-02 durable semantic TaskRevision context)
 
 Schema122 now stores append-only semantic TaskRevision context for the exact

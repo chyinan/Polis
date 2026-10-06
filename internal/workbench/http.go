@@ -1476,6 +1476,37 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "tasks.semantic_revision.decide":
+		response.Header().Set("Cache-Control", "no-store")
+		if !installationauth.IsAuthenticated(ctx) {
+			writeError(response, http.StatusUnauthorized, "installation owner authentication is required")
+			return
+		}
+		csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+		csrfValue := ""
+		if csrfCookie != nil {
+			csrfValue = csrfCookie.Value
+		}
+		if request.Header.Get("Origin") == "" || !installationauth.CSRFValid(ctx, csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+			writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+			return
+		}
+		decisionService, ok := service.(control.TaskSemanticRevisionDecisionService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "task_semantic_revision", errors.New("task semantic revision decisions are unavailable"))
+			return
+		}
+		var input control.DecideTaskSemanticRevisionRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, input.TaskID, "task_semantic_revision", err)
+			return
+		}
+		receipt, err := decisionService.DecideTaskSemanticRevision(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, input.TaskID, "task_semantic_revision", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "capabilities.revocation-review":
 		if !installationauth.IsAuthenticated(ctx) {
 			writeError(response, http.StatusUnauthorized, "installation owner authentication is required")

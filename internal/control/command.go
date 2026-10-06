@@ -529,6 +529,15 @@ type DecideCapabilityRequest struct {
 	RequestID       string `json:"requestId"`
 }
 
+type DecideTaskSemanticRevisionRequest struct {
+	TaskID        string `json:"taskId"`
+	Revision      int64  `json:"revision"`
+	BindingSHA256 string `json:"bindingSha256"`
+	Decision      string `json:"decision"`
+	Rationale     string `json:"rationale"`
+	RequestID     string `json:"requestId"`
+}
+
 type ApproveStdioMCPRuntimeQualificationRequest struct {
 	RuntimeQualificationID string `json:"runtimeQualificationId"`
 	Rationale              string `json:"rationale"`
@@ -553,6 +562,10 @@ type CapabilityService interface {
 	BindEmployeeCapability(ctx context.Context, companyID string, request BindEmployeeCapabilityRequest) (kernel.Receipt, error)
 	RevokeEmployeeCapability(ctx context.Context, companyID string, request BindEmployeeCapabilityRequest) (kernel.Receipt, error)
 	ReviewIncompleteCapabilityRevocation(ctx context.Context, companyID string, request ReviewCapabilityRevocationRequest) (kernel.Receipt, error)
+}
+
+type TaskSemanticRevisionDecisionService interface {
+	DecideTaskSemanticRevision(ctx context.Context, companyID string, request DecideTaskSemanticRevisionRequest) (kernel.Receipt, error)
 }
 
 type ReviewCapabilityRevocationRequest struct {

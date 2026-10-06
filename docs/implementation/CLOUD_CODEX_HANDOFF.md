@@ -2,6 +2,16 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 300)
+
+Added the monotonic TaskRevision owner-decision lifecycle and Schema123
+append-only decision ledger. Only `proposed -> approved|rejected` and
+`approved -> revoked` are accepted; rejected/revoked rows cannot be
+resurrected, and `qualified` is not a decision state. The Kernel exact-binding
+command is exposed through an installation-owner/CSRF Workbench route, while
+qualification and execution remain unchanged and denied. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-300-req02-task-revision-decisions/verification.md`.
+
 ## Current continuation pointer (Slice 299)
 
 Added Schema122 append-only `task_semantic_revisions` context. The product
