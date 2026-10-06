@@ -1,3 +1,7 @@
+## Latest continuation status (Slice 276, REQ-40 delivery completion UI/API)
+
+The owner/CSRF delivery completion command is now exposed through the real Workbench API and assembling-delivery form. Five bounded evidence sections are submitted, ready/system receipts are validated and the delivery query refreshes after success; completion remains separate from acceptance and execution. No runtime database, Worker/provider, browser or frozen scenario ran. REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-276-req40-delivery-completion-ui/verification.md`.
+
 ## Latest continuation status (Slice 275, REQ-40 historical Manifest backfill)
 
 Added an explicit idempotent management path to backfill missing durable Manifest/UserDisposition rows for legacy deliverable/ready Artifacts. The backfill remains `assembling`/`not_requested` and preserves missing evidence; it does not claim ready, accepted, qualified or completed. No management DSN/runtime operation ran; REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-275-req40-historical-backfill/verification.md`.

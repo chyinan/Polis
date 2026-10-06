@@ -19,12 +19,13 @@
 - `frontend/src/domain/workbench-validation.ts` — runtime validation boundary for durable delivery responses
 - `frontend/src/pages/SubpagePanels.tsx` — existing durable delivery presentation component
 - `summary/req40-backlog-read-projection.md` — Slice 274 scope and invariant summary
+- `summary/req40-delivery-completion-ui.md` — Slice 276 owner completion UI/API summary
 
 ## 当前进度
-已完成需求筛选；REQ-40 Company backlog 只读投影已接入 Go read store、TypeScript validation 和 Workbench 展示；历史 Artifact 的 durable Manifest/UserDisposition backfill 管理路径也已实现并通过目标测试/build。
+已完成需求筛选；REQ-40 Company backlog 只读投影、历史 Artifact backfill 管理路径和 assembling delivery completion UI/API 均已实现并通过目标测试/build。
 
 ## 下一步
-提交并推送 Slice 275；保留前端测试文件中三个既有无关失败及 PostgreSQL/runtime backfill 未执行的记录。
+提交并推送 Slice 276；保留前端测试文件中三个既有无关失败及 PostgreSQL/runtime backfill 未执行的记录。
 
 ## 发现的关键信息
 - REQ-36/37/38 与部分 REQ-40 工作需要 owner policy、真实主机、账号或运行时迁移，当前不应猜测。

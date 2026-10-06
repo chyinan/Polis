@@ -6,7 +6,7 @@ import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, Emplo
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES} from '../data/workbench-api';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useArtifactDeliveryManifest, useArtifactDetail, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDurableDelivery, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useRecordDurableUserDisposition, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
+import {useArtifactDeliveryManifest, useArtifactDetail, useCompleteDurableDeliveryManifest, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDurableDelivery, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useRecordDurableUserDisposition, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
 import {formatEntityId} from '../domain/activity-presentation';
 import {labelDisplayValue, labelProjectEnvironmentPolicy, labelRole} from '../domain/display-labels';
 import {selectCheckpointForTask} from '../domain/checkpoint-projection';
@@ -17,13 +17,62 @@ import styles from '../styles/workbench.module.css';
 
 function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
   const key = JSON.stringify({operation, payload});
-  const requestId = pendingIds.get(key) ?? `${operation}-${crypto.randomUUID()}`;
+  const storageKey = `polis.pending-request:${hashPendingRequestKey(key)}`;
+  let requestId = pendingIds.get(key);
+  if (requestId === undefined) {
+    try {
+      requestId = window.sessionStorage.getItem(storageKey) ?? undefined;
+    } catch {
+      requestId = undefined;
+    }
+  }
+  requestId ??= `${operation}-${crypto.randomUUID()}`;
   pendingIds.set(key, requestId);
+  try {
+    window.sessionStorage.setItem(storageKey, requestId);
+  } catch {
+    // In-memory retry remains available when session storage is unavailable.
+  }
   return {key, requestId};
 }
 
 function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: string): void {
   pendingIds.delete(key);
+  try {
+    window.sessionStorage.removeItem(`polis.pending-request:${hashPendingRequestKey(key)}`);
+  } catch {
+    // Nothing else is required after a confirmed command.
+  }
+}
+
+function hashPendingRequestKey(value: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+type DeliveryEvidenceKey = 'sourceInputs' | 'environmentBuild' | 'runInstructions' | 'limitations' | 'licenseSource';
+type DeliveryEvidenceField = 'reference' | 'digest' | 'detail';
+type DeliveryEvidenceDraft = Readonly<Record<DeliveryEvidenceKey, Readonly<Record<DeliveryEvidenceField, string>>>>;
+const deliveryEvidenceFields: ReadonlyArray<Readonly<{key: DeliveryEvidenceKey; label: string}>> = [
+  {key: 'sourceInputs', label: '源输入证据'},
+  {key: 'environmentBuild', label: '环境 / 构建证据'},
+  {key: 'runInstructions', label: '运行说明证据'},
+  {key: 'limitations', label: '限制说明证据'},
+  {key: 'licenseSource', label: '许可证 / 来源证据'},
+];
+
+function emptyDeliveryEvidenceDraft(): DeliveryEvidenceDraft {
+  return {
+    sourceInputs: {reference: '', digest: '', detail: ''},
+    environmentBuild: {reference: '', digest: '', detail: ''},
+    runInstructions: {reference: '', digest: '', detail: ''},
+    limitations: {reference: '', digest: '', detail: ''},
+    licenseSource: {reference: '', digest: '', detail: ''},
+  };
 }
 
 function DataRow({label, value, mono = false}: Readonly<{label: string; value: ReactNode; mono?: boolean}>) {
@@ -32,9 +81,12 @@ function DataRow({label, value, mono = false}: Readonly<{label: string; value: R
 
 function DurableDeliveryLifecycle({api, companyId, artifactId, query, pendingRequestIds}: Readonly<{api: WorkbenchApi; companyId: string; artifactId: string | null; query: ReturnType<typeof useDurableDelivery>; pendingRequestIds: Map<string, string>}>) {
   const dispositionMutation = useRecordDurableUserDisposition(api, companyId);
+  const completionMutation = useCompleteDurableDeliveryManifest(api, companyId);
   const [dispositionDecision, setDispositionDecision] = useState<UserDispositionDecision | ''>('');
   const [dispositionReason, setDispositionReason] = useState('');
   const [dispositionMessage, setDispositionMessage] = useState<string | null>(null);
+  const [completionEvidence, setCompletionEvidence] = useState<DeliveryEvidenceDraft>(() => emptyDeliveryEvidenceDraft());
+  const [completionMessage, setCompletionMessage] = useState<string | null>(null);
   const delivery = query.data;
   const sectionStateLabels: Readonly<Record<string, string>> = {available: '已提供', unavailable: '不可用', missing: '缺失', not_requested: '未请求'};
   const deliveryStateLabels: Readonly<Record<string, string>> = {assembling: '组装中', ready: '就绪', invalidated: '已失效', withdrawn: '已撤回'};
@@ -75,6 +127,27 @@ function DurableDeliveryLifecycle({api, companyId, artifactId, query, pendingReq
       setDispositionMessage('用户态度回执已收到，正在刷新对应的持久交付记录。');
     } catch (error) {
       setDispositionMessage(`${error instanceof Error ? error.message : '用户态度提交失败'}；保留了本次选择和理由，原样重试会复用同一 request ID。`);
+    }
+  }
+
+  function updateCompletionEvidence(section: DeliveryEvidenceKey, field: DeliveryEvidenceField, value: string): void {
+    setCompletionEvidence(current => ({...current, [section]: {...current[section], [field]: value}}));
+    setCompletionMessage(null);
+  }
+
+  async function submitCompletion(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    if (artifactId === null || delivery === undefined || delivery.manifest.state !== 'assembling' || api.mode !== 'real' || !api.completeDurableDeliveryManifest) return;
+    const intent = {companyId, artifactId, expectedManifestRevision: delivery.manifest.revision, ...completionEvidence};
+    const pending = pendingRequestIdentity(pendingRequestIds, 'durable-delivery-completion', intent);
+    setCompletionMessage(null);
+    try {
+      await completionMutation.mutateAsync({...intent, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingRequestIds, pending.key);
+      setCompletionEvidence(emptyDeliveryEvidenceDraft());
+      setCompletionMessage('交付清单已追加 ready revision，正在刷新持久交付记录。');
+    } catch (error) {
+      setCompletionMessage(`${error instanceof Error ? error.message : '交付清单完成失败'}；保留证据字段，原样重试会复用同一 request ID。`);
     }
   }
 
@@ -133,6 +206,18 @@ function DurableDeliveryLifecycle({api, companyId, artifactId, query, pendingReq
         {dispositionMessage ? <div className={dispositionMutation.isError ? styles.errorState : styles.formHint} role={dispositionMutation.isError ? 'alert' : 'status'}>{dispositionMessage}</div> : null}
       </form> : null}
       {delivery.manifest.state === 'assembling' ? <p className={styles.formHint} role="status">当前清单仍在组装中；只有持久交付清单进入 ready 状态后，才能提交接受或请求修改。</p> : null}
+      {delivery.manifest.state === 'assembling' && api.mode === 'real' && api.completeDurableDeliveryManifest ? <form className={styles.formStack} data-testid="durable-delivery-completion-form" onSubmit={event => void submitCompletion(event)}>
+        <h4 className={styles.sectionTitle}>补齐交付证据并生成 ready 清单</h4>
+        <p className={styles.formHint}>仅安装所有者可以提交。后端会重新校验源输入、验证绑定、Artifact 资格和证据摘要；提交不会接受交付，也不会启动 Worker。</p>
+        {deliveryEvidenceFields.map(field => <div className={styles.recordRow} key={field.key}>
+          <div className={styles.recordLead}><FileCheck2 aria-hidden="true" size={16} /><div><strong>{field.label}</strong>
+            <input className={styles.formField} aria-label={`${field.label}引用`} placeholder="reference" value={completionEvidence[field.key].reference} disabled={completionMutation.isPending} onChange={event => updateCompletionEvidence(field.key, 'reference', event.target.value)} />
+            <input className={styles.formField} aria-label={`${field.label}摘要`} placeholder="sha256" value={completionEvidence[field.key].digest} disabled={completionMutation.isPending} onChange={event => updateCompletionEvidence(field.key, 'digest', event.target.value)} />
+            <textarea className={styles.formField} aria-label={`${field.label}说明`} rows={2} maxLength={512} placeholder="bounded evidence detail" value={completionEvidence[field.key].detail} disabled={completionMutation.isPending} onChange={event => updateCompletionEvidence(field.key, 'detail', event.target.value)} />
+          </div></div></div>)}
+        <button className={styles.commandButton} data-testid="durable-delivery-completion-submit" disabled={completionMutation.isPending} type="submit">{completionMutation.isPending ? '正在补齐…' : '生成 ready 清单'}</button>
+        {completionMessage ? <div className={completionMutation.isError ? styles.errorState : styles.formHint} role={completionMutation.isError ? 'alert' : 'status'}>{completionMessage}</div> : null}
+      </form> : null}
       {delivery.manifest.state === 'invalidated' || delivery.manifest.state === 'withdrawn' ? <p className={styles.formHint} role="status">当前交付清单已失效或撤回，不能基于此 revision 提交用户态度。</p> : null}
       {delivery.manifest.state === 'ready' && (api.mode !== 'real' || !api.recordDurableUserDisposition) ? <p className={styles.formHint} role="status">当前数据源不支持提交用户态度；现有态度保持只读。</p> : null}
       {delivery.manifest.state === 'ready' ? <p className={styles.formHint}>查看 Artifact 预览和下载 ZIP 不会提交、接受或请求修改这项用户态度。</p> : null}

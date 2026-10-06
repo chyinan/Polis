@@ -251,6 +251,17 @@ export type DurableUserDispositionCommandReceipt = Readonly<{
   createdAt: string;
 }>;
 
+export type DurableDeliveryManifestCompletionReceipt = Readonly<{
+  requestId: string;
+  companyId: string;
+  deliveryId: string;
+  manifestRevision: string;
+  dispositionRevision: string;
+  state: 'ready';
+  actor: 'system';
+  createdAt: string;
+}>;
+
 export type ProjectEnvironmentPolicyManifestView = Readonly<{
   schemaVersion: 'project-environment-policy@1';
   profileId: 'windows-node-npm@1' | 'linux-node-npm@1';

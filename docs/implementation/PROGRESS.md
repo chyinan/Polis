@@ -1,3 +1,7 @@
+## Latest continuation status (Slice 276, REQ-40 delivery completion UI/API)
+
+The real Workbench now exposes the owner-authenticated delivery completion command for assembling Artifacts. It collects bounded evidence, validates a ready/system receipt and refreshes the durable delivery read model; it does not imply user acceptance or execution. Targeted frontend tests, direct TypeScript/Vite builds and diff checks pass. No database runtime, Worker/provider, browser or frozen scenario ran. REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-276-req40-delivery-completion-ui/verification.md`.
+
 ## Latest continuation status (Slice 275, REQ-40 historical Manifest backfill)
 
 Added an explicit idempotent `delivery-backfill` management path for legacy deliverable/ready Artifacts that lack durable DeliveryManifest rows. Backfilled records remain `assembling` with `not_requested` UserDisposition and explicit unavailable evidence; no ready/accepted/completed claim is made. Targeted Kernel tests, command build and diff checks pass. No management DSN invocation, database runtime, Worker/provider, browser or frozen scenario ran. REQ-40 remains partial. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-275-req40-historical-backfill/verification.md`.

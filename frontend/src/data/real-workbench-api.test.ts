@@ -678,6 +678,20 @@ describe('RealWorkbenchApi', () => {
     await expect(api.getDurableDelivery({companyId: 'company-1', artifactId: 'artifact-1'})).resolves.toMatchObject({feedbackBacklog: []});
   });
 
+  it('posts assembling delivery evidence through the owner completion route', async () => {
+    const receipt = {requestId: 'complete-1', companyId: 'company-1', deliveryId: 'artifact-1', manifestRevision: '2', dispositionRevision: '1', state: 'ready', actor: 'system', createdAt: '2026-10-06T00:00:00Z'};
+    const evidence = {reference: 'ref-1', digest: 'a'.repeat(64), detail: 'bounded evidence'};
+    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => receipt});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench', false, 'owner-token');
+
+    await expect(api.completeDurableDeliveryManifest({
+      companyId: 'company-1', artifactId: 'artifact-1', requestId: 'complete-1', expectedManifestRevision: '1',
+      sourceInputs: evidence, environmentBuild: evidence, runInstructions: evidence, limitations: evidence, licenseSource: evidence,
+    })).resolves.toEqual(receipt);
+    expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/artifacts/artifact-1/delivery/complete', expect.objectContaining({method: 'POST', body: expect.stringContaining('complete-1')}));
+  });
+
   it('sends the desktop session token with delivery manifest and package requests', async () => {
     const artifact = new TextEncoder().encode('qualified artifact payload');
     const manifest = {

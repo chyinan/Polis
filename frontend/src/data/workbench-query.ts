@@ -19,7 +19,7 @@ import type {SetMissionToolCallClosingReserveOptions} from './workbench-api';
 import type {ChangeCompanyToolCallBudgetOptions} from './workbench-api';
 import type {SetCompanyToolCallClosingReserveOptions} from './workbench-api';
 import type {ProposeMemoryCorrectionOptions, ReviewMemoryCorrectionOptions} from './workbench-api';
-import type {RecordDurableUserDispositionOptions} from './workbench-api';
+import type {CompleteDurableDeliveryManifestOptions, RecordDurableUserDispositionOptions} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
   return useQuery({
@@ -882,6 +882,20 @@ export function useDurableDelivery(api: WorkbenchApi, companyId: string, artifac
     queryFn: () => api.getDurableDelivery({companyId, artifactId: artifactId as string}),
     enabled: artifactId !== null,
     staleTime: 5_000,
+  });
+}
+
+export function useCompleteDurableDeliveryManifest(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<CompleteDurableDeliveryManifestOptions, 'companyId'>) => {
+      if (!api.completeDurableDeliveryManifest) throw new Error('当前数据源不支持完成持久交付清单。');
+      return api.completeDurableDeliveryManifest({...options, companyId});
+    },
+    onSuccess: async (_receipt, options) => queryClient.invalidateQueries({
+      queryKey: ['workbench', api.mode, 'durable-delivery', companyId, options.artifactId],
+      exact: true,
+    }),
   });
 }
 

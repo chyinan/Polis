@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 276, REQ-40 delivery completion UI/API)
+
+Connected the installation-owner/CSRF `delivery/complete` command to the real Workbench API and assembling-delivery form. The client collects five bounded evidence sections, validates the ready/system receipt and refreshes the durable delivery query; completion remains distinct from user acceptance and Worker execution. Legacy responses without `feedbackBacklog` remain compatible. TypeScript/Vite and targeted receipt/API tests pass; no PostgreSQL runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-276-req40-delivery-completion-ui/verification.md`.
+
+Next local slice: only remaining REQ-40 policy gates and any explicitly owner-approved offline projections; do not infer deadline, closeout or revision-task semantics.
+
 ## Latest continuation status (Slice 275, REQ-40 historical Manifest backfill)
 
 Added the explicit `polis delivery-backfill COMPANY REQUEST_ID` management path. It idempotently appends `assembling` revision 1 and `not_requested` UserDisposition only for existing deliverable/ready Artifacts without a durable Manifest, preserving unavailable provenance/build/instruction/verification/limitation/license sections. It never infers ready, accepted, qualified or Mission completion. The command requires an explicit management DSN/blob-root invocation and was not run; Go targeted tests/build and diff checks pass. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-275-req40-historical-backfill/verification.md`.

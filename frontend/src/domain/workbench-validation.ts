@@ -56,6 +56,7 @@ import type {
   CollaborationItem,
   ArtifactDeliveryManifestResponse,
   DurableDeliveryFeedbackBacklogEventView,
+  DurableDeliveryManifestCompletionReceipt,
   DurableDeliveryResponse,
   DurableUserDispositionCommandReceipt,
   UserDispositionDecision,
@@ -1385,6 +1386,17 @@ export function validateDurableDelivery(value: unknown, companyId: string, artif
   return isDurableDeliveryResponse(value, companyId, artifactId)
     ? {success: true, value}
     : {success: false, issues: [{path: '', message: 'durable delivery response contains an unknown, malformed, or cross-scope field'}]};
+}
+
+export function validateDurableDeliveryManifestCompletionReceipt(value: unknown, expected: Readonly<{requestId: string; companyId: string; artifactId: string; expectedManifestRevision: string}>): ValidationResult<DurableDeliveryManifestCompletionReceipt> {
+  const expectedRevision = isCanonicalPositiveInt64(expected.expectedManifestRevision) ? BigInt(expected.expectedManifestRevision) : null;
+  const returnedRevision = isRecord(value) && typeof value.manifestRevision === 'string' && isCanonicalPositiveInt64(value.manifestRevision) ? BigInt(value.manifestRevision) : null;
+  if (!isRecord(value) || value.requestId !== expected.requestId || value.companyId !== expected.companyId || value.deliveryId !== expected.artifactId
+    || value.state !== 'ready' || value.actor !== 'system' || expectedRevision === null || returnedRevision === null || returnedRevision !== expectedRevision + 1n
+    || value.dispositionRevision !== '1' || !hasString(value, 'createdAt') || typeof value.createdAt !== 'string' || Number.isNaN(Date.parse(value.createdAt))) {
+    return {success: false, issues: [{path: '', message: 'durable delivery completion receipt is malformed or cross-scoped'}]};
+  }
+  return {success: true, value: value as unknown as DurableDeliveryManifestCompletionReceipt};
 }
 
 export function validateDurableUserDispositionReceipt(value: unknown, expected: Readonly<{

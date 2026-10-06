@@ -1,7 +1,7 @@
 // pattern: Functional Core
 
 import {describe, expect, it} from 'vitest';
-import {isAcceptanceContract, validateActivityView, validateCapabilityCatalog, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateGitHubCredentialReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateOperatorInstructions, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateServiceBrowserSession, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases} from './workbench-validation';
+import {isAcceptanceContract, validateActivityView, validateCapabilityCatalog, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateDurableDeliveryManifestCompletionReceipt, validateGitHubCredentialReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateOperatorInstructions, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateServiceBrowserSession, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases} from './workbench-validation';
 import {validateGitHubFeedbackCollectionPolicyReceipt} from './workbench-validation';
 
 const companyId = 'company-1';
@@ -19,6 +19,16 @@ describe('durable delivery backlog projection', () => {
       userDisposition: {revision: '1', manifestRevision: '1', state: 'not_requested', actor: 'system', reason: 'not requested', requestId: 'request-1', feedbackDeadline: '', createdAt: '2026-10-06T00:00:00Z'},
     }, companyId, 'artifact-1');
     expect(result.success).toBe(false);
+  });
+});
+
+describe('durable delivery completion receipt', () => {
+  it('accepts only a ready system completion receipt in the requested company scope', () => {
+    const result = validateDurableDeliveryManifestCompletionReceipt({
+      requestId: 'complete-1', companyId, deliveryId: 'artifact-1', manifestRevision: '2', dispositionRevision: '1',
+      state: 'ready', actor: 'system', createdAt: '2026-10-06T00:00:00Z',
+    }, {requestId: 'complete-1', companyId, artifactId: 'artifact-1', expectedManifestRevision: '1'});
+    expect(result.success).toBe(true);
   });
 });
 

@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 276)
+
+Slice276 connects the owner/CSRF delivery completion command to the real Workbench API and assembling-delivery form. The five evidence sections are bounded and the ready/system receipt is validated; completion remains separate from acceptance and execution. Legacy delivery responses without `feedbackBacklog` remain compatible. Targeted frontend tests/builds pass; no database runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-276-req40-delivery-completion-ui/verification.md`.
+
 ## Current continuation pointer (Slice 275)
 
 Slice275 adds the explicit `delivery-backfill` management path for legacy deliverable/ready Artifacts without durable Manifest rows. It appends only an `assembling` revision 1 plus `not_requested` disposition and preserves all unavailable evidence sections; it never infers ready, accepted, qualified or Mission completion. The command requires explicit management DSN/blob-root invocation and was not run. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-275-req40-historical-backfill/verification.md`.
