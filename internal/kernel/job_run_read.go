@@ -3,8 +3,6 @@ package kernel
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 
 	"github.com/jackc/pgx/v5"
@@ -45,13 +43,17 @@ func (k *Kernel) GetJobRun(ctx context.Context, companyID, jobID string) (JobRun
 	if !core.ValidID(companyID) || !core.ValidID(jobID) {
 		return JobRunRecord{}, core.Malformed
 	}
-	var record JobRunRecord
-	err := k.pool.QueryRow(ctx, `SELECT j.company_id,j.job_id,j.task_id,j.session_id,j.environment_revision_id,COALESCE(j.handover_id,''),j.kind,COALESCE(j.service_id,''),
+	return scanJobRunRecord(k.pool.QueryRow(ctx, `SELECT j.company_id,j.job_id,j.task_id,j.session_id,j.environment_revision_id,COALESCE(j.handover_id,''),j.kind,COALESCE(j.service_id,''),
 	e.state,e.readiness,e.exit_code,e.reason_code,e.stdout_offset,e.stderr_offset,e.logs_truncated,e.log_gap,COALESCE(e.log_manifest_sha256,''),j.created_at::text
 FROM job_runs j
 JOIN LATERAL (SELECT state,readiness,exit_code,reason_code,stdout_offset,stderr_offset,logs_truncated,log_gap,log_manifest_sha256
 	FROM job_run_events WHERE company_id=j.company_id AND job_id=j.job_id ORDER BY event_seq DESC LIMIT 1) e ON true
-WHERE j.company_id=$1 AND j.job_id=$2`, companyID, jobID).Scan(
+	WHERE j.company_id=$1 AND j.job_id=$2`, companyID, jobID))
+}
+
+func scanJobRunRecord(row pgx.Row) (JobRunRecord, error) {
+	var record JobRunRecord
+	err := row.Scan(
 		&record.CompanyID, &record.JobID, &record.TaskID, &record.SessionID, &record.EnvironmentRevisionID, &record.HandoverID, &record.Kind, &record.ServiceID,
 		&record.State, &record.Readiness, &record.ExitCode, &record.ReasonCode, &record.StdoutOffset, &record.StderrOffset,
 		&record.LogsTruncated, &record.LogGap, &record.LogManifestSHA256, &record.CreatedAt,
@@ -60,6 +62,56 @@ WHERE j.company_id=$1 AND j.job_id=$2`, companyID, jobID).Scan(
 		return JobRunRecord{}, core.OutOfScope
 	}
 	return record, err
+}
+
+// ProductTaskJobStatus returns one exact JobRun only when it belongs to the
+// current product Task and active WorkerSession. The query is read-only and
+// never starts or stops a project process.
+func (k *Kernel) ProductTaskJobStatus(ctx context.Context, binding Binding, jobID string) (JobRunRecord, error) {
+	if !core.ValidID(binding.scope.company) || !core.ValidID(binding.task) || !core.ValidID(binding.session) || !core.ValidID(jobID) {
+		return JobRunRecord{}, core.Malformed
+	}
+	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return JobRunRecord{}, err
+	}
+	defer tx.Rollback(ctx)
+	if _, err = k.checkSession(ctx, tx, binding, false); err != nil {
+		return JobRunRecord{}, err
+	}
+	var activeTaskID, activeSessionID string
+	if err = tx.QueryRow(ctx, `SELECT task_id,id FROM worker_sessions WHERE company_id=$1 AND id=$2 AND state<>'stopped'`, binding.scope.company, binding.session).Scan(&activeTaskID, &activeSessionID); errors.Is(err, pgx.ErrNoRows) {
+		return JobRunRecord{}, core.OutOfScope
+	} else if err != nil {
+		return JobRunRecord{}, err
+	}
+	record, err := scanJobRunRecord(tx.QueryRow(ctx, `SELECT j.company_id,j.job_id,j.task_id,j.session_id,j.environment_revision_id,COALESCE(j.handover_id,''),j.kind,COALESCE(j.service_id,''),
+	e.state,e.readiness,e.exit_code,e.reason_code,e.stdout_offset,e.stderr_offset,e.logs_truncated,e.log_gap,COALESCE(e.log_manifest_sha256,''),j.created_at::text
+FROM job_runs j
+JOIN worker_sessions s ON s.company_id=j.company_id AND s.id=$3 AND s.task_id=j.task_id AND s.state<>'stopped'
+JOIN LATERAL (SELECT state,readiness,exit_code,reason_code,stdout_offset,stderr_offset,logs_truncated,log_gap,log_manifest_sha256
+	FROM job_run_events WHERE company_id=j.company_id AND job_id=j.job_id ORDER BY event_seq DESC LIMIT 1) e ON true
+	WHERE j.company_id=$1 AND j.job_id=$2`, binding.scope.company, jobID, binding.session))
+	if err != nil {
+		return JobRunRecord{}, err
+	}
+	if err = validateProductTaskJobReadScope(binding, record, activeTaskID, activeSessionID); err != nil {
+		return JobRunRecord{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return JobRunRecord{}, err
+	}
+	return record, nil
+}
+
+// ProductTaskJobLogs returns the bounded immutable log artifact for one exact
+// JobRun after applying the same Task and WorkerSession scope checks as status.
+func (k *Kernel) ProductTaskJobLogs(ctx context.Context, binding Binding, jobID string) (JobRunLogArtifact, error) {
+	record, err := k.ProductTaskJobStatus(ctx, binding, jobID)
+	if err != nil {
+		return JobRunLogArtifact{}, err
+	}
+	return readVerifiedJobRunLogArtifact(k.root, binding.scope.company, jobID, record.LogManifestSHA256)
 }
 
 func (k *Kernel) ListMissionJobRuns(ctx context.Context, companyID, missionID string) ([]JobRunRecord, error) {
@@ -162,16 +214,19 @@ func (k *Kernel) GetJobRunLogArtifact(ctx context.Context, companyID, jobID stri
 	if err != nil {
 		return JobRunLogArtifact{}, err
 	}
-	if record.LogManifestSHA256 == "" {
+	return readVerifiedJobRunLogArtifact(k.root, companyID, jobID, record.LogManifestSHA256)
+}
+
+func readVerifiedJobRunLogArtifact(root, companyID, jobID, manifestSHA256 string) (JobRunLogArtifact, error) {
+	if !core.ValidID(companyID) || !core.ValidID(jobID) {
+		return JobRunLogArtifact{}, core.Malformed
+	}
+	if manifestSHA256 == "" {
 		return JobRunLogArtifact{CompanyID: companyID, JobID: jobID, Content: []byte{}}, nil
 	}
-	content, err := readBlob(k.root, companyID, record.LogManifestSHA256)
+	content, err := readBlobBounded(root, companyID, manifestSHA256, maxJobRunLogArtifactBytes)
 	if err != nil {
 		return JobRunLogArtifact{}, err
 	}
-	digest := sha256.Sum256(content)
-	if hex.EncodeToString(digest[:]) != record.LogManifestSHA256 {
-		return JobRunLogArtifact{}, core.Integrity
-	}
-	return JobRunLogArtifact{CompanyID: companyID, JobID: jobID, ManifestSHA256: record.LogManifestSHA256, Content: content}, nil
+	return JobRunLogArtifact{CompanyID: companyID, JobID: jobID, ManifestSHA256: manifestSHA256, Content: content}, nil
 }

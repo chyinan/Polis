@@ -36,6 +36,7 @@ type EmployeeTools struct {
 	MissionChangeAssessmentSurface     bool
 	CSVInputRangeSurface               bool
 	EnvironmentStatusSurface           bool
+	ReadOnlyJobsSurface                bool
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -110,6 +111,30 @@ func (t EmployeeTools) Call(ctx context.Context, name, callID string, raw []byte
 func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (ToolResult, error) {
 	k, b := t.Kernel, t.Binding
 	switch name {
+	case "jobs_status":
+		if !t.ProductSurface || !t.ReadOnlyJobsSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			JobID string `json:"job_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		status, e := k.ProductTaskJobStatus(ctx, b, args.JobID)
+		return ToolResult{Data: status}, e
+	case "jobs_logs":
+		if !t.ProductSurface || !t.ReadOnlyJobsSurface {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			JobID string `json:"job_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		logs, e := k.ProductTaskJobLogs(ctx, b, args.JobID)
+		return ToolResult{Data: logs}, e
 	case "environment_status":
 		if !t.ProductSurface || !t.EnvironmentStatusSurface {
 			return ToolResult{}, core.Denied

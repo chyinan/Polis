@@ -1,0 +1,43 @@
+// pattern: Functional Core
+package kernel
+
+import (
+	"context"
+	"errors"
+	"testing"
+
+	"polis/internal/core"
+)
+
+func TestValidateProductTaskJobReadScopeRequiresCurrentTaskAndWorkerSession(t *testing.T) {
+	binding := Binding{scope: Scope{company: "company"}, task: "task", session: "session"}
+	record := JobRunRecord{CompanyID: "company", JobID: "job", TaskID: "task", SessionID: "session"}
+	if err := validateProductTaskJobReadScope(binding, record, "task", "session"); err != nil {
+		t.Fatalf("current task/session was rejected: %v", err)
+	}
+	for name, input := range map[string]struct {
+		record        JobRunRecord
+		activeTask    string
+		activeSession string
+	}{
+		"other task job":       {record: JobRunRecord{CompanyID: "company", JobID: "job", TaskID: "other-task", SessionID: "session"}, activeTask: "task", activeSession: "session"},
+		"other company job":    {record: JobRunRecord{CompanyID: "other-company", JobID: "job", TaskID: "task", SessionID: "session"}, activeTask: "task", activeSession: "session"},
+		"other session job":    {record: record, activeTask: "task", activeSession: "other-session"},
+		"stale worker binding": {record: record, activeTask: "task", activeSession: ""},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if err := validateProductTaskJobReadScope(binding, input.record, input.activeTask, input.activeSession); !errors.Is(err, core.OutOfScope) {
+				t.Fatalf("scope error=%v, want %v", err, core.OutOfScope)
+			}
+		})
+	}
+}
+
+func TestEmployeeToolsReadOnlyJobsRequiresTheIsolatedProductSurface(t *testing.T) {
+	for _, name := range []string{"jobs_status", "jobs_logs"} {
+		_, err := (EmployeeTools{}).call(context.Background(), name, "budget-key", []byte(`{"job_id":"job"}`))
+		if !errors.Is(err, core.Denied) {
+			t.Fatalf("%s without the isolated product surface returned %v, want %v", name, err, core.Denied)
+		}
+	}
+}

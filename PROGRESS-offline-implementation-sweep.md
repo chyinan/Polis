@@ -32,3 +32,8 @@ Slice 274–276 已提交并推送；保留前端测试文件中三个既有无�
 - Schema 113 已持久化 terminal `delivery_feedback_backlog_events`，但目前只有写入路径，没有 Workbench read projection。
 - 新投影限制为当前 Artifact delivery、最多 32 条、只读 `open` 事件；不创建任务、不唤醒 Mission、不改变 terminal 状态。
 - 当前 worktree 不需要真实 PostgreSQL/Worker/provider/browser，适合直接在 WSL 继续开发。
+# Latest checkpoint: Slice277 REQ-37 read-only JobRun surface
+
+Slice277 adds the fake-only `polis-product-tool-surface@15` with `jobs_status` and `jobs_logs`. The Kernel revalidates Company/Task/WorkerSession scope in a repeatable-read transaction and verifies the persisted log-manifest digest. The qualified real-provider `@4` surface is unchanged; `jobs.start/stop`, process control and BorrowerLease remain policy/native-host gated. Targeted Codex, Provider, Kernel and Control tests pass. A broader package sweep was attempted but remains non-clean because of existing provider identity, MCP permit/fixture and mission-command environment failures; no Worker, process, database runtime, provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-277-req37-read-only-jobs/verification.md`.
+
+Review follow-up: JobRun log reads now use the explicit 2 MiB log bound, read-only CAS lookup does not create a missing Company directory, and tests cover large logs, missing/tampered manifests, cross-Company scope and the isolated-surface deny path.

@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 277, REQ-37 fake-only read-only JobRun surface)
+
+Added isolated fake-only product surface `polis-product-tool-surface@15` with `polis_jobs_status` and `polis_jobs_logs`. Kernel reads are bounded to the current Company, Task and WorkerSession, use a read-only repeatable-read transaction, and verify persisted log-manifest SHA-256 before returning bytes. The existing qualified `@4` surface is unchanged. `jobs.start`, `jobs.stop`, process control, service endpoint BorrowerLease, owner policy, native executor qualification and real-provider execution remain open. Targeted Go tests and adapter-readiness verification pass; no Worker, process, database runtime, provider, browser, external account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-277-req37-read-only-jobs/verification.md`.
+
+Next local slice: continue only with owner-independent projections or validations; REQ-37 start/stop and BorrowerLease remain gated on consumer scope, TTL/idle policy and native host qualification.
+
 ## Latest continuation status (Slice 276, REQ-40 delivery completion UI/API)
 
 Connected the installation-owner/CSRF `delivery/complete` command to the real Workbench API and assembling-delivery form. The client collects five bounded evidence sections, validates the ready/system receipt and refreshes the durable delivery query; completion remains distinct from user acceptance and Worker execution. Legacy responses without `feedbackBacklog` remain compatible. TypeScript/Vite and targeted receipt/API tests pass; no PostgreSQL runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-276-req40-delivery-completion-ui/verification.md`.

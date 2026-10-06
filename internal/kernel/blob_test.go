@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"polis/internal/core"
+	"strings"
 	"testing"
 )
 
@@ -134,6 +135,18 @@ func TestReadBlobBoundedAllowsAnExplicitLimitAboveLegacyContentSize(t *testing.T
 	got, err := readBlobBounded(root, companyID, digest, 64<<10)
 	if err != nil || !bytes.Equal(got, content) {
 		t.Fatalf("explicit bounded CAS read length=%d err=%v, want %d bytes", len(got), err, len(content))
+	}
+}
+
+func TestReadBlobBoundedDoesNotCreateMissingCompanyDirectory(t *testing.T) {
+	root := t.TempDir()
+	companyID := "read-only-company"
+	digest := strings.Repeat("a", 64)
+	if _, err := readBlobBounded(root, companyID, digest, 64<<10); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("missing read-only blob error=%v, want not-exist", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, companyID)); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("read-only blob lookup created company directory: %v", err)
 	}
 }
 

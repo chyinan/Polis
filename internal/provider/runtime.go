@@ -135,11 +135,15 @@ func ProductWorkspaceSnapshotRevocationToolSurface() ToolSurface {
 const ProductMissionChangeAssessmentToolSurfaceQualification = "polis-product-tool-surface@12"
 const ProductCSVInputRangeToolSurfaceQualification = "polis-product-tool-surface@13"
 const ProductEnvironmentStatusToolSurfaceQualification = "polis-product-tool-surface@14"
+const ProductReadOnlyJobsToolSurfaceQualification = "polis-product-tool-surface@15"
 
 const (
 	ProductEnvironmentStatusManifestDigest = "b59ff6acd757764e66c73e1b5e638c3ff1a64a06f44491c919e017f91c48e0af"
 	ProductEnvironmentStatusSchemaDigest   = "513160783bc7effd340097ee55519f6a993a3eb57e3ebccd70bf7884afca5270"
 	ProductEnvironmentStatusSchemaBytes    = 2282
+	ProductReadOnlyJobsManifestDigest      = "68e0ac39e1eb14a19b7243f5bcfab88b8d16630c7e4f6661089922ac32239944"
+	ProductReadOnlyJobsSchemaDigest        = "0bd1fe983df7452ec0ce601384c5f03263670483c7312df00ec178e23f561f17"
+	ProductReadOnlyJobsSchemaBytes         = 2484
 )
 
 const (
@@ -149,6 +153,8 @@ const (
 	OfflineCSVInputRangeSurfaceSimulationMarker         = "offline-csv-input-range-tool-surface-unqualified"
 	OfflineEnvironmentStatusSurfacePurpose              = "offline-environment-status-tool-surface"
 	OfflineEnvironmentStatusSurfaceSimulationMarker     = "offline-environment-status-tool-surface-unqualified"
+	OfflineReadOnlyJobsSurfacePurpose                   = "offline-read-only-jobs-tool-surface"
+	OfflineReadOnlyJobsSurfaceSimulationMarker          = "offline-read-only-jobs-tool-surface-unqualified"
 	ProductMissionChangeAssessmentManifestDigest        = "cd9f4f852cd5674b1e0660868cb5af628a0186a0f137e8e1778e8fd6809c326d"
 	ProductMissionChangeAssessmentSchemaDigest          = "0be7f09a90c96ed73596617207ed1bac7575c6b8fd56cfe086a5880352c6b28a"
 	ProductMissionChangeAssessmentSchemaBytes           = 6740
@@ -169,6 +175,27 @@ func ProductCSVInputRangeToolSurface() ToolSurface {
 // qualified real-provider contract remains pinned to @4.
 func ProductEnvironmentStatusToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithEnvironmentStatus())
+}
+
+// ProductReadOnlyJobsToolSurface is a fake-only read surface. The qualified
+// real-provider contract remains pinned to @4.
+func ProductReadOnlyJobsToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithReadOnlyJobs())
+}
+
+func ValidateOfflineFakeReadOnlyJobsSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductReadOnlyJobsToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductReadOnlyJobsToolSurfaceQualification ||
+		profile.Purpose != OfflineReadOnlyJobsSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineReadOnlyJobsSurfaceSimulationMarker ||
+		profile.ProductProviderL2Fingerprint != OfflineReadOnlyJobsSurfaceSimulationMarker || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 9 || expected.ManifestDigest != ProductReadOnlyJobsManifestDigest || expected.AggregateSchemaBytes != ProductReadOnlyJobsSchemaBytes || expected.AggregateSchemaDigest != ProductReadOnlyJobsSchemaDigest ||
+		surface.ToolCount != 9 || observed.ToolCount != 9 || surface.ManifestDigest != ProductReadOnlyJobsManifestDigest || observed.ManifestDigest != ProductReadOnlyJobsManifestDigest ||
+		surface.AggregateSchemaBytes != ProductReadOnlyJobsSchemaBytes || observed.AggregateSchemaBytes != ProductReadOnlyJobsSchemaBytes || surface.AggregateSchemaDigest != ProductReadOnlyJobsSchemaDigest || observed.AggregateSchemaDigest != ProductReadOnlyJobsSchemaDigest {
+		return fmt.Errorf("read-only jobs surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
 }
 
 func ValidateOfflineFakeEnvironmentStatusSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

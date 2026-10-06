@@ -81,6 +81,22 @@ func ProductEmployeeToolsWithEnvironmentStatus() []any {
 	return append(tools, environmentTool[0])
 }
 
+// ProductEmployeeToolsWithReadOnlyJobs is an isolated, fake-only extension.
+// It exposes bounded reads for an exact job owned by the current Task; job
+// lifecycle mutation remains outside this surface.
+func ProductEmployeeToolsWithReadOnlyJobs() []any {
+	tools := ProductEmployeeTools()
+	jobTools := productTools([]peerToolDefinition{
+		{"jobs_status", "Read the latest bounded status for one exact job owned by your current Task. The result is scoped by the active WorkerSession and contains lifecycle metadata only.", map[string]any{
+			"job_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+		{"jobs_logs", "Read the bounded immutable log artifact for one exact job owned by your current Task. The result is scoped by the active WorkerSession and includes its content digest.", map[string]any{
+			"job_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+	})
+	return append(tools, jobTools...)
+}
+
 // ProductEmployeeToolsWithDirectMessaging is a separately versioned product
 // surface. The historical @4, Skill @5 and guidance @6 registries stay fixed.
 func ProductEmployeeToolsWithDirectMessaging() []any {

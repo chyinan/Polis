@@ -1,0 +1,38 @@
+// pattern: Functional Core
+package provider
+
+import (
+	"context"
+	"testing"
+)
+
+func TestProductReadOnlyJobsSurfaceIsFakeOnlyAndTaskBound(t *testing.T) {
+	runtime := NewFakeRuntime(FakeRuntimeConfig{ReadOnlyJobsSurface: true})
+	surface := ProductReadOnlyJobsToolSurface()
+	profile := runtime.ExecutionProfile()
+	if surface.ToolCount != 9 {
+		t.Fatalf("read-only jobs tool count=%d, want 9", surface.ToolCount)
+	}
+	if err := runtime.Readiness(context.Background()); err != nil {
+		t.Fatalf("explicit read-only jobs Fake Runtime readiness: %v", err)
+	}
+	authorization := validProviderExecutionAuthorization("offline-model", "fake", profile.Purpose, profile.ExecutionEnvelope)
+	authorization.ToolSurfaceDigest = surface.ManifestDigest
+	authorization.ToolSurfaceQualification = profile.ToolSurfaceQualification
+	authorization.ToolCount = surface.ToolCount
+	authorization.AggregateSchemaBytes = surface.AggregateSchemaBytes
+	authorization.AggregateSchemaDigest = surface.AggregateSchemaDigest
+	authorization.ExactSurfaceExecutionFingerprint = profile.ExactSurfaceExecutionFingerprint
+	authorization.ProductProviderL2Fingerprint = profile.ProductProviderL2Fingerprint
+	if err := ValidateRuntimeExecutionAuthorization(authorization); err != nil {
+		t.Fatalf("exact fake read-only jobs authorization was rejected: %v", err)
+	}
+	realAuthorization := authorization
+	realAuthorization.ProviderMode = "real"
+	if err := ValidateRuntimeExecutionAuthorization(realAuthorization); err == nil {
+		t.Fatal("real provider accepted the fake-only read-only jobs surface")
+	}
+	if err := ValidateOfflineFakeReadOnlyJobsSurface("real", profile, surface); err == nil {
+		t.Fatal("read-only jobs surface passed the non-fake validator")
+	}
+}

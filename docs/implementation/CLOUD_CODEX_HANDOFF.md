@@ -2,6 +2,10 @@
 
 Updated: 2026-10-06
 
+## Current continuation pointer (Slice 277)
+
+Slice277 adds fake-only product tool surface `polis-product-tool-surface@15` with read-only `jobs_status` and `jobs_logs`. Kernel reads revalidate the current WorkerSession and exact Company/Task/Session ownership in a repeatable-read transaction; log bytes are digest-verified. The qualified real-provider `@4` surface is unchanged. No `jobs.start/stop`, process control, BorrowerLease, real provider, database runtime, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-277-req37-read-only-jobs/verification.md`.
+
 ## Current continuation pointer (Slice 276)
 
 Slice276 connects the owner/CSRF delivery completion command to the real Workbench API and assembling-delivery form. The five evidence sections are bounded and the ready/system receipt is validated; completion remains separate from acceptance and execution. Legacy delivery responses without `feedbackBacklog` remain compatible. Targeted frontend tests/builds pass; no database runtime, Worker/provider, browser, external account or frozen scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-276-req40-delivery-completion-ui/verification.md`.

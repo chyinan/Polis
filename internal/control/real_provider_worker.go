@@ -162,6 +162,9 @@ func (a *RealProviderWorkerAdapter) Readiness(ctx context.Context) error {
 		return fmt.Errorf("real provider runtime unavailable: %w", err)
 	}
 	profile := a.runtime.ExecutionProfile()
+	if profile.ToolSurfaceQualification == provider.ProductReadOnlyJobsToolSurfaceQualification && a.runtime.Mode() == "fake" {
+		return provider.ValidateOfflineFakeReadOnlyJobsSurface(a.runtime.Mode(), profile, a.runtime.ToolSurface())
+	}
 	if profile.ToolSurfaceQualification == provider.ProductEnvironmentStatusToolSurfaceQualification && a.runtime.Mode() == "fake" {
 		return provider.ValidateOfflineFakeEnvironmentStatusSurface(a.runtime.Mode(), profile, a.runtime.ToolSurface())
 	}
@@ -873,6 +876,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 	controlledMCPV1Surface := profile.ToolSurfaceQualification == provider.ProductControlledMCPToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductControlledMCPToolSurface().ManifestDigest
 	controlledMCPV2Surface := profile.ToolSurfaceQualification == provider.ProductControlledMCPToolSurfaceV2Qualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductControlledMCPToolSurfaceV2().ManifestDigest
 	controlledMCPSurface := controlledMCPV1Surface || controlledMCPV2Surface
+	readOnlyJobsSurface := profile.ToolSurfaceQualification == provider.ProductReadOnlyJobsToolSurfaceQualification && a.runtime.Mode() == "fake" && a.runtime.ToolSurface().ManifestDigest == provider.ProductReadOnlyJobsToolSurface().ManifestDigest
 	environmentStatusSurface := profile.ToolSurfaceQualification == provider.ProductEnvironmentStatusToolSurfaceQualification && a.runtime.Mode() == "fake" && a.runtime.ToolSurface().ManifestDigest == provider.ProductEnvironmentStatusToolSurface().ManifestDigest
 	workspaceSnapshotRevocationSurface := profile.ToolSurfaceQualification == provider.ProductWorkspaceSnapshotRevocationToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductWorkspaceSnapshotRevocationToolSurface().ManifestDigest
 	missionChangeAssessmentSurface := profile.ToolSurfaceQualification == provider.ProductMissionChangeAssessmentToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductMissionChangeAssessmentToolSurface().ManifestDigest
@@ -899,7 +903,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 		skillLoadSurface := (profile.ToolSurfaceQualification == provider.ProductSkillToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillToolSurface().ManifestDigest) ||
 			(profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest)
 		skillDirectorySurface := profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest
-		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
+		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, ReadOnlyJobsSurface: readOnlyJobsSurface, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
 		result := tools.Call(ctx, name, callID, raw)
 		encoded, _ := json.Marshal(result)
 		return encoded, false

@@ -1,0 +1,20 @@
+// pattern: Functional Core
+package control
+
+import (
+	"context"
+	"testing"
+
+	"polis/internal/provider"
+)
+
+func TestReadOnlyJobsFakeSurfacePassesAdapterReadinessWithoutRealProvider(t *testing.T) {
+	runtime := provider.NewFakeRuntime(provider.FakeRuntimeConfig{ReadOnlyJobsSurface: true})
+	adapter, err := NewRealProviderWorkerLaunchQualificationAdapter(runtime)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := adapter.Readiness(context.Background()); err != nil {
+		t.Fatalf("fake read-only jobs adapter readiness: %v", err)
+	}
+}

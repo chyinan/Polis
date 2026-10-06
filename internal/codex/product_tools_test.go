@@ -106,6 +106,47 @@ func TestProductEmployeeSkillSurfaceAddsOnlyBoundedReadOnlyLoad(t *testing.T) {
 	}
 }
 
+func TestProductEmployeeReadOnlyJobsSurfaceAddsOnlyBoundedStatusAndLogs(t *testing.T) {
+	legacy := ProductEmployeeTools()
+	tools := ProductEmployeeToolsWithReadOnlyJobs()
+	if len(legacy) != 7 || len(tools) != 9 {
+		t.Fatalf("legacy/read-only-jobs tool counts=%d/%d, want 7/9", len(legacy), len(tools))
+	}
+	for index, tool := range legacy {
+		legacyJSON, err := json.Marshal(tool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		currentJSON, err := json.Marshal(tools[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(legacyJSON) != string(currentJSON) {
+			t.Fatalf("legacy tool %d changed while adding the separately versioned jobs-read surface", index)
+		}
+	}
+	for index, want := range []string{"polis_jobs_status", "polis_jobs_logs"} {
+		tool, ok := tools[7+index].(map[string]any)
+		if !ok || tool["name"] != want {
+			t.Fatalf("read-only jobs tool %d=%v, want %s", index, tools[7+index], want)
+		}
+		schema, ok := tool["inputSchema"].(map[string]any)
+		if !ok || schema["additionalProperties"] != false {
+			t.Fatalf("%s schema is not closed: %v", want, tool["inputSchema"])
+		}
+		properties, ok := schema["properties"].(map[string]any)
+		if !ok || properties["job_id"] == nil {
+			t.Fatalf("%s must require an exact job_id: %v", want, schema)
+		}
+		definition, _ := json.Marshal(tool)
+		for _, forbidden := range []string{"start", "stop", "borrower", "lease", "process"} {
+			if strings.Contains(strings.ToLower(string(definition)), forbidden) {
+				t.Fatalf("%s suggests non-read-only capability %q: %s", want, forbidden, definition)
+			}
+		}
+	}
+}
+
 func TestControlledMCPToolSurfaceAddsOnlyBoundedCallContract(t *testing.T) {
 	legacy := ProductEmployeeTools()
 	tools := ProductEmployeeToolsWithControlledMCP()
