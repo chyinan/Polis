@@ -2,6 +2,14 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 321)
+
+The Windows-native Playwright runner smoke passed against a disposable Go TLS
+loopback fixture using Windows Chrome. Python package root is now explicit and
+test-only insecure TLS is loopback-gated; the temporary binary was cleaned.
+Production WFP/profile/network/Provider qualification remains open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-321-windows-browser-runner-smoke/verification.md`.
+
 ## Current continuation pointer (Slice 320)
 
 `cmd/polis serve` now has a default-off operation-adapter gate. With explicit

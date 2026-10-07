@@ -1761,3 +1761,10 @@ Added default-off `cmd/polis serve` wiring for concrete BrowserRun/research
 adapters with required path configuration; no runtime adapter was enabled.
 Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.
+## Latest continuation status (Slice 321, Windows BrowserRun runner smoke)
+
+The actual Windows Chrome/Playwright runner protocol passed a disposable Go
+TLS loopback smoke with explicit Python package path and cleaned profile/binary.
+This is local runner evidence only; production WFP/profile/network and Provider
+qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-321-windows-browser-runner-smoke/verification.md`.

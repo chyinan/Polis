@@ -1248,3 +1248,8 @@ and search policy state from the backend. No retrieval ran. Evidence:
 `cmd/polis serve` now has default-off wiring for concrete operation adapters;
 no adapter executed. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.
+## Latest continuation status (Slice 321, Windows BrowserRun runner smoke)
+
+Windows Chrome/Playwright passed a disposable TLS loopback runner smoke; this
+does not qualify production isolation/WFP/network/Provider behavior. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-321-windows-browser-runner-smoke/verification.md`.

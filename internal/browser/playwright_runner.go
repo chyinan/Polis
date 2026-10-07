@@ -19,6 +19,7 @@ const browserRunnerOutputLimit = 2 << 20
 
 type PlaywrightRunner struct {
 	PythonPath        string
+	PythonPackageRoot string
 	ScriptPath        string
 	ProfileRoot       string
 	BrowserExecutable string
@@ -44,6 +45,12 @@ func (runner PlaywrightRunner) Run(ctx context.Context, plan BrowserRunPlan) (Br
 	if _, err := os.Stat(runner.ScriptPath); err != nil {
 		return BrowserRunOutcome{}, fmt.Errorf("browser runner script is unavailable: %w", err)
 	}
+	if runner.PythonPackageRoot != "" {
+		info, err := os.Stat(runner.PythonPackageRoot)
+		if err != nil || !info.IsDir() || !filepath.IsAbs(runner.PythonPackageRoot) {
+			return BrowserRunOutcome{}, errors.New("browser runner Python package root is unavailable")
+		}
+	}
 	if info, err := os.Stat(runner.ProfileRoot); err != nil || !info.IsDir() {
 		return BrowserRunOutcome{}, errors.New("browser runner profile root is unavailable")
 	}
@@ -63,7 +70,7 @@ func (runner PlaywrightRunner) Run(ctx context.Context, plan BrowserRunPlan) (Br
 	runCtx, cancel := context.WithTimeout(ctx, time.Duration(normalized.TimeoutMS+2000)*time.Millisecond)
 	defer cancel()
 	command := exec.CommandContext(runCtx, runner.PythonPath, runner.ScriptPath)
-	command.Env = controlledBrowserEnvironment(profileDir)
+	command.Env = controlledBrowserEnvironment(profileDir, runner.PythonPackageRoot)
 	command.Stdin = bytes.NewReader(payload)
 	stdout := &cappedBuffer{limit: browserRunnerOutputLimit}
 	stderr := &cappedBuffer{limit: browserRunnerOutputLimit}
@@ -88,13 +95,16 @@ func (runner PlaywrightRunner) Run(ctx context.Context, plan BrowserRunPlan) (Br
 	return outcome, nil
 }
 
-func controlledBrowserEnvironment(profileDir string) []string {
+func controlledBrowserEnvironment(profileDir, pythonPackageRoot string) []string {
 	environment := []string{
 		"PATH=/usr/bin:/bin",
 		"HOME=" + profileDir,
 		"TMPDIR=" + profileDir,
 		"TEMP=" + profileDir,
 		"TMP=" + profileDir,
+	}
+	if pythonPackageRoot != "" {
+		environment = append(environment, "PYTHONPATH="+pythonPackageRoot)
 	}
 	if runtime.GOOS == "windows" {
 		if systemRoot := os.Getenv("SystemRoot"); systemRoot != "" {

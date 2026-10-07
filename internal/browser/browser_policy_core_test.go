@@ -27,6 +27,17 @@ func TestNormalizeBrowserRunPlanRejectsNonOriginTargets(t *testing.T) {
 	}
 }
 
+func TestNormalizeBrowserRunPlanOnlyAllowsInsecureTLSForLoopbackFixtures(t *testing.T) {
+	plan := BrowserRunPlan{TargetOrigin: "https://example.test", TimeoutMS: 5000, MaxRequests: 32, MaxResponseBytes: 1 << 20, TestOnlyAllowInsecureTLS: true}
+	if _, err := NormalizeBrowserRunPlan(plan); !errors.Is(err, ErrInvalidBrowserRunPlan) {
+		t.Fatal("insecure TLS was allowed for a non-loopback origin")
+	}
+	plan.TargetOrigin = "https://127.0.0.1:45169"
+	if _, err := NormalizeBrowserRunPlan(plan); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestValidateBrowserRunOutcomeBindsFinalOriginAndEgressControls(t *testing.T) {
 	plan, err := NormalizeBrowserRunPlan(BrowserRunPlan{TargetOrigin: "https://example.test", TimeoutMS: 5000, MaxRequests: 32, MaxResponseBytes: 1 << 20})
 	if err != nil {

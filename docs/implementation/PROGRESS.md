@@ -1536,3 +1536,9 @@ The real provider worker now has an explicit default-off configuration gate for
 BrowserRun/research adapters; fail-closed defaults and full Go/build checks
 remain green. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.
+## Latest continuation status (Slice 321, Windows BrowserRun runner smoke)
+
+Windows-native Chrome/Playwright runner smoke passed against a disposable TLS
+loopback fixture; no external network or account was used. Production browser
+isolation/WFP/Provider qualification remains open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-321-windows-browser-runner-smoke/verification.md`.

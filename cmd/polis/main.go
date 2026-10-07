@@ -490,13 +490,14 @@ func serveWorkbench() (returnErr error) {
 			return fmt.Errorf("operation adapters require the real provider worker adapter")
 		}
 		pythonPath := strings.TrimSpace(os.Getenv("POLIS_BROWSER_PYTHON_PATH"))
+		pythonPackageRoot := strings.TrimSpace(os.Getenv("POLIS_BROWSER_PYTHON_PACKAGE_ROOT"))
 		runnerScript := strings.TrimSpace(os.Getenv("POLIS_BROWSER_RUNNER_SCRIPT"))
 		profileRoot := strings.TrimSpace(os.Getenv("POLIS_BROWSER_PROFILE_ROOT"))
-		if pythonPath == "" || runnerScript == "" || profileRoot == "" {
-			return fmt.Errorf("operation adapters require POLIS_BROWSER_PYTHON_PATH, POLIS_BROWSER_RUNNER_SCRIPT and POLIS_BROWSER_PROFILE_ROOT")
+		if pythonPath == "" || pythonPackageRoot == "" || runnerScript == "" || profileRoot == "" {
+			return fmt.Errorf("operation adapters require POLIS_BROWSER_PYTHON_PATH, POLIS_BROWSER_PYTHON_PACKAGE_ROOT, POLIS_BROWSER_RUNNER_SCRIPT and POLIS_BROWSER_PROFILE_ROOT")
 		}
 		searchFetcher := research.NewFetcher()
-		configurer.SetBrowserRunExecutor(&control.PlaywrightOperationAdapter{Kernel: kernelRuntime, Runner: browser.PlaywrightRunner{PythonPath: pythonPath, ScriptPath: runnerScript, ProfileRoot: profileRoot, BrowserExecutable: strings.TrimSpace(os.Getenv("POLIS_BROWSER_EXECUTABLE"))}})
+		configurer.SetBrowserRunExecutor(&control.PlaywrightOperationAdapter{Kernel: kernelRuntime, Runner: browser.PlaywrightRunner{PythonPath: pythonPath, PythonPackageRoot: pythonPackageRoot, ScriptPath: runnerScript, ProfileRoot: profileRoot, BrowserExecutable: strings.TrimSpace(os.Getenv("POLIS_BROWSER_EXECUTABLE"))}})
 		configurer.SetResearchOperationExecutor(&control.ResearchOperationAdapterMux{
 			Fetch:  &control.ResearchFetchOperationAdapter{Kernel: kernelRuntime, Fetcher: searchFetcher},
 			Search: &control.ResearchSearchOperationAdapter{Kernel: kernelRuntime, HTTPClient: searchFetcher.Client},

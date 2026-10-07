@@ -3,6 +3,7 @@ package browser
 
 import (
 	"errors"
+	"net"
 	"net/url"
 	"strconv"
 	"strings"
@@ -20,10 +21,11 @@ var (
 )
 
 type BrowserRunPlan struct {
-	TargetOrigin     string `json:"target_origin"`
-	TimeoutMS        int    `json:"timeout_ms"`
-	MaxRequests      int    `json:"max_requests"`
-	MaxResponseBytes int64  `json:"max_response_bytes"`
+	TargetOrigin             string `json:"target_origin"`
+	TimeoutMS                int    `json:"timeout_ms"`
+	MaxRequests              int    `json:"max_requests"`
+	MaxResponseBytes         int64  `json:"max_response_bytes"`
+	TestOnlyAllowInsecureTLS bool   `json:"test_only_allow_insecure_tls,omitempty"`
 }
 
 type BrowserRunOutcome struct {
@@ -48,8 +50,20 @@ func NormalizeBrowserRunPlan(input BrowserRunPlan) (BrowserRunPlan, error) {
 	if err != nil {
 		return BrowserRunPlan{}, ErrInvalidBrowserRunPlan
 	}
+	if input.TestOnlyAllowInsecureTLS && !isLoopbackOrigin(origin) {
+		return BrowserRunPlan{}, ErrInvalidBrowserRunPlan
+	}
 	input.TargetOrigin = origin
 	return input, nil
+}
+
+func isLoopbackOrigin(origin string) bool {
+	u, err := url.ParseRequestURI(origin)
+	if err != nil || u.Hostname() == "localhost" {
+		return err == nil
+	}
+	ip := net.ParseIP(u.Hostname())
+	return ip != nil && ip.IsLoopback()
 }
 
 func ValidateBrowserRunOutcome(plan BrowserRunPlan, outcome BrowserRunOutcome) error {

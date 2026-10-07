@@ -279,4 +279,10 @@ Added default-off cmd/polis operation-adapter wiring; no adapter or network
 ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.
 
+# Latest checkpoint: Slice321 Windows BrowserRun runner smoke
+
+Windows Chrome and the Playwright runner passed a disposable TLS loopback
+smoke; no external network ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-321-windows-browser-runner-smoke/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

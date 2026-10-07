@@ -75,6 +75,7 @@ def main() -> int:
         timeout_ms = int(plan["timeout_ms"])
         max_requests = int(plan["max_requests"])
         max_response_bytes = int(plan["max_response_bytes"])
+        test_only_allow_insecure_tls = bool(plan.get("test_only_allow_insecure_tls", False))
         profile_dir = Path(str(plan["profile_dir"])).resolve()
         browser_executable = str(plan.get("browser_executable", ""))
         if timeout_ms < 1000 or timeout_ms > 120000 or max_requests < 1 or max_requests > 512 or max_response_bytes < 1 or max_response_bytes > 8 * 1024 * 1024:
@@ -83,6 +84,8 @@ def main() -> int:
             raise ValueError("browser profile directory must start empty")
         if browser_executable and not Path(browser_executable).is_file():
             raise ValueError("configured browser executable is unavailable")
+        if test_only_allow_insecure_tls and urlsplit(target_origin).hostname not in ("localhost", "127.0.0.1", "::1"):
+            raise ValueError("insecure TLS is only permitted for a loopback fixture")
     except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
         emit_failure("browser_plan_invalid")
         print(str(error), file=sys.stderr)
@@ -103,7 +106,7 @@ def main() -> int:
                 "headless": True,
                 "accept_downloads": False,
                 "service_workers": "block",
-                "ignore_https_errors": False,
+                "ignore_https_errors": test_only_allow_insecure_tls,
                 "args": [
                     "--disable-background-networking",
                     "--disable-component-update",
