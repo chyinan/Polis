@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 305)
+
+The authorized browser qualification was rerun with a Windows-hosted,
+cross-compiled service fixture so browser and service shared one loopback
+namespace. Windows Chrome rendered the service page and completed the
+same-origin fetch successfully. Effective WFP/profile isolation, packaged
+Node/npm, clean-VM and production Provider qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-305-windows-browser-fixture-qualification/verification.md`.
+
 ## Current continuation pointer (Slice 304)
 
 Authorized local browser requalification reran the WSL service fixture with

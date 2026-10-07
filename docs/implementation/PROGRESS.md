@@ -1,3 +1,9 @@
+## Latest continuation status (Slice 305, Windows browser fixture qualification)
+
+The service ingress fixture was cross-compiled and run on Windows beside
+Windows Chrome. Rendering and same-origin fetch passed; effective WFP/profile,
+packaged Node/npm and clean-VM qualification remain open. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-305-windows-browser-fixture-qualification/verification.md`.
+
 ## Latest continuation status (Slice 304, local browser requalification checkpoint)
 
 Authorized Windows Chrome/WSL fixture requalification reached the fixed local

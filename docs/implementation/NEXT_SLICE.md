@@ -1,3 +1,11 @@
+## Latest continuation status (Slice 305, Windows browser fixture qualification)
+
+The service fixture now runs on Windows amd64 beside Windows Chrome; rendering
+and same-origin fetch passed. This resolves the WSL loopback topology failure,
+but does not qualify effective WFP/profile isolation, packaged Node/npm,
+clean-VM or production Provider behavior. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-305-windows-browser-fixture-qualification/verification.md`.
+
 ## Latest continuation status (Slice 304, local browser requalification checkpoint)
 
 Authorized Windows Chrome/WSL fixture requalification reached the fixed local
