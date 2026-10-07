@@ -1232,3 +1232,9 @@ filtering; credential resolution and qualification remain open. Evidence:
 The owner research-source route is now represented in the frontend API with
 strict validation and fixture denial; 147 tests/typecheck pass. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.
+## Latest continuation status (Slice 318, research source owner panel)
+
+Workbench now exposes metadata-only owner registration/revocation for research
+sources, with fixture writes disabled. Frontend tests/typecheck/build pass.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.

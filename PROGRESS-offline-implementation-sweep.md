@@ -261,4 +261,10 @@ Wired the owner research-source route into the frontend Real/Fixture API,
 runtime validation and mutation hook. Frontend tests/typecheck pass. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.
 
+# Latest checkpoint: Slice318 research source owner panel
+
+Added the metadata-only Workbench owner panel; fixture mode remains read-only
+and no retrieval ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

@@ -1518,3 +1518,9 @@ The research-source owner route is now wired through the frontend data layer;
 147 frontend tests and TypeScript typecheck pass. No runtime or network action
 ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.
+## Latest continuation status (Slice 318, research source owner panel)
+
+The owner source-registration workflow is now visible in Workbench as a
+metadata-only panel; fixture writes remain disabled. Frontend 147 tests,
+typecheck and build pass. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.

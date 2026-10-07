@@ -2,6 +2,14 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 318)
+
+Added the Domain Evidence Workbench owner panel for research-source
+registration/revocation. It writes only source metadata, validates the fixed
+origin/profile/digest policy, and remains disabled in fixture mode; no retrieval
+or network action ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.
+
 ## Current continuation pointer (Slice 317)
 
 Completed the Workbench TypeScript contract for owner research-source

@@ -10,6 +10,7 @@ import {labelDisplayValue} from '../domain/display-labels';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import {ResearchSimulationPanel} from './ResearchSimulationPanel';
 import {ContentOperationsPanel} from './ContentOperationsPanel';
+import {ResearchSourcePanel} from './ResearchSourcePanel';
 import styles from '../styles/workbench.module.css';
 
 type DomainEvidencePanelProps = Readonly<{api: WorkbenchApi; companyId: string}>;
@@ -298,6 +299,7 @@ export function DomainEvidencePanel({api, companyId}: DomainEvidencePanelProps):
   return <div className={styles.viewStack} data-od-id="domain-evidence-panel">
     <ResearchSimulationPanel key={`${companyId}:${overviewQuery.data?.mission.missionId ?? ''}`} api={api} companyId={companyId} missionId={overviewQuery.data?.mission.missionId ?? ''} runs={query.data.researchSimulationRuns} />
     <ContentOperationsPanel key={`${companyId}:${overviewQuery.data?.mission.missionId ?? ''}`} api={api} companyId={companyId} missionId={overviewQuery.data?.mission.missionId ?? ''} employees={employees} sourceEvents={query.data.contentSourceEvents} drafts={query.data.contentDrafts} reviews={query.data.contentReviews} publications={query.data.contentPublications} corrections={query.data.contentCorrections} feedback={query.data.contentFeedback} />
+    <ResearchSourcePanel key={`${companyId}:${overviewQuery.data?.mission.missionId ?? ''}:research-source`} api={api} companyId={companyId} missionId={overviewQuery.data?.mission.missionId ?? ''} />
     <section className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
         <div><span className={styles.cardEyebrow}>R3 / 独立领域证据</span><h2 className={styles.sectionTitle}>领域验收准备</h2></div>

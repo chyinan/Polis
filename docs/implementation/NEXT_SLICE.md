@@ -1744,3 +1744,9 @@ strict origin/digest/profile/ranking validation, Real/Fixture implementations
 and mutation hook. 147 frontend tests and typecheck pass; no runtime/network
 action ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.
+## Latest continuation status (Slice 318, research source owner panel)
+
+Added the Domain Evidence owner UI for registering/revoking research sources;
+fixture mode remains read-only and the panel never starts retrieval. Frontend
+tests/typecheck/build pass. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.
