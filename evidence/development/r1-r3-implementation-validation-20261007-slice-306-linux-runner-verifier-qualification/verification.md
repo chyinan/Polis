@@ -50,6 +50,11 @@ bypass, accepted the valid formatter, and confirmed that the candidate could
 not create the outside `escaped` path. The full runner package passed with the
 environment set.
 
+The full repository Go package suite also passed with the same
+`POLIS_GO_ROOT` environment, including `internal/control`, `environment`,
+`kernel`, `probe`, `provider`, `runner` and `workbench`. The command build
+`./scripts/go.sh build ./cmd/...` passed as well.
+
 ## Boundary
 
 This is Linux `bwrap` verifier evidence only. It does not qualify Windows
@@ -57,4 +62,3 @@ AppContainer/Job Object effectiveness, Windows WFP policy arbitration,
 packaged Node/npm materialization, clean-VM recovery, browser profile/network
 isolation, or any production Provider path. Frozen scenarios remain
 `not_run`.
-

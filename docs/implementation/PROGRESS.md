@@ -1,8 +1,9 @@
 ## Latest continuation status (Slice 306, Linux runner verifier qualification)
 
 The previously skipped Linux `POLIS_GO_ROOT` verifier now executes in WSL2
-with the workspace Go root and existing `bwrap`; its focused test and the full
-`internal/runner` package pass. No persistent host policy, Worker, Provider,
+with the workspace Go root and existing `bwrap`; its focused test, full
+`internal/runner` package, complete Go package suite and `build ./cmd/...` pass.
+No persistent host policy, Worker, Provider,
 browser, external account or business database was used. Windows WFP/profile,
 packaged Node/npm, clean-VM and production Provider qualification remain open.
 Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.

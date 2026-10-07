@@ -178,8 +178,9 @@ packaged Node/npm and clean-VM qualification remain open. Evidence:
 
 The WSL2 Ubuntu-22.04 runner now executes the previously skipped
 `POLIS_GO_ROOT` verifier with the existing `bwrap` and workspace Go root. The
-focused verifier test and full `internal/runner` package pass. This removes
-the Linux verifier gap only; Windows WFP/profile, packaged Node/npm, clean-VM,
+focused verifier test, full `internal/runner` package, complete Go package
+suite and `build ./cmd/...` pass. This removes the Linux verifier gap only;
+Windows WFP/profile, packaged Node/npm, clean-VM,
 browser isolation and Provider qualification remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.
 

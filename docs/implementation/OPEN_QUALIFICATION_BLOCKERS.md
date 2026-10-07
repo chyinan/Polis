@@ -49,9 +49,9 @@ Slice273 adds the source-level ready-Manifest completion path and lifecycle rout
 ## Current checkout evidence
 
 Slice306 executes the previously skipped Linux `POLIS_GO_ROOT` verifier in
-WSL2 with the workspace Go root and existing `bwrap`; the focused test and the
-full `internal/runner` package pass. This removes only the Linux verifier
-qualification gap. Windows WFP/profile effectiveness, packaged Node/npm,
+WSL2 with the workspace Go root and existing `bwrap`; the focused test, full
+`internal/runner` package, complete Go package suite and `build ./cmd/...` pass.
+This removes only the Linux verifier qualification gap. Windows WFP/profile effectiveness, packaged Node/npm,
 clean-VM, browser isolation and Provider/account qualification remain open.
 Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.
 

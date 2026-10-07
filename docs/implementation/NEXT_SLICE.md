@@ -1,8 +1,9 @@
 ## Latest continuation status (Slice 306, Linux runner verifier qualification)
 
 The previously skipped `POLIS_GO_ROOT` verifier now runs inside the existing
-WSL2 Ubuntu-22.04 `bwrap` environment. The focused verifier test and the full
-`internal/runner` package pass. This is Linux verifier evidence only; Windows
+WSL2 Ubuntu-22.04 `bwrap` environment. The focused verifier test, full
+`internal/runner` package, complete Go package suite and `build ./cmd/...` pass.
+This is Linux verifier evidence only; Windows
 WFP/profile isolation, packaged Node/npm, clean-VM, browser isolation and
 production Provider qualification remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.
