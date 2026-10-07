@@ -2,6 +2,16 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 308)
+
+Added the source-level BrowserRun runner boundary. The pure policy core checks
+HTTPS origin/final-URL scope, request/response bounds and no-download/no-
+WebSocket outcomes; the imperative shell launches a configured Playwright
+protocol process with an empty temporary profile, minimal environment and
+bounded output. The Kernel success fence requires real scoped Artifact rows.
+The runner remains default-deny and was not launched. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-308-browser-runner-boundary/verification.md`.
+
 ## Current continuation pointer (Slice 307)
 
 REQ-38 now has a source-only research binding foundation. Schema124 adds

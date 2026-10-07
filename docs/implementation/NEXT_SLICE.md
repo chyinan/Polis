@@ -1,3 +1,13 @@
+## Latest continuation status (Slice 308, BrowserRun runner boundary)
+
+Added the source-level Playwright runner boundary and BrowserRun success fence.
+The pure core enforces HTTPS/same-origin, bounded requests/responses and
+download/WebSocket denial; the shell uses an empty temporary profile, minimal
+environment and bounded protocol output. No browser or network was launched;
+the product remains default-deny pending host/profile/WFP qualification and
+provider wiring. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-308-browser-runner-boundary/verification.md`.
+
 ## Latest continuation status (Slice 307, REQ-38 research source binding)
 
 Added Schema124 Mission-scoped research source registrations and immutable

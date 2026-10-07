@@ -1173,3 +1173,10 @@ and exact HTTPS origin; the owner Workbench command is company-scoped. No
 network retrieval or browser execution is enabled; fake @19 remains
 unavailable. Full Go tests and command build pass. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-307-research-source-binding/verification.md`.
+## Latest continuation status (Slice 308, BrowserRun runner boundary)
+
+The source-level BrowserRun runner now has a pure policy core, a minimal-
+environment Playwright protocol shell with a fresh profile, and an Artifact-
+bound Kernel success fence. It was not launched; product wiring and host/
+profile/WFP qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-308-browser-runner-boundary/verification.md`.

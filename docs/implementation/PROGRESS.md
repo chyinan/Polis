@@ -1458,3 +1458,10 @@ HTTPS origin and append-only authorization/revocation. Search/fetch remains
 unavailable with zero egress; no external source, Worker, Provider or BrowserRun
 ran. Full Go tests and `build ./cmd/...` pass. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-307-research-source-binding/verification.md`.
+## Latest continuation status (Slice 308, BrowserRun runner boundary)
+
+Implemented the source-level BrowserRun policy/runner boundary and Kernel
+success fence. The runner is default-deny, uses a fresh profile/minimal
+environment and has no external network invocation in this slice. Browser
+host/profile/WFP qualification and Worker/provider wiring remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-308-browser-runner-boundary/verification.md`.
