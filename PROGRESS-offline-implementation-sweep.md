@@ -236,4 +236,10 @@ Added the injectable SearchBackend and evidence-producing search adapter; no
 backend or network ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-313-search-adapter-contract/verification.md`.
 
+# Latest checkpoint: Slice314 HTTP JSON search backend
+
+Added strict explicit HTTP JSON search backend enforcement; no endpoint or
+network ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

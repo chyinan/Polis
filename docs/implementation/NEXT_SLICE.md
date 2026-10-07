@@ -1719,3 +1719,9 @@ Added an injectable search backend and evidence-producing adapter. It requires
 the registered source/result contract and remains fail-closed without a
 configured backend; no search/network action ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-313-search-adapter-contract/verification.md`.
+## Latest continuation status (Slice 314, HTTP JSON search backend)
+
+Added a strict injectable HTTP JSON search backend contract for registered
+sources. It remains unconfigured/fail-closed; tests use an in-memory transport
+and no network ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.

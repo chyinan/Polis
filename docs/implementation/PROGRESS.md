@@ -1495,3 +1495,9 @@ Search now has a concrete injectable adapter seam that writes bounded
 `search_result` evidence and uses the completion fence; no backend is configured
 or called. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-313-search-adapter-contract/verification.md`.
+## Latest continuation status (Slice 314, HTTP JSON search backend)
+
+The source-level search adapter now has a strict HTTP JSON backend contract;
+endpoint/auth/ranking qualification remains open and no network was used.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.

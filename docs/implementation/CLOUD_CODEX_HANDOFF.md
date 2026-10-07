@@ -2,6 +2,13 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 314)
+
+Added an explicit HTTP JSON SearchBackend for a future registered-source
+endpoint. It enforces exact origin, bounded `q`, no credentials, no redirects,
+strict JSON and response bounds; no endpoint is configured. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.
+
 ## Current continuation pointer (Slice 313)
 
 Added an injectable `SearchBackend` and concrete ResearchSearchOperationAdapter

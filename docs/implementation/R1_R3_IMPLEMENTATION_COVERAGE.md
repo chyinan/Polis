@@ -1211,3 +1211,9 @@ The registered-source search adapter now normalizes results, writes
 `search_result` evidence and routes completion through the existing fence; no
 backend is configured. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-313-search-adapter-contract/verification.md`.
+## Latest continuation status (Slice 314, HTTP JSON search backend)
+
+The injectable search adapter now has a strict HTTP JSON backend contract with
+origin, redirect, credential, schema and size guards; no endpoint is configured.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.
