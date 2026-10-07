@@ -2,6 +2,16 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 306)
+
+The previously skipped Linux `POLIS_GO_ROOT` verifier now runs in the existing
+WSL2 Ubuntu-22.04 environment with the workspace Go root and `bwrap`. The
+focused verifier test and the full `internal/runner` package both pass. This
+qualifies only the Linux disposable verifier boundary; Windows WFP/profile,
+packaged Node/npm, clean-VM, browser isolation and production Provider behavior
+remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.
+
 ## Current continuation pointer (Slice 305)
 
 The authorized browser qualification was rerun with a Windows-hosted,

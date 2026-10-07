@@ -174,4 +174,13 @@ Windows Chrome. Rendering and same-origin fetch passed; effective WFP/profile,
 packaged Node/npm and clean-VM qualification remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-305-windows-browser-fixture-qualification/verification.md`.
 
+# Latest checkpoint: Slice306 Linux runner verifier qualification
+
+The WSL2 Ubuntu-22.04 runner now executes the previously skipped
+`POLIS_GO_ROOT` verifier with the existing `bwrap` and workspace Go root. The
+focused verifier test and full `internal/runner` package pass. This removes
+the Linux verifier gap only; Windows WFP/profile, packaged Node/npm, clean-VM,
+browser isolation and Provider qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

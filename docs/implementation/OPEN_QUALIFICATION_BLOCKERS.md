@@ -1,6 +1,6 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-06, after Slice272 REQ-40 explicit UserDisposition command. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-07, after Slice306 Linux runner verifier qualification. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
 
 Slice296 adds optional generic ActionIntent denied-audit readback in Operations; permits and external actions remain unavailable. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-296-action-intent-operations-projection/verification.md`.
 
@@ -47,6 +47,14 @@ Slice277 adds the fake-only `polis-product-tool-surface@15` read-only `jobs_stat
 Slice273 adds the source-level ready-Manifest completion path and lifecycle routing: source/build/instruction evidence is digest-bound to existing immutable records; limitations and license/source declarations are content-addressed bounded evidence; active/paused `changes_requested` enters the formal change-request history; terminal `changes_requested` enters an immutable Schema113 Company backlog without reopening the Mission. REQ-40 remains partial because feedback deadline/expiry, revision-task creation, Mission closeout acceptance policy, historical backfill and runtime/database qualification remain open. Targeted offline verification is recorded at `evidence/development/r1-r3-implementation-validation-20261006-slice-273-req40-ready-manifest-routing/verification.md`.
 
 ## Current checkout evidence
+
+Slice306 executes the previously skipped Linux `POLIS_GO_ROOT` verifier in
+WSL2 with the workspace Go root and existing `bwrap`; the focused test and the
+full `internal/runner` package pass. This removes only the Linux verifier
+qualification gap. Windows WFP/profile effectiveness, packaged Node/npm,
+clean-VM, browser isolation and Provider/account qualification remain open.
+Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.
+
 
 - Slice269 is source-only and adds no migration; the last recorded local runtime/database observation remains Schema108. A re-audit found four omissions from the software ledger (REQ-36/37/38/40) and corrected their crosswalk dispositions; see evidence/development/r1-r3-implementation-validation-20261006-slice-269-hidden-gaps-preview-cookie-boundary/verification.md.
 - Slice270 adds a bounded Mission-scoped read-only Worker `environment_status` tool on fake-only @14; the real-provider @4 surface is unchanged. Its Go build passed, but no Worker operation or database query was run. REQ-36 remains partial; see evidence/development/r1-r3-implementation-validation-20261006-slice-270-req36-worker-environment-status/verification.md.
