@@ -216,4 +216,11 @@ time, bounded fields, duplicate rejection and stable digest. No search backend
 or network ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-310-research-search-contract/verification.md`.
 
+# Latest checkpoint: Slice311 executor product wiring
+
+Wired optional BrowserRun/ResearchOperation executors through EmployeeTools and
+the RealProviderWorkerAdapter; nil defaults keep both paths fail-closed and no
+runtime adapter ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

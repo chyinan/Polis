@@ -1193,3 +1193,9 @@ WF-16 now has a bounded same-origin search-result contract requiring source
 timestamps, deterministic rank and digest; provider search and qualification
 remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-310-research-search-contract/verification.md`.
+## Latest continuation status (Slice 311, executor product wiring)
+
+EmployeeTools and RealProviderWorkerAdapter now pass optional BrowserRun and
+ResearchOperation executors through the completion fences, while nil defaults
+keep both capabilities disabled. No runtime adapter ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.

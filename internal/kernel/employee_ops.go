@@ -25,6 +25,14 @@ type CheckRunner interface {
 	Check(string, string) (runner.Report, error)
 }
 
+type BrowserRunExecutor interface {
+	ExecuteBrowserRun(context.Context, BrowserRunRequest, BrowserRunRecord) (BrowserRunSuccessInput, error)
+}
+
+type ResearchOperationExecutor interface {
+	ExecuteResearchOperation(context.Context, ResearchOperationRequest, ResearchOperationRecord) (ResearchOperationSuccessInput, error)
+}
+
 // EmployeeTools is constructed by the trusted adapter. No payload can select
 // company, employee, attempt, epoch or task. callID comes from the native bridge.
 type EmployeeTools struct {
@@ -42,6 +50,8 @@ type EmployeeTools struct {
 	BorrowerLeaseSurface               bool
 	BrowserRunSurface                  bool
 	ResearchOperationSurface           bool
+	BrowserExecutor                    BrowserRunExecutor
+	ResearchExecutor                   ResearchOperationExecutor
 	DirectMessagingSurface             bool
 	SharedArtifactSurface              bool
 	WorkspaceTreeSurface               bool
@@ -219,6 +229,14 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 			Input   BrowserRunRequest
 		}{b.SessionID(), input})[:48]
 		run, e := k.TXRequestBrowserRun(ctx, b, input, requestID)
+		if e == nil && t.BrowserExecutor != nil {
+			completion, executeErr := t.BrowserExecutor.ExecuteBrowserRun(ctx, input, run)
+			if executeErr != nil {
+				return ToolResult{Data: run, Error: "BROWSER_RUN_FAILED", Detail: executeErr.Error()}, nil
+			}
+			completed, completeErr := k.TXCompleteBrowserRunSuccess(ctx, b, completion)
+			return ToolResult{Data: completed}, completeErr
+		}
 		return ToolResult{Data: run}, e
 	case "browser_results":
 		if !t.ProductSurface || !t.BrowserRunSurface {
@@ -245,6 +263,14 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		requestID := "research-search-" + fingerprint([]string{b.SessionID(), key, args.SourceID, args.Query})[:48]
 		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, requestID)
+		if e == nil && t.ResearchExecutor != nil {
+			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, record)
+			if executeErr != nil {
+				return ToolResult{Data: record, Error: "RESEARCH_OPERATION_FAILED", Detail: executeErr.Error()}, nil
+			}
+			completed, completeErr := k.TXCompleteResearchOperationSuccess(ctx, b, completion)
+			return ToolResult{Data: completed}, completeErr
+		}
 		return ToolResult{Data: record}, e
 	case "research_fetch":
 		if !t.ProductSurface || !t.ResearchOperationSurface || t.ReadOnly {
@@ -259,6 +285,15 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		requestID := "research-fetch-" + fingerprint([]string{b.SessionID(), key, args.SourceID, args.TargetURL})[:48]
 		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}, requestID)
+		if e == nil && t.ResearchExecutor != nil {
+			request := ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}
+			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, request, record)
+			if executeErr != nil {
+				return ToolResult{Data: record, Error: "RESEARCH_OPERATION_FAILED", Detail: executeErr.Error()}, nil
+			}
+			completed, completeErr := k.TXCompleteResearchOperationSuccess(ctx, b, completion)
+			return ToolResult{Data: completed}, completeErr
+		}
 		return ToolResult{Data: record}, e
 	case "environment_status":
 		if !t.ProductSurface || !t.EnvironmentStatusSurface {

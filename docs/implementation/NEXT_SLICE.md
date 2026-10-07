@@ -1699,3 +1699,10 @@ Next local slice: continue remaining owner-independent RoleRevision/TaskRevision
 Added optional Schema120 generic ActionIntent denied-audit projection to Workbench Operations. It is Company-scoped, latest-event filtered before the bounded limit, digest-only and compatible with older schemas. Workbench Go test, frontend 50/50 validation, TypeScript/Vite builds and diff check pass; no external action, Provider, browser, database runtime, account or scenario ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-296-action-intent-operations-projection/verification.md`.
 
 Next local slice: audit remaining governance/read projections; generic action-specific permits remain default-denied without a concrete writer policy.
+## Latest continuation status (Slice 311, executor product wiring)
+
+EmployeeTools and RealProviderWorkerAdapter now have an injectable
+BrowserRun/ResearchOperation executor seam; successful results must use the
+existing Kernel evidence fences. The default remains nil/fail-closed, and no
+runtime adapter ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.

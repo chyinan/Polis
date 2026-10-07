@@ -29,6 +29,8 @@ type RealProviderWorkerAdapter struct {
 	localCleanupSessions map[string]provider.Session
 	localHostReconcile   map[string]bool
 	workerCgroupManager  environment.LinuxWorkerCgroupManager
+	browserRunExecutor   kernel.BrowserRunExecutor
+	researchExecutor     kernel.ResearchOperationExecutor
 }
 
 type providerWorker struct {
@@ -111,6 +113,28 @@ func NewRealProviderWorkerAdapter(runtime *kernel.Kernel, providerRuntime provid
 		adapter.workerCgroupManager = workerCgroupManagers[0]
 	}
 	return adapter, nil
+}
+
+// SetBrowserRunExecutor installs a separately qualified BrowserRun adapter.
+// The default is nil, which preserves the fail-closed blocked surface.
+func (a *RealProviderWorkerAdapter) SetBrowserRunExecutor(executor kernel.BrowserRunExecutor) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.browserRunExecutor = executor
+}
+
+// SetResearchOperationExecutor installs a separately qualified research
+// adapter. The default is nil, which preserves explicit unavailable results.
+func (a *RealProviderWorkerAdapter) SetResearchOperationExecutor(executor kernel.ResearchOperationExecutor) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.researchExecutor = executor
+}
+
+func (a *RealProviderWorkerAdapter) executionAdapters() (kernel.BrowserRunExecutor, kernel.ResearchOperationExecutor) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.browserRunExecutor, a.researchExecutor
 }
 
 // NewRealProviderWorkerAdapterWithMCPAppContainer enables the separately
@@ -914,6 +938,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 	if sharedMissionArtifactSurface {
 		directMessagingSurface = true
 	}
+	browserRunExecutor, researchExecutor := a.executionAdapters()
 	turn, turnErr := worker.session.Turn(ctx, thread, prompt, turnOptions, func(name, callID string, raw json.RawMessage) (json.RawMessage, bool) {
 		if controlledMCPSurface && name == "mcp_call" {
 			encoded, callErr := worker.mcpState.call(ctx, a.kernel, a.mcpFactory, worker.companyID, worker.binding, callID, raw)
@@ -929,7 +954,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 		skillLoadSurface := (profile.ToolSurfaceQualification == provider.ProductSkillToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillToolSurface().ManifestDigest) ||
 			(profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest)
 		skillDirectorySurface := profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest
-		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, ReadOnlyJobsSurface: readOnlyJobsSurface, BorrowerLeaseSurface: borrowerLeaseSurface, BrowserRunSurface: browserRunSurface, ResearchOperationSurface: researchOperationsSurface, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, EnvironmentEnsureSurface: environmentEnsureSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
+		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, ReadOnlyJobsSurface: readOnlyJobsSurface, BorrowerLeaseSurface: borrowerLeaseSurface, BrowserRunSurface: browserRunSurface, ResearchOperationSurface: researchOperationsSurface, BrowserExecutor: browserRunExecutor, ResearchExecutor: researchExecutor, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, EnvironmentEnsureSurface: environmentEnsureSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
 		result := tools.Call(ctx, name, callID, raw)
 		encoded, _ := json.Marshal(result)
 		return encoded, false

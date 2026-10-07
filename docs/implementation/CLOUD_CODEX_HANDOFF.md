@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 311)
+
+Wired optional BrowserRun and ResearchOperation executors through
+`EmployeeTools` and `RealProviderWorkerAdapter`; successful adapter results are
+forced through the Kernel evidence completion fences. Defaults remain nil, so
+BrowserRun stays blocked and research stays unavailable. No adapter, browser,
+HTTP or Provider execution ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.
+
 ## Current continuation pointer (Slice 310)
 
 Added the pure registered-source search-result contract: max 20 results,

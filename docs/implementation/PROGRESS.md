@@ -1477,3 +1477,9 @@ unavailable until a qualified control path is wired. Evidence:
 WF-16 的来源结果契约已落地：搜索结果必须同源、有界、去重、带 RFC3339
 来源时间和稳定 digest；没有后端时仍返回 unavailable，不伪造全网检索。Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-310-research-search-contract/verification.md`.
+## Latest continuation status (Slice 311, executor product wiring)
+
+Added the product executor seam for BrowserRun and ResearchOperation with
+completion-fence routing and fail-closed nil defaults. No runtime adapter,
+browser, HTTP or Provider action ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.
