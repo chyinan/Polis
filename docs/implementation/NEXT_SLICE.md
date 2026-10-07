@@ -1,3 +1,12 @@
+## Latest continuation status (Slice 309, controlled research fetch executor)
+
+Added the source-level bounded HTTPS fetch executor and ResearchOperation
+success/evidence fence. It uses exact registered origin, no redirects or
+credentials, bounded text-like content and a body digest; tests use an in-memory
+transport and no external request ran. Search ranking, BrowserRun wiring and
+host/provider qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-309-research-fetch-executor/verification.md`.
+
 ## Latest continuation status (Slice 308, BrowserRun runner boundary)
 
 Added the source-level Playwright runner boundary and BrowserRun success fence.

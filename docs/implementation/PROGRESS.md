@@ -1465,3 +1465,10 @@ success fence. The runner is default-deny, uses a fresh profile/minimal
 environment and has no external network invocation in this slice. Browser
 host/profile/WFP qualification and Worker/provider wiring remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-308-browser-runner-boundary/verification.md`.
+## Latest continuation status (Slice 309, controlled research fetch executor)
+
+The source-level research fetch path now has exact-origin/redirect/credential/
+size/media controls and a body-digest/evidence completion fence. No external
+HTTP, Worker, Provider or BrowserRun execution was used; fake @19 remains
+unavailable until a qualified control path is wired. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-309-research-fetch-executor/verification.md`.

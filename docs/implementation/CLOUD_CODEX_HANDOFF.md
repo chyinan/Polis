@@ -2,6 +2,16 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 309)
+
+Added a bounded source-level HTTPS fetch executor and ResearchOperation success
+fence. The executor rejects cross-origin targets, redirects, credentials and
+oversized/non-text responses, and emits a body digest for evidence binding;
+the Kernel accepts success only with same-Task/Session Artifact evidence. No
+network or product retrieval path was launched. Search ranking, Playwright
+wiring and host/provider qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-309-research-fetch-executor/verification.md`.
+
 ## Current continuation pointer (Slice 308)
 
 Added the source-level BrowserRun runner boundary. The pure policy core checks

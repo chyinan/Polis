@@ -201,4 +201,12 @@ bounded output and explicit same-origin/download/WebSocket controls, but was
 not launched and remains default-deny. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-308-browser-runner-boundary/verification.md`.
 
+# Latest checkpoint: Slice309 controlled research fetch executor
+
+Added the source-level bounded fetch executor and ResearchOperation success
+fence. Tests use an in-memory HTTP transport; no external request or product
+retrieval ran. Search ranking, BrowserRun wiring and host/provider qualification
+remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-309-research-fetch-executor/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.
