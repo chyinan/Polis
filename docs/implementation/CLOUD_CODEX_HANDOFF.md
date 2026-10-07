@@ -2,6 +2,14 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 310)
+
+Added the pure registered-source search-result contract: max 20 results,
+same-origin URLs, required RFC3339 source time, bounded title/snippet, duplicate
+rejection, deterministic rank and digest. No search backend or network path was
+selected or called; fake @19 remains unavailable. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-310-research-search-contract/verification.md`.
+
 ## Current continuation pointer (Slice 309)
 
 Added a bounded source-level HTTPS fetch executor and ResearchOperation success

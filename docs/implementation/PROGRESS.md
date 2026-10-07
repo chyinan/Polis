@@ -1472,3 +1472,8 @@ size/media controls and a body-digest/evidence completion fence. No external
 HTTP, Worker, Provider or BrowserRun execution was used; fake @19 remains
 unavailable until a qualified control path is wired. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-309-research-fetch-executor/verification.md`.
+## Latest continuation status (Slice 310, research search result contract)
+
+WF-16 的来源结果契约已落地：搜索结果必须同源、有界、去重、带 RFC3339
+来源时间和稳定 digest；没有后端时仍返回 unavailable，不伪造全网检索。Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-310-research-search-contract/verification.md`.
