@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 315)
+
+Schema126 adds an optional same-origin HTTPS `search_endpoint` to registered
+research sources. Kernel read/write paths remain compatible with pre-Schema126
+runtimes, and the HTTP JSON search adapter only constructs from this endpoint
+when an explicit client is injected. No endpoint/client/network was configured.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-315-research-search-endpoint-registration/verification.md`.
+
 ## Current continuation pointer (Slice 314)
 
 Added an explicit HTTP JSON SearchBackend for a future registered-source

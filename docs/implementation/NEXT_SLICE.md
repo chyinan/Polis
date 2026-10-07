@@ -1725,3 +1725,9 @@ Added a strict injectable HTTP JSON search backend contract for registered
 sources. It remains unconfigured/fail-closed; tests use an in-memory transport
 and no network ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.
+## Latest continuation status (Slice 315, registered search endpoint)
+
+Schema126 now persists an optional same-origin HTTPS search endpoint for a
+Mission-scoped source, with old-schema compatibility and default-disabled
+adapter construction. No endpoint or network was used. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-315-research-search-endpoint-registration/verification.md`.

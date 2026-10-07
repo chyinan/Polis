@@ -22,6 +22,7 @@ type ResearchSourceRecord struct {
 	SourceID        string `json:"sourceId"`
 	MissionID       string `json:"missionId"`
 	Origin          string `json:"origin"`
+	SearchEndpoint  string `json:"searchEndpoint,omitempty"`
 	ProfileRevision string `json:"profileRevision"`
 	IdentitySHA256  string `json:"identitySha256"`
 	DataSHA256      string `json:"dataSha256"`
@@ -66,12 +67,26 @@ func (k *Kernel) TXRegisterResearchSource(ctx context.Context, companyID string,
 		} else if err != nil {
 			return Receipt{}, err
 		}
-		if _, err := tx.Exec(ctx, `INSERT INTO research_source_bindings(company_id,source_id,mission_id,origin,profile_revision,identity_sha256,data_sha256,registration_sha256,request_id)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`, companyID, normalized.SourceID, normalized.MissionID, normalized.Origin, normalized.ProfileRevision, normalized.IdentitySHA256, normalized.DataSHA256, registrationSHA, input.RequestID); err != nil {
-			if isUniqueViolation(err) {
+		searchEndpointAvailable, err := researchSourceSearchEndpointAvailable(ctx, tx)
+		if err != nil {
+			return Receipt{}, err
+		}
+		if normalized.SearchEndpoint != "" && !searchEndpointAvailable {
+			return Receipt{}, core.Denied
+		}
+		var insertErr error
+		if searchEndpointAvailable {
+			_, insertErr = tx.Exec(ctx, `INSERT INTO research_source_bindings(company_id,source_id,mission_id,origin,search_endpoint,profile_revision,identity_sha256,data_sha256,registration_sha256,request_id)
+VALUES($1,$2,$3,$4,NULLIF($5,''),$6,$7,$8,$9,$10)`, companyID, normalized.SourceID, normalized.MissionID, normalized.Origin, normalized.SearchEndpoint, normalized.ProfileRevision, normalized.IdentitySHA256, normalized.DataSHA256, registrationSHA, input.RequestID)
+		} else {
+			_, insertErr = tx.Exec(ctx, `INSERT INTO research_source_bindings(company_id,source_id,mission_id,origin,profile_revision,identity_sha256,data_sha256,registration_sha256,request_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`, companyID, normalized.SourceID, normalized.MissionID, normalized.Origin, normalized.ProfileRevision, normalized.IdentitySHA256, normalized.DataSHA256, registrationSHA, input.RequestID)
+		}
+		if insertErr != nil {
+			if isUniqueViolation(insertErr) {
 				return Receipt{}, core.Conflict
 			}
-			return Receipt{}, err
+			return Receipt{}, insertErr
 		}
 		if _, err := tx.Exec(ctx, `INSERT INTO research_source_events(company_id,event_id,source_id,state,rationale,actor,request_id)
 VALUES($1,$2,$3,'authorized',$4,'local-owner',$5)`, companyID, eventID, normalized.SourceID, input.Rationale, input.RequestID); err != nil {
@@ -134,12 +149,24 @@ func (k *Kernel) GetResearchSourceByRequest(ctx context.Context, companyID, requ
 	if k == nil || !core.ValidID(companyID) || !core.ValidID(requestID) {
 		return ResearchSourceRecord{}, core.Malformed
 	}
+	searchEndpointAvailable, err := researchSourceSearchEndpointAvailable(ctx, k.pool)
+	if err != nil {
+		return ResearchSourceRecord{}, err
+	}
 	var record ResearchSourceRecord
 	var createdAt time.Time
-	err := k.pool.QueryRow(ctx, `SELECT b.company_id,b.source_id,b.mission_id,b.origin,b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
+	var query string
+	if searchEndpointAvailable {
+		query = `SELECT b.company_id,b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
 FROM research_source_bindings b JOIN research_source_events e ON e.company_id=b.company_id AND e.source_id=b.source_id
-WHERE e.company_id=$1 AND e.request_id=$2`, companyID, requestID).Scan(
-		&record.CompanyID, &record.SourceID, &record.MissionID, &record.Origin, &record.ProfileRevision, &record.IdentitySHA256, &record.DataSHA256, &record.RegistrationSHA, &record.State, &record.Rationale, &record.Actor, &record.RequestID, &createdAt)
+WHERE e.company_id=$1 AND e.request_id=$2`
+	} else {
+		query = `SELECT b.company_id,b.source_id,b.mission_id,b.origin,'' AS search_endpoint,b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
+FROM research_source_bindings b JOIN research_source_events e ON e.company_id=b.company_id AND e.source_id=b.source_id
+WHERE e.company_id=$1 AND e.request_id=$2`
+	}
+	err = k.pool.QueryRow(ctx, query, companyID, requestID).Scan(
+		&record.CompanyID, &record.SourceID, &record.MissionID, &record.Origin, &record.SearchEndpoint, &record.ProfileRevision, &record.IdentitySHA256, &record.DataSHA256, &record.RegistrationSHA, &record.State, &record.Rationale, &record.Actor, &record.RequestID, &createdAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ResearchSourceRecord{}, core.OutOfScope
 	}
@@ -154,11 +181,21 @@ func (k *Kernel) GetAuthorizedResearchSource(ctx context.Context, companyID, mis
 	if k == nil || !core.ValidID(companyID) || !core.ValidID(missionID) || !core.ValidID(sourceID) {
 		return ResearchSourceRegistration{}, core.Malformed
 	}
+	searchEndpointAvailable, err := researchSourceSearchEndpointAvailable(ctx, k.pool)
+	if err != nil {
+		return ResearchSourceRegistration{}, err
+	}
 	var registration ResearchSourceRegistration
 	var state string
-	err := k.pool.QueryRow(ctx, `SELECT b.source_id,b.mission_id,b.origin,b.profile_revision,b.identity_sha256,b.data_sha256,e.state
+	query := `SELECT b.source_id,b.mission_id,b.origin,'' AS search_endpoint,b.profile_revision,b.identity_sha256,b.data_sha256,e.state
 FROM research_source_bindings b JOIN LATERAL (SELECT state FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
-WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`, companyID, missionID, sourceID).Scan(&registration.SourceID, &registration.MissionID, &registration.Origin, &registration.ProfileRevision, &registration.IdentitySHA256, &registration.DataSHA256, &state)
+WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`
+	if searchEndpointAvailable {
+		query = `SELECT b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),b.profile_revision,b.identity_sha256,b.data_sha256,e.state
+FROM research_source_bindings b JOIN LATERAL (SELECT state FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`
+	}
+	err = k.pool.QueryRow(ctx, query, companyID, missionID, sourceID).Scan(&registration.SourceID, &registration.MissionID, &registration.Origin, &registration.SearchEndpoint, &registration.ProfileRevision, &registration.IdentitySHA256, &registration.DataSHA256, &state)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ResearchSourceRegistration{}, core.OutOfScope
 	}
@@ -169,4 +206,14 @@ WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`, companyID, missio
 		return ResearchSourceRegistration{}, core.Denied
 	}
 	return normalizeResearchSourceRegistration(registration)
+}
+
+type researchSourceSchemaQueryer interface {
+	QueryRow(context.Context, string, ...any) pgx.Row
+}
+
+func researchSourceSearchEndpointAvailable(ctx context.Context, queryer researchSourceSchemaQueryer) (bool, error) {
+	var available bool
+	err := queryer.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='research_source_bindings' AND column_name='search_endpoint')`).Scan(&available)
+	return available, err
 }

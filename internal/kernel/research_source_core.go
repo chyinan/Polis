@@ -18,6 +18,7 @@ type ResearchSourceRegistration struct {
 	SourceID        string `json:"sourceId"`
 	MissionID       string `json:"missionId"`
 	Origin          string `json:"origin"`
+	SearchEndpoint  string `json:"searchEndpoint,omitempty"`
 	ProfileRevision string `json:"profileRevision"`
 	IdentitySHA256  string `json:"identitySha256"`
 	DataSHA256      string `json:"dataSha256"`
@@ -27,6 +28,7 @@ func normalizeResearchSourceRegistration(input ResearchSourceRegistration) (Rese
 	input.SourceID = strings.TrimSpace(input.SourceID)
 	input.MissionID = strings.TrimSpace(input.MissionID)
 	input.Origin = strings.TrimSpace(input.Origin)
+	input.SearchEndpoint = strings.TrimSpace(input.SearchEndpoint)
 	input.ProfileRevision = strings.TrimSpace(input.ProfileRevision)
 	input.IdentitySHA256 = strings.TrimSpace(input.IdentitySHA256)
 	input.DataSHA256 = strings.TrimSpace(input.DataSHA256)
@@ -39,7 +41,30 @@ func normalizeResearchSourceRegistration(input ResearchSourceRegistration) (Rese
 		return ResearchSourceRegistration{}, err
 	}
 	input.Origin = origin
+	if input.SearchEndpoint != "" {
+		endpoint, endpointErr := canonicalResearchSourceSearchEndpoint(input.SearchEndpoint, origin)
+		if endpointErr != nil {
+			return ResearchSourceRegistration{}, endpointErr
+		}
+		input.SearchEndpoint = endpoint
+	}
 	return input, nil
+}
+
+func canonicalResearchSourceSearchEndpoint(raw, origin string) (string, error) {
+	if raw == "" || strings.ContainsAny(raw, "\r\n\t") {
+		return "", core.Malformed
+	}
+	u, err := url.ParseRequestURI(raw)
+	if err != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Opaque != "" || u.Path == "" {
+		return "", core.Denied
+	}
+	if canonicalResearchURLAuthority(u) != origin {
+		return "", core.Denied
+	}
+	u.Scheme = "https"
+	u.Host = canonicalResearchURLAuthority(u)[len("https://"):]
+	return u.String(), nil
 }
 
 func canonicalResearchSourceOrigin(raw string) (string, error) {

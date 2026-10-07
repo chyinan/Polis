@@ -1217,3 +1217,8 @@ The injectable search adapter now has a strict HTTP JSON backend contract with
 origin, redirect, credential, schema and size guards; no endpoint is configured.
 Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.
+## Latest continuation status (Slice 315, registered search endpoint)
+
+Schema126 persists an optional same-origin search endpoint with pre-Schema126
+compatibility; adapter/client injection and qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-315-research-search-endpoint-registration/verification.md`.

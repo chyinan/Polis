@@ -1501,3 +1501,8 @@ The source-level search adapter now has a strict HTTP JSON backend contract;
 endpoint/auth/ranking qualification remains open and no network was used.
 Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-314-http-json-search-backend/verification.md`.
+## Latest continuation status (Slice 315, registered search endpoint)
+
+Research source registration now carries an optional same-origin search
+endpoint; runtime/HTTP injection remains explicit and disabled. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-315-research-search-endpoint-registration/verification.md`.

@@ -63,12 +63,13 @@ type ResearchFetchOperationAdapter struct {
 }
 
 type ResearchSearchOperationAdapter struct {
-	Kernel  *kernel.Kernel
-	Backend research.SearchBackend
+	Kernel     *kernel.Kernel
+	Backend    research.SearchBackend
+	HTTPClient research.HTTPDoer
 }
 
 func (adapter *ResearchSearchOperationAdapter) ExecuteResearchOperation(ctx context.Context, binding kernel.Binding, request kernel.ResearchOperationRequest, record kernel.ResearchOperationRecord) (kernel.ResearchOperationSuccessInput, error) {
-	if adapter == nil || adapter.Kernel == nil || adapter.Backend == nil {
+	if adapter == nil || adapter.Kernel == nil {
 		return kernel.ResearchOperationSuccessInput{}, errors.New("research search adapter is not configured")
 	}
 	if request.Kind != kernel.ResearchOperationKindSearch || record.SourceID == "" {
@@ -78,7 +79,14 @@ func (adapter *ResearchSearchOperationAdapter) ExecuteResearchOperation(ctx cont
 	if err != nil {
 		return kernel.ResearchOperationSuccessInput{}, err
 	}
-	candidates, err := adapter.Backend.Search(ctx, request.Query)
+	backend := adapter.Backend
+	if backend == nil && adapter.HTTPClient != nil && source.SearchEndpoint != "" {
+		backend = &research.HTTPJSONSearchBackend{Client: adapter.HTTPClient, Origin: source.Origin, Endpoint: source.SearchEndpoint}
+	}
+	if backend == nil {
+		return kernel.ResearchOperationSuccessInput{}, errors.New("research search backend is not configured")
+	}
+	candidates, err := backend.Search(ctx, request.Query)
 	if err != nil {
 		return kernel.ResearchOperationSuccessInput{}, err
 	}

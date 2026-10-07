@@ -14,6 +14,7 @@ func TestNormalizeResearchSourceRegistrationCanonicalizesHTTPSOrigin(t *testing.
 		SourceID:        "source-docs",
 		MissionID:       "mission-1",
 		Origin:          "https://Example.test:8443/",
+		SearchEndpoint:  "https://example.test:8443/search",
 		ProfileRevision: ResearchSourceProfileRevision,
 		IdentitySHA256:  strings.Repeat("a", 64),
 		DataSHA256:      strings.Repeat("b", 64),
@@ -21,7 +22,7 @@ func TestNormalizeResearchSourceRegistrationCanonicalizesHTTPSOrigin(t *testing.
 	if err != nil {
 		t.Fatal(err)
 	}
-	if registration.Origin != "https://example.test:8443" || registration.ProfileRevision != ResearchSourceProfileRevision {
+	if registration.Origin != "https://example.test:8443" || registration.SearchEndpoint != "https://example.test:8443/search" || registration.ProfileRevision != ResearchSourceProfileRevision {
 		t.Fatalf("normalized research source=%+v", registration)
 	}
 }
@@ -36,13 +37,15 @@ func TestNormalizeResearchSourceRegistrationRejectsUnsafeOrIncompleteBindings(t 
 		DataSHA256:      strings.Repeat("b", 64),
 	}
 	cases := map[string]ResearchSourceRegistration{
-		"http":        mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "http://example.test" }),
-		"path":        mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "https://example.test/docs" }),
-		"query":       mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "https://example.test?x=1" }),
-		"credentials": mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "https://user:pass@example.test" }),
-		"identity":    mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.IdentitySHA256 = "bad" }),
-		"data":        mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.DataSHA256 = "bad" }),
-		"profile":     mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.ProfileRevision = "research-source@2" }),
+		"http":                   mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "http://example.test" }),
+		"path":                   mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "https://example.test/docs" }),
+		"query":                  mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "https://example.test?x=1" }),
+		"credentials":            mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.Origin = "https://user:pass@example.test" }),
+		"identity":               mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.IdentitySHA256 = "bad" }),
+		"data":                   mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.DataSHA256 = "bad" }),
+		"profile":                mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.ProfileRevision = "research-source@2" }),
+		"search endpoint origin": mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.SearchEndpoint = "https://other.test/search" }),
+		"search endpoint query":  mutateResearchSource(base, func(v *ResearchSourceRegistration) { v.SearchEndpoint = "https://example.test/search?q=fixed" }),
 	}
 	for name, input := range cases {
 		t.Run(name, func(t *testing.T) {
