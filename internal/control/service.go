@@ -299,6 +299,10 @@ func (s *Service) SetResearchSourceAuthorization(ctx context.Context, companyID 
 	}
 }
 
+func (s *Service) ListResearchSources(ctx context.Context, companyID, missionID string) ([]kernel.ResearchSourceRecord, error) {
+	return s.runtime.ListResearchSources(ctx, companyID, missionID)
+}
+
 func (s *Service) RegisterContentDraft(ctx context.Context, companyID string, request DomainContentDraftCommandRequest) (kernel.DomainContentDraftRecord, error) {
 	if err := validateRequestID(request.RequestID); err != nil {
 		return kernel.DomainContentDraftRecord{}, err

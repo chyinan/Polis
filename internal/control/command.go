@@ -676,6 +676,10 @@ type ResearchSourceCommandService interface {
 	SetResearchSourceAuthorization(ctx context.Context, companyID string, request ResearchSourceAuthorizationCommandRequest) (kernel.ResearchSourceRecord, error)
 }
 
+type ResearchSourceReader interface {
+	ListResearchSources(ctx context.Context, companyID, missionID string) ([]kernel.ResearchSourceRecord, error)
+}
+
 type DomainEvidenceService interface {
 	ListDomainEvidence(ctx context.Context, companyID string) (kernel.DomainEvidenceLedger, error)
 	RecordDomainEvidence(ctx context.Context, companyID string, request DomainEvidenceCommandRequest) (kernel.DomainEvidenceRecord, error)

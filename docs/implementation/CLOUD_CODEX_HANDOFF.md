@@ -2,6 +2,13 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 319)
+
+Added Mission-scoped research source readback and Workbench display of current
+authorization/endpoint policy state. Pre-registration schemas return an empty
+projection; no retrieval/network action ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.
+
 ## Current continuation pointer (Slice 318)
 
 Added the Domain Evidence Workbench owner panel for research-source

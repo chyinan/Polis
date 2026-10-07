@@ -1524,3 +1524,9 @@ The owner source-registration workflow is now visible in Workbench as a
 metadata-only panel; fixture writes remain disabled. Frontend 147 tests,
 typecheck and build pass. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.
+## Latest continuation status (Slice 319, research source read projection)
+
+Added backend/Workbench source readback for current Mission-scoped research
+source state. Frontend tests/typecheck/build and targeted Workbench test pass.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.

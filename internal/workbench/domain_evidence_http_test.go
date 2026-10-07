@@ -64,6 +64,10 @@ func (service *fakeDomainEvidenceService) SetResearchSourceAuthorization(_ conte
 	return kernel.ResearchSourceRecord{CompanyID: companyID, SourceID: request.SourceID, MissionID: request.MissionID, Origin: request.Origin, State: request.State, RequestID: request.RequestID}, nil
 }
 
+func (service *fakeDomainEvidenceService) ListResearchSources(_ context.Context, companyID, missionID string) ([]kernel.ResearchSourceRecord, error) {
+	return []kernel.ResearchSourceRecord{{CompanyID: companyID, SourceID: "source-docs", MissionID: missionID, Origin: "https://example.test", State: "authorized", RequestID: "research-source-request-1"}}, nil
+}
+
 func (service *fakeDomainEvidenceService) RegisterContentDraft(_ context.Context, companyID string, request control.DomainContentDraftCommandRequest) (kernel.DomainContentDraftRecord, error) {
 	service.contentDraftFor, service.contentDraft = companyID, request
 	return kernel.DomainContentDraftRecord{CompanyID: companyID, DraftID: "content-draft-1", DraftInputID: request.DraftInputID, DraftRevision: "1", DraftSHA256: strings.Repeat("a", 64), WriterEmployeeID: request.WriterEmployeeID, CriticalClaims: request.CriticalClaims, ConstraintsPassed: request.ConstraintsPassed, RequestID: request.RequestID}, nil
@@ -348,6 +352,17 @@ func TestContentOperationCommandsAreCompanyScoped(t *testing.T) {
 		service.contentReviewInputID != "draft-1" || service.contentReviewRevision != 3 {
 		t.Fatalf("content operation company scopes source=%q draft=%q review=%q publication=%q correction=%q feedback=%q input=%q revision=%d",
 			service.contentSourceFor, service.contentDraftFor, service.contentReviewFor, service.contentPublicationFor, service.contentCorrectionFor, service.contentFeedbackFor, service.contentReviewInputID, service.contentReviewRevision)
+	}
+}
+
+func TestResearchSourcesReadIsMissionScoped(t *testing.T) {
+	service := &fakeDomainEvidenceService{}
+	handler := NewHandler(nil, service)
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/api/workbench/companies/company-1/domain-workflows/research-sources?missionId=mission-1", nil)
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "source-docs") || !strings.Contains(response.Body.String(), "mission-1") {
+		t.Fatalf("research source read response=%d body=%s", response.Code, response.Body.String())
 	}
 }
 

@@ -350,6 +350,23 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				return
 			}
 			writeJSON(response, http.StatusOK, ledger)
+		case "research.source.authorization":
+			sourceReader, ok := service.(control.ResearchSourceReader)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "research source reader is unavailable")
+				return
+			}
+			missionID := request.URL.Query().Get("missionId")
+			if request.URL.Query().Get("missionId") == "" || len(request.URL.Query()) != 1 {
+				writeError(response, http.StatusBadRequest, "a single missionId query parameter is required")
+				return
+			}
+			sources, err := sourceReader.ListResearchSources(ctx, path.companyID, missionID)
+			if err != nil {
+				writeModelError(response, err)
+				return
+			}
+			writeJSON(response, http.StatusOK, sources)
 		case "domain.evidence.preview":
 			domainEvidenceService, ok := service.(control.DomainEvidenceService)
 			if !ok {

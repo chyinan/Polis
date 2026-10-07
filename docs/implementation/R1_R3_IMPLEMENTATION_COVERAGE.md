@@ -1238,3 +1238,8 @@ Workbench now exposes metadata-only owner registration/revocation for research
 sources, with fixture writes disabled. Frontend tests/typecheck/build pass.
 Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.
+## Latest continuation status (Slice 319, research source read projection)
+
+The owner research-source panel now reads current Mission-scoped authorization
+and search policy state from the backend. No retrieval ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.

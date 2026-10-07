@@ -2413,6 +2413,12 @@ export function validateResearchSource(value: unknown, expected: Readonly<{
     : {success: false, issues: [{path: '', message: 'research source authorization receipt is malformed or out of scope'}]};
 }
 
+export function validateResearchSources(value: unknown, companyId: string): ValidationResult<ReadonlyArray<ResearchSourceView>> {
+  return Array.isArray(value) && value.every(item => isResearchSource(item, companyId))
+    ? {success: true, value: value as ReadonlyArray<ResearchSourceView>}
+    : {success: false, issues: [{path: '', message: 'research source list is malformed or out of scope'}]};
+}
+
 export function validateDomainContentDraft(value: unknown, expected: Readonly<{
   companyId: string;
   inputId: string;

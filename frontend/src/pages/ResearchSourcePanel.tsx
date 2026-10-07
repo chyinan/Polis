@@ -2,7 +2,7 @@
 
 import {useRef, useState, type ReactElement} from 'react';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useSetResearchSourceAuthorization} from '../data/workbench-query';
+import {useResearchSources, useSetResearchSourceAuthorization} from '../data/workbench-query';
 import styles from '../styles/workbench.module.css';
 
 type ResearchSourcePanelProps = Readonly<{
@@ -13,6 +13,7 @@ type ResearchSourcePanelProps = Readonly<{
 
 export function ResearchSourcePanel({api, companyId, missionId}: ResearchSourcePanelProps): ReactElement {
   const authorizeSource = useSetResearchSourceAuthorization(api, companyId);
+  const sourcesQuery = useResearchSources(api, companyId, missionId);
   const pendingRequestIds = useRef(new Map<string, string>());
   const [sourceId, setSourceId] = useState('');
   const [origin, setOrigin] = useState('');
@@ -62,5 +63,9 @@ export function ResearchSourcePanel({api, companyId, missionId}: ResearchSourceP
     </div>
     <button className={styles.commandButton} type="button" disabled={api.mode !== 'real' || authorizeSource.isPending} onClick={() => { void submit(); }}>{authorizeSource.isPending ? '正在提交…' : state === 'authorized' ? '登记研究来源' : '撤销研究来源'}</button>
     {message ? <div className={styles.operationNotice} role="status">{message}</div> : null}
+    {sourcesQuery.isError ? <div className={styles.errorState} role="alert">来源读取失败：{sourcesQuery.error.message}</div> : null}
+    {(sourcesQuery.data ?? []).slice(0, 16).map(source => <div className={styles.recordRow} key={source.sourceId}>
+      <div className={styles.recordLead}><div><strong>{source.sourceId} · {source.state}</strong><span>{source.origin} · Mission {source.missionId}</span><span>search endpoint: {source.searchEndpoint || '未配置'} · ranking: {source.searchRankingRevision || '未配置'}</span></div></div>
+    </div>)}
   </section>;
 }

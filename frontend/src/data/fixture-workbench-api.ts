@@ -4,7 +4,7 @@ import type {MemoryCorrectionCommandReceiptView} from '../domain/workbench';
 import type {MissionCloseoutOptions} from './workbench-api';
 import type {ProposeMemoryCorrectionOptions, ReviewMemoryCorrectionOptions} from './workbench-api';
 import type {CreateProjectJobBrowserSessionOptions, ImportStdioMCPPackageOptions, ObserveStdioMCPRuntimeOptions, ObserveStreamableHTTPMCPRuntimeOptions} from './workbench-api';
-import type {RunResearchSimulationOptions, SetResearchSourceAuthorizationOptions} from './workbench-api';
+import type {ResearchSourcesQueryOptions, RunResearchSimulationOptions, SetResearchSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
 import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, ChangeCompanyToolCallBudgetOptions, ChangeMissionToolCallBudgetOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, DailyRoutineQueryOptions, MemoryCorrectionQueueQueryOptions, MemoryTaskRevalidationPreviewOptions, MemoryTaskStatusQueryOptions, MissionToolCallBudgetQueryOptions, ProblemToolCallBudgetQueryOptions, RevalidateMemoryTaskOptions, SetCompanyToolCallClosingReserveOptions, SetDailyRoutineTaskInstructionOptions, SetMissionToolCallClosingReserveOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
@@ -634,6 +634,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
 
   async setResearchSourceAuthorization(_options: SetResearchSourceAuthorizationOptions): Promise<never> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'Research source authorization is unavailable in fixture mode');
+  }
+
+  async listResearchSources(_options: ResearchSourcesQueryOptions): Promise<ReadonlyArray<never>> {
+    return [];
   }
 
   async registerContentDraft(_options: RegisterContentDraftOptions): Promise<never> {

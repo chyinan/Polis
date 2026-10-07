@@ -1750,3 +1750,8 @@ Added the Domain Evidence owner UI for registering/revoking research sources;
 fixture mode remains read-only and the panel never starts retrieval. Frontend
 tests/typecheck/build pass. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-318-research-source-owner-panel/verification.md`.
+## Latest continuation status (Slice 319, research source read projection)
+
+Research source authorization now has a Mission-scoped read projection and the
+owner panel displays current state/policy metadata. No retrieval ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.

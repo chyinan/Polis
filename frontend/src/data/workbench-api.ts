@@ -181,6 +181,7 @@ export type SetResearchSourceAuthorizationOptions = Readonly<{
   rationale: string;
   requestId: string;
 }>;
+export type ResearchSourcesQueryOptions = Readonly<{companyId: string; missionId: string}>;
 
 export type RegisterContentDraftOptions = Readonly<{
   companyId: string;
@@ -771,6 +772,7 @@ export type WorkbenchApi = Readonly<{
   listDomainEvidence(options: CompanyScopeOptions): Promise<DomainEvidenceLedgerView>;
   setContentSourceAuthorization(options: SetContentSourceAuthorizationOptions): Promise<DomainContentSourceEventView>;
   setResearchSourceAuthorization(options: SetResearchSourceAuthorizationOptions): Promise<ResearchSourceView>;
+  listResearchSources(options: ResearchSourcesQueryOptions): Promise<ReadonlyArray<ResearchSourceView>>;
   registerContentDraft(options: RegisterContentDraftOptions): Promise<DomainContentDraftView>;
   recordContentReview(options: RecordContentReviewOptions): Promise<DomainContentReviewView>;
   simulateContentPublication(options: SimulateContentPublicationOptions): Promise<DomainContentPublicationView>;

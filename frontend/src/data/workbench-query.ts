@@ -594,6 +594,15 @@ export function useSetResearchSourceAuthorization(api: WorkbenchApi, companyId: 
   });
 }
 
+export function useResearchSources(api: WorkbenchApi, companyId: string, missionId: string) {
+  return useQuery({
+    queryKey: ['workbench', api.mode, 'research-sources', companyId, missionId],
+    queryFn: () => api.listResearchSources({companyId, missionId}),
+    enabled: missionId !== '',
+    refetchOnMount: 'always',
+  });
+}
+
 export function useRegisterContentDraft(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({

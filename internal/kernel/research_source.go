@@ -36,6 +36,51 @@ type ResearchSourceRecord struct {
 	CreatedAt             string `json:"createdAt"`
 }
 
+func (k *Kernel) ListResearchSources(ctx context.Context, companyID, missionID string) ([]ResearchSourceRecord, error) {
+	if k == nil || !core.ValidID(companyID) || !core.ValidID(missionID) {
+		return nil, core.Malformed
+	}
+	var available bool
+	if err := k.pool.QueryRow(ctx, `SELECT to_regclass('public.research_source_bindings') IS NOT NULL AND to_regclass('public.research_source_events') IS NOT NULL`).Scan(&available); err != nil {
+		return nil, err
+	}
+	if !available {
+		return []ResearchSourceRecord{}, nil
+	}
+	endpointAvailable, authAvailable, err := researchSourceOptionalColumnsAvailable(ctx, k.pool)
+	if err != nil {
+		return nil, err
+	}
+	selectFields := `b.company_id,b.source_id,b.mission_id,b.origin,'' AS search_endpoint,'' AS search_credential_ref,'' AS search_ranking_revision,b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at`
+	if endpointAvailable {
+		selectFields = `b.company_id,b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),'' AS search_credential_ref,'' AS search_ranking_revision,b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at`
+	}
+	if endpointAvailable && authAvailable {
+		selectFields = `b.company_id,b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),COALESCE(b.search_credential_ref,''),COALESCE(b.search_ranking_revision,''),b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at`
+	}
+	rows, err := k.pool.Query(ctx, `SELECT `+selectFields+`
+FROM research_source_bindings b JOIN LATERAL (SELECT state,rationale,actor,request_id,created_at FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE b.company_id=$1 AND b.mission_id=$2 ORDER BY b.source_id`, companyID, missionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := make([]ResearchSourceRecord, 0, 16)
+	for rows.Next() {
+		var item ResearchSourceRecord
+		var createdAt time.Time
+		if err := rows.Scan(&item.CompanyID, &item.SourceID, &item.MissionID, &item.Origin, &item.SearchEndpoint, &item.SearchCredentialRef, &item.SearchRankingRevision, &item.ProfileRevision, &item.IdentitySHA256, &item.DataSHA256, &item.RegistrationSHA, &item.State, &item.Rationale, &item.Actor, &item.RequestID, &createdAt); err != nil {
+			return nil, err
+		}
+		item.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+		result = append(result, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (k *Kernel) TXRegisterResearchSource(ctx context.Context, companyID string, input ResearchSourceRegistrationInput) (ResearchSourceRecord, error) {
 	if k == nil || !core.ValidID(companyID) || !core.ValidID(input.RequestID) || strings.TrimSpace(input.Rationale) == "" || len(strings.TrimSpace(input.Rationale)) > 512 {
 		return ResearchSourceRecord{}, core.Malformed

@@ -24,8 +24,8 @@ import type {ResearchSimulationRunView, ResearchSourceView} from '../domain/work
 import {validateResearchSimulationRun} from '../domain/workbench-validation';
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {DomainContentCorrectionView, DomainContentDraftView, DomainContentFeedbackView, DomainContentPublicationView, DomainContentReviewView, DomainContentSourceEventView} from '../domain/workbench';
-import {validateDomainContentCorrection, validateDomainContentDraft, validateDomainContentFeedback, validateDomainContentPublication, validateDomainContentReview, validateDomainContentSourceEvent, validateResearchSource} from '../domain/workbench-validation';
-import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions, SetResearchSourceAuthorizationOptions} from './workbench-api';
+import {validateDomainContentCorrection, validateDomainContentDraft, validateDomainContentFeedback, validateDomainContentPublication, validateDomainContentReview, validateDomainContentSourceEvent, validateResearchSource, validateResearchSources} from '../domain/workbench-validation';
+import type {RecordContentReviewOptions, RegisterContentDraftOptions, ResearchSourcesQueryOptions, SetContentSourceAuthorizationOptions, SetResearchSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
 import type {GitHubFeedbackCollectionPolicyReceipt} from '../domain/workbench';
 import {validateGitHubFeedbackCollectionPolicyReceipt} from '../domain/workbench-validation';
@@ -534,6 +534,15 @@ export class RealWorkbenchApi implements WorkbenchApi {
     });
     const result = validateResearchSource(raw, {companyId: options.companyId, sourceId: options.sourceId, missionId: options.missionId, requestId: options.requestId, state: options.state});
     if (!result.success) throw new Error(`failed to authorize research source: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async listResearchSources(options: ResearchSourcesQueryOptions): Promise<ReadonlyArray<ResearchSourceView>> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/domain-workflows/research-sources?missionId=${encodeURIComponent(options.missionId)}`);
+    const result = validateResearchSources(raw, options.companyId);
+    if (!result.success) throw new Error(`failed to load research sources: ${validationMessage(result.issues)}`);
     return result.value;
   }
 
