@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 304)
+
+Authorized local browser requalification reran the WSL service fixture with
+installed Windows Chrome. The fixed Workbench fixture was reachable, but the
+randomized WSL `127/8` service ingress was refused from Windows, reproducing
+Slice280. The fixture was cleaned up; no browser isolation or rendering pass
+was claimed and no source code changed. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-304-local-browser-requalification/verification.md`.
+
 ## Current continuation pointer (Slice 303)
 
 Extended the canonical evidence binding to succeeded ResearchOperation
