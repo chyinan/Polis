@@ -2,6 +2,14 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 313)
+
+Added an injectable `SearchBackend` and concrete ResearchSearchOperationAdapter
+that normalizes registered-source results, writes `search_result` evidence
+Artifacts and routes completion through the existing fence. No backend is
+configured or called; fake @19 remains unavailable. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-313-search-adapter-contract/verification.md`.
+
 ## Current continuation pointer (Slice 312)
 
 Added concrete optional BrowserRun and research-fetch adapters. They write

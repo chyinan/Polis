@@ -1205,3 +1205,9 @@ Concrete optional adapters now materialize page snapshots as Schema125
 operation-evidence Artifacts and feed the completion fences; no adapter was
 enabled or run. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-312-concrete-operation-adapters/verification.md`.
+## Latest continuation status (Slice 313, search adapter contract)
+
+The registered-source search adapter now normalizes results, writes
+`search_result` evidence and routes completion through the existing fence; no
+backend is configured. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-313-search-adapter-contract/verification.md`.

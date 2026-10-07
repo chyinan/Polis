@@ -62,6 +62,50 @@ type ResearchFetchOperationAdapter struct {
 	MaxBytes  int64
 }
 
+type ResearchSearchOperationAdapter struct {
+	Kernel  *kernel.Kernel
+	Backend research.SearchBackend
+}
+
+func (adapter *ResearchSearchOperationAdapter) ExecuteResearchOperation(ctx context.Context, binding kernel.Binding, request kernel.ResearchOperationRequest, record kernel.ResearchOperationRecord) (kernel.ResearchOperationSuccessInput, error) {
+	if adapter == nil || adapter.Kernel == nil || adapter.Backend == nil {
+		return kernel.ResearchOperationSuccessInput{}, errors.New("research search adapter is not configured")
+	}
+	if request.Kind != kernel.ResearchOperationKindSearch || record.SourceID == "" {
+		return kernel.ResearchOperationSuccessInput{}, errors.New("research search adapter requires a bound search source")
+	}
+	source, err := adapter.Kernel.GetAuthorizedResearchSource(ctx, record.CompanyID, record.MissionID, record.SourceID)
+	if err != nil {
+		return kernel.ResearchOperationSuccessInput{}, err
+	}
+	candidates, err := adapter.Backend.Search(ctx, request.Query)
+	if err != nil {
+		return kernel.ResearchOperationSuccessInput{}, err
+	}
+	results, err := research.NormalizeSearchResults(source.Origin, candidates)
+	if err != nil {
+		return kernel.ResearchOperationSuccessInput{}, err
+	}
+	payload, err := json.Marshal(struct {
+		Results []research.SearchResult `json:"results"`
+	}{results})
+	if err != nil {
+		return kernel.ResearchOperationSuccessInput{}, err
+	}
+	artifact, err := adapter.Kernel.TXStoreOperationEvidenceArtifact(ctx, binding, kernel.OperationEvidenceArtifactInput{OperationID: record.OperationID, Kind: "search_result", Content: payload, RequestID: operationAdapterRequestID("research-search-evidence", record.OperationID, hexDigest(payload))})
+	if err != nil {
+		return kernel.ResearchOperationSuccessInput{}, err
+	}
+	manifest := kernel.OperationEvidenceManifest{SchemaVersion: kernel.OperationEvidenceManifestSchema, CompanyID: record.CompanyID, MissionID: record.MissionID, TaskID: record.TaskID, OperationID: record.OperationID, Artifacts: []kernel.OperationEvidenceArtifactRef{artifact}}
+	manifestBytes, err := kernel.CanonicalOperationEvidenceJSON(mustJSON(manifest))
+	if err != nil {
+		return kernel.ResearchOperationSuccessInput{}, err
+	}
+	digest := sha256.Sum256(manifestBytes)
+	envelope := kernel.ResearchOperationEvidenceEnvelope{EvidenceManifestSHA256: hex.EncodeToString(digest[:]), EvidenceManifest: manifest, Payload: payload}
+	return kernel.ResearchOperationSuccessInput{OperationID: record.OperationID, Envelope: envelope, RequestID: operationAdapterRequestID("research-search-success", record.OperationID, artifact.Digest)}, nil
+}
+
 func (adapter *ResearchFetchOperationAdapter) ExecuteResearchOperation(ctx context.Context, binding kernel.Binding, request kernel.ResearchOperationRequest, record kernel.ResearchOperationRecord) (kernel.ResearchOperationSuccessInput, error) {
 	if adapter == nil || adapter.Kernel == nil || adapter.Fetcher == nil {
 		return kernel.ResearchOperationSuccessInput{}, errors.New("research fetch adapter is not configured")
