@@ -1755,3 +1755,9 @@ tests/typecheck/build pass. Evidence:
 Research source authorization now has a Mission-scoped read projection and the
 owner panel displays current state/policy metadata. No retrieval ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.
+## Latest continuation status (Slice 320, operation adapter configuration)
+
+Added default-off `cmd/polis serve` wiring for concrete BrowserRun/research
+adapters with required path configuration; no runtime adapter was enabled.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.

@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"polis/db"
+	"polis/internal/browser"
 	"polis/internal/codex"
 	"polis/internal/control"
 	"polis/internal/desktop"
@@ -23,6 +24,7 @@ import (
 	"polis/internal/kernel"
 	"polis/internal/provider"
 	"polis/internal/recovery"
+	"polis/internal/research"
 	"polis/internal/runner"
 	"polis/internal/workbench"
 	"runtime"
@@ -478,6 +480,27 @@ func serveWorkbench() (returnErr error) {
 		}
 		commandService.SetProjectEnvironmentPreparationExecutor(executor)
 		commandService.SetProjectJobExecutor(executor)
+	}
+	if os.Getenv("POLIS_OPERATION_ADAPTERS_ENABLED") == "1" {
+		configurer, ok := workerAdapter.(interface {
+			SetBrowserRunExecutor(kernel.BrowserRunExecutor)
+			SetResearchOperationExecutor(kernel.ResearchOperationExecutor)
+		})
+		if !ok {
+			return fmt.Errorf("operation adapters require the real provider worker adapter")
+		}
+		pythonPath := strings.TrimSpace(os.Getenv("POLIS_BROWSER_PYTHON_PATH"))
+		runnerScript := strings.TrimSpace(os.Getenv("POLIS_BROWSER_RUNNER_SCRIPT"))
+		profileRoot := strings.TrimSpace(os.Getenv("POLIS_BROWSER_PROFILE_ROOT"))
+		if pythonPath == "" || runnerScript == "" || profileRoot == "" {
+			return fmt.Errorf("operation adapters require POLIS_BROWSER_PYTHON_PATH, POLIS_BROWSER_RUNNER_SCRIPT and POLIS_BROWSER_PROFILE_ROOT")
+		}
+		searchFetcher := research.NewFetcher()
+		configurer.SetBrowserRunExecutor(&control.PlaywrightOperationAdapter{Kernel: kernelRuntime, Runner: browser.PlaywrightRunner{PythonPath: pythonPath, ScriptPath: runnerScript, ProfileRoot: profileRoot, BrowserExecutable: strings.TrimSpace(os.Getenv("POLIS_BROWSER_EXECUTABLE"))}})
+		configurer.SetResearchOperationExecutor(&control.ResearchOperationAdapterMux{
+			Fetch:  &control.ResearchFetchOperationAdapter{Kernel: kernelRuntime, Fetcher: searchFetcher},
+			Search: &control.ResearchSearchOperationAdapter{Kernel: kernelRuntime, HTTPClient: searchFetcher.Client},
+		})
 	}
 	if _, err = commandService.ReconcileEnvironmentPreparationsAfterRestart(ctx); err != nil {
 		return fmt.Errorf("failed to reconcile project environments after restart: %w", err)

@@ -2,6 +2,14 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 320)
+
+`cmd/polis serve` now has a default-off operation-adapter gate. With explicit
+configuration it can inject the concrete BrowserRun Playwright adapter and
+ResearchOperation fetch/search mux; without it, product behavior stays
+blocked/unavailable. No adapters or network ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.
+
 ## Current continuation pointer (Slice 319)
 
 Added Mission-scoped research source readback and Workbench display of current

@@ -69,6 +69,24 @@ type ResearchSearchOperationAdapter struct {
 	Credentials research.CredentialProvider
 }
 
+type ResearchOperationAdapterMux struct {
+	Fetch  *ResearchFetchOperationAdapter
+	Search *ResearchSearchOperationAdapter
+}
+
+func (adapter *ResearchOperationAdapterMux) ExecuteResearchOperation(ctx context.Context, binding kernel.Binding, request kernel.ResearchOperationRequest, record kernel.ResearchOperationRecord) (kernel.ResearchOperationSuccessInput, error) {
+	if adapter == nil {
+		return kernel.ResearchOperationSuccessInput{}, errors.New("research operation adapter is not configured")
+	}
+	if request.Kind == kernel.ResearchOperationKindFetch && adapter.Fetch != nil {
+		return adapter.Fetch.ExecuteResearchOperation(ctx, binding, request, record)
+	}
+	if request.Kind == kernel.ResearchOperationKindSearch && adapter.Search != nil {
+		return adapter.Search.ExecuteResearchOperation(ctx, binding, request, record)
+	}
+	return kernel.ResearchOperationSuccessInput{}, errors.New("research operation adapter does not support this operation")
+}
+
 func (adapter *ResearchSearchOperationAdapter) ExecuteResearchOperation(ctx context.Context, binding kernel.Binding, request kernel.ResearchOperationRequest, record kernel.ResearchOperationRecord) (kernel.ResearchOperationSuccessInput, error) {
 	if adapter == nil || adapter.Kernel == nil {
 		return kernel.ResearchOperationSuccessInput{}, errors.New("research search adapter is not configured")

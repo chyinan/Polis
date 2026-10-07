@@ -1243,3 +1243,8 @@ Evidence:
 The owner research-source panel now reads current Mission-scoped authorization
 and search policy state from the backend. No retrieval ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.
+## Latest continuation status (Slice 320, operation adapter configuration)
+
+`cmd/polis serve` now has default-off wiring for concrete operation adapters;
+no adapter executed. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.

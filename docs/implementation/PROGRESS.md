@@ -1530,3 +1530,9 @@ Added backend/Workbench source readback for current Mission-scoped research
 source state. Frontend tests/typecheck/build and targeted Workbench test pass.
 Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.
+## Latest continuation status (Slice 320, operation adapter configuration)
+
+The real provider worker now has an explicit default-off configuration gate for
+BrowserRun/research adapters; fail-closed defaults and full Go/build checks
+remain green. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.

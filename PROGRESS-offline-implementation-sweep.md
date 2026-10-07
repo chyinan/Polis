@@ -273,4 +273,10 @@ Added Mission-scoped backend readback and owner-panel display of source state
 and policy metadata. No retrieval ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-319-research-source-read-projection/verification.md`.
 
+# Latest checkpoint: Slice320 operation adapter configuration
+
+Added default-off cmd/polis operation-adapter wiring; no adapter or network
+ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-320-operation-adapter-config/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.
