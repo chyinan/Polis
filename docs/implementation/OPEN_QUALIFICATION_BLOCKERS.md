@@ -1,6 +1,14 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-07, after Slice322 Windows profile/WFP qualification. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-08, after Slice323 REQ-38 provider configuration qualification. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+
+Slice323 fixes local credential readiness false positives, but provider
+configuration qualification is `BLOCKED`: no active provider or Polis process
+was present, the Codex upstream endpoint is not pinned, and no research
+credential resolver is injected. No provider request, Worker or retrieval ran.
+Provider endpoint/model availability, real Worker, external retrieval, clean
+VM and WFP/profile qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
 Slice322 reran the Windows-native Chrome + Playwright loopback path with an
 empty per-run profile and recorded Private/Public interface observations.

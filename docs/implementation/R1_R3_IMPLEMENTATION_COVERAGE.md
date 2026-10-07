@@ -1263,3 +1263,12 @@ inspection returned Windows error 5 without elevation; no firewall exception
 was added. Source identity remained `229289e` with `source_change=NONE`.
 REQ-38 remains partial and does not claim clean-VM or WFP qualification.
 Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-322-windows-profile-clean-qualification/verification.md`.
+## Latest continuation status (Slice 323, REQ-38 provider configuration)
+
+Credential readiness now rejects missing, unreadable, malformed and
+unsupported local auth-file states, while reporting `configured` without
+claiming remote authentication. Qualification is `BLOCKED`: no provider
+configuration or Polis process was active, research credential resolution is
+not wired and the Codex upstream endpoint is not pinned. No Worker/provider
+request or external retrieval ran. REQ-38 remains partial. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.

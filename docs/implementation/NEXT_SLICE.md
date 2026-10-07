@@ -1,3 +1,14 @@
+## Latest continuation status (Slice 323, REQ-38 provider configuration)
+
+Credential readiness now checks a readable, supported local Codex auth-file
+shape and returns `missing`, `invalid` or `configured`; `configured` does not
+claim remote authentication. The regression fix is source commit `e76fc44`.
+Qualification is `BLOCKED`: this host has no active Polis process or provider
+configuration, research adapters are default-off, the credential resolver is
+not injected, and the Codex upstream `base_url` is not pinned. No Worker,
+provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
+
 ## Latest continuation status (Slice 322, Windows profile and WFP qualification)
 
 The existing Windows Chrome + Playwright loopback runner passed again with an

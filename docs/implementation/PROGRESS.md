@@ -13,6 +13,19 @@ VM/WFP, provider credential/endpoint/ranking, real Worker and external
 retrieval qualification. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-322-windows-profile-clean-qualification/verification.md`.
 
+## Latest continuation status (Slice 323, REQ-38 provider configuration)
+
+The Workbench and provider runtime now reject missing, unreadable, malformed
+or unsupported local Codex auth-file shapes. The safe projection reports
+`missing`, `invalid` or `configured`; remote authentication remains unverified.
+This fixes a false `ready` state and is committed as `e76fc44`. Qualification
+is `BLOCKED`: no Polis service or provider configuration was active, research
+adapters were off, the production search credential resolver is not injected,
+and the Codex upstream endpoint is not pinned. No Worker/provider request or
+external retrieval ran. Full Go tests and `build ./cmd/...` passed. REQ-38
+remains `NOT_COMPLETE`; clean VM/WFP and real Worker/retrieval gates remain.
+Evidence: `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
+
 ## Latest continuation status (Slice 306, Linux runner verifier qualification)
 
 The previously skipped Linux `POLIS_GO_ROOT` verifier now executes in WSL2

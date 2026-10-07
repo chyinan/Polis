@@ -1,8 +1,18 @@
 # Polis cloud Codex handoff
 
-Updated: 2026-10-07
+Updated: 2026-10-08
 
-## Current continuation pointer (Slice 322)
+## Current continuation pointer (Slice 323)
+
+REQ-38 provider configuration qualification is `BLOCKED`. The auth readiness
+projection/runtime now validate local credential structure, but no provider
+configuration or Polis process was active. Research credential resolution is
+not wired, and the Codex upstream endpoint is not pinned. No model discovery,
+Worker, provider request or external retrieval ran. Source commit: `e76fc44`.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
+
+## Previous continuation pointer (Slice 322)
 
 The Windows profile/WFP qualification was run against the strongest available
 host equivalent. The Windows Chrome + Playwright loopback runner passed again
