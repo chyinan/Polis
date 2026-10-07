@@ -10,7 +10,7 @@ import type {MissionCloseoutOptions} from './workbench-api';
 import type {CreateProjectJobBrowserSessionOptions} from './workbench-api';
 import type {SetGitHubFeedbackCollectionPolicyOptions} from './workbench-api';
 import type {RunResearchSimulationOptions} from './workbench-api';
-import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
+import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions, SetResearchSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
 import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, CloseTaskToolBudgetIncompleteOptions, CreateDailyRoutineOptions, SetDailyRoutineTaskInstructionOptions, SetProblemToolCallClosingReserveOptions} from './workbench-api';
 import type {RevalidateMemoryTaskOptions} from './workbench-api';
@@ -582,6 +582,14 @@ export function useSetContentSourceAuthorization(api: WorkbenchApi, companyId: s
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<SetContentSourceAuthorizationOptions, 'companyId'>) => api.setContentSourceAuthorization({...options, companyId}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
+  });
+}
+
+export function useSetResearchSourceAuthorization(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<SetResearchSourceAuthorizationOptions, 'companyId'>) => api.setResearchSourceAuthorization({...options, companyId}),
     onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'domain-evidence', companyId]}),
   });
 }

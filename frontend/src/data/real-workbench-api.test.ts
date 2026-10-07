@@ -1000,6 +1000,29 @@ describe('RealWorkbenchApi', () => {
 
     await expect(api.cancelMission({companyId: 'company-1', missionId: 'mission-1', requestId: 'request-3'})).rejects.toThrow('command backend unavailable');
   });
+
+  it('registers a Mission-scoped research source with optional search endpoint metadata', async () => {
+    const source = {
+      companyId: 'company-1', sourceId: 'source-docs', missionId: 'mission-1', origin: 'https://example.test',
+      searchEndpoint: 'https://example.test/search', searchCredentialRef: 'search-token', searchRankingRevision: 'research-ranking@1',
+      profileRevision: 'research-source@1', identitySha256: 'a'.repeat(64), dataSha256: 'b'.repeat(64), registrationSha256: 'c'.repeat(64),
+      state: 'authorized', rationale: 'owner approved fixture source', actor: 'local-owner', requestId: 'research-source-request', createdAt: '2026-10-07T00:00:00Z',
+    } as const;
+    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => source});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+
+    await expect(api.setResearchSourceAuthorization({
+      companyId: 'company-1', sourceId: 'source-docs', missionId: 'mission-1', origin: 'https://example.test',
+      searchEndpoint: 'https://example.test/search', searchCredentialRef: 'search-token', searchRankingRevision: 'research-ranking@1',
+      profileRevision: 'research-source@1', identitySha256: 'a'.repeat(64), dataSha256: 'b'.repeat(64), state: 'authorized',
+      rationale: 'owner approved fixture source', requestId: 'research-source-request',
+    })).resolves.toEqual(source);
+    expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/domain-workflows/research-sources', expect.objectContaining({
+      method: 'POST',
+      body: JSON.stringify({sourceId: 'source-docs', missionId: 'mission-1', origin: 'https://example.test', searchEndpoint: 'https://example.test/search', searchCredentialRef: 'search-token', searchRankingRevision: 'research-ranking@1', profileRevision: 'research-source@1', identitySha256: 'a'.repeat(64), dataSha256: 'b'.repeat(64), state: 'authorized', rationale: 'owner approved fixture source', requestId: 'research-source-request'}),
+    }));
+  });
 });
 
 async function sha256Hex(content: Uint8Array): Promise<string> {

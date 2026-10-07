@@ -2,6 +2,14 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 317)
+
+Completed the Workbench TypeScript contract for owner research-source
+registration: strict view validation, Real/Fixture API methods and a mutation
+hook now match the backend route. Frontend 147 tests and typecheck pass; no
+runtime/network action ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.
+
 ## Current continuation pointer (Slice 316)
 
 Schema127 adds opaque search credential-reference and fixed ranking metadata;

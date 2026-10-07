@@ -40,6 +40,7 @@ import type {
   DomainContentCorrectionView,
   DomainContentFeedbackView,
   ResearchSimulationRunView,
+  ResearchSourceView,
   DomainEvidenceSubstantiveOutcomeView,
   DomainEvidenceSubmissionView,
   DomainWorkflowProfileView,
@@ -1972,6 +1973,35 @@ function isDomainContentSourceEvent(value: unknown, companyId: string): value is
     && hasString(value, 'requestId') && hasString(value, 'createdAt');
 }
 
+function isResearchSource(value: unknown, companyId: string): value is ResearchSourceView {
+  if (!isRecord(value) || value.companyId !== companyId) return false;
+  const sourceIdValue = value.sourceId;
+  const missionIdValue = value.missionId;
+  if (typeof sourceIdValue !== 'string' || typeof missionIdValue !== 'string' || !ID_PATTERN.test(sourceIdValue) || !ID_PATTERN.test(missionIdValue) || !hasString(value, 'origin')
+    || !hasString(value, 'searchEndpoint') || !hasString(value, 'searchCredentialRef') || !hasString(value, 'searchRankingRevision')
+    || !hasString(value, 'profileRevision') || value.profileRevision !== 'research-source@1'
+    || !isSha256(value.identitySha256) || !isSha256(value.dataSha256) || !isSha256(value.registrationSha256)
+    || !isOneOf(value.state, ['authorized', 'revoked']) || typeof value.rationale !== 'string' || value.rationale.trim() === ''
+    || Array.from(value.rationale).length > 512 || !hasString(value, 'actor') || !hasString(value, 'requestId') || !hasString(value, 'createdAt')) return false;
+  const originValue = value.origin;
+  const endpointValue = value.searchEndpoint;
+  const credentialRefValue = value.searchCredentialRef;
+  const rankingRevisionValue = value.searchRankingRevision;
+  if (typeof originValue !== 'string' || typeof endpointValue !== 'string' || typeof credentialRefValue !== 'string' || typeof rankingRevisionValue !== 'string') return false;
+  if (credentialRefValue !== '' && !ID_PATTERN.test(credentialRefValue)) return false;
+  if (endpointValue === '') return credentialRefValue === '' && rankingRevisionValue === '';
+  try {
+    const origin = new URL(originValue);
+    const endpoint = new URL(endpointValue);
+    return origin.protocol === 'https:' && origin.username === '' && origin.password === '' && origin.pathname === '/'
+      && origin.search === '' && origin.hash === '' && endpoint.protocol === 'https:' && endpoint.username === '' && endpoint.password === ''
+      && endpoint.search === '' && endpoint.hash === '' && endpoint.origin === origin.origin
+      && rankingRevisionValue === 'research-ranking@1';
+  } catch {
+    return false;
+  }
+}
+
 function isDomainContentDraft(value: unknown, companyId: string): value is DomainContentDraftView {
   if (!isRecord(value) || value.companyId !== companyId || !hasString(value, 'draftId') || !hasString(value, 'draftInputId')
     || !isPositiveIntegerString(value.draftRevision) || !isSha256(value.draftSha256) || !hasString(value, 'writerEmployeeId')
@@ -2367,6 +2397,20 @@ export function validateDomainContentSourceEvent(value: unknown, expected: Reado
     && value.state === expected.state && value.requestId === expected.requestId
     ? {success: true, value: value as DomainContentSourceEventView}
     : {success: false, issues: [{path: '', message: 'content source authorization receipt is malformed or out of scope'}]};
+}
+
+export function validateResearchSource(value: unknown, expected: Readonly<{
+  companyId: string;
+  sourceId: string;
+  missionId: string;
+  requestId: string;
+  state: 'authorized' | 'revoked';
+}>): ValidationResult<ResearchSourceView> {
+  return isResearchSource(value, expected.companyId)
+    && value.sourceId === expected.sourceId && value.missionId === expected.missionId
+    && value.requestId === expected.requestId && value.state === expected.state
+    ? {success: true, value: value as ResearchSourceView}
+    : {success: false, issues: [{path: '', message: 'research source authorization receipt is malformed or out of scope'}]};
 }
 
 export function validateDomainContentDraft(value: unknown, expected: Readonly<{

@@ -1512,3 +1512,9 @@ Search sources now carry non-secret credential-reference/ranking policy, with
 dangerous header filtering at the injected provider boundary. No secret or
 network was used. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-316-search-auth-ranking-policy/verification.md`.
+## Latest continuation status (Slice 317, research source Workbench API)
+
+The research-source owner route is now wired through the frontend data layer;
+147 frontend tests and TypeScript typecheck pass. No runtime or network action
+ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.

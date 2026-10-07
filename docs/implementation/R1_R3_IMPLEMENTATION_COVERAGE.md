@@ -1227,3 +1227,8 @@ compatibility; adapter/client injection and qualification remain open. Evidence:
 Added non-secret credential-reference/ranking metadata and injected-header
 filtering; credential resolution and qualification remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-316-search-auth-ranking-policy/verification.md`.
+## Latest continuation status (Slice 317, research source Workbench API)
+
+The owner research-source route is now represented in the frontend API with
+strict validation and fixture denial; 147 tests/typecheck pass. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.

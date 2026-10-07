@@ -22,9 +22,9 @@ type ResearchSourceRecord struct {
 	SourceID              string `json:"sourceId"`
 	MissionID             string `json:"missionId"`
 	Origin                string `json:"origin"`
-	SearchEndpoint        string `json:"searchEndpoint,omitempty"`
-	SearchCredentialRef   string `json:"searchCredentialRef,omitempty"`
-	SearchRankingRevision string `json:"searchRankingRevision,omitempty"`
+	SearchEndpoint        string `json:"searchEndpoint"`
+	SearchCredentialRef   string `json:"searchCredentialRef"`
+	SearchRankingRevision string `json:"searchRankingRevision"`
 	ProfileRevision       string `json:"profileRevision"`
 	IdentitySHA256        string `json:"identitySha256"`
 	DataSHA256            string `json:"dataSha256"`

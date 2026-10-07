@@ -255,4 +255,10 @@ filtering at the injected credential boundary. No credential, endpoint or
 network ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-316-search-auth-ranking-policy/verification.md`.
 
+# Latest checkpoint: Slice317 research source Workbench API
+
+Wired the owner research-source route into the frontend Real/Fixture API,
+runtime validation and mutation hook. Frontend tests/typecheck pass. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-317-research-source-workbench-api/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

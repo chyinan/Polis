@@ -1006,6 +1006,25 @@ export type ResearchSimulationRunView = Readonly<{
 }>;
 
 export type DomainContentSourceStateView = 'authorized' | 'revoked';
+export type ResearchSourceStateView = 'authorized' | 'revoked';
+export type ResearchSourceView = Readonly<{
+  companyId: string;
+  sourceId: string;
+  missionId: string;
+  origin: string;
+  searchEndpoint: string;
+  searchCredentialRef: string;
+  searchRankingRevision: string;
+  profileRevision: string;
+  identitySha256: string;
+  dataSha256: string;
+  registrationSha256: string;
+  state: ResearchSourceStateView;
+  rationale: string;
+  actor: string;
+  requestId: string;
+  createdAt: string;
+}>;
 export type DomainContentClaimFindingView = 'verified' | 'inconclusive' | 'contradicted';
 export type DomainContentReviewOutcomeView = 'accepted' | 'inconclusive' | 'rejected';
 

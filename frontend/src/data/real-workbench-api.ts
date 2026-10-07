@@ -20,12 +20,12 @@ import {validateStdioMCPPackageRevision} from '../domain/workbench-validation';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
 import {validateServiceBrowserSession} from '../domain/workbench-validation';
 import type {CreateProjectJobBrowserSessionOptions} from './workbench-api';
-import type {ResearchSimulationRunView} from '../domain/workbench';
+import type {ResearchSimulationRunView, ResearchSourceView} from '../domain/workbench';
 import {validateResearchSimulationRun} from '../domain/workbench-validation';
 import type {RunResearchSimulationOptions} from './workbench-api';
 import type {DomainContentCorrectionView, DomainContentDraftView, DomainContentFeedbackView, DomainContentPublicationView, DomainContentReviewView, DomainContentSourceEventView} from '../domain/workbench';
-import {validateDomainContentCorrection, validateDomainContentDraft, validateDomainContentFeedback, validateDomainContentPublication, validateDomainContentReview, validateDomainContentSourceEvent} from '../domain/workbench-validation';
-import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions} from './workbench-api';
+import {validateDomainContentCorrection, validateDomainContentDraft, validateDomainContentFeedback, validateDomainContentPublication, validateDomainContentReview, validateDomainContentSourceEvent, validateResearchSource} from '../domain/workbench-validation';
+import type {RecordContentReviewOptions, RegisterContentDraftOptions, SetContentSourceAuthorizationOptions, SetResearchSourceAuthorizationOptions} from './workbench-api';
 import type {RecordContentCorrectionOptions, RecordContentFeedbackOptions, SimulateContentPublicationOptions} from './workbench-api';
 import type {GitHubFeedbackCollectionPolicyReceipt} from '../domain/workbench';
 import {validateGitHubFeedbackCollectionPolicyReceipt} from '../domain/workbench-validation';
@@ -491,6 +491,49 @@ export class RealWorkbenchApi implements WorkbenchApi {
       sha256: options.sourceSha256, state: options.state, requestId: options.requestId,
     });
     if (!result.success) throw new Error(`failed to authorize content source: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async setResearchSourceAuthorization(options: SetResearchSourceAuthorizationOptions): Promise<ResearchSourceView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.sourceId);
+    assertRequestID(options.requestId);
+    if (options.state === 'authorized') {
+      assertCompanyScope(options.missionId);
+      if (options.profileRevision !== 'research-source@1' || !/^[a-f0-9]{64}$/.test(options.identitySha256) || !/^[a-f0-9]{64}$/.test(options.dataSha256)) {
+        throw new Error('research source authorization must bind the fixed profile and identity/data digests');
+      }
+      let origin: URL;
+      try {
+        origin = new URL(options.origin);
+      } catch {
+        throw new Error('research source origin is invalid');
+      }
+      if (origin.protocol !== 'https:' || origin.username !== '' || origin.password !== '' || origin.pathname !== '/' || origin.search !== '' || origin.hash !== '') {
+        throw new Error('research source origin must be an HTTPS origin without credentials or path');
+      }
+      if (options.searchEndpoint !== '') {
+        let endpoint: URL;
+        try {
+          endpoint = new URL(options.searchEndpoint);
+        } catch {
+          throw new Error('research search endpoint is invalid');
+        }
+        if (endpoint.protocol !== 'https:' || endpoint.username !== '' || endpoint.password !== '' || endpoint.search !== '' || endpoint.hash !== '' || endpoint.origin !== origin.origin || options.searchRankingRevision !== 'research-ranking@1') {
+          throw new Error('research search endpoint must stay on the registered origin and ranking revision');
+        }
+      } else if (options.searchCredentialRef !== '' || options.searchRankingRevision !== '') {
+        throw new Error('research search policy requires an endpoint');
+      }
+    }
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/domain-workflows/research-sources`, options.requestId, {
+      sourceId: options.sourceId, missionId: options.missionId, origin: options.origin, searchEndpoint: options.searchEndpoint,
+      searchCredentialRef: options.searchCredentialRef, searchRankingRevision: options.searchRankingRevision,
+      profileRevision: options.profileRevision, identitySha256: options.identitySha256, dataSha256: options.dataSha256,
+      state: options.state, rationale: options.rationale.trim(), requestId: options.requestId,
+    });
+    const result = validateResearchSource(raw, {companyId: options.companyId, sourceId: options.sourceId, missionId: options.missionId, requestId: options.requestId, state: options.state});
+    if (!result.success) throw new Error(`failed to authorize research source: ${validationMessage(result.issues)}`);
     return result.value;
   }
 
