@@ -1,6 +1,16 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-07, after Slice321 Windows BrowserRun runner smoke. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+Updated: 2026-10-07, after Slice322 Windows profile/WFP qualification. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario.
+
+Slice322 reran the Windows-native Chrome + Playwright loopback path with an
+empty per-run profile and recorded Private/Public interface observations.
+Missing browser, non-empty profile and unavailable endpoint cases failed closed
+with structured diagnostics and no success evidence. The available host is not
+a clean VM or fresh Windows user profile. WFP inspection requires elevation and
+returned Windows error 5; no firewall exception was added. REQ-38 therefore
+remains open for clean-VM/WFP qualification, provider credential/endpoint/
+ranking qualification, real Worker qualification and external retrieval.
+Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-322-windows-profile-clean-qualification/verification.md`.
 
 Slice296 adds optional generic ActionIntent denied-audit readback in Operations; permits and external actions remain unavailable. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-296-action-intent-operations-projection/verification.md`.
 

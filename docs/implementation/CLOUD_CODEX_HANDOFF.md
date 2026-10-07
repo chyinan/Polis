@@ -2,7 +2,19 @@
 
 Updated: 2026-10-07
 
-## Current continuation pointer (Slice 321)
+## Current continuation pointer (Slice 322)
+
+The Windows profile/WFP qualification was run against the strongest available
+host equivalent. The Windows Chrome + Playwright loopback runner passed again
+with a fresh per-run profile, and invalid browser/profile/endpoint cases
+failed closed without success evidence. The host is not a clean VM or fresh
+Windows user profile. Private/Public profile observations were recorded, but
+`netsh wfp` returned Windows error 5 without elevation; no firewall exception
+was added. Source identity is unchanged and REQ-38 remains incomplete.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-322-windows-profile-clean-qualification/verification.md`.
+
+## Previous continuation pointer (Slice 321)
 
 The Windows-native Playwright runner smoke passed against a disposable Go TLS
 loopback fixture using Windows Chrome. Python package root is now explicit and

@@ -1,3 +1,14 @@
+## Latest continuation status (Slice 322, Windows profile and WFP qualification)
+
+The existing Windows Chrome + Playwright loopback runner passed again with an
+empty per-run profile, explicit Chrome 155.0.8059.39 and Python 3.14. Browser
+path, non-empty profile, and unavailable-endpoint failures returned structured
+fail-closed diagnostics with no success evidence. The available host is not a
+clean VM or fresh Windows user profile. Private/Public interface observations
+were recorded, but WFP inspection returned Windows error 5 without elevation;
+no firewall exception was added. REQ-38 remains incomplete. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-322-windows-profile-clean-qualification/verification.md`.
+
 ## Latest continuation status (Slice 310, research search result contract)
 
 Added a pure search-result normalizer for registered sources: bounded 20-item

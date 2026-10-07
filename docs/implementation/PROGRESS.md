@@ -1,3 +1,18 @@
+## Latest continuation status (Slice 322, Windows profile and WFP qualification)
+
+The existing Windows-native Chrome + Playwright loopback runner passed with a
+fresh empty per-run profile and explicit Chrome/Python identities. Missing
+browser, non-empty profile and unavailable-loopback endpoint cases returned
+structured failed results without success evidence or leftover Chrome. The
+available environment is an existing Windows 11 host, not a clean VM or fresh
+Windows user profile. Private/Public profile observations were recorded, but
+WFP state inspection returned Windows error 5 without elevation; no firewall
+exception was added. Source identity stayed `229289e`; source change was
+`NONE`; the full Go suite passed. REQ-38 remains `NOT_COMPLETE` pending clean
+VM/WFP, provider credential/endpoint/ranking, real Worker and external
+retrieval qualification. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-322-windows-profile-clean-qualification/verification.md`.
+
 ## Latest continuation status (Slice 306, Linux runner verifier qualification)
 
 The previously skipped Linux `POLIS_GO_ROOT` verifier now executes in WSL2

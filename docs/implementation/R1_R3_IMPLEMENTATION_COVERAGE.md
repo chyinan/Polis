@@ -1253,3 +1253,13 @@ no adapter executed. Evidence:
 Windows Chrome/Playwright passed a disposable TLS loopback runner smoke; this
 does not qualify production isolation/WFP/network/Provider behavior. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-321-windows-browser-runner-smoke/verification.md`.
+## Latest continuation status (Slice 322, Windows profile and WFP qualification)
+
+The existing Windows Chrome + Playwright loopback runner passed with an empty
+per-run profile, and missing browser/profile/endpoint cases failed closed with
+structured diagnostics. The available host is not a clean VM or fresh Windows
+user profile. Private/Public profile observations were recorded, but WFP
+inspection returned Windows error 5 without elevation; no firewall exception
+was added. Source identity remained `229289e` with `source_change=NONE`.
+REQ-38 remains partial and does not claim clean-VM or WFP qualification.
+Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-322-windows-profile-clean-qualification/verification.md`.
