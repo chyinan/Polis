@@ -2,6 +2,15 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 312)
+
+Added concrete optional BrowserRun and research-fetch adapters. They write
+page-snapshot outputs as immutable `operation_evidence` Artifacts under
+Schema125 and return the existing completion-fence inputs; no adapter is
+enabled by default. Full Go/build verification passed; no browser, HTTP,
+Worker, Provider or migration runtime ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-312-concrete-operation-adapters/verification.md`.
+
 ## Current continuation pointer (Slice 311)
 
 Wired optional BrowserRun and ResearchOperation executors through

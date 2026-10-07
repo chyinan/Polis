@@ -223,4 +223,11 @@ the RealProviderWorkerAdapter; nil defaults keep both paths fail-closed and no
 runtime adapter ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.
 
+# Latest checkpoint: Slice312 concrete operation adapters
+
+Added optional BrowserRun/research-fetch adapters and Schema125
+`operation_evidence` Artifact storage. Adapters remain disabled; no browser,
+HTTP, Worker, Provider or migration runtime ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-312-concrete-operation-adapters/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

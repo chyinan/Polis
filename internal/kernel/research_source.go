@@ -149,3 +149,24 @@ WHERE e.company_id=$1 AND e.request_id=$2`, companyID, requestID).Scan(
 	record.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
 	return record, nil
 }
+
+func (k *Kernel) GetAuthorizedResearchSource(ctx context.Context, companyID, missionID, sourceID string) (ResearchSourceRegistration, error) {
+	if k == nil || !core.ValidID(companyID) || !core.ValidID(missionID) || !core.ValidID(sourceID) {
+		return ResearchSourceRegistration{}, core.Malformed
+	}
+	var registration ResearchSourceRegistration
+	var state string
+	err := k.pool.QueryRow(ctx, `SELECT b.source_id,b.mission_id,b.origin,b.profile_revision,b.identity_sha256,b.data_sha256,e.state
+FROM research_source_bindings b JOIN LATERAL (SELECT state FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`, companyID, missionID, sourceID).Scan(&registration.SourceID, &registration.MissionID, &registration.Origin, &registration.ProfileRevision, &registration.IdentitySHA256, &registration.DataSHA256, &state)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ResearchSourceRegistration{}, core.OutOfScope
+	}
+	if err != nil {
+		return ResearchSourceRegistration{}, err
+	}
+	if state != "authorized" {
+		return ResearchSourceRegistration{}, core.Denied
+	}
+	return normalizeResearchSourceRegistration(registration)
+}

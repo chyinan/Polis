@@ -1483,3 +1483,9 @@ Added the product executor seam for BrowserRun and ResearchOperation with
 completion-fence routing and fail-closed nil defaults. No runtime adapter,
 browser, HTTP or Provider action ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.
+## Latest continuation status (Slice 312, concrete operation adapters)
+
+Concrete optional adapters now bridge qualified BrowserRun/fetch outputs into
+Schema125 operation-evidence Artifacts and completion fences. No adapter was
+enabled or executed. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-312-concrete-operation-adapters/verification.md`.

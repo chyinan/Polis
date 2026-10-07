@@ -26,11 +26,11 @@ type CheckRunner interface {
 }
 
 type BrowserRunExecutor interface {
-	ExecuteBrowserRun(context.Context, BrowserRunRequest, BrowserRunRecord) (BrowserRunSuccessInput, error)
+	ExecuteBrowserRun(context.Context, Binding, BrowserRunRequest, BrowserRunRecord) (BrowserRunSuccessInput, error)
 }
 
 type ResearchOperationExecutor interface {
-	ExecuteResearchOperation(context.Context, ResearchOperationRequest, ResearchOperationRecord) (ResearchOperationSuccessInput, error)
+	ExecuteResearchOperation(context.Context, Binding, ResearchOperationRequest, ResearchOperationRecord) (ResearchOperationSuccessInput, error)
 }
 
 // EmployeeTools is constructed by the trusted adapter. No payload can select
@@ -230,7 +230,7 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}{b.SessionID(), input})[:48]
 		run, e := k.TXRequestBrowserRun(ctx, b, input, requestID)
 		if e == nil && t.BrowserExecutor != nil {
-			completion, executeErr := t.BrowserExecutor.ExecuteBrowserRun(ctx, input, run)
+			completion, executeErr := t.BrowserExecutor.ExecuteBrowserRun(ctx, b, input, run)
 			if executeErr != nil {
 				return ToolResult{Data: run, Error: "BROWSER_RUN_FAILED", Detail: executeErr.Error()}, nil
 			}
@@ -264,7 +264,7 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		requestID := "research-search-" + fingerprint([]string{b.SessionID(), key, args.SourceID, args.Query})[:48]
 		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, requestID)
 		if e == nil && t.ResearchExecutor != nil {
-			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, record)
+			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, record)
 			if executeErr != nil {
 				return ToolResult{Data: record, Error: "RESEARCH_OPERATION_FAILED", Detail: executeErr.Error()}, nil
 			}
@@ -287,7 +287,7 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}, requestID)
 		if e == nil && t.ResearchExecutor != nil {
 			request := ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}
-			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, request, record)
+			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, b, request, record)
 			if executeErr != nil {
 				return ToolResult{Data: record, Error: "RESEARCH_OPERATION_FAILED", Detail: executeErr.Error()}, nil
 			}

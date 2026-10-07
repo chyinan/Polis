@@ -1199,3 +1199,9 @@ EmployeeTools and RealProviderWorkerAdapter now pass optional BrowserRun and
 ResearchOperation executors through the completion fences, while nil defaults
 keep both capabilities disabled. No runtime adapter ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.
+## Latest continuation status (Slice 312, concrete operation adapters)
+
+Concrete optional adapters now materialize page snapshots as Schema125
+operation-evidence Artifacts and feed the completion fences; no adapter was
+enabled or run. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-312-concrete-operation-adapters/verification.md`.

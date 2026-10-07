@@ -1706,3 +1706,10 @@ BrowserRun/ResearchOperation executor seam; successful results must use the
 existing Kernel evidence fences. The default remains nil/fail-closed, and no
 runtime adapter ran. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-311-executor-product-wiring/verification.md`.
+## Latest continuation status (Slice 312, concrete operation adapters)
+
+Added optional concrete BrowserRun/research-fetch adapters that write
+`operation_evidence` page snapshots and route completion through the existing
+fences. They are not injected by default; search backend and host/provider
+qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-312-concrete-operation-adapters/verification.md`.
