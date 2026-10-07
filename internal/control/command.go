@@ -612,6 +612,18 @@ type DomainContentSourceAuthorizationCommandRequest struct {
 	RequestID           string                          `json:"requestId"`
 }
 
+type ResearchSourceAuthorizationCommandRequest struct {
+	SourceID        string `json:"sourceId"`
+	MissionID       string `json:"missionId,omitempty"`
+	Origin          string `json:"origin,omitempty"`
+	ProfileRevision string `json:"profileRevision,omitempty"`
+	IdentitySHA256  string `json:"identitySha256,omitempty"`
+	DataSHA256      string `json:"dataSha256,omitempty"`
+	State           string `json:"state"`
+	Rationale       string `json:"rationale"`
+	RequestID       string `json:"requestId"`
+}
+
 type DomainContentDraftCommandRequest struct {
 	DraftInputID       string   `json:"draftInputId"`
 	DraftInputRevision int64    `json:"draftInputRevision,string"`
@@ -655,6 +667,10 @@ type ContentOperationsCommandService interface {
 	SimulateContentPublication(ctx context.Context, companyID string, request DomainContentPublicationCommandRequest) (kernel.DomainContentPublicationRecord, error)
 	RecordContentCorrection(ctx context.Context, companyID string, request DomainContentCorrectionCommandRequest) (kernel.DomainContentCorrectionRecord, error)
 	RecordContentFeedback(ctx context.Context, companyID string, request DomainContentFeedbackCommandRequest) (kernel.DomainContentFeedbackRecord, error)
+}
+
+type ResearchSourceCommandService interface {
+	SetResearchSourceAuthorization(ctx context.Context, companyID string, request ResearchSourceAuthorizationCommandRequest) (kernel.ResearchSourceRecord, error)
 }
 
 type DomainEvidenceService interface {

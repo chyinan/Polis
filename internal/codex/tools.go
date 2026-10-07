@@ -160,14 +160,18 @@ func ProductEmployeeToolsWithBrowserRun() []any {
 
 // ProductEmployeeToolsWithResearchOperations is a separately versioned,
 // fake-only extension. It records explicit unavailable search/fetch intents;
-// it does not provide an internet, MCP or browser egress path.
+// an optional source_id binds the intent to a separately registered,
+// Mission-scoped source without providing an internet, MCP or browser egress
+// path.
 func ProductEmployeeToolsWithResearchOperations() []any {
 	tools := ProductEmployeeToolsWithBrowserRun()
 	researchTools := productTools([]peerToolDefinition{
-		{"research_search", "Record a bounded search request for the current Task. The local product has no search backend in this surface, so the result is explicitly unavailable and no query is sent anywhere.", map[string]any{
-			"query": map[string]any{"type": "string", "minLength": 1, "maxLength": 4096},
+		{"research_search", "Record a bounded search request for the current Task. An optional source_id binds it to an owner-registered Mission source; the local product still has no search backend in this surface, so the result is explicitly unavailable and no query is sent anywhere.", map[string]any{
+			"source_id": map[string]any{"type": "string", "minLength": 0, "maxLength": 80},
+			"query":     map[string]any{"type": "string", "minLength": 1, "maxLength": 4096},
 		}},
-		{"research_fetch", "Record a bounded HTTPS page-read request for the current Task. The local product has no fetch backend in this surface, so the result is explicitly unavailable and no URL is opened.", map[string]any{
+		{"research_fetch", "Record a bounded HTTPS page-read request for the current Task. An optional source_id requires the URL to stay on that registered origin; the local product still has no fetch backend in this surface, so the result is explicitly unavailable and no URL is opened.", map[string]any{
+			"source_id":  map[string]any{"type": "string", "minLength": 0, "maxLength": 80},
 			"target_url": map[string]any{"type": "string", "minLength": 9, "maxLength": 4096},
 		}},
 	})

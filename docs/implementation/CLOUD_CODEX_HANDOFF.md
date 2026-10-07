@@ -2,6 +2,18 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 307)
+
+REQ-38 now has a source-only research binding foundation. Schema124 adds
+Mission-scoped HTTPS source registrations with dedicated identity/data digests,
+append-only authorization/revocation, and optional `research_operations.source_id`.
+The Workbench owner route and fake @19 surface bind requests to the current
+authorized source and exact origin, while search/fetch still remain explicit
+`unavailable` with zero egress. Full Go tests and command build pass. Playwright,
+HTTP retrieval, browser isolation and external source qualification remain open.
+Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-307-research-source-binding/verification.md`.
+
 ## Current continuation pointer (Slice 306)
 
 The previously skipped Linux `POLIS_GO_ROOT` verifier now runs in the existing

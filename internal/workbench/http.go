@@ -1191,6 +1191,23 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, run)
+	case "research.source.authorization":
+		sourceService, ok := service.(control.ResearchSourceCommandService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "research_source_authorization", errors.New("research source service is unavailable"))
+			return
+		}
+		var input control.ResearchSourceAuthorizationCommandRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "research_source_authorization", err)
+			return
+		}
+		source, err := sourceService.SetResearchSourceAuthorization(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, input.RequestID, "research_source_authorization", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, source)
 	case "domain.content.source.authorization":
 		contentService, ok := service.(control.ContentOperationsCommandService)
 		if !ok {
@@ -2271,6 +2288,8 @@ func parsePath(path string) (parsedPath, bool) {
 	}
 	if len(parts) == 3 && parts[1] == "domain-workflows" {
 		switch parts[2] {
+		case "research-sources":
+			return parsedPath{companyID: companyID, endpoint: "research.source.authorization"}, true
 		case "content-sources":
 			return parsedPath{companyID: companyID, endpoint: "domain.content.source.authorization"}, true
 		case "content-drafts":

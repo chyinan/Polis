@@ -279,6 +279,26 @@ func (s *Service) SetContentSourceAuthorization(ctx context.Context, companyID s
 	})
 }
 
+func (s *Service) SetResearchSourceAuthorization(ctx context.Context, companyID string, request ResearchSourceAuthorizationCommandRequest) (kernel.ResearchSourceRecord, error) {
+	if err := validateRequestID(request.RequestID); err != nil {
+		return kernel.ResearchSourceRecord{}, err
+	}
+	switch request.State {
+	case "authorized":
+		return s.runtime.TXRegisterResearchSource(ctx, companyID, kernel.ResearchSourceRegistrationInput{
+			Registration: kernel.ResearchSourceRegistration{
+				SourceID: request.SourceID, MissionID: request.MissionID, Origin: request.Origin,
+				ProfileRevision: request.ProfileRevision, IdentitySHA256: request.IdentitySHA256, DataSHA256: request.DataSHA256,
+			},
+			Rationale: request.Rationale, RequestID: request.RequestID,
+		})
+	case "revoked":
+		return s.runtime.TXRevokeResearchSource(ctx, companyID, request.SourceID, request.Rationale, request.RequestID)
+	default:
+		return kernel.ResearchSourceRecord{}, core.Malformed
+	}
+}
+
 func (s *Service) RegisterContentDraft(ctx context.Context, companyID string, request DomainContentDraftCommandRequest) (kernel.DomainContentDraftRecord, error) {
 	if err := validateRequestID(request.RequestID); err != nil {
 		return kernel.DomainContentDraftRecord{}, err

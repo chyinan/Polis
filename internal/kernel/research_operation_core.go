@@ -17,15 +17,17 @@ const (
 
 type ResearchOperationRequest struct {
 	Kind      string `json:"kind"`
+	SourceID  string `json:"sourceId,omitempty"`
 	Query     string `json:"query,omitempty"`
 	TargetURL string `json:"targetUrl,omitempty"`
 }
 
 func normalizeResearchOperationRequest(input ResearchOperationRequest) (ResearchOperationRequest, error) {
 	input.Kind = strings.TrimSpace(input.Kind)
+	input.SourceID = strings.TrimSpace(input.SourceID)
 	input.Query = strings.TrimSpace(input.Query)
 	input.TargetURL = strings.TrimSpace(input.TargetURL)
-	if input.Kind != ResearchOperationKindSearch && input.Kind != ResearchOperationKindFetch {
+	if (input.SourceID != "" && !core.ValidID(input.SourceID)) || (input.Kind != ResearchOperationKindSearch && input.Kind != ResearchOperationKindFetch) {
 		return ResearchOperationRequest{}, core.Malformed
 	}
 	if input.Kind == ResearchOperationKindSearch {

@@ -237,26 +237,28 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 			return ToolResult{}, core.Denied
 		}
 		var args struct {
-			Query string `json:"query"`
+			SourceID string `json:"source_id"`
+			Query    string `json:"query"`
 		}
 		if e := strictArgsLimit(raw, &args, 4096); e != nil {
 			return ToolResult{}, e
 		}
-		requestID := "research-search-" + fingerprint([]string{b.SessionID(), key, args.Query})[:48]
-		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, Query: args.Query}, requestID)
+		requestID := "research-search-" + fingerprint([]string{b.SessionID(), key, args.SourceID, args.Query})[:48]
+		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, requestID)
 		return ToolResult{Data: record}, e
 	case "research_fetch":
 		if !t.ProductSurface || !t.ResearchOperationSurface || t.ReadOnly {
 			return ToolResult{}, core.Denied
 		}
 		var args struct {
+			SourceID  string `json:"source_id"`
 			TargetURL string `json:"target_url"`
 		}
 		if e := strictArgsLimit(raw, &args, 4096); e != nil {
 			return ToolResult{}, e
 		}
-		requestID := "research-fetch-" + fingerprint([]string{b.SessionID(), key, args.TargetURL})[:48]
-		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindFetch, TargetURL: args.TargetURL}, requestID)
+		requestID := "research-fetch-" + fingerprint([]string{b.SessionID(), key, args.SourceID, args.TargetURL})[:48]
+		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}, requestID)
 		return ToolResult{Data: record}, e
 	case "environment_status":
 		if !t.ProductSurface || !t.EnvironmentStatusSurface {

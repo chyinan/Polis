@@ -36,6 +36,8 @@ type fakeDomainEvidenceService struct {
 	previewedPath             string
 	simulationFor             string
 	simulationReq             control.ResearchSimulationCommandRequest
+	researchSourceFor         string
+	researchSource            control.ResearchSourceAuthorizationCommandRequest
 	contentSourceFor          string
 	contentSource             control.DomainContentSourceAuthorizationCommandRequest
 	contentDraftFor           string
@@ -55,6 +57,11 @@ type fakeDomainEvidenceService struct {
 func (service *fakeDomainEvidenceService) SetContentSourceAuthorization(_ context.Context, companyID string, request control.DomainContentSourceAuthorizationCommandRequest) (kernel.DomainContentSourceEventRecord, error) {
 	service.contentSourceFor, service.contentSource = companyID, request
 	return kernel.DomainContentSourceEventRecord{CompanyID: companyID, EventID: "content-source-event-1", InputID: request.SourceInputID, Revision: "1", SHA256: strings.Repeat("a", 64), State: request.State, RequestID: request.RequestID}, nil
+}
+
+func (service *fakeDomainEvidenceService) SetResearchSourceAuthorization(_ context.Context, companyID string, request control.ResearchSourceAuthorizationCommandRequest) (kernel.ResearchSourceRecord, error) {
+	service.researchSourceFor, service.researchSource = companyID, request
+	return kernel.ResearchSourceRecord{CompanyID: companyID, SourceID: request.SourceID, MissionID: request.MissionID, Origin: request.Origin, State: request.State, RequestID: request.RequestID}, nil
 }
 
 func (service *fakeDomainEvidenceService) RegisterContentDraft(_ context.Context, companyID string, request control.DomainContentDraftCommandRequest) (kernel.DomainContentDraftRecord, error) {
@@ -309,6 +316,7 @@ func TestContentOperationCommandsAreCompanyScoped(t *testing.T) {
 		path string
 		body any
 	}{
+		{"research-sources", control.ResearchSourceAuthorizationCommandRequest{SourceID: "source-docs", MissionID: "mission-1", Origin: "https://example.test", ProfileRevision: kernel.ResearchSourceProfileRevision, IdentitySHA256: strings.Repeat("a", 64), DataSHA256: strings.Repeat("b", 64), State: "authorized", Rationale: "approved test source", RequestID: "research-source-request-1"}},
 		{"content-sources", control.DomainContentSourceAuthorizationCommandRequest{SourceInputID: "source-1", SourceInputRevision: 2, SourceSHA256: strings.Repeat("a", 64), State: kernel.DomainContentSourceAuthorized, Rationale: "source reviewed", RequestID: "content-source-request-1"}},
 		{"content-drafts", control.DomainContentDraftCommandRequest{DraftInputID: "draft-1", DraftInputRevision: 3, WriterEmployeeID: "emp-backend", CriticalClaims: []string{"claim-1"}, ConstraintsPassed: true, RequestID: "content-draft-request-1"}},
 		{"content-reviews", struct {
@@ -335,7 +343,7 @@ func TestContentOperationCommandsAreCompanyScoped(t *testing.T) {
 			t.Fatalf("content operation %s response=%d body=%s", item.path, response.Code, response.Body.String())
 		}
 	}
-	if service.contentSourceFor != "company-1" || service.contentDraftFor != "company-1" || service.contentReviewFor != "company-1" ||
+	if service.researchSourceFor != "company-1" || service.researchSource.SourceID != "source-docs" || service.contentSourceFor != "company-1" || service.contentDraftFor != "company-1" || service.contentReviewFor != "company-1" ||
 		service.contentPublicationFor != "company-1" || service.contentCorrectionFor != "company-1" || service.contentFeedbackFor != "company-1" ||
 		service.contentReviewInputID != "draft-1" || service.contentReviewRevision != 3 {
 		t.Fatalf("content operation company scopes source=%q draft=%q review=%q publication=%q correction=%q feedback=%q input=%q revision=%d",

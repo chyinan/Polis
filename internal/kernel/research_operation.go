@@ -18,6 +18,7 @@ type ResearchOperationRecord struct {
 	TaskID        string          `json:"taskId"`
 	SessionID     string          `json:"sessionId"`
 	Kind          string          `json:"kind"`
+	SourceID      string          `json:"sourceId,omitempty"`
 	Query         string          `json:"query,omitempty"`
 	TargetURL     string          `json:"targetUrl,omitempty"`
 	RequestSHA256 string          `json:"requestSha256"`
@@ -48,15 +49,48 @@ WHERE t.company_id=$1 AND t.id=$2 AND s.id=$3 AND s.state='active'`, binding.sco
 		} else if err != nil {
 			return Receipt{}, err
 		}
+		var sourceTablesAvailable bool
+		if err := tx.QueryRow(ctx, `SELECT to_regclass('public.research_source_bindings') IS NOT NULL AND to_regclass('public.research_source_events') IS NOT NULL`).Scan(&sourceTablesAvailable); err != nil {
+			return Receipt{}, err
+		}
+		if normalized.SourceID != "" {
+			if !sourceTablesAvailable {
+				return Receipt{}, core.Denied
+			}
+			var registration ResearchSourceRegistration
+			var sourceState string
+			err := tx.QueryRow(ctx, `SELECT b.source_id,b.mission_id,b.origin,b.profile_revision,b.identity_sha256,b.data_sha256,e.state
+FROM research_source_bindings b JOIN LATERAL (SELECT state FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE b.company_id=$1 AND b.source_id=$2`, binding.scope.company, normalized.SourceID).Scan(&registration.SourceID, &registration.MissionID, &registration.Origin, &registration.ProfileRevision, &registration.IdentitySHA256, &registration.DataSHA256, &sourceState)
+			if errors.Is(err, pgx.ErrNoRows) {
+				return Receipt{}, core.OutOfScope
+			}
+			if err != nil {
+				return Receipt{}, err
+			}
+			if sourceState != "authorized" {
+				return Receipt{}, core.Denied
+			}
+			if err := validateResearchSourceOperation(registration, missionID, normalized); err != nil {
+				return Receipt{}, err
+			}
+		}
 		var query, targetURL any
 		if normalized.Kind == ResearchOperationKindSearch {
 			query = normalized.Query
 		} else {
 			targetURL = normalized.TargetURL
 		}
-		if _, err := tx.Exec(ctx, `INSERT INTO research_operations(company_id,operation_id,mission_id,task_id,session_id,kind,query,target_url,request_sha256,request_id)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, binding.scope.company, operationID, missionID, binding.task, binding.session, normalized.Kind, query, targetURL, requestSHA256, requestID); err != nil {
-			return Receipt{}, err
+		var insertErr error
+		if sourceTablesAvailable {
+			_, insertErr = tx.Exec(ctx, `INSERT INTO research_operations(company_id,operation_id,mission_id,task_id,session_id,source_id,kind,query,target_url,request_sha256,request_id)
+VALUES($1,$2,$3,$4,$5,NULLIF($6,''),$7,$8,$9,$10,$11)`, binding.scope.company, operationID, missionID, binding.task, binding.session, normalized.SourceID, normalized.Kind, query, targetURL, requestSHA256, requestID)
+		} else {
+			_, insertErr = tx.Exec(ctx, `INSERT INTO research_operations(company_id,operation_id,mission_id,task_id,session_id,kind,query,target_url,request_sha256,request_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, binding.scope.company, operationID, missionID, binding.task, binding.session, normalized.Kind, query, targetURL, requestSHA256, requestID)
+		}
+		if insertErr != nil {
+			return Receipt{}, insertErr
 		}
 		eventID := stableCapabilityID("research-operation-event", binding.scope.company, requestID)
 		result := json.RawMessage(`{"availability":"unavailable","provider_egress":0}`)
@@ -112,15 +146,30 @@ func readResearchOperation(ctx context.Context, queryer researchOperationQueryer
 	var record ResearchOperationRecord
 	var result []byte
 	var createdAt time.Time
+	var sourceTablesAvailable bool
+	if err := queryer.QueryRow(ctx, `SELECT to_regclass('public.research_source_bindings') IS NOT NULL AND to_regclass('public.research_source_events') IS NOT NULL`).Scan(&sourceTablesAvailable); err != nil {
+		return ResearchOperationRecord{}, err
+	}
 	query := `SELECT o.company_id,o.operation_id,o.mission_id,o.task_id,o.session_id,o.kind,COALESCE(o.query,''),COALESCE(o.target_url,''),o.request_sha256,e.state,e.reason_code,e.result,e.actor,e.request_id,o.created_at
 FROM research_operations o JOIN LATERAL (SELECT state,reason_code,result,actor,request_id FROM research_operation_events WHERE company_id=o.company_id AND operation_id=o.operation_id ORDER BY event_seq DESC LIMIT 1) e ON true
 WHERE o.company_id=$1 AND o.operation_id=$2`
+	if sourceTablesAvailable {
+		query = `SELECT o.company_id,o.operation_id,o.mission_id,o.task_id,o.session_id,o.kind,COALESCE(o.source_id,''),COALESCE(o.query,''),COALESCE(o.target_url,''),o.request_sha256,e.state,e.reason_code,e.result,e.actor,e.request_id,o.created_at
+FROM research_operations o JOIN LATERAL (SELECT state,reason_code,result,actor,request_id FROM research_operation_events WHERE company_id=o.company_id AND operation_id=o.operation_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE o.company_id=$1 AND o.operation_id=$2`
+	}
 	args := []any{companyID, operationID}
 	if taskID != "" {
 		query += ` AND o.task_id=$3 AND o.session_id=$4`
 		args = append(args, taskID, sessionID)
 	}
-	err := queryer.QueryRow(ctx, query, args...).Scan(&record.CompanyID, &record.OperationID, &record.MissionID, &record.TaskID, &record.SessionID, &record.Kind, &record.Query, &record.TargetURL, &record.RequestSHA256, &record.State, &record.ReasonCode, &result, &record.Actor, &record.RequestID, &createdAt)
+	var scanArgs []any
+	if sourceTablesAvailable {
+		scanArgs = []any{&record.CompanyID, &record.OperationID, &record.MissionID, &record.TaskID, &record.SessionID, &record.Kind, &record.SourceID, &record.Query, &record.TargetURL, &record.RequestSHA256, &record.State, &record.ReasonCode, &result, &record.Actor, &record.RequestID, &createdAt}
+	} else {
+		scanArgs = []any{&record.CompanyID, &record.OperationID, &record.MissionID, &record.TaskID, &record.SessionID, &record.Kind, &record.Query, &record.TargetURL, &record.RequestSHA256, &record.State, &record.ReasonCode, &result, &record.Actor, &record.RequestID, &createdAt}
+	}
+	err := queryer.QueryRow(ctx, query, args...).Scan(scanArgs...)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ResearchOperationRecord{}, core.OutOfScope
 	}

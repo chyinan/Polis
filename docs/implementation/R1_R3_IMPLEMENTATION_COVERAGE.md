@@ -1164,3 +1164,12 @@ Slice300 adds Schema123 append-only owner decisions for exact TaskRevision bindi
 Slice301 adds an optional scoped TaskSummary semantic TaskRevision/decision projection with fail-closed backend/frontend validation and read-only rendering. Older schemas remain compatible; no approval or execution control is exposed. Evidence: evidence/development/r1-r3-implementation-validation-20261007-slice-301-req02-task-revision-projection/verification.md.
 Slice302 adds fail-closed, canonicalized/content-addressed BrowserRun success evidence binding with same-scope real ready candidate/passed Artifact references. Browser/network execution remains disabled. Evidence: evidence/development/r1-r3-implementation-validation-20261007-slice-302-req38-operation-evidence-binding/verification.md.
 Slice303 extends the same canonical evidence envelope and real Artifact digest/state binding to succeeded ResearchOperation results; unavailable fake search/fetch remains unchanged. Evidence: evidence/development/r1-r3-implementation-validation-20261007-slice-303-req38-research-evidence-binding/verification.md.
+## Latest continuation status (Slice 307, REQ-38 research source binding)
+
+Schema124 and the Kernel now persist Mission-scoped research source
+registrations with identity/data digests and append-only authorization/
+revocation. Optional ResearchOperation source IDs require the current source
+and exact HTTPS origin; the owner Workbench command is company-scoped. No
+network retrieval or browser execution is enabled; fake @19 remains
+unavailable. Full Go tests and command build pass. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-307-research-source-binding/verification.md`.

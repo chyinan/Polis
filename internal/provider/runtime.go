@@ -157,9 +157,9 @@ const (
 	ProductBrowserRunManifestDigest         = "1a954674caea420d4b9445bcf237fb0be4bf04d07634e16c595af0db62913456"
 	ProductBrowserRunSchemaDigest           = "a691aeffad6545d1e618b6eb5c0a2c14152561620fef351e47230f764752a38e"
 	ProductBrowserRunSchemaBytes            = 4071
-	ProductResearchOperationsManifestDigest = "544efe705cfb9f4b3124af1f2304bf57fe6340edc116eda18b82940e995c7464"
-	ProductResearchOperationsSchemaDigest   = "7abb5b07268f44853657a31201c7a0ec04d6f46d70a5deb60e956915f3598070"
-	ProductResearchOperationsSchemaBytes    = 4359
+	ProductResearchOperationsManifestDigest = "6149e0fd55fcdfe19575347c7b141536190e48d8cb4713b84ac1399f2e2c9554"
+	ProductResearchOperationsSchemaDigest   = "5a853c10ef4f97d9c39304acef65cd42dae2aaabab0d12dc1d3ee0fd42f89a0c"
+	ProductResearchOperationsSchemaBytes    = 4501
 )
 
 const (

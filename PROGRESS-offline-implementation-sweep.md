@@ -184,4 +184,13 @@ Windows WFP/profile, packaged Node/npm, clean-VM,
 browser isolation and Provider qualification remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-306-linux-runner-verifier-qualification/verification.md`.
 
+# Latest checkpoint: Slice307 REQ-38 research source binding
+
+Added Schema124 Mission-scoped source registrations, immutable authorization/
+revocation events, exact-origin binding and the owner Workbench route. Fake
+research @19 accepts optional `source_id`, but search/fetch remains explicit
+unavailable with zero egress. Full Go tests and command build pass; no external
+source, Worker, Provider, browser or scenario ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-307-research-source-binding/verification.md`.
+
 Tightened EmployeeSummary RoleRevision validation to null or lowercase SHA-256 and corrected a stale formal MissionChangeRequest fixture. Workbench validation tests pass 50/50; direct TypeScript/Vite builds and diff check pass. No backend/runtime/provider/browser/account/scenario action ran. Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-294-role-revision-frontend-boundary/verification.md`.

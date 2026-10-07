@@ -1,3 +1,13 @@
+## Latest continuation status (Slice 307, REQ-38 research source binding)
+
+Added Schema124 Mission-scoped research source registrations and immutable
+authorization/revocation events. Optional search/fetch requests now bind to a
+current source and exact HTTPS origin when the schema is available; pre-Schema124
+runtimes keep the old source-less unavailable path. No network is opened: the
+fake @19 surface remains `unavailable/research_backend_unavailable`, and
+BrowserRun remains blocked. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-307-research-source-binding/verification.md`.
+
 ## Latest continuation status (Slice 306, Linux runner verifier qualification)
 
 The previously skipped `POLIS_GO_ROOT` verifier now runs inside the existing

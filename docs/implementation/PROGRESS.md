@@ -1450,3 +1450,11 @@ Do not start real provider business execution, external QQ/webhook delivery, aut
 R0.8 first capability-config vertical is implemented: schema 12 candidate SkillRevision/MCPServerDefinition catalog, Go/Workbench API, Group Settings registration/read UI, and safe no-execution/no-egress boundaries. Smoke passed migration 12, backend health, active-work and shutdown with provider business egress 0. Report: `docs/implementation/R0.8_CAPABILITY_CATALOG_REPORT.md`; progress: `PROGRESS-r0-8-capability-catalog-foundation.md`.
 
 Do not infer candidate registration as approval, Skill execution, MCP connection, OAuth or QQ delivery. Those require later qualification and authorization.
+## Latest continuation status (Slice 307, REQ-38 research source binding)
+
+The source-only REQ-38 gap is narrowed: Schema124, Kernel, owner Workbench
+route and fake @19 optional `source_id` now enforce Mission scope, canonical
+HTTPS origin and append-only authorization/revocation. Search/fetch remains
+unavailable with zero egress; no external source, Worker, Provider or BrowserRun
+ran. Full Go tests and `build ./cmd/...` pass. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-307-research-source-binding/verification.md`.
