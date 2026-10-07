@@ -1506,3 +1506,9 @@ Evidence:
 Research source registration now carries an optional same-origin search
 endpoint; runtime/HTTP injection remains explicit and disabled. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-315-research-search-endpoint-registration/verification.md`.
+## Latest continuation status (Slice 316, search auth/ranking policy)
+
+Search sources now carry non-secret credential-reference/ranking policy, with
+dangerous header filtering at the injected provider boundary. No secret or
+network was used. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-316-search-auth-ranking-policy/verification.md`.

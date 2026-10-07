@@ -613,16 +613,18 @@ type DomainContentSourceAuthorizationCommandRequest struct {
 }
 
 type ResearchSourceAuthorizationCommandRequest struct {
-	SourceID        string `json:"sourceId"`
-	MissionID       string `json:"missionId,omitempty"`
-	Origin          string `json:"origin,omitempty"`
-	SearchEndpoint  string `json:"searchEndpoint,omitempty"`
-	ProfileRevision string `json:"profileRevision,omitempty"`
-	IdentitySHA256  string `json:"identitySha256,omitempty"`
-	DataSHA256      string `json:"dataSha256,omitempty"`
-	State           string `json:"state"`
-	Rationale       string `json:"rationale"`
-	RequestID       string `json:"requestId"`
+	SourceID              string `json:"sourceId"`
+	MissionID             string `json:"missionId,omitempty"`
+	Origin                string `json:"origin,omitempty"`
+	SearchEndpoint        string `json:"searchEndpoint,omitempty"`
+	SearchCredentialRef   string `json:"searchCredentialRef,omitempty"`
+	SearchRankingRevision string `json:"searchRankingRevision,omitempty"`
+	ProfileRevision       string `json:"profileRevision,omitempty"`
+	IdentitySHA256        string `json:"identitySha256,omitempty"`
+	DataSHA256            string `json:"dataSha256,omitempty"`
+	State                 string `json:"state"`
+	Rationale             string `json:"rationale"`
+	RequestID             string `json:"requestId"`
 }
 
 type DomainContentDraftCommandRequest struct {

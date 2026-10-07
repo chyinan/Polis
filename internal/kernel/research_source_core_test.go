@@ -11,13 +11,14 @@ import (
 
 func TestNormalizeResearchSourceRegistrationCanonicalizesHTTPSOrigin(t *testing.T) {
 	registration, err := normalizeResearchSourceRegistration(ResearchSourceRegistration{
-		SourceID:        "source-docs",
-		MissionID:       "mission-1",
-		Origin:          "https://Example.test:8443/",
-		SearchEndpoint:  "https://example.test:8443/search",
-		ProfileRevision: ResearchSourceProfileRevision,
-		IdentitySHA256:  strings.Repeat("a", 64),
-		DataSHA256:      strings.Repeat("b", 64),
+		SourceID:              "source-docs",
+		MissionID:             "mission-1",
+		Origin:                "https://Example.test:8443/",
+		SearchEndpoint:        "https://example.test:8443/search",
+		SearchRankingRevision: ResearchSearchRankingRevision,
+		ProfileRevision:       ResearchSourceProfileRevision,
+		IdentitySHA256:        strings.Repeat("a", 64),
+		DataSHA256:            strings.Repeat("b", 64),
 	})
 	if err != nil {
 		t.Fatal(err)

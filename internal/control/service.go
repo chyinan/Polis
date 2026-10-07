@@ -287,7 +287,7 @@ func (s *Service) SetResearchSourceAuthorization(ctx context.Context, companyID 
 	case "authorized":
 		return s.runtime.TXRegisterResearchSource(ctx, companyID, kernel.ResearchSourceRegistrationInput{
 			Registration: kernel.ResearchSourceRegistration{
-				SourceID: request.SourceID, MissionID: request.MissionID, Origin: request.Origin, SearchEndpoint: request.SearchEndpoint,
+				SourceID: request.SourceID, MissionID: request.MissionID, Origin: request.Origin, SearchEndpoint: request.SearchEndpoint, SearchCredentialRef: request.SearchCredentialRef, SearchRankingRevision: request.SearchRankingRevision,
 				ProfileRevision: request.ProfileRevision, IdentitySHA256: request.IdentitySHA256, DataSHA256: request.DataSHA256,
 			},
 			Rationale: request.Rationale, RequestID: request.RequestID,

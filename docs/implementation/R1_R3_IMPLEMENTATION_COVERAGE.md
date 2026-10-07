@@ -1222,3 +1222,8 @@ Evidence:
 Schema126 persists an optional same-origin search endpoint with pre-Schema126
 compatibility; adapter/client injection and qualification remain open. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-315-research-search-endpoint-registration/verification.md`.
+## Latest continuation status (Slice 316, search auth/ranking policy)
+
+Added non-secret credential-reference/ranking metadata and injected-header
+filtering; credential resolution and qualification remain open. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-316-search-auth-ranking-policy/verification.md`.

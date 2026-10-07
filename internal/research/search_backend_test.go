@@ -44,3 +44,27 @@ func TestHTTPJSONSearchBackendRejectsRedirectAndUnknownFields(t *testing.T) {
 		})
 	}
 }
+
+type credentialHeaders struct {
+	headers http.Header
+}
+
+func (provider credentialHeaders) Headers(_ context.Context, _ string) (http.Header, error) {
+	return provider.headers, nil
+}
+
+func TestHTTPJSONSearchBackendUsesOpaqueCredentialReferenceAndRejectsCookieHeaders(t *testing.T) {
+	backend := &HTTPJSONSearchBackend{Origin: "https://example.test", Endpoint: "https://example.test/search", CredentialRef: "search-token", Credentials: credentialHeaders{headers: http.Header{"Authorization": []string{"Bearer fixture"}}}, Client: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		if request.Header.Get("Authorization") != "Bearer fixture" {
+			t.Fatalf("authorization header=%q", request.Header.Get("Authorization"))
+		}
+		return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": []string{"application/json"}}, Body: io.NopCloser(strings.NewReader(`{"results":[{"url":"https://example.test/docs","title":"Docs","snippet":"bounded","source_time":"2026-10-07T00:00:00Z"}]}`)), Request: request}, nil
+	})}
+	if _, err := backend.Search(context.Background(), "query"); err != nil {
+		t.Fatal(err)
+	}
+	backend.Credentials = credentialHeaders{headers: http.Header{"Cookie": []string{"secret=1"}}}
+	if _, err := backend.Search(context.Background(), "query"); err == nil {
+		t.Fatal("credential provider cookie header was accepted")
+	}
+}

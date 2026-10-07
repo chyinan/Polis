@@ -63,9 +63,10 @@ type ResearchFetchOperationAdapter struct {
 }
 
 type ResearchSearchOperationAdapter struct {
-	Kernel     *kernel.Kernel
-	Backend    research.SearchBackend
-	HTTPClient research.HTTPDoer
+	Kernel      *kernel.Kernel
+	Backend     research.SearchBackend
+	HTTPClient  research.HTTPDoer
+	Credentials research.CredentialProvider
 }
 
 func (adapter *ResearchSearchOperationAdapter) ExecuteResearchOperation(ctx context.Context, binding kernel.Binding, request kernel.ResearchOperationRequest, record kernel.ResearchOperationRecord) (kernel.ResearchOperationSuccessInput, error) {
@@ -81,7 +82,7 @@ func (adapter *ResearchSearchOperationAdapter) ExecuteResearchOperation(ctx cont
 	}
 	backend := adapter.Backend
 	if backend == nil && adapter.HTTPClient != nil && source.SearchEndpoint != "" {
-		backend = &research.HTTPJSONSearchBackend{Client: adapter.HTTPClient, Origin: source.Origin, Endpoint: source.SearchEndpoint}
+		backend = &research.HTTPJSONSearchBackend{Client: adapter.HTTPClient, Origin: source.Origin, Endpoint: source.SearchEndpoint, CredentialRef: source.SearchCredentialRef, Credentials: adapter.Credentials}
 	}
 	if backend == nil {
 		return kernel.ResearchOperationSuccessInput{}, errors.New("research search backend is not configured")

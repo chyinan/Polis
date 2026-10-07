@@ -16,13 +16,19 @@ type SearchBackend interface {
 	Search(context.Context, string) ([]SearchCandidate, error)
 }
 
+type CredentialProvider interface {
+	Headers(context.Context, string) (http.Header, error)
+}
+
 const maxSearchResponseBytes int64 = 1 << 20
 
 type HTTPJSONSearchBackend struct {
-	Client    HTTPDoer
-	Origin    string
-	Endpoint  string
-	TimeoutMS int
+	Client        HTTPDoer
+	Origin        string
+	Endpoint      string
+	CredentialRef string
+	Credentials   CredentialProvider
+	TimeoutMS     int
 }
 
 func (backend *HTTPJSONSearchBackend) Search(ctx context.Context, query string) ([]SearchCandidate, error) {
@@ -61,6 +67,24 @@ func (backend *HTTPJSONSearchBackend) Search(ctx context.Context, query string) 
 		return nil, err
 	}
 	request.Header.Set("Accept", "application/json")
+	if backend.CredentialRef != "" {
+		if backend.Credentials == nil {
+			return nil, errors.New("search credential provider is unavailable")
+		}
+		headers, err := backend.Credentials.Headers(requestCtx, backend.CredentialRef)
+		if err != nil {
+			return nil, err
+		}
+		for name, values := range headers {
+			lower := strings.ToLower(name)
+			if lower == "cookie" || lower == "set-cookie" || lower == "proxy-authorization" || lower == "host" || lower == "connection" || lower == "content-length" {
+				return nil, errors.New("search credential provider returned a forbidden header")
+			}
+			for _, value := range values {
+				request.Header.Add(name, value)
+			}
+		}
+	}
 	response, err := backend.Client.Do(request)
 	if err != nil {
 		return nil, err

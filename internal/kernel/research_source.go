@@ -18,20 +18,22 @@ type ResearchSourceRegistrationInput struct {
 }
 
 type ResearchSourceRecord struct {
-	CompanyID       string `json:"companyId"`
-	SourceID        string `json:"sourceId"`
-	MissionID       string `json:"missionId"`
-	Origin          string `json:"origin"`
-	SearchEndpoint  string `json:"searchEndpoint,omitempty"`
-	ProfileRevision string `json:"profileRevision"`
-	IdentitySHA256  string `json:"identitySha256"`
-	DataSHA256      string `json:"dataSha256"`
-	RegistrationSHA string `json:"registrationSha256"`
-	State           string `json:"state"`
-	Rationale       string `json:"rationale"`
-	Actor           string `json:"actor"`
-	RequestID       string `json:"requestId"`
-	CreatedAt       string `json:"createdAt"`
+	CompanyID             string `json:"companyId"`
+	SourceID              string `json:"sourceId"`
+	MissionID             string `json:"missionId"`
+	Origin                string `json:"origin"`
+	SearchEndpoint        string `json:"searchEndpoint,omitempty"`
+	SearchCredentialRef   string `json:"searchCredentialRef,omitempty"`
+	SearchRankingRevision string `json:"searchRankingRevision,omitempty"`
+	ProfileRevision       string `json:"profileRevision"`
+	IdentitySHA256        string `json:"identitySha256"`
+	DataSHA256            string `json:"dataSha256"`
+	RegistrationSHA       string `json:"registrationSha256"`
+	State                 string `json:"state"`
+	Rationale             string `json:"rationale"`
+	Actor                 string `json:"actor"`
+	RequestID             string `json:"requestId"`
+	CreatedAt             string `json:"createdAt"`
 }
 
 func (k *Kernel) TXRegisterResearchSource(ctx context.Context, companyID string, input ResearchSourceRegistrationInput) (ResearchSourceRecord, error) {
@@ -67,15 +69,21 @@ func (k *Kernel) TXRegisterResearchSource(ctx context.Context, companyID string,
 		} else if err != nil {
 			return Receipt{}, err
 		}
-		searchEndpointAvailable, err := researchSourceSearchEndpointAvailable(ctx, tx)
+		searchEndpointAvailable, searchAuthAvailable, err := researchSourceOptionalColumnsAvailable(ctx, tx)
 		if err != nil {
 			return Receipt{}, err
 		}
 		if normalized.SearchEndpoint != "" && !searchEndpointAvailable {
 			return Receipt{}, core.Denied
 		}
+		if (normalized.SearchCredentialRef != "" || normalized.SearchRankingRevision != "") && !searchAuthAvailable {
+			return Receipt{}, core.Denied
+		}
 		var insertErr error
-		if searchEndpointAvailable {
+		if searchEndpointAvailable && searchAuthAvailable {
+			_, insertErr = tx.Exec(ctx, `INSERT INTO research_source_bindings(company_id,source_id,mission_id,origin,search_endpoint,search_credential_ref,search_ranking_revision,profile_revision,identity_sha256,data_sha256,registration_sha256,request_id)
+VALUES($1,$2,$3,$4,NULLIF($5,''),NULLIF($6,''),NULLIF($7,''),$8,$9,$10,$11,$12)`, companyID, normalized.SourceID, normalized.MissionID, normalized.Origin, normalized.SearchEndpoint, normalized.SearchCredentialRef, normalized.SearchRankingRevision, normalized.ProfileRevision, normalized.IdentitySHA256, normalized.DataSHA256, registrationSHA, input.RequestID)
+		} else if searchEndpointAvailable {
 			_, insertErr = tx.Exec(ctx, `INSERT INTO research_source_bindings(company_id,source_id,mission_id,origin,search_endpoint,profile_revision,identity_sha256,data_sha256,registration_sha256,request_id)
 VALUES($1,$2,$3,$4,NULLIF($5,''),$6,$7,$8,$9,$10)`, companyID, normalized.SourceID, normalized.MissionID, normalized.Origin, normalized.SearchEndpoint, normalized.ProfileRevision, normalized.IdentitySHA256, normalized.DataSHA256, registrationSHA, input.RequestID)
 		} else {
@@ -149,24 +157,28 @@ func (k *Kernel) GetResearchSourceByRequest(ctx context.Context, companyID, requ
 	if k == nil || !core.ValidID(companyID) || !core.ValidID(requestID) {
 		return ResearchSourceRecord{}, core.Malformed
 	}
-	searchEndpointAvailable, err := researchSourceSearchEndpointAvailable(ctx, k.pool)
+	searchEndpointAvailable, searchAuthAvailable, err := researchSourceOptionalColumnsAvailable(ctx, k.pool)
 	if err != nil {
 		return ResearchSourceRecord{}, err
 	}
 	var record ResearchSourceRecord
 	var createdAt time.Time
 	var query string
-	if searchEndpointAvailable {
-		query = `SELECT b.company_id,b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
+	if searchEndpointAvailable && searchAuthAvailable {
+		query = `SELECT b.company_id,b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),COALESCE(b.search_credential_ref,''),COALESCE(b.search_ranking_revision,''),b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
+FROM research_source_bindings b JOIN research_source_events e ON e.company_id=b.company_id AND e.source_id=b.source_id
+WHERE e.company_id=$1 AND e.request_id=$2`
+	} else if searchEndpointAvailable {
+		query = `SELECT b.company_id,b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),'' AS search_credential_ref,'' AS search_ranking_revision,b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
 FROM research_source_bindings b JOIN research_source_events e ON e.company_id=b.company_id AND e.source_id=b.source_id
 WHERE e.company_id=$1 AND e.request_id=$2`
 	} else {
-		query = `SELECT b.company_id,b.source_id,b.mission_id,b.origin,'' AS search_endpoint,b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
+		query = `SELECT b.company_id,b.source_id,b.mission_id,b.origin,'' AS search_endpoint,'' AS search_credential_ref,'' AS search_ranking_revision,b.profile_revision,b.identity_sha256,b.data_sha256,b.registration_sha256,e.state,e.rationale,e.actor,e.request_id,e.created_at
 FROM research_source_bindings b JOIN research_source_events e ON e.company_id=b.company_id AND e.source_id=b.source_id
 WHERE e.company_id=$1 AND e.request_id=$2`
 	}
 	err = k.pool.QueryRow(ctx, query, companyID, requestID).Scan(
-		&record.CompanyID, &record.SourceID, &record.MissionID, &record.Origin, &record.SearchEndpoint, &record.ProfileRevision, &record.IdentitySHA256, &record.DataSHA256, &record.RegistrationSHA, &record.State, &record.Rationale, &record.Actor, &record.RequestID, &createdAt)
+		&record.CompanyID, &record.SourceID, &record.MissionID, &record.Origin, &record.SearchEndpoint, &record.SearchCredentialRef, &record.SearchRankingRevision, &record.ProfileRevision, &record.IdentitySHA256, &record.DataSHA256, &record.RegistrationSHA, &record.State, &record.Rationale, &record.Actor, &record.RequestID, &createdAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ResearchSourceRecord{}, core.OutOfScope
 	}
@@ -181,21 +193,25 @@ func (k *Kernel) GetAuthorizedResearchSource(ctx context.Context, companyID, mis
 	if k == nil || !core.ValidID(companyID) || !core.ValidID(missionID) || !core.ValidID(sourceID) {
 		return ResearchSourceRegistration{}, core.Malformed
 	}
-	searchEndpointAvailable, err := researchSourceSearchEndpointAvailable(ctx, k.pool)
+	searchEndpointAvailable, searchAuthAvailable, err := researchSourceOptionalColumnsAvailable(ctx, k.pool)
 	if err != nil {
 		return ResearchSourceRegistration{}, err
 	}
 	var registration ResearchSourceRegistration
 	var state string
-	query := `SELECT b.source_id,b.mission_id,b.origin,'' AS search_endpoint,b.profile_revision,b.identity_sha256,b.data_sha256,e.state
+	query := `SELECT b.source_id,b.mission_id,b.origin,'' AS search_endpoint,'' AS search_credential_ref,'' AS search_ranking_revision,b.profile_revision,b.identity_sha256,b.data_sha256,e.state
 FROM research_source_bindings b JOIN LATERAL (SELECT state FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
 WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`
-	if searchEndpointAvailable {
-		query = `SELECT b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),b.profile_revision,b.identity_sha256,b.data_sha256,e.state
+	if searchEndpointAvailable && searchAuthAvailable {
+		query = `SELECT b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),COALESCE(b.search_credential_ref,''),COALESCE(b.search_ranking_revision,''),b.profile_revision,b.identity_sha256,b.data_sha256,e.state
+FROM research_source_bindings b JOIN LATERAL (SELECT state FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`
+	} else if searchEndpointAvailable {
+		query = `SELECT b.source_id,b.mission_id,b.origin,COALESCE(b.search_endpoint,''),'' AS search_credential_ref,'' AS search_ranking_revision,b.profile_revision,b.identity_sha256,b.data_sha256,e.state
 FROM research_source_bindings b JOIN LATERAL (SELECT state FROM research_source_events WHERE company_id=b.company_id AND source_id=b.source_id ORDER BY event_seq DESC LIMIT 1) e ON true
 WHERE b.company_id=$1 AND b.mission_id=$2 AND b.source_id=$3`
 	}
-	err = k.pool.QueryRow(ctx, query, companyID, missionID, sourceID).Scan(&registration.SourceID, &registration.MissionID, &registration.Origin, &registration.SearchEndpoint, &registration.ProfileRevision, &registration.IdentitySHA256, &registration.DataSHA256, &state)
+	err = k.pool.QueryRow(ctx, query, companyID, missionID, sourceID).Scan(&registration.SourceID, &registration.MissionID, &registration.Origin, &registration.SearchEndpoint, &registration.SearchCredentialRef, &registration.SearchRankingRevision, &registration.ProfileRevision, &registration.IdentitySHA256, &registration.DataSHA256, &state)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ResearchSourceRegistration{}, core.OutOfScope
 	}
@@ -212,8 +228,8 @@ type researchSourceSchemaQueryer interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
-func researchSourceSearchEndpointAvailable(ctx context.Context, queryer researchSourceSchemaQueryer) (bool, error) {
-	var available bool
-	err := queryer.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='research_source_bindings' AND column_name='search_endpoint')`).Scan(&available)
-	return available, err
+func researchSourceOptionalColumnsAvailable(ctx context.Context, queryer researchSourceSchemaQueryer) (bool, bool, error) {
+	var endpoint, auth bool
+	err := queryer.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='research_source_bindings' AND column_name='search_endpoint'), EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='research_source_bindings' AND column_name='search_credential_ref' AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='research_source_bindings' AND column_name='search_ranking_revision'))`).Scan(&endpoint, &auth)
+	return endpoint, auth, err
 }

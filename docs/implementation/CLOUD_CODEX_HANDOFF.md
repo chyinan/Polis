@@ -2,6 +2,14 @@
 
 Updated: 2026-10-07
 
+## Current continuation pointer (Slice 316)
+
+Schema127 adds opaque search credential-reference and fixed ranking metadata;
+the HTTP backend only uses a separately injected credential provider and
+rejects cookie/proxy/control headers. No secret or endpoint was configured and
+no network ran. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-316-search-auth-ranking-policy/verification.md`.
+
 ## Current continuation pointer (Slice 315)
 
 Schema126 adds an optional same-origin HTTPS `search_endpoint` to registered

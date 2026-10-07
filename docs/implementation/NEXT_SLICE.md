@@ -1731,3 +1731,9 @@ Schema126 now persists an optional same-origin HTTPS search endpoint for a
 Mission-scoped source, with old-schema compatibility and default-disabled
 adapter construction. No endpoint or network was used. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261007-slice-315-research-search-endpoint-registration/verification.md`.
+## Latest continuation status (Slice 316, search auth/ranking policy)
+
+Added non-secret search credential-ref/ranking metadata and strict injected
+header filtering. No credential provider or network path was configured;
+runtime remains default-deny. Evidence:
+`evidence/development/r1-r3-implementation-validation-20261007-slice-316-search-auth-ranking-policy/verification.md`.

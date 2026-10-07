@@ -13,15 +13,18 @@ import (
 )
 
 const ResearchSourceProfileRevision = "research-source@1"
+const ResearchSearchRankingRevision = "research-ranking@1"
 
 type ResearchSourceRegistration struct {
-	SourceID        string `json:"sourceId"`
-	MissionID       string `json:"missionId"`
-	Origin          string `json:"origin"`
-	SearchEndpoint  string `json:"searchEndpoint,omitempty"`
-	ProfileRevision string `json:"profileRevision"`
-	IdentitySHA256  string `json:"identitySha256"`
-	DataSHA256      string `json:"dataSha256"`
+	SourceID              string `json:"sourceId"`
+	MissionID             string `json:"missionId"`
+	Origin                string `json:"origin"`
+	SearchEndpoint        string `json:"searchEndpoint,omitempty"`
+	SearchCredentialRef   string `json:"searchCredentialRef,omitempty"`
+	SearchRankingRevision string `json:"searchRankingRevision,omitempty"`
+	ProfileRevision       string `json:"profileRevision"`
+	IdentitySHA256        string `json:"identitySha256"`
+	DataSHA256            string `json:"dataSha256"`
 }
 
 func normalizeResearchSourceRegistration(input ResearchSourceRegistration) (ResearchSourceRegistration, error) {
@@ -29,6 +32,8 @@ func normalizeResearchSourceRegistration(input ResearchSourceRegistration) (Rese
 	input.MissionID = strings.TrimSpace(input.MissionID)
 	input.Origin = strings.TrimSpace(input.Origin)
 	input.SearchEndpoint = strings.TrimSpace(input.SearchEndpoint)
+	input.SearchCredentialRef = strings.TrimSpace(input.SearchCredentialRef)
+	input.SearchRankingRevision = strings.TrimSpace(input.SearchRankingRevision)
 	input.ProfileRevision = strings.TrimSpace(input.ProfileRevision)
 	input.IdentitySHA256 = strings.TrimSpace(input.IdentitySHA256)
 	input.DataSHA256 = strings.TrimSpace(input.DataSHA256)
@@ -47,6 +52,11 @@ func normalizeResearchSourceRegistration(input ResearchSourceRegistration) (Rese
 			return ResearchSourceRegistration{}, endpointErr
 		}
 		input.SearchEndpoint = endpoint
+		if input.SearchRankingRevision != ResearchSearchRankingRevision || (input.SearchCredentialRef != "" && !core.ValidID(input.SearchCredentialRef)) {
+			return ResearchSourceRegistration{}, core.Malformed
+		}
+	} else if input.SearchCredentialRef != "" || input.SearchRankingRevision != "" {
+		return ResearchSourceRegistration{}, core.Malformed
 	}
 	return input, nil
 }
