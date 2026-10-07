@@ -246,7 +246,7 @@ func TestCodexRuntimeDiagnosticReservationIsIsolatedFromBusinessBudget(t *testin
 		helperName += ".exe"
 	}
 	helper := filepath.Join(root, helperName)
-	for path, content := range map[string]string{binary: "provider binary", helper: "provider helper", filepath.Join(root, "auth.json"): "credential fixture"} {
+	for path, content := range map[string]string{binary: "provider binary", helper: "provider helper", filepath.Join(root, "auth.json"): `{"auth_mode":"chatgpt","tokens":{"access_token":"fixture-secret","refresh_token":"fixture-refresh"}}`} {
 		if err := os.WriteFile(path, []byte(content), 0600); err != nil {
 			t.Fatal(err)
 		}

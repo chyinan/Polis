@@ -885,13 +885,7 @@ func providerAuthReadiness(transport string) string {
 		return "not_required"
 	}
 	path := strings.TrimSpace(os.Getenv("POLIS_PROVIDER_AUTH_FILE"))
-	if path == "" {
-		return "missing"
-	}
-	if _, err := os.Stat(filepath.Clean(path)); err != nil {
-		return "invalid"
-	}
-	return "ready"
+	return provider.CodexCredentialReadiness(path)
 }
 
 func firstNonEmpty(values ...string) string {

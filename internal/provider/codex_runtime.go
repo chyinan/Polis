@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -185,6 +186,67 @@ func (r *CodexRuntime) Stats() RuntimeStats {
 	return r.stats
 }
 
+// CodexCredentialReadiness reports only whether the configured local auth
+// source is readable and contains a supported credential shape. It does not
+// authenticate with the remote provider.
+func CodexCredentialReadiness(path string) string {
+	if strings.TrimSpace(path) == "" {
+		return "missing"
+	}
+	info, err := os.Stat(path)
+	if err != nil || !info.Mode().IsRegular() {
+		return "invalid"
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return "invalid"
+	}
+	var document map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &document); err != nil || len(document) == 0 {
+		return "invalid"
+	}
+	if rawMode, ok := document["auth_mode"]; ok {
+		var mode string
+		if json.Unmarshal(rawMode, &mode) != nil {
+			return "invalid"
+		}
+		switch strings.ToLower(strings.TrimSpace(mode)) {
+		case "chatgpt":
+			return codexTokenCredentialConfigured(document["tokens"])
+		case "apikey", "api_key":
+			return codexAPIKeyCredentialConfigured(document["OPENAI_API_KEY"])
+		default:
+			return "invalid"
+		}
+	}
+	if codexTokenCredentialConfigured(document["tokens"]) == "configured" || codexAPIKeyCredentialConfigured(document["OPENAI_API_KEY"]) == "configured" {
+		return "configured"
+	}
+	return "invalid"
+}
+
+func codexTokenCredentialConfigured(raw json.RawMessage) string {
+	var tokens map[string]json.RawMessage
+	if len(raw) == 0 || json.Unmarshal(raw, &tokens) != nil || tokens == nil {
+		return "invalid"
+	}
+	for _, name := range []string{"access_token", "refresh_token"} {
+		var token string
+		if json.Unmarshal(tokens[name], &token) == nil && strings.TrimSpace(token) != "" {
+			return "configured"
+		}
+	}
+	return "invalid"
+}
+
+func codexAPIKeyCredentialConfigured(raw json.RawMessage) string {
+	var key string
+	if json.Unmarshal(raw, &key) != nil || strings.TrimSpace(key) == "" {
+		return "invalid"
+	}
+	return "configured"
+}
+
 func (r *CodexRuntime) Readiness(ctx context.Context) error {
 	if r.config.RuntimeManifestPath != "" {
 		bound, err := BindCodexRuntimeConfig(r.config)
@@ -223,8 +285,8 @@ func (r *CodexRuntime) Readiness(ctx context.Context) error {
 	if _, err := os.Stat(r.config.Binary); err != nil {
 		return fmt.Errorf("real provider binary unavailable: %w", err)
 	}
-	if _, err := os.Stat(r.config.AuthFile); err != nil {
-		return fmt.Errorf("real provider auth source unavailable: %w", err)
+	if authReadiness := CodexCredentialReadiness(r.config.AuthFile); authReadiness != "configured" {
+		return fmt.Errorf("real provider auth source is %s", authReadiness)
 	}
 	if r.config.Purpose == Live2AuthorizationPurpose {
 		if err := r.captureLive2AuthSource(); err != nil {

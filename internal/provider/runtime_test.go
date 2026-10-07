@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -301,6 +302,63 @@ func TestCodexRuntimeReadinessFailsClosedWhenProviderConfigurationIsMissing(t *t
 	runtime := NewCodexRuntime(CodexRuntimeConfig{TransportPolicy: codex.DefaultTransportPolicy(), ToolSurface: ProductToolSurface()})
 	if err := runtime.Readiness(context.Background()); err == nil {
 		t.Fatal("missing real provider configuration was accepted")
+	}
+}
+
+func TestCodexRuntimeReadinessRejectsMalformedCredentialSource(t *testing.T) {
+	root := t.TempDir()
+	binaryPath := filepath.Join(root, "codex")
+	if err := os.WriteFile(binaryPath, []byte("provider fixture"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	authPath := filepath.Join(root, "auth.json")
+	if err := os.WriteFile(authPath, []byte("not-json"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	runtime := NewCodexRuntime(CodexRuntimeConfig{
+		Binary: binaryPath, AuthFile: authPath, Root: filepath.Join(root, "runtime"), EvidenceRoot: filepath.Join(root, "evidence"),
+		Model: "gpt-5.6-luna", Effort: "medium", ExpectedVersion: ProductProviderRuntimeVersionV2,
+		ExecutionEnvelope: "credential-readiness-test@1", ToolSurfaceQualification: ProductToolSurfaceQualification,
+		ToolSurface: ProductToolSurface(), TransportPolicy: codex.DefaultTransportPolicy(), Purpose: "product-artifact",
+		AllowancePath: filepath.Join(root, "allowance.json"), MediumLimit: 1, HighLimit: 0, ToolCallLimit: 16,
+	})
+	if err := runtime.Readiness(context.Background()); err == nil {
+		t.Fatal("malformed provider credential source was accepted as ready")
+	}
+}
+
+func TestCodexCredentialReadinessReportsSafeLocalStates(t *testing.T) {
+	root := t.TempDir()
+	tests := []struct {
+		name    string
+		path    string
+		content string
+		want    string
+	}{
+		{name: "missing path", want: "missing"},
+		{name: "directory instead of file", path: root, want: "invalid"},
+		{name: "malformed JSON", content: "not-json", want: "invalid"},
+		{name: "empty object", content: `{}`, want: "invalid"},
+		{name: "ChatGPT token file", content: `{"auth_mode":"chatgpt","tokens":{"access_token":"fixture-secret","refresh_token":"fixture-refresh"}}`, want: "configured"},
+		{name: "API key file", content: `{"auth_mode":"apikey","OPENAI_API_KEY":"fixture-secret"}`, want: "configured"},
+		{name: "unsupported auth mode", content: `{"auth_mode":"other","tokens":{"access_token":"fixture-secret"}}`, want: "invalid"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			path := test.path
+			if test.content != "" {
+				path = filepath.Join(root, test.name+".json")
+				if err := os.WriteFile(path, []byte(test.content), 0600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if got := CodexCredentialReadiness(path); got != test.want {
+				t.Fatalf("credential readiness=%q, want %q", got, test.want)
+			}
+			if strings.Contains(CodexCredentialReadiness(path), "fixture-secret") {
+				t.Fatal("credential readiness exposed credential content")
+			}
+		})
 	}
 }
 
