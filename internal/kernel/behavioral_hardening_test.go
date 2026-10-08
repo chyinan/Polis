@@ -8,7 +8,9 @@ import (
 	"os"
 	"polis/internal/core"
 	"polis/internal/fixture"
+	"polis/internal/organization"
 	"polis/internal/runner"
+	"polis/spec"
 	"strings"
 	"testing"
 )
@@ -26,6 +28,12 @@ type peerHardeningEnv struct {
 
 func newPeerHardeningEnv(t *testing.T, toolLimit int64) peerHardeningEnv {
 	t.Helper()
+	mustStage := func(stage string, err error) {
+		t.Helper()
+		if err != nil {
+			t.Fatalf("%s: %v", stage, err)
+		}
+	}
 	dsn := os.Getenv("POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
@@ -33,25 +41,39 @@ func newPeerHardeningEnv(t *testing.T, toolLimit int64) peerHardeningEnv {
 	env := peerHardeningEnv{ctx: context.Background()}
 	var err error
 	env.k, err = Open(env.ctx, dsn, t.TempDir())
-	must(t, err)
-	env.scope, err = env.k.TXCreateCompany(env.ctx, "r03a-hardening-"+newID())
-	must(t, err)
+	mustStage("open kernel", err)
+	_, err = env.k.TXSetInstallationWorkerSlotPolicy(env.ctx, env.k.LocalInstallationOwnerScope(), InstallationWorkerSlotPolicyInput{
+		RequestID: "r03a-hardening-worker-slots-" + newID(), ExpectedRevision: 0, MaxActiveSlots: 4, ProtectedSlots: 1,
+	})
+	mustStage("configure disposable installation worker-slot policy", err)
+	env.scope, err = env.k.TXCreateCompanyWithOrganizationAndCoverageConfirmation(env.ctx, organization.CompanyDraft{
+		ID: "r03a-hardening-" + newID(), Name: "R03A hardening fixture", WorkspaceRoot: "C:/polis-test/r03a-hardening", Roster: organization.DefaultRoster(),
+	}, "r03a-hardening-owner-confirm-"+newID(), spec.FixedTeamCoverageSHA256())
+	mustStage("create company with explicit test-owner coverage confirmation", err)
 	env.fixture, err = env.k.TXCreatePeerFixture(env.ctx, env.scope, "r03a-hardening-"+newID())
-	must(t, err)
+	mustStage("create peer fixture", err)
+	_, err = env.k.TXChangeCompanyToolCallBudget(env.ctx, env.scope, CompanyToolCallBudgetChangeInput{
+		RequestID: "r03a-hardening-company-budget-" + newID(), ExpectedRevision: 0, ResultingLimit: 1000, Reason: "bounded peer integration fixture",
+	})
+	mustStage("configure company test budget", err)
+	_, err = env.k.TXChangeMissionToolCallBudget(env.ctx, env.scope, env.fixture.Mission, MissionToolCallBudgetChangeInput{
+		RequestID: "r03a-hardening-mission-budget-" + newID(), ExpectedRevision: 0, ResultingLimit: 200, Reason: "bounded peer integration fixture",
+	})
+	mustStage("configure mission test budget", err)
 	env.backend, err = env.k.TXNewWorkerWithToolBudget(env.ctx, env.scope, env.fixture.Backend.ID, "gpt-5.6-luna/medium", toolLimit)
-	must(t, err)
+	mustStage("create backend worker", err)
 	env.process, err = runner.Start(env.backend.SessionID(), []string{"/bin/sleep", "60"}, nil)
-	must(t, err)
-	must(t, env.k.TXAttachWorker(env.ctx, env.backend, env.process))
-	must(t, env.k.TXValidateWorker(env.ctx, env.backend))
-	must(t, env.k.TXActivateWorker(env.ctx, env.backend, "hardening-test"))
+	mustStage("start backend process", err)
+	mustStage("attach backend worker", env.k.TXAttachWorker(env.ctx, env.backend, env.process))
+	mustStage("validate backend worker", env.k.TXValidateWorker(env.ctx, env.backend))
+	mustStage("activate backend worker", env.k.TXActivateWorker(env.ctx, env.backend, "hardening-test"))
 	env.frontend, err = env.k.TXNewWorkerWithToolBudget(env.ctx, env.scope, env.fixture.Frontend.ID, "gpt-5.6-luna/medium", 20)
-	must(t, err)
+	mustStage("create frontend worker", err)
 	env.frontendProcess, err = runner.Start(env.frontend.SessionID(), []string{"/bin/sleep", "60"}, nil)
-	must(t, err)
-	must(t, env.k.TXAttachWorker(env.ctx, env.frontend, env.frontendProcess))
-	must(t, env.k.TXValidateWorker(env.ctx, env.frontend))
-	must(t, env.k.TXActivateWorker(env.ctx, env.frontend, "hardening-frontend-test"))
+	mustStage("start frontend process", err)
+	mustStage("attach frontend worker", env.k.TXAttachWorker(env.ctx, env.frontend, env.frontendProcess))
+	mustStage("validate frontend worker", env.k.TXValidateWorker(env.ctx, env.frontend))
+	mustStage("activate frontend worker", env.k.TXActivateWorker(env.ctx, env.frontend, "hardening-frontend-test"))
 	t.Cleanup(func() {
 		_ = env.k.TXBeginStop(context.Background(), env.backend)
 		proof, stopErr := env.process.Stop()

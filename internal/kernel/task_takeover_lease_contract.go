@@ -64,11 +64,13 @@ type TaskTakeoverLease struct {
 }
 
 type TaskTakeoverWorkspaceTreeBinding struct {
-	RootBindingID  string `json:"rootBindingId"`
-	Revision       int64  `json:"revision"`
-	ManifestSHA256 string `json:"manifestSha256"`
-	FileCount      int32  `json:"fileCount"`
-	Bytes          int64  `json:"bytes"`
+	RootBindingID       string `json:"rootBindingId"`
+	Revision            int64  `json:"revision"`
+	ManifestSHA256      string `json:"manifestSha256"`
+	FileCount           int32  `json:"fileCount"`
+	Bytes               int64  `json:"bytes"`
+	BaseCommitOID       string `json:"baseCommitOid,omitempty"`
+	InputManifestSHA256 string `json:"inputManifestSha256,omitempty"`
 }
 
 type TaskTakeoverWorkspaceManifest struct {

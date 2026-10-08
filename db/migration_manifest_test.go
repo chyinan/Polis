@@ -60,6 +60,32 @@ func TestGooseMigrationSourceAddsMissingLegacyUpMarkersWithoutChangingSourceByte
 	}
 }
 
+func TestGooseMigrationSourceNormalizesUnwrappedEmployeeRoleDollarStatements(t *testing.T) {
+	name := "migrations/00121_employee_role_revisions.sql"
+	original, err := fs.ReadFile(migrations, name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	normalized, err := fs.ReadFile(gooseMigrationSourceFS{source: migrations}, name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Count(string(normalized), "-- +goose StatementBegin") != strings.Count(string(original), "-- +goose StatementBegin")+2 ||
+		strings.Count(string(normalized), "-- +goose StatementEnd") != strings.Count(string(original), "-- +goose StatementEnd")+2 {
+		t.Fatal("Goose stream did not add only the two missing anonymous-block boundaries")
+	}
+	if !strings.Contains(string(normalized), "-- +goose StatementBegin\nDO $$\nBEGIN\n IF EXISTS(") ||
+		!strings.Contains(string(normalized), "END\n$$;\n-- +goose StatementEnd\nCREATE INDEX employee_role_revisions_current") ||
+		!strings.Contains(string(normalized), "-- +goose Down\n-- +goose StatementBegin\nDO $$") ||
+		!strings.Contains(string(normalized), "END\n$$;\n-- +goose StatementEnd\nDROP TRIGGER employee_role_revisions_no_truncate") {
+		t.Fatal("Goose stream has incomplete anonymous-block normalization")
+	}
+	unchanged, err := fs.ReadFile(migrations, name)
+	if err != nil || !bytes.Equal(unchanged, original) || verifyMigrationManifest(migrations, migrationHashManifest) != nil {
+		t.Fatalf("on-disk migration bytes or pinned manifest changed: %v", err)
+	}
+}
+
 func TestVerifyMigrationManifestRejectsChangedMissingExtraAndUnsortedEntries(t *testing.T) {
 	first := []byte("SELECT 1;")
 	second := []byte("SELECT 2;")

@@ -11,6 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"polis/internal/core"
+	"polis/internal/workspacepath"
 )
 
 const (
@@ -64,43 +65,34 @@ type WorkspaceTreeRead struct {
 }
 
 type WorkspaceTreeSnapshot struct {
-	ArtifactID    string               `json:"artifactId"`
-	ReadReference string               `json:"readReference,omitempty"`
-	TaskID        string               `json:"taskId"`
-	RootBindingID string               `json:"rootBindingId"`
-	Revision      int64                `json:"workspaceRevision"`
-	Digest        string               `json:"manifestSha256"`
-	Bytes         int64                `json:"manifestBytes"`
-	FileCount     int                  `json:"fileCount"`
-	Verdict       string               `json:"verdict"`
-	Entries       []WorkspaceTreeEntry `json:"entries"`
+	ArtifactID          string               `json:"artifactId"`
+	ReadReference       string               `json:"readReference,omitempty"`
+	TaskID              string               `json:"taskId"`
+	RootBindingID       string               `json:"rootBindingId"`
+	BaseCommitOID       string               `json:"baseCommitOid,omitempty"`
+	InputManifestSHA256 string               `json:"inputManifestSha256,omitempty"`
+	Revision            int64                `json:"workspaceRevision"`
+	Digest              string               `json:"manifestSha256"`
+	Bytes               int64                `json:"manifestBytes"`
+	FileCount           int                  `json:"fileCount"`
+	Verdict             string               `json:"verdict"`
+	Entries             []WorkspaceTreeEntry `json:"entries"`
 }
 
 type workspaceTreeManifest struct {
-	Version       string               `json:"version"`
-	CompanyID     string               `json:"companyId"`
-	MissionID     string               `json:"missionId"`
-	TaskID        string               `json:"taskId"`
-	RootBindingID string               `json:"rootBindingId"`
-	Revision      int64                `json:"workspaceRevision"`
-	Entries       []WorkspaceTreeEntry `json:"entries"`
+	Version             string               `json:"version"`
+	CompanyID           string               `json:"companyId"`
+	MissionID           string               `json:"missionId"`
+	TaskID              string               `json:"taskId"`
+	RootBindingID       string               `json:"rootBindingId"`
+	BaseCommitOID       string               `json:"baseCommitOid,omitempty"`
+	InputManifestSHA256 string               `json:"inputManifestSha256,omitempty"`
+	Revision            int64                `json:"workspaceRevision"`
+	Entries             []WorkspaceTreeEntry `json:"entries"`
 }
 
 func ValidWorkspaceRelativePath(path string) bool {
-	if path == "" || !utf8.ValidString(path) || len(path) > 1024 || strings.HasPrefix(path, "/") || strings.HasSuffix(path, "/") || strings.ContainsAny(path, "\\%:\x00") {
-		return false
-	}
-	for _, segment := range strings.Split(path, "/") {
-		if segment == "" || segment == "." || segment == ".." || len(segment) > 255 || strings.TrimSpace(segment) != segment {
-			return false
-		}
-		for _, r := range segment {
-			if r < 0x20 || r == 0x7f {
-				return false
-			}
-		}
-	}
-	return true
+	return workspacepath.ValidRelativePath(path)
 }
 
 // bindProductWorkspaceTreeTX creates the logical private file tree from the
@@ -128,21 +120,49 @@ func (k *Kernel) bindProductWorkspaceTreeTX(ctx context.Context, tx pgx.Tx, bind
 	if legacyRevision < 1 {
 		return core.Integrity
 	}
-	content, err := readBlobBounded(k.root, binding.scope.company, digest, workspaceTreeMaxFileBytes)
-	if err != nil || !utf8.Valid(content) {
-		return core.Integrity
-	}
-	path := "workspace.txt"
-	if task.Kind == core.TaskKindCompat {
-		path = "formatter.go"
-	}
-	rootID = newID()
-	if _, err = tx.Exec(ctx, `INSERT INTO worker_workspace_roots(company_id,id,task_id,mission_id,owner,read_write_class,revision,writer_session_id,writer_epoch)
-VALUES($1,$2,$3,$4,$5,'task_private',1,$6,$7)`, binding.scope.company, rootID, task.ID, task.Mission, task.Owner, binding.session, binding.epoch); err != nil {
+	gitImport, hasGitImport, err := k.loadInitialGitWorkspaceImportTX(ctx, tx, binding.scope.company, task.Mission, task.ID)
+	if err != nil {
 		return err
 	}
+	var legacyContent []byte
+	legacyPath := "workspace.txt"
+	if !hasGitImport {
+		legacyContent, err = readBlobBounded(k.root, binding.scope.company, digest, workspaceTreeMaxFileBytes)
+		if err != nil || !utf8.Valid(legacyContent) {
+			return core.Integrity
+		}
+		if task.Kind == core.TaskKindCompat {
+			legacyPath = "formatter.go"
+		}
+	}
+	rootID = newID()
+	var sourceCommitOID, sourceInputManifestSHA256 string
+	if hasGitImport {
+		sourceCommitOID = gitImport.Manifest.CommitID
+		sourceInputManifestSHA256 = gitImport.InputManifestSHA256
+	}
+	if _, err = tx.Exec(ctx, `INSERT INTO worker_workspace_roots(company_id,id,task_id,mission_id,owner,read_write_class,revision,writer_session_id,writer_epoch,source_commit_oid,source_input_manifest_sha256)
+VALUES($1,$2,$3,$4,$5,'task_private',1,$6,$7,NULLIF($8,''),NULLIF($9,''))`, binding.scope.company, rootID, task.ID, task.Mission, task.Owner, binding.session, binding.epoch, sourceCommitOID, sourceInputManifestSHA256); err != nil {
+		return err
+	}
+	if hasGitImport {
+		for _, file := range gitImport.Files {
+			storedDigest, storeErr := k.putBlobInTX(ctx, tx, binding.scope.company, file.Content)
+			if storeErr != nil || storedDigest != file.Digest {
+				if storeErr != nil {
+					return storeErr
+				}
+				return core.Integrity
+			}
+			if _, err = tx.Exec(ctx, `INSERT INTO worker_workspace_files(company_id,workspace_id,relative_path,digest,bytes,file_revision,source_revision,content_type)
+VALUES($1,$2,$3,$4,$5,1,$6,'text/utf-8')`, binding.scope.company, rootID, file.RelativePath, file.Digest, len(file.Content), legacyRevision); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	_, err = tx.Exec(ctx, `INSERT INTO worker_workspace_files(company_id,workspace_id,relative_path,digest,bytes,file_revision,source_revision,content_type)
-	VALUES($1,$2,$3,$4,$5,1,$6,'text/utf-8')`, binding.scope.company, rootID, path, digest, len(content), legacyRevision)
+	VALUES($1,$2,$3,$4,$5,1,$6,'text/utf-8')`, binding.scope.company, rootID, legacyPath, digest, len(legacyContent), legacyRevision)
 	return err
 }
 
@@ -597,7 +617,15 @@ WHERE company_id=$1 AND workspace_id=$2 ORDER BY relative_path COLLATE "C"`, bin
 		if !validWorkspaceTreeEntrySequence(entries) {
 			return Receipt{}, core.Integrity
 		}
-		manifest := workspaceTreeManifest{Version: "polis-workspace-snapshot@1", CompanyID: binding.scope.company, MissionID: missionID, TaskID: taskID, RootBindingID: rootID, Revision: revision, Entries: entries}
+		var sourceCommitOID, sourceInputManifestSHA256 string
+		if txErr = tx.QueryRow(ctx, `SELECT COALESCE(source_commit_oid,''),COALESCE(source_input_manifest_sha256,'') FROM worker_workspace_roots WHERE company_id=$1 AND id=$2`, binding.scope.company, rootID).Scan(&sourceCommitOID, &sourceInputManifestSHA256); txErr != nil {
+			return Receipt{}, txErr
+		}
+		if (sourceCommitOID == "") != (sourceInputManifestSHA256 == "") || (sourceCommitOID != "" && (!validWorkspaceGitOID(sourceCommitOID) || !validSHA256(sourceInputManifestSHA256))) {
+			return Receipt{}, core.Integrity
+		}
+		manifest := workspaceTreeManifest{Version: "polis-workspace-snapshot@1", CompanyID: binding.scope.company, MissionID: missionID, TaskID: taskID, RootBindingID: rootID,
+			BaseCommitOID: sourceCommitOID, InputManifestSHA256: sourceInputManifestSHA256, Revision: revision, Entries: entries}
 		manifestBytes, txErr := json.Marshal(manifest)
 		if txErr != nil {
 			return Receipt{}, txErr
@@ -632,7 +660,8 @@ VALUES($1,$2,$3,$4,$5,$6,$7)`, binding.scope.company, artifactID, rootID, entry.
 		if _, txErr = tx.Exec(ctx, `DELETE FROM artifact_staging WHERE company_id=$1 AND id=$2`, binding.scope.company, artifactID); txErr != nil {
 			return Receipt{}, txErr
 		}
-		snapshot = WorkspaceTreeSnapshot{ArtifactID: artifactID, TaskID: taskID, RootBindingID: rootID, Revision: revision, Digest: manifestDigest, Bytes: int64(len(manifestBytes)), FileCount: len(entries), Verdict: "draft_not_accepted", Entries: entries}
+		snapshot = WorkspaceTreeSnapshot{ArtifactID: artifactID, TaskID: taskID, RootBindingID: rootID, BaseCommitOID: sourceCommitOID, InputManifestSHA256: sourceInputManifestSHA256,
+			Revision: revision, Digest: manifestDigest, Bytes: int64(len(manifestBytes)), FileCount: len(entries), Verdict: "draft_not_accepted", Entries: entries}
 		return Receipt{ID: artifactID, Status: "draft_not_accepted", Revision: revision}, nil
 	})
 	if err != nil {
@@ -733,6 +762,9 @@ FOR SHARE OF a`, binding.scope.company, binding.session, artifactID).Scan(&reade
 	if err = json.Unmarshal(manifestBytes, &manifest); err != nil || manifest.Version != "polis-workspace-snapshot@1" || manifest.CompanyID != binding.scope.company || manifest.MissionID != sourceMission || manifest.TaskID != sourceTask || manifest.RootBindingID != workspaceID || manifest.Revision != revision || len(manifest.Entries) == 0 || len(manifest.Entries) > workspaceTreeMaxFiles {
 		return snapshot, core.Integrity
 	}
+	if err = k.verifyWorkspaceTreeGitSourceTX(ctx, tx, binding.scope.company, manifest); err != nil {
+		return snapshot, core.Integrity
+	}
 	entries := make([]WorkspaceTreeEntry, len(manifest.Entries))
 	fileRows, err := tx.Query(ctx, `SELECT relative_path,digest,bytes,file_revision FROM workspace_snapshot_files
 WHERE company_id=$1 AND artifact_id=$2 ORDER BY relative_path COLLATE "C"`, binding.scope.company, artifactID)
@@ -783,7 +815,8 @@ WHERE company_id=$1 AND artifact_id=$2 ORDER BY relative_path COLLATE "C"`, bind
 	if !validWorkspaceTreeEntrySequence(entries) {
 		return snapshot, core.Integrity
 	}
-	snapshot = WorkspaceTreeSnapshot{ArtifactID: artifactID, TaskID: sourceTask, RootBindingID: workspaceID, Revision: revision, Digest: digest, Bytes: byteCount, FileCount: len(entries), Verdict: verdict, Entries: entries}
+	snapshot = WorkspaceTreeSnapshot{ArtifactID: artifactID, TaskID: sourceTask, RootBindingID: workspaceID, BaseCommitOID: manifest.BaseCommitOID, InputManifestSHA256: manifest.InputManifestSHA256,
+		Revision: revision, Digest: digest, Bytes: byteCount, FileCount: len(entries), Verdict: verdict, Entries: entries}
 	snapshot.ReadReference = newID()
 	if err = appendEvent(ctx, tx, binding.scope, "worker.workspace.snapshot.read", map[string]any{
 		"readReference": snapshot.ReadReference, "artifactId": artifactID, "sha256": digest, "sourceTaskId": sourceTask,

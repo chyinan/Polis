@@ -48,6 +48,10 @@ var legacyGooseUpMarkerFiles = map[string]struct{}{
 	"migrations/00079_cas_blob_write_claims.sql":     {},
 }
 
+var legacyGooseStatementMarkerFiles = map[string]struct{}{
+	"migrations/00121_employee_role_revisions.sql": {},
+}
+
 type gooseMigrationSourceFS struct{ source fs.FS }
 
 func (source gooseMigrationSourceFS) Open(name string) (fs.File, error) {
@@ -55,7 +59,9 @@ func (source gooseMigrationSourceFS) Open(name string) (fs.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	if _, needsMarker := legacyGooseUpMarkerFiles[name]; !needsMarker {
+	_, needsUpMarker := legacyGooseUpMarkerFiles[name]
+	_, needsStatementMarkers := legacyGooseStatementMarkerFiles[name]
+	if !needsUpMarker && !needsStatementMarkers {
 		return file, nil
 	}
 	content, err := io.ReadAll(file)
@@ -71,7 +77,32 @@ func (source gooseMigrationSourceFS) Open(name string) (fs.File, error) {
 	if err = file.Close(); err != nil {
 		return nil, err
 	}
-	return &gooseMigrationFile{reader: bytes.NewReader(append([]byte("-- +goose Up\n"), content...)), info: info}, nil
+	if needsUpMarker {
+		content = append([]byte("-- +goose Up\n"), content...)
+	}
+	if needsStatementMarkers {
+		content, err = addEmployeeRoleGooseStatementMarkers(content)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &gooseMigrationFile{reader: bytes.NewReader(content), info: info}, nil
+}
+
+func addEmployeeRoleGooseStatementMarkers(content []byte) ([]byte, error) {
+	boundaries := [][2][]byte{
+		{[]byte("\nDO $$\nBEGIN\n IF EXISTS(\n  SELECT 1 FROM (\n   SELECT DISTINCT ON(company_id)"), []byte("\n-- +goose StatementBegin\nDO $$\nBEGIN\n IF EXISTS(\n  SELECT 1 FROM (\n   SELECT DISTINCT ON(company_id)")},
+		{[]byte("\nEND\n$$;\nCREATE INDEX employee_role_revisions_current"), []byte("\nEND\n$$;\n-- +goose StatementEnd\nCREATE INDEX employee_role_revisions_current")},
+		{[]byte("-- +goose Down\nDO $$\nBEGIN\n IF EXISTS(SELECT 1 FROM employee_role_revisions)"), []byte("-- +goose Down\n-- +goose StatementBegin\nDO $$\nBEGIN\n IF EXISTS(SELECT 1 FROM employee_role_revisions)")},
+		{[]byte("\nEND\n$$;\nDROP TRIGGER employee_role_revisions_no_truncate"), []byte("\nEND\n$$;\n-- +goose StatementEnd\nDROP TRIGGER employee_role_revisions_no_truncate")},
+	}
+	for _, boundary := range boundaries {
+		if bytes.Count(content, boundary[0]) != 1 {
+			return nil, fmt.Errorf("legacy employee role migration SQL boundary is not unique")
+		}
+		content = bytes.Replace(content, boundary[0], boundary[1], 1)
+	}
+	return content, nil
 }
 
 type gooseMigrationFile struct {

@@ -20,6 +20,7 @@ type JobState string
 
 const (
 	JobAccepted       = "accepted"
+	JobBlocked        = "blocked"
 	JobStarting       = "starting"
 	JobRunning        = "running"
 	JobExited         = "exited"
@@ -79,7 +80,7 @@ func CanTransitionPreparation(from, to string) bool {
 
 func CanTransitionJob(from, to string) bool {
 	if from == "" {
-		return JobState(to) == JobAccepted
+		return JobState(to) == JobAccepted || JobState(to) == JobBlocked
 	}
 	switch JobState(from) {
 	case JobAccepted:

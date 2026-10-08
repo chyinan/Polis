@@ -1,0 +1,2 @@
+postgresql18_download=FAIL
+reason=official_pgdg_key_download_failed

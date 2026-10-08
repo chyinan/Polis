@@ -81,6 +81,17 @@ func TestJobStateTransitionsSeparateExitFromReadiness(t *testing.T) {
 	}
 }
 
+func TestBlockedGoTestJobHasNoSuccessTransition(t *testing.T) {
+	if !CanTransitionJob("", JobBlocked) {
+		t.Fatal("initial blocked job state was rejected")
+	}
+	for _, target := range []string{JobStarting, JobRunning, JobExited} {
+		if CanTransitionJob(JobBlocked, target) {
+			t.Fatalf("blocked job transitioned to %s without a new qualified run", target)
+		}
+	}
+}
+
 func TestServiceReadinessTransitionsAreIndependentFromJobExit(t *testing.T) {
 	valid := [][2]string{
 		{ServiceNotReady, ServiceReady},

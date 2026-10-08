@@ -1,0 +1,11 @@
+environment=disposable_PostgreSQL_18_unix_socket_only
+version=18.6
+database=polis_r0_self_dev_go_1791450770_319
+runtime_role=polis_self_dev_go_runtime_1791450770_319
+network_listener=disabled
+test_pattern=TestPeerWorkspaceCheckReturnsActionableSemanticCriteria
+migration=PASS
+schema_identity=18:129
+least_privilege=PASS
+postgres_backed_tests=FAIL
+postgres_integration_exit=1

@@ -24,10 +24,13 @@ export function MissionChangeRequestPanel({api, companyId, missionId, missionSta
   const [proposedTitle, setProposedTitle] = useState(overview.mission.title);
   const [proposedGoal, setProposedGoal] = useState(overview.mission.goal);
   const [criteriaText, setCriteriaText] = useState(overview.mission.acceptanceContract?.required_text.join('\n') ?? '');
+  const [goTestFixtureEnabled, setGoTestFixtureEnabled] = useState(overview.mission.acceptanceContract?.revision === 'text-acceptance@2');
   const [blockPreviousResults, setBlockPreviousResults] = useState(true);
   const pendingRequestIds = useRef(new Map<string, string>());
   const criteria = criteriaText.split(/\r?\n/).map(value => value.trim()).filter(value => value !== '');
-  const proposedAcceptanceContract = criteria.length === 0 ? null : {revision: 'text-acceptance@1' as const, required_text: criteria};
+  const proposedAcceptanceContract = criteria.length === 0 ? null : goTestFixtureEnabled
+    ? {revision: 'text-acceptance@2' as const, required_text: criteria, go_test_profile_revision: 'polis-go-test-fixture@1' as const}
+    : {revision: 'text-acceptance@1' as const, required_text: criteria};
   const hasAcceptanceContract = proposedAcceptanceContract !== null || overview.mission.acceptanceContract !== null;
   const mutationPending = createRequest.isPending || considerRequest.isPending || declineRequest.isPending || applyRequest.isPending;
   const activeRequest = requestsQuery.data?.find(request => ['received', 'queued', 'considered'].includes(request.state)) ?? null;
@@ -103,6 +106,11 @@ export function MissionChangeRequestPanel({api, companyId, missionId, missionSta
       <label className={styles.formLabel}>新的验收标准（每行一条；留空表示沿用现行标准）
         <textarea className={styles.formField} rows={4} value={criteriaText} onChange={event => setCriteriaText(event.target.value)} placeholder={overview.mission.acceptanceContract === null ? '当前使命没有可继承的标准，请至少添加一条。' : 'Task summary:\nEmpty results:\nValidation:'} />
       </label>
+      <label className={styles.formLabel}>
+        <input checked={goTestFixtureEnabled} onChange={event => setGoTestFixtureEnabled(event.target.checked)} type="checkbox" />
+        固定离线 Go 测试 profile（仅 polis-go-test-fixture@1）
+      </label>
+      {goTestFixtureEnabled ? <p className={styles.formHint}>profile revision 会写入后继 Task 的 TaskValidationBinding；宿主资源隔离未资格化时，不会启动 Go JobRun。</p> : null}
       {!hasAcceptanceContract ? <p className={styles.formError} role="alert">后继使命需要显式验收标准。</p> : null}
       <label className={styles.formLabel}>
         <input checked={blockPreviousResults} onChange={event => setBlockPreviousResults(event.target.checked)} type="checkbox" />

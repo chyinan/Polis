@@ -1,0 +1,12 @@
+=== RUN   TestPeerWorkspaceCheckReturnsActionableSemanticCriteria
+    behavioral_hardening_test.go:92: create backend worker: TOOL_CALL_BUDGET_EXHAUSTED
+--- FAIL: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.32s)
+FAIL
+FAIL	polis/internal/kernel	0.370s
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/control	0.055s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/workbench	0.056s [no tests to run]
+FAIL

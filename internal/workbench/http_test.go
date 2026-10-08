@@ -196,6 +196,17 @@ type fakeProjectJobCommandService struct {
 	handoverRequest control.CreateProjectEnvironmentHandoverRequest
 }
 
+type fakeBlockedGoTestJobCommandService struct {
+	fakeCommandService
+	taskID  string
+	request control.StartBlockedGoTestJobRequest
+}
+
+func (service *fakeBlockedGoTestJobCommandService) StartBlockedGoTestJob(_ context.Context, companyID, taskID string, request control.StartBlockedGoTestJobRequest) (kernel.JobRunRecord, error) {
+	service.taskID, service.request = taskID, request
+	return kernel.JobRunRecord{CompanyID: companyID, JobID: "go-test-job-1", TaskID: taskID, Kind: "go_test", State: "blocked", Readiness: "not_applicable", ReasonCode: "host_profile_unqualified"}, nil
+}
+
 func (service *fakeProjectJobCommandService) StartProjectJob(_ context.Context, companyID string, request control.StartProjectJobRequest) (kernel.JobRunRecord, error) {
 	service.startRequest = request
 	return kernel.JobRunRecord{CompanyID: companyID, JobID: "job-1", TaskID: request.TaskID, Kind: request.Kind, ServiceID: request.ServiceID, State: "running", Readiness: "not_applicable", ReasonCode: "project_job_running"}, nil
@@ -497,6 +508,24 @@ func TestHandlerStartsAndStopsCompanyScopedProjectJob(t *testing.T) {
 	NewHandler(fakeReadModel{}, service).ServeHTTP(stopRecorder, stopRequest)
 	if stopRecorder.Code != http.StatusAccepted || service.stopJobID != "job-1" || service.stopRequest.RequestID != "job-stop-1" {
 		t.Fatalf("stop response=%d body=%s job=%q request=%+v", stopRecorder.Code, stopRecorder.Body.String(), service.stopJobID, service.stopRequest)
+	}
+}
+
+func TestHandlerRecordsOnlyBlockedGoTestJobFromFrozenSnapshotIDs(t *testing.T) {
+	service := &fakeBlockedGoTestJobCommandService{}
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/tasks/task-1/jobs", strings.NewReader(`{"kind":"go_test","baseSnapshotArtifactId":"base-1","candidateSnapshotArtifactId":"candidate-1","requestId":"go-test-start-1"}`))
+	request.Header.Set("Content-Type", "application/json")
+	NewHandler(fakeReadModel{}, service).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusAccepted || service.taskID != "task-1" || service.request.BaseSnapshotArtifactID != "base-1" || service.request.CandidateSnapshotArtifactID != "candidate-1" || !strings.Contains(recorder.Body.String(), `"state":"blocked"`) {
+		t.Fatalf("blocked Go JobRun response=%d body=%s task=%q request=%+v", recorder.Code, recorder.Body.String(), service.taskID, service.request)
+	}
+	unsafeRecorder := httptest.NewRecorder()
+	unsafeRequest := httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/tasks/task-1/jobs", strings.NewReader(`{"kind":"go_test","baseSnapshotArtifactId":"base-1","candidateSnapshotArtifactId":"candidate-1","scriptPath":"scripts/arbitrary.sh","requestId":"go-test-start-2"}`))
+	unsafeRequest.Header.Set("Content-Type", "application/json")
+	NewHandler(fakeReadModel{}, service).ServeHTTP(unsafeRecorder, unsafeRequest)
+	if unsafeRecorder.Code != http.StatusBadRequest {
+		t.Fatalf("Go-test request accepted an arbitrary command: %d %s", unsafeRecorder.Code, unsafeRecorder.Body.String())
 	}
 }
 

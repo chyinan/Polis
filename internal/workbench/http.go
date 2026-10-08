@@ -871,17 +871,37 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		}
 		writeJSON(response, http.StatusAccepted, record)
 	case "tasks.jobs":
-		jobService, ok := service.(control.ProjectJobLifecycleService)
-		if !ok {
-			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "task", errors.New("project job command service is unavailable"))
-			return
-		}
 		var input control.StartProjectJobRequest
 		if err := decodeJSON(response, request, &input); err != nil {
 			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "task", err)
 			return
 		}
 		input.TaskID = path.resourceID
+		if input.Kind == "go_test" {
+			if input.SessionID != "" || input.EnvironmentRevisionID != "" || input.HandoverID != "" || input.ServiceID != "" || input.ScriptPath != "" || len(input.Args) != 0 {
+				writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "task", errors.New("Go-test JobRun accepts only frozen base and candidate snapshot identities"))
+				return
+			}
+			goTestService, ok := service.(control.GoTestJobLifecycleService)
+			if !ok {
+				writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "task", errors.New("Go-test JobRun command service is unavailable"))
+				return
+			}
+			job, err := goTestService.StartBlockedGoTestJob(ctx, path.companyID, path.resourceID, control.StartBlockedGoTestJobRequest{
+				BaseSnapshotArtifactID: input.BaseSnapshotArtifactID, CandidateSnapshotArtifactID: input.CandidateSnapshotArtifactID, RequestID: input.RequestID,
+			})
+			if err != nil {
+				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task", err)
+				return
+			}
+			writeJSON(response, http.StatusAccepted, job)
+			return
+		}
+		jobService, ok := service.(control.ProjectJobLifecycleService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "task", errors.New("project job command service is unavailable"))
+			return
+		}
 		job, err := jobService.StartProjectJob(ctx, path.companyID, input)
 		if err != nil {
 			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task", err)

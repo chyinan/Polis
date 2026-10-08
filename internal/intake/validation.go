@@ -239,7 +239,7 @@ func textMediaType(extension string) (string, bool) {
 		return "application/json", true
 	case ".csv":
 		return "text/csv", true
-	case ".txt", ".go", ".ts", ".tsx", ".js", ".jsx", ".html", ".css", ".yaml", ".yml", ".toml", ".sql", ".rs", ".py", ".sh", ".ps1":
+	case ".txt", ".go", ".mod", ".sum", ".ts", ".tsx", ".js", ".jsx", ".html", ".css", ".yaml", ".yml", ".toml", ".sql", ".rs", ".py", ".sh", ".ps1":
 		return "text/plain", true
 	default:
 		return "", false

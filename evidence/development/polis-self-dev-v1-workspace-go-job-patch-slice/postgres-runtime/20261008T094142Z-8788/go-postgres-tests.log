@@ -1,0 +1,10 @@
+=== RUN   TestPeerWorkspaceCheckReturnsActionableSemanticCriteria
+--- PASS: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.58s)
+PASS
+ok  	polis/internal/kernel	0.639s
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/control	0.059s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/workbench	0.068s [no tests to run]

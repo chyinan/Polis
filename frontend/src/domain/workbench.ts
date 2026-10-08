@@ -383,6 +383,33 @@ export type ServiceEndpointView = Readonly<{
   leaseExpiresAt: string | null;
 }>;
 
+export type GoTestJobView = Readonly<{
+  bindingSha256: string;
+  baseCommitOid: string;
+  inputManifestSha256: string;
+  baseSnapshotArtifactId: string;
+  baseSnapshotSha256: string;
+  baseWorkspaceRevision: number;
+  baseFilesSha256: string;
+  candidateSnapshotArtifactId: string;
+  candidateSnapshotSha256: string;
+  candidateWorkspaceRevision: number;
+  candidateFilesSha256: string;
+  taskValidationBindingSha256: string;
+  profileRevision: 'polis-go-test-fixture@1';
+  profileSha256: string;
+  runnerSha256: string;
+  toolchainSha256: string;
+  commandSha256: string;
+  testManifestSha256: string;
+  resourceLimits: Readonly<Record<string, number>>;
+  outcome?: 'passed' | 'candidate_failed' | 'dependency_unavailable' | 'infrastructure_failed' | 'resource_limit' | 'timed_out' | 'cancelled';
+  resultSha256?: string;
+  result?: Readonly<Record<string, unknown>>;
+  runnerReceiptSha256?: string;
+  runnerReceipt?: Readonly<Record<string, unknown>>;
+}>;
+
 export type JobRunView = Readonly<{
   companyId: string;
   jobId: string;
@@ -390,9 +417,9 @@ export type JobRunView = Readonly<{
   sessionId: string;
   environmentRevisionId: string;
   handoverId: string;
-  kind: 'batch' | 'service' | 'controlled_input';
+  kind: 'batch' | 'service' | 'controlled_input' | 'go_test';
   serviceId: string;
-  state: 'accepted' | 'starting' | 'running' | 'exited' | 'failed' | 'cancelled' | 'outcome_unknown';
+  state: 'accepted' | 'blocked' | 'starting' | 'running' | 'exited' | 'failed' | 'cancelled' | 'outcome_unknown';
   readiness: 'not_applicable' | 'not_ready' | 'ready' | 'unhealthy';
   exitCode: number | null;
   reasonCode: string;
@@ -404,6 +431,7 @@ export type JobRunView = Readonly<{
   logGap: boolean;
   logManifestSha256: string | null;
   serviceEndpoint: ServiceEndpointView | null;
+  goTest?: GoTestJobView;
   createdAt: string;
   updatedAt: string;
 }>;
@@ -437,9 +465,9 @@ export type JobRunCommandReceipt = Readonly<{
   companyId: string;
   jobId: string;
   taskId: string;
-  kind: 'batch' | 'service' | 'controlled_input';
+  kind: 'batch' | 'service' | 'controlled_input' | 'go_test';
   serviceId: string;
-  state: 'accepted' | 'starting' | 'running' | 'exited' | 'failed' | 'cancelled' | 'outcome_unknown';
+  state: 'accepted' | 'blocked' | 'starting' | 'running' | 'exited' | 'failed' | 'cancelled' | 'outcome_unknown';
   readiness: 'not_applicable' | 'not_ready' | 'ready' | 'unhealthy';
   reasonCode: string;
 }>;
@@ -1192,10 +1220,17 @@ export type CompanyCommandReceipt = Readonly<{
 
 export type Freshness = 'fresh' | 'stale' | 'reconnecting' | 'unknown';
 
-export type AcceptanceContract = Readonly<{
-  revision: 'text-acceptance@1';
-  required_text: ReadonlyArray<string>;
-}>;
+export type AcceptanceContract =
+  | Readonly<{
+      revision: 'text-acceptance@1';
+      required_text: ReadonlyArray<string>;
+      go_test_profile_revision?: never;
+    }>
+  | Readonly<{
+      revision: 'text-acceptance@2';
+      required_text: ReadonlyArray<string>;
+      go_test_profile_revision: 'polis-go-test-fixture@1';
+    }>;
 
 export type MissionChangeRequestState = 'received' | 'queued' | 'considered' | 'applied' | 'declined' | 'superseded';
 
@@ -1397,6 +1432,8 @@ export type TaskTakeoverWorkspaceTreeBindingView = Readonly<{
   manifestSha256: string;
   fileCount: number;
   bytes: number;
+  baseCommitOid?: string;
+  inputManifestSha256?: string;
 }>;
 
 export type TaskTakeoverWorkspaceManifestEntryView = Readonly<{

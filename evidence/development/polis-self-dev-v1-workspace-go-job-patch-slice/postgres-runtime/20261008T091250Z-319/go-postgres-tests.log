@@ -1,0 +1,12 @@
+=== RUN   TestPeerWorkspaceCheckReturnsActionableSemanticCriteria
+    behavioral_hardening_test.go:92: create company with explicit test-owner coverage confirmation: ARTIFACT_INTEGRITY
+--- FAIL: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.29s)
+FAIL
+FAIL	polis/internal/kernel	0.347s
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/control	0.059s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/workbench	0.060s [no tests to run]
+FAIL

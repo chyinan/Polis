@@ -81,14 +81,15 @@ func (k *Kernel) TXCreateTaskTakeoverLease(ctx context.Context, scope Scope, mis
 			return Receipt{}, core.ConflictError{Reason: "Task already has an active human takeover lease", CurrentState: "takeover_lease_active"}
 		}
 		leaseID := newID()
-		var treeRoot, treeRevision, treeManifest, treeFileCount, treeBytes any
+		var treeRoot, treeRevision, treeManifest, treeFileCount, treeBytes, treeSourceCommitOID, treeInputManifestSHA256 any
 		if treeBinding != nil {
 			treeRoot, treeRevision, treeManifest = treeBinding.RootBindingID, treeBinding.Revision, treeBinding.ManifestSHA256
 			treeFileCount, treeBytes = treeBinding.FileCount, treeBinding.Bytes
+			treeSourceCommitOID, treeInputManifestSHA256 = nullableWorkspaceSourceText(treeBinding.BaseCommitOID), nullableWorkspaceSourceText(treeBinding.InputManifestSHA256)
 		}
 		if _, err = tx.Exec(ctx, `INSERT INTO task_takeover_leases(company_id,lease_id,mission_id,task_id,client_request_id,base_requirements_sha256,base_workspace_digest,base_workspace_revision,created_by,
-base_tree_root_id,base_tree_revision,base_tree_manifest_sha256,base_tree_file_count,base_tree_bytes)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,'local_operator',$9,$10,$11,$12,$13)`, scope.company, leaseID, missionID, taskID, key, baseRequirementsDigest, baseDigest, baseRevision, treeRoot, treeRevision, treeManifest, treeFileCount, treeBytes); err != nil {
+base_tree_root_id,base_tree_revision,base_tree_manifest_sha256,base_tree_file_count,base_tree_bytes,base_tree_source_commit_oid,base_tree_input_manifest_sha256)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,'local_operator',$9,$10,$11,$12,$13,$14,$15)`, scope.company, leaseID, missionID, taskID, key, baseRequirementsDigest, baseDigest, baseRevision, treeRoot, treeRevision, treeManifest, treeFileCount, treeBytes, treeSourceCommitOID, treeInputManifestSHA256); err != nil {
 			return Receipt{}, err
 		}
 		if _, err = tx.Exec(ctx, `INSERT INTO task_takeover_active_slots(company_id,task_id,lease_id,mission_id) VALUES($1,$2,$3,$4)`, scope.company, taskID, leaseID, missionID); err != nil {
@@ -487,18 +488,18 @@ func (k *Kernel) TaskTakeoverLease(ctx context.Context, scope Scope, missionID, 
 	var humanEffortSeconds pgtype.Int4
 	var diffJSON []byte
 	var createdAt time.Time
-	var treeRoot, treeManifest pgtype.Text
+	var treeRoot, treeManifest, treeSourceCommitOID, treeInputManifestSHA256 pgtype.Text
 	var treeRevision, treeBytes pgtype.Int8
 	var treeFileCount pgtype.Int4
 	err := k.pool.QueryRow(ctx, `SELECT l.lease_id,l.mission_id,l.task_id,l.client_request_id,l.base_requirements_sha256,l.base_workspace_digest,l.base_workspace_revision,l.created_at,
- l.base_tree_root_id,l.base_tree_revision,l.base_tree_manifest_sha256,l.base_tree_file_count,l.base_tree_bytes,
+ l.base_tree_root_id,l.base_tree_revision,l.base_tree_manifest_sha256,l.base_tree_file_count,l.base_tree_bytes,l.base_tree_source_commit_oid,l.base_tree_input_manifest_sha256,
 latest.state,latest.snapshot_input_id,latest.snapshot_revision,latest.snapshot_digest,latest.snapshot_bytes,latest.human_effort_seconds,latest.diff_summary
 FROM task_takeover_leases l
 JOIN LATERAL (SELECT state,snapshot_input_id,snapshot_revision,snapshot_digest,snapshot_bytes,human_effort_seconds,diff_summary
  FROM task_takeover_lease_events e WHERE e.company_id=l.company_id AND e.lease_id=l.lease_id ORDER BY event_seq DESC LIMIT 1) latest ON true
 WHERE l.company_id=$1 AND l.mission_id=$2 AND l.lease_id=$3`, scope.company, missionID, leaseID).Scan(
 		&out.LeaseID, &out.MissionID, &out.TaskID, &out.ClientRequestID, &out.BaseRequirementsSHA256, &out.BaseWorkspaceDigest, &out.BaseWorkspaceRevision, &createdAt,
-		&treeRoot, &treeRevision, &treeManifest, &treeFileCount, &treeBytes,
+		&treeRoot, &treeRevision, &treeManifest, &treeFileCount, &treeBytes, &treeSourceCommitOID, &treeInputManifestSHA256,
 		&out.State, &snapshotInputID, &snapshotRevision, &snapshotDigest, &snapshotBytes, &humanEffortSeconds, &diffJSON)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return TaskTakeoverLease{}, core.OutOfScope
@@ -507,7 +508,7 @@ WHERE l.company_id=$1 AND l.mission_id=$2 AND l.lease_id=$3`, scope.company, mis
 		return TaskTakeoverLease{}, err
 	}
 	var validTreeBinding bool
-	out.WorkspaceTree, validTreeBinding = taskTakeoverWorkspaceTreeBindingFromDB(treeRoot, treeManifest, treeRevision, treeFileCount, treeBytes)
+	out.WorkspaceTree, validTreeBinding = taskTakeoverWorkspaceTreeBindingFromDB(treeRoot, treeManifest, treeRevision, treeFileCount, treeBytes, treeSourceCommitOID, treeInputManifestSHA256)
 	if !validTreeBinding {
 		return TaskTakeoverLease{}, core.Integrity
 	}
@@ -538,14 +539,29 @@ WHERE l.company_id=$1 AND l.mission_id=$2 AND l.lease_id=$3`, scope.company, mis
 	return out, nil
 }
 
-func taskTakeoverWorkspaceTreeBindingFromDB(root, manifest pgtype.Text, revision pgtype.Int8, count pgtype.Int4, bytes pgtype.Int8) (*TaskTakeoverWorkspaceTreeBinding, bool) {
-	if !root.Valid && !manifest.Valid && !revision.Valid && !count.Valid && !bytes.Valid {
+func taskTakeoverWorkspaceTreeBindingFromDB(root, manifest pgtype.Text, revision pgtype.Int8, count pgtype.Int4, bytes pgtype.Int8, sourceCommitOID, sourceInputManifestSHA256 pgtype.Text) (*TaskTakeoverWorkspaceTreeBinding, bool) {
+	if !root.Valid && !manifest.Valid && !revision.Valid && !count.Valid && !bytes.Valid && !sourceCommitOID.Valid && !sourceInputManifestSHA256.Valid {
 		return nil, true
 	}
 	if !root.Valid || !manifest.Valid || !revision.Valid || !count.Valid || !bytes.Valid || root.String == "" || revision.Int64 < 1 || !validSHA256(manifest.String) || count.Int32 < 1 || bytes.Int64 < 1 {
 		return nil, false
 	}
-	return &TaskTakeoverWorkspaceTreeBinding{RootBindingID: root.String, Revision: revision.Int64, ManifestSHA256: manifest.String, FileCount: count.Int32, Bytes: bytes.Int64}, true
+	if sourceCommitOID.Valid != sourceInputManifestSHA256.Valid || (sourceCommitOID.Valid && (!validWorkspaceGitOID(sourceCommitOID.String) || !validSHA256(sourceInputManifestSHA256.String))) {
+		return nil, false
+	}
+	binding := &TaskTakeoverWorkspaceTreeBinding{RootBindingID: root.String, Revision: revision.Int64, ManifestSHA256: manifest.String, FileCount: count.Int32, Bytes: bytes.Int64}
+	if sourceCommitOID.Valid {
+		binding.BaseCommitOID = sourceCommitOID.String
+		binding.InputManifestSHA256 = sourceInputManifestSHA256.String
+	}
+	return binding, true
+}
+
+func nullableWorkspaceSourceText(value string) any {
+	if value == "" {
+		return nil
+	}
+	return value
 }
 
 func (k *Kernel) TaskTakeoverLeases(ctx context.Context, scope Scope, missionID string) ([]TaskTakeoverLease, error) {
@@ -698,11 +714,11 @@ func (k *Kernel) taskTakeoverWorkspaceReadBaselineTX(ctx context.Context, tx pgx
 // fingerprint while holding the root row lock. Workspace tree writers update
 // that row in the same transaction, so a lease cannot pin a mixed revision.
 func (k *Kernel) taskTakeoverWorkspaceTreeBindingTX(ctx context.Context, tx pgx.Tx, scope Scope, missionID, taskID string, verifyCAS bool) (*TaskTakeoverWorkspaceTreeBinding, []WorkspaceTreeEntry, error) {
-	var rootID, owner, class, rootMission, taskOwner, taskMission string
+	var rootID, owner, class, rootMission, taskOwner, taskMission, sourceCommitOID, sourceInputManifestSHA256 string
 	var revision int64
-	err := tx.QueryRow(ctx, `SELECT r.id,r.owner,r.read_write_class,r.mission_id,r.revision,t.owner,t.mission_id
+	err := tx.QueryRow(ctx, `SELECT r.id,r.owner,r.read_write_class,r.mission_id,r.revision,t.owner,t.mission_id,COALESCE(r.source_commit_oid,''),COALESCE(r.source_input_manifest_sha256,'')
 FROM worker_workspace_roots r JOIN tasks t ON t.company_id=r.company_id AND t.id=r.task_id
-WHERE r.company_id=$1 AND r.task_id=$2 FOR UPDATE OF r`, scope.company, taskID).Scan(&rootID, &owner, &class, &rootMission, &revision, &taskOwner, &taskMission)
+WHERE r.company_id=$1 AND r.task_id=$2 FOR UPDATE OF r`, scope.company, taskID).Scan(&rootID, &owner, &class, &rootMission, &revision, &taskOwner, &taskMission, &sourceCommitOID, &sourceInputManifestSHA256)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil, nil
 	}
@@ -711,6 +727,9 @@ WHERE r.company_id=$1 AND r.task_id=$2 FOR UPDATE OF r`, scope.company, taskID).
 	}
 	if class != "task_private" || owner != taskOwner || rootMission != missionID || taskMission != missionID || revision < 1 {
 		return nil, nil, core.ConflictError{Reason: "Task workspace tree is not private to this Mission and Task owner", CurrentState: "workspace_tree_scope_mismatch"}
+	}
+	if (sourceCommitOID == "") != (sourceInputManifestSHA256 == "") || (sourceCommitOID != "" && (!validWorkspaceGitOID(sourceCommitOID) || !validSHA256(sourceInputManifestSHA256))) {
+		return nil, nil, core.Integrity
 	}
 	rows, err := tx.Query(ctx, `SELECT relative_path,digest,bytes,file_revision,source_revision,content_type FROM worker_workspace_files
 WHERE company_id=$1 AND workspace_id=$2 ORDER BY relative_path COLLATE "C"`, scope.company, rootID)
@@ -744,7 +763,8 @@ WHERE company_id=$1 AND workspace_id=$2 ORDER BY relative_path COLLATE "C"`, sco
 	if len(entries) == 0 || !validWorkspaceTreeEntrySequence(entries) {
 		return nil, nil, core.ConflictError{Reason: "Task workspace tree is empty or has a noncanonical manifest", CurrentState: "workspace_tree_invalid"}
 	}
-	manifest := workspaceTreeManifest{Version: "polis-workspace-snapshot@1", CompanyID: scope.company, MissionID: missionID, TaskID: taskID, RootBindingID: rootID, Revision: revision, Entries: entries}
+	manifest := workspaceTreeManifest{Version: "polis-workspace-snapshot@1", CompanyID: scope.company, MissionID: missionID, TaskID: taskID, RootBindingID: rootID,
+		BaseCommitOID: sourceCommitOID, InputManifestSHA256: sourceInputManifestSHA256, Revision: revision, Entries: entries}
 	manifestBytes, err := json.Marshal(manifest)
 	if err != nil {
 		return nil, nil, err
@@ -761,7 +781,8 @@ WHERE company_id=$1 AND workspace_id=$2 ORDER BY relative_path COLLATE "C"`, sco
 		}
 	}
 	digest := sha256.Sum256(manifestBytes)
-	return &TaskTakeoverWorkspaceTreeBinding{RootBindingID: rootID, Revision: revision, ManifestSHA256: hex.EncodeToString(digest[:]), FileCount: int32(len(entries)), Bytes: total}, entries, nil
+	return &TaskTakeoverWorkspaceTreeBinding{RootBindingID: rootID, Revision: revision, ManifestSHA256: hex.EncodeToString(digest[:]), FileCount: int32(len(entries)), Bytes: total,
+		BaseCommitOID: sourceCommitOID, InputManifestSHA256: sourceInputManifestSHA256}, entries, nil
 }
 
 func taskTakeoverWorkspaceTreeMatchesLegacy(entries []WorkspaceTreeEntry, digest string, revision int64) bool {
@@ -856,16 +877,16 @@ func taskTakeoverWorkspaceTreeDiffSummary(lease TaskTakeoverLease, baseEntries [
 func taskTakeoverLeaseForUpdate(ctx context.Context, tx pgx.Tx, scope Scope, missionID, leaseID string) (TaskTakeoverLease, string, error) {
 	var lease TaskTakeoverLease
 	var state string
-	var treeRoot, treeManifest pgtype.Text
+	var treeRoot, treeManifest, treeSourceCommitOID, treeInputManifestSHA256 pgtype.Text
 	var treeRevision, treeBytes pgtype.Int8
 	var treeFileCount pgtype.Int4
 	err := tx.QueryRow(ctx, `SELECT l.lease_id,l.mission_id,l.task_id,l.client_request_id,l.base_requirements_sha256,l.base_workspace_digest,l.base_workspace_revision,
-l.base_tree_root_id,l.base_tree_revision,l.base_tree_manifest_sha256,l.base_tree_file_count,l.base_tree_bytes,latest.state
+l.base_tree_root_id,l.base_tree_revision,l.base_tree_manifest_sha256,l.base_tree_file_count,l.base_tree_bytes,l.base_tree_source_commit_oid,l.base_tree_input_manifest_sha256,latest.state
 FROM task_takeover_leases l
 JOIN LATERAL (SELECT state FROM task_takeover_lease_events e WHERE e.company_id=l.company_id AND e.lease_id=l.lease_id ORDER BY event_seq DESC LIMIT 1) latest ON true
 WHERE l.company_id=$1 AND l.mission_id=$2 AND l.lease_id=$3 FOR UPDATE OF l`, scope.company, missionID, leaseID).Scan(
 		&lease.LeaseID, &lease.MissionID, &lease.TaskID, &lease.ClientRequestID, &lease.BaseRequirementsSHA256, &lease.BaseWorkspaceDigest, &lease.BaseWorkspaceRevision,
-		&treeRoot, &treeRevision, &treeManifest, &treeFileCount, &treeBytes, &state)
+		&treeRoot, &treeRevision, &treeManifest, &treeFileCount, &treeBytes, &treeSourceCommitOID, &treeInputManifestSHA256, &state)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return TaskTakeoverLease{}, "", core.OutOfScope
 	}
@@ -873,7 +894,7 @@ WHERE l.company_id=$1 AND l.mission_id=$2 AND l.lease_id=$3 FOR UPDATE OF l`, sc
 		return TaskTakeoverLease{}, "", err
 	}
 	var validTreeBinding bool
-	lease.WorkspaceTree, validTreeBinding = taskTakeoverWorkspaceTreeBindingFromDB(treeRoot, treeManifest, treeRevision, treeFileCount, treeBytes)
+	lease.WorkspaceTree, validTreeBinding = taskTakeoverWorkspaceTreeBindingFromDB(treeRoot, treeManifest, treeRevision, treeFileCount, treeBytes, treeSourceCommitOID, treeInputManifestSHA256)
 	if !validTreeBinding {
 		return TaskTakeoverLease{}, "", core.Integrity
 	}

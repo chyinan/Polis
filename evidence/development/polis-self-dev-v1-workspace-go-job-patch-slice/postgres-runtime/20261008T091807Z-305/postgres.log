@@ -1,0 +1,15 @@
+2026-10-08 17:18:09.101 CST [435] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-08 17:18:09.103 CST [435] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.NJsao9/socket/.s.PGSQL.5432"
+2026-10-08 17:18:09.108 CST [441] LOG:  database system was shut down at 2026-10-08 17:18:08 CST
+2026-10-08 17:18:09.112 CST [435] LOG:  database system is ready to accept connections
+2026-10-08 17:18:16.043 CST [518] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-08 17:18:16.043 CST [518] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-08 17:18:16.904 CST [534] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-08 17:18:16.904 CST [534] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-08 17:18:49.524 CST [435] LOG:  received fast shutdown request
+2026-10-08 17:18:49.526 CST [435] LOG:  aborting any active transactions
+2026-10-08 17:18:49.530 CST [435] LOG:  background worker "logical replication launcher" (PID 444) exited with exit code 1
+2026-10-08 17:18:49.530 CST [439] LOG:  shutting down
+2026-10-08 17:18:49.532 CST [439] LOG:  checkpoint starting: shutdown immediate
+2026-10-08 17:18:50.045 CST [439] LOG:  checkpoint complete: wrote 1819 buffers (11.1%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.032 s, sync=0.475 s, total=0.515 s; sync files=1321, longest=0.003 s, average=0.001 s; distance=14621 kB, estimate=14621 kB; lsn=0/259DAA8, redo lsn=0/259DAA8
+2026-10-08 17:18:50.054 CST [435] LOG:  database system is shut down

@@ -1,0 +1,7 @@
+environment=disposable_PostgreSQL_18_unix_socket_only
+version=18.6
+database=polis_self_dev_go_1791448789_300
+runtime_role=polis_self_dev_go_runtime_1791448789_300
+network_listener=disabled
+migration=FAIL
+postgres_integration_exit=1

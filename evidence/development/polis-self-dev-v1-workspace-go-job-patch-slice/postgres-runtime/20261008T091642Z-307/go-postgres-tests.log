@@ -1,0 +1,12 @@
+=== RUN   TestPeerWorkspaceCheckReturnsActionableSemanticCriteria
+    behavioral_hardening_test.go:100: create backend worker: WORKER_SLOTS_UNCONFIGURED: an installation owner must set maxActiveSlots and protectedSlots at /api/workbench/installation/worker-slots before WorkerSessions can be admitted
+--- FAIL: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.32s)
+FAIL
+FAIL	polis/internal/kernel	0.380s
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/control	0.061s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/workbench	0.058s [no tests to run]
+FAIL

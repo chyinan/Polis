@@ -1,0 +1,12 @@
+=== RUN   TestPeerWorkspaceCheckReturnsActionableSemanticCriteria
+    behavioral_hardening_test.go:88: create backend worker: POLICY_DENIED
+--- FAIL: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.30s)
+FAIL
+FAIL	polis/internal/kernel	0.357s
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/control	0.056s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/workbench	0.058s [no tests to run]
+FAIL

@@ -614,6 +614,30 @@ describe('RealWorkbenchApi', () => {
     }));
   });
 
+  it('preserves the fixed offline Go test profile in a Mission acceptance contract', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        commandId: 'request-go-test', commandType: 'mission.create', targetType: 'mission', targetId: 'mission-go-test',
+        requestId: 'request-go-test', accepted: true, acceptedAt: '2026-10-08T00:00:00Z', resultingState: 'draft',
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+    const acceptanceContract = {
+      revision: 'text-acceptance@2' as const,
+      required_text: ['Task summary:'],
+      go_test_profile_revision: 'polis-go-test-fixture@1' as const,
+    };
+
+    await api.createMission({companyId: 'company-1', title: 'offline code task', goal: 'change the fixture', acceptanceContract, protocolToolCallLimit: 8, requestId: 'request-go-test'});
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/missions', expect.objectContaining({
+      method: 'POST',
+      body: JSON.stringify({title: 'offline code task', goal: 'change the fixture', acceptanceContract, protocolToolCallLimit: 8, requestId: 'request-go-test'}),
+    }));
+  });
+
   it('preserves a structured conflict from a real command response', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: false,
@@ -829,6 +853,28 @@ describe('RealWorkbenchApi', () => {
 
     const request = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as Record<string, unknown>;
     expect(request).toEqual({taskId: 'task-1', sessionId: 'session-1', environmentRevisionId: 'environment-1', kind: 'service', serviceId: 'web', requestId: 'service-start-1'});
+  });
+
+  it('submits only frozen snapshot identities for a Go-test JobRun', async () => {
+    const response = {companyId: 'company-1', jobId: 'go-job-1', taskId: 'task-1', sessionId: '', environmentRevisionId: '', handoverId: '',
+      kind: 'go_test', serviceId: '', state: 'blocked', readiness: 'not_applicable', exitCode: null, reasonCode: 'host_profile_unqualified',
+      stdoutOffset: '0', stderrOffset: '0', stdoutBytes: '0', stderrBytes: '0', logsTruncated: false, logGap: false, logManifestSha256: null,
+      serviceEndpoint: null, createdAt: '2026-10-08T00:00:00Z', updatedAt: '2026-10-08T00:00:00Z', goTest: {
+        bindingSha256: 'a'.repeat(64), baseCommitOid: 'b'.repeat(40), inputManifestSha256: 'c'.repeat(64), baseSnapshotArtifactId: 'base-1',
+        baseSnapshotSha256: 'd'.repeat(64), baseWorkspaceRevision: 1, baseFilesSha256: 'e'.repeat(64), candidateSnapshotArtifactId: 'candidate-1',
+        candidateSnapshotSha256: 'f'.repeat(64), candidateWorkspaceRevision: 2, candidateFilesSha256: '1'.repeat(64), taskValidationBindingSha256: '2'.repeat(64),
+        profileRevision: 'polis-go-test-fixture@1', profileSha256: '3'.repeat(64), runnerSha256: '4'.repeat(64), toolchainSha256: '5'.repeat(64),
+        commandSha256: '6'.repeat(64), testManifestSha256: '7'.repeat(64), resourceLimits: {cpuQuotaMicros: 200_000, cpuPeriodMicros: 100_000,
+          memoryBytes: 2_147_483_648, swapBytes: 0, pids: 256, wallTimeoutMs: 120_000, scratchBytes: 1_073_741_824, scratchInodes: 4096, stdoutBytes: 524_288, stderrBytes: 524_288},
+      }};
+    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => response});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+
+    const receipt = await api.startTaskJobRun({companyId: 'company-1', taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', requestId: 'go-job-start-1'});
+
+    expect(receipt.state).toBe('blocked');
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toEqual({taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', requestId: 'go-job-start-1'});
   });
 
   it('creates a bounded loopback browser session for a service JobRun', async () => {

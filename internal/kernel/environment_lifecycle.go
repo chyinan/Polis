@@ -590,7 +590,7 @@ VALUES($1,$2,$3,$4,$5,NULLIF($6,''),NULLIF($7,''),$8,$9,$10)`, companyID, eventI
 }
 
 func (k *Kernel) TXCreateJobRun(ctx context.Context, companyID string, input JobRunInput) (Receipt, error) {
-	if !core.ValidID(companyID) || !core.ValidID(input.TaskID) || (input.SessionID != "" && !core.ValidID(input.SessionID)) || !core.ValidID(input.EnvironmentRevisionID) || (input.HandoverID != "" && !core.ValidID(input.HandoverID)) || !core.ValidID(input.RequestID) || (input.JobID != "" && !core.ValidID(input.JobID)) || !validJobKind(input.Kind) || !validEnvironmentSHA256(input.SourceRevisionSHA256) || !validEnvironmentSHA256(input.ArgvSHA256) || !validEnvironmentSHA256(input.WorkingDirectorySHA256) || !validEnvironmentSHA256(input.NetworkPolicySHA256) || input.TimeoutMS < 1 || input.TimeoutMS > 3600000 || input.OutputLimitBytes < 1 || input.OutputLimitBytes > 1048576 {
+	if !core.ValidID(companyID) || !core.ValidID(input.TaskID) || (input.SessionID != "" && !core.ValidID(input.SessionID)) || !core.ValidID(input.EnvironmentRevisionID) || (input.HandoverID != "" && !core.ValidID(input.HandoverID)) || !core.ValidID(input.RequestID) || (input.JobID != "" && !core.ValidID(input.JobID)) || !validJobKind(input.Kind) || input.Kind == "go_test" || !validEnvironmentSHA256(input.SourceRevisionSHA256) || !validEnvironmentSHA256(input.ArgvSHA256) || !validEnvironmentSHA256(input.WorkingDirectorySHA256) || !validEnvironmentSHA256(input.NetworkPolicySHA256) || input.TimeoutMS < 1 || input.TimeoutMS > 3600000 || input.OutputLimitBytes < 1 || input.OutputLimitBytes > 1048576 {
 		return Receipt{}, core.Malformed
 	}
 	if (input.Kind == "service" && !environment.ValidProjectServiceID(input.ServiceID)) || (input.Kind != "service" && input.ServiceID != "") {
@@ -705,10 +705,20 @@ func (k *Kernel) TXRecordJobRunEvent(ctx context.Context, companyID string, inpu
 		}
 		var kind, sessionID, executionMode string
 		var outputLimit int
-		if err := tx.QueryRow(ctx, `SELECT j.kind,j.output_limit_bytes,j.session_id,s.execution_mode FROM job_runs j JOIN worker_sessions s ON s.company_id=j.company_id AND s.id=j.session_id WHERE j.company_id=$1 AND j.job_id=$2 FOR UPDATE OF j,s`, companyID, input.JobID).Scan(&kind, &outputLimit, &sessionID, &executionMode); errors.Is(err, pgx.ErrNoRows) {
+		if err := tx.QueryRow(ctx, `SELECT j.kind,j.output_limit_bytes,COALESCE(j.session_id,''),COALESCE(s.execution_mode,'') FROM job_runs j
+LEFT JOIN worker_sessions s ON s.company_id=j.company_id AND s.id=j.session_id
+WHERE j.company_id=$1 AND j.job_id=$2 FOR UPDATE OF j`, companyID, input.JobID).Scan(&kind, &outputLimit, &sessionID, &executionMode); errors.Is(err, pgx.ErrNoRows) {
 			return Receipt{}, core.OutOfScope
 		} else if err != nil {
 			return Receipt{}, err
+		}
+		if kind == "go_test" && (sessionID != "" || executionMode != "") || kind != "go_test" && (sessionID == "" || executionMode == "") {
+			return Receipt{}, core.Integrity
+		}
+		if kind == "go_test" {
+			// This generic event path is used by the already-qualified Node project
+			// executor. Go tests require a separate host-qualified result receipt.
+			return Receipt{}, core.Denied
 		}
 		previous, readiness, stdoutOffset, stderrOffset, err := latestJobRunEvent(ctx, tx, companyID, input.JobID)
 		if err != nil {
@@ -742,7 +752,7 @@ func (k *Kernel) TXRecordJobRunEvent(ctx context.Context, companyID string, inpu
 		if input.ExitCode != nil && input.State != string(environment.JobExited) {
 			return Receipt{}, core.Malformed
 		}
-		if input.State == string(environment.JobExited) && kind == "batch" && input.ExitCode == nil {
+		if input.State == string(environment.JobExited) && (kind == "batch" || kind == "go_test") && input.ExitCode == nil {
 			return Receipt{}, core.Malformed
 		}
 		if input.ReasonCode == "" {
@@ -871,12 +881,12 @@ func validEnvironmentPreparationState(value string) bool {
 }
 
 func validJobKind(value string) bool {
-	return value == "batch" || value == "service" || value == "controlled_input"
+	return value == "batch" || value == "service" || value == "controlled_input" || value == "go_test"
 }
 
 func validJobState(value string) bool {
 	switch environment.JobState(value) {
-	case environment.JobAccepted, environment.JobStarting, environment.JobRunning, environment.JobExited, environment.JobFailed, environment.JobCancelled, environment.JobOutcomeUnknown:
+	case environment.JobAccepted, environment.JobBlocked, environment.JobStarting, environment.JobRunning, environment.JobExited, environment.JobFailed, environment.JobCancelled, environment.JobOutcomeUnknown:
 		return true
 	default:
 		return false

@@ -143,7 +143,7 @@ func (s *Service) SetProjectJobExecutor(executor ProjectJobExecutor) {
 }
 
 func normalizeStartProjectJobRequest(request StartProjectJobRequest) (StartProjectJobRequest, error) {
-	if !core.ValidID(request.TaskID) || (request.SessionID != "" && !core.ValidID(request.SessionID)) || !core.ValidID(request.EnvironmentRevisionID) || (request.HandoverID != "" && !core.ValidID(request.HandoverID)) || validateRequestID(request.RequestID) != nil {
+	if !core.ValidID(request.TaskID) || (request.SessionID != "" && !core.ValidID(request.SessionID)) || !core.ValidID(request.EnvironmentRevisionID) || (request.HandoverID != "" && !core.ValidID(request.HandoverID)) || request.BaseSnapshotArtifactID != "" || request.CandidateSnapshotArtifactID != "" || validateRequestID(request.RequestID) != nil {
 		return StartProjectJobRequest{}, core.Malformed
 	}
 	switch request.Kind {

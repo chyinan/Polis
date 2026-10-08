@@ -1,0 +1,12 @@
+=== RUN   TestPeerWorkspaceCheckReturnsActionableSemanticCriteria
+    behavioral_hardening_test.go:82: POLICY_DENIED
+--- FAIL: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.34s)
+FAIL
+FAIL	polis/internal/kernel	0.400s
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/control	0.064s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	polis/internal/workbench	0.063s [no tests to run]
+FAIL

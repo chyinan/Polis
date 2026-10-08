@@ -1,0 +1,9 @@
+e13db77dbc6d12acfd5508206053e461266bf00563d4c49697fc2215140918af  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/libjson-perl_4.04000-1_all.deb
+8af0b458834e219f3aa7c904fa1237ea484950486e3165a3a90204878e060530  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/libpq5_18.6-1.pgdg22.04+2_amd64.deb
+f6e9bdf50c9683cd9a74ad92d51dde085f40baf0a5fcd8a56fc68425c1bd3c5f  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/liburing2_2.1-2build1_amd64.deb
+5e50bc83e9365942cf63272d8a45ce71170aaf4a1a4e3c4b30f591f6194d77ef  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/libxslt1.1_1.1.34-4ubuntu0.22.04.5_amd64.deb
+2aab00b13babd3d9abc257bc5f6b00efa1f7c27cda071413f358d2e0cdb84420  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/postgresql-18_18.6-1.pgdg22.04+2_amd64.deb
+ad4e491adceaf1453162c62691473ace78ed81ab20f50d11b344a793d13ed4bd  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/postgresql-client-18_18.6-1.pgdg22.04+2_amd64.deb
+5ec37493c1512b83095ac02f774fe8b6620a3442c5abfd0b6d9b268e49b0d0d9  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/postgresql-client-common_293.pgdg22.04+1_all.deb
+182ab506ec9ca4041f8abe2793c66c8b44e8e41ba7b2a63fc6f17a2074ee462d  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/postgresql-common_293.pgdg22.04+1_all.deb
+9b52283009c334ac83d7b731bd1199443fff128c2089fcdf6ee434dbb59f9b1b  /mnt/d/Programs/Polis-cloud-main/.tools/downloads/ssl-cert_1.1.2_all.deb

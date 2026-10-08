@@ -1,0 +1,27 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libjson-perl libpq5 liburing2 libxslt1.1 postgresql-client-common
+  postgresql-common ssl-cert
+Suggested packages:
+  libpq-oauth postgresql-doc-18
+Recommended packages:
+  libjson-xs-perl postgresql-18-jit sysstat
+The following NEW packages will be installed:
+  libjson-perl libpq5 liburing2 libxslt1.1 postgresql-18 postgresql-client-18
+  postgresql-client-common postgresql-common ssl-cert
+0 upgraded, 9 newly installed, 0 to remove and 24 not upgraded.
+Need to get 10.5 MB of archives.
+After this operation, 49.6 MB of additional disk space will be used.
+Get:1 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-client-common all 293.pgdg22.04+1 [107 kB]
+Get:2 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-common all 293.pgdg22.04+1 [185 kB]
+Get:3 https://archive.ubuntu.com/ubuntu jammy/main amd64 libjson-perl all 4.04000-1 [81.8 kB]
+Get:4 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 libpq5 amd64 18.6-1.pgdg22.04+2 [265 kB]
+Get:5 https://archive.ubuntu.com/ubuntu jammy/main amd64 ssl-cert all 1.1.2 [17.4 kB]
+Get:6 https://archive.ubuntu.com/ubuntu jammy/main amd64 liburing2 amd64 2.1-2build1 [10.3 kB]
+Get:7 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libxslt1.1 amd64 1.1.34-4ubuntu0.22.04.5 [165 kB]
+Get:8 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-client-18 amd64 18.6-1.pgdg22.04+2 [2107 kB]
+Get:9 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-18 amd64 18.6-1.pgdg22.04+2 [7551 kB]
+Fetched 10.5 MB in 2min 10s (80.9 kB/s)
+Download complete and in download only mode

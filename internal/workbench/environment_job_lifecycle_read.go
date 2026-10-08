@@ -71,8 +71,36 @@ type JobRunView struct {
 	LogGap                bool                 `json:"logGap"`
 	LogManifestSHA256     *string              `json:"logManifestSha256"`
 	ServiceEndpoint       *ServiceEndpointView `json:"serviceEndpoint"`
+	GoTest                *GoTestJobView       `json:"goTest,omitempty"`
 	CreatedAt             string               `json:"createdAt"`
 	UpdatedAt             string               `json:"updatedAt"`
+}
+
+type GoTestJobView struct {
+	BindingSHA256               string          `json:"bindingSha256"`
+	BaseCommitOID               string          `json:"baseCommitOid"`
+	InputManifestSHA256         string          `json:"inputManifestSha256"`
+	BaseSnapshotArtifactID      string          `json:"baseSnapshotArtifactId"`
+	BaseSnapshotSHA256          string          `json:"baseSnapshotSha256"`
+	BaseWorkspaceRevision       int64           `json:"baseWorkspaceRevision"`
+	BaseFilesSHA256             string          `json:"baseFilesSha256"`
+	CandidateSnapshotArtifactID string          `json:"candidateSnapshotArtifactId"`
+	CandidateSnapshotSHA256     string          `json:"candidateSnapshotSha256"`
+	CandidateWorkspaceRevision  int64           `json:"candidateWorkspaceRevision"`
+	CandidateFilesSHA256        string          `json:"candidateFilesSha256"`
+	TaskValidationBindingSHA256 string          `json:"taskValidationBindingSha256"`
+	ProfileRevision             string          `json:"profileRevision"`
+	ProfileSHA256               string          `json:"profileSha256"`
+	RunnerSHA256                string          `json:"runnerSha256"`
+	ToolchainSHA256             string          `json:"toolchainSha256"`
+	CommandSHA256               string          `json:"commandSha256"`
+	TestManifestSHA256          string          `json:"testManifestSha256"`
+	ResourceLimits              json.RawMessage `json:"resourceLimits"`
+	Outcome                     *string         `json:"outcome,omitempty"`
+	ResultSHA256                *string         `json:"resultSha256,omitempty"`
+	Result                      json.RawMessage `json:"result,omitempty"`
+	RunnerReceiptSHA256         *string         `json:"runnerReceiptSha256,omitempty"`
+	RunnerReceipt               json.RawMessage `json:"runnerReceipt,omitempty"`
 }
 
 type EnvironmentJobLifecycleReader interface {
@@ -186,14 +214,14 @@ func (s *PostgresReadStore) ListTaskJobRuns(ctx context.Context, companyID, task
 	if err := validateCompanyID(companyID); err != nil || !core.ValidID(taskID) {
 		return nil, core.Malformed
 	}
-	rows, err := s.pool.Query(ctx, `SELECT j.job_id,j.task_id,j.session_id,j.environment_revision_id,COALESCE(j.handover_id,''),j.kind,COALESCE(j.service_id,''),
+	rows, err := s.pool.Query(ctx, `SELECT j.job_id,j.task_id,COALESCE(j.session_id,''),COALESCE(j.environment_revision_id,''),COALESCE(j.handover_id,''),j.kind,COALESCE(j.service_id,''),
 COALESCE(event.state,'accepted'),CASE WHEN endpoint.readiness='revoked' OR (endpoint.readiness IS NOT NULL AND (endpoint.lease_expires_at<=clock_timestamp() OR COALESCE(event.state,'accepted') IN ('exited','failed','cancelled','outcome_unknown') OR (j.kind='service' AND (policy_event.decision IS DISTINCT FROM 'approved' OR policy_event.policy_sha256 IS DISTINCT FROM revision.policy_sha256)))) THEN 'unhealthy' ELSE COALESCE(event.readiness,CASE WHEN j.kind='service' THEN 'not_ready' ELSE 'not_applicable' END) END,event.exit_code,
 COALESCE(event.reason_code,'job_accepted'),COALESCE(event.stdout_offset,0)::text,COALESCE(event.stderr_offset,0)::text,
 COALESCE(event.stdout_bytes,0)::text,COALESCE(event.stderr_bytes,0)::text,COALESCE(event.logs_truncated,false),COALESCE(event.log_gap,false),event.log_manifest_sha256,
 endpoint.generation::text,endpoint.bind_address,endpoint.port::text,CASE WHEN endpoint.readiness!='revoked' AND endpoint.readiness IS NOT NULL AND (endpoint.lease_expires_at<=clock_timestamp() OR COALESCE(event.state,'accepted') IN ('exited','failed','cancelled','outcome_unknown') OR (j.kind='service' AND (policy_event.decision IS DISTINCT FROM 'approved' OR policy_event.policy_sha256 IS DISTINCT FROM revision.policy_sha256))) THEN 'unhealthy' ELSE endpoint.readiness END,endpoint.source_revision_sha256,endpoint.healthcheck_sha256,CASE WHEN endpoint.readiness='revoked' THEN NULL ELSE endpoint.lease_expires_at::text END,
 j.created_at::text,COALESCE(event.created_at,j.created_at)::text
 FROM job_runs j
-JOIN project_environment_revisions revision ON revision.company_id=j.company_id AND revision.revision_id=j.environment_revision_id
+LEFT JOIN project_environment_revisions revision ON revision.company_id=j.company_id AND revision.revision_id=j.environment_revision_id
 LEFT JOIN LATERAL (
  SELECT decision,policy_sha256 FROM environment_policy_events WHERE company_id=j.company_id AND revision_id=j.environment_revision_id ORDER BY event_seq DESC LIMIT 1
 ) policy_event ON j.kind='service'
@@ -209,7 +237,6 @@ WHERE j.company_id=$1 AND j.task_id=$2 ORDER BY j.created_at DESC,j.job_id DESC 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	items := make([]JobRunView, 0)
 	for rows.Next() {
 		var item JobRunView
@@ -233,7 +260,21 @@ WHERE j.company_id=$1 AND j.task_id=$2 ORDER BY j.created_at DESC,j.job_id DESC 
 		}
 		items = append(items, item)
 	}
-	return items, rows.Err()
+	if err = rows.Err(); err != nil {
+		rows.Close()
+		return nil, err
+	}
+	rows.Close()
+	for index := range items {
+		if items[index].Kind != "go_test" {
+			continue
+		}
+		items[index].GoTest, err = s.readGoTestJobView(ctx, companyID, items[index].JobID)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return items, nil
 }
 
 func (s *PostgresReadStore) ListTaskCrossBackendHandovers(ctx context.Context, companyID, taskID string) ([]kernel.CrossBackendHandoverRecord, error) {

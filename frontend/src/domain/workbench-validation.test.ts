@@ -22,6 +22,22 @@ describe('durable delivery backlog projection', () => {
   });
 });
 
+describe('offline Go acceptance profile contract', () => {
+  it('accepts only the fixed Go fixture profile on the versioned acceptance contract', () => {
+    expect(isAcceptanceContract({
+      revision: 'text-acceptance@2',
+      required_text: ['Task summary:'],
+      go_test_profile_revision: 'polis-go-test-fixture@1',
+    })).toBe(true);
+  });
+
+  it('rejects missing, unknown, or cross-version Go profile bindings', () => {
+    expect(isAcceptanceContract({revision: 'text-acceptance@2', required_text: ['Task summary:']})).toBe(false);
+    expect(isAcceptanceContract({revision: 'text-acceptance@2', required_text: ['Task summary:'], go_test_profile_revision: 'go-test@latest'})).toBe(false);
+    expect(isAcceptanceContract({revision: 'text-acceptance@1', required_text: ['Task summary:'], go_test_profile_revision: 'polis-go-test-fixture@1'})).toBe(false);
+  });
+});
+
 describe('durable delivery completion receipt', () => {
   it('accepts only a ready system completion receipt in the requested company scope', () => {
     const result = validateDurableDeliveryManifestCompletionReceipt({
@@ -148,6 +164,14 @@ describe('Task human takeover lease validation', () => {
     expect(validateTaskTakeoverLeases([lease, lease], 'mission-1').success).toBe(false);
     expect(validateTaskTakeoverLease({...lease, state: 'returned'}, 'mission-1').success).toBe(false);
     expect(validateTaskTakeoverLease({...lease, events: [{...lease.events[0], state: 'released'}]}, 'mission-1').success).toBe(false);
+  });
+
+  it('pins Git commit and Task input manifest identity when present', () => {
+    const workspaceTree = {rootBindingId: 'root-1', revision: 4, manifestSha256: 'c'.repeat(64), fileCount: 2, bytes: 128,
+      baseCommitOid: 'd'.repeat(40), inputManifestSha256: 'e'.repeat(64)};
+    expect(validateTaskTakeoverLease({...lease, workspaceTree}, 'mission-1').success).toBe(true);
+    expect(validateTaskTakeoverLease({...lease, workspaceTree: {...workspaceTree, inputManifestSha256: 'invalid'}}, 'mission-1').success).toBe(false);
+    expect(validateTaskTakeoverLease({...lease, workspaceTree: {...workspaceTree, baseCommitOid: 'D'.repeat(40)}}, 'mission-1').success).toBe(false);
   });
 });
 
@@ -652,6 +676,27 @@ describe('Workbench view validation', () => {
     expect(validateTaskJobRuns([{...job, kind: 'batch', serviceEndpoint: null}], companyId, 'task-1').success).toBe(false);
     expect(validateTaskJobRuns([{...job, readiness: 'unhealthy', serviceEndpoint: null}], companyId, 'task-1').success).toBe(false);
     expect(validateTaskJobRuns([{...job, readiness: 'not_applicable', serviceEndpoint: null}], companyId, 'task-1').success).toBe(false);
+  });
+
+  it('requires a complete frozen Go JobBinding for blocked Go-test JobRuns', () => {
+    const goTest = {
+      bindingSha256: 'a'.repeat(64), baseCommitOid: 'b'.repeat(40), inputManifestSha256: 'c'.repeat(64),
+      baseSnapshotArtifactId: 'base-1', baseSnapshotSha256: 'd'.repeat(64), baseWorkspaceRevision: 1, baseFilesSha256: 'e'.repeat(64),
+      candidateSnapshotArtifactId: 'candidate-1', candidateSnapshotSha256: 'f'.repeat(64), candidateWorkspaceRevision: 2, candidateFilesSha256: '1'.repeat(64),
+      taskValidationBindingSha256: '2'.repeat(64), profileRevision: 'polis-go-test-fixture@1', profileSha256: '3'.repeat(64),
+      runnerSha256: '4'.repeat(64), toolchainSha256: '5'.repeat(64), commandSha256: '6'.repeat(64), testManifestSha256: '7'.repeat(64),
+      resourceLimits: {cpuQuotaMicros: 200_000, cpuPeriodMicros: 100_000, memoryBytes: 2_147_483_648, swapBytes: 0, pids: 256,
+        wallTimeoutMs: 120_000, scratchBytes: 1_073_741_824, scratchInodes: 4096, stdoutBytes: 524_288, stderrBytes: 524_288},
+    };
+    const blocked = {
+      companyId, jobId: 'job-1', taskId: 'task-1', sessionId: '', environmentRevisionId: '', handoverId: '',
+      kind: 'go_test', serviceId: '', state: 'blocked', readiness: 'not_applicable', exitCode: null, reasonCode: 'host_profile_unqualified',
+      stdoutOffset: '0', stderrOffset: '0', stdoutBytes: '0', stderrBytes: '0', logsTruncated: false, logGap: false,
+      logManifestSha256: null, serviceEndpoint: null, goTest, createdAt: '2026-09-24T00:00:00Z', updatedAt: '2026-09-24T00:00:00Z',
+    };
+    expect(validateTaskJobRuns([blocked], companyId, 'task-1').success).toBe(true);
+    expect(validateTaskJobRuns([{...blocked, goTest: undefined}], companyId, 'task-1').success).toBe(false);
+    expect(validateTaskJobRuns([{...blocked, goTest: {...goTest, resourceLimits: {...goTest.resourceLimits, pids: 512}}}], companyId, 'task-1').success).toBe(false);
   });
 
   it('validates a digest-bound cross-backend handover against Task and company scope', () => {

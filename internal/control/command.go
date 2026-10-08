@@ -378,15 +378,17 @@ type DecideDependencyChangeRequest struct {
 }
 
 type StartProjectJobRequest struct {
-	TaskID                string   `json:"taskId"`
-	SessionID             string   `json:"sessionId"`
-	EnvironmentRevisionID string   `json:"environmentRevisionId"`
-	HandoverID            string   `json:"handoverId,omitempty"`
-	Kind                  string   `json:"kind"`
-	ServiceID             string   `json:"serviceId,omitempty"`
-	ScriptPath            string   `json:"scriptPath"`
-	Args                  []string `json:"args"`
-	RequestID             string   `json:"requestId"`
+	TaskID                      string   `json:"taskId"`
+	SessionID                   string   `json:"sessionId"`
+	EnvironmentRevisionID       string   `json:"environmentRevisionId"`
+	HandoverID                  string   `json:"handoverId,omitempty"`
+	Kind                        string   `json:"kind"`
+	ServiceID                   string   `json:"serviceId,omitempty"`
+	ScriptPath                  string   `json:"scriptPath"`
+	Args                        []string `json:"args"`
+	BaseSnapshotArtifactID      string   `json:"baseSnapshotArtifactId,omitempty"`
+	CandidateSnapshotArtifactID string   `json:"candidateSnapshotArtifactId,omitempty"`
+	RequestID                   string   `json:"requestId"`
 }
 
 type StopProjectJobRequest struct {

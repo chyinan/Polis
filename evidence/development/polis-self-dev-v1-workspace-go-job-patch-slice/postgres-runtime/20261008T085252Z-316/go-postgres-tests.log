@@ -1,0 +1,367 @@
+--- FAIL: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.42s)
+    behavioral_hardening_test.go:82: POLICY_DENIED
+--- FAIL: TestProgressCheckpointIsHandoverStateButNotArtifactAcceptance (0.29s)
+    behavioral_hardening_test.go:156: POLICY_DENIED
+--- FAIL: TestContractBoundObligationIsSupersededAndReplacementIsCurrent (0.30s)
+    behavioral_hardening_test.go:220: POLICY_DENIED
+--- FAIL: TestPeerSendMissingTaskTargetReturnsActionableFailureAndNoRows (0.29s)
+    behavioral_hardening_test.go:259: POLICY_DENIED
+--- FAIL: TestCapabilityApprovalBindingAndRevocationStayVersionPinned (0.27s)
+    capability_governance_integration_test.go:35: POLICY_DENIED
+--- FAIL: TestCapabilitySkillConcurrentSameRevisionImportPreflightsCASWrites (0.29s)
+    capability_governance_integration_test.go:220: POLICY_DENIED
+--- FAIL: TestCapabilitySkillDistinctRevisionImportsDoNotExhaustDatabasePool (0.27s)
+    capability_governance_integration_test.go:309: POLICY_DENIED
+--- FAIL: TestCapabilitySkillLoadRequiresCurrentEmployeeBindingAndFlowsThroughHandover (0.28s)
+    capability_governance_integration_test.go:354: POLICY_DENIED
+--- FAIL: TestControlledStdioMCPApprovalAndEmployeeUnbindAreAudited (0.27s)
+    capability_governance_integration_test.go:446: POLICY_DENIED
+--- FAIL: TestStdioMCPRuntimeQualificationRejectsUnsealedObservation (0.28s)
+    capability_governance_integration_test.go:506: POLICY_DENIED
+--- FAIL: TestStdioMCPRuntimeAuthorizationRequiresCurrentApprovalBindingAndSchema (0.28s)
+    capability_governance_integration_test.go:562: POLICY_DENIED
+--- FAIL: TestStreamableHTTPMCPUsesPinned20260728ProfileWithoutNetworkProbe (0.28s)
+    capability_governance_integration_test.go:869: POLICY_DENIED
+--- FAIL: TestQualifiedCheckpointFreshness (1.99s)
+    --- FAIL: TestQualifiedCheckpointFreshness/current (0.28s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/workspace (0.30s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/checker (0.28s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/policy (0.28s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/contract-recovery (0.28s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/progress-history (0.28s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/old-check (0.28s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+--- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance (2.24s)
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/0 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/1 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/2 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/3 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/4 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/5 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/6 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/7 (0.28s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+--- FAIL: TestCrossBackendHandoverRequiresPauseAndKnownTerminalSourceAndIsSingleUse (0.28s)
+    cross_backend_handover_integration_test.go:28: POLICY_DENIED
+--- FAIL: TestCreateDailyRoutineRequiresTaskInstruction (0.28s)
+    daily_routine_integration_test.go:19: POLICY_DENIED
+--- FAIL: TestMigratedActiveLegacyRoutineRequiresInstructionThenDelivers (0.28s)
+    daily_routine_integration_test.go:37: POLICY_DENIED
+--- FAIL: TestDailyRoutineMaterializationPersistsAndWakesOwner (0.29s)
+    daily_routine_integration_test.go:70: POLICY_DENIED
+--- FAIL: TestPausedMissionPersistsDailyRoutineWithoutWakingUntilResume (0.29s)
+    daily_routine_integration_test.go:192: POLICY_DENIED
+--- FAIL: TestCancelledMissionRoutineOccurrenceDoesNotRewakeEmployee (0.27s)
+    daily_routine_integration_test.go:241: POLICY_DENIED
+--- FAIL: TestLegacyRoutineWithoutInstructionWaitsThenDeliversOnceSupplemented (0.27s)
+    daily_routine_integration_test.go:277: POLICY_DENIED
+--- FAIL: TestDomainEvidenceSubmissionIsScopedAppendOnlyAndNeverQualifies (0.26s)
+    domain_evidence_integration_test.go:27: POLICY_DENIED
+--- FAIL: TestDomainEvidencePreviewLoadsOnlyReferencedMissionInputAndVerifiesCAS (0.27s)
+    domain_evidence_preview_integration_test.go:28: POLICY_DENIED
+--- FAIL: TestDomainEvidenceProfileQualificationIsCompanyScopedAndNeverEnablesExecution (0.25s)
+    domain_profile_qualification_integration_test.go:24: POLICY_DENIED
+--- FAIL: TestNewCompanyCreatesSleepingEmployeeSchedules (0.23s)
+    employee_schedule_integration_test.go:21: POLICY_DENIED
+--- FAIL: TestActionablePeerWorkCannotBeLostAcrossEmployeeSleepReconciliation (0.27s)
+    employee_schedule_integration_test.go:35: POLICY_DENIED
+--- FAIL: TestFYIPeerMessageDoesNotWakeEmployeeSchedule (0.27s)
+    employee_schedule_integration_test.go:121: POLICY_DENIED
+--- FAIL: TestMissionPauseBlocksPeerWorkAndResumeRestoresPendingWake (0.27s)
+    employee_schedule_integration_test.go:153: POLICY_DENIED
+--- FAIL: TestObservedPeerObligationKeepsStoppedEmployeeWakePending (0.27s)
+    employee_schedule_integration_test.go:201: POLICY_DENIED
+--- FAIL: TestReadyTasksAdvanceEmployeeScheduleOnMissionStartAndResume (0.27s)
+    employee_schedule_integration_test.go:240: POLICY_DENIED
+--- FAIL: TestNextProductWorkerDispatchCandidateIsAgeOrderedAndHonorsBarriers (0.27s)
+    employee_schedule_integration_test.go:301: POLICY_DENIED
+--- FAIL: TestKernelStartupScanRestoresReadyTaskWakeAfterLostHint (0.27s)
+    employee_schedule_integration_test.go:364: POLICY_DENIED
+--- FAIL: TestCancellingPausedMissionClearsScheduleBarrierForNextMission (0.27s)
+    employee_schedule_integration_test.go:415: POLICY_DENIED
+--- FAIL: TestEmployeeScheduleReconcilerListensReconnectsAndScans (0.27s)
+    employee_schedule_listener_integration_test.go:13: POLICY_DENIED
+--- FAIL: TestEmployeeScheduleWakeHintStaysWithinCompanyScope (0.27s)
+    employee_schedule_listener_integration_test.go:49: POLICY_DENIED
+--- FAIL: TestEmployeeScheduleReconcilerMaterializesDueDailyRoutine (0.28s)
+    employee_schedule_listener_integration_test.go:72: POLICY_DENIED
+--- FAIL: TestEnvironmentExecutorQualificationRequiresCurrentCASBoundEvidence (0.27s)
+    environment_executor_qualification_integration_test.go:24: POLICY_DENIED
+--- FAIL: TestEnvironmentPreparationPersistsPolicyAndIsolationBlocksIdempotently (0.27s)
+    environment_lifecycle_integration_test.go:30: POLICY_DENIED
+--- FAIL: TestFaultBoundaries (0.27s)
+    fault_test.go:28: POLICY_DENIED
+--- FAIL: TestProcessCrashRecovery (0.27s)
+    fault_test.go:179: POLICY_DENIED
+--- FAIL: TestFrontendCollabApplyRejectsCandidateContentAndRequiresStructuredReferences (0.28s)
+    frontend_interaction_contract_test.go:12: POLICY_DENIED
+--- FAIL: TestFrontendCollabApplyAndProgressCheckpointUseReceiptReferences (0.25s)
+    frontend_interaction_contract_test.go:55: POLICY_DENIED
+--- FAIL: TestFrontendCollabApplyReportsUnsupportedCheckpointReceipt (0.25s)
+    frontend_interaction_contract_test.go:108: POLICY_DENIED
+--- FAIL: TestFrontendInteractionRejectsStaleAndAmbiguousReferences (0.24s)
+    frontend_interaction_contract_test.go:154: POLICY_DENIED
+--- FAIL: TestGitHubFeedbackRequiresSourceApprovalAndOnlyCompleteScansAdvanceCursor (0.23s)
+    github_feedback_integration_test.go:27: POLICY_DENIED
+--- FAIL: TestGitHubFeedbackBacklogKeepsInternalStateAndReopensOnSourceRevision (0.23s)
+    github_feedback_integration_test.go:150: POLICY_DENIED
+--- FAIL: TestGitHubFeedbackScheduleRequiresCurrentKernelLeaseForReserveAndDispatch (0.24s)
+    github_feedback_integration_test.go:221: POLICY_DENIED
+--- FAIL: TestHumanInterventionCreatesSafeDeduplicatedNotificationIntent (0.24s)
+    human_interventions_test.go:24: POLICY_DENIED
+--- FAIL: TestQQOutboxRequiresQualifiedRouteAndNeverRetriesUnknownOutcome (0.24s)
+    human_interventions_test.go:99: POLICY_DENIED
+--- FAIL: TestPostgresSlice (0.24s)
+    kernel_test.go:25: POLICY_DENIED
+--- FAIL: TestLostLeaseCannotRecoverOverSuccessor (0.24s)
+    lifecycle_test.go:21: POLICY_DENIED
+--- FAIL: TestCloseReleasesLeaseMutexBeforeWaitingForTransactions (0.25s)
+    lifecycle_test.go:45: POLICY_DENIED
+--- FAIL: TestStdioMCPPackageImportPinsCompanyCASAndReplaysByRequestID (0.24s)
+    mcp_package_import_integration_test.go:29: POLICY_DENIED
+--- FAIL: TestStdioMCPObservationReservationPreventsRequestReplay (0.24s)
+    mcp_package_import_integration_test.go:75: POLICY_DENIED
+--- FAIL: TestStdioMCPPackageImportSharesServerLockWithRuntimeObservation (0.24s)
+    mcp_package_import_integration_test.go:171: POLICY_DENIED
+--- FAIL: TestStdioMCPPackageUpdateRevokesObservedRuntimeQualification (0.23s)
+    mcp_package_import_integration_test.go:216: POLICY_DENIED
+--- FAIL: TestStdioMCPPackageImportSerializesSameRevisionBeforeCASWrites (0.24s)
+    mcp_package_import_integration_test.go:347: POLICY_DENIED
+--- FAIL: TestStdioMCPPackageImportSerializesReusedRequestIDAcrossTargetsBeforeCASWrites (0.24s)
+    mcp_package_import_integration_test.go:404: POLICY_DENIED
+--- FAIL: TestCapabilitySkillAndMCPImportsShareRequestIDLockBeforeCASWrites (0.25s)
+    mcp_package_import_integration_test.go:465: POLICY_DENIED
+--- FAIL: TestCapabilitySourceRequestLockBlocksUncoordinatedTXWrite (0.25s)
+    mcp_package_import_integration_test.go:515: POLICY_DENIED
+--- FAIL: TestStdioMCPPackageImportRequiresDescriptorAndManifestToMatch (0.24s)
+    mcp_package_import_integration_test.go:603: POLICY_DENIED
+--- FAIL: TestMissionChangeRequestAppliesAsSuccessorOnlyAfterStoppedBoundary (0.23s)
+    mission_change_request_test.go:28: POLICY_DENIED
+--- FAIL: TestMissionCommandGoalAndTerminalTransitions (0.24s)
+    mission_command_test.go:20: POLICY_DENIED
+--- FAIL: TestMissionCommandCreateIsIdempotentByRequestKey (0.24s)
+    mission_command_test.go:63: POLICY_DENIED
+--- FAIL: TestMissionInputUploadCreatesImmutableIdempotentRevisions (0.25s)
+    mission_input_test.go:25: POLICY_DENIED
+--- FAIL: TestMissionDirectorySnapshotIsStoredAsOneVerifiedRevision (0.24s)
+    mission_input_test.go:118: POLICY_DENIED
+--- FAIL: TestProductTaskFreezesVersionedModelInputManifest (0.25s)
+    mission_input_test.go:172: POLICY_DENIED
+--- FAIL: TestMissionPauseResumeCommandsRequireStateAndReplayIdempotently (0.25s)
+    mission_lifecycle_test.go:20: POLICY_DENIED
+--- FAIL: TestOperatorInstructionIsPersistedForActiveMission (0.25s)
+    operator_instructions_test.go:24: POLICY_DENIED
+--- FAIL: TestCompanyOrganizationRoundTrip (0.25s)
+    organization_test.go:20: POLICY_DENIED
+--- FAIL: TestProductWorkerDirectMessageToolSurfaceCompletesAnActionableRequest (0.22s)
+    peer_bidirectional_messaging_test.go:24: POLICY_DENIED
+--- FAIL: TestProductDirectSendRacingCandidateSubmissionNeverCommitsAfterSubmission (0.22s)
+    peer_bidirectional_messaging_test.go:114: POLICY_DENIED
+--- FAIL: TestProductDirectSendRacingMissionPauseHasSerializedOutcome (0.22s)
+    peer_bidirectional_messaging_test.go:170: POLICY_DENIED
+--- FAIL: TestProductDirectFYIsHaveNoObligationAndAdvanceInEventOrder (0.22s)
+    peer_bidirectional_messaging_test.go:224: POLICY_DENIED
+--- FAIL: TestProductDirectMessageSurfaceIsExplicitAndReadOnlyCannotWrite (0.23s)
+    peer_bidirectional_messaging_test.go:281: POLICY_DENIED
+--- FAIL: TestProductDirectMessageRejectsTargetsOutsideTheCurrentMission (0.22s)
+    peer_bidirectional_messaging_test.go:299: POLICY_DENIED
+--- FAIL: TestPeerDirectMessageCanBeSentAndResolvedInBothDirections (0.22s)
+    peer_bidirectional_messaging_test.go:337: POLICY_DENIED
+--- FAIL: TestPeerFYIMessageCanBeReadAndAcknowledgedByEitherPeer (0.23s)
+    peer_bidirectional_messaging_test.go:401: POLICY_DENIED
+--- FAIL: TestPeerFYIInboxAdvancesAfterAcknowledgement (0.23s)
+    peer_bidirectional_messaging_test.go:437: POLICY_DENIED
+--- FAIL: TestPeerDirectMessageCannotCrossMissionWithinCompany (0.22s)
+    peer_bidirectional_messaging_test.go:476: POLICY_DENIED
+--- FAIL: TestPeerDirectMessageCannotTargetFinalizedTask (0.23s)
+    peer_bidirectional_messaging_test.go:494: POLICY_DENIED
+--- FAIL: TestPeerResolveRequiresObligationTaskBoundToSession (0.23s)
+    peer_bidirectional_messaging_test.go:509: POLICY_DENIED
+--- FAIL: TestPeerHandoverBoundarySnapshotReadsStoppedInitialSession (0.24s)
+    peer_collaboration_test.go:16: POLICY_DENIED
+--- FAIL: TestPeerSendDeniesFinalizedCandidateTask (0.22s)
+    peer_collaboration_test.go:64: POLICY_DENIED
+--- FAIL: TestPeerIntegrationUsesRuntimePaginationVerifierAndSeparateCoverage (0.23s)
+    peer_collaboration_test.go:83: POLICY_DENIED
+--- FAIL: TestPeerInboxMakesMessageObservableBeforeAck (0.23s)
+    peer_collaboration_test.go:139: POLICY_DENIED
+--- FAIL: TestR03APeerSendCommitVisibleToIndependentSession (0.23s)
+    peer_collaboration_test.go:216: POLICY_DENIED
+--- FAIL: TestR03APeerCollaborationPositiveAndNegative (0.22s)
+    peer_collaboration_test.go:257: POLICY_DENIED
+--- FAIL: TestR03AFrontendHandoverPreservesPeerObligation (0.23s)
+    peer_collaboration_test.go:388: POLICY_DENIED
+--- FAIL: TestR03AT5BackendToolSurfaceInvokesEveryHandlerOnce (0.23s)
+    peer_employee_ops_test.go:21: POLICY_DENIED
+--- FAIL: TestPeerWorkspaceCheckPersistsActionableBindingFailureReceipt (0.23s)
+    peer_employee_ops_test.go:86: POLICY_DENIED
+--- FAIL: TestProductCandidateFencesPostPublicationWorkspaceAndCheckpointWrites (0.23s)
+    product_finalization_fence_test.go:26: POLICY_DENIED
+--- FAIL: TestQQRouteCannotEnableBeforeQualificationAndDisableAdvancesRevision (0.23s)
+    qq_route_integration_test.go:22: POLICY_DENIED
+--- FAIL: TestBackendTerminalRecoveryAnchorForensicsReproducesErrNoRows (0.23s)
+    recovery_anchor_forensics_test.go:21: POLICY_DENIED
+--- FAIL: TestReviewerGrantPersistsReviewSubmitWithoutBehaviorVerifier (0.22s)
+    reviewer_h3_integration_test.go:70: POLICY_DENIED
+--- FAIL: TestT21CQualifiedCheckpointMustBindEffectiveContract (0.23s)
+    t21c_policy_binding_test.go:12: POLICY_DENIED
+--- FAIL: TestTakeoverLeaseFreezesWorkspaceAndReturnsHumanSnapshotToSuccessor (0.23s)
+    takeover_lease_test.go:27: POLICY_DENIED
+--- FAIL: TestWorkerHostContainmentBindingScopesRecoveryCandidates (0.23s)
+    worker_process_recovery_test.go:44: POLICY_DENIED
+--- FAIL: TestTaskWorkspaceCASRehydratesForNewSessionAfterKernelRestart (0.23s)
+    worker_process_recovery_test.go:134: POLICY_DENIED
+--- FAIL: TestLegacyLinuxWorkerSessionProcessGroupRecoveryRemainsUnresolved (0.23s)
+    worker_process_recovery_test.go:183: POLICY_DENIED
+--- FAIL: TestTXFinalizeWorkerBeforeProcessIsIdempotentForSameFailure (0.22s)
+    worker_process_recovery_test.go:242: POLICY_DENIED
+--- FAIL: TestWorkerLifecycleAndMediation (0.23s)
+    worker_test.go:23: POLICY_DENIED
+--- FAIL: TestTXNewWorkerHonorsEmployeeAdmissionBarriers (0.22s)
+    worker_test.go:98: POLICY_DENIED
+--- FAIL: TestTXNewWorkerMarksEmployeeScheduleAdmitted (0.23s)
+    worker_test.go:138: POLICY_DENIED
+FAIL
+FAIL	polis/internal/kernel	76.464s
+--- FAIL: TestContentOperationsBindAuthorizedSourcesAndVersionedDraftReview (0.34s)
+    content_operations_integration_test.go:31: POLICY_DENIED
+--- FAIL: TestContentCorrectionRequiresANewReviewBeforeResimulation (0.30s)
+    content_operations_integration_test.go:176: POLICY_DENIED
+--- FAIL: TestCrossBackendHandoverFlowsThroughPauseResumeAndJobRunWithoutProviderTurn (0.31s)
+    cross_backend_handover_integration_test.go:31: POLICY_DENIED
+--- FAIL: TestDeterministicWorkerRetainsOwnershipWhenStopPersistenceFails (0.30s)
+    deterministic_worker_test.go:29: POLICY_DENIED
+--- FAIL: TestDeterministicStopRetriesProcessAttachmentBeforeConfirmation (0.29s)
+    deterministic_worker_test.go:105: POLICY_DENIED
+--- FAIL: TestDeterministicStopReplaysConfirmationAfterAmbiguousCommit (0.29s)
+    deterministic_worker_test.go:167: POLICY_DENIED
+--- FAIL: TestDeterministicStopRetainsWindowsHostReconciliationOwner (0.30s)
+    deterministic_worker_test.go:223: POLICY_DENIED
+--- FAIL: TestEnvironmentLifecycleControlCommandsPersistGatedStatus (0.29s)
+    environment_lifecycle_integration_test.go:26: POLICY_DENIED
+--- FAIL: TestEnvironmentPreparationExecutorRunsOnlyAfterQualificationAndReplaysReadyState (0.29s)
+    environment_preparation_executor_integration_test.go:26: POLICY_DENIED
+--- FAIL: TestGitHubFeedbackControlProbesApprovesPollsAndDoesNotCallUnapprovedSource (0.29s)
+    github_feedback_integration_test.go:78: POLICY_DENIED
+--- FAIL: TestGitHubFeedbackSchedulerRequiresCompanyPolicyAndDoesNotReplayReservedSlot (0.29s)
+    github_feedback_integration_test.go:176: POLICY_DENIED
+--- FAIL: TestGitHubFeedbackScheduledDispatchRejectsArchivedCompany (0.29s)
+    github_feedback_integration_test.go:328: POLICY_DENIED
+--- FAIL: TestMissionStartReadinessFailureCreatesSafeHumanInterventionAndOutbox (0.30s)
+    human_intervention_test.go:46: POLICY_DENIED
+--- FAIL: TestLinuxProfileDoesNotReuseWindowsExecutorQualification (0.29s)
+    linux_environment_profile_integration_test.go:26: POLICY_DENIED
+--- FAIL: TestPauseResumeAreFormalAndIdempotentAcrossLaterTransitions (0.28s)
+    mission_lifecycle_test.go:25: POLICY_DENIED
+--- FAIL: TestStartMissionFinishesWorkerStartBeforeConcurrentCancellation (0.28s)
+    mission_lifecycle_test.go:81: POLICY_DENIED
+--- FAIL: TestFailedWorkerStartReplayRequiresLifecycleRecovery (0.29s)
+    mission_lifecycle_test.go:149: POLICY_DENIED
+--- FAIL: TestStartMissionReplayKeepsConfirmedStartAfterWorkerFinishes (0.28s)
+    mission_lifecycle_test.go:180: POLICY_DENIED
+--- FAIL: TestStartMissionReplayAfterRuntimeRestartRequiresSessionReconciliation (0.29s)
+    mission_lifecycle_test.go:214: POLICY_DENIED
+--- FAIL: TestRuntimeSettingsUpdatePersistsDesiredNonSecretConfiguration (0.28s)
+    organization_test.go:31: POLICY_DENIED
+--- FAIL: TestProjectJobLifecycleLaunchesOncePersistsLogsAndReplaysWithoutExecution (0.29s)
+    project_job_integration_test.go:54: POLICY_DENIED
+--- FAIL: TestDispatchHumanInterventionRequiresQualifiedRouteAndPersistsFakeReceipt (0.28s)
+    qq_notification_sender_test.go:53: POLICY_DENIED
+--- FAIL: TestRealProviderWorkerRetainsOwnershipWhenStopPersistenceFails (0.28s)
+    real_provider_worker_test.go:308: POLICY_DENIED
+--- FAIL: TestRealProviderStartRetainsSessionWhenUnactivatedCleanupFails (0.29s)
+    real_provider_worker_test.go:382: POLICY_DENIED
+--- FAIL: TestRealProviderStartRetainsReservationWhenNoProcessCleanupFails (0.28s)
+    real_provider_worker_test.go:438: POLICY_DENIED
+--- FAIL: TestRealProviderStopReplaysConfirmationAfterAmbiguousCommit (0.28s)
+    real_provider_worker_test.go:502: POLICY_DENIED
+--- FAIL: TestBusinessPreflightRetainsOwnerWhenProcessStopFails (0.28s)
+    real_provider_worker_test.go:568: POLICY_DENIED
+--- FAIL: TestResearchSimulationPersistsExactInputBoundDeterministicRun (0.27s)
+    research_simulation_integration_test.go:29: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesFrozenImageBytesAsVisionInput (0.27s)
+    task_input_delivery_test.go:71: POLICY_DENIED
+--- FAIL: TestProductWorkerLoadsOnlyApprovedBoundReadOnlySkill (0.26s)
+    task_input_delivery_test.go:176: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesFrozenGitSnapshotFromSelectedCommit (0.27s)
+    task_input_delivery_test.go:282: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesFrozenTextInputsInTurnPrompt (0.27s)
+    task_input_delivery_test.go:405: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesFrozenImageBytesInTurnInput (0.28s)
+    task_input_delivery_test.go:482: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesExtractedTextFromBoundPDFInput (0.27s)
+    task_input_delivery_test.go:575: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesTextFilesFromFrozenDirectoryInput (0.28s)
+    task_input_delivery_test.go:699: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesFrozenCSVInputInTurnPrompt (0.27s)
+    task_input_delivery_test.go:781: POLICY_DENIED
+--- FAIL: TestProductWorkerReceivesOnlySupportedTextFromFrozenZIPInput (0.27s)
+    task_input_delivery_test.go:864: POLICY_DENIED
+--- FAIL: TestReconcileEnvironmentPreparationsAfterRestartClosesUnknownWindowsJobRuns (0.28s)
+    windows_job_startup_recovery_integration_test.go:27: POLICY_DENIED
+FAIL
+FAIL	polis/internal/control	18.309s
+--- FAIL: TestPostgresCollaborationProjectionPreservesMessageAndObligation (0.31s)
+    collaboration_integration_test.go:20: POLICY_DENIED
+--- FAIL: TestHTTPDailyRoutineCreateRepairAndReadback (0.29s)
+    daily_routine_http_integration_test.go:29: POLICY_DENIED
+--- FAIL: TestDomainEvidenceWorkbenchPersistsAndProjectsReadinessWithoutQualification (0.30s)
+    domain_evidence_integration_test.go:28: POLICY_DENIED
+--- FAIL: TestPostgresReadStoreProjectsEmployeeSchedule (0.29s)
+    employee_schedule_projection_integration_test.go:23: POLICY_DENIED
+--- FAIL: TestPostgresReadStoreProjectsMissionDailyRoutines (0.30s)
+    employee_schedule_projection_integration_test.go:67: POLICY_DENIED
+--- FAIL: TestPostgresReadStoreProjectsScopedBoundedGitHubFeedback (0.29s)
+    feedback_read_integration_test.go:26: POLICY_DENIED
+--- FAIL: TestOpenHumanInterventionAppearsInWorkbenchAttention (0.30s)
+    human_intervention_integration_test.go:23: POLICY_DENIED
+--- FAIL: TestPostgresLocalNotificationDeliveryIsReadable (0.30s)
+    notifications_integration_test.go:20: POLICY_DENIED
+--- FAIL: TestPostgresOperationsProjectionPreservesUnavailableTokenSemantics (0.30s)
+    operations_integration_test.go:20: POLICY_DENIED
+--- FAIL: TestOperatorInstructionResponseIsVisibleInWorkbench (0.30s)
+    operator_instruction_response_integration_test.go:28: POLICY_DENIED
+--- FAIL: TestRestartRecoveryProjectionShowsReconciliationRequired (0.30s)
+    recovery_ux_integration_test.go:22: POLICY_DENIED
+--- FAIL: TestPostgresStreamReplaysCompanySequenceEvents (0.30s)
+    stream_integration_test.go:23: POLICY_DENIED
+--- FAIL: TestPostgresWorkspacePreviewReadsAuthorizedCASBlob (0.30s)
+    workspace_integration_test.go:21: POLICY_DENIED
+--- FAIL: TestPostgresReadStoreProjectsQualifiedCheckpointWithoutLifecycleFilters (0.31s)
+    checkpoint_projection_integration_test.go:31: POLICY_DENIED
+--- FAIL: TestEnvironmentReadStoreShowsPolicyAndExecutorQualificationGates (0.30s)
+    environment_job_lifecycle_integration_test.go:33: POLICY_DENIED
+--- FAIL: TestLegacyEnvironmentPolicyWithoutManifestIsUnverifiedAndCanBeRevoked (0.30s)
+    environment_job_lifecycle_integration_test.go:363: POLICY_DENIED
+--- FAIL: TestWorkbenchDirectoryInputIsScopedAndStoredAsOneSnapshot (0.30s)
+    mission_directory_inputs_integration_test.go:32: POLICY_DENIED
+--- FAIL: TestWorkbenchMissionInputUploadStoresAndListsWithoutStartingMission (0.30s)
+    mission_inputs_http_e2e_test.go:35: POLICY_DENIED
+--- FAIL: TestProductCandidateLifecycleProjectsThroughWorkbench (0.30s)
+    product_lifecycle_integration_test.go:26: POLICY_DENIED
+--- FAIL: TestTaskInputManifestReadShowsFinalWorkerDeliveryStatus (0.30s)
+    task_input_delivery_read_integration_test.go:40: POLICY_DENIED
+--- FAIL: TestEmptyTaskInputDeliveryIsRecordedAndReadAsNotRequired (0.30s)
+    task_input_delivery_read_integration_test.go:115: POLICY_DENIED
+--- FAIL: TestQualifiedArtifactDeliveryManifestAndPackageReadFromPostgresAndCAS (0.30s)
+    task_input_delivery_read_integration_test.go:201: POLICY_DENIED
+--- FAIL: TestTaskInputManifestReadProjectsPerFileDirectoryDeliveryReceipt (0.31s)
+    task_input_delivery_read_integration_test.go:389: POLICY_DENIED
+--- FAIL: TestZIPInputIsDeliveredToWorkerAndReadBackPerFile (0.31s)
+    task_input_delivery_read_integration_test.go:477: POLICY_DENIED
+FAIL
+FAIL	polis/internal/workbench	9.659s
+FAIL

@@ -107,6 +107,7 @@ import type {
   ServiceEndpointView,
 } from './workbench';
 import type {MissionInputCommandReceipt, MissionInputSourceKind, MissionInputState, MissionInputView, ModelInputDeliveryRef, ModelInputExclusion, TaskInputManifestView} from './mission-input';
+import {containsC0OrDelControlCharacters} from './text-validation';
 
 export type ValidationIssue = Readonly<{
   path: string;
@@ -558,12 +559,15 @@ function isTaskTakeoverWorkspaceTreeBinding(value: unknown): value is TaskTakeov
     && typeof value.revision === 'number' && Number.isSafeInteger(value.revision) && value.revision > 0
     && typeof value.manifestSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.manifestSha256)
     && typeof value.fileCount === 'number' && Number.isSafeInteger(value.fileCount) && value.fileCount >= 1 && value.fileCount <= 512
-    && typeof value.bytes === 'number' && Number.isSafeInteger(value.bytes) && value.bytes >= 1 && value.bytes <= 16 * 1024 * 1024;
+    && typeof value.bytes === 'number' && Number.isSafeInteger(value.bytes) && value.bytes >= 1 && value.bytes <= 16 * 1024 * 1024
+    && ((value.baseCommitOid === undefined && value.inputManifestSha256 === undefined)
+      || (typeof value.baseCommitOid === 'string' && /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(value.baseCommitOid)
+        && typeof value.inputManifestSha256 === 'string' && /^[0-9a-f]{64}$/.test(value.inputManifestSha256)));
 }
 
 function isWorkspaceRelativePath(value: unknown): value is string {
   if (typeof value !== 'string' || value.length === 0 || value.length > 1024 || value.startsWith('/') || value.endsWith('/') || value.includes('\\') || value.includes('%') || value.includes(':')) return false;
-  return value.split('/').every(part => part !== '' && part !== '.' && part !== '..' && part.trim() === part && part.length <= 255 && !/[\u0000-\u001f\u007f]/.test(part));
+  return value.split('/').every(part => part !== '' && part !== '.' && part !== '..' && part.trim() === part && part.length <= 255 && !containsC0OrDelControlCharacters(part));
 }
 
 function isTaskTakeoverWorkspaceManifestEntry(value: unknown): value is TaskTakeoverWorkspaceManifestEntryView {
@@ -726,7 +730,12 @@ function isNotifications(value: unknown): value is NotificationsView {
 }
 
 export function isAcceptanceContract(value: unknown): value is AcceptanceContract {
-  if (!isRecord(value) || value.revision !== 'text-acceptance@1' || !Array.isArray(value.required_text) || value.required_text.length < 1 || value.required_text.length > 8) {
+  if (!isRecord(value) || !Array.isArray(value.required_text) || value.required_text.length < 1 || value.required_text.length > 8) {
+    return false;
+  }
+  const isTextOnlyContract = value.revision === 'text-acceptance@1' && value.go_test_profile_revision === undefined;
+  const isOfflineGoTestContract = value.revision === 'text-acceptance@2' && value.go_test_profile_revision === 'polis-go-test-fixture@1';
+  if (!isTextOnlyContract && !isOfflineGoTestContract) {
     return false;
   }
   const seen = new Set<string>();
@@ -2598,8 +2607,8 @@ export function validationMessage(issues: ReadonlyArray<ValidationIssue>): strin
 const ENVIRONMENT_PREPARATION_STATES: ReadonlyArray<ProjectEnvironmentRevisionView['preparationState']> = ['unprepared', 'blocked_policy', 'blocked_source_unverified', 'blocked_unqualified', 'accepted', 'starting', 'running', 'ready', 'failed', 'cancelled', 'outcome_unknown'];
 const ENVIRONMENT_POLICY_DECISIONS: ReadonlyArray<ProjectEnvironmentRevisionView['policyDecision']> = ['unverified', 'source_unverified', 'not_approved', 'approved', 'revoked', 'revocation_required'];
 const ENVIRONMENT_EXECUTOR_QUALIFICATIONS: ReadonlyArray<ProjectEnvironmentRevisionView['executorQualification']> = ['unqualified', 'qualified', 'expired', 'revoked', 'identity_stale'];
-const JOB_KINDS: ReadonlyArray<JobRunView['kind']> = ['batch', 'service', 'controlled_input'];
-const JOB_STATES: ReadonlyArray<JobRunView['state']> = ['accepted', 'starting', 'running', 'exited', 'failed', 'cancelled', 'outcome_unknown'];
+const JOB_KINDS: ReadonlyArray<JobRunView['kind']> = ['batch', 'service', 'controlled_input', 'go_test'];
+const JOB_STATES: ReadonlyArray<JobRunView['state']> = ['accepted', 'blocked', 'starting', 'running', 'exited', 'failed', 'cancelled', 'outcome_unknown'];
 const JOB_READINESS: ReadonlyArray<JobRunView['readiness']> = ['not_applicable', 'not_ready', 'ready', 'unhealthy'];
 const NODE_ENVIRONMENT_PROFILES: ReadonlyArray<CrossBackendHandoverView['sourceProfileId']> = ['windows-node-npm@1', 'linux-node-npm@1'];
 const SERVICE_READINESS: ReadonlyArray<ServiceEndpointView['readiness']> = ['not_ready', 'ready', 'unhealthy', 'revoked'];
@@ -2757,10 +2766,11 @@ function isJobRunView(value: unknown, companyId: string, taskId: string): value 
   return value.companyId === companyId
     && hasString(value, 'jobId')
     && value.taskId === taskId
-    && hasString(value, 'sessionId')
-    && hasString(value, 'environmentRevisionId')
+    && typeof value.sessionId === 'string'
+    && typeof value.environmentRevisionId === 'string'
     && typeof value.handoverId === 'string'
     && isOneOf(value.kind, JOB_KINDS)
+    && (value.kind === 'go_test' ? value.sessionId === '' && value.environmentRevisionId === '' : value.sessionId !== '' && value.environmentRevisionId !== '')
     && typeof value.serviceId === 'string'
     && isJobRunServiceIdentityProjection(value.kind, value.serviceId)
     && isOneOf(value.state, JOB_STATES)
@@ -2776,8 +2786,43 @@ function isJobRunView(value: unknown, companyId: string, taskId: string): value 
     && isNullableString(value.logManifestSha256)
     && (value.logManifestSha256 === null || SHA256_PATTERN.test(value.logManifestSha256))
     && isJobRunServiceEndpointProjection(value.kind, value.state, value.readiness, value.serviceEndpoint)
+    && (value.kind === 'go_test' ? isGoTestJobView(value.goTest) : value.goTest === undefined)
     && isTimestamp(value.createdAt)
     && isTimestamp(value.updatedAt);
+}
+
+function isGoTestJobView(value: unknown): value is NonNullable<JobRunView['goTest']> {
+  if (!isRecord(value) || typeof value.bindingSha256 !== 'string' || !SHA256_PATTERN.test(value.bindingSha256)
+    || typeof value.baseCommitOid !== 'string' || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(value.baseCommitOid)
+    || typeof value.inputManifestSha256 !== 'string' || !SHA256_PATTERN.test(value.inputManifestSha256)
+    || typeof value.baseSnapshotArtifactId !== 'string' || typeof value.candidateSnapshotArtifactId !== 'string'
+    || typeof value.baseSnapshotSha256 !== 'string' || !SHA256_PATTERN.test(value.baseSnapshotSha256)
+    || typeof value.candidateSnapshotSha256 !== 'string' || !SHA256_PATTERN.test(value.candidateSnapshotSha256)
+    || typeof value.baseFilesSha256 !== 'string' || !SHA256_PATTERN.test(value.baseFilesSha256)
+    || typeof value.candidateFilesSha256 !== 'string' || !SHA256_PATTERN.test(value.candidateFilesSha256)
+    || typeof value.taskValidationBindingSha256 !== 'string' || !SHA256_PATTERN.test(value.taskValidationBindingSha256)
+    || typeof value.profileRevision !== 'string' || value.profileRevision !== 'polis-go-test-fixture@1'
+    || typeof value.profileSha256 !== 'string' || !SHA256_PATTERN.test(value.profileSha256)
+    || typeof value.runnerSha256 !== 'string' || !SHA256_PATTERN.test(value.runnerSha256)
+    || typeof value.toolchainSha256 !== 'string' || !SHA256_PATTERN.test(value.toolchainSha256)
+    || typeof value.commandSha256 !== 'string' || !SHA256_PATTERN.test(value.commandSha256)
+    || typeof value.testManifestSha256 !== 'string' || !SHA256_PATTERN.test(value.testManifestSha256)
+    || typeof value.baseWorkspaceRevision !== 'number' || !Number.isSafeInteger(value.baseWorkspaceRevision) || value.baseWorkspaceRevision < 1
+    || typeof value.candidateWorkspaceRevision !== 'number' || !Number.isSafeInteger(value.candidateWorkspaceRevision) || value.candidateWorkspaceRevision < 1
+    || value.candidateWorkspaceRevision <= value.baseWorkspaceRevision) return false;
+  const resourceLimits = value.resourceLimits;
+  if (!isRecord(resourceLimits)) return false;
+  const expectedLimits: Readonly<Record<string, number>> = {
+    cpuQuotaMicros: 200_000, cpuPeriodMicros: 100_000, memoryBytes: 2_147_483_648, swapBytes: 0, pids: 256,
+    wallTimeoutMs: 120_000, scratchBytes: 1_073_741_824, scratchInodes: 4096, stdoutBytes: 524_288, stderrBytes: 524_288,
+  };
+  if (Object.entries(expectedLimits).some(([key, expected]) => resourceLimits[key] !== expected)
+    || Object.keys(resourceLimits).length !== Object.keys(expectedLimits).length) return false;
+  const hasOutcome = value.outcome !== undefined;
+  if (!hasOutcome) return value.resultSha256 === undefined && value.result === undefined && value.runnerReceiptSha256 === undefined && value.runnerReceipt === undefined;
+  return isOneOf(value.outcome, ['passed', 'candidate_failed', 'dependency_unavailable', 'infrastructure_failed', 'resource_limit', 'timed_out', 'cancelled'])
+    && typeof value.resultSha256 === 'string' && SHA256_PATTERN.test(value.resultSha256) && isRecord(value.result)
+    && typeof value.runnerReceiptSha256 === 'string' && SHA256_PATTERN.test(value.runnerReceiptSha256) && isRecord(value.runnerReceipt);
 }
 
 function isJobRunServiceIdentityProjection(kind: JobRunView['kind'], serviceId: string): boolean {

@@ -1,3 +1,4 @@
+// pattern: Functional Core
 // Package taskvalidation defines the public acceptance contract and its
 // immutable, task-scoped validator binding.
 package taskvalidation
@@ -9,14 +10,18 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+
+	"polis/internal/gotestprofile"
 )
 
 const (
-	AcceptanceContractRevision    = "text-acceptance@1"
-	TextContainsAllRunnerKind     = "text_contains_all"
-	TextContainsAllRunnerRevision = "text-contains-all@1"
-	maxRequiredTextItems          = 8
-	maxRequiredTextBytes          = 512
+	AcceptanceContractRevision       = "text-acceptance@1"
+	AcceptanceContractGoTestRevision = "text-acceptance@2"
+	GoTestFixtureProfileRevision     = gotestprofile.FixtureRevision
+	TextContainsAllRunnerKind        = "text_contains_all"
+	TextContainsAllRunnerRevision    = "text-contains-all@1"
+	maxRequiredTextItems             = 8
+	maxRequiredTextBytes             = 512
 )
 
 var identityPattern = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,80}$`)
@@ -25,8 +30,9 @@ var identityPattern = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,80}$`)
 // literal public criteria; only the two documented identity placeholders are
 // substituted when a Mission is frozen into a Task binding.
 type AcceptanceContract struct {
-	Revision     string   `json:"revision"`
-	RequiredText []string `json:"required_text"`
+	Revision              string   `json:"revision"`
+	RequiredText          []string `json:"required_text"`
+	GoTestProfileRevision string   `json:"go_test_profile_revision,omitempty"`
 }
 
 // Binding freezes the Mission's public contract and the trusted validator
@@ -50,7 +56,9 @@ func ValidateContract(contract *AcceptanceContract) error {
 	if contract == nil {
 		return nil
 	}
-	if contract.Revision != AcceptanceContractRevision || len(contract.RequiredText) == 0 || len(contract.RequiredText) > maxRequiredTextItems {
+	validRevision := (contract.Revision == AcceptanceContractRevision && contract.GoTestProfileRevision == "") ||
+		(contract.Revision == AcceptanceContractGoTestRevision && contract.GoTestProfileRevision == GoTestFixtureProfileRevision)
+	if !validRevision || len(contract.RequiredText) == 0 || len(contract.RequiredText) > maxRequiredTextItems {
 		return ErrInvalidContract
 	}
 	seen := make(map[string]struct{}, len(contract.RequiredText))
@@ -81,7 +89,7 @@ func Bind(taskID, missionID string, contract *AcceptanceContract) (*Binding, err
 	if !identityPattern.MatchString(taskID) || !identityPattern.MatchString(missionID) || ValidateContract(contract) != nil {
 		return nil, ErrInvalidContract
 	}
-	bound := AcceptanceContract{Revision: contract.Revision, RequiredText: make([]string, len(contract.RequiredText))}
+	bound := AcceptanceContract{Revision: contract.Revision, GoTestProfileRevision: contract.GoTestProfileRevision, RequiredText: make([]string, len(contract.RequiredText))}
 	for i, criterion := range contract.RequiredText {
 		criterion = strings.TrimSpace(criterion)
 		criterion = strings.ReplaceAll(criterion, "{{mission_id}}", missionID)

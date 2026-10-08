@@ -603,19 +603,22 @@ export type CreateTaskEnvironmentHandoverOptions = Readonly<{
   requestId: string;
 }>;
 
-type StartTaskJobRunBaseOptions = Readonly<{
+type StartTaskJobRunCommonOptions = Readonly<{
   companyId: string;
   taskId: string;
-  sessionId?: string;
-  environmentRevisionId: string;
-  handoverId?: string;
   requestId: string;
 }>;
 
-export type StartTaskJobRunOptions = StartTaskJobRunBaseOptions & (
-  | Readonly<{kind?: 'batch'; scriptPath: string; args: ReadonlyArray<string>}>
-  | Readonly<{kind: 'service'; serviceId: string}>
-);
+type StartTaskProjectJobRunOptions = StartTaskJobRunCommonOptions & Readonly<{
+  sessionId?: string;
+  environmentRevisionId: string;
+  handoverId?: string;
+}>;
+
+export type StartTaskJobRunOptions =
+  | (StartTaskProjectJobRunOptions & Readonly<{kind?: 'batch'; scriptPath: string; args: ReadonlyArray<string>}>)
+  | (StartTaskProjectJobRunOptions & Readonly<{kind: 'service'; serviceId: string}>)
+  | (StartTaskJobRunCommonOptions & Readonly<{kind: 'go_test'; baseSnapshotArtifactId: string; candidateSnapshotArtifactId: string}>);
 
 export type StopTaskJobRunOptions = Readonly<{
   companyId: string;

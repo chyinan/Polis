@@ -5,6 +5,7 @@ import type {WorkbenchApi} from '../data/workbench-api';
 import {useCreateTaskTakeoverLease, useReleaseTaskTakeoverLease, useSubmitTaskTakeoverDirectorySnapshot, useSubmitTaskTakeoverSnapshot, useTaskTakeoverLeases} from '../data/workbench-query';
 import type {CompanyOverviewView, TaskTakeoverLeaseView, TaskTakeoverWorkspaceManifestEntryView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 import {applyWorkspaceTextPatch, MAX_WORKSPACE_PATCH_BYTES, MAX_WORKSPACE_SNAPSHOT_BYTES} from '../domain/workspace-patch';
+import {containsC0OrDelControlCharacters} from '../domain/text-validation';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES} from '../data/workbench-api';
 import styles from '../styles/workbench.module.css';
 
@@ -34,7 +35,7 @@ type TakeoverWorkspaceDraftFile = Readonly<{
 
 function isSafeWorkspaceRelativePath(value: string): boolean {
   return value.length > 0 && value.length <= 1024 && !value.startsWith('/') && !value.endsWith('/') && !value.includes('\\') && !value.includes('%') && !value.includes(':')
-    && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !/[\u0000-\u001f\u007f]/.test(part));
+    && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !containsC0OrDelControlCharacters(part));
 }
 
 type MissionTakeoverPanelProps = Readonly<{
@@ -50,7 +51,8 @@ async function loadBoundWorkspaceFiles(api: WorkbenchApi, companyId: string, mis
   const binding = lease.workspaceTree;
   if (binding === undefined || manifest.taskId !== lease.taskId || manifest.workspaceTree.rootBindingId !== binding.rootBindingId
     || manifest.workspaceTree.revision !== binding.revision || manifest.workspaceTree.manifestSha256 !== binding.manifestSha256
-    || manifest.workspaceTree.fileCount !== binding.fileCount || manifest.workspaceTree.bytes !== binding.bytes) {
+    || manifest.workspaceTree.fileCount !== binding.fileCount || manifest.workspaceTree.bytes !== binding.bytes
+    || manifest.workspaceTree.baseCommitOid !== binding.baseCommitOid || manifest.workspaceTree.inputManifestSha256 !== binding.inputManifestSha256) {
     throw new Error('接管租约返回的冻结文件清单与租约固定摘要不一致。');
   }
   const loaded: Array<TakeoverWorkspaceDraftFile | undefined> = new Array(manifest.entries.length);
@@ -305,8 +307,14 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
       if (attempt.kind === 'workspace_tree') {
         await submitDirectorySnapshot.mutateAsync(attempt);
       } else {
-        const {kind: _kind, ...legacyAttempt} = attempt;
-        await submitSnapshot.mutateAsync(legacyAttempt);
+        await submitSnapshot.mutateAsync({
+          leaseId: attempt.leaseId,
+          requestId: attempt.requestId,
+          baseWorkspaceDigest: attempt.baseWorkspaceDigest,
+          baseWorkspaceRevision: attempt.baseWorkspaceRevision,
+          content: attempt.content,
+          humanEffortSeconds: attempt.humanEffortSeconds,
+        });
       }
       setPendingSnapshotReturn(null);
       setLoadedLeaseId('');
@@ -371,6 +379,7 @@ export function MissionTakeoverPanel({api, companyId, missionId, missionState, o
           </div> : null}
           {workspaceTreeManifest !== null ? <>
             <p className={styles.formHint}>冻结清单固定了 {workspaceTreeManifest.workspaceTree.fileCount} 个文件、{workspaceTreeManifest.workspaceTree.bytes} 字节；编辑器读取的都是该租约清单中的 CAS 内容。</p>
+            {workspaceTreeManifest.workspaceTree.baseCommitOid ? <p className={styles.formHint}>Git 基线 commit：<code>{workspaceTreeManifest.workspaceTree.baseCommitOid}</code> · 输入清单：<code>{workspaceTreeManifest.workspaceTree.inputManifestSha256}</code></p> : null}
             <label className={styles.formLabel}>工作区文件
               <select className={styles.formField} disabled={pendingSnapshotReturn !== null} value={selectedWorkspacePath} onChange={event => setSelectedWorkspacePath(event.target.value)}>
                 {workspaceTreeFiles.map(file => <option key={file.relativePath} value={file.relativePath}>{file.relativePath}{file.entry === null ? ' · 新增' : file.content === file.baseContent ? '' : ' · 已修改'}</option>)}

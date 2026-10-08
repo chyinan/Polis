@@ -1,0 +1,14 @@
+               current_user               | rolsuper | current_setting
+------------------------------------------+----------+-----------------
+ polis_self_dev_go_runtime_1791451002_307 | f        | 180006
+(1 row)
+
+ pg_try_advisory_lock
+----------------------
+ t
+(1 row)
+
+ pg_advisory_unlock
+--------------------
+ t
+(1 row)

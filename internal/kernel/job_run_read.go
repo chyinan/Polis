@@ -43,7 +43,7 @@ func (k *Kernel) GetJobRun(ctx context.Context, companyID, jobID string) (JobRun
 	if !core.ValidID(companyID) || !core.ValidID(jobID) {
 		return JobRunRecord{}, core.Malformed
 	}
-	return scanJobRunRecord(k.pool.QueryRow(ctx, `SELECT j.company_id,j.job_id,j.task_id,j.session_id,j.environment_revision_id,COALESCE(j.handover_id,''),j.kind,COALESCE(j.service_id,''),
+	return scanJobRunRecord(k.pool.QueryRow(ctx, `SELECT j.company_id,j.job_id,j.task_id,COALESCE(j.session_id,''),COALESCE(j.environment_revision_id,''),COALESCE(j.handover_id,''),j.kind,COALESCE(j.service_id,''),
 	e.state,e.readiness,e.exit_code,e.reason_code,e.stdout_offset,e.stderr_offset,e.logs_truncated,e.log_gap,COALESCE(e.log_manifest_sha256,''),j.created_at::text
 FROM job_runs j
 JOIN LATERAL (SELECT state,readiness,exit_code,reason_code,stdout_offset,stderr_offset,logs_truncated,log_gap,log_manifest_sha256

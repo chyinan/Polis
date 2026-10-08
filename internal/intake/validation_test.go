@@ -100,6 +100,20 @@ func TestPrepareUploadRejectsMislabeledOrInvalidText(t *testing.T) {
 	}
 }
 
+func TestPrepareUploadFileRecognizesGoModuleMetadataAsText(t *testing.T) {
+	for _, filename := range []string{"go.mod", "go.sum"} {
+		t.Run(filename, func(t *testing.T) {
+			prepared, err := prepareUploadFile(filename, "text/plain", []byte("module fixture\n"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if prepared.State != StateUsable || prepared.MediaType != "text/plain" {
+				t.Fatalf("Go module input is not usable text: %+v", prepared)
+			}
+		})
+	}
+}
+
 func TestPrepareUploadRejectsEmptyOversizedAndInvalidNames(t *testing.T) {
 	for _, test := range []struct {
 		name, filename string

@@ -137,7 +137,7 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 		return fail(err)
 	}
 	if !locked {
-		return fail(core.Denied)
+		return fail(fmt.Errorf("%w: another runtime holds the database lease", core.Denied))
 	}
 	var version int
 	var super bool
@@ -146,7 +146,7 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 		return fail(err)
 	}
 	if version < 180000 || version >= 190000 || super {
-		return fail(core.Denied)
+		return fail(fmt.Errorf("%w: runtime requires PostgreSQL 18 and a non-superuser role (version_num=%d, superuser=%t)", core.Denied, version, super))
 	}
 	if err = p.QueryRow(ctx, "SELECT incarnation FROM runtime_control WHERE singleton").Scan(&k.sourceIncarnation); err != nil {
 		return fail(err)
@@ -171,7 +171,7 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 		err = k.txRecover(ctx)
 	}
 	if err != nil {
-		return fail(err)
+		return fail(fmt.Errorf("recover runtime state: %w", err))
 	}
 	if err = k.reconcileMemoryRevocationOverlays(ctx); err != nil {
 		return fail(fmt.Errorf("apply memory revocation overlays: %w", err))

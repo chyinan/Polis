@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"slices"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
@@ -316,7 +317,7 @@ WHERE company_id=$1 AND id=$2 AND enabled`, draft.ID, employee.ID, strings.TrimS
 func persistFixedTeamRoleRevisionsTX(ctx context.Context, tx pgx.Tx, companyID string) error {
 	revision, err := spec.CompileFixedTeamCoverageRoleRevision(spec.FixedTeamCoverageDraftSnapshot(), spec.FixedTeamCoverageSHA256(), spec.FixedTeamCoverageOwnerDecision, "unverified")
 	var confirmationSeq int64
-var confirmationDigest, confirmationDecision, confirmationQualification, confirmationSnapshot string
+	var confirmationDigest, confirmationDecision, confirmationQualification, confirmationSnapshot string
 	if err = tx.QueryRow(ctx, `SELECT company_seq,payload->>'template_sha256',payload->>'decision',payload->>'qualification',COALESCE(payload->>'team_coverage_snapshot_base64','')
 FROM events WHERE company_id=$1 AND kind='company.team_coverage.confirmed' ORDER BY company_seq DESC LIMIT 1`, companyID).Scan(&confirmationSeq, &confirmationDigest, &confirmationDecision, &confirmationQualification, &confirmationSnapshot); err != nil {
 		return err
@@ -374,7 +375,10 @@ VALUES($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb,$8,$9) ON CONFLICT(company_id,employee
 FROM employee_role_revisions WHERE company_id=$1 AND employee_id=$2 AND revision_sha256=$3`, companyID, role.id, revision.RevisionSHA256).Scan(&storedConfirmationSeq, &storedRole, &storedTaskTypes, &storedTaskKinds, &storedDecision, &storedQualification); err != nil {
 			return err
 		}
-		if storedConfirmationSeq <= 0 || storedRole != role.role || storedTaskTypes != string(taskTypesJSON) || storedTaskKinds != string(taskKindsJSON) || storedDecision != revision.OwnerDecision || storedQualification != revision.Qualification {
+		var decodedTaskTypes, decodedTaskKinds []string
+		if json.Unmarshal([]byte(storedTaskTypes), &decodedTaskTypes) != nil || json.Unmarshal([]byte(storedTaskKinds), &decodedTaskKinds) != nil ||
+			storedConfirmationSeq <= 0 || storedRole != role.role || !slices.Equal(decodedTaskTypes, taskTypes) || !slices.Equal(decodedTaskKinds, taskKinds) ||
+			storedDecision != revision.OwnerDecision || storedQualification != revision.Qualification {
 			return core.Integrity
 		}
 	}

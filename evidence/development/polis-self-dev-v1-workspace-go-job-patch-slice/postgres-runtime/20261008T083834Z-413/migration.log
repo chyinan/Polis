@@ -1,0 +1,2 @@
+refusing migrations because the embedded SQL set failed its hash manifest: embedded migration "00129_go_test_job_persistence.sql" does not match its pinned SHA-256
+exit status 1

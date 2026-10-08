@@ -35,13 +35,14 @@ import type {ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView,
 import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 import {validateActivityEvent, validateActivityView, validateArtifactDeliveryManifest, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyFeedback, validateCompanyList, validateCompanyOverview, validateDomainEvidenceArtifactPreviewManifest, validateDomainEvidenceLedger, validateDomainEvidenceRecord, validateDomainEvidenceReviewRecord, validateDomainEvidenceSubstantiveAssessmentRecord, validateDomainProfileQualificationRecord, validateDurableDelivery, validateDurableDeliveryManifestCompletionReceipt, validateDurableDeliveryManifestInvalidationReceipt, validateDurableUserDispositionReceipt, validateEnvironmentExecutorQualificationReceipt, validateEnvironmentPolicyDecisionReceipt, validateEnvironmentPreparationRun, validateGitHubCredentialReceipt, validateGitHubFeedbackBacklogStatusReceipt, validateGitHubFeedbackPollReceipt, validateGitHubFeedbackProbeReceipt, validateGitHubFeedbackSourceReceipt, validateHumanInterventionCommandReceipt, validateJobRunCommandReceipt, validateJobRunLogArtifact, validateMissionChangeRequest, validateMissionChangeRequests, validateMissionCommandReceipt, validateMissionInputCommandReceipt, validateMissionInputs, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateProjectEnvironmentRevisions, validateRuntimeSettings, validateTaskCrossBackendHandovers, validateTaskInputManifest, validateTaskJobRuns, validateTaskTakeoverLease, validateTaskTakeoverLeases, validateWorkspace, validationMessage} from '../domain/workbench-validation';
 import {validateTaskTakeoverWorkspaceFile, validateTaskTakeoverWorkspaceManifest} from '../domain/workbench-validation';
+import {containsC0OrDelControlCharacters} from '../domain/text-validation';
 import type {TaskTakeoverWorkspaceFileQueryOptions, TaskTakeoverWorkspaceManifestQueryOptions} from './workbench-api';
 import type {TaskTakeoverDirectorySnapshotOptions} from './workbench-api';
 import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type CompleteDurableDeliveryManifestOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type InvalidateDurableDeliveryManifestOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type RecordDurableUserDispositionOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
 
 function isSafeWorkspaceRelativePath(value: string): boolean {
   return value.length > 0 && value.length <= 1024 && !value.startsWith('/') && !value.endsWith('/') && !value.includes('\\') && !value.includes('%') && !value.includes(':')
-    && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !/[\u0000-\u001f\u007f]/.test(part));
+    && value.split('/').every(part => part.length > 0 && part.length <= 255 && part !== '.' && part !== '..' && part.trim() === part && !containsC0OrDelControlCharacters(part));
 }
 
 function normalizeDurableDeliveryResponse(value: unknown): unknown {
@@ -1683,21 +1684,33 @@ export class RealWorkbenchApi implements WorkbenchApi {
   async startTaskJobRun(options: StartTaskJobRunOptions): Promise<JobRunCommandReceipt> {
     assertCompanyScope(options.companyId);
     assertCompanyScope(options.taskId);
-    if (options.sessionId !== undefined && options.sessionId !== '') assertCompanyScope(options.sessionId);
-    assertCompanyScope(options.environmentRevisionId);
-    if (options.handoverId !== undefined) assertCompanyScope(options.handoverId);
     assertRequestID(options.requestId);
-    if (options.kind === 'service') assertCompanyScope(options.serviceId);
-    const handover = options.handoverId === undefined ? {} : {handoverId: options.handoverId};
-    const command = options.kind === 'service'
-      ? {
-        taskId: options.taskId, sessionId: options.sessionId, environmentRevisionId: options.environmentRevisionId,
-        ...handover, kind: 'service', serviceId: options.serviceId, requestId: options.requestId,
-      }
-      : {
-        taskId: options.taskId, sessionId: options.sessionId, environmentRevisionId: options.environmentRevisionId,
-        ...handover, kind: 'batch', scriptPath: options.scriptPath, args: options.args, requestId: options.requestId,
+    let command: Record<string, unknown>;
+    if (options.kind === 'go_test') {
+      assertCompanyScope(options.baseSnapshotArtifactId);
+      assertCompanyScope(options.candidateSnapshotArtifactId);
+      command = {
+        taskId: options.taskId, kind: 'go_test', baseSnapshotArtifactId: options.baseSnapshotArtifactId,
+        candidateSnapshotArtifactId: options.candidateSnapshotArtifactId, requestId: options.requestId,
       };
+    } else {
+      if (options.sessionId !== undefined && options.sessionId !== '') assertCompanyScope(options.sessionId);
+      assertCompanyScope(options.environmentRevisionId);
+      if (options.handoverId !== undefined) assertCompanyScope(options.handoverId);
+      const handover = options.handoverId === undefined ? {} : {handoverId: options.handoverId};
+      if (options.kind === 'service') {
+        assertCompanyScope(options.serviceId);
+        command = {
+          taskId: options.taskId, sessionId: options.sessionId, environmentRevisionId: options.environmentRevisionId,
+          ...handover, kind: 'service', serviceId: options.serviceId, requestId: options.requestId,
+        };
+      } else {
+        command = {
+          taskId: options.taskId, sessionId: options.sessionId, environmentRevisionId: options.environmentRevisionId,
+          ...handover, kind: 'batch', scriptPath: options.scriptPath, args: options.args, requestId: options.requestId,
+        };
+      }
+    }
     const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/tasks/${encodeURIComponent(options.taskId)}/jobs`, options.requestId, command);
     const result = validateJobRunCommandReceipt(raw, options.companyId, options.taskId);
     if (!result.success) throw new Error(`failed to parse JobRun start receipt: ${validationMessage(result.issues)}`);
