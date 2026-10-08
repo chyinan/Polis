@@ -174,4 +174,6 @@ The prior reconciliation document remains unmodified and unstaged. `D:/Programs/
 
 ### Exact remaining boundary
 
+The `prepare` plan now checks both `cmd/polis/main.go` for the supervisor command and `bin/polis` for the executable. It reports `apply_ready=no` and `apply_command=not_available_until_supervisor_build` while either is missing. The root helper and systemd units were not invoked.
+
 The next source work is a trusted supervisor/JobRun result path and the formal Patch Artifact/DeliveryManifest/Workbench diff integration. The host step must wait until the supervisor command is implemented and built. After that, the owner must review the exact systemd/polkit plan and explicitly authorize the targeted root apply; then run `bash scripts/self-dev-go-job-host.sh verify`. Candidate code remains prohibited until effective CPU, memory/swap, task-count, scratch-byte/inode, network, timeout, and whole-process-tree cleanup probes pass. The PG-backed Go JobRun/Patch E2E and browser review remain unrun.

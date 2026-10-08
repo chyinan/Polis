@@ -25,6 +25,10 @@ grep -q '/etc/systemd/system/polis-self-dev-go-job@.service' <<<"$prepare_output
 grep -q 'TemporaryFileSystem=/scratch' <<<"$prepare_output" || fail "prepare omitted the per-job scratch tmpfs"
 grep -q 'cgroup.kill' <<<"$prepare_output" || fail "prepare omitted the cgroup.kill verification requirement"
 grep -q 'nr_inodes=4096' <<<"$prepare_output" || fail "prepare omitted the scratch inode cap"
+grep -q '^apply_ready=no$' <<<"$prepare_output" || fail "prepare must block root apply until the trusted supervisor exists"
+grep -q '^supervisor_command_source=missing$' <<<"$prepare_output" || fail "prepare must report the missing supervisor command"
+grep -q '^supervisor_binary=missing$' <<<"$prepare_output" || fail "prepare must report the missing supervisor binary"
+grep -q '^apply_command=not_available_until_supervisor_build$' <<<"$prepare_output" || fail "prepare must not offer an unusable root apply command"
 
 root_helper="$repo_root/scripts/self-dev-go-job-host-root.sh"
 root_plan="$(bash "$root_helper" plan --target-uid "$(id -u)")"

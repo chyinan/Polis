@@ -132,10 +132,30 @@ inspect() {
 }
 
 prepare() {
-  local uid user helper
+  local uid user helper repo_root supervisor_source supervisor_binary supervisor_command_source supervisor_binary_state apply_ready apply_command
   uid="$(current_uid)"
   user="$(id -un)"
   helper="$(cd "$(dirname "$0")" && pwd -P)/$root_helper_name"
+  repo_root="$(cd "$(dirname "$0")/.." && pwd -P)"
+  supervisor_source="$repo_root/cmd/polis/main.go"
+  supervisor_binary="$repo_root/bin/polis"
+  if grep -Fq -- 'self-dev-go-job-supervisor' "$supervisor_source"; then
+    supervisor_command_source=present
+  else
+    supervisor_command_source=missing
+  fi
+  if [[ -x "$supervisor_binary" && ! -L "$supervisor_binary" ]]; then
+    supervisor_binary_state=present
+  else
+    supervisor_binary_state=missing
+  fi
+  if [[ "$supervisor_command_source" == present && "$supervisor_binary_state" == present ]]; then
+    apply_ready=yes
+    apply_command="sudo bash $helper apply --target-uid $uid --confirm"
+  else
+    apply_ready=no
+    apply_command=not_available_until_supervisor_build
+  fi
   cat <<PLAN
 changes_applied=no
 prepare_mode=plan_only
@@ -143,6 +163,11 @@ target_distribution=${WSL_DISTRO_NAME:-unknown}
 target_uid=${uid}
 target_user=${user}
 root_required=yes
+supervisor_source_path=${repo_root}/cmd/polis/main.go
+supervisor_command_source=${supervisor_command_source}
+supervisor_binary_path=${supervisor_binary}
+supervisor_binary=${supervisor_binary_state}
+apply_ready=${apply_ready}
 exact_files:
   /etc/systemd/system/polis-self-dev-go-job@.service
   /etc/systemd/system/polis-self-dev-go-probe@.service
@@ -160,7 +185,7 @@ impact=only this WSL distribution's dedicated self-dev Go JobRun system units an
 polkit=allow ${user} to start/stop/kill only the two fixed Polis self-dev unit templates; no arbitrary commands
 rollback=stop exact probe/job units, then run: sudo bash ${helper} cleanup --target-uid ${uid} --confirm
 activation=systemd daemon-reload; actual controller and quota availability must still pass the probe before candidate execution
-apply_command=sudo bash ${helper} apply --target-uid ${uid} --confirm
+apply_command=${apply_command}
 verify_command=bash $(cd "$(dirname "$0")" && pwd -P)/self-dev-go-job-host.sh verify
 PLAN
 }
