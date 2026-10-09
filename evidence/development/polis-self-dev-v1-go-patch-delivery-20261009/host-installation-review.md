@@ -2,6 +2,13 @@
 
 基线 de9089bc。以下内容由现有 root helper 的 heredoc 展开，未安装任何文件。B 线重建产物后需要重新核对完整 SHA256；旧摘要不授权替换新产物。
 
+当前源码 checkpoint：`f824e06a1ccd2abcd06a39d80f9daf18c1b95da6`。
+当前待审批产物完整 SHA256：`b07af7b7aeca924721d6fba4ac49ba01f0d9e7bee95d3f3c8f642c14dd66e377`。
+当前 production source identity：`247346a11a1ed5bb935f24f0a155e0f93459a112adc43db27468c326de844b13`。
+以下 `76fe…` 摘要只保留作 de9089bc 基线记录，不是当前安装目标。本轮未安装两个版本中的任何一个。
+
+控制面还需显式配置 `POLIS_GO_TOOLCHAIN_ROOT=/mnt/d/Programs/Polis-cloud-main/.tools/go`，与现有 unit 一致。旧“仅预检”请求始终不执行；真正执行还需要独立的 `executeGoTest=true` 操作者请求。当前消息及构建成功都不提供这项执行或安装授权。
+
 ## 身份与权限
 
 supervisor 安装路径：`/usr/local/libexec/polis-selfdev-go-job-supervisor`。

@@ -1,0 +1,18 @@
+supervisor-build=PASS exit=0
+script-syntax=PASS exit=0
+host-cli=PASS exit=0
+host-inspect=PASS exit=0
+host-prepare=PASS exit=0
+go-tests=PASS exit=0
+go-race=PASS exit=0
+go-vet=PASS exit=0
+linux-build=PASS exit=0
+windows-build=PASS exit=0
+postgres-full=PASS exit=0
+provider_egress=0
+real_model_worker_started=0
+candidate_project_execution=NOT_RUN
+automatic_merge=NO
+automatic_deploy=NO
+host_execution_profile_qualification=BLOCKED
+verification_exit=0

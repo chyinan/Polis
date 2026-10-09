@@ -44,6 +44,23 @@ func TestInitializeFailureCapturesSafeLifecycleEvidence(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
+	// EOF can be observed before the runner's wait goroutine records exit,
+	// especially under -race. Establish the exit-before-initialize fixture
+	// premise without inferring process death from a closed protocol pipe.
+	deadline := time.NewTimer(5 * time.Second)
+	defer deadline.Stop()
+	tick := time.NewTicker(time.Millisecond)
+	defer tick.Stop()
+	for !p.HasExited() {
+		select {
+		case <-tick.C:
+		case <-deadline.C:
+			t.Fatal("exit helper did not actually exit before initialize")
+		}
+	}
+	if p.WaitError() == nil {
+		t.Fatal("exit helper unexpectedly succeeded")
+	}
 	err = client.InitializeWithPolicy(context.Background(), DefaultTransportPolicy())
 	var failure *InitializationFailure
 	if !errors.As(err, &failure) {

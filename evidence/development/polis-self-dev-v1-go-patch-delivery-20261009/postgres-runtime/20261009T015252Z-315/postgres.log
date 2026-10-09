@@ -1,0 +1,17 @@
+2026-10-09 09:52:54.178 CST [685] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-09 09:52:54.180 CST [685] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.276ceO/socket/.s.PGSQL.5432"
+2026-10-09 09:52:54.186 CST [691] LOG:  database system was shut down at 2026-10-09 09:52:53 CST
+2026-10-09 09:52:54.190 CST [685] LOG:  database system is ready to accept connections
+2026-10-09 09:53:04.298 CST [844] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-09 09:53:04.298 CST [844] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-09 09:53:05.150 CST [862] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-09 09:53:05.150 CST [862] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-09 09:54:32.370 CST [689] LOG:  checkpoint starting: immediate force wait
+2026-10-09 09:54:32.579 CST [689] LOG:  checkpoint complete: wrote 1762 buffers (10.8%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.012 s, sync=0.192 s, total=0.210 s; sync files=1332, longest=0.002 s, average=0.001 s; distance=24636 kB, estimate=24636 kB; lsn=0/2F65958, redo lsn=0/2F65900
+2026-10-09 09:54:55.122 CST [685] LOG:  received fast shutdown request
+2026-10-09 09:54:55.124 CST [685] LOG:  aborting any active transactions
+2026-10-09 09:54:55.125 CST [685] LOG:  background worker "logical replication launcher" (PID 694) exited with exit code 1
+2026-10-09 09:54:55.125 CST [689] LOG:  shutting down
+2026-10-09 09:54:55.127 CST [689] LOG:  checkpoint starting: shutdown immediate
+2026-10-09 09:54:55.137 CST [689] LOG:  checkpoint complete: wrote 51 buffers (0.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.005 s, total=0.012 s; sync files=16, longest=0.002 s, average=0.001 s; distance=407 kB, estimate=22213 kB; lsn=0/2FCB5D8, redo lsn=0/2FCB5D8
+2026-10-09 09:54:55.145 CST [685] LOG:  database system is shut down
