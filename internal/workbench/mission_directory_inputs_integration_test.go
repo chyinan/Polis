@@ -17,11 +17,12 @@ import (
 	"polis/internal/control"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/workbench"
 )
 
 func TestWorkbenchDirectoryInputIsScopedAndStoredAsOneSnapshot(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -34,12 +35,12 @@ func TestWorkbenchDirectoryInputIsScopedAndStoredAsOneSnapshot(t *testing.T) {
 	defer runtime.Close()
 	suffix := fmt.Sprint(time.Now().UnixNano())
 	companyID := "directory-http-" + suffix
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := "mission-" + suffix
-	if err = runtime.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(runtime, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 	readStore, err := workbench.NewPostgresReadStoreWithBlobRoot(ctx, dsn, root)

@@ -13,17 +13,27 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestRecoveryBackupPackagePostgresRoundTrip(t *testing.T) {
-	sourceRuntimeDSN := os.Getenv("POLIS_RECOVERY_TEST_SOURCE_DSN")
-	sourceBackupDSN := os.Getenv("POLIS_RECOVERY_TEST_BACKUP_DSN")
-	targetDSN := os.Getenv("POLIS_RECOVERY_TEST_TARGET_DSN")
-	targetRuntimeDSN := os.Getenv("POLIS_RECOVERY_TEST_TARGET_RUNTIME_DSN")
-	blobRoot := os.Getenv("POLIS_RECOVERY_TEST_BLOB_ROOT")
+	sourceRuntimeDSN := pgfixture.DSN(t, "POLIS_RECOVERY_TEST_SOURCE_DSN")
+	if sourceRuntimeDSN == "" {
+		t.Skip("dedicated temporary PostgreSQL backup/restore environment required")
+	}
+	sourceBackupDSN := os.Getenv("POLIS_TEST_ADMIN_DSN")
+	targetDSN := pgfixture.EmptyDSN(t, "POLIS_RECOVERY_TEST_TARGET_DSN")
+	targetRuntimeDSN := pgfixture.RuntimeForDatabase(t, sourceRuntimeDSN, targetDSN)
+	blobRoot := t.TempDir()
+	runtimeConfig, parseErr := pgx.ParseConfig(sourceRuntimeDSN)
+	if parseErr != nil {
+		t.Fatal(parseErr)
+	}
+	runtimeRoleName := runtimeConfig.User
 	pgDumpPath := os.Getenv("POLIS_PG_DUMP_PATH")
 	pgRestorePath := os.Getenv("POLIS_PG_RESTORE_PATH")
 	if sourceRuntimeDSN == "" || sourceBackupDSN == "" || targetDSN == "" || targetRuntimeDSN == "" || blobRoot == "" || pgDumpPath == "" || pgRestorePath == "" {
@@ -38,7 +48,7 @@ func TestRecoveryBackupPackagePostgresRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: t.TempDir(), PGDumpPath: pgDumpPath, RuntimeRoleName: "polis_runtime"}); !errors.Is(err, ErrRecoveryBackupMaintenanceBusy) {
+	if _, err = CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: t.TempDir(), PGDumpPath: pgDumpPath, RuntimeRoleName: runtimeRoleName}); !errors.Is(err, ErrRecoveryBackupMaintenanceBusy) {
 		k.Close()
 		t.Fatalf("backup window overlapping the live Polis controller error=%v", err)
 	}
@@ -72,7 +82,7 @@ func TestRecoveryBackupPackagePostgresRoundTrip(t *testing.T) {
 		adminPool.Close()
 		t.Fatal(err)
 	}
-	if _, err = CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: t.TempDir(), PGDumpPath: pgDumpPath, RuntimeRoleName: "polis_runtime"}); !errors.Is(err, ErrRecoveryBackupMaintenanceBusy) {
+	if _, err = CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: t.TempDir(), PGDumpPath: pgDumpPath, RuntimeRoleName: runtimeRoleName}); !errors.Is(err, ErrRecoveryBackupMaintenanceBusy) {
 		adminPool.Close()
 		t.Fatalf("backup window with an uploading MissionInput error=%v", err)
 	}
@@ -83,19 +93,19 @@ func TestRecoveryBackupPackagePostgresRoundTrip(t *testing.T) {
 	adminPool.Close()
 
 	outputRoot := t.TempDir()
-	backup, err := CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: outputRoot, PGDumpPath: pgDumpPath, RuntimeRoleName: "polis_runtime"})
+	backup, err := CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: outputRoot, PGDumpPath: pgDumpPath, RuntimeRoleName: runtimeRoleName})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if backup.Verification.Status != "PASSED" || backup.Verification.SchemaVersion < 40 || backup.Verification.VerifiedBlobCount != 1 ||
-		backup.Verification.DatabaseOwner == "" || backup.Verification.RuntimeRoleName != "polis_runtime" || len(backup.Verification.Extensions) == 0 {
+		backup.Verification.DatabaseOwner == "" || backup.Verification.RuntimeRoleName != runtimeRoleName || len(backup.Verification.Extensions) == 0 {
 		t.Fatalf("backup verification=%+v", backup.Verification)
 	}
 
 	restoredBlobRoot := filepath.Join(t.TempDir(), "restored-blobs")
 	firstRestore, err := RestoreRecoveryBackupPackage(ctx, RestoreRecoveryBackupOptions{
 		PackageRoot: backup.PackagePath, TargetDatabaseDSN: targetDSN, TargetBlobRoot: restoredBlobRoot,
-		RuntimeRoleName: "polis_runtime", PGRestorePath: pgRestorePath,
+		RuntimeRoleName: runtimeRoleName, PGRestorePath: pgRestorePath,
 	})
 	if err != nil || firstRestore.Status != "RESTORED" || firstRestore.DatabaseName == "" || firstRestore.RestoredBlobCount != 1 {
 		t.Fatalf("restore result=(%+v,%v)", firstRestore, err)
@@ -125,12 +135,12 @@ func TestRecoveryBackupPackagePostgresRoundTrip(t *testing.T) {
 	}
 	secondRestore, err := RestoreRecoveryBackupPackage(ctx, RestoreRecoveryBackupOptions{
 		PackageRoot: backup.PackagePath, TargetDatabaseDSN: targetDSN, TargetBlobRoot: restoredBlobRoot,
-		RuntimeRoleName: "polis_runtime", PGRestorePath: pgRestorePath,
+		RuntimeRoleName: runtimeRoleName, PGRestorePath: pgRestorePath,
 	})
 	if err != nil || secondRestore.Status != "ALREADY_RESTORED" {
 		t.Fatalf("idempotent restore result=(%+v,%v)", secondRestore, err)
 	}
-	otherBackup, err := CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: outputRoot, PGDumpPath: pgDumpPath, RuntimeRoleName: "polis_runtime"})
+	otherBackup, err := CreateRecoveryBackupPackage(ctx, CreateRecoveryBackupOptions{DatabaseDSN: sourceBackupDSN, BlobRoot: blobRoot, OutputRoot: outputRoot, PGDumpPath: pgDumpPath, RuntimeRoleName: runtimeRoleName})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,7 +149,7 @@ func TestRecoveryBackupPackagePostgresRoundTrip(t *testing.T) {
 	}
 	if _, err = RestoreRecoveryBackupPackage(ctx, RestoreRecoveryBackupOptions{
 		PackageRoot: otherBackup.PackagePath, TargetDatabaseDSN: targetDSN, TargetBlobRoot: restoredBlobRoot,
-		RuntimeRoleName: "polis_runtime", PGRestorePath: pgRestorePath,
+		RuntimeRoleName: runtimeRoleName, PGRestorePath: pgRestorePath,
 	}); err == nil {
 		t.Fatal("restore from a different package overwrote a previously restored target")
 	}

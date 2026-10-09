@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+
 	"sync"
 	"testing"
 	"time"
@@ -16,10 +16,11 @@ import (
 	"polis/internal/domainworkflow"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestResearchSimulationPersistsExactInputBoundDeterministicRun(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -30,10 +31,10 @@ func TestResearchSimulationPersistsExactInputBoundDeterministicRun(t *testing.T)
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("r3-research-run-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, runtime.LocalScope(companyID), "Research simulator input fixture", "persist deterministic simulation output", "r3-research-run-mission")
+	mission, err := createPGTestMissionGoal(runtime, ctx, runtime.LocalScope(companyID), "Research simulator input fixture", "persist deterministic simulation output", "r3-research-run-mission")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -103,7 +104,7 @@ FROM domain_workflow_research_simulation_runs WHERE company_id=$1 AND run_id=$2`
 		t.Fatalf("over-budget simulation error=%v, want malformed rejection", err)
 	}
 	otherCompany := fmt.Sprintf("r3-research-other-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, otherCompany); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, otherCompany); err != nil {
 		t.Fatal(err)
 	}
 	crossCompany := request

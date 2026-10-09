@@ -52,8 +52,11 @@ fi
 job_unit="$systemd_root/polis-self-dev-go-job@.service"
 probe_unit="$systemd_root/polis-self-dev-go-probe@.service"
 polkit_rule="$polkit_root/49-polis-self-dev-go-job.rules"
-supervisor_binary="$repo_root/bin/polis"
+supervisor_binary="$repo_root/bin/polis-selfdev-go-job-supervisor"
+supervisor_identity="$supervisor_binary.identity.json"
 installed_binary=/usr/local/libexec/polis-selfdev-go-job-supervisor
+installed_identity="$installed_binary.identity.json"
+runtime_base=/run/polis-self-dev-go-job
 binary_sha_file="$systemd_root/polis-self-dev-go-job-supervisor.sha256"
 probe_script="$repo_root/scripts/self-dev-go-job-host.sh"
 
@@ -67,23 +70,28 @@ target_uid=${target_uid}
 scope=one WSL distribution; systemd creates one resource-controlled cgroup per exact JobRun unit
 root_required=yes
 files_to_add:
+  /usr/local/libexec and /etc/polkit-1/rules.d (0755 parent directories only if absent)
   ${job_unit}
   ${probe_unit}
   ${polkit_rule}
   ${binary_sha_file}
-  ${installed_binary} (verified copy of this checkout's polis binary)
+  ${installed_binary} (verified dedicated fixed-Go supervisor built from this checkout)
+  ${installed_identity}
+  ${runtime_base} (0700; owned by ${target_user}; bounded request/result handoff only)
 resource_contract:
   CPUQuota=200%; CPUQuotaPeriodSec=100ms
   MemoryMax=2147483648; MemorySwapMax=0
   TasksMax=256 (cgroup pids controller counts tasks, including threads)
   RuntimeMaxSec=120s; KillMode=control-group
-  TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${target_uid},gid=${target_gid},nodev,nosuid,noexec
+  TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${target_uid},gid=${target_gid},nodev,nosuid
   stdout/stderr limits remain 512 KiB each in the trusted supervisor
 cgroup_management=systemd-managed; no direct cgroupfs writes
 polkit_scope=only start/stop/kill on polis-self-dev-go-job@job-*.service and polis-self-dev-go-probe@probe-*.service for ${target_user}; no sudoers rule
 mount_scope=per-system-service private tmpfs; no physical device, global mount, /etc/wsl.conf, or .wslconfig change
 rollback=stop exact unit instances; run this script cleanup --target-uid ${target_uid} --confirm; no recursive workspace or cgroup cleanup
 activation=systemd daemon-reload; actual controller and quota availability must pass the trusted probe
+prerequisite_command=sudo install -d -m 0755 /usr/local/libexec /etc/polkit-1/rules.d (review absent directories first; helper refuses missing/linked parents)
+parent_rollback=shared parent directories are retained; if created solely for this setup, remove only with rmdir after cleanup confirms they are empty
 PLAN
 }
 
@@ -104,9 +112,12 @@ fi
 
 case "$action" in
   apply)
-    [[ -x "$supervisor_binary" ]] || die "trusted supervisor build is missing: $supervisor_binary"
+    [[ -f "$supervisor_binary" && -x "$supervisor_binary" && ! -L "$supervisor_binary" ]] || die "trusted supervisor build is missing: $supervisor_binary"
+    [[ -f "$supervisor_identity" && ! -L "$supervisor_identity" ]] || die "supervisor build identity is missing"
+    [[ "$(od -An -tx1 -N5 "$supervisor_binary" | tr -d ' \n')" == 7f454c4602 ]] || die "supervisor must be a Linux 64-bit ELF executable"
+    timeout -k 1s 30s "$supervisor_binary" --verify-build "$supervisor_identity" --source-root "$repo_root" || die "supervisor platform/protocol/source identity mismatch; rebuild required"
     [[ -f "$probe_script" && ! -L "$probe_script" ]] || die "trusted probe source is missing or linked: $probe_script"
-    paths=("$job_unit" "$probe_unit" "$polkit_rule" "$binary_sha_file" "$installed_binary")
+    paths=("$job_unit" "$probe_unit" "$polkit_rule" "$binary_sha_file" "$installed_binary" "$installed_identity" "$runtime_base")
     for path in "${paths[@]}"; do
       [[ ! -e "$path" && ! -L "$path" ]] || die "refusing to overwrite existing path: $path"
     done
@@ -118,12 +129,15 @@ case "$action" in
       local path index
       for ((index=${#created[@]}-1; index>=0; index--)); do
         path="${created[$index]}"
-        if [[ "$path" == "$installed_binary" ]]; then
-          if [[ -f "$binary_sha_file" && -f "$installed_binary" && ! -L "$installed_binary" ]]; then
-            expected="$(tail -n 1 "$binary_sha_file")"
-            actual="$(sha256sum "$installed_binary" | cut -d ' ' -f 1)"
-            [[ "$expected" == "$actual" ]] && rm -f -- "$installed_binary"
+        if [[ "$path" == "$installed_binary" || "$path" == "$installed_identity" ]]; then
+          if [[ -f "$binary_sha_file" && -f "$path" && ! -L "$path" ]]; then
+            line=2; [[ "$path" == "$installed_identity" ]] && line=3
+            expected="$(sed -n "${line}p" "$binary_sha_file")"
+            actual="$(sha256sum "$path" | cut -d ' ' -f 1)"
+            [[ "$expected" == "$actual" ]] && rm -f -- "$path"
           fi
+        elif [[ "$path" == "$runtime_base" ]]; then
+          [[ -d "$path" && ! -L "$path" ]] && rmdir -- "$path" 2>/dev/null || true
         elif [[ -f "$path" && ! -L "$path" ]] && grep -Fxq "$marker" "$path"; then
           rm -f -- "$path"
         fi
@@ -141,7 +155,7 @@ Type=exec
 User=${target_user}
 Group=${target_gid}
 Slice=system.slice
-ExecStart=/usr/local/libexec/polis-selfdev-go-job-supervisor self-dev-go-job-supervisor --job-id=%i
+ExecStart=/usr/local/libexec/polis-selfdev-go-job-supervisor --job-id=%i --toolchain-root=${repo_root}/.tools/go
 CPUAccounting=yes
 MemoryAccounting=yes
 TasksAccounting=yes
@@ -153,9 +167,10 @@ TasksMax=256
 RuntimeMaxSec=120s
 TimeoutStopSec=1s
 KillMode=control-group
-TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${target_uid},gid=${target_gid},nodev,nosuid,noexec
+TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${target_uid},gid=${target_gid},nodev,nosuid
 RuntimeDirectory=polis-self-dev-go-job/%i
 RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
 ProtectSystem=strict
 ProtectHome=read-only
 ProtectKernelTunables=yes
@@ -194,7 +209,7 @@ TasksMax=256
 RuntimeMaxSec=120s
 TimeoutStopSec=1s
 KillMode=control-group
-TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${target_uid},gid=${target_gid},nodev,nosuid,noexec
+TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${target_uid},gid=${target_gid},nodev,nosuid
 RuntimeDirectory=polis-self-dev-go-job-probes/%i
 RuntimeDirectoryMode=0700
 ProtectSystem=strict
@@ -202,7 +217,7 @@ ProtectHome=read-only
 ProtectKernelTunables=yes
 ProtectKernelModules=yes
 ProtectKernelLogs=yes
-ProtectControlGroups=read-only
+ProtectControlGroups=yes
 PrivateDevices=yes
 NoNewPrivileges=yes
 RestrictSUIDSGID=yes
@@ -213,13 +228,19 @@ StandardError=journal
 UNIT
     chmod 0644 "$probe_unit"
     created+=("$probe_unit")
-    printf '%s\n%s\n' "$marker" "$(sha256sum "$supervisor_binary" | cut -d ' ' -f 1)" > "$binary_sha_file"
+    printf '%s\n%s\n%s\n' "$marker" "$(sha256sum "$supervisor_binary" | cut -d ' ' -f 1)" "$(sha256sum "$supervisor_identity" | cut -d ' ' -f 1)" > "$binary_sha_file"
     chmod 0644 "$binary_sha_file"
     created+=("$binary_sha_file")
     install -m 0755 "$supervisor_binary" "$installed_binary"
     created+=("$installed_binary")
+    install -m 0644 "$supervisor_identity" "$installed_identity"
+    created+=("$installed_identity")
+    install -d -m 0700 -o "$target_uid" -g "$target_gid" "$runtime_base"
+    created+=("$runtime_base")
     cat > "$polkit_rule" <<POLKIT
+/*
 ${marker}
+*/
 polkit.addRule(function(action, subject) {
   var unit = action.lookup("unit");
   var verb = action.lookup("verb");
@@ -244,22 +265,34 @@ POLKIT
     fi
     files=("$job_unit" "$probe_unit" "$polkit_rule")
     for path in "${files[@]}"; do
-      [[ ! -e "$path" ]] && continue
+      [[ ! -e "$path" && ! -L "$path" ]] && continue
       require_marked_file "$path"
-      rm -f -- "$path"
     done
     if [[ -e "$installed_binary" || -L "$installed_binary" ]]; then
       [[ -f "$installed_binary" && ! -L "$installed_binary" && -f "$binary_sha_file" && ! -L "$binary_sha_file" ]] || die "refusing unsafe installed supervisor path"
       grep -Fxq "$marker" "$binary_sha_file" || die "refusing to remove supervisor without matching marker"
-      expected="$(tail -n 1 "$binary_sha_file")"
+      expected="$(sed -n '2p' "$binary_sha_file")"
       actual="$(sha256sum "$installed_binary" | cut -d ' ' -f 1)"
       [[ "$expected" == "$actual" ]] || die "refusing to remove supervisor whose bytes changed"
-      rm -f -- "$installed_binary" "$binary_sha_file"
+      if [[ -e "$installed_identity" || -L "$installed_identity" ]]; then
+        [[ -f "$installed_identity" && ! -L "$installed_identity" ]] || die "refusing unsafe installed identity path"
+        [[ "$(sha256sum "$installed_identity" | cut -d ' ' -f 1)" == "$(sed -n '3p' "$binary_sha_file")" ]] || die "refusing changed supervisor identity"
+      fi
     elif [[ -e "$binary_sha_file" || -L "$binary_sha_file" ]]; then
       require_marked_file "$binary_sha_file"
-      rm -f -- "$binary_sha_file"
     fi
+    # Validate the complete exact removal set before changing any target.
+    if [[ ( -e "$installed_identity" || -L "$installed_identity" ) && ! -e "$installed_binary" ]]; then
+      die 'refusing an orphaned identity manifest without its verified binary'
+    fi
+    for path in "${files[@]}"; do
+      [[ ! -e "$path" ]] || rm -f -- "$path"
+    done
+    rm -f -- "$installed_binary" "$installed_identity" "$binary_sha_file"
     systemctl daemon-reload
+    if [[ -d "$runtime_base" && ! -L "$runtime_base" ]]; then
+      rmdir -- "$runtime_base" 2>/dev/null || printf 'runtime_handoff_preserved=%s (contains job evidence)\n' "$runtime_base"
+    fi
     printf 'cleaned=yes\nremoved_only_marked_paths=yes\n'
     ;;
   *)

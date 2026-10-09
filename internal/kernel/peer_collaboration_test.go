@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"os"
+
 	"polis/internal/core"
 	"polis/internal/fixture"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"testing"
 )
@@ -130,7 +131,7 @@ func TestPeerIntegrationUsesRuntimePaginationVerifierAndSeparateCoverage(t *test
 }
 
 func TestPeerInboxMakesMessageObservableBeforeAck(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -138,13 +139,13 @@ func TestPeerInboxMakesMessageObservableBeforeAck(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r03a-inbox-observe-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "r03a-inbox-observe-"+newID())
 	must(t, err)
-	fx, err := k.TXCreatePeerFixture(ctx, scope, "r03a-inbox-observe")
+	fx, err := createPGTestPeerFixture(k, ctx, scope, "r03a-inbox-observe")
 	must(t, err)
 	backend, err := k.BindFake(ctx, scope, "emp-backend")
 	must(t, err)
-	backendTask, err := k.TXClaim(ctx, backend)
+	backendTask, backend, err := claimPGTestBoundTask(k, ctx, backend)
 	must(t, err)
 	revision, err := k.TXProposePeerContract(ctx, backend, backendTask, PeerContractProposal{Endpoint: "GET /items?cursor=...", Schema: `{"items":[],"next_cursor":""}`}, "inbox-propose")
 	must(t, err)
@@ -207,7 +208,7 @@ func wantPeerStates(t *testing.T, k *Kernel, scope Scope, messageID, wantMessage
 }
 
 func TestR03APeerSendCommitVisibleToIndependentSession(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -215,17 +216,17 @@ func TestR03APeerSendCommitVisibleToIndependentSession(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r03a-durable-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "r03a-durable-"+newID())
 	must(t, err)
-	fixtureState, err := k.TXCreatePeerFixture(ctx, scope, "r03a-durable")
+	fixtureState, err := createPGTestPeerFixture(k, ctx, scope, "r03a-durable")
 	must(t, err)
 	backend, err := k.BindFake(ctx, scope, "emp-backend")
 	must(t, err)
 	frontend, err := k.BindFake(ctx, scope, "emp-frontend")
 	must(t, err)
-	backendTask, err := k.TXClaim(ctx, backend)
+	backendTask, backend, err := claimPGTestBoundTask(k, ctx, backend)
 	must(t, err)
-	_, err = k.TXClaim(ctx, frontend)
+	_, frontend, err = claimPGTestBoundTask(k, ctx, frontend)
 	must(t, err)
 	revision, err := k.TXProposePeerContract(ctx, backend, backendTask, PeerContractProposal{Endpoint: "GET /items?cursor=...", Schema: `{"items":[],"next_cursor":""}`}, "durable-propose")
 	must(t, err)
@@ -248,7 +249,7 @@ WHERE m.company_id=$1 AND m.id=$2`, scope.company, message.ID).Scan(&state, &obl
 }
 
 func TestR03APeerCollaborationPositiveAndNegative(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -256,17 +257,17 @@ func TestR03APeerCollaborationPositiveAndNegative(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r03a-positive-company")
+	scope, err := createPGTestCompany(k, ctx, "r03a-positive-company")
 	must(t, err)
-	fixtureState, err := k.TXCreatePeerFixture(ctx, scope, "r03a-positive")
+	fixtureState, err := createPGTestPeerFixture(k, ctx, scope, "r03a-positive")
 	must(t, err)
 	backend, err := k.BindFake(ctx, scope, "emp-backend")
 	must(t, err)
 	frontendOwner, err := k.BindFake(ctx, scope, "emp-frontend")
 	must(t, err)
-	backendTask, err := k.TXClaim(ctx, backend)
+	backendTask, backend, err := claimPGTestBoundTask(k, ctx, backend)
 	must(t, err)
-	frontendTask, err := k.TXClaim(ctx, frontendOwner)
+	frontendTask, frontendOwner, err := claimPGTestBoundTask(k, ctx, frontendOwner)
 	must(t, err)
 	frontend, err := k.TXNewWorker(ctx, scope, frontendTask.ID, "fake/frontend")
 	must(t, err)
@@ -346,17 +347,17 @@ func TestR03APeerCollaborationPositiveAndNegative(t *testing.T) {
 		t.Fatalf("Planner appeared in peer forwarding path: %d", plannerPath)
 	}
 
-	negativeScope, err := k.TXCreateCompany(ctx, "r03a-negative-company")
+	negativeScope, err := createPGTestCompany(k, ctx, "r03a-negative-company")
 	must(t, err)
-	negative, err := k.TXCreatePeerFixture(ctx, negativeScope, "r03a-negative")
+	negative, err := createPGTestPeerFixture(k, ctx, negativeScope, "r03a-negative")
 	must(t, err)
 	negativeBackend, err := k.BindFake(ctx, negativeScope, "emp-backend")
 	must(t, err)
 	negativeFrontend, err := k.BindFake(ctx, negativeScope, "emp-frontend")
 	must(t, err)
-	negativeBackendTask, err := k.TXClaim(ctx, negativeBackend)
+	negativeBackendTask, negativeBackend, err := claimPGTestBoundTask(k, ctx, negativeBackend)
 	must(t, err)
-	negativeFrontendTask, err := k.TXClaim(ctx, negativeFrontend)
+	negativeFrontendTask, negativeFrontend, err := claimPGTestBoundTask(k, ctx, negativeFrontend)
 	must(t, err)
 	negativeBackendArtifact, err := k.TXSubmit(ctx, negativeBackend, negativeBackendTask, "backend-v1", []byte(fixture.PeerBackendV1))
 	must(t, err)
@@ -379,7 +380,7 @@ func TestR03APeerCollaborationPositiveAndNegative(t *testing.T) {
 }
 
 func TestR03AFrontendHandoverPreservesPeerObligation(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -387,14 +388,14 @@ func TestR03AFrontendHandoverPreservesPeerObligation(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r03a-handover-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "r03a-handover-"+newID())
 	must(t, err)
 	mission := "r03a-handover-" + newID()
-	fx, err := k.TXCreatePeerFixture(ctx, scope, mission)
+	fx, err := createPGTestPeerFixture(k, ctx, scope, mission)
 	must(t, err)
 	backend, err := k.BindFake(ctx, scope, "emp-backend")
 	must(t, err)
-	backendTask, err := k.TXClaim(ctx, backend)
+	backendTask, backend, err := claimPGTestBoundTask(k, ctx, backend)
 	must(t, err)
 	revision, err := k.TXProposePeerContract(ctx, backend, backendTask, PeerContractProposal{Endpoint: "GET /items?cursor=...", Schema: `{"items":[],"next_cursor":""}`}, "handover-propose")
 	must(t, err)
@@ -451,7 +452,10 @@ func TestR03AFrontendHandoverPreservesPeerObligation(t *testing.T) {
 	must(t, k.TXPeerResolve(ctx, successor, message.ObligationID, artifact.ID, "successor-resolve"))
 	bundle, err = k.PeerHandover(ctx, successor)
 	must(t, err)
-	if bundle.ObligationState != "fulfilled" || bundle.MessageState != "resolved" {
-		t.Fatalf("successor did not close peer obligation: %+v", bundle)
+	var obligationState, messageState string
+	must(t, k.pool.QueryRow(ctx, `SELECT o.state,m.delivery_state FROM obligations o
+JOIN messages m ON m.company_id=o.company_id AND m.id=o.id WHERE o.company_id=$1 AND o.id=$2`, scope.company, message.ObligationID).Scan(&obligationState, &messageState))
+	if obligationState != "fulfilled" || messageState != "resolved" || bundle.ObligationID != "" || bundle.MessageID != "" {
+		t.Fatalf("successor did not close and remove the pending peer obligation: %s/%s %+v", obligationState, messageState, bundle)
 	}
 }

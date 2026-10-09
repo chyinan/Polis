@@ -17,13 +17,14 @@ import (
 	"polis/internal/codex"
 	"polis/internal/core"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/provider"
 	"polis/internal/runner"
 	"polis/internal/taskvalidation"
 )
 
 func TestRealProviderWorkerAdapterUsesOfflineRuntimeAndFinalizesWorkerLifecycle(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B1_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B1_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B1 PostgreSQL required")
 	}
@@ -35,7 +36,7 @@ func TestRealProviderWorkerAdapterUsesOfflineRuntimeAndFinalizesWorkerLifecycle(
 	}
 	defer k.Close()
 	company := "r05b1-provider-company"
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	adapter, err := NewRealProviderWorkerAdapter(k, runtime)
@@ -48,7 +49,7 @@ func TestRealProviderWorkerAdapterUsesOfflineRuntimeAndFinalizesWorkerLifecycle(
 		t.Fatalf("production adapter surface differs from generic product registry: adapter=%+v product=%+v", adapterSurface, productSurface)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{Title: "offline provider bridge", Goal: "persist one deterministic product artifact", RequestID: "bridge-create", AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}}})
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "offline provider bridge", Goal: "persist one deterministic product artifact", RequestID: "bridge-create", AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +144,7 @@ func TestLaunchQualificationAdapterAcceptsExplicitOfflineDirectMessagingSurface(
 }
 
 func TestRealProviderWorkerAdapterMissingBindingCannotQualifyOrSubmit(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B3_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B3_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated offline product PostgreSQL required")
 	}
@@ -155,7 +156,7 @@ func TestRealProviderWorkerAdapterMissingBindingCannotQualifyOrSubmit(t *testing
 	}
 	defer k.Close()
 	company := "r05b3-no-validation-company"
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	adapter, err := NewRealProviderWorkerAdapter(k, runtime)
@@ -163,49 +164,33 @@ func TestRealProviderWorkerAdapterMissingBindingCannotQualifyOrSubmit(t *testing
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{Title: "exploratory task", Goal: "explore without a public acceptance contract", RequestID: "no-validation-create"})
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "exploratory task", Goal: "explore without a public acceptance contract", RequestID: "no-validation-create"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = service.StartMission(ctx, company, MissionCommandRequest{MissionID: created.TargetID, RequestID: "no-validation-start"}); err != nil {
-		t.Fatal(err)
+	if _, err = service.StartMission(ctx, company, MissionCommandRequest{MissionID: created.TargetID, RequestID: "no-validation-start"}); err == nil {
+		t.Fatal("missing validation binding was admitted")
 	}
 	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	deadline := time.Now().Add(10 * time.Second)
-	for time.Now().Before(deadline) {
-		var sessionState, taskState string
-		var artifacts, checkpoints, checks int
-		err = pool.QueryRow(ctx, "SELECT state FROM worker_sessions WHERE company_id=$1 ORDER BY id DESC LIMIT 1", company).Scan(&sessionState)
-		if err == nil {
-			err = pool.QueryRow(ctx, "SELECT state FROM tasks WHERE company_id=$1 AND kind='compat' ORDER BY id DESC LIMIT 1", company).Scan(&taskState)
-		}
-		if err == nil {
-			err = pool.QueryRow(ctx, "SELECT count(*) FROM artifacts WHERE company_id=$1", company).Scan(&artifacts)
-		}
-		if err == nil {
-			err = pool.QueryRow(ctx, "SELECT count(*) FROM worker_checkpoints c JOIN worker_sessions s ON s.company_id=c.company_id AND s.id=c.session_id WHERE c.company_id=$1", company).Scan(&checkpoints)
-		}
-		if err == nil {
-			err = pool.QueryRow(ctx, "SELECT count(*) FROM worker_checks WHERE company_id=$1 AND phase='product' AND NOT passed AND report->>'status'='VALIDATION_NOT_CONFIGURED'", company).Scan(&checks)
-		}
-		if err == nil && sessionState == "stopped" && taskState == "working" && artifacts == 0 && checkpoints == 0 && checks == 1 {
-			if runtime.Stats().ProviderEgress != 0 || runtime.Stats().Reservations != 0 {
-				t.Fatalf("missing-binding offline run used provider: %+v", runtime.Stats())
-			}
-			service.Close()
-			return
-		}
-		time.Sleep(25 * time.Millisecond)
+	var sessions, artifacts, checkpoints, checks int
+	if err = pool.QueryRow(ctx, `SELECT (SELECT count(*) FROM worker_sessions WHERE company_id=$1),(SELECT count(*) FROM artifacts WHERE company_id=$1),(SELECT count(*) FROM worker_checkpoints WHERE company_id=$1),(SELECT count(*) FROM worker_checks WHERE company_id=$1)`, company).Scan(&sessions, &artifacts, &checkpoints, &checks); err != nil {
+		t.Fatal(err)
 	}
-	t.Fatalf("missing-binding task did not fail closed: err=%v", err)
+	if sessions != 0 || artifacts != 0 || checkpoints != 0 || checks != 0 {
+		t.Fatalf("missing binding crossed admission: sessions=%d artifacts=%d checkpoints=%d checks=%d", sessions, artifacts, checkpoints, checks)
+	}
+	if runtime.Stats().ProviderEgress != 0 || runtime.Stats().Reservations != 0 {
+		t.Fatalf("missing binding used provider: %+v", runtime.Stats())
+	}
+	service.Close()
 }
 
 func TestRealProviderWorkerAdapterCancelsOfflineTurnWithoutOrphan(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B1_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B1_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B1 PostgreSQL required")
 	}
@@ -217,7 +202,7 @@ func TestRealProviderWorkerAdapterCancelsOfflineTurnWithoutOrphan(t *testing.T) 
 	}
 	defer k.Close()
 	company := "r05b1-cancel-company"
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	adapter, err := NewRealProviderWorkerAdapter(k, runtime)
@@ -225,7 +210,7 @@ func TestRealProviderWorkerAdapterCancelsOfflineTurnWithoutOrphan(t *testing.T) 
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{Title: "cancel bridge", Goal: "cancel during an offline turn", RequestID: "cancel-create"})
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "cancel bridge", Goal: "cancel during an offline turn", RequestID: "cancel-create", AcceptanceContract: pgTestAcceptance()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -265,7 +250,7 @@ func TestRealProviderWorkerAdapterClosesReservationAfterPreTurnStop(t *testing.T
 	}
 	defer k.Close()
 	company := fmt.Sprintf("r05b16-reservation-stop-%d", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	runtime := &reservationTrackingRuntime{FakeRuntime: provider.NewFakeRuntime(provider.FakeRuntimeConfig{TurnDelay: 2 * time.Second})}
@@ -274,8 +259,7 @@ func TestRealProviderWorkerAdapterClosesReservationAfterPreTurnStop(t *testing.T
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{
-		Title:              "reservation lifecycle stop",
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "reservation lifecycle stop",
 		Goal:               "close the reservation when a no-turn worker is stopped",
 		RequestID:          "r0-5b16-reservation-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
@@ -298,7 +282,7 @@ func TestRealProviderWorkerRetainsOwnershipWhenStopPersistenceFails(t *testing.T
 	if runtime.GOOS != "linux" {
 		t.Skip("long-lived process fixture is Linux-specific")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -309,7 +293,7 @@ func TestRealProviderWorkerRetainsOwnershipWhenStopPersistenceFails(t *testing.T
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-real-stop-retry-%x", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	runtimeAdapter, err := NewRealProviderWorkerAdapter(k, provider.NewFakeRuntime(provider.FakeRuntimeConfig{TurnDelay: time.Second}))
@@ -317,7 +301,7 @@ func TestRealProviderWorkerRetainsOwnershipWhenStopPersistenceFails(t *testing.T
 		t.Fatal(err)
 	}
 	missionID := "r1-stop-retry-mission"
-	task, err := k.TXCreateProbe(ctx, k.LocalScope(companyID), missionID)
+	task, err := createPGTestProbe(k, ctx, k.LocalScope(companyID), missionID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -372,7 +356,7 @@ func TestRealProviderStartRetainsSessionWhenUnactivatedCleanupFails(t *testing.T
 	if runtime.GOOS != "linux" {
 		t.Skip("long-lived process fixture is Linux-specific")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -383,7 +367,7 @@ func TestRealProviderStartRetainsSessionWhenUnactivatedCleanupFails(t *testing.T
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-start-stop-retry-%x", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	startCtx, cancelStart := context.WithCancel(ctx)
@@ -394,8 +378,7 @@ func TestRealProviderStartRetainsSessionWhenUnactivatedCleanupFails(t *testing.T
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "retry unactivated provider stop", Goal: "retain startup process ownership after the first stop fails",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "retry unactivated provider stop", Goal: "retain startup process ownership after the first stop fails",
 		RequestID: companyID + "-create", AcceptanceContract: r05b5AcceptanceContractPointer(),
 	})
 	if err != nil {
@@ -428,7 +411,7 @@ func TestRealProviderStartRetainsSessionWhenUnactivatedCleanupFails(t *testing.T
 }
 
 func TestRealProviderStartRetainsReservationWhenNoProcessCleanupFails(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -439,7 +422,7 @@ func TestRealProviderStartRetainsReservationWhenNoProcessCleanupFails(t *testing
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-no-process-close-retry-%x", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	providerRuntime := &failFirstReservationCloseRuntime{
@@ -452,8 +435,7 @@ func TestRealProviderStartRetainsReservationWhenNoProcessCleanupFails(t *testing
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "retry no-process reservation close", Goal: "retain the provider reservation after stop finalization succeeds",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "retry no-process reservation close", Goal: "retain the provider reservation after stop finalization succeeds",
 		RequestID: companyID + "-create", AcceptanceContract: r05b5AcceptanceContractPointer(),
 	})
 	if err != nil {
@@ -492,7 +474,7 @@ func TestRealProviderStopReplaysConfirmationAfterAmbiguousCommit(t *testing.T) {
 	if runtime.GOOS != "linux" {
 		t.Skip("long-lived process fixture is Linux-specific")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -503,11 +485,11 @@ func TestRealProviderStopReplaysConfirmationAfterAmbiguousCommit(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-provider-stop-confirm-replay-%x", time.Now().UTC().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, scope, "r1-provider-stop-confirm-replay-task")
+	task, err := createPGTestProbe(k, ctx, scope, "r1-provider-stop-confirm-replay-task")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -558,7 +540,7 @@ func TestRealProviderStopReplaysConfirmationAfterAmbiguousCommit(t *testing.T) {
 }
 
 func TestBusinessPreflightRetainsOwnerWhenProcessStopFails(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -569,7 +551,7 @@ func TestBusinessPreflightRetainsOwnerWhenProcessStopFails(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-preflight-stop-retry-%x", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	startCtx, cancelStart := context.WithCancel(ctx)
@@ -580,8 +562,7 @@ func TestBusinessPreflightRetainsOwnerWhenProcessStopFails(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "preflight stop retry", Goal: "retain a business preflight process when cleanup first fails",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "preflight stop retry", Goal: "retain a business preflight process when cleanup first fails",
 		RequestID: companyID + "-create", AcceptanceContract: r05b5AcceptanceContractPointer(),
 	})
 	if err != nil {
@@ -739,7 +720,7 @@ func TestRealProviderWorkerAdapterReservationBearingPreflightStopsBeforeTurn(t *
 	}
 	defer k.Close()
 	company := fmt.Sprintf("r05b16-reservation-preflight-%d", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	runtime := &reservationTrackingRuntime{FakeRuntime: provider.NewFakeRuntime(provider.FakeRuntimeConfig{TurnDelay: 2 * time.Second})}
@@ -748,8 +729,7 @@ func TestRealProviderWorkerAdapterReservationBearingPreflightStopsBeforeTurn(t *
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{
-		Title:              "reservation bridge preflight",
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "reservation bridge preflight",
 		Goal:               "reach initialize and thread start without a provider turn",
 		RequestID:          "r0-5b16-preflight-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
@@ -871,7 +851,7 @@ func (s reservationTrackingSession) Turn(ctx context.Context, thread, prompt str
 }
 
 func TestRealProviderWorkerAdapterProcessStartFailureFinalizesSession(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B1_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B1_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B1 PostgreSQL required")
 	}
@@ -882,7 +862,7 @@ func TestRealProviderWorkerAdapterProcessStartFailureFinalizesSession(t *testing
 	}
 	defer k.Close()
 	company := "r05b1-start-failure-company"
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	base := provider.NewFakeRuntime(provider.FakeRuntimeConfig{})
@@ -891,7 +871,7 @@ func TestRealProviderWorkerAdapterProcessStartFailureFinalizesSession(t *testing
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{Title: "process failure bridge", Goal: "fail before provider process start", RequestID: "failure-create"})
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "process failure bridge", Goal: "fail before provider process start", RequestID: "failure-create", AcceptanceContract: pgTestAcceptance()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -913,7 +893,7 @@ func TestRealProviderWorkerAdapterProcessStartFailureFinalizesSession(t *testing
 }
 
 func TestRealProviderWorkerAdapterDisconnectIsInconclusiveAndStopped(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B1_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B1_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B1 PostgreSQL required")
 	}
@@ -924,7 +904,7 @@ func TestRealProviderWorkerAdapterDisconnectIsInconclusiveAndStopped(t *testing.
 	}
 	defer k.Close()
 	company := "r05b1-disconnect-company"
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	base := provider.NewFakeRuntime(provider.FakeRuntimeConfig{})
@@ -933,7 +913,7 @@ func TestRealProviderWorkerAdapterDisconnectIsInconclusiveAndStopped(t *testing.
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{Title: "disconnect bridge", Goal: "classify transport disconnect", RequestID: "disconnect-create"})
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "disconnect bridge", Goal: "classify transport disconnect", RequestID: "disconnect-create", AcceptanceContract: pgTestAcceptance()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -956,7 +936,7 @@ func TestRealProviderWorkerAdapterDisconnectIsInconclusiveAndStopped(t *testing.
 }
 
 func TestRealProviderWorkerAdapterInitializationFailureUsesInitializationEvent(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B15_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B15_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B15 PostgreSQL required")
 	}
@@ -967,7 +947,7 @@ func TestRealProviderWorkerAdapterInitializationFailureUsesInitializationEvent(t
 	}
 	defer k.Close()
 	company := fmt.Sprintf("r05b15-initialize-failure-%d", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	base := provider.NewFakeRuntime(provider.FakeRuntimeConfig{})
@@ -976,8 +956,7 @@ func TestRealProviderWorkerAdapterInitializationFailureUsesInitializationEvent(t
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{
-		Title:              "initialize failure classification",
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "initialize failure classification",
 		Goal:               "exercise the business provider initialization boundary",
 		RequestID:          "r0-5b15-initialize-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
@@ -1018,7 +997,7 @@ func TestRealProviderWorkerAdapterInitializationFailureUsesInitializationEvent(t
 }
 
 func TestRealProviderWorkerAdapterBusinessContextLocalPreflightAvoidsReservation(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B15_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B15_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B15 PostgreSQL required")
 	}
@@ -1029,7 +1008,7 @@ func TestRealProviderWorkerAdapterBusinessContextLocalPreflightAvoidsReservation
 	}
 	defer k.Close()
 	company := fmt.Sprintf("r05b15-business-preflight-%d", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	runtime := newLocalQualificationFakeRuntime()
@@ -1038,8 +1017,7 @@ func TestRealProviderWorkerAdapterBusinessContextLocalPreflightAvoidsReservation
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{
-		Title:              "business context local preflight",
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "business context local preflight",
 		Goal:               "reach initialize and thread start without a provider turn",
 		RequestID:          "r0-5b15-preflight-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
@@ -1063,7 +1041,7 @@ func TestRealProviderWorkerAdapterBusinessContextLocalPreflightAvoidsReservation
 }
 
 func TestRealProviderWorkerAdapterThreadStartFailureUsesThreadStartEvent(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B15_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B15_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B15 PostgreSQL required")
 	}
@@ -1074,7 +1052,7 @@ func TestRealProviderWorkerAdapterThreadStartFailureUsesThreadStartEvent(t *test
 	}
 	defer k.Close()
 	company := fmt.Sprintf("r05b15-thread-failure-%d", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	base := provider.NewFakeRuntime(provider.FakeRuntimeConfig{})
@@ -1083,7 +1061,7 @@ func TestRealProviderWorkerAdapterThreadStartFailureUsesThreadStartEvent(t *test
 		t.Fatal(err)
 	}
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{Title: "thread start failure classification", Goal: "classify thread start before a turn", RequestID: "r0-5b15-thread-create", AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}}})
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "thread start failure classification", Goal: "classify thread start before a turn", RequestID: "r0-5b15-thread-create", AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1213,7 +1191,8 @@ func waitForTerminalEvent(t *testing.T, ctx context.Context, pool *pgxpool.Pool,
 	deadline := time.Now().Add(10 * time.Second)
 	for time.Now().Before(deadline) {
 		var count int
-		if err := pool.QueryRow(ctx, "SELECT count(*) FROM events WHERE company_id=$1 AND kind=$2", company, kind).Scan(&count); err == nil && count == 1 {
+		if err := pool.QueryRow(ctx, `SELECT count(*) FROM events WHERE company_id=$1 AND kind=$2
+AND NOT EXISTS(SELECT 1 FROM worker_sessions WHERE company_id=$1 AND state<>'stopped')`, company, kind).Scan(&count); err == nil && count == 1 {
 			return
 		}
 		time.Sleep(25 * time.Millisecond)

@@ -12,7 +12,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
+
 	"strconv"
 	"strings"
 	"testing"
@@ -23,13 +23,14 @@ import (
 	"polis/internal/control"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/provider"
 	"polis/internal/taskvalidation"
 	"polis/internal/workbench"
 )
 
 func TestTaskInputManifestReadShowsFinalWorkerDeliveryStatus(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -46,7 +47,7 @@ func TestTaskInputManifestReadShowsFinalWorkerDeliveryStatus(t *testing.T) {
 	}
 	defer pool.Close()
 	companyID := fmt.Sprintf("input-delivery-read-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	fakeRuntime := provider.NewFakeRuntime(provider.FakeRuntimeConfig{TurnDelay: time.Millisecond})
@@ -56,8 +57,7 @@ func TestTaskInputManifestReadShowsFinalWorkerDeliveryStatus(t *testing.T) {
 	}
 	service := control.NewService(runtime, worker)
 	defer service.Close()
-	mission, err := service.CreateMission(ctx, companyID, control.CreateMissionRequest{
-		Title: "Input delivery view", Goal: "Read bound task inputs and record a local Worker turn.", RequestID: "input-delivery-read-mission",
+	mission, err := service.CreateMission(ctx, companyID, control.CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Input delivery view", Goal: "Read bound task inputs and record a local Worker turn.", RequestID: "input-delivery-read-mission",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Task summary:"}},
 	})
 	if err != nil {
@@ -104,7 +104,7 @@ func TestTaskInputManifestReadShowsFinalWorkerDeliveryStatus(t *testing.T) {
 }
 
 func TestEmptyTaskInputDeliveryIsRecordedAndReadAsNotRequired(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -121,7 +121,7 @@ func TestEmptyTaskInputDeliveryIsRecordedAndReadAsNotRequired(t *testing.T) {
 	}
 	defer pool.Close()
 	companyID := fmt.Sprintf("input-empty-read-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	fakeRuntime := provider.NewFakeRuntime(provider.FakeRuntimeConfig{TurnDelay: time.Millisecond})
@@ -131,8 +131,7 @@ func TestEmptyTaskInputDeliveryIsRecordedAndReadAsNotRequired(t *testing.T) {
 	}
 	service := control.NewService(runtime, worker)
 	defer service.Close()
-	mission, err := service.CreateMission(ctx, companyID, control.CreateMissionRequest{
-		Title: "No input mission", Goal: "Run without any registered MissionInputs.", RequestID: "input-empty-read-mission",
+	mission, err := service.CreateMission(ctx, companyID, control.CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "No input mission", Goal: "Run without any registered MissionInputs.", RequestID: "input-empty-read-mission",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Task summary:"}},
 	})
 	if err != nil {
@@ -190,7 +189,7 @@ func waitForFinalInputDelivery(t *testing.T, ctx context.Context, pool *pgxpool.
 }
 
 func TestQualifiedArtifactDeliveryManifestAndPackageReadFromPostgresAndCAS(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -207,7 +206,7 @@ func TestQualifiedArtifactDeliveryManifestAndPackageReadFromPostgresAndCAS(t *te
 	}
 	defer pool.Close()
 	companyID := fmt.Sprintf("artifact-download-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	adapter, err := control.NewRealProviderWorkerAdapter(runtime, provider.NewFakeRuntime(provider.FakeRuntimeConfig{}))
@@ -216,8 +215,7 @@ func TestQualifiedArtifactDeliveryManifestAndPackageReadFromPostgresAndCAS(t *te
 	}
 	service := control.NewService(runtime, adapter)
 	defer service.Close()
-	mission, err := service.CreateMission(ctx, companyID, control.CreateMissionRequest{
-		Title: "Artifact delivery verification", Goal: "Create a qualified local fixture artifact.", RequestID: "artifact-download-create",
+	mission, err := service.CreateMission(ctx, companyID, control.CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Artifact delivery verification", Goal: "Create a qualified local fixture artifact.", RequestID: "artifact-download-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -378,7 +376,7 @@ func mapKeys(values map[string][]byte) []string {
 }
 
 func TestTaskInputManifestReadProjectsPerFileDirectoryDeliveryReceipt(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -395,11 +393,11 @@ func TestTaskInputManifestReadProjectsPerFileDirectoryDeliveryReceipt(t *testing
 	}
 	defer pool.Close()
 	companyID := fmt.Sprintf("directory-delivery-read-%d", time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoalWithAcceptance(ctx, scope, "Directory input delivery view", "verify per-file delivery readback", &taskvalidation.AcceptanceContract{
+	mission, err := createPGTestMissionGoalWithAcceptance(runtime, ctx, scope, "Directory input delivery view", "verify per-file delivery readback", &taskvalidation.AcceptanceContract{
 		Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}"},
 	}, "directory-delivery-read-mission")
 	if err != nil {
@@ -466,7 +464,7 @@ VALUES($1,$2,$3,$4,'final','local_context_loaded',$5,$6,$7,$8,0)`, companyID, de
 }
 
 func TestZIPInputIsDeliveredToWorkerAndReadBackPerFile(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -483,11 +481,11 @@ func TestZIPInputIsDeliveredToWorkerAndReadBackPerFile(t *testing.T) {
 	}
 	defer pool.Close()
 	companyID := fmt.Sprintf("zip-delivery-read-%d", time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoalWithAcceptance(ctx, scope, "ZIP input delivery", "deliver verified ZIP text to a worker", &taskvalidation.AcceptanceContract{
+	mission, err := createPGTestMissionGoalWithAcceptance(runtime, ctx, scope, "ZIP input delivery", "deliver verified ZIP text to a worker", &taskvalidation.AcceptanceContract{
 		Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}"},
 	}, "zip-delivery-read-mission")
 	if err != nil {

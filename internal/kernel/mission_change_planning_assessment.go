@@ -177,7 +177,7 @@ func normalizeAssessmentIDs(values []string) ([]string, error) {
 	if values == nil || len(values) > maxMissionChangeAssessmentList {
 		return nil, core.Malformed
 	}
-	out := append([]string(nil), values...)
+	out := append([]string{}, values...)
 	for _, value := range out {
 		if !core.ValidID(value) {
 			return nil, core.Malformed

@@ -5,17 +5,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
 
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/provider"
 )
 
 func TestPauseResumeAreFormalAndIdempotentAcrossLaterTransitions(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -26,11 +27,11 @@ func TestPauseResumeAreFormalAndIdempotentAcrossLaterTransitions(t *testing.T) {
 	}
 	defer runtime.Close()
 	companyID := "lifecycle-control-" + fmt.Sprint(time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Pause/resume", "verify user-controlled formal pause and resume", "lifecycle-control-create")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Pause/resume", "verify user-controlled formal pause and resume", "lifecycle-control-create")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +72,7 @@ func TestPauseResumeAreFormalAndIdempotentAcrossLaterTransitions(t *testing.T) {
 }
 
 func TestStartMissionFinishesWorkerStartBeforeConcurrentCancellation(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -82,11 +83,11 @@ func TestStartMissionFinishesWorkerStartBeforeConcurrentCancellation(t *testing.
 	}
 	defer runtime.Close()
 	companyID := "lifecycle-start-cancel-" + fmt.Sprint(time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Start/cancel ordering", "verify lifecycle serialization", "lifecycle-start-cancel-create")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Start/cancel ordering", "verify lifecycle serialization", "lifecycle-start-cancel-create")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,7 +140,7 @@ func TestStartMissionFinishesWorkerStartBeforeConcurrentCancellation(t *testing.
 }
 
 func TestFailedWorkerStartReplayRequiresLifecycleRecovery(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -150,11 +151,11 @@ func TestFailedWorkerStartReplayRequiresLifecycleRecovery(t *testing.T) {
 	}
 	defer runtime.Close()
 	companyID := "lifecycle-start-failed-" + fmt.Sprint(time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Failed Worker start", "ensure start replay is fenced", "lifecycle-start-failed-create")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Failed Worker start", "ensure start replay is fenced", "lifecycle-start-failed-create")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -170,7 +171,7 @@ func TestFailedWorkerStartReplayRequiresLifecycleRecovery(t *testing.T) {
 }
 
 func TestStartMissionReplayKeepsConfirmedStartAfterWorkerFinishes(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -181,11 +182,11 @@ func TestStartMissionReplayKeepsConfirmedStartAfterWorkerFinishes(t *testing.T) 
 	}
 	defer runtime.Close()
 	companyID := "lifecycle-start-finished-" + fmt.Sprint(time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Completed Worker start", "preserve the confirmed start receipt", "lifecycle-start-finished-create")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Completed Worker start", "preserve the confirmed start receipt", "lifecycle-start-finished-create")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -203,7 +204,7 @@ func TestStartMissionReplayKeepsConfirmedStartAfterWorkerFinishes(t *testing.T) 
 }
 
 func TestStartMissionReplayAfterRuntimeRestartRequiresSessionReconciliation(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -214,12 +215,12 @@ func TestStartMissionReplayAfterRuntimeRestartRequiresSessionReconciliation(t *t
 		t.Fatal(err)
 	}
 	companyID := "lifecycle-start-restart-" + fmt.Sprint(time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		runtime.Close()
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Restarted Worker start", "require persisted WorkerSession reconciliation", "lifecycle-start-restart-create")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Restarted Worker start", "require persisted WorkerSession reconciliation", "lifecycle-start-restart-create")
 	if err != nil {
 		runtime.Close()
 		t.Fatal(err)

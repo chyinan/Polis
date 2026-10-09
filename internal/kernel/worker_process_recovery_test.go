@@ -3,13 +3,14 @@ package kernel
 
 import (
 	"context"
-	"os"
+
 	"runtime"
 	"strings"
 	"testing"
 
 	"polis/internal/core"
 	"polis/internal/environment"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 )
 
@@ -35,7 +36,7 @@ func TestWindowsWorkerHostStopReceiptReplayRequiresExactEvidence(t *testing.T) {
 }
 
 func TestWorkerHostContainmentBindingScopesRecoveryCandidates(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -43,9 +44,9 @@ func TestWorkerHostContainmentBindingScopesRecoveryCandidates(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "worker-host-recovery-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "worker-host-recovery-"+newID())
 	must(t, err)
-	task, err := k.TXCreateProbe(ctx, scope, "worker-host-recovery-mission")
+	task, err := createPGTestProbe(k, ctx, scope, "worker-host-recovery-mission")
 	must(t, err)
 	binding, err := k.TXNewWorker(ctx, scope, task.ID, "offline-process-recovery")
 	must(t, err)
@@ -124,7 +125,7 @@ func TestWorkerHostContainmentBindingScopesRecoveryCandidates(t *testing.T) {
 }
 
 func TestTaskWorkspaceCASRehydratesForNewSessionAfterKernelRestart(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -133,9 +134,9 @@ func TestTaskWorkspaceCASRehydratesForNewSessionAfterKernelRestart(t *testing.T)
 	first, err := Open(ctx, dsn, blobRoot)
 	must(t, err)
 	companyID := "workspace-restart-" + newID()
-	scope, err := first.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(first, ctx, companyID)
 	must(t, err)
-	task, err := first.TXCreateProbe(ctx, scope, "workspace-restart-mission-"+newID())
+	task, err := createPGTestProbe(first, ctx, scope, "workspace-restart-mission-"+newID())
 	must(t, err)
 	content := `{"files":[{"path":"README.md","content":"saved task workspace"}]}`
 	digest, err := putBlob(blobRoot, companyID, []byte(content))
@@ -174,7 +175,7 @@ func TestLegacyLinuxWorkerSessionProcessGroupRecoveryRemainsUnresolved(t *testin
 	if runtime.GOOS != "linux" {
 		t.Skip("Linux procfs reconciliation required")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -182,9 +183,9 @@ func TestLegacyLinuxWorkerSessionProcessGroupRecoveryRemainsUnresolved(t *testin
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "linux-worker-recovery-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "linux-worker-recovery-"+newID())
 	must(t, err)
-	task, err := k.TXCreateProbe(ctx, scope, "linux-worker-recovery-mission")
+	task, err := createPGTestProbe(k, ctx, scope, "linux-worker-recovery-mission")
 	must(t, err)
 	binding, err := k.TXNewWorker(ctx, scope, task.ID, "offline-linux-worker-recovery")
 	must(t, err)
@@ -233,7 +234,7 @@ func TestLegacyLinuxWorkerSessionProcessGroupRecoveryRemainsUnresolved(t *testin
 }
 
 func TestTXFinalizeWorkerBeforeProcessIsIdempotentForSameFailure(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -241,9 +242,9 @@ func TestTXFinalizeWorkerBeforeProcessIsIdempotentForSameFailure(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "worker-finalize-retry-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "worker-finalize-retry-"+newID())
 	must(t, err)
-	task, err := k.TXCreateProbe(ctx, scope, "worker-finalize-retry-mission")
+	task, err := createPGTestProbe(k, ctx, scope, "worker-finalize-retry-mission")
 	must(t, err)
 	binding, err := k.TXNewWorker(ctx, scope, task.ID, "offline-start-failure")
 	must(t, err)

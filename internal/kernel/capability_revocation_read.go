@@ -200,7 +200,7 @@ LEFT JOIN LATERAL (
  SELECT e.status FROM mcp_tool_call_events e WHERE e.company_id=c.company_id AND e.intent_id=c.intent_id ORDER BY e.event_seq DESC LIMIT 1
 ) current ON true
 WHERE r.company_id=$1 AND r.revocation_id=$2
-GROUP BY w.id,w.employee_id,w.task_id,t.mission_id,w.state,r.skill_load_count
+GROUP BY w.id,w.employee_id,w.task_id,t.mission_id,w.state,r.session_state_at_revocation,r.skill_load_count
 ORDER BY w.id LIMIT $3`
 	} else {
 		sessionCountQuery = `WITH uses AS (` + sessionUse + `)

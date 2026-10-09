@@ -137,19 +137,19 @@ prepare() {
   user="$(id -un)"
   helper="$(cd "$(dirname "$0")" && pwd -P)/$root_helper_name"
   repo_root="$(cd "$(dirname "$0")/.." && pwd -P)"
-  supervisor_source="$repo_root/cmd/polis/main.go"
-  supervisor_binary="$repo_root/bin/polis"
-  if grep -Fq -- 'self-dev-go-job-supervisor' "$supervisor_source"; then
+  supervisor_source="$repo_root/cmd/polis-selfdev-go-job-supervisor/main.go"
+  supervisor_binary="$repo_root/bin/polis-selfdev-go-job-supervisor"
+  if [[ -f "$supervisor_source" && ! -L "$supervisor_source" ]]; then
     supervisor_command_source=present
   else
     supervisor_command_source=missing
   fi
-  if [[ -x "$supervisor_binary" && ! -L "$supervisor_binary" ]]; then
+  if [[ -f "$supervisor_binary" && -x "$supervisor_binary" && ! -L "$supervisor_binary" ]] && [[ "$(od -An -tx1 -N5 "$supervisor_binary" | tr -d ' \n')" == 7f454c4602 ]]; then
     supervisor_binary_state=present
   else
     supervisor_binary_state=missing
   fi
-  if [[ "$supervisor_command_source" == present && "$supervisor_binary_state" == present ]]; then
+  if [[ "$supervisor_command_source" == present && "$supervisor_binary_state" == present ]] && timeout -k 1s 30s "$supervisor_binary" --verify-build "$supervisor_binary.identity.json" --source-root "$repo_root" >/dev/null 2>&1; then
     apply_ready=yes
     apply_command="sudo bash $helper apply --target-uid $uid --confirm"
   else
@@ -163,28 +163,37 @@ target_distribution=${WSL_DISTRO_NAME:-unknown}
 target_uid=${uid}
 target_user=${user}
 root_required=yes
-supervisor_source_path=${repo_root}/cmd/polis/main.go
+supervisor_source_path=${supervisor_source}
 supervisor_command_source=${supervisor_command_source}
 supervisor_binary_path=${supervisor_binary}
 supervisor_binary=${supervisor_binary_state}
 apply_ready=${apply_ready}
+setup_plan_valid=${apply_ready}
+supervisor_binary_built=${apply_ready}
+privileged_apply_authorized=no
+host_execution_profile_qualified=no
 exact_files:
+  /usr/local/libexec and /etc/polkit-1/rules.d (create 0755 only if absent; retain shared parents on cleanup)
   /etc/systemd/system/polis-self-dev-go-job@.service
   /etc/systemd/system/polis-self-dev-go-probe@.service
   /etc/polkit-1/rules.d/49-polis-self-dev-go-job.rules
   /usr/local/libexec/polis-selfdev-go-job-supervisor (built from this checkout)
+  /usr/local/libexec/polis-selfdev-go-job-supervisor.identity.json
+  /etc/systemd/system/polis-self-dev-go-job-supervisor.sha256
+  /run/polis-self-dev-go-job (0700; request/result handoff)
 resource_settings:
   CPUQuota=200%; CPUQuotaPeriodSec=100ms
   MemoryMax=2147483648; MemorySwapMax=0
   TasksMax=256 (pids.max counts all tasks, including processes and threads)
   RuntimeMaxSec=120s; KillMode=control-group
   termination=systemd-owned per-job cgroup; verify cgroup.kill presence and prove all child PIDs gone after stop
-  TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${uid},gid=$(id -g),nodev,nosuid,noexec
+  TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=${uid},gid=$(id -g),nodev,nosuid
   nr_inodes=4096 caps all filesystem inodes on this per-job tmpfs (files, directories and links), not just regular files
 impact=only this WSL distribution's dedicated self-dev Go JobRun system units and their systemd-created per-job cgroups; no global WSL config, physical disk, firewall, sudoers, or running Polis change
 polkit=allow ${user} to start/stop/kill only the two fixed Polis self-dev unit templates; no arbitrary commands
 rollback=stop exact probe/job units, then run: sudo bash ${helper} cleanup --target-uid ${uid} --confirm
 activation=systemd daemon-reload; actual controller and quota availability must still pass the probe before candidate execution
+prerequisite_command=sudo install -d -m 0755 /usr/local/libexec /etc/polkit-1/rules.d (review absent directories first)
 apply_command=${apply_command}
 verify_command=bash $(cd "$(dirname "$0")" && pwd -P)/self-dev-go-job-host.sh verify
 PLAN

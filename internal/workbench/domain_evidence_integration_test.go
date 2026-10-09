@@ -8,17 +8,18 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
+
 	"testing"
 	"time"
 
 	"polis/internal/control"
 	"polis/internal/domainworkflow"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestDomainEvidenceWorkbenchPersistsAndProjectsReadinessWithoutQualification(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -34,7 +35,7 @@ func TestDomainEvidenceWorkbenchPersistsAndProjectsReadinessWithoutQualification
 	}
 	defer readStore.Close()
 	companyID := fmt.Sprintf("domain-evidence-workbench-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	handler := NewHandler(nil, control.NewService(runtime, nil))

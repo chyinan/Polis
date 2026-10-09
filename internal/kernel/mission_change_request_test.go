@@ -3,13 +3,14 @@ package kernel
 
 import (
 	"context"
-	"os"
+
 	"runtime"
 	"strings"
 	"testing"
 
 	"polis/internal/core"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"polis/internal/taskvalidation"
 )
@@ -18,7 +19,7 @@ func TestMissionChangeRequestAppliesAsSuccessorOnlyAfterStoppedBoundary(t *testi
 	if runtime.GOOS != "linux" {
 		t.Skip("the owned process fixture requires Linux")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -28,12 +29,12 @@ func TestMissionChangeRequestAppliesAsSuccessorOnlyAfterStoppedBoundary(t *testi
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "change-request-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "change-request-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
 	baseContract := &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Task summary:", "Implementation:", "Validation:"}}
-	created, err := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "Change request source", "Return a non-empty list of records.", baseContract, "change-source-create-"+newID())
+	created, err := createPGTestMissionGoalWithAcceptance(k, ctx, scope, "Change request source", "Return a non-empty list of records.", baseContract, "change-source-create-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,8 +100,8 @@ VALUES($1,$2,$3,$4,$5,10,'ready','candidate',$6)`, scope.company, artifactID, ta
 	if _, err = k.TXCreateMissionChangeRequest(ctx, scope, created.ID, MissionChangeRequestInput{ChangeSummary: "A second concurrent Mission change."}, "change-create-overlap-"+newID()); err == nil {
 		t.Fatal("a second open formal change request was accepted for the same Mission")
 	}
-	if _, err = k.TXSetMissionPausedCommand(ctx, scope, created.ID, true, "change-source-pause-"+newID()); err != nil {
-		t.Fatal(err)
+	if _, err = k.TXSetMissionPausedCommand(ctx, scope, created.ID, true, "change-source-pause-"+newID()); err == nil {
+		t.Fatal("mission pause admitted a live writer")
 	}
 	if _, err = k.TXConsiderMissionChangeRequest(ctx, scope, created.ID, change.ID, "change-consider-live-writer-"+newID()); err == nil {
 		t.Fatal("change request was considered while its prior WorkerSession still owned the Task")
@@ -115,6 +116,13 @@ VALUES($1,$2,$3,$4,$5,10,'ready','candidate',$6)`, scope.company, artifactID, ta
 	if err = k.TXConfirmStopped(ctx, binding, stopProof); err != nil {
 		t.Fatal(err)
 	}
+	if _, err = k.TXSetMissionPausedCommand(ctx, scope, created.ID, true, "change-source-stopped-pause-"+newID()); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = k.TXConsiderMissionChangeRequest(ctx, scope, created.ID, change.ID, "change-missing-planning-"+newID()); err == nil {
+		t.Fatal("operator review bypassed the required Planning assessment")
+	}
+	planningWorkspaceSHA := assessPGTestMissionChange(t, k, scope, created.ID)
 	considered, err := k.TXConsiderMissionChangeRequest(ctx, scope, created.ID, change.ID, "change-consider-"+newID())
 	if err != nil {
 		t.Fatal(err)
@@ -136,8 +144,12 @@ VALUES($1,$2,$3,$4,$5,10,'ready','candidate',$6)`, scope.company, artifactID, ta
 	for _, item := range applied.InputRevisionMap {
 		handoverSnapshotCopied = handoverSnapshotCopied || (item.Origin == "task_workspace" && item.SourceTaskID == task.ID && item.ContentDigest == binding.WorkspaceDigest())
 	}
-	if len(applied.InputRevisionMap) != 2 || !handoverSnapshotCopied {
-		t.Fatalf("successor input map did not preserve both source input and stopped workspace: %+v", applied.InputRevisionMap)
+	var planningSnapshotCopied bool
+	for _, item := range applied.InputRevisionMap {
+		planningSnapshotCopied = planningSnapshotCopied || item.Origin == "task_workspace" && item.ContentDigest == planningWorkspaceSHA
+	}
+	if len(applied.InputRevisionMap) != 3 || !handoverSnapshotCopied || !planningSnapshotCopied {
+		t.Fatalf("successor input map did not preserve the source input and both stopped workspaces: %+v", applied.InputRevisionMap)
 	}
 	successorMissionID := *applied.SuccessorMissionID
 	oldMission, err := k.MissionDetails(ctx, scope, created.ID)
@@ -168,12 +180,13 @@ VALUES($1,$2,$3,$4,$5,10,'ready','candidate',$6)`, scope.company, artifactID, ta
 		t.Fatal(err)
 	}
 	manifest, err := k.TaskInputManifest(ctx, scope, newTask.ID)
-	var preservedRequirementInput, preservedWorkspaceInput bool
+	var preservedRequirementInput, preservedWorkspaceInput, preservedPlanningInput bool
 	for _, candidate := range manifest.Manifest.CandidateInputs {
 		preservedRequirementInput = preservedRequirementInput || candidate.ContentDigest == preparedInput.ContentDigest
 		preservedWorkspaceInput = preservedWorkspaceInput || candidate.ContentDigest == binding.WorkspaceDigest()
+		preservedPlanningInput = preservedPlanningInput || candidate.ContentDigest == planningWorkspaceSHA
 	}
-	if err != nil || len(manifest.Manifest.CandidateInputs) != 2 || !preservedRequirementInput || !preservedWorkspaceInput {
+	if err != nil || len(manifest.Manifest.CandidateInputs) != 3 || !preservedRequirementInput || !preservedWorkspaceInput || !preservedPlanningInput {
 		t.Fatalf("successor Task did not freeze the cloned input bytes: %+v err=%v", manifest, err)
 	}
 	var eventCount int

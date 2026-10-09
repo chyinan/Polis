@@ -3,14 +3,15 @@ package kernel
 
 import (
 	"context"
-	"os"
+
 	"testing"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 )
 
 func TestMissionPauseResumeCommandsRequireStateAndReplayIdempotently(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -20,11 +21,11 @@ func TestMissionPauseResumeCommandsRequireStateAndReplayIdempotently(t *testing.
 		t.Fatal(err)
 	}
 	defer runtime.Close()
-	scope, err := runtime.TXCreateCompany(ctx, "mission-lifecycle-"+newID())
+	scope, err := createPGTestCompany(runtime, ctx, "mission-lifecycle-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Pause and resume", "verify formal mission lifecycle commands", "lifecycle-create")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Pause and resume", "verify formal mission lifecycle commands", "lifecycle-create")
 	if err != nil {
 		t.Fatal(err)
 	}

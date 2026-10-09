@@ -11,7 +11,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
-	"os"
+
 	"strings"
 	"sync"
 	"testing"
@@ -22,11 +22,12 @@ import (
 	"polis/internal/environment"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 )
 
 func TestProjectJobLifecycleLaunchesOncePersistsLogsAndReplaysWithoutExecution(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -55,12 +56,12 @@ func TestProjectJobLifecycleLaunchesOncePersistsLogsAndReplaysWithoutExecution(t
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("project-job-%d", time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := "project-job-mission-" + fmt.Sprint(time.Now().UnixNano())
-	if err = runtime.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(runtime, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = runtime.TXStartMissionCommand(ctx, scope, missionID, "project-job-start-mission"); err != nil {

@@ -3,14 +3,15 @@ package workbench
 
 import (
 	"context"
-	"os"
+
 	"testing"
 
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestPostgresLocalNotificationDeliveryIsReadable(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -20,7 +21,7 @@ func TestPostgresLocalNotificationDeliveryIsReadable(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer runtime.Close()
-	scope, err := runtime.TXCreateCompany(ctx, "r06-notifications")
+	scope, err := createPGTestCompany(runtime, ctx, "r06-notifications")
 	if err != nil {
 		t.Fatal(err)
 	}

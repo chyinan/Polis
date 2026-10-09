@@ -4,15 +4,16 @@ package kernel
 import (
 	"context"
 	"errors"
-	"os"
+
 	"testing"
 	"time"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 )
 
 func TestQQRouteCannotEnableBeforeQualificationAndDisableAdvancesRevision(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -23,7 +24,7 @@ func TestQQRouteCannotEnableBeforeQualificationAndDisableAdvancesRevision(t *tes
 	}
 	defer runtime.Close()
 	companyID := "qq-route-" + newID()
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}

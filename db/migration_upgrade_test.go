@@ -5,7 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -14,7 +13,7 @@ import (
 )
 
 func TestSchema35LegacyUpgradeAndRollback(t *testing.T) {
-	dsn := os.Getenv("POLIS_MIGRATION_TEST_DSN")
+	dsn := migrationFixtureDSN(t)
 	if dsn == "" {
 		t.Skip("dedicated disposable migration database required")
 	}
@@ -175,7 +174,7 @@ VALUES($1,'migration-response','valid-mission-broadcast','emp-backend','migratio
 }
 
 func TestSchema36ChangeRequestDownGuardWithHistory(t *testing.T) {
-	dsn := os.Getenv("POLIS_MIGRATION_TEST_DSN")
+	dsn := migrationFixtureDSN(t)
 	if dsn == "" {
 		t.Skip("dedicated disposable migration database required")
 	}
@@ -233,7 +232,7 @@ VALUES($1,'change-1','migration-artifact')`, companyID); err != nil {
 }
 
 func TestSchema37TakeoverLeaseTablesAndDownGuard(t *testing.T) {
-	dsn := os.Getenv("POLIS_MIGRATION_TEST_DSN")
+	dsn := migrationFixtureDSN(t)
 	if dsn == "" {
 		t.Skip("dedicated disposable migration database required")
 	}
@@ -295,7 +294,7 @@ VALUES($1,'lease-event-1','lease-1','granted','process_tree_stopped','operator',
 }
 
 func TestSchema38SubstantiveAssessmentDownGuard(t *testing.T) {
-	dsn := os.Getenv("POLIS_MIGRATION_TEST_DSN")
+	dsn := migrationFixtureDSN(t)
 	if dsn == "" {
 		t.Skip("dedicated disposable migration database required")
 	}
@@ -347,7 +346,7 @@ VALUES($1,'assessment-1','evidence-1',$2,'more_evidence_required','emp-review','
 }
 
 func TestSchema39CrossBackendHandoverMigrationRoundTripsWithoutHistory(t *testing.T) {
-	dsn := os.Getenv("POLIS_MIGRATION_TEST_DSN")
+	dsn := migrationFixtureDSN(t)
 	if dsn == "" {
 		t.Skip("dedicated disposable migration database required")
 	}

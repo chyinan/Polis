@@ -332,9 +332,9 @@ func appendDeliveryRevisionRouteTaskTX(ctx context.Context, tx pgx.Tx, scope Sco
 	var routeID, state string
 	err := tx.QueryRow(ctx, `SELECT r.route_id,latest.state
 FROM delivery_revision_routes r
-JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$2
 WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
-ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r`, scope.company, successorMissionID, successorMissionID).Scan(&routeID, &state)
+ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r`, scope.company, successorMissionID).Scan(&routeID, &state)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil
 	}

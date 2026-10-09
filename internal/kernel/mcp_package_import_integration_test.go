@@ -18,10 +18,11 @@ import (
 	"polis/internal/capabilitysource"
 	"polis/internal/core"
 	"polis/internal/mcptransport"
+	"polis/internal/pgfixture"
 )
 
 func TestStdioMCPPackageImportPinsCompanyCASAndReplaysByRequestID(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -67,7 +68,7 @@ func TestStdioMCPPackageImportPinsCompanyCASAndReplaysByRequestID(t *testing.T) 
 }
 
 func TestStdioMCPObservationReservationPreventsRequestReplay(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -163,7 +164,7 @@ WHERE company_id=$1 AND observation_request_id=$2 ORDER BY event_seq DESC LIMIT 
 }
 
 func TestStdioMCPPackageImportSharesServerLockWithRuntimeObservation(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -208,7 +209,7 @@ func TestStdioMCPPackageImportSharesServerLockWithRuntimeObservation(t *testing.
 }
 
 func TestStdioMCPPackageUpdateRevokesObservedRuntimeQualification(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -339,7 +340,7 @@ WHERE company_id=$1 AND runtime_qualification_id=$2 ORDER BY event_seq DESC LIMI
 }
 
 func TestStdioMCPPackageImportSerializesSameRevisionBeforeCASWrites(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -396,7 +397,7 @@ func TestStdioMCPPackageImportSerializesSameRevisionBeforeCASWrites(t *testing.T
 }
 
 func TestStdioMCPPackageImportSerializesReusedRequestIDAcrossTargetsBeforeCASWrites(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -457,7 +458,7 @@ func TestStdioMCPPackageImportSerializesReusedRequestIDAcrossTargetsBeforeCASWri
 }
 
 func TestCapabilitySkillAndMCPImportsShareRequestIDLockBeforeCASWrites(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -507,7 +508,7 @@ func TestCapabilitySkillAndMCPImportsShareRequestIDLockBeforeCASWrites(t *testin
 }
 
 func TestCapabilitySourceRequestLockBlocksUncoordinatedTXWrite(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -595,7 +596,7 @@ func kernelTestBundleFileDigest(t *testing.T, bundle capabilitysource.StdioMCPBu
 }
 
 func TestStdioMCPPackageImportRequiresDescriptorAndManifestToMatch(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
+
 	"testing"
 	"time"
 
@@ -16,10 +16,11 @@ import (
 	"polis/internal/control"
 	"polis/internal/core"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestHTTPDailyRoutineCreateRepairAndReadback(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -30,11 +31,11 @@ func TestHTTPDailyRoutineCreateRepairAndReadback(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("routine-http-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "Daily work", "complete the approved recurring check", "routine-http-mission")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "Daily work", "complete the approved recurring check", "routine-http-mission")
 	if err != nil {
 		t.Fatal(err)
 	}

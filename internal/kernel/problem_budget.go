@@ -180,7 +180,7 @@ func (k *Kernel) ListProblemToolCallBudgets(ctx context.Context, scope Scope, li
 		return ProblemToolCallBudgetList{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return ProblemToolCallBudgetList{}, err
 	}
 	rows, err := tx.Query(ctx, `SELECT pb.problem_key,

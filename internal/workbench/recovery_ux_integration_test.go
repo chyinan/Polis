@@ -3,15 +3,16 @@ package workbench
 
 import (
 	"context"
-	"os"
+
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestRestartRecoveryProjectionShowsReconciliationRequired(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -21,12 +22,12 @@ func TestRestartRecoveryProjectionShowsReconciliationRequired(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	scope, err := runtime.TXCreateCompany(ctx, "r06-recovery-ux")
+	scope, err := createPGTestCompany(runtime, ctx, "r06-recovery-ux")
 	if err != nil {
 		runtime.Close()
 		t.Fatal(err)
 	}
-	if err = runtime.TXCreateMission(ctx, scope, "mission-1"); err != nil {
+	if err = createPGTestMission(runtime, ctx, scope, "mission-1"); err != nil {
 		runtime.Close()
 		t.Fatal(err)
 	}

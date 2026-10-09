@@ -3,15 +3,16 @@ package kernel
 
 import (
 	"context"
-	"os"
+
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 	"runtime"
 	"testing"
 	"time"
 )
 
 func TestLostLeaseCannotRecoverOverSuccessor(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("run scripts/test.sh")
 	}
@@ -30,12 +31,12 @@ func TestLostLeaseCannotRecoverOverSuccessor(t *testing.T) {
 	if current != next.incarnation {
 		t.Fatal("retired controller overwrote successor incarnation")
 	}
-	_, e = next.TXCreateCompany(ctx, "new-controller-neighbor")
+	_, e = createPGTestCompany(next, ctx, "new-controller-neighbor")
 	must(t, e)
 }
 
 func TestCloseReleasesLeaseMutexBeforeWaitingForTransactions(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("run scripts/test.sh")
 	}

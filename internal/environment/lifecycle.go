@@ -84,7 +84,7 @@ func CanTransitionJob(from, to string) bool {
 	}
 	switch JobState(from) {
 	case JobAccepted:
-		return JobState(to) == JobStarting || JobState(to) == JobCancelled || JobState(to) == JobOutcomeUnknown
+		return JobState(to) == JobStarting || JobState(to) == JobBlocked || JobState(to) == JobFailed || JobState(to) == JobCancelled || JobState(to) == JobOutcomeUnknown
 	case JobStarting:
 		return JobState(to) == JobRunning || JobState(to) == JobFailed || JobState(to) == JobCancelled || JobState(to) == JobOutcomeUnknown
 	case JobRunning:

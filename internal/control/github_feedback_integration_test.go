@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
@@ -17,6 +17,7 @@ import (
 	"polis/internal/core"
 	githubfeedback "polis/internal/feedback/github"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 type fakeGitHubFeedbackProvider struct {
@@ -68,7 +69,7 @@ func (f *fakeGitHubFeedbackProvider) ReadIssueComments(_ context.Context, reposi
 }
 
 func TestGitHubFeedbackControlProbesApprovesPollsAndDoesNotCallUnapprovedSource(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -79,7 +80,7 @@ func TestGitHubFeedbackControlProbesApprovesPollsAndDoesNotCallUnapprovedSource(
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("gh-control-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	provider := &fakeGitHubFeedbackProvider{}
@@ -166,7 +167,7 @@ func TestGitHubFeedbackControlProbesApprovesPollsAndDoesNotCallUnapprovedSource(
 }
 
 func TestGitHubFeedbackSchedulerRequiresCompanyPolicyAndDoesNotReplayReservedSlot(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -177,7 +178,7 @@ func TestGitHubFeedbackSchedulerRequiresCompanyPolicyAndDoesNotReplayReservedSlo
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("gh-schedule-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	provider := &fakeGitHubFeedbackProvider{}
@@ -318,7 +319,7 @@ func TestGitHubFeedbackSchedulerRequiresCompanyPolicyAndDoesNotReplayReservedSlo
 }
 
 func TestGitHubFeedbackScheduledDispatchRejectsArchivedCompany(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -334,7 +335,7 @@ func TestGitHubFeedbackScheduledDispatchRejectsArchivedCompany(t *testing.T) {
 	}
 	defer database.Close()
 	companyID := fmt.Sprintf("gh-schedule-archived-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	provider := &fakeGitHubFeedbackProvider{}

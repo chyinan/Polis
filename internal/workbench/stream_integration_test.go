@@ -4,16 +4,17 @@ package workbench
 import (
 	"context"
 	"errors"
-	"os"
+
 	"testing"
 
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 var errStopStreamTest = errors.New("stop stream test")
 
 func TestPostgresStreamReplaysCompanySequenceEvents(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -28,7 +29,7 @@ func TestPostgresStreamReplaysCompanySequenceEvents(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = runtime.TXCreateMission(ctx, scope, "mission-1"); err != nil {
+	if err = createPGTestMission(runtime, ctx, scope, "mission-1"); err != nil {
 		t.Fatal(err)
 	}
 	store, err := NewPostgresReadStore(ctx, dsn)

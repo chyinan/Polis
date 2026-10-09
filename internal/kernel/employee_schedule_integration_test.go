@@ -3,16 +3,17 @@ package kernel
 
 import (
 	"context"
-	"os"
+
 	"sync"
 	"testing"
 	"time"
 
+	"polis/internal/pgfixture"
 	"polis/internal/taskvalidation"
 )
 
 func TestNewCompanyCreatesSleepingEmployeeSchedules(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -21,7 +22,7 @@ func TestNewCompanyCreatesSleepingEmployeeSchedules(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(context.Background(), "schedule-company-"+newID())
+	scope, err := createPGTestCompany(k, context.Background(), "schedule-company-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -168,6 +169,16 @@ func TestMissionPauseBlocksPeerWorkAndResumeRestoresPendingWake(t *testing.T) {
 	}
 
 	missionID := env.fixture.Frontend.Mission
+	if err = env.k.TXBeginStop(env.ctx, env.backend); err != nil {
+		t.Fatal(err)
+	}
+	backendProof, stopErr := env.process.Stop()
+	if stopErr != nil {
+		t.Fatal(stopErr)
+	}
+	if err = env.k.TXConfirmStopped(env.ctx, env.backend, backendProof); err != nil {
+		t.Fatal(err)
+	}
 	if _, err = env.k.TXSetMissionPausedCommand(env.ctx, env.scope, missionID, true, "paused-schedule-pause"); err != nil {
 		t.Fatal(err)
 	}
@@ -230,7 +241,7 @@ func TestObservedPeerObligationKeepsStoppedEmployeeWakePending(t *testing.T) {
 }
 
 func TestReadyTasksAdvanceEmployeeScheduleOnMissionStartAndResume(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -240,11 +251,11 @@ func TestReadyTasksAdvanceEmployeeScheduleOnMissionStartAndResume(t *testing.T) 
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "ready-task-schedule-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "ready-task-schedule-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "Wake ready tasks", "Wake each owner when a ready Task appears", "ready-task-mission-create")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "Wake ready tasks", "Wake each owner when a ready Task appears", "ready-task-mission-create")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -291,7 +302,7 @@ VALUES($1,$2,$3,'emp-review','review','ready')`, scope.company, newID(), mission
 }
 
 func TestNextProductWorkerDispatchCandidateIsAgeOrderedAndHonorsBarriers(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -304,7 +315,7 @@ func TestNextProductWorkerDispatchCandidateIsAgeOrderedAndHonorsBarriers(t *test
 
 	createCandidate := func(name string) (Scope, string) {
 		t.Helper()
-		scope, createErr := k.TXCreateCompany(ctx, "dispatch-fairness-"+name+"-"+newID())
+		scope, createErr := createPGTestCompany(k, ctx, "dispatch-fairness-"+name+"-"+newID())
 		if createErr != nil {
 			t.Fatal(createErr)
 		}
@@ -313,7 +324,7 @@ func TestNextProductWorkerDispatchCandidateIsAgeOrderedAndHonorsBarriers(t *test
 			RequiredText: []string{"Task summary:"},
 		}
 		goal := "verify oldest eligible product work is selected"
-		mission, createErr := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "Dispatch fairness", goal, contract, "dispatch-mission-create-"+newID())
+		mission, createErr := createPGTestMissionGoalWithAcceptance(k, ctx, scope, "Dispatch fairness", goal, contract, "dispatch-mission-create-"+newID())
 		if createErr != nil {
 			t.Fatal(createErr)
 		}
@@ -325,12 +336,14 @@ func TestNextProductWorkerDispatchCandidateIsAgeOrderedAndHonorsBarriers(t *test
 		}
 		return scope, mission.ID
 	}
-	oldestScope, oldestMission := createCandidate("oldest")
-	nextScope, _ := createCandidate("next")
-	if _, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET updated_at=$3 WHERE company_id=$1 AND employee_id='emp-backend'`, oldestScope.company, "emp-backend", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)); err != nil {
+	// The current dispatcher orders Companies by its durable ID cursor, then
+	// ages within each Company. Keep these fixture IDs in that explicit order.
+	oldestScope, oldestMission := createCandidate("a-oldest")
+	nextScope, _ := createCandidate("b-next")
+	if _, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET updated_at=$2 WHERE company_id=$1 AND employee_id='emp-backend'`, oldestScope.company, time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET updated_at=$3 WHERE company_id=$1 AND employee_id='emp-backend'`, nextScope.company, "emp-backend", time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)); err != nil {
+	if _, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET updated_at=$2 WHERE company_id=$1 AND employee_id='emp-backend'`, nextScope.company, time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)); err != nil {
 		t.Fatal(err)
 	}
 	candidate, found, err := k.NextProductWorkerDispatchCandidate(ctx, "")
@@ -354,7 +367,7 @@ func TestNextProductWorkerDispatchCandidateIsAgeOrderedAndHonorsBarriers(t *test
 }
 
 func TestKernelStartupScanRestoresReadyTaskWakeAfterLostHint(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -363,12 +376,12 @@ func TestKernelStartupScanRestoresReadyTaskWakeAfterLostHint(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	scope, err := k.TXCreateCompany(ctx, "startup-wake-scan-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "startup-wake-scan-"+newID())
 	if err != nil {
 		k.Close()
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "Recover a pending Task", "Reconcile a durable ready Task after restart", "startup-wake-mission-create")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "Recover a pending Task", "Reconcile a durable ready Task after restart", "startup-wake-mission-create")
 	if err != nil {
 		k.Close()
 		t.Fatal(err)
@@ -405,7 +418,7 @@ WHERE company_id=$1 AND employee_id='emp-backend'`, scope.company); err != nil {
 }
 
 func TestCancellingPausedMissionClearsScheduleBarrierForNextMission(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -415,11 +428,11 @@ func TestCancellingPausedMissionClearsScheduleBarrierForNextMission(t *testing.T
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "cancel-paused-schedule-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "cancel-paused-schedule-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	first, err := k.TXCreateMissionGoal(ctx, scope, "First Mission", "Start, pause, and cancel", "cancel-paused-mission-create-1")
+	first, err := createPGTestMissionGoal(k, ctx, scope, "First Mission", "Start, pause, and cancel", "cancel-paused-mission-create-1")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -437,7 +450,7 @@ func TestCancellingPausedMissionClearsScheduleBarrierForNextMission(t *testing.T
 		t.Fatalf("cancelled Mission schedule=(%+v,%v), want sleeping", planner, err)
 	}
 
-	second, err := k.TXCreateMissionGoal(ctx, scope, "Second Mission", "Ready work must wake after cancellation", "cancel-paused-mission-create-2")
+	second, err := createPGTestMissionGoal(k, ctx, scope, "Second Mission", "Ready work must wake after cancellation", "cancel-paused-mission-create-2")
 	if err != nil {
 		t.Fatal(err)
 	}

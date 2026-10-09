@@ -10,11 +10,12 @@ import (
 	"testing"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 )
 
 func TestOperatorInstructionIsPersistedForActiveMission(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -24,11 +25,11 @@ func TestOperatorInstructionIsPersistedForActiveMission(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r06-instruction-company")
+	scope, err := createPGTestCompany(k, ctx, "r06-instruction-company")
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, scope, "mission-1")
+	task, err := createPGTestProbe(k, ctx, scope, "mission-1")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +46,7 @@ func TestOperatorGuidanceIsReadAndAnsweredByBoundWorker(t *testing.T) {
 	if runtime.GOOS != "linux" {
 		t.Skip("the process fixture requires Linux")
 	}
-	dsn, goRoot := os.Getenv("POLIS_TEST_DSN"), os.Getenv("POLIS_GO_ROOT")
+	dsn, goRoot := pgfixture.DSN(t, "POLIS_TEST_DSN"), os.Getenv("POLIS_GO_ROOT")
 	if dsn == "" || goRoot == "" {
 		t.Skip("dedicated PostgreSQL 18 and compiler required")
 	}
@@ -55,11 +56,11 @@ func TestOperatorGuidanceIsReadAndAnsweredByBoundWorker(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r1-guidance-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "r1-guidance-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, scope, "guidance-mission-"+newID())
+	task, err := createPGTestProbe(k, ctx, scope, "guidance-mission-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -201,7 +202,7 @@ func TestOperatorGuidanceIsReadAndAnsweredByBoundWorker(t *testing.T) {
 	if _, err = k.TXCancelMission(ctx, scope, task.Mission, "guidance-cancel-"+newID()); err != nil {
 		t.Fatal(err)
 	}
-	nextTask, err := k.TXCreateProbe(ctx, scope, "guidance-next-mission-"+newID())
+	nextTask, err := createPGTestProbe(k, ctx, scope, "guidance-next-mission-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -245,7 +246,7 @@ func TestOperatorGuidanceIsReadAndAnsweredByBoundWorker(t *testing.T) {
 	if _, err = k.TXCancelMission(ctx, scope, nextTask.Mission, "guidance-cancel-next-"+newID()); err != nil {
 		t.Fatal(err)
 	}
-	peerFixture, err := k.TXCreatePeerFixture(ctx, scope, "guidance-frontend-mission-"+newID())
+	peerFixture, err := createPGTestPeerFixture(k, ctx, scope, "guidance-frontend-mission-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}

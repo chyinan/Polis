@@ -103,7 +103,7 @@ func (k *Kernel) GetCompanyToolCallBudget(ctx context.Context, scope Scope) (Com
 		return CompanyToolCallBudget{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return CompanyToolCallBudget{}, err
 	}
 	var item CompanyToolCallBudget

@@ -5,15 +5,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
+
 	"testing"
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"polis/internal/pgfixture"
 )
 
 func TestPostgresReadStoreListsMissionInputRevisionsInCompanyScope(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}

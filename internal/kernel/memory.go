@@ -682,7 +682,7 @@ func (k *Kernel) ListMemoryCorrections(ctx context.Context, scope Scope, limit i
 		return MemoryCorrectionQueue{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return MemoryCorrectionQueue{}, err
 	}
 	rows, err := tx.Query(ctx, `SELECT c.correction_id,c.record_id,r.record_kind,r.scope_kind,COALESCE(r.mission_id,''),r.sensitivity,
@@ -908,7 +908,7 @@ func (k *Kernel) GetMemoryTaskStatus(ctx context.Context, scope Scope, taskID st
 		return MemoryTaskStatus{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return MemoryTaskStatus{}, err
 	}
 	var exists bool
@@ -1187,7 +1187,7 @@ func (k *Kernel) GetMemoryTaskRevalidationPreview(ctx context.Context, scope Sco
 		return MemoryTaskRevalidationPreview{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return MemoryTaskRevalidationPreview{}, err
 	}
 	preview, err := k.memoryTaskRevalidationPreviewTX(ctx, tx, scope, taskID, dependencyID, correctionID)

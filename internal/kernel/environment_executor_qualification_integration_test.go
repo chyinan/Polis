@@ -4,17 +4,18 @@ package kernel
 import (
 	"context"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
 
 	"polis/internal/environment"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 )
 
 func TestEnvironmentExecutorQualificationRequiresCurrentCASBoundEvidence(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -25,12 +26,12 @@ func TestEnvironmentExecutorQualificationRequiresCurrentCASBoundEvidence(t *test
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("executor-qualification-%d", time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := "executor-qualification-mission-" + fmt.Sprint(time.Now().UnixNano())
-	if err = runtime.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(runtime, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 	directory, err := intake.PrepareDirectorySnapshot([]intake.DirectoryInputFile{

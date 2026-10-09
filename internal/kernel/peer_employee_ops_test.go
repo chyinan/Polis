@@ -5,14 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"os"
+
 	"polis/internal/fixture"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"testing"
 )
 
 func TestR03AT5BackendToolSurfaceInvokesEveryHandlerOnce(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -20,9 +21,9 @@ func TestR03AT5BackendToolSurfaceInvokesEveryHandlerOnce(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r03a-t5-tools-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "r03a-t5-tools-"+newID())
 	must(t, err)
-	fx, err := k.TXCreatePeerFixture(ctx, scope, "r03a-t5-tools")
+	fx, err := createPGTestPeerFixture(k, ctx, scope, "r03a-t5-tools")
 	must(t, err)
 	b, err := k.TXNewWorker(ctx, scope, fx.Backend.ID, "fake/backend")
 	must(t, err)
@@ -77,7 +78,7 @@ func TestR03AT5BackendToolSurfaceInvokesEveryHandlerOnce(t *testing.T) {
 }
 
 func TestPeerWorkspaceCheckPersistsActionableBindingFailureReceipt(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -85,9 +86,9 @@ func TestPeerWorkspaceCheckPersistsActionableBindingFailureReceipt(t *testing.T)
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r03a-binding-feedback-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "r03a-binding-feedback-"+newID())
 	must(t, err)
-	fx, err := k.TXCreatePeerFixture(ctx, scope, "r03a-binding-feedback")
+	fx, err := createPGTestPeerFixture(k, ctx, scope, "r03a-binding-feedback")
 	must(t, err)
 	b, err := k.TXNewWorkerWithToolBudget(ctx, scope, fx.Backend.ID, "gpt-5.6-luna/medium", 48)
 	must(t, err)

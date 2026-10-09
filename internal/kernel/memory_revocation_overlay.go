@@ -67,7 +67,7 @@ func (k *Kernel) GetMemoryRecordRevocationPreview(ctx context.Context, scope Sco
 		return MemoryRecordRevocationPreview{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return MemoryRecordRevocationPreview{}, err
 	}
 	overlay, hasOverlay := k.memoryRecordRevocation(scope.company, recordID)

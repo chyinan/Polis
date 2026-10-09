@@ -8,13 +8,14 @@ import (
 	"os"
 	"polis/internal/core"
 	"polis/internal/fixture"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"strings"
 	"testing"
 )
 
 func TestWorkerLifecycleAndMediation(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -22,9 +23,9 @@ func TestWorkerLifecycleAndMediation(t *testing.T) {
 	k, e := Open(ctx, dsn, t.TempDir())
 	must(t, e)
 	defer k.Close()
-	s, e := k.TXCreateCompany(ctx, "worker-company")
+	s, e := createPGTestCompany(k, ctx, "worker-company")
 	must(t, e)
-	task, e := k.TXCreateProbe(ctx, s, "worker-mission")
+	task, e := createPGTestProbe(k, ctx, s, "worker-mission")
 	must(t, e)
 	fake, e := k.BindFake(ctx, s, "emp-backend")
 	must(t, e)
@@ -51,10 +52,22 @@ func TestWorkerLifecycleAndMediation(t *testing.T) {
 	}
 	ws, e := k.Workspace(ctx, first)
 	must(t, e)
+	must(t, k.TXBeginStop(ctx, first))
+	initialProof, stopErr := p.Stop()
+	must(t, stopErr)
+	must(t, k.TXConfirmStopped(ctx, first, initialProof))
 	must(t, k.TXSetPaused(ctx, s, "worker-mission", true))
 	_, e = k.TXReplace(ctx, first, "paused", ws.Digest, ws.Content+"\n// paused\n")
 	wantCode(t, e, core.Denied)
 	must(t, k.TXSetPaused(ctx, s, "worker-mission", false))
+	first, e = k.TXNewWorker(ctx, s, task.ID, "gpt-5.6-sol/medium")
+	must(t, e)
+	p, e = runner.Start(first.SessionID(), []string{"/bin/sleep", "60"}, nil)
+	must(t, e)
+	defer p.Stop()
+	must(t, k.TXAttachWorker(ctx, first, p))
+	must(t, k.TXValidateWorker(ctx, first))
+	must(t, k.TXActivateWorker(ctx, first, "measured-capability-digest"))
 	_, e = k.TXReplace(ctx, first, "replace", ws.Digest, ws.Content+"\n// checkpoint\n")
 	must(t, e)
 	must(t, k.TXBeginStop(ctx, first))
@@ -80,16 +93,27 @@ func TestWorkerLifecycleAndMediation(t *testing.T) {
 	_, e = k.TXReplace(ctx, second, "restore-write", bundle.Workspace.Digest, "bad")
 	wantCode(t, e, core.Denied)
 	must(t, k.TXValidateWorker(ctx, second))
+	must(t, k.TXBeginStop(ctx, second))
+	readyProof, stopErr := p2.Stop()
+	must(t, stopErr)
+	must(t, k.TXConfirmStopped(ctx, second, readyProof))
 	must(t, k.TXSetPaused(ctx, s, "worker-mission", true))
 	wantCode(t, k.TXActivateWorker(ctx, second, "paused-capability"), core.Denied)
 	must(t, k.TXSetPaused(ctx, s, "worker-mission", false))
+	second, e = k.TXNewWorker(ctx, s, task.ID, "gpt-5.6-sol/high")
+	must(t, e)
+	p2, e = runner.Start(second.SessionID(), []string{"/bin/sleep", "60"}, nil)
+	must(t, e)
+	defer p2.Stop()
+	must(t, k.TXAttachWorker(ctx, second, p2))
+	must(t, k.TXValidateWorker(ctx, second))
 	must(t, k.TXActivateWorker(ctx, second, "measured-capability-digest"))
 	_, e = k.TXReplace(ctx, second, "valid-neighbor", bundle.Workspace.Digest, bundle.Workspace.Content+"\n// next\n")
 	must(t, e)
 }
 
 func TestTXNewWorkerHonorsEmployeeAdmissionBarriers(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -99,9 +123,9 @@ func TestTXNewWorkerHonorsEmployeeAdmissionBarriers(t *testing.T) {
 	defer k.Close()
 	for _, state := range []string{"paused", "waiting_quota"} {
 		t.Run(state, func(t *testing.T) {
-			scope, err := k.TXCreateCompany(ctx, "worker-admission-barrier-"+state)
+			scope, err := createPGTestCompany(k, ctx, "worker-admission-barrier-"+state)
 			must(t, err)
-			task, err := k.TXCreateProbe(ctx, scope, "worker-admission-barrier-mission")
+			task, err := createPGTestProbe(k, ctx, scope, "worker-admission-barrier-mission")
 			must(t, err)
 			_, err = k.pool.Exec(ctx, `UPDATE employee_schedules SET state=$2,pause_reason=$3
 WHERE company_id=$1 AND employee_id='emp-backend'`, scope.company, state, map[string]string{"paused": "mission_paused", "waiting_quota": "provider_quota_exhausted"}[state])
@@ -129,7 +153,7 @@ WHERE company_id=$1 AND employee_id='emp-backend'`, scope.company, state, map[st
 }
 
 func TestTXNewWorkerMarksEmployeeScheduleAdmitted(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -137,9 +161,9 @@ func TestTXNewWorkerMarksEmployeeScheduleAdmitted(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "worker-admitted-schedule-company")
+	scope, err := createPGTestCompany(k, ctx, "worker-admitted-schedule-company")
 	must(t, err)
-	task, err := k.TXCreateProbe(ctx, scope, "worker-admitted-schedule-mission")
+	task, err := createPGTestProbe(k, ctx, scope, "worker-admitted-schedule-mission")
 	must(t, err)
 
 	if _, err = k.TXNewWorker(ctx, scope, task.ID, "offline-model/medium"); err != nil {
@@ -172,7 +196,7 @@ func (unknownCheck) Check(string, string) (runner.Report, error) {
 }
 
 func TestEmployeeOpsBehavioralHandover(t *testing.T) {
-	dsn, goRoot := os.Getenv("POLIS_TEST_DSN"), os.Getenv("POLIS_GO_ROOT")
+	dsn, goRoot := pgfixture.DSN(t, "POLIS_TEST_DSN"), os.Getenv("POLIS_GO_ROOT")
 	if dsn == "" || goRoot == "" {
 		t.Skip("dedicated PG and compiler required")
 	}
@@ -181,9 +205,9 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 	k, e := Open(ctx, dsn, root)
 	must(t, e)
 	defer k.Close()
-	s, e := k.TXCreateCompany(ctx, "behavior-company")
+	s, e := createPGTestCompany(k, ctx, "behavior-company")
 	must(t, e)
-	task, e := k.TXCreateProbe(ctx, s, "behavior-mission")
+	task, e := createPGTestProbe(k, ctx, s, "behavior-mission")
 	must(t, e)
 	start := func(profile string) (Binding, *runner.Process) {
 		b, e := k.TXNewWorker(ctx, s, task.ID, profile)

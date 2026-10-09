@@ -3,14 +3,15 @@ package kernel
 
 import (
 	"context"
-	"os"
+
 	"testing"
 
 	"polis/internal/organization"
+	"polis/internal/pgfixture"
 )
 
 func TestCompanyOrganizationRoundTrip(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required: run scripts/test.sh")
 	}

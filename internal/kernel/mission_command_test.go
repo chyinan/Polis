@@ -4,14 +4,15 @@ package kernel
 import (
 	"context"
 	"errors"
-	"os"
+
 	"testing"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 )
 
 func TestMissionCommandGoalAndTerminalTransitions(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -19,10 +20,10 @@ func TestMissionCommandGoalAndTerminalTransitions(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r05a-command-company")
+	scope, err := createPGTestCompany(k, ctx, "r05a-command-company")
 	must(t, err)
 
-	created, err := k.TXCreateMissionGoal(ctx, scope, "R0.5A goal", "persist and run a deterministic mission", "mission-create-request")
+	created, err := createPGTestMissionGoal(k, ctx, scope, "R0.5A goal", "persist and run a deterministic mission", "mission-create-request")
 	must(t, err)
 	if created.Status != "draft" || created.ID == "" {
 		t.Fatalf("unexpected create receipt: %+v", created)
@@ -54,7 +55,7 @@ func TestMissionCommandGoalAndTerminalTransitions(t *testing.T) {
 }
 
 func TestMissionCommandCreateIsIdempotentByRequestKey(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -62,17 +63,17 @@ func TestMissionCommandCreateIsIdempotentByRequestKey(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r05a-command-idempotency-company")
+	scope, err := createPGTestCompany(k, ctx, "r05a-command-idempotency-company")
 	must(t, err)
 
-	first, err := k.TXCreateMissionGoal(ctx, scope, "same request", "same goal", "same-request-key")
+	first, err := createPGTestMissionGoal(k, ctx, scope, "same request", "same goal", "same-request-key")
 	must(t, err)
-	second, err := k.TXCreateMissionGoal(ctx, scope, "same request", "same goal", "same-request-key")
+	second, err := createPGTestMissionGoal(k, ctx, scope, "same request", "same goal", "same-request-key")
 	must(t, err)
 	if first.ID != second.ID {
 		t.Fatalf("same request created two missions: %q and %q", first.ID, second.ID)
 	}
-	if _, err = k.TXCreateMissionGoal(ctx, scope, "same request", "changed goal", "same-request-key"); !errors.Is(err, core.Conflict) {
+	if _, err = createPGTestMissionGoal(k, ctx, scope, "same request", "changed goal", "same-request-key"); !errors.Is(err, core.Conflict) {
 		t.Fatalf("changed retry error = %v, want %s", err, core.Conflict)
 	}
 
@@ -84,7 +85,7 @@ func TestMissionCommandCreateIsIdempotentByRequestKey(t *testing.T) {
 }
 
 func TestProductWorkerFailureAndStopFenceStaleWriter(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B1_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B1_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B1 PostgreSQL required")
 	}
@@ -92,9 +93,9 @@ func TestProductWorkerFailureAndStopFenceStaleWriter(t *testing.T) {
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "r05b1-stale-writer-company")
+	scope, err := createPGTestCompany(k, ctx, "r05b1-stale-writer-company")
 	must(t, err)
-	created, err := k.TXCreateMissionGoal(ctx, scope, "stale writer bridge", "verify old worker writers are fenced", "stale-create")
+	created, err := createPGTestMissionGoal(k, ctx, scope, "stale writer bridge", "verify old worker writers are fenced", "stale-create")
 	must(t, err)
 	_, err = k.TXStartMissionCommand(ctx, scope, created.ID, "stale-start")
 	must(t, err)

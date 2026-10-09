@@ -12,12 +12,13 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/taskvalidation"
 	"polis/internal/workbench"
 )
 
 func TestPostgresReadStoreProjectsQualifiedCheckpointWithoutLifecycleFilters(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -36,12 +37,12 @@ func TestPostgresReadStoreProjectsQualifiedCheckpointWithoutLifecycleFilters(t *
 	if companyID == "" {
 		companyID = fmt.Sprintf("r0-5b17-checkpoint-%d", time.Now().UnixNano())
 	}
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	acceptance := &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Task ID: {{task_id}}"}}
-	mission, err := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "checkpoint projection", "project the authoritative checkpoint", acceptance, "r0-5b17-create")
+	mission, err := createPGTestMissionGoalWithAcceptance(k, ctx, scope, "checkpoint projection", "project the authoritative checkpoint", acceptance, "r0-5b17-create")
 	if err != nil {
 		t.Fatal(err)
 	}

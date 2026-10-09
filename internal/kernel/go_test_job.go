@@ -43,7 +43,7 @@ func (k *Kernel) PrepareGoTestJobBinding(ctx context.Context, companyID string, 
 		!core.ValidID(input.CandidateSnapshotArtifactID) || input.BaseSnapshotArtifactID == input.CandidateSnapshotArtifactID || !validSHA256(input.RunnerSHA256) {
 		return binding, core.Malformed
 	}
-	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	tx, err := k.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
 		return binding, err
 	}
@@ -138,6 +138,14 @@ FROM worker_workspace_roots WHERE company_id=$1 AND task_id=$2`, companyID, inpu
 }
 
 func (k *Kernel) TXCreateBlockedGoTestJobRun(ctx context.Context, companyID string, input BlockedGoTestJobInput) (Receipt, error) {
+	return k.txCreateGoTestJobRun(ctx, companyID, input, environment.JobBlocked)
+}
+
+func (k *Kernel) TXCreateGoTestJobRun(ctx context.Context, companyID string, input BlockedGoTestJobInput) (Receipt, error) {
+	return k.txCreateGoTestJobRun(ctx, companyID, input, environment.JobAccepted)
+}
+
+func (k *Kernel) txCreateGoTestJobRun(ctx context.Context, companyID string, input BlockedGoTestJobInput, initial environment.JobState) (Receipt, error) {
 	if k == nil || ctx == nil || !core.ValidID(companyID) || !core.ValidID(input.RequestID) {
 		return Receipt{}, core.Malformed
 	}
@@ -149,7 +157,7 @@ func (k *Kernel) TXCreateBlockedGoTestJobRun(ctx context.Context, companyID stri
 	if err != nil || profileSHA256 != input.Binding.ProfileSHA256 {
 		return Receipt{}, core.Malformed
 	}
-	return k.TXWrite(ctx, k.LocalScope(companyID), nil, input.RequestID, "go_test.job.blocked", struct {
+	return k.TXWrite(ctx, k.LocalScope(companyID), nil, input.RequestID, "go_test.job."+string(initial), struct {
 		BindingSHA256 string
 		Binding       gotestprofile.JobBinding
 	}{BindingSHA256: bindingSHA256, Binding: input.Binding}, func(tx pgx.Tx) (Receipt, error) {
@@ -224,7 +232,7 @@ FROM worker_workspace_roots WHERE company_id=$1 AND task_id=$2 FOR SHARE`, compa
 		if err != nil || candidateFilesSHA256 != input.Binding.CandidateFilesSHA256 {
 			return Receipt{}, core.Integrity
 		}
-		if !environment.CanTransitionJob("", environment.JobBlocked) {
+		if !environment.CanTransitionJob("", string(initial)) {
 			return Receipt{}, core.Integrity
 		}
 		allowlist, err := json.Marshal(input.Binding.Profile.Environment)
@@ -252,10 +260,10 @@ VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$2
 		}
 		eventID := stableCapabilityID("job-event", companyID, input.RequestID)
 		if _, err = tx.Exec(ctx, `INSERT INTO job_run_events(company_id,event_id,job_id,state,readiness,reason_code)
-VALUES($1,$2,$3,'blocked','not_applicable','host_profile_unqualified')`, companyID, eventID, input.Binding.JobRunID); err != nil {
+VALUES($1,$2,$3,$4,'not_applicable',$5)`, companyID, eventID, input.Binding.JobRunID, string(initial), "go_test_job_"+string(initial)); err != nil {
 			return Receipt{}, err
 		}
-		return Receipt{ID: input.Binding.JobRunID, Status: environment.JobBlocked}, nil
+		return Receipt{ID: input.Binding.JobRunID, Status: string(initial)}, nil
 	})
 }
 

@@ -1057,7 +1057,7 @@ COALESCE(ws.epoch,e.epoch),COALESCE(ws.tool_call_limit,0),COALESCE(ws.tool_calls
 es.state,es.work_generation,es.checked_generation,es.next_due_at,COALESCE(es.pause_reason,'')
 FROM employees e
 LEFT JOIN LATERAL (
- SELECT revision_sha256 FROM employee_role_revisions
+ SELECT revision_sha256,role_name,task_types,task_kinds,owner_decision,qualification FROM employee_role_revisions
  WHERE company_id=e.company_id AND employee_id=e.id
  ORDER BY created_at DESC,revision_sha256 DESC LIMIT 1
 ) role ON true

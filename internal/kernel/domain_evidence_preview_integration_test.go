@@ -14,10 +14,11 @@ import (
 	"polis/internal/core"
 	"polis/internal/domainworkflow"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 )
 
 func TestDomainEvidencePreviewLoadsOnlyReferencedMissionInputAndVerifiesCAS(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -29,11 +30,11 @@ func TestDomainEvidencePreviewLoadsOnlyReferencedMissionInputAndVerifiesCAS(t *t
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("domain-preview-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "preview source", "bind preview to evidence reference", "domain-preview-mission")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "preview source", "bind preview to evidence reference", "domain-preview-mission")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,7 +74,7 @@ func TestDomainEvidencePreviewLoadsOnlyReferencedMissionInputAndVerifiesCAS(t *t
 		t.Fatalf("unreferenced evidence area error=%v, want out-of-scope", err)
 	}
 	otherCompany := companyID + "-other"
-	if _, err = k.TXCreateCompany(ctx, otherCompany); err != nil {
+	if _, err = createPGTestCompany(k, ctx, otherCompany); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = k.ReadDomainEvidenceArtifactPreview(ctx, otherCompany, record.RecordID, domainworkflow.DomainEvidenceQuality, "quality.md"); err != core.OutOfScope {

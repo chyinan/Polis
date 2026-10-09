@@ -4,13 +4,14 @@ package control
 import (
 	"context"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/qqnotify"
 )
 
@@ -43,7 +44,7 @@ func (s *recordingQQNotificationSender) Dispatch(_ context.Context, plan kernel.
 }
 
 func TestDispatchHumanInterventionRequiresQualifiedRouteAndPersistsFakeReceipt(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -59,11 +60,11 @@ func TestDispatchHumanInterventionRequiresQualifiedRouteAndPersistsFakeReceipt(t
 	}
 	defer pool.Close()
 	companyID := fmt.Sprintf("qq-sender-%d", time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "QQ reminder", "exercise the fake sender adapter", "qq-sender-mission")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "QQ reminder", "exercise the fake sender adapter", "qq-sender-mission")
 	if err != nil {
 		t.Fatal(err)
 	}

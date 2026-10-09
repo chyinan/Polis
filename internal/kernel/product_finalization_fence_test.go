@@ -4,19 +4,20 @@ package kernel
 import (
 	"context"
 	"encoding/json"
-	"os"
+
 	"strings"
 	"testing"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"polis/internal/taskvalidation"
 )
 
 func TestProductCandidateFencesPostPublicationWorkspaceAndCheckpointWrites(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B3_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B3_TEST_DSN")
 	if dsn == "" {
-		dsn = os.Getenv("POLIS_TEST_DSN")
+		dsn = pgfixture.DSN(t, "POLIS_TEST_DSN")
 	}
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
@@ -26,10 +27,10 @@ func TestProductCandidateFencesPostPublicationWorkspaceAndCheckpointWrites(t *te
 	must(t, err)
 	defer k.Close()
 
-	scope, err := k.TXCreateCompany(ctx, "r05b3-finalizer-fence-company")
+	scope, err := createPGTestCompany(k, ctx, "r05b3-finalizer-fence-company")
 	must(t, err)
 	acceptance := &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Task ID: {{task_id}}"}}
-	mission, err := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "candidate fencing", "ensure a published Artifact cannot be made stale", acceptance, "fence-create")
+	mission, err := createPGTestMissionGoalWithAcceptance(k, ctx, scope, "candidate fencing", "ensure a published Artifact cannot be made stale", acceptance, "fence-create")
 	must(t, err)
 	_, err = k.TXStartMissionCommand(ctx, scope, mission.ID, "fence-start")
 	must(t, err)

@@ -23,6 +23,7 @@ import (
 	"polis/internal/core"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/provider"
 	"polis/internal/taskvalidation"
 )
@@ -60,7 +61,7 @@ func (s *promptCaptureSession) Turn(ctx context.Context, threadID, prompt string
 }
 
 func TestProductWorkerReceivesFrozenImageBytesAsVisionInput(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -76,7 +77,7 @@ func TestProductWorkerReceivesFrozenImageBytesAsVisionInput(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	imageBytes := workerTestPNG(t)
@@ -91,8 +92,7 @@ func TestProductWorkerReceivesFrozenImageBytesAsVisionInput(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "Image input delivery test", Goal: "Inspect the attached screenshot and use its content as task context.", RequestID: "image-input-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Image input delivery test", Goal: "Inspect the attached screenshot and use its content as task context.", RequestID: "image-input-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -165,7 +165,7 @@ func workerTestPNG(t *testing.T) []byte {
 }
 
 func TestProductWorkerLoadsOnlyApprovedBoundReadOnlySkill(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -181,7 +181,7 @@ func TestProductWorkerLoadsOnlyApprovedBoundReadOnlySkill(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	skill, err := k.TXImportReadOnlySkillPackage(ctx, companyID, kernel.ReadOnlySkillPackageInput{
@@ -215,8 +215,7 @@ func TestProductWorkerLoadsOnlyApprovedBoundReadOnlySkill(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "Offline Skill worker flow", Goal: "complete the task with its approved reference Skill available",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Offline Skill worker flow", Goal: "complete the task with its approved reference Skill available",
 		RequestID:          "offline-skill-mission-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
@@ -271,7 +270,7 @@ func workerTestReadOnlySkillZIP(t *testing.T) []byte {
 }
 
 func TestProductWorkerReceivesFrozenGitSnapshotFromSelectedCommit(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -287,7 +286,7 @@ func TestProductWorkerReceivesFrozenGitSnapshotFromSelectedCommit(t *testing.T) 
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	runtime := &promptCaptureRuntime{FakeRuntime: provider.NewFakeRuntime(provider.FakeRuntimeConfig{TurnDelay: time.Millisecond}), prompts: make(chan string, 1)}
@@ -297,8 +296,7 @@ func TestProductWorkerReceivesFrozenGitSnapshotFromSelectedCommit(t *testing.T) 
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "Git snapshot delivery test", Goal: "Read the selected local commit and its source provenance.", RequestID: "git-input-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Git snapshot delivery test", Goal: "Read the selected local commit and its source provenance.", RequestID: "git-input-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -394,7 +392,7 @@ func controlGitFixture(t *testing.T, repository string, arguments ...string) str
 }
 
 func TestProductWorkerReceivesFrozenTextInputsInTurnPrompt(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -410,7 +408,7 @@ func TestProductWorkerReceivesFrozenTextInputsInTurnPrompt(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	promptMarker := "POLIS_BOUND_INPUT_SENTINEL_2026"
@@ -421,8 +419,7 @@ func TestProductWorkerReceivesFrozenTextInputsInTurnPrompt(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "Input delivery test", Goal: "Read the bound task inputs before writing the artifact.", RequestID: "input-delivery-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Input delivery test", Goal: "Read the bound task inputs before writing the artifact.", RequestID: "input-delivery-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -471,7 +468,7 @@ WHERE company_id=$1 AND task_id=$2 AND phase='final' ORDER BY created_at DESC LI
 }
 
 func TestProductWorkerReceivesFrozenImageBytesInTurnInput(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -487,7 +484,7 @@ func TestProductWorkerReceivesFrozenImageBytesInTurnInput(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	imageBytes := workerTestPNG(t)
@@ -501,8 +498,7 @@ func TestProductWorkerReceivesFrozenImageBytesInTurnInput(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "Image input delivery test", Goal: "Inspect the attached screenshot and use it as untrusted task context.", RequestID: "image-input-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Image input delivery test", Goal: "Inspect the attached screenshot and use it as untrusted task context.", RequestID: "image-input-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -564,7 +560,7 @@ WHERE company_id=$1 AND task_id=$2 AND phase='final' ORDER BY created_at DESC LI
 }
 
 func TestProductWorkerReceivesExtractedTextFromBoundPDFInput(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -580,7 +576,7 @@ func TestProductWorkerReceivesExtractedTextFromBoundPDFInput(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	sentinel := "POLIS_PDF_WORKER_INPUT_SENTINEL_2026"
@@ -591,8 +587,7 @@ func TestProductWorkerReceivesExtractedTextFromBoundPDFInput(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "PDF input delivery test", Goal: "Read the text extracted from the bound PDF source.", RequestID: "pdf-input-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "PDF input delivery test", Goal: "Read the text extracted from the bound PDF source.", RequestID: "pdf-input-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -688,7 +683,7 @@ func hasPDFDeliveryExclusion(exclusions []intake.ModelInputExclusion, path strin
 }
 
 func TestProductWorkerReceivesTextFilesFromFrozenDirectoryInput(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -704,7 +699,7 @@ func TestProductWorkerReceivesTextFilesFromFrozenDirectoryInput(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	runtime := &promptCaptureRuntime{FakeRuntime: provider.NewFakeRuntime(provider.FakeRuntimeConfig{TurnDelay: time.Millisecond}), prompts: make(chan string, 1)}
@@ -714,8 +709,7 @@ func TestProductWorkerReceivesTextFilesFromFrozenDirectoryInput(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "Directory input delivery test", Goal: "Read supported files in the frozen directory snapshot.", RequestID: "directory-input-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "Directory input delivery test", Goal: "Read supported files in the frozen directory snapshot.", RequestID: "directory-input-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -770,7 +764,7 @@ WHERE company_id=$1 AND task_id=$2 AND phase='final' ORDER BY created_at DESC LI
 }
 
 func TestProductWorkerReceivesFrozenCSVInputInTurnPrompt(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -786,7 +780,7 @@ func TestProductWorkerReceivesFrozenCSVInputInTurnPrompt(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	marker := "POLIS_CSV_WORKER_INPUT_SENTINEL_2026"
@@ -798,8 +792,7 @@ func TestProductWorkerReceivesFrozenCSVInputInTurnPrompt(t *testing.T) {
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "CSV input delivery test", Goal: "Read the bound CSV source before writing the artifact.", RequestID: "csv-input-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "CSV input delivery test", Goal: "Read the bound CSV source before writing the artifact.", RequestID: "csv-input-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {
@@ -853,7 +846,7 @@ WHERE company_id=$1 AND task_id=$2 AND phase='final' ORDER BY created_at DESC LI
 }
 
 func TestProductWorkerReceivesOnlySupportedTextFromFrozenZIPInput(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -869,7 +862,7 @@ func TestProductWorkerReceivesOnlySupportedTextFromFrozenZIPInput(t *testing.T) 
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	textMarker, binaryMarker := "POLIS_ZIP_WORKER_TEXT_SENTINEL_2026", "POLIS_ZIP_WORKER_BINARY_SENTINEL_2026"
@@ -884,8 +877,7 @@ func TestProductWorkerReceivesOnlySupportedTextFromFrozenZIPInput(t *testing.T) 
 	}
 	service := NewService(k, adapter)
 	defer service.Close()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title: "ZIP input delivery test", Goal: "Read supported files from the bound ZIP archive.", RequestID: "zip-input-create",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "ZIP input delivery test", Goal: "Read supported files from the bound ZIP archive.", RequestID: "zip-input-create",
 		AcceptanceContract: &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement:", "Task summary:"}},
 	})
 	if err != nil {

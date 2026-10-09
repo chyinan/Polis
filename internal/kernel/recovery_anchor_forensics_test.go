@@ -4,14 +4,15 @@ package kernel
 import (
 	"context"
 	"errors"
-	"os"
+
 	"polis/internal/fixture"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"testing"
 )
 
 func TestBackendTerminalRecoveryAnchorForensicsReproducesErrNoRows(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -22,11 +23,11 @@ func TestBackendTerminalRecoveryAnchorForensicsReproducesErrNoRows(t *testing.T)
 	}
 	defer k.Close()
 
-	scope, err := k.TXCreateCompany(ctx, "r03a-recovery-anchor-forensics-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "r03a-recovery-anchor-forensics-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	fx, err := k.TXCreatePeerFixture(ctx, scope, "r03a-recovery-anchor-forensics-"+newID())
+	fx, err := createPGTestPeerFixture(k, ctx, scope, "r03a-recovery-anchor-forensics-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}

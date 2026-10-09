@@ -10,11 +10,12 @@ import (
 
 	"polis/internal/core"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 	"polis/internal/taskvalidation"
 )
 
 func TestMissionInputUploadCreatesImmutableIdempotentRevisions(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -27,12 +28,12 @@ func TestMissionInputUploadCreatesImmutableIdempotentRevisions(t *testing.T) {
 	defer k.Close()
 
 	companyID := "input-" + newID()
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := "mission-" + newID()
-	if err = k.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(k, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 
@@ -85,12 +86,12 @@ func TestMissionInputUploadCreatesImmutableIdempotentRevisions(t *testing.T) {
 		t.Fatalf("replacement did not create a new immutable revision: first=%+v second=%+v", first, second)
 	}
 
-	otherScope, err := k.TXCreateCompany(ctx, "other-"+newID())
+	otherScope, err := createPGTestCompany(k, ctx, "other-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
 	otherMission := "mission-" + newID()
-	if err = k.TXCreateMission(ctx, otherScope, otherMission); err != nil {
+	if err = createPGTestMission(k, ctx, otherScope, otherMission); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = k.TXAddMissionInput(ctx, otherScope, otherMission, first.InputID, "input-cross-company", secondPrepared, secondBytes); !errors.Is(err, core.OutOfScope) {
@@ -107,7 +108,7 @@ func TestMissionInputUploadCreatesImmutableIdempotentRevisions(t *testing.T) {
 }
 
 func TestMissionDirectorySnapshotIsStoredAsOneVerifiedRevision(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -119,12 +120,12 @@ func TestMissionDirectorySnapshotIsStoredAsOneVerifiedRevision(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := "directory-input-" + newID()
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := "mission-" + newID()
-	if err = k.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(k, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 	prepared, err := intake.PrepareDirectorySnapshot([]intake.DirectoryInputFile{
@@ -161,7 +162,7 @@ func TestMissionDirectorySnapshotIsStoredAsOneVerifiedRevision(t *testing.T) {
 }
 
 func TestProductTaskFreezesVersionedModelInputManifest(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -173,11 +174,11 @@ func TestProductTaskFreezesVersionedModelInputManifest(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := "manifest-input-" + newID()
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "Input manifest", "freeze exact accepted inputs for one product Task", &taskvalidation.AcceptanceContract{
+	mission, err := createPGTestMissionGoalWithAcceptance(k, ctx, scope, "Input manifest", "freeze exact accepted inputs for one product Task", &taskvalidation.AcceptanceContract{
 		Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}"},
 	}, "manifest-mission-create")
 	if err != nil {
@@ -197,9 +198,15 @@ func TestProductTaskFreezesVersionedModelInputManifest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = k.TXAddMissionInput(ctx, scope, mission.ID, "", "manifest-image-input", imageUpload, imageContent); err != nil {
+	imageRevision, err := k.TXAddMissionInput(ctx, scope, mission.ID, "", "manifest-image-input", imageUpload, imageContent)
+	if err != nil {
 		t.Fatal(err)
 	}
+	opaque := []byte{0, 1, 2}
+	unsupported, err := intake.PrepareUpload("opaque.bin", "application/octet-stream", opaque)
+	must(t, err)
+	_, err = k.TXAddMissionInput(ctx, scope, mission.ID, "", "manifest-unsupported-input", unsupported, opaque)
+	must(t, err)
 	if _, err = k.TXStartMissionCommand(ctx, scope, mission.ID, "manifest-mission-start"); err != nil {
 		t.Fatal(err)
 	}
@@ -211,10 +218,14 @@ func TestProductTaskFreezesVersionedModelInputManifest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if first.Manifest.DeliveryStatus != "not_delivered" || len(first.Manifest.CandidateInputs) != 1 || len(first.Manifest.ExcludedInputs) != 1 {
+	if first.Manifest.DeliveryStatus != "not_delivered" || len(first.Manifest.CandidateInputs) != 2 || len(first.Manifest.ExcludedInputs) != 1 {
 		t.Fatalf("manifest candidates/exclusions = %d/%d, status=%s", len(first.Manifest.CandidateInputs), len(first.Manifest.ExcludedInputs), first.Manifest.DeliveryStatus)
 	}
-	if first.Manifest.CandidateInputs[0].InputID != textRevision.InputID || first.Manifest.CandidateInputs[0].Revision != 1 || first.Manifest.ExcludedInputs[0].State != intake.StatePartial {
+	frozen := make(map[string]intake.ModelInputManifestEntry)
+	for _, ref := range first.Manifest.CandidateInputs {
+		frozen[ref.InputID] = ref
+	}
+	if frozen[textRevision.InputID].Revision != 1 || frozen[textRevision.InputID].ContentDigest != textRevision.ContentDigest || frozen[imageRevision.InputID].ContentDigest != imageRevision.ContentDigest || first.Manifest.ExcludedInputs[0].State != intake.StateUnsupported {
 		t.Fatalf("unexpected frozen input refs: %+v", first.Manifest)
 	}
 	inputBinding, err := k.TXNewProductProviderWorkerWithToolBudget(ctx, scope, task.ID, "offline-model/medium", 16)
@@ -225,7 +236,14 @@ func TestProductTaskFreezesVersionedModelInputManifest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(inputContext.Payload.Inputs) != 1 || inputContext.Payload.Inputs[0].Reference.ContentDigest != textRevision.ContentDigest || inputContext.Payload.Inputs[0].Text != string(textContent) || inputContext.ManifestDigest != first.Digest {
+	var textFound, imageFound bool
+	for _, input := range inputContext.Payload.Inputs {
+		textFound = textFound || input.Reference.ContentDigest == textRevision.ContentDigest && input.Text == string(textContent)
+	}
+	for _, image := range inputContext.Payload.Images {
+		imageFound = imageFound || image.Reference.ContentDigest == imageRevision.ContentDigest && string(image.Content) == string(imageContent)
+	}
+	if len(inputContext.Payload.Inputs) != 1 || len(inputContext.Payload.Images) != 1 || !textFound || !imageFound || inputContext.ManifestDigest != first.Digest {
 		t.Fatalf("provider input context is not bound to the frozen text revision: %+v", inputContext)
 	}
 	newContent := []byte("# Revised goal\n")

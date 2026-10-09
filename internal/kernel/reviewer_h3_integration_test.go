@@ -11,6 +11,7 @@ import (
 	"polis/internal/codex"
 	"polis/internal/core"
 	"polis/internal/fixture"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"strings"
 	"testing"
@@ -61,7 +62,7 @@ func TestReviewerNativeProtocolHelper(t *testing.T) {
 }
 
 func TestReviewerGrantPersistsReviewSubmitWithoutBehaviorVerifier(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -71,9 +72,9 @@ func TestReviewerGrantPersistsReviewSubmitWithoutBehaviorVerifier(t *testing.T) 
 	defer k.Close()
 	company := "h3-review-" + newID()
 	mission := "h3-mission-" + newID()
-	scope, err := k.TXCreateCompany(ctx, company)
+	scope, err := createPGTestCompany(k, ctx, company)
 	must(t, err)
-	_, err = k.TXCreateProbe(ctx, scope, mission)
+	_, err = createPGTestProbe(k, ctx, scope, mission)
 	must(t, err)
 	artifactID := "57761d55c7b0dbf63668b9f8010de41d"
 	_, err = k.TXRestoreCandidateForReview(ctx, scope, mission, artifactID, []byte(fixture.Source))

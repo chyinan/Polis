@@ -7,17 +7,18 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
 
 	"polis/internal/core"
 	githubfeedback "polis/internal/feedback/github"
+	"polis/internal/pgfixture"
 )
 
 func TestGitHubFeedbackRequiresSourceApprovalAndOnlyCompleteScansAdvanceCursor(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -28,7 +29,7 @@ func TestGitHubFeedbackRequiresSourceApprovalAndOnlyCompleteScansAdvanceCursor(t
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("feedback-source-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	repository := githubfeedback.Repository{ID: 1296269, Owner: "acme", Name: "widget"}
@@ -140,7 +141,7 @@ func TestGitHubFeedbackRequiresSourceApprovalAndOnlyCompleteScansAdvanceCursor(t
 }
 
 func TestGitHubFeedbackBacklogKeepsInternalStateAndReopensOnSourceRevision(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -151,7 +152,7 @@ func TestGitHubFeedbackBacklogKeepsInternalStateAndReopensOnSourceRevision(t *te
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("feedback-backlog-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	repository := githubfeedback.Repository{ID: 1296269, Owner: "acme", Name: "widget"}
@@ -202,7 +203,7 @@ func TestGitHubFeedbackBacklogKeepsInternalStateAndReopensOnSourceRevision(t *te
 		t.Fatalf("backlog action against an older issue revision error=%v, want %s", err, core.Conflict)
 	}
 	otherCompany := fmt.Sprintf("feedback-backlog-other-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, otherCompany); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, otherCompany); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = runtime.GetGitHubFeedbackBacklogItem(ctx, otherCompany, source.SourceID, 101); !errors.Is(err, core.OutOfScope) {
@@ -211,7 +212,7 @@ func TestGitHubFeedbackBacklogKeepsInternalStateAndReopensOnSourceRevision(t *te
 }
 
 func TestGitHubFeedbackScheduleRequiresCurrentKernelLeaseForReserveAndDispatch(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -222,7 +223,7 @@ func TestGitHubFeedbackScheduleRequiresCurrentKernelLeaseForReserveAndDispatch(t
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("feedback-lease-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	repository := githubfeedback.Repository{ID: 1296269, Owner: "acme", Name: "widget"}

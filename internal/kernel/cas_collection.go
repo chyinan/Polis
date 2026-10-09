@@ -88,10 +88,10 @@ func casDigest(content []byte) string {
 }
 
 func (k *Kernel) lockCASLifecycle(ctx context.Context, companyID string) (func(), error) {
-	if k == nil || ctx == nil || !core.ValidID(companyID) || k.lockPool == nil {
+	if k == nil || ctx == nil || !core.ValidID(companyID) || k.casLockPool == nil {
 		return nil, core.Malformed
 	}
-	connection, err := k.lockPool.Acquire(ctx)
+	connection, err := k.casLockPool.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}

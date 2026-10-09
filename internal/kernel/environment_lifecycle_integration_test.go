@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
@@ -17,10 +17,11 @@ import (
 	"polis/internal/core"
 	"polis/internal/environment"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 )
 
 func TestEnvironmentPreparationPersistsPolicyAndIsolationBlocksIdempotently(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -31,12 +32,12 @@ func TestEnvironmentPreparationPersistsPolicyAndIsolationBlocksIdempotently(t *t
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("environment-lifecycle-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := "environment-source-" + fmt.Sprint(time.Now().UnixNano())
-	if err = k.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(k, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 	directory, err := intake.PrepareDirectorySnapshot([]intake.DirectoryInputFile{

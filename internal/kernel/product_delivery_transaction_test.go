@@ -5,11 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"os"
+
 	"strings"
 	"testing"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"polis/internal/taskvalidation"
 )
@@ -205,7 +206,7 @@ func TestFrozenLive2WorkspaceCounterfactualUsesSingleTaskSubmit(t *testing.T) {
 
 func prepareFrozenLive2CounterfactualTask(t *testing.T) (*Kernel, Scope, Task) {
 	t.Helper()
-	dsn := os.Getenv("POLIS_R05B5_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B5_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B5 PostgreSQL required")
 	}
@@ -214,7 +215,7 @@ func prepareFrozenLive2CounterfactualTask(t *testing.T) (*Kernel, Scope, Task) {
 		t.Fatal(err)
 	}
 	companyID := "r05b-live-2"
-	scope, err := k.TXCreateCompany(context.Background(), companyID)
+	scope, err := createPGTestCompany(k, context.Background(), companyID)
 	if err != nil {
 		k.Close()
 		t.Fatal(err)
@@ -235,6 +236,10 @@ func prepareFrozenLive2CounterfactualTask(t *testing.T) (*Kernel, Scope, Task) {
 	}
 	if _, err = k.pool.Exec(context.Background(), `INSERT INTO missions(company_id,id,title,goal,state,activation_id,contract,acceptance_contract)
 VALUES($1,$2,$3,$4,'active','live2-counterfactual-activation',$5,$6)`, companyID, missionID, "R0.5B LIVE_2 real-provider product smoke", goal, core.Contract, missionJSON); err != nil {
+		k.Close()
+		t.Fatal(err)
+	}
+	if err = configurePGTestMission(k, context.Background(), scope, missionID); err != nil {
 		k.Close()
 		t.Fatal(err)
 	}

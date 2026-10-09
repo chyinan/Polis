@@ -74,7 +74,9 @@ func (k *Kernel) TXCreateTaskTakeoverLease(ctx context.Context, scope Scope, mis
 			return Receipt{}, core.ConflictError{Reason: "resolve the open formal change request before starting a human takeover", CurrentState: "change_request_open"}
 		}
 		var leaseExists bool
-		if err = tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2)", scope.company, taskID).Scan(&leaseExists); err != nil {
+		if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM task_takeover_active_slots slot
+JOIN LATERAL (SELECT state FROM task_takeover_lease_events e WHERE e.company_id=slot.company_id AND e.lease_id=slot.lease_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.state='granted'
+WHERE slot.company_id=$1 AND slot.task_id=$2)`, scope.company, taskID).Scan(&leaseExists); err != nil {
 			return Receipt{}, err
 		}
 		if leaseExists {
@@ -92,7 +94,8 @@ base_tree_root_id,base_tree_revision,base_tree_manifest_sha256,base_tree_file_co
 VALUES($1,$2,$3,$4,$5,$6,$7,$8,'local_operator',$9,$10,$11,$12,$13,$14,$15)`, scope.company, leaseID, missionID, taskID, key, baseRequirementsDigest, baseDigest, baseRevision, treeRoot, treeRevision, treeManifest, treeFileCount, treeBytes, treeSourceCommitOID, treeInputManifestSHA256); err != nil {
 			return Receipt{}, err
 		}
-		if _, err = tx.Exec(ctx, `INSERT INTO task_takeover_active_slots(company_id,task_id,lease_id,mission_id) VALUES($1,$2,$3,$4)`, scope.company, taskID, leaseID, missionID); err != nil {
+		if _, err = tx.Exec(ctx, `INSERT INTO task_takeover_active_slots(company_id,task_id,lease_id,mission_id) VALUES($1,$2,$3,$4)
+ON CONFLICT(company_id,task_id) DO UPDATE SET lease_id=EXCLUDED.lease_id`, scope.company, taskID, leaseID, missionID); err != nil {
 			return Receipt{}, err
 		}
 		if err = appendTaskTakeoverLeaseEvent(ctx, tx, scope, leaseID, "granted", "worker_tree_stopped", key, nil, nil, nil, nil, nil, nil); err != nil {
@@ -244,9 +247,7 @@ VALUES($1,$2,$3,1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, scope.company, inputID, m
 			&inputID, int64Pointer(1), &digest, int64Pointer(int64(len(content))), humanEffortSeconds, diffJSON); err != nil {
 			return Receipt{}, err
 		}
-		if _, err = tx.Exec(ctx, "DELETE FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3", scope.company, currentLease.TaskID, leaseID); err != nil {
-			return Receipt{}, err
-		}
+		// Retain the pointer; the returned event above makes this lease inactive.
 		if err = appendEvent(ctx, tx, scope, "mission.input.human_handover", map[string]any{
 			"mission_id": missionID, "task_id": currentLease.TaskID, "lease_id": leaseID, "input_id": inputID, "revision": 1, "content_digest": digest,
 		}); err != nil {
@@ -407,9 +408,7 @@ VALUES($1,$2,$3,1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, scope.company, inputID, m
 			&inputID, int64Pointer(1), &prepared.Upload.ContentDigest, &prepared.Upload.ByteSize, humanEffortSeconds, diffJSON); txErr != nil {
 			return Receipt{}, txErr
 		}
-		if _, txErr = tx.Exec(ctx, "DELETE FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3", scope.company, currentLease.TaskID, leaseID); txErr != nil {
-			return Receipt{}, txErr
-		}
+		// Retain the pointer; the returned event above makes this lease inactive.
 		if txErr = appendEvent(ctx, tx, scope, "mission.input.human_handover", map[string]any{
 			"mission_id": missionID, "task_id": currentLease.TaskID, "lease_id": leaseID, "input_id": inputID, "revision": 1,
 			"content_digest": prepared.Upload.ContentDigest, "source_kind": prepared.Upload.SourceKind,
@@ -461,9 +460,7 @@ func (k *Kernel) TXReleaseTaskTakeoverLease(ctx context.Context, scope Scope, mi
 		if !missionChangeWritersStopped(impact) {
 			return Receipt{}, core.ConflictError{Reason: "a WorkerSession, JobRun or service lease became active before the takeover lease was released", CurrentState: "writers_not_stopped"}
 		}
-		if _, err = tx.Exec(ctx, "DELETE FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3", scope.company, lease.TaskID, leaseID); err != nil {
-			return Receipt{}, err
-		}
+		// The terminal event below releases the logical slot without DELETE.
 		if err = appendTaskTakeoverLeaseEvent(ctx, tx, scope, leaseID, "released", "operator_returned_no_snapshot", key, nil, nil, nil, nil, nil, nil); err != nil {
 			return Receipt{}, err
 		}
@@ -786,7 +783,7 @@ WHERE company_id=$1 AND workspace_id=$2 ORDER BY relative_path COLLATE "C"`, sco
 }
 
 func taskTakeoverWorkspaceTreeMatchesLegacy(entries []WorkspaceTreeEntry, digest string, revision int64) bool {
-	return len(entries) == 1 && entries[0].RelativePath == "workspace.txt" && entries[0].Digest == digest && entries[0].SourceRevision == revision
+	return len(entries) == 1 && (entries[0].RelativePath == "workspace.txt" || entries[0].RelativePath == "formatter.go") && entries[0].Digest == digest && entries[0].SourceRevision == revision
 }
 
 func (k *Kernel) taskTakeoverPrepareWorkspaceTreeDirectorySnapshot(ctx context.Context, scope Scope, taskID string, entries []WorkspaceTreeEntry) (intake.PreparedDirectorySnapshot, error) {

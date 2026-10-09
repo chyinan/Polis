@@ -21,11 +21,12 @@ import (
 	"polis/internal/core"
 	"polis/internal/mcpowner"
 	"polis/internal/mcptransport"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 )
 
 func TestCapabilityApprovalBindingAndRevocationStayVersionPinned(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -36,7 +37,7 @@ func TestCapabilityApprovalBindingAndRevocationStayVersionPinned(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("capability-governance-%d", time.Now().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	skill, err := k.TXImportReadOnlySkillPackage(ctx, companyID, ReadOnlySkillPackageInput{
@@ -210,7 +211,7 @@ func capabilitySkillZIPForTest(t *testing.T, name string, referenceText ...strin
 }
 
 func TestCapabilitySkillConcurrentSameRevisionImportPreflightsCASWrites(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -221,7 +222,7 @@ func TestCapabilitySkillConcurrentSameRevisionImportPreflightsCASWrites(t *testi
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("capability-skill-concurrent-%d", time.Now().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	archives := [][]byte{
@@ -298,7 +299,7 @@ func TestCapabilitySkillConcurrentSameRevisionImportPreflightsCASWrites(t *testi
 }
 
 func TestCapabilitySkillDistinctRevisionImportsDoNotExhaustDatabasePool(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -310,7 +311,7 @@ func TestCapabilitySkillDistinctRevisionImportsDoNotExhaustDatabasePool(t *testi
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("capability-skill-distinct-concurrent-%d", time.Now().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	const count = 12
@@ -346,7 +347,7 @@ func TestCapabilitySkillDistinctRevisionImportsDoNotExhaustDatabasePool(t *testi
 }
 
 func TestCapabilitySkillLoadRequiresCurrentEmployeeBindingAndFlowsThroughHandover(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -436,7 +437,7 @@ func TestCapabilitySkillLoadRequiresCurrentEmployeeBindingAndFlowsThroughHandove
 }
 
 func TestControlledStdioMCPApprovalAndEmployeeUnbindAreAudited(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -447,7 +448,7 @@ func TestControlledStdioMCPApprovalAndEmployeeUnbindAreAudited(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("capability-mcp-governance-%d", time.Now().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	args := []string{"--stdio"}
@@ -498,7 +499,7 @@ func TestControlledStdioMCPApprovalAndEmployeeUnbindAreAudited(t *testing.T) {
 }
 
 func TestStdioMCPRuntimeQualificationRejectsUnsealedObservation(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -554,7 +555,7 @@ func TestStdioMCPRuntimeQualificationRejectsUnsealedObservation(t *testing.T) {
 	}
 }
 func TestStdioMCPRuntimeAuthorizationRequiresCurrentApprovalBindingAndSchema(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -692,18 +693,22 @@ VALUES($1,'fixture-runtime-event',$2,$3,$4,'observed_unqualified',$5,'test-only 
 	if currentResult.Error != "" || !ok || len(current.MCPToolSets) != 1 || current.MCPToolSets[0].CapabilityID != mcp.ID || current.MCPToolSets[0].Tools[0].Name != "lookup" {
 		t.Fatalf("worker-facing approved MCP context=(%+v,%t)", currentResult, ok)
 	}
-	intent, err := k.TXBeginStdioMCPToolCall(ctx, binding, StdioMCPToolCallIntentInput{
+	intent, err := dispatchPGTestMCPCall(k, ctx, binding, StdioMCPToolCallIntentInput{
 		ProviderCallID: "provider-call-completed", CapabilityID: mcp.ID, ToolName: "lookup",
 		ToolSchemaSHA256: toolSchemaDigest, Arguments: json.RawMessage(`{"key":"needle"}`),
 	})
 	if err != nil || intent.Status != "dispatching" || intent.RuntimeQualificationID != runtimeQualificationID {
 		t.Fatalf("MCP call intent=(%+v,%v), want a one-shot dispatch reservation", intent, err)
 	}
-	if _, duplicateErr := k.TXBeginStdioMCPToolCall(ctx, binding, StdioMCPToolCallIntentInput{
+	if _, duplicateErr := dispatchPGTestMCPCall(k, ctx, binding, StdioMCPToolCallIntentInput{
 		ProviderCallID: "provider-call-completed", CapabilityID: mcp.ID, ToolName: "lookup",
 		ToolSchemaSHA256: toolSchemaDigest, Arguments: json.RawMessage(`{"key":"needle"}`),
-	}); !errors.Is(duplicateErr, core.Conflict) {
-		t.Fatalf("duplicate provider call reservation error=%v, want %s", duplicateErr, core.Conflict)
+	}); !errors.Is(duplicateErr, core.Denied) {
+		t.Fatalf("consumed one-shot permit replay error=%v, want %s", duplicateErr, core.Denied)
+	}
+	var intentCount int
+	if err = k.pool.QueryRow(ctx, "SELECT count(*) FROM mcp_tool_call_intents WHERE company_id=$1 AND provider_call_id=$2", scope.company, "provider-call-completed").Scan(&intentCount); err != nil || intentCount != 1 {
+		t.Fatalf("duplicate call changed the one-shot ledger: count=%d error=%v", intentCount, err)
 	}
 	toolResult := mcptransport.StdioToolResult{
 		ToolName: "lookup", ToolSchemaSHA256: toolSchemaDigest, ContentBoundary: mcptransport.StdioResultContentBoundary,
@@ -725,7 +730,7 @@ VALUES($1,'fixture-runtime-event',$2,$3,$4,'observed_unqualified',$5,'test-only 
 	if _, err = k.pool.Exec(ctx, `DELETE FROM mcp_tool_call_intents WHERE company_id=$1 AND intent_id=$2`, scope.company, intent.IntentID); err == nil {
 		t.Fatal("MCP tool-call intent history was deletable")
 	}
-	wideIntent, err := k.TXBeginStdioMCPToolCall(ctx, binding, StdioMCPToolCallIntentInput{
+	wideIntent, err := dispatchPGTestMCPCall(k, ctx, binding, StdioMCPToolCallIntentInput{
 		ProviderCallID: "provider-call-empty-content-boundary", CapabilityID: mcp.ID, ToolName: "lookup",
 		ToolSchemaSHA256: toolSchemaDigest, Arguments: json.RawMessage(`{"key":"bounded"}`),
 	})
@@ -741,7 +746,7 @@ VALUES($1,'fixture-runtime-event',$2,$3,$4,'observed_unqualified',$5,'test-only 
 	if err != nil || wideCall.Status != "completed" || wideCall.Result == nil || len(wideCall.Result.Content) != len(wideResult.Content) {
 		t.Fatalf("bounded empty-content result persistence=(%+v,%v)", wideCall, err)
 	}
-	unknownIntent, err := k.TXBeginStdioMCPToolCall(ctx, binding, StdioMCPToolCallIntentInput{
+	unknownIntent, err := dispatchPGTestMCPCall(k, ctx, binding, StdioMCPToolCallIntentInput{
 		ProviderCallID: "provider-call-unknown", CapabilityID: mcp.ID, ToolName: "lookup",
 		ToolSchemaSHA256: toolSchemaDigest, Arguments: json.RawMessage(`{"key":"ambiguous"}`),
 	})
@@ -767,7 +772,7 @@ VALUES($1,'fixture-runtime-event',$2,$3,$4,'observed_unqualified',$5,'test-only 
 	if _, err = k.AuthorizeStdioMCPToolCall(ctx, binding, mcp.ID, "lookup", toolSchemaDigest); !errors.Is(err, core.Denied) {
 		t.Fatalf("schema-drifted runtime remained authorized: %v", err)
 	}
-	if _, err = k.TXBeginStdioMCPToolCall(ctx, binding, StdioMCPToolCallIntentInput{
+	if _, err = dispatchPGTestMCPCall(k, ctx, binding, StdioMCPToolCallIntentInput{
 		ProviderCallID: "provider-call-after-drift", CapabilityID: mcp.ID, ToolName: "lookup",
 		ToolSchemaSHA256: toolSchemaDigest, Arguments: json.RawMessage(`{"key":"no-dispatch"}`),
 	}); !errors.Is(err, core.Denied) {
@@ -842,7 +847,7 @@ VALUES($1,'fixture-runtime-event-2',$2,$3,$4,'observed_unqualified',$5,'test-onl
 	if err != nil || unknownCall.Status != "outcome_unknown" {
 		t.Fatalf("interrupted MCP call=(%+v,%v), want outcome_unknown", unknownCall, err)
 	}
-	if _, err = k.TXBeginStdioMCPToolCall(ctx, binding, StdioMCPToolCallIntentInput{
+	if _, err = dispatchPGTestMCPCall(k, ctx, binding, StdioMCPToolCallIntentInput{
 		ProviderCallID: "provider-call-unknown", CapabilityID: mcp.ID, ToolName: "lookup",
 		ToolSchemaSHA256: toolSchemaDigest, Arguments: json.RawMessage(`{"key":"ambiguous"}`),
 	}); err == nil {
@@ -860,7 +865,7 @@ VALUES($1,'fixture-runtime-event-2',$2,$3,$4,'observed_unqualified',$5,'test-onl
 }
 
 func TestStreamableHTTPMCPUsesPinned20260728ProfileWithoutNetworkProbe(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -938,7 +943,7 @@ func TestStreamableHTTPMCPUsesPinned20260728ProfileWithoutNetworkProbe(t *testin
 	if _, err = k.AuthorizeStdioMCPToolCall(ctx, binding, mcp.ID, "unlisted", schemaDigest); !errors.Is(err, core.Denied) {
 		t.Fatalf("unlisted Streamable HTTP tool authorization error=%v", err)
 	}
-	intent, err := k.TXBeginStdioMCPToolCall(ctx, binding, StdioMCPToolCallIntentInput{
+	intent, err := dispatchPGTestMCPCall(k, ctx, binding, StdioMCPToolCallIntentInput{
 		ProviderCallID: "http-provider-call-1", CapabilityID: mcp.ID, ToolName: "lookup", ToolSchemaSHA256: schemaDigest,
 		Arguments: json.RawMessage(`{"key":"fixture"}`),
 	})

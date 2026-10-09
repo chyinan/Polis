@@ -4,17 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
 
 	"polis/internal/domainworkflow"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 )
 
 func TestDomainEvidenceProfileQualificationIsCompanyScopedAndNeverEnablesExecution(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -25,11 +26,11 @@ func TestDomainEvidenceProfileQualificationIsCompanyScopedAndNeverEnablesExecuti
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("domain-profile-qualification-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "R3 qualification sample", "bind profile qualification to reviewed domain evidence", "domain-profile-qualification-mission")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "R3 qualification sample", "bind profile qualification to reviewed domain evidence", "domain-profile-qualification-mission")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -184,7 +185,7 @@ func TestDomainEvidenceProfileQualificationIsCompanyScopedAndNeverEnablesExecuti
 		}
 	}
 	otherCompany := companyID + "-other"
-	if _, err = k.TXCreateCompany(ctx, otherCompany); err != nil {
+	if _, err = createPGTestCompany(k, ctx, otherCompany); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = k.TXRecordDomainProfileQualification(ctx, otherCompany, DomainProfileQualificationInput{

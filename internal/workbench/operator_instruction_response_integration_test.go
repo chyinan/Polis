@@ -4,13 +4,14 @@ package workbench
 import (
 	"context"
 	"fmt"
-	"os"
+
 	"runtime"
 	"testing"
 	"time"
 
 	"polis/internal/control"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 )
 
@@ -18,7 +19,7 @@ func TestOperatorInstructionResponseIsVisibleInWorkbench(t *testing.T) {
 	if runtime.GOOS != "linux" {
 		t.Skip("the process fixture requires Linux")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL 18 required")
 	}
@@ -29,11 +30,11 @@ func TestOperatorInstructionResponseIsVisibleInWorkbench(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-guidance-view-%d", time.Now().UnixNano())
-	company, err := k.TXCreateCompany(ctx, companyID)
+	company, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, company, fmt.Sprintf("guidance-mission-%d", time.Now().UnixNano()))
+	task, err := createPGTestProbe(k, ctx, company, fmt.Sprintf("guidance-mission-%d", time.Now().UnixNano()))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -53,7 +53,7 @@ type ExecutionFacts struct {
 type TestResult struct {
 	Outcome       string   `json:"outcome"`
 	ReasonCode    string   `json:"reasonCode"`
-	ExitCode      int      `json:"exitCode"`
+	ExitCode      *int     `json:"exitCode,omitempty"`
 	PassedTests   []string `json:"passedTests"`
 	FailedTests   []string `json:"failedTests"`
 	StdoutBytes   int      `json:"stdoutBytes"`
@@ -77,9 +77,13 @@ type goTestEvent struct {
 // is affirmative. The candidate's textual output is never treated as evidence.
 func ClassifyResult(facts ExecutionFacts) TestResult {
 	result := TestResult{
-		ExitCode: facts.ExitCode, PassedTests: []string{}, FailedTests: []string{},
+		PassedTests: []string{}, FailedTests: []string{},
 		StdoutBytes: len(facts.Stdout), StdoutSHA256: digestHex(facts.Stdout),
 		StderrBytes: len(facts.Stderr), StderrSHA256: digestHex(facts.Stderr), ResourceLimit: facts.ResourceLimit,
+	}
+	if facts.ExitCodeKnown {
+		code := facts.ExitCode
+		result.ExitCode = &code
 	}
 	setOutcome := func(outcome, reason string) TestResult {
 		result.Outcome, result.ReasonCode = outcome, reason

@@ -4,16 +4,17 @@ package workbench
 import (
 	"context"
 	"fmt"
-	"os"
+
 	"testing"
 	"time"
 
 	"polis/internal/core"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestWorkbenchDisplaysInternalAndProviderTaskKinds(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05B5_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B5_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B5 PostgreSQL required")
 	}
@@ -24,11 +25,11 @@ func TestWorkbenchDisplaysInternalAndProviderTaskKinds(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "Task kind projection", "show authoritative Mission tasks", "r05b5-workbench-create")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "Task kind projection", "show authoritative Mission tasks", "r05b5-workbench-create")
 	if err != nil {
 		t.Fatal(err)
 	}

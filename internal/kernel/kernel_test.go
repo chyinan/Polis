@@ -11,10 +11,11 @@ import (
 	"testing"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 )
 
 func TestPostgresSlice(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required: run scripts/test.sh")
 	}
@@ -25,13 +26,13 @@ func TestPostgresSlice(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() { k.Close() }()
-	a, err := k.TXCreateCompany(ctx, "company-a")
+	a, err := createPGTestCompany(k, ctx, "company-a")
 	must(t, err)
-	b, err := k.TXCreateCompany(ctx, "company-b")
+	b, err := createPGTestCompany(k, ctx, "company-b")
 	must(t, err)
-	must(t, k.TXCreateMission(ctx, a, "mission-a"))
-	must(t, k.TXCreateMission(ctx, a, "mission-other"))
-	must(t, k.TXCreateMission(ctx, b, "mission-b"))
+	must(t, createPGTestMission(k, ctx, a, "mission-a"))
+	must(t, createPGTestMission(k, ctx, a, "mission-other"))
+	must(t, createPGTestMission(k, ctx, b, "mission-b"))
 
 	t.Run("FT-57-concurrent-start", func(t *testing.T) {
 		var wg sync.WaitGroup

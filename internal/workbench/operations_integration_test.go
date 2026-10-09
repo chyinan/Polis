@@ -3,14 +3,15 @@ package workbench
 
 import (
 	"context"
-	"os"
+
 	"testing"
 
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestPostgresOperationsProjectionPreservesUnavailableTokenSemantics(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -20,7 +21,7 @@ func TestPostgresOperationsProjectionPreservesUnavailableTokenSemantics(t *testi
 		t.Fatal(err)
 	}
 	defer runtime.Close()
-	if _, err = runtime.TXCreateCompany(ctx, "r06-operations"); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, "r06-operations"); err != nil {
 		t.Fatal(err)
 	}
 	store, err := NewPostgresReadStore(ctx, dsn)

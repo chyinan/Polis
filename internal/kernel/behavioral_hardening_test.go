@@ -5,10 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"os"
+
 	"polis/internal/core"
 	"polis/internal/fixture"
 	"polis/internal/organization"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"polis/spec"
 	"strings"
@@ -34,7 +35,7 @@ func newPeerHardeningEnv(t *testing.T, toolLimit int64) peerHardeningEnv {
 			t.Fatalf("%s: %v", stage, err)
 		}
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PG required")
 	}
@@ -42,6 +43,15 @@ func newPeerHardeningEnv(t *testing.T, toolLimit int64) peerHardeningEnv {
 	var err error
 	env.k, err = Open(env.ctx, dsn, t.TempDir())
 	mustStage("open kernel", err)
+	t.Cleanup(env.k.Close)
+	t.Cleanup(func() {
+		if env.process != nil {
+			_, _ = env.process.Stop()
+		}
+		if env.frontendProcess != nil {
+			_, _ = env.frontendProcess.Stop()
+		}
+	})
 	_, err = env.k.TXSetInstallationWorkerSlotPolicy(env.ctx, env.k.LocalInstallationOwnerScope(), InstallationWorkerSlotPolicyInput{
 		RequestID: "r03a-hardening-worker-slots-" + newID(), ExpectedRevision: 0, MaxActiveSlots: 4, ProtectedSlots: 1,
 	})

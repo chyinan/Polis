@@ -91,7 +91,7 @@ blob_root="$temp_root/blobs"
 mkdir -m 0700 "$data_dir" "$socket_dir" "$blob_root"
 chmod 0700 "$data_dir" "$socket_dir" "$blob_root"
 
-evidence_parent="$repo_root/evidence/development/polis-self-dev-v1-workspace-go-job-patch-slice/postgres-runtime"
+evidence_parent="$repo_root/evidence/development/polis-self-dev-v1-supervisor-pg-20261009/postgres-runtime"
 mkdir -p "$evidence_parent"
 evidence_dir="$evidence_parent/$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -m 0700 "$evidence_dir"
@@ -113,6 +113,7 @@ cleanup() {
   fi
   printf 'postgres_integration_exit=%s\n' "$status" >>"$evidence_dir/summary.txt"
   if [[ "$server_started" -eq 0 && "$temp_root" == /tmp/polis-self-dev-go-pg.* && ! -L "$temp_root" && -d "$data_dir" && ! -L "$data_dir" && -d "$socket_dir" && ! -L "$socket_dir" && -d "$blob_root" && ! -L "$blob_root" ]]; then
+    find "$temp_root" -type d -user "$(id -u)" -exec chmod u+w {} +
     rm -rf -- "$temp_root"
   else
     printf 'cleanup=preserved_for_manual_recovery\ntemporary_root=%s\n' "$temp_root" >>"$evidence_dir/summary.txt"
@@ -140,6 +141,9 @@ runtime_dsn="host=$socket_dir dbname=$database user=$runtime_role"
 "$pg_bin/createdb" -h "$socket_dir" -U "$admin_user" -O "$runtime_role" "$database"
 export POLIS_DSN="host=$socket_dir dbname=$database user=$admin_user"
 export POLIS_BLOB_ROOT="$blob_root"
+export POLIS_GO_TMP_ROOT="$temp_root/go"
+export POLIS_GO_ROOT="$repo_root/.tools/go"
+export POLIS_GO_SUPERVISOR_BINARY="$repo_root/bin/polis-selfdev-go-job-supervisor"
 if ! bash "$repo_root/scripts/go.sh" run ./cmd/polis migrate >"$evidence_dir/migration.log" 2>&1; then
   printf 'migration=FAIL\n' >>"$evidence_dir/summary.txt"
   exit 1
@@ -165,12 +169,24 @@ fi
 } >"$evidence_dir/runtime-filesystem.log" 2>&1
 
 unset POLIS_DSN
-go_test_args=(-p 1 -count=1)
+export POLIS_TEST_TEMPLATE_ADMIN_DSN="$admin_dsn"
+export POLIS_TEST_TEMPLATE_DATABASE="$database"
+export POLIS_MIGRATION_TEST_DSN="host=$socket_dir dbname=$database user=$admin_user"
+export POLIS_MIGRATION_EVIDENCE_TEST_DSN="$POLIS_MIGRATION_TEST_DSN"
+export POLIS_RECOVERY_TEST_SOURCE_DSN="$runtime_dsn"
+export POLIS_RECOVERY_TEST_TARGET_DSN="$POLIS_MIGRATION_TEST_DSN"
+export POLIS_PG_DUMP_PATH="$pg_bin/pg_dump"
+export POLIS_PG_RESTORE_PATH="$pg_bin/pg_restore"
+for alias in POLIS_R05A_CONTROL_TEST_DSN POLIS_R05B1_TEST_DSN POLIS_R05B3_TEST_DSN POLIS_R05B5_TEST_DSN POLIS_R05B15_TEST_DSN POLIS_R05B16_TEST_DSN; do
+  export "$alias=$runtime_dsn"
+done
+go_test_args=(-p 1 -count=1 -json -v)
 if [[ -n "${SELFDEV_GO_TEST_PATTERN:-}" ]]; then
   go_test_args+=(-run "$SELFDEV_GO_TEST_PATTERN" -v)
   printf 'test_pattern=%s\n' "$SELFDEV_GO_TEST_PATTERN" >>"$evidence_dir/summary.txt"
 fi
-if ! bash "$repo_root/scripts/go.sh" test "${go_test_args[@]}" ./internal/kernel ./internal/control ./internal/workbench >"$evidence_dir/go-postgres-tests.log" 2>&1; then
+printf 'command=bash scripts/go.sh test -p 1 -count=1 -json -v ./...\n' >>"$evidence_dir/summary.txt"
+if ! bash "$repo_root/scripts/go.sh" test "${go_test_args[@]}" ./... >"$evidence_dir/go-postgres-tests.jsonl" 2>"$evidence_dir/go-postgres-tests.stderr.log"; then
   printf 'migration=PASS\nschema_identity=%s\nleast_privilege=PASS\npostgres_backed_tests=FAIL\n' "$schema_identity" >>"$evidence_dir/summary.txt"
   exit 1
 fi

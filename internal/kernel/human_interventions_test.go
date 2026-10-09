@@ -5,16 +5,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"os"
+
 	"testing"
 	"time"
 
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 	"polis/internal/qqnotify"
 )
 
 func TestHumanInterventionCreatesSafeDeduplicatedNotificationIntent(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -24,11 +25,11 @@ func TestHumanInterventionCreatesSafeDeduplicatedNotificationIntent(t *testing.T
 		t.Fatal(err)
 	}
 	defer runtime.Close()
-	scope, err := runtime.TXCreateCompany(ctx, "human-intervention-"+newID())
+	scope, err := createPGTestCompany(runtime, ctx, "human-intervention-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Provider readiness", "record a human takeover need", "human-intervention-mission")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Provider readiness", "record a human takeover need", "human-intervention-mission")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +90,7 @@ func TestHumanInterventionCreatesSafeDeduplicatedNotificationIntent(t *testing.T
 }
 
 func TestQQOutboxRequiresQualifiedRouteAndNeverRetriesUnknownOutcome(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -99,11 +100,11 @@ func TestQQOutboxRequiresQualifiedRouteAndNeverRetriesUnknownOutcome(t *testing.
 		t.Fatal(err)
 	}
 	defer runtime.Close()
-	scope, err := runtime.TXCreateCompany(ctx, "qq-outbox-"+newID())
+	scope, err := createPGTestCompany(runtime, ctx, "qq-outbox-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "QQ outbox", "verify the fake qualified route boundary", "qq-outbox-mission-"+newID())
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "QQ outbox", "verify the fake qualified route boundary", "qq-outbox-mission-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}

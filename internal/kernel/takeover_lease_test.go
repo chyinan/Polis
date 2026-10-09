@@ -3,12 +3,14 @@ package kernel
 
 import (
 	"context"
-	"os"
+	"errors"
+
 	"runtime"
 	"testing"
 
 	"polis/internal/core"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"polis/internal/taskvalidation"
 )
@@ -17,7 +19,7 @@ func TestTakeoverLeaseFreezesWorkspaceAndReturnsHumanSnapshotToSuccessor(t *test
 	if runtime.GOOS != "linux" {
 		t.Skip("the owned process fixture requires Linux")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -27,12 +29,12 @@ func TestTakeoverLeaseFreezesWorkspaceAndReturnsHumanSnapshotToSuccessor(t *test
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "takeover-lease-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "takeover-lease-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
 	contract := &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Task summary:", "Implementation:", "Validation:"}}
-	mission, err := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "Human handover", "Preserve the approved implementation boundary.", contract, "takeover-mission-create-"+newID())
+	mission, err := createPGTestMissionGoalWithAcceptance(k, ctx, scope, "Human handover", "Preserve the approved implementation boundary.", contract, "takeover-mission-create-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,8 +75,8 @@ func TestTakeoverLeaseFreezesWorkspaceAndReturnsHumanSnapshotToSuccessor(t *test
 	if err = k.TXActivateWorker(ctx, worker, "gpt-5.6-sol/medium"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = k.TXSetMissionPausedCommand(ctx, scope, mission.ID, true, "takeover-mission-pause-"+newID()); err != nil {
-		t.Fatal(err)
+	if _, err = k.TXSetMissionPausedCommand(ctx, scope, mission.ID, true, "takeover-mission-pause-"+newID()); err == nil {
+		t.Fatal("mission pause admitted a live writer")
 	}
 	if _, err = k.TXCreateTaskTakeoverLease(ctx, scope, mission.ID, task.ID, "takeover-while-worker-live-"+newID()); err == nil {
 		t.Fatal("human takeover lease was granted before the live WorkerSession stopped")
@@ -89,6 +91,9 @@ func TestTakeoverLeaseFreezesWorkspaceAndReturnsHumanSnapshotToSuccessor(t *test
 	if err = k.TXConfirmStopped(ctx, worker, stopProof); err != nil {
 		t.Fatal(err)
 	}
+	if _, err = k.TXSetMissionPausedCommand(ctx, scope, mission.ID, true, "takeover-stopped-pause-"+newID()); err != nil {
+		t.Fatal(err)
+	}
 	lease, err := k.TXCreateTaskTakeoverLease(ctx, scope, mission.ID, task.ID, "takeover-lease-create-"+newID())
 	if err != nil {
 		t.Fatal(err)
@@ -99,7 +104,7 @@ func TestTakeoverLeaseFreezesWorkspaceAndReturnsHumanSnapshotToSuccessor(t *test
 	if _, err = k.TXSubmitTaskTakeoverSnapshot(ctx, scope, mission.ID, lease.LeaseID, TaskTakeoverSnapshotInput{
 		RequestID: "takeover-stale-" + newID(), BaseWorkspaceDigest: repeatDigest('f'), BaseWorkspaceRevision: lease.BaseWorkspaceRevision + 1,
 		Content: "Human baseline must match the lease revision.", HumanEffortSeconds: 90,
-	}); err != core.Conflict {
+	}); !errors.Is(err, core.Conflict) {
 		t.Fatalf("stale human snapshot error=%v, want conflict", err)
 	}
 
@@ -128,6 +133,7 @@ func TestTakeoverLeaseFreezesWorkspaceAndReturnsHumanSnapshotToSuccessor(t *test
 	if err != nil {
 		t.Fatal(err)
 	}
+	assessPGTestMissionChange(t, k, scope, mission.ID)
 	considered, err := k.TXConsiderMissionChangeRequest(ctx, scope, mission.ID, change.ID, "takeover-change-consider-"+newID())
 	if err != nil {
 		t.Fatal(err)

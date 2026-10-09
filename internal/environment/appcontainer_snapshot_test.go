@@ -124,6 +124,7 @@ func TestWindowsNodeToolchainSHA256FromFilesBindsStagedBytes(t *testing.T) {
 	if err != nil {
 		t.Fatalf("stage separately approved Node/npm files: %v", err)
 	}
+	t.Cleanup(func() { _ = os.Chmod(filepath.Dir(paths.NodeExecutable), 0700) })
 	if filepath.Dir(paths.NodeExecutable) != filepath.Join(stageWorkspace, ".polis-toolchain") || filepath.Dir(paths.NPMCLIScript) != filepath.Join(stageWorkspace, ".polis-toolchain") {
 		t.Fatalf("trusted toolchain was not staged into its separate directory: %+v", paths)
 	}

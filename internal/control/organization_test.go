@@ -3,11 +3,12 @@ package control
 
 import (
 	"context"
-	"os"
+
 	"testing"
 
 	"polis/internal/kernel"
 	"polis/internal/organization"
+	"polis/internal/pgfixture"
 )
 
 func TestValidateCreateCompanyRequestRequiresRequestIDAndRoster(t *testing.T) {
@@ -21,7 +22,7 @@ func TestValidateCreateCompanyRequestRequiresRequestIDAndRoster(t *testing.T) {
 }
 
 func TestRuntimeSettingsUpdatePersistsDesiredNonSecretConfiguration(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -32,7 +33,7 @@ func TestRuntimeSettingsUpdatePersistsDesiredNonSecretConfiguration(t *testing.T
 	}
 	defer k.Close()
 	company := "r06-runtime-settings"
-	if _, err = k.TXCreateCompany(ctx, company); err != nil {
+	if _, err = createPGTestCompany(k, ctx, company); err != nil {
 		t.Fatal(err)
 	}
 	service := NewService(k, &recordingWorkerAdapter{})

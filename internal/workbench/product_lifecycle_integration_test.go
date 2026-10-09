@@ -5,18 +5,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
+
 	"testing"
 	"time"
 
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 	"polis/internal/taskvalidation"
 	"polis/internal/workbench"
 )
 
 func TestProductCandidateLifecycleProjectsThroughWorkbench(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -27,12 +28,12 @@ func TestProductCandidateLifecycleProjectsThroughWorkbench(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r0-5b7-workbench-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	contract := &taskvalidation.AcceptanceContract{Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Task ID: {{task_id}}"}}
-	mission, err := k.TXCreateMissionGoalWithAcceptance(ctx, scope, "product lifecycle projection", "publish one candidate", contract, "r0-5b7-create")
+	mission, err := createPGTestMissionGoalWithAcceptance(k, ctx, scope, "product lifecycle projection", "publish one candidate", contract, "r0-5b7-create")
 	if err != nil {
 		t.Fatal(err)
 	}

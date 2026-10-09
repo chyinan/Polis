@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 	"strings"
 	"sync"
 	"testing"
@@ -18,7 +19,7 @@ import (
 )
 
 func TestFaultBoundaries(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("run scripts/test.sh with dedicated PG")
 	}
@@ -27,9 +28,9 @@ func TestFaultBoundaries(t *testing.T) {
 	k, e := Open(ctx, dsn, root)
 	must(t, e)
 	defer func() { k.Close() }()
-	scope, e := k.TXCreateCompany(ctx, "fault-company")
+	scope, e := createPGTestCompany(k, ctx, "fault-company")
 	must(t, e)
-	must(t, k.TXCreateMission(ctx, scope, "fault-mission"))
+	must(t, createPGTestMission(k, ctx, scope, "fault-mission"))
 	_, e = k.TXStartMission(ctx, scope, "fault-mission", "start")
 	must(t, e)
 	t.Run("singleton-controller", func(t *testing.T) {
@@ -98,7 +99,7 @@ func TestFaultBoundaries(t *testing.T) {
 	w, e := k.TXClaim(ctx, backend)
 	must(t, e)
 	t.Run("FT-16-foreign-write-with-valid-identity", func(t *testing.T) {
-		other, e := k.TXCreateCompany(ctx, "fault-foreign")
+		other, e := createPGTestCompany(k, ctx, "fault-foreign")
 		must(t, e)
 		foreign, e := k.BindFake(ctx, other, "emp-backend")
 		must(t, e)
@@ -155,7 +156,7 @@ func TestCrashHelper(t *testing.T) {
 		return
 	}
 	ctx := context.Background()
-	k, e := Open(ctx, os.Getenv("POLIS_TEST_DSN"), os.Getenv("POLIS_CRASH_ROOT"))
+	k, e := Open(ctx, pgfixture.DSN(t, "POLIS_TEST_DSN"), os.Getenv("POLIS_CRASH_ROOT"))
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -169,7 +170,7 @@ func TestCrashHelper(t *testing.T) {
 	k.Close()
 }
 func TestProcessCrashRecovery(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("run scripts/test.sh")
 	}
@@ -177,9 +178,9 @@ func TestProcessCrashRecovery(t *testing.T) {
 	root := t.TempDir()
 	k, e := Open(ctx, dsn, root)
 	must(t, e)
-	s, e := k.TXCreateCompany(ctx, "crash-company")
+	s, e := createPGTestCompany(k, ctx, "crash-company")
 	must(t, e)
-	must(t, k.TXCreateMission(ctx, s, "crash-mission"))
+	must(t, createPGTestMission(k, ctx, s, "crash-mission"))
 	_, e = k.TXStartMission(ctx, s, "crash-mission", "start")
 	must(t, e)
 	k.Close()

@@ -68,6 +68,7 @@ type Snapshot struct {
 type Kernel struct {
 	pool                     *pgxpool.Pool
 	lockPool                 *pgxpool.Pool
+	casLockPool              *pgxpool.Pool
 	lease                    *pgxpool.Conn
 	leaseMu                  sync.Mutex
 	incarnation              string
@@ -119,7 +120,13 @@ func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBindin
 		p.Close()
 		return nil, err
 	}
-	k := &Kernel{pool: p, lockPool: lockPool, incarnation: newID(), root: root, windowsNodeWorkspaceRoot: os.Getenv("POLIS_WINDOWS_NODE_WORKSPACE_ROOT"), runtimeCASBinding: binding, executorFingerprints: make(map[string]environment.EnvironmentExecutorFingerprint)}
+	casLockPool, err := pgxpool.NewWithConfig(ctx, lockCfg.Copy())
+	if err != nil {
+		lockPool.Close()
+		p.Close()
+		return nil, err
+	}
+	k := &Kernel{pool: p, lockPool: lockPool, casLockPool: casLockPool, incarnation: newID(), root: root, windowsNodeWorkspaceRoot: os.Getenv("POLIS_WINDOWS_NODE_WORKSPACE_ROOT"), runtimeCASBinding: binding, executorFingerprints: make(map[string]environment.EnvironmentExecutorFingerprint)}
 	for _, profileID := range []string{environment.WindowsNodeNPMProfile, environment.LinuxNodeNPMProfile} {
 		fingerprint, fingerprintErr := environment.CurrentEnvironmentExecutorFingerprint(profileID)
 		if fingerprintErr == nil {
@@ -217,6 +224,9 @@ func (k *Kernel) Close() {
 	if k.lockPool != nil {
 		k.lockPool.Close()
 	}
+	if k.casLockPool != nil {
+		k.casLockPool.Close()
+	}
 }
 
 // LocalScope is a trusted local OS management entry, never offered to workers.
@@ -294,6 +304,14 @@ func (k *Kernel) CheckRuntimeLease(ctx context.Context) error {
 }
 
 func (k *Kernel) checkRuntimeLease(ctx context.Context, tx pgx.Tx) error {
+	return k.checkRuntimeLeaseMode(ctx, tx, true)
+}
+
+func (k *Kernel) checkRuntimeReadLease(ctx context.Context, tx pgx.Tx) error {
+	return k.checkRuntimeLeaseMode(ctx, tx, false)
+}
+
+func (k *Kernel) checkRuntimeLeaseMode(ctx context.Context, tx pgx.Tx, lock bool) error {
 	if k == nil {
 		return core.StaleEpoch
 	}
@@ -308,7 +326,11 @@ func (k *Kernel) checkRuntimeLease(ctx context.Context, tx pgx.Tx) error {
 		return core.StaleEpoch
 	}
 	var incarnation string
-	if e = tx.QueryRow(ctx, "SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE").Scan(&incarnation); e != nil {
+	query := "SELECT incarnation FROM runtime_control WHERE singleton"
+	if lock {
+		query += " FOR SHARE"
+	}
+	if e = tx.QueryRow(ctx, query).Scan(&incarnation); e != nil {
 		return e
 	}
 	if incarnation != k.incarnation {

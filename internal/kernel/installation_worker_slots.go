@@ -47,7 +47,7 @@ func (k *Kernel) GetInstallationWorkerSlotPolicy(ctx context.Context, scope Inst
 		return InstallationWorkerSlotPolicy{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return InstallationWorkerSlotPolicy{}, err
 	}
 	policy, err := installationWorkerSlotPolicyTX(ctx, tx)

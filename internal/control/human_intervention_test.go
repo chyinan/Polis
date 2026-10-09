@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
@@ -14,6 +14,7 @@ import (
 
 	"polis/internal/core"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/provider"
 )
 
@@ -36,7 +37,7 @@ func (*unavailableReadinessAdapter) Stop(context.Context, string, string) error 
 func (*unavailableReadinessAdapter) Close()                                     {}
 
 func TestMissionStartReadinessFailureCreatesSafeHumanInterventionAndOutbox(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -47,11 +48,11 @@ func TestMissionStartReadinessFailureCreatesSafeHumanInterventionAndOutbox(t *te
 	}
 	defer runtime.Close()
 	companyID := "start-intervention-" + fmt.Sprint(time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Readiness failure", "record a human action when runtime is unavailable", "start-intervention-mission")
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Readiness failure", "record a human action when runtime is unavailable", "start-intervention-mission")
 	if err != nil {
 		t.Fatal(err)
 	}

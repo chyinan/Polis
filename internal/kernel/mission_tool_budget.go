@@ -112,7 +112,7 @@ func (k *Kernel) ListMissionToolCallBudgets(ctx context.Context, scope Scope, li
 		return MissionToolCallBudgetList{}, err
 	}
 	defer tx.Rollback(ctx)
-	if err = k.checkRuntimeLease(ctx, tx); err != nil {
+	if err = k.checkRuntimeReadLease(ctx, tx); err != nil {
 		return MissionToolCallBudgetList{}, err
 	}
 	rows, err := tx.Query(ctx, `SELECT m.id,m.title,m.state,m.mission_tool_call_limit,m.mission_tool_calls_used,

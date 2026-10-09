@@ -10,9 +10,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"polis/db"
 	"polis/internal/core"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 )
 
 func TestCreateDailyRoutineRequiresTaskInstruction(t *testing.T) {
@@ -28,11 +31,30 @@ func TestCreateDailyRoutineRequiresTaskInstruction(t *testing.T) {
 }
 
 func TestMigratedActiveLegacyRoutineRequiresInstructionThenDelivers(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.EmptyDSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL upgrade fixture required")
 	}
 	ctx := context.Background()
+	adminDSN := os.Getenv("POLIS_TEST_ADMIN_DSN")
+	must(t, db.MigrateToVersion(ctx, adminDSN, 60))
+	admin, e := pgx.Connect(ctx, adminDSN)
+	must(t, e)
+	defer admin.Close(ctx)
+	_, e = admin.Exec(ctx, `INSERT INTO companies(id,name,workspace_root) VALUES('wake_migration_pending','legacy routine upgrade','/tmp');
+INSERT INTO employees(company_id,id,display_name,role_name,model_profile,enabled) VALUES('wake_migration_pending','emp-review','Review','review','deterministic/fake',true);
+INSERT INTO missions(company_id,id,state,contract,title,goal) VALUES('wake_migration_pending','pending-mission','active','r03-api@1','Pending wake','Preserve pending routine work')`)
+	must(t, e)
+	must(t, db.MigrateToVersion(ctx, adminDSN, 68))
+	_, e = admin.Exec(ctx, `INSERT INTO routines(company_id,id,mission_id,employee_id,timezone,local_time,next_logical_day,catch_up_policy,max_catch_up) VALUES('wake_migration_pending','active-legacy-routine','pending-mission','emp-review','UTC','09:00','2026-09-29','skip',1);
+INSERT INTO routine_materializations(company_id,routine_id,request_id,planned_at,next_logical_day,occurrence_count) VALUES('wake_migration_pending','active-legacy-routine','active-legacy-materialize','2026-09-30T00:00:00Z','2026-09-30',1);
+INSERT INTO routine_occurrences(company_id,routine_id,occurrence_key,logical_day,scheduled_at,materialization_request_id,state) VALUES('wake_migration_pending','active-legacy-routine','active-legacy-routine:2026-09-29','2026-09-29','2026-09-29T09:00:00Z','active-legacy-materialize','pending')`)
+	must(t, e)
+	must(t, db.Migrate(ctx, adminDSN))
+	cfg, e := pgx.ParseConfig(dsn)
+	must(t, e)
+	_, e = admin.Exec(ctx, "GRANT USAGE ON SCHEMA public TO "+pgx.Identifier{cfg.User}.Sanitize()+"; GRANT SELECT,INSERT,UPDATE ON ALL TABLES IN SCHEMA public TO "+pgx.Identifier{cfg.User}.Sanitize()+"; GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA public TO "+pgx.Identifier{cfg.User}.Sanitize())
+	must(t, e)
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
 	t.Cleanup(func() { k.Close() })
@@ -393,16 +415,16 @@ $$`); err != nil {
 
 func newDailyRoutineEnv(t *testing.T) (*Kernel, Scope, PeerFixture) {
 	t.Helper()
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
 	ctx := context.Background()
 	k, err := Open(ctx, dsn, t.TempDir())
 	must(t, err)
-	scope, err := k.TXCreateCompany(ctx, "routine-company-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "routine-company-"+newID())
 	must(t, err)
-	fixture, err := k.TXCreatePeerFixture(ctx, scope, "routine-fixture-"+newID())
+	fixture, err := createPGTestPeerFixture(k, ctx, scope, "routine-fixture-"+newID())
 	must(t, err)
 	t.Cleanup(func() { k.Close() })
 	return k, scope, fixture

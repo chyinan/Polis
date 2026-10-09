@@ -775,6 +775,7 @@ FROM (
 	rows, err = tx.Query(ctx, `SELECT l.lease_id,l.task_id,l.base_requirements_sha256,l.base_workspace_digest,l.base_workspace_revision
 FROM task_takeover_active_slots slot
 JOIN task_takeover_leases l ON l.company_id=slot.company_id AND l.lease_id=slot.lease_id
+JOIN LATERAL (SELECT state FROM task_takeover_lease_events e WHERE e.company_id=slot.company_id AND e.lease_id=slot.lease_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.state='granted'
 WHERE slot.company_id=$1 AND slot.mission_id=$2 ORDER BY l.lease_id`, scope.company, missionID)
 	if err != nil {
 		return MissionChangeImpact{}, "", err

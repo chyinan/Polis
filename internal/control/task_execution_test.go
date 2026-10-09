@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+
 	"sync/atomic"
 	"testing"
 	"time"
@@ -15,6 +15,7 @@ import (
 	"polis/internal/codex"
 	"polis/internal/core"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/provider"
 	"polis/internal/taskvalidation"
 )
@@ -26,8 +27,7 @@ func TestRealProductStartHasOneProviderExecutableTaskAndOneBoundWorker(t *testin
 	defer service.Close()
 
 	contract := r05b5AcceptanceContract()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title:              "one product work Task",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "one product work Task",
 		Goal:               "write the public smoke artifact",
 		RequestID:          "r05b5-create",
 		AcceptanceContract: &contract,
@@ -177,8 +177,7 @@ func TestRealProductStartWithoutTaskValidationBindingStopsBeforeProviderAuthoriz
 	defer k.Close()
 	defer service.Close()
 
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title:     "missing public acceptance binding",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "missing public acceptance binding",
 		Goal:      "provider execution must not begin without a task-scoped public contract",
 		RequestID: "r05b5-no-binding-create",
 	})
@@ -217,7 +216,7 @@ func TestRealProductStartRejectsMissionWithMultipleExecutableTasksBeforeReserve(
 	defer pool.Close()
 
 	contract := r05b5AcceptanceContract()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{Title: "malformed task fan-out", Goal: "fail closed on multiple provider Tasks", RequestID: "r05b5-malformed-create", AcceptanceContract: &contract})
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "malformed task fan-out", Goal: "fail closed on multiple provider Tasks", RequestID: "r05b5-malformed-create", AcceptanceContract: &contract})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -263,8 +262,7 @@ func TestRealProductStartRejectsWorkspaceDriftBeforeReserve(t *testing.T) {
 	defer service.Close()
 
 	contract := r05b5AcceptanceContract()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{
-		Title:              "stale initial workspace snapshot",
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "stale initial workspace snapshot",
 		Goal:               "reject CAS drift before provider reservation",
 		RequestID:          "live2-stale-workspace-create",
 		AcceptanceContract: &contract,
@@ -322,7 +320,7 @@ func TestRealProductStartFailureCannotReserveAgainOnIdempotentReplay(t *testing.
 	defer pool.Close()
 
 	contract := r05b5AcceptanceContract()
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{Title: "one failed start attempt", Goal: "do not repeat a consumed provider attempt", RequestID: "r05b5-failure-create", AcceptanceContract: &contract})
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "one failed start attempt", Goal: "do not repeat a consumed provider attempt", RequestID: "r05b5-failure-create", AcceptanceContract: &contract})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -355,7 +353,7 @@ func newR05B5ControlFixture(t *testing.T, startError error) (*kernel.Kernel, str
 		t.Fatalf("kernel.Open: %v", err)
 	}
 	companyID := fmt.Sprintf("r05b5-control-%x", time.Now().UnixNano())
-	_, err = k.TXCreateCompany(context.Background(), companyID)
+	_, err = createPGTestCompany(k, context.Background(), companyID)
 	if err != nil {
 		k.Close()
 		t.Fatalf("TXCreateCompany: %v", err)
@@ -371,7 +369,7 @@ func newR05B5ControlFixture(t *testing.T, startError error) (*kernel.Kernel, str
 
 func r05b5TestDSN(t *testing.T) string {
 	t.Helper()
-	dsn := os.Getenv("POLIS_R05B5_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B5_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B5 PostgreSQL required")
 	}

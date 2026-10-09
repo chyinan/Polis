@@ -4,16 +4,17 @@ package workbench
 import (
 	"context"
 	"fmt"
-	"os"
+
 	"testing"
 	"time"
 
 	"polis/internal/core"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestPostgresReadStoreProjectsEmployeeSchedule(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -24,11 +25,11 @@ func TestPostgresReadStoreProjectsEmployeeSchedule(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("employee-schedule-view-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "Schedule view", "project persisted schedule facts", "schedule-view-mission")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "Schedule view", "project persisted schedule facts", "schedule-view-mission")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +58,7 @@ func TestPostgresReadStoreProjectsEmployeeSchedule(t *testing.T) {
 }
 
 func TestPostgresReadStoreProjectsMissionDailyRoutines(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -68,11 +69,11 @@ func TestPostgresReadStoreProjectsMissionDailyRoutines(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("daily-routine-view-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, scope, "Routine view", "project persisted daily Routines", "routine-view-mission")
+	mission, err := createPGTestMissionGoal(k, ctx, scope, "Routine view", "project persisted daily Routines", "routine-view-mission")
 	if err != nil {
 		t.Fatal(err)
 	}

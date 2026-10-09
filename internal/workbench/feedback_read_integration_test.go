@@ -6,17 +6,18 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
 
 	githubfeedback "polis/internal/feedback/github"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestPostgresReadStoreProjectsScopedBoundedGitHubFeedback(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -27,7 +28,7 @@ func TestPostgresReadStoreProjectsScopedBoundedGitHubFeedback(t *testing.T) {
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("feedback-read-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	repository := githubfeedback.Repository{ID: 1296269, Owner: "acme", Name: "widget"}
@@ -117,7 +118,7 @@ func TestPostgresReadStoreProjectsScopedBoundedGitHubFeedback(t *testing.T) {
 		t.Fatalf("projected comment body is not byte-bounded: %+v bytes=%d", projected.Comments[0], len([]byte(projected.Comments[0].Body)))
 	}
 	otherCompany := fmt.Sprintf("feedback-read-other-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, otherCompany); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, otherCompany); err != nil {
 		t.Fatal(err)
 	}
 	otherView, err := store.GetCompanyFeedback(ctx, otherCompany)

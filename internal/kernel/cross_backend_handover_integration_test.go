@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
@@ -15,10 +15,11 @@ import (
 	"polis/internal/core"
 	"polis/internal/environment"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 )
 
 func TestCrossBackendHandoverRequiresPauseAndKnownTerminalSourceAndIsSingleUse(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -30,12 +31,12 @@ func TestCrossBackendHandoverRequiresPauseAndKnownTerminalSourceAndIsSingleUse(t
 	defer k.Close()
 
 	companyID := fmt.Sprintf("cross-handover-%d", time.Now().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := "cross-handover-mission-" + fmt.Sprint(time.Now().UnixNano())
-	if err = k.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(k, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 	directory, err := intake.PrepareDirectorySnapshot([]intake.DirectoryInputFile{
@@ -117,7 +118,7 @@ VALUES($1,'cross-handover-linux-ready-event','cross-handover-linux-ready-run','r
 	if err != nil || hasLinuxRecoveryWork {
 		t.Fatalf("ready Linux environment created restart work: present=%t error=%v", hasLinuxRecoveryWork, err)
 	}
-	recoveryMission, err := k.TXCreateMissionGoal(ctx, k.LocalScope(companyID), "Linux cgroup recovery fixture", "Verify the Linux host recovery gate.", "cross-handover-linux-recovery-mission")
+	recoveryMission, err := createPGTestMissionGoal(k, ctx, k.LocalScope(companyID), "Linux cgroup recovery fixture", "Verify the Linux host recovery gate.", "cross-handover-linux-recovery-mission")
 	if err != nil {
 		t.Fatal(err)
 	}

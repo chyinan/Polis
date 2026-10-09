@@ -60,6 +60,9 @@ func validateFixtureTree(files []SnapshotFile) (map[string]SnapshotFile, string,
 	var total int64
 	for _, file := range files {
 		path := file.RelativePath
+		if !validateFixtureSourcePolicy(path, file.Content) {
+			return nil, "", 0, ErrInvalidFixtureTree
+		}
 		if !workspacepath.ValidRelativePath(path) || strings.Contains(path, "\\") || strings.HasPrefix(path, ".") ||
 			strings.Contains(path, "/.git") || path == ".git" || file.EntryType != "regular" || file.ContentType != "text/utf-8" ||
 			file.Bytes <= 0 || file.Bytes > maxFixtureFileBytes || int64(len(file.Content)) != file.Bytes || !utf8.Valid(file.Content) || !validDigest(file.Digest) || digestHex(file.Content) != file.Digest {

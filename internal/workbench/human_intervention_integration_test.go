@@ -4,16 +4,17 @@ package workbench
 import (
 	"context"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
 
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestOpenHumanInterventionAppearsInWorkbenchAttention(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -25,11 +26,11 @@ func TestOpenHumanInterventionAppearsInWorkbenchAttention(t *testing.T) {
 	defer runtime.Close()
 	suffix := fmt.Sprint(time.Now().UnixNano())
 	companyID := "human-view-" + suffix
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, scope, "Runtime recovery", "verify administrator handover visibility", "human-view-mission-"+suffix)
+	mission, err := createPGTestMissionGoal(runtime, ctx, scope, "Runtime recovery", "verify administrator handover visibility", "human-view-mission-"+suffix)
 	if err != nil {
 		t.Fatal(err)
 	}

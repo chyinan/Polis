@@ -185,6 +185,9 @@ func TestProductDirectSendRacingMissionPauseHasSerializedOutcome(t *testing.T) {
 	go func() {
 		defer wait.Done()
 		<-start
+		if pauseErr = stopPGTestPeerWorkers(env); pauseErr != nil {
+			return
+		}
 		pause, pauseErr = env.k.TXSetMissionPausedCommand(env.ctx, env.scope, env.fixture.Mission, true, "direct-pause-race-pause")
 	}()
 	close(start)
@@ -299,8 +302,8 @@ func TestProductDirectMessageRejectsTargetsOutsideTheCurrentMission(t *testing.T
 	env := newPeerHardeningEnv(t, 16)
 	otherMission, err := env.k.TXCreateMissionGoal(env.ctx, env.scope, "Other mission", "A target from another Mission must not be addressable", "product-direct-other-mission-create")
 	must(t, err)
-	if _, err = env.k.TXStartMissionCommand(env.ctx, env.scope, otherMission.ID, "product-direct-other-mission-start"); err != nil {
-		t.Fatal(err)
+	if _, err = env.k.TXStartMissionCommand(env.ctx, env.scope, otherMission.ID, "product-direct-other-mission-start"); err == nil {
+		t.Fatal("a second active Mission was admitted")
 	}
 	otherTaskID := newID()
 	if _, err = env.k.pool.Exec(env.ctx, `INSERT INTO tasks(company_id,id,mission_id,owner,kind,state)

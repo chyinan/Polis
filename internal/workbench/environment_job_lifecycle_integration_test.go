@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
@@ -17,12 +17,13 @@ import (
 	"polis/internal/environment"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/taskvalidation"
 	"polis/internal/workbench"
 )
 
 func TestEnvironmentReadStoreShowsPolicyAndExecutorQualificationGates(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -34,12 +35,12 @@ func TestEnvironmentReadStoreShowsPolicyAndExecutorQualificationGates(t *testing
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("environment-read-%d", time.Now().UnixNano())
-	scope, err := runtime.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(runtime, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	missionID := fmt.Sprintf("environment-read-mission-%d", time.Now().UnixNano())
-	if err = runtime.TXCreateMission(ctx, scope, missionID); err != nil {
+	if err = createPGTestMission(runtime, ctx, scope, missionID); err != nil {
 		t.Fatal(err)
 	}
 	directory, err := intake.PrepareDirectorySnapshot([]intake.DirectoryInputFile{
@@ -109,7 +110,7 @@ func TestEnvironmentReadStoreShowsPolicyAndExecutorQualificationGates(t *testing
 	if _, err = runtime.TXRequestEnvironmentPreparation(ctx, companyID, revision.RevisionID, "environment-read-executor-block"); err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoalWithAcceptance(ctx, scope, "JobRun view", "seed a scoped read-only JobRun projection", &taskvalidation.AcceptanceContract{
+	mission, err := createPGTestMissionGoalWithAcceptance(runtime, ctx, scope, "JobRun view", "seed a scoped read-only JobRun projection", &taskvalidation.AcceptanceContract{
 		Revision: taskvalidation.AcceptanceContractRevision, RequiredText: []string{"Mission ID: {{mission_id}}"},
 	}, "environment-job-view-mission")
 	if err != nil {
@@ -352,7 +353,7 @@ VALUES($1,'service-view-terminal-ready','job-view-terminal',1,'127.0.0.1',3000,'
 }
 
 func TestLegacyEnvironmentPolicyWithoutManifestIsUnverifiedAndCanBeRevoked(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -364,7 +365,7 @@ func TestLegacyEnvironmentPolicyWithoutManifestIsUnverifiedAndCanBeRevoked(t *te
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("legacy-environment-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	pool, err := pgxpool.New(ctx, dsn)

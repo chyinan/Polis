@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+
 	"strings"
 	"testing"
 	"time"
@@ -14,10 +14,11 @@ import (
 	"polis/internal/core"
 	"polis/internal/domainworkflow"
 	"polis/internal/intake"
+	"polis/internal/pgfixture"
 )
 
 func TestDomainEvidenceSubmissionIsScopedAppendOnlyAndNeverQualifies(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -28,10 +29,10 @@ func TestDomainEvidenceSubmissionIsScopedAppendOnlyAndNeverQualifies(t *testing.
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("domain-evidence-%d", time.Now().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoal(ctx, k.LocalScope(companyID), "R3 evidence fixture", "store company evidence artifacts", "domain-evidence-mission")
+	mission, err := createPGTestMissionGoal(k, ctx, k.LocalScope(companyID), "R3 evidence fixture", "store company evidence artifacts", "domain-evidence-mission")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -221,7 +222,7 @@ VALUES($1,'domain-review-no-previews', $2,'evidence_references_accepted','emp-re
 		t.Fatalf("persisted readiness was projected as qualified or lost a reference/substantive decision: %+v", persistedReady)
 	}
 	otherCompanyID := companyID + "-other"
-	if _, err = k.TXCreateCompany(ctx, otherCompanyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, otherCompanyID); err != nil {
 		t.Fatal(err)
 	}
 	otherLedger, err := k.ListDomainEvidence(ctx, otherCompanyID)

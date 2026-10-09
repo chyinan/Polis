@@ -4,10 +4,11 @@ package control
 import (
 	"context"
 	"encoding/json"
-	"os"
+
 	"testing"
 
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/provider"
 )
 
@@ -49,7 +50,7 @@ func (a *recordingWorkerAdapter) Stop(_ context.Context, companyID, missionID st
 func (a *recordingWorkerAdapter) Close() {}
 
 func TestServiceUsesWorkerAdapterForStartAndCancel(t *testing.T) {
-	dsn := os.Getenv("POLIS_R05A_CONTROL_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05A_CONTROL_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated control-service PostgreSQL required")
 	}
@@ -60,14 +61,14 @@ func TestServiceUsesWorkerAdapterForStartAndCancel(t *testing.T) {
 	}
 	defer k.Close()
 	company := "r05a-control-company"
-	_, err = k.TXCreateCompany(ctx, company)
+	_, err = createPGTestCompany(k, ctx, company)
 	if err != nil {
 		t.Fatal(err)
 	}
 	adapter := &recordingWorkerAdapter{}
 	service := NewService(k, adapter)
 
-	created, err := service.CreateMission(ctx, company, CreateMissionRequest{Title: "control goal", Goal: "control goal body", RequestID: "control-create"})
+	created, err := service.CreateMission(ctx, company, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "control goal", Goal: "control goal body", RequestID: "control-create"})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 )
 
@@ -19,7 +20,7 @@ func TestWindowsWorkerProcessHelper(t *testing.T) {
 }
 
 func TestWindowsKernelReapsRestartedWorkerSessionWithoutRetryingTask(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -29,11 +30,11 @@ func TestWindowsKernelReapsRestartedWorkerSessionWithoutRetryingTask(t *testing.
 		t.Fatal(err)
 	}
 	defer k.Close()
-	scope, err := k.TXCreateCompany(ctx, "windows-worker-recovery-"+newID())
+	scope, err := createPGTestCompany(k, ctx, "windows-worker-recovery-"+newID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, scope, "windows-worker-recovery-mission")
+	task, err := createPGTestProbe(k, ctx, scope, "windows-worker-recovery-mission")
 	if err != nil {
 		t.Fatal(err)
 	}

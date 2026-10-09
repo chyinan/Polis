@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+
 	"testing"
 	"time"
 
@@ -18,10 +18,11 @@ import (
 	"polis/internal/domainworkflow"
 	"polis/internal/intake"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 )
 
 func TestContentOperationsBindAuthorizedSourcesAndVersionedDraftReview(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -32,10 +33,10 @@ func TestContentOperationsBindAuthorizedSourcesAndVersionedDraftReview(t *testin
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("r3-content-ops-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, runtime.LocalScope(companyID), "Content operation fixture", "review source-bound draft and sample claims", "r3-content-ops-mission")
+	mission, err := createPGTestMissionGoal(runtime, ctx, runtime.LocalScope(companyID), "Content operation fixture", "review source-bound draft and sample claims", "r3-content-ops-mission")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +167,7 @@ func TestContentOperationsBindAuthorizedSourcesAndVersionedDraftReview(t *testin
 }
 
 func TestContentCorrectionRequiresANewReviewBeforeResimulation(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated PostgreSQL required")
 	}
@@ -177,10 +178,10 @@ func TestContentCorrectionRequiresANewReviewBeforeResimulation(t *testing.T) {
 	}
 	defer runtime.Close()
 	companyID := fmt.Sprintf("r3-content-correction-%d", time.Now().UnixNano())
-	if _, err = runtime.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(runtime, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
-	mission, err := runtime.TXCreateMissionGoal(ctx, runtime.LocalScope(companyID), "Content correction fixture", "require post-correction review", "r3-content-correction-mission")
+	mission, err := createPGTestMissionGoal(runtime, ctx, runtime.LocalScope(companyID), "Content correction fixture", "require post-correction review", "r3-content-correction-mission")
 	if err != nil {
 		t.Fatal(err)
 	}

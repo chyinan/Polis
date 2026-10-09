@@ -12,6 +12,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"polis/internal/kernel"
+	"polis/internal/pgfixture"
 	"polis/internal/runner"
 )
 
@@ -19,7 +20,7 @@ func TestDeterministicWorkerRetainsOwnershipWhenStopPersistenceFails(t *testing.
 	if runtime.GOOS != "linux" {
 		t.Skip("long-lived deterministic helper script is Linux-specific")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -30,7 +31,7 @@ func TestDeterministicWorkerRetainsOwnershipWhenStopPersistenceFails(t *testing.
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-stop-retry-%x", time.Now().UTC().UnixNano())
-	if _, err = k.TXCreateCompany(ctx, companyID); err != nil {
+	if _, err = createPGTestCompany(k, ctx, companyID); err != nil {
 		t.Fatal(err)
 	}
 	helper := t.TempDir() + "/deterministic-worker"
@@ -41,7 +42,7 @@ func TestDeterministicWorkerRetainsOwnershipWhenStopPersistenceFails(t *testing.
 	adapter.executable = helper
 	defer adapter.Close()
 	service := NewService(k, adapter)
-	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{Title: "retry stop", Goal: "retain worker ownership after a transient stop error", RequestID: companyID + "-create"})
+	created, err := service.CreateMission(ctx, companyID, CreateMissionRequest{ProtocolToolCallLimit: 2000, Title: "retry stop", Goal: "retain worker ownership after a transient stop error", RequestID: companyID + "-create"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +96,7 @@ func TestDeterministicStopRetriesProcessAttachmentBeforeConfirmation(t *testing.
 	if runtime.GOOS != "linux" {
 		t.Skip("long-lived process fixture is Linux-specific")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -106,11 +107,11 @@ func TestDeterministicStopRetriesProcessAttachmentBeforeConfirmation(t *testing.
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-stop-attach-retry-%x", time.Now().UTC().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, scope, "r1-stop-attach-retry-task")
+	task, err := createPGTestProbe(k, ctx, scope, "r1-stop-attach-retry-task")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +158,7 @@ func TestDeterministicStopReplaysConfirmationAfterAmbiguousCommit(t *testing.T) 
 	if runtime.GOOS != "linux" {
 		t.Skip("long-lived process fixture is Linux-specific")
 	}
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -168,11 +169,11 @@ func TestDeterministicStopReplaysConfirmationAfterAmbiguousCommit(t *testing.T) 
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-stop-confirm-replay-%x", time.Now().UTC().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, scope, "r1-stop-confirm-replay-task")
+	task, err := createPGTestProbe(k, ctx, scope, "r1-stop-confirm-replay-task")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -213,7 +214,7 @@ func TestDeterministicStopReplaysConfirmationAfterAmbiguousCommit(t *testing.T) 
 }
 
 func TestDeterministicStopRetainsWindowsHostReconciliationOwner(t *testing.T) {
-	dsn := os.Getenv("POLIS_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated temporary PostgreSQL required")
 	}
@@ -224,11 +225,11 @@ func TestDeterministicStopRetainsWindowsHostReconciliationOwner(t *testing.T) {
 	}
 	defer k.Close()
 	companyID := fmt.Sprintf("r1-host-reconcile-owner-%x", time.Now().UTC().UnixNano())
-	scope, err := k.TXCreateCompany(ctx, companyID)
+	scope, err := createPGTestCompany(k, ctx, companyID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	task, err := k.TXCreateProbe(ctx, scope, "r1-host-reconcile-owner-task")
+	task, err := createPGTestProbe(k, ctx, scope, "r1-host-reconcile-owner-task")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -120,7 +120,12 @@ func (k *Kernel) bindProductWorkspaceTreeTX(ctx context.Context, tx pgx.Tx, bind
 	if legacyRevision < 1 {
 		return core.Integrity
 	}
-	gitImport, hasGitImport, err := k.loadInitialGitWorkspaceImportTX(ctx, tx, binding.scope.company, task.Mission, task.ID)
+	var gitImport *workspaceTreeGitImport
+	var hasGitImport bool
+	err = nil // The absent root is expected; only an attempted import may fail below.
+	if task.ValidationBinding != nil && task.ValidationBinding.Contract.GoTestProfileRevision != "" {
+		gitImport, hasGitImport, err = k.loadInitialGitWorkspaceImportTX(ctx, tx, binding.scope.company, task.Mission, task.ID)
+	}
 	if err != nil {
 		return err
 	}
@@ -657,9 +662,9 @@ VALUES($1,$2,$3,$4,$5,$6,$7)`, binding.scope.company, artifactID, rootID, entry.
 				return Receipt{}, txErr
 			}
 		}
-		if _, txErr = tx.Exec(ctx, `DELETE FROM artifact_staging WHERE company_id=$1 AND id=$2`, binding.scope.company, artifactID); txErr != nil {
-			return Receipt{}, txErr
-		}
+		// Retain the staging journal, as the deliverable publication path does.
+		// The matching immutable Artifact is the publication boundary; runtime
+		// credentials intentionally have no DELETE grant.
 		snapshot = WorkspaceTreeSnapshot{ArtifactID: artifactID, TaskID: taskID, RootBindingID: rootID, BaseCommitOID: sourceCommitOID, InputManifestSHA256: sourceInputManifestSHA256,
 			Revision: revision, Digest: manifestDigest, Bytes: int64(len(manifestBytes)), FileCount: len(entries), Verdict: "draft_not_accepted", Entries: entries}
 		return Receipt{ID: artifactID, Status: "draft_not_accepted", Revision: revision}, nil

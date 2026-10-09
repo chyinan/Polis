@@ -4,11 +4,12 @@ package kernel
 import (
 	"context"
 	"errors"
-	"os"
+
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"polis/internal/core"
+	"polis/internal/pgfixture"
 	"polis/internal/taskvalidation"
 )
 
@@ -150,7 +151,7 @@ func TestTaskValidationBindingCannotBeMutatedOrDeleted(t *testing.T) {
 
 func prepareR05B5ProductTaskWithoutAcceptance(t *testing.T) (*Kernel, Scope, Task) {
 	t.Helper()
-	dsn := os.Getenv("POLIS_R05B5_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B5_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B5 PostgreSQL required")
 	}
@@ -159,12 +160,12 @@ func prepareR05B5ProductTaskWithoutAcceptance(t *testing.T) (*Kernel, Scope, Tas
 		t.Fatal(err)
 	}
 	companyID := "r05b5-unqualified-" + newID()
-	scope, err := k.TXCreateCompany(context.Background(), companyID)
+	scope, err := createPGTestCompany(k, context.Background(), companyID)
 	if err != nil {
 		k.Close()
 		t.Fatal(err)
 	}
-	mission, err := k.TXCreateMissionGoalWithAcceptance(context.Background(), scope, "R0.5B5 missing binding test", "confirm provider execution requires public criteria", nil, "r05b5-mission-create")
+	mission, err := createPGTestMissionGoalWithAcceptance(k, context.Background(), scope, "R0.5B5 missing binding test", "confirm provider execution requires public criteria", nil, "r05b5-mission-create")
 	if err != nil {
 		k.Close()
 		t.Fatal(err)
@@ -183,7 +184,7 @@ func prepareR05B5ProductTaskWithoutAcceptance(t *testing.T) (*Kernel, Scope, Tas
 
 func prepareR05B5ProductTask(t *testing.T) (*Kernel, Scope, Task, Task) {
 	t.Helper()
-	dsn := os.Getenv("POLIS_R05B5_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R05B5_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B5 PostgreSQL required")
 	}
@@ -192,7 +193,7 @@ func prepareR05B5ProductTask(t *testing.T) (*Kernel, Scope, Task, Task) {
 		t.Fatal(err)
 	}
 	companyID := "r05b5-" + newID()
-	scope, err := k.TXCreateCompany(context.Background(), companyID)
+	scope, err := createPGTestCompany(k, context.Background(), companyID)
 	if err != nil {
 		k.Close()
 		t.Fatal(err)
@@ -206,7 +207,7 @@ func prepareR05B5ProductTask(t *testing.T) (*Kernel, Scope, Task, Task) {
 			"Task summary:",
 		},
 	}
-	mission, err := k.TXCreateMissionGoalWithAcceptance(context.Background(), scope, "R0.5B5 provider Task test", "prepare one provider-executable Task", contract, "r05b5-mission-create")
+	mission, err := createPGTestMissionGoalWithAcceptance(k, context.Background(), scope, "R0.5B5 provider Task test", "prepare one provider-executable Task", contract, "r05b5-mission-create")
 	if err != nil {
 		k.Close()
 		t.Fatal(err)
