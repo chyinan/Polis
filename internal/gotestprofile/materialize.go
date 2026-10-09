@@ -124,3 +124,7 @@ func digestSnapshotFiles(files []SnapshotFile) string {
 	}
 	return digestHex([]byte(canonical.String()))
 }
+
+// InventoryDigest shares the immutable path/digest/size identity with patch
+// delivery. Callers still validate file bytes and their own snapshot policy.
+func InventoryDigest(files []SnapshotFile) string { return digestSnapshotFiles(files) }

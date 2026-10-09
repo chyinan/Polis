@@ -69,6 +69,7 @@ func Main(args []string, out, errout io.Writer) int {
 	f.SetOutput(errout)
 	info := f.Bool("protocol-info", false, "print binary identity; does not execute candidate code")
 	inspect := f.Bool("inspect", false, "read-only host preflight")
+	inspectHost := f.Bool("inspect-host", false, "read-only sealed host/unit readiness, without launching a job")
 	check := f.String("check-input", "", "validate a canonical private request file without executing it")
 	job := f.String("job-id", "", "fixed-profile JobRun identifier; request comes from its systemd runtime directory")
 	source := f.String("source-identity", "", "hash current production source without compiling or executing it")
@@ -96,7 +97,7 @@ func Main(args []string, out, errout io.Writer) int {
 		return 2
 	}
 	actions := 0
-	for _, b := range []bool{*info, *inspect, *check != "", *source != "", *verify != ""} {
+	for _, b := range []bool{*info, *inspect, *inspectHost, *check != "", *source != "", *verify != ""} {
 		if b {
 			actions++
 		}
@@ -154,8 +155,11 @@ func Main(args []string, out, errout io.Writer) int {
 	}
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
-	if *inspect {
-		h := Inspect(ctx, *job, cfg, "")
+	if *inspect || *inspectHost {
+		h := InspectHost(ctx, *job, cfg, "")
+		if *inspect {
+			h = Inspect(ctx, *job, cfg, "")
+		}
 		_ = json.NewEncoder(out).Encode(h)
 		if !h.Qualified {
 			return 3

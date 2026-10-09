@@ -40,6 +40,7 @@ type ProjectJobExecutor interface {
 }
 
 type activeProjectJob struct {
+	goRun                *activeGoJob
 	companyID            string
 	jobID                string
 	process              runner.AppContainerProcess
@@ -143,7 +144,7 @@ func (s *Service) SetProjectJobExecutor(executor ProjectJobExecutor) {
 }
 
 func normalizeStartProjectJobRequest(request StartProjectJobRequest) (StartProjectJobRequest, error) {
-	if !core.ValidID(request.TaskID) || (request.SessionID != "" && !core.ValidID(request.SessionID)) || !core.ValidID(request.EnvironmentRevisionID) || (request.HandoverID != "" && !core.ValidID(request.HandoverID)) || request.BaseSnapshotArtifactID != "" || request.CandidateSnapshotArtifactID != "" || validateRequestID(request.RequestID) != nil {
+	if request.ExecuteGoTest || !core.ValidID(request.TaskID) || (request.SessionID != "" && !core.ValidID(request.SessionID)) || !core.ValidID(request.EnvironmentRevisionID) || (request.HandoverID != "" && !core.ValidID(request.HandoverID)) || request.BaseSnapshotArtifactID != "" || request.CandidateSnapshotArtifactID != "" || validateRequestID(request.RequestID) != nil {
 		return StartProjectJobRequest{}, core.Malformed
 	}
 	switch request.Kind {
@@ -404,6 +405,9 @@ func (s *Service) StopProjectJob(ctx context.Context, companyID, jobID string, r
 	job, err := s.runtime.GetJobRun(ctx, companyID, jobID)
 	if err != nil {
 		return job, err
+	}
+	if job.Kind == "go_test" {
+		return s.stopGoTestJob(ctx, companyID, jobID)
 	}
 	s.projectJobsMu.Lock()
 	active := s.projectJobs[jobID]

@@ -95,8 +95,12 @@ func (k *Kernel) TXRecordGoTestJobReport(ctx context.Context, companyID, request
 		if err != nil {
 			return Receipt{}, err
 		}
-		if report.ProcessStarted && previous == string(environment.JobAccepted) {
-			for _, state := range []string{string(environment.JobStarting), string(environment.JobRunning)} {
+		if report.ProcessStarted && (previous == string(environment.JobAccepted) || previous == string(environment.JobStarting)) {
+			states := []string{string(environment.JobRunning)}
+			if previous == string(environment.JobAccepted) {
+				states = append([]string{string(environment.JobStarting)}, states...)
+			}
+			for _, state := range states {
 				if _, err = tx.Exec(ctx, "INSERT INTO job_run_events(company_id,event_id,job_id,state,readiness,reason_code) VALUES($1,$2,$3,$4,'not_applicable','supervisor_process_observed')", companyID, stableCapabilityID("go-event", report.JobRunID, state), report.JobRunID, state); err != nil {
 					return Receipt{}, err
 				}

@@ -304,14 +304,15 @@ type WorkspaceView struct {
 }
 
 type ArtifactDetailView struct {
-	ArtifactID       string `json:"artifactId"`
-	TaskID           string `json:"taskId"`
-	Digest           string `json:"digest"`
-	Bytes            string `json:"bytes"`
-	State            string `json:"state"`
-	Verdict          string `json:"verdict"`
-	Content          string `json:"content"`
-	ContentAvailable bool   `json:"contentAvailable"`
+	Patch            *GoPatchView `json:"patch,omitempty"`
+	ArtifactID       string       `json:"artifactId"`
+	TaskID           string       `json:"taskId"`
+	Digest           string       `json:"digest"`
+	Bytes            string       `json:"bytes"`
+	State            string       `json:"state"`
+	Verdict          string       `json:"verdict"`
+	Content          string       `json:"content"`
+	ContentAvailable bool         `json:"contentAvailable"`
 }
 
 type OperationsView struct {

@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"polis/internal/gotestprofile"
+	"polis/internal/gotestsupervisor"
 	"strconv"
 	"strings"
 	"time"
@@ -409,6 +411,37 @@ func validReadyProductDeliverySections(sections []durableProductDeliveryManifest
 }
 
 func requireProductDeliveryQualification(ctx context.Context, tx pgx.Tx, companyID, missionID, taskID, artifactID, artifactDigest string) error {
+	var format string
+	if err := tx.QueryRow(ctx, `SELECT content_format FROM artifacts WHERE company_id=$1 AND id=$2 AND task_id=$3 AND digest=$4 AND artifact_kind='deliverable'`, companyID, artifactID, taskID, artifactDigest).Scan(&format); err != nil {
+		return err
+	}
+	workspaceDigest := artifactDigest
+	if format == "go_patch" {
+		var job, patchSHA, snapshotSHA, bindingSHA, resultSHA string
+		var revision int64
+		if err := tx.QueryRow(ctx, `SELECT job_id,patch_sha256,candidate_snapshot_sha256,candidate_revision,job_binding_sha256,result_sha256 FROM go_patch_deliveries WHERE company_id=$1 AND artifact_id=$2 AND task_id=$3 AND replay_verified`, companyID, artifactID, taskID).Scan(&job, &patchSHA, &snapshotSHA, &revision, &bindingSHA, &resultSHA); err != nil {
+			return err
+		}
+		// CAS verification is performed at publication and readback; this
+		// transaction rechecks immutable JobRun and qualification authority.
+		var raw, result, receipt []byte
+		var storedBindingSHA, storedResultSHA, receiptSHA string
+		if err := tx.QueryRow(ctx, `SELECT b.binding,b.binding_sha256,r.result,r.result_sha256,r.runner_receipt,r.runner_receipt_sha256 FROM go_test_job_bindings b JOIN go_test_job_results r ON r.company_id=b.company_id AND r.job_id=b.job_id WHERE b.company_id=$1 AND b.job_id=$2 AND b.task_id=$3 AND b.mission_id=$4 AND r.outcome='passed'`, companyID, job, taskID, missionID).Scan(&raw, &storedBindingSHA, &result, &storedResultSHA, &receipt, &receiptSHA); err != nil {
+			return core.Integrity
+		}
+		binding, _, err := gotestprofile.ParseJobBinding(raw, storedBindingSHA)
+		var report gotestsupervisor.Report
+		if err != nil || json.Unmarshal(receipt, &report) != nil || casDigest(result) != storedResultSHA || casDigest(receipt) != receiptSHA || storedBindingSHA != bindingSHA || resultSHA != storedResultSHA || patchSHA != artifactDigest || binding.CandidateSnapshotSHA256 != snapshotSHA || binding.CandidateWorkspaceRevision != revision || report.ExecutionKind != "real" || !report.QualificationEligible || !report.ProcessStarted || !report.ExitObserved || !report.CleanupConfirmed || report.Outcome != "passed" || report.BindingSHA256 != bindingSHA {
+			return core.Integrity
+		}
+		workspaceDigest = snapshotSHA
+	} else if format != "opaque" {
+		return core.Integrity
+	}
+	return requireProductDeliveryQualificationForDigest(ctx, tx, companyID, missionID, taskID, artifactID, workspaceDigest)
+}
+
+func requireProductDeliveryQualificationForDigest(ctx context.Context, tx pgx.Tx, companyID, missionID, taskID, artifactID, artifactDigest string) error {
 	var checkpointRaw []byte
 	var checkpointID, checkID, sessionID, bindingDigest, workspaceDigest, runnerRevision string
 	var workspaceRevision int64

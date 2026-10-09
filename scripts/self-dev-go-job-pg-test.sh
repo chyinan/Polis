@@ -91,7 +91,9 @@ blob_root="$temp_root/blobs"
 mkdir -m 0700 "$data_dir" "$socket_dir" "$blob_root"
 chmod 0700 "$data_dir" "$socket_dir" "$blob_root"
 
-evidence_parent="$repo_root/evidence/development/polis-self-dev-v1-supervisor-pg-20261009/postgres-runtime"
+evidence_slice="${POLIS_SELF_DEV_EVIDENCE_SLICE:-polis-self-dev-v1-supervisor-pg-20261009}"
+[[ "$evidence_slice" =~ ^[A-Za-z0-9_-]+$ ]] || { printf 'invalid evidence slice\n' >&2; exit 2; }
+evidence_parent="$repo_root/evidence/development/$evidence_slice/postgres-runtime"
 mkdir -p "$evidence_parent"
 evidence_dir="$evidence_parent/$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -m 0700 "$evidence_dir"

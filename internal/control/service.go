@@ -16,6 +16,7 @@ import (
 	"polis/internal/domainworkflow"
 	"polis/internal/environment"
 	githubfeedback "polis/internal/feedback/github"
+	"polis/internal/gotestsupervisor"
 	"polis/internal/installationauth"
 	"polis/internal/intake"
 	"polis/internal/kernel"
@@ -38,6 +39,7 @@ type Service struct {
 	projectJobsWG                    sync.WaitGroup
 	projectJobs                      map[string]*activeProjectJob
 	projectJobRunner                 ProjectJobExecutor
+	goJobRunner                      gotestsupervisor.Executor
 	projectLifecycleMu               sync.RWMutex
 	capabilityRevocationStopMu       sync.Mutex
 	capabilityRevocationStopWake     chan struct{}

@@ -870,6 +870,27 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, record)
+	case "tasks.go_patch":
+		publisher, ok := service.(control.GoPatchDeliveryService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "task", errors.New("Go patch publication is unavailable"))
+			return
+		}
+		var input control.PublishGoPatchRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "task", err)
+			return
+		}
+		result, err := publisher.PublishGoPatch(ctx, path.companyID, path.resourceID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, struct {
+			kernel.ProductDeliveryResult
+			JobRunID  string `json:"jobRunId"`
+			RequestID string `json:"requestId"`
+		}{result, input.JobRunID, input.RequestID})
 	case "tasks.jobs":
 		var input control.StartProjectJobRequest
 		if err := decodeJSON(response, request, &input); err != nil {
@@ -887,9 +908,22 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "task", errors.New("Go-test JobRun command service is unavailable"))
 				return
 			}
-			job, err := goTestService.StartBlockedGoTestJob(ctx, path.companyID, path.resourceID, control.StartBlockedGoTestJobRequest{
+			goRequest := control.StartBlockedGoTestJobRequest{
 				BaseSnapshotArtifactID: input.BaseSnapshotArtifactID, CandidateSnapshotArtifactID: input.CandidateSnapshotArtifactID, RequestID: input.RequestID,
-			})
+			}
+			var job kernel.JobRunRecord
+			var err error
+			if input.ExecuteGoTest {
+				execution, ok := service.(control.GoTestJobExecutionService)
+				if !ok {
+					writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "task", errors.New("fixed Go execution service is unavailable"))
+					return
+				}
+				goRequest.Execute = true
+				job, err = execution.StartGoTestJob(ctx, path.companyID, path.resourceID, goRequest)
+			} else {
+				job, err = goTestService.StartBlockedGoTestJob(ctx, path.companyID, path.resourceID, goRequest)
+			}
 			if err != nil {
 				writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task", err)
 				return
@@ -905,6 +939,25 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		job, err := jobService.StartProjectJob(ctx, path.companyID, input)
 		if err != nil {
 			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, job)
+	case "jobs.collect":
+		collector, ok := service.(control.GoTestJobCollectionService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "job", errors.New("Go result collection is unavailable"))
+			return
+		}
+		var input struct {
+			RequestID string `json:"requestId"`
+		}
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "job", err)
+			return
+		}
+		job, err := collector.CollectGoTestJobResult(ctx, path.companyID, path.resourceID, input.RequestID)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "job", err)
 			return
 		}
 		writeJSON(response, http.StatusAccepted, job)
@@ -2499,6 +2552,13 @@ func parsePath(path string) (parsedPath, bool) {
 		}
 		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.memory_revalidation_preview"}, true
 	}
+	if len(parts) == 4 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "go-patch" {
+		id, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: id, endpoint: "tasks.go_patch"}, true
+	}
 	if len(parts) == 4 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "jobs" {
 		resourceID, err := url.PathUnescape(parts[2])
 		if err != nil {
@@ -2513,7 +2573,7 @@ func parsePath(path string) (parsedPath, bool) {
 		}
 		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.handovers"}, true
 	}
-	if len(parts) == 4 && parts[1] == "jobs" && parts[2] != "" && (parts[3] == "logs" || parts[3] == "stop" || parts[3] == "browser-session") {
+	if len(parts) == 4 && parts[1] == "jobs" && parts[2] != "" && (parts[3] == "logs" || parts[3] == "stop" || parts[3] == "collect" || parts[3] == "browser-session") {
 		jobID, err := url.PathUnescape(parts[2])
 		if err != nil {
 			return parsedPath{}, false

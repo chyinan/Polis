@@ -379,7 +379,8 @@ func (s *PostgresReadStore) GetArtifact(ctx context.Context, companyID, artifact
 	defer tx.Rollback(ctx)
 	var view ArtifactDetailView
 	var bytes int64
-	if err = tx.QueryRow(ctx, `SELECT id,task_id,digest,bytes,state,verdict FROM artifacts WHERE company_id=$1 AND id=$2 AND artifact_kind='deliverable'`, companyID, artifactID).Scan(&view.ArtifactID, &view.TaskID, &view.Digest, &bytes, &view.State, &view.Verdict); errors.Is(err, pgx.ErrNoRows) {
+	var format string
+	if err = tx.QueryRow(ctx, `SELECT id,task_id,digest,bytes,state,verdict,content_format FROM artifacts WHERE company_id=$1 AND id=$2 AND artifact_kind='deliverable'`, companyID, artifactID).Scan(&view.ArtifactID, &view.TaskID, &view.Digest, &bytes, &view.State, &view.Verdict, &format); errors.Is(err, pgx.ErrNoRows) {
 		return ArtifactDetailView{}, errCompanyNotFound
 	} else if err != nil {
 		return ArtifactDetailView{}, err
@@ -388,6 +389,15 @@ func (s *PostgresReadStore) GetArtifact(ctx context.Context, companyID, artifact
 		return ArtifactDetailView{}, err
 	}
 	view.Bytes = stringValue(bytes)
+	if format == "go_patch" {
+		view.Patch, err = s.readGoPatch(ctx, companyID, view.TaskID, artifactID, view.Digest)
+		if err != nil {
+			return ArtifactDetailView{}, err
+		}
+		view.Content = "Digest-bound Go patch bundle; use the formal delivery package to obtain all bytes."
+		view.ContentAvailable = true
+		return view, nil
+	}
 	content, available, err := s.readAuthorizedBlob(companyID, view.Digest)
 	if err != nil {
 		return ArtifactDetailView{}, err

@@ -875,6 +875,20 @@ describe('RealWorkbenchApi', () => {
 
     expect(receipt.state).toBe('blocked');
     expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toEqual({taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', requestId: 'go-job-start-1'});
+    await api.startTaskJobRun({companyId: 'company-1', taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', executeGoTest: true, requestId: 'go-job-execute-1'});
+    expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body))).toEqual({taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', executeGoTest: true, requestId: 'go-job-execute-1'});
+  });
+
+  it('binds Go patch command receipts to the exact Task, JobRun and request', async () => {
+    // Transport-shape test only; no server, Artifact or qualification exists.
+    const response = {artifact_id: 'patch-1', task_id: 'task-1', delivery_state: 'committed', jobRunId: 'job-1', requestId: 'patch-request'};
+    const fetchMock = vi.fn().mockResolvedValueOnce({ok: true, json: async () => response}).mockResolvedValueOnce({ok: true, json: async () => ({...response, jobRunId: 'another-job'})});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+    const options = {companyId: 'company-1', taskId: 'task-1', jobRunId: 'job-1', requestId: 'patch-request'};
+    expect(await api.publishGoPatch(options)).toBe('patch-1');
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toEqual({jobRunId: 'job-1', requestId: 'patch-request'});
+    await expect(api.publishGoPatch(options)).rejects.toThrow('Go patch delivery receipt mismatch');
   });
 
   it('creates a bounded loopback browser session for a service JobRun', async () => {

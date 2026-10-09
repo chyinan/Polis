@@ -14,6 +14,7 @@ import {countIncludedTaskInputImages, countIncludedTaskInputSources, countInclud
 import {ActivityTimeline} from '../components/activity-timeline/ActivityTimeline';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
+import {GoPatchPreview} from '../components/go-patch-preview/GoPatchPreview';
 
 function pendingRequestIdentity(pendingIds: Map<string, string>, operation: string, payload: unknown): Readonly<{key: string; requestId: string}> {
   const key = JSON.stringify({operation, payload});
@@ -540,6 +541,10 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const [jobActionMessage, setJobActionMessage] = useState<string | null>(null);
   const [jobActionError, setJobActionError] = useState<string | null>(null);
   const pendingJobRequestIds = useRef(new Map<string, string>());
+  const [goBaseSnapshot, setGoBaseSnapshot] = useState('');
+  const [goCandidateSnapshot, setGoCandidateSnapshot] = useState('');
+  const [executeGoTest, setExecuteGoTest] = useState(false);
+  const [pendingGoAction, setPendingGoAction] = useState<string | null>(null);
   const pendingDurableDispositionRequestIds = useRef(new Map<string, string>());
   const jobLogsQuery = useTaskJobLogs(api, companyId, selectedJobLogId, tab === 'jobs');
   const environmentPolicy = useDecideProjectEnvironmentPolicy(api, companyId);
@@ -549,6 +554,7 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const [selectedArtifactId, setSelectedArtifactId] = useState<string | null>(null);
   const artifactForTask = taskArtifacts.find(item => item.artifactId === selectedArtifactId) ?? taskArtifacts[0] ?? null;
   const artifactQuery = useArtifactDetail(api, companyId, artifactForTask?.artifactId ?? null);
+  const patchLogsQuery = useTaskJobLogs(api, companyId, artifactQuery.data?.patch?.jobRunId ?? null, tab === 'browser');
   const deliveryManifestQuery = useArtifactDeliveryManifest(api, companyId, artifactForTask?.artifactId ?? null);
   const durableDeliveryQuery = useDurableDelivery(api, companyId, artifactForTask?.artifactId ?? null);
   const [downloadingArtifact, setDownloadingArtifact] = useState(false);
@@ -646,6 +652,38 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
     && item.policyDecision === 'approved' && item.executorQualification === 'qualified' && item.preparationState === 'ready');
   const selectedJobEnvironment = readyJobEnvironments.find(item => item.revisionId === selectedEnvironmentRevisionId) ?? readyJobEnvironments[0] ?? null;
   const taskJobs = jobRunsQuery.data ?? [];
+  async function goJobAction(job: JobRunView, action: 'publish' | 'collect'): Promise<void> {
+    if (task === null) return;
+    const payload = {companyId, taskId: task.taskId, jobRunId: job.jobId, candidate: job.goTest?.candidateSnapshotSha256};
+    const pending = pendingRequestIdentity(pendingJobRequestIds.current, `go-${action}`, payload);
+    setPendingGoAction(job.jobId); setJobActionError(null);
+    try {
+      if (action === 'publish' && api.publishGoPatch) {
+        const artifactId = await api.publishGoPatch({companyId, taskId: task.taskId, jobRunId: job.jobId, requestId: pending.requestId});
+        setJobActionMessage(`Patch Artifact ${artifactId} 已生成。DeliveryManifest 与人工审核继续遵循正式发布策略，不会自动应用、merge 或部署。`);
+      } else if (action === 'collect' && api.collectGoTestJobResult) {
+        const receipt = await api.collectGoTestJobResult({companyId, jobId: job.jobId, requestId: pending.requestId});
+        setJobActionMessage(`仅回收已有结果：${labelDisplayValue(receipt.state)}。没有重新启动候选。`);
+      }
+      clearPendingRequestIdentity(pendingJobRequestIds.current, pending.key);
+      await jobRunsQuery.refetch();
+    } catch (error) {setJobActionError(error instanceof Error ? error.message : 'Go 操作结果未确认；保留原请求 ID。');}
+    finally {setPendingGoAction(null);}
+  }
+  async function requestFixedGoJob(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    if (task === null) return;
+    const payload = {companyId, taskId: task.taskId, kind: 'go_test' as const, baseSnapshotArtifactId: goBaseSnapshot.trim(), candidateSnapshotArtifactId: goCandidateSnapshot.trim(), executeGoTest};
+    const pending = pendingRequestIdentity(pendingJobRequestIds.current, 'go-job', payload);
+    setPendingGoAction('new'); setJobActionError(null);
+    try {
+      const receipt = await api.startTaskJobRun({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingJobRequestIds.current, pending.key);
+      setJobActionMessage(`固定 Go JobRun ${receipt.jobId}：${labelDisplayValue(receipt.state)}。宿主不合格时不会执行候选。`);
+      await jobRunsQuery.refetch();
+    } catch (error) {setJobActionError(error instanceof Error ? error.message : 'Go 作业请求未确认。');}
+    finally {setPendingGoAction(null);}
+  }
   const taskHandovers = crossBackendHandoversQuery.data ?? [];
   const activeTaskSession = overview.employees.find(employee => employee.employeeId === task.ownerEmployeeId
     && employee.currentTask?.id === task.taskId && employee.sessionState === 'active' && employee.sessionId !== null) ?? null;
@@ -845,6 +883,16 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
         {jobRunsQuery.isPending ? <div className={styles.emptyState} role="status">正在读取 JobRun</div> : jobRunsQuery.isError ? <div className={styles.errorState} role="alert">JobRun 读取失败：{jobRunsQuery.error.message}</div> : jobRunsQuery.data?.length ? <div className={styles.recordList}>{jobRunsQuery.data.map(job => <div className={styles.recordRow} key={job.jobId}><div className={styles.recordLead}><Wrench aria-hidden="true" size={16} /><div><strong>{job.kind} · {formatEntityId(job.jobId)}</strong><span>状态 {labelDisplayValue(job.state)} · 就绪 {labelDisplayValue(job.readiness)}</span>{job.serviceId === 'legacy:unattributed' ? <span>历史服务 · 未归属</span> : job.serviceId ? <span>固定服务定义 {formatEntityId(job.serviceId)}</span> : null}<span>环境 {formatEntityId(job.environmentRevisionId)} · 会话 {formatEntityId(job.sessionId)}</span><span>stdout offset {job.stdoutOffset} · stderr offset {job.stderrOffset}{job.logsTruncated ? ' · 日志已截断' : ''}{job.logGap ? ' · 日志存在缺口' : ''}</span>{job.logManifestSha256 ? <span>日志清单 {job.logManifestSha256}</span> : null}{job.serviceEndpoint ? <span>服务 generation {job.serviceEndpoint.generation} · {job.serviceEndpoint.bindAddress}:{job.serviceEndpoint.port} · {labelDisplayValue(job.serviceEndpoint.readiness)}</span> : null}{job.exitCode !== null ? <span>退出码 {job.exitCode}</span> : null}<div className={styles.recordActions}>{job.logManifestSha256 ? <button className={styles.textButton} onClick={() => setSelectedJobLogId(job.jobId)} type="button">读取日志</button> : null}{job.state === 'running' || job.state === 'starting' || job.state === 'outcome_unknown' || (job.kind === 'service' && job.serviceId !== 'legacy:unattributed' && (job.state === 'exited' || job.state === 'failed' || job.state === 'cancelled') && job.serviceEndpoint?.readiness === 'unhealthy') ? <button className={styles.textButton} disabled={stopProjectJob.isPending} onClick={() => { void stopProjectJobRun(job.jobId); }} type="button">{job.state === 'exited' || job.state === 'failed' || job.state === 'cancelled' ? '重试端点撤销' : job.state === 'outcome_unknown' ? '重试停止' : '停止'}</button> : null}</div></div></div><StatusBadge label={labelDisplayValue(job.state)} tone={job.state === 'exited' && job.exitCode === 0 ? 'success' : job.state === 'exited' || job.state === 'failed' || job.state === 'cancelled' || job.state === 'outcome_unknown' ? 'danger' : 'warning'} /></div>)}</div> : <EmptyPanel detail="当前任务没有持久 JobRun；没有合格隔离执行器时不会启动项目命令。" title="暂无运行作业" />}
         {selectedJobLogId ? <div className={styles.formStack}><div>{jobLogsQuery.isPending ? <div className={styles.emptyState} role="status">正在读取作业日志</div> : jobLogsQuery.isError ? <div className={styles.errorState} role="alert">日志读取失败：{jobLogsQuery.error.message}</div> : jobLogsQuery.data ? <><DataRow label="Manifest SHA-256" value={jobLogsQuery.data.manifestSha256 || '暂无日志内容'} mono /><pre className={styles.codePreview}>{formatProjectJobLogs(jobLogsQuery.data.content)}</pre></> : null}</div></div> : null}
       </article>
+      {api.mode === 'real' && task.kind === 'compat' && task.state === 'working' ? <article className={styles.sectionCard}>
+        <h2 className={styles.sectionTitle}>固定 Go 测试请求</h2>
+        <p className={styles.formHint}>仅适用于已批准的 Go fixture Task。输入正式冻结快照 ID；命令、工具链与资源配置不可修改。后端核验绑定与宿主资格。</p>
+        <form className={styles.formStack} onSubmit={event => void requestFixedGoJob(event)}>
+          <label className={styles.formLabel}>base snapshot ID<input className={styles.formField} required maxLength={80} value={goBaseSnapshot} onChange={event => setGoBaseSnapshot(event.target.value)} /></label>
+          <label className={styles.formLabel}>candidate snapshot ID<input className={styles.formField} required maxLength={80} value={goCandidateSnapshot} onChange={event => setGoCandidateSnapshot(event.target.value)} /></label>
+          <label><input type="checkbox" checked={executeGoTest} onChange={event => setExecuteGoTest(event.target.checked)} />显式请求执行候选（仍须通过宿主资格；默认仅预检）</label>
+          <button className={styles.textButton} disabled={pendingGoAction !== null} type="submit">{executeGoTest ? '提交受限 Go 测试' : '只记录 Go 预检'}</button>
+        </form>
+      </article> : null}
       {taskJobs.some(job => job.kind === 'go_test') ? <article className={styles.sectionCard}>
         <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>固定测试 / 冻结身份</span><h2 className={styles.sectionTitle}>Go JobRun 绑定</h2></div></div>
         <div className={styles.recordList}>{taskJobs.map(job => {
@@ -861,6 +909,8 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
             <span>{binding.outcome ? `测试结果：${labelDisplayValue(binding.outcome)} · result ${binding.resultSha256}` : '暂无测试结果；宿主未资格化时仅记录 blocked，不执行候选代码。'}</span>
             <details><summary>固定资源上限</summary><pre className={styles.codePreview}>{JSON.stringify(binding.resourceLimits, null, 2)}</pre></details>
             {binding.result ? <pre className={styles.codePreview}>{JSON.stringify(binding.result, null, 2)}</pre> : null}
+            {api.mode === 'real' && api.collectGoTestJobResult && (job.state === 'starting' || job.state === 'running') ? <button className={styles.textButton} type="button" disabled={pendingGoAction !== null} onClick={() => void goJobAction(job, 'collect')}>回收已有结果（不重跑）</button> : null}
+            {api.mode === 'real' && api.publishGoPatch && job.state === 'exited' && binding.outcome === 'passed' && binding.result?.qualificationEligible === true && binding.result?.executionKind === 'real' ? <button className={styles.textButton} type="button" disabled={pendingGoAction !== null} onClick={() => void goJobAction(job, 'publish')}>生成正式 Patch 交付</button> : <span>没有真实、匹配且通过的执行证据，不能生成合格 Patch。</span>}
           </div></div></div>;
         })}</div>
       </article> : null}
@@ -884,6 +934,8 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
       {artifactForTask !== null && artifactQuery.isPending ? <div className={styles.emptyState}>正在读取产物内容</div> : null}
       {artifactForTask !== null && artifactQuery.isError ? <div className={styles.errorState} role="alert">产物读取失败：{artifactQuery.error.message}</div> : null}
       {artifactForTask !== null && artifactQuery.data ? <div className={styles.detailRows}><DataRow label="内容是否可用" value={artifactQuery.data.contentAvailable ? '是' : '否'} /><DataRow label="内容预览" value={artifactQuery.data.content || '内容不可得'} /></div> : null}
+      {artifactQuery.data?.patch ? <GoPatchPreview patch={artifactQuery.data.patch} logText={patchLogsQuery.data ? formatProjectJobLogs(patchLogsQuery.data.content) : null} /> : null}
+      {artifactQuery.data?.patch && patchLogsQuery.isError ? <p role="alert">Go 日志读取失败：{patchLogsQuery.error.message}</p> : null}
       {artifactForTask !== null && deliveryManifestQuery.isPending ? <div className={styles.emptyState}>正在读取 ZIP Manifest</div> : null}
       {artifactForTask !== null && deliveryManifestQuery.isError ? <div className={styles.errorState} role="alert">ZIP Manifest 不可用：{deliveryManifestQuery.error.message}</div> : null}
       {deliveryManifestQuery.data ? <><div className={styles.detailRows}><DataRow label="ZIP Manifest SHA-256" value={deliveryManifestQuery.data.manifestSha256} mono /><DataRow label="内容摘要" value={deliveryManifestQuery.data.manifest.content.sha256} mono /><DataRow label="内容大小" value={deliveryManifestQuery.data.manifest.content.byteSize + ' bytes'} /><DataRow label="检查点 / 验证回执" value={`${deliveryManifestQuery.data.manifest.qualification.checkpointId} / ${deliveryManifestQuery.data.manifest.qualification.validationReceiptId}`} mono /><DataRow label="工作区版本 / Runner" value={`${deliveryManifestQuery.data.manifest.qualification.workspaceRevision} / ${deliveryManifestQuery.data.manifest.qualification.runnerRevision}`} /></div><button className={styles.textButton} disabled={downloadingArtifact} onClick={() => { void downloadArtifact(); }} type="button">{downloadingArtifact ? '正在准备 ZIP…' : '下载 Artifact ZIP（含校验清单）'}</button>{artifactDownloadError ? <div className={styles.errorState} role="alert">{artifactDownloadError}</div> : null}</> : null}

@@ -184,4 +184,23 @@ func TestGoJobPersistsRealHostGateAndSimulatedStartFailure(t *testing.T) {
 	if qualifications != 0 {
 		t.Fatal("no-start reports created qualifications")
 	}
+	for _, job := range []string{b.JobRunID, second.JobRunID} {
+		if _, err := k.TXPublishGoPatchDelivery(ctx, scope.company, GoPatchDeliveryInput{TaskID: task.ID, JobRunID: job, RequestID: "patch-denied-" + job}); !errors.Is(err, core.Denied) {
+			t.Fatalf("unexecuted/simulated job published a patch: %v", err)
+		}
+	}
+	var patches, deliverables int
+	must(t, k.pool.QueryRow(ctx, `SELECT count(*) FROM go_patch_deliveries WHERE company_id=$1`, scope.company).Scan(&patches))
+	must(t, k.pool.QueryRow(ctx, `SELECT count(*) FROM artifacts WHERE company_id=$1 AND artifact_kind='deliverable'`, scope.company).Scan(&deliverables))
+	if patches != 0 || deliverables != 0 {
+		t.Fatalf("unqualified results produced delivery: patches=%d artifacts=%d", patches, deliverables)
+	}
+	_, e = k.WriteProductWorkspaceFile(ctx, binding, "newer-candidate", "formatter.go", 2, fixture.Source+"\n// newer candidate\n")
+	must(t, e)
+	if _, err := k.PrepareGoTestJobBinding(ctx, scope.company, PrepareGoTestJobBindingInput{RequestID: "stale-job", TaskID: task.ID, BaseSnapshotArtifactID: base.ArtifactID, CandidateSnapshotArtifactID: candidate.ArtifactID, RunnerSHA256: b.Profile.RunnerSHA256}); !errors.Is(err, core.Conflict) {
+		t.Fatalf("old frozen candidate admitted after edit: %v", err)
+	}
+	if _, err := k.TXPublishGoPatchDelivery(ctx, scope.company, GoPatchDeliveryInput{TaskID: task.ID, JobRunID: b.JobRunID, RequestID: "stale-patch"}); !errors.Is(err, core.Conflict) {
+		t.Fatalf("old result was consumed for newer candidate: %v", err)
+	}
 }

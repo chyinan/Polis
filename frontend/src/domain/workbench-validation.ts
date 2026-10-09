@@ -1,5 +1,7 @@
 // pattern: Functional Core
 
+import {isGoPatchView} from './go-patch';
+
 import type {
   ActivityEvent,
   ActivityEventKind,
@@ -697,7 +699,8 @@ function isArtifactDetail(value: unknown): value is ArtifactDetailView {
     && hasString(value, 'state')
     && hasString(value, 'verdict')
     && typeof value.content === 'string'
-    && typeof value.contentAvailable === 'boolean';
+    && typeof value.contentAvailable === 'boolean'
+    && (value.patch === undefined || (isGoPatchView(value.patch) && value.patch.patchSha256 === value.digest));
 }
 
 function isOperations(value: unknown): value is OperationsView {

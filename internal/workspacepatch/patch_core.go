@@ -479,8 +479,11 @@ func fileReferences(files []SnapshotFile) []FileReference {
 }
 
 func fileReferencesDigest(files []FileReference) string {
-	encoded, _ := json.Marshal(files)
-	return digestBytes(encoded)
+	refs := make([]gotestprofile.SnapshotFile, len(files))
+	for i, file := range files {
+		refs[i] = gotestprofile.SnapshotFile{RelativePath: file.RelativePath, Digest: file.SHA256, Bytes: file.Bytes}
+	}
+	return gotestprofile.InventoryDigest(refs)
 }
 
 func sameFiles(left, right []SnapshotFile) bool {

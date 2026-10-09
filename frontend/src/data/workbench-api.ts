@@ -618,7 +618,7 @@ type StartTaskProjectJobRunOptions = StartTaskJobRunCommonOptions & Readonly<{
 export type StartTaskJobRunOptions =
   | (StartTaskProjectJobRunOptions & Readonly<{kind?: 'batch'; scriptPath: string; args: ReadonlyArray<string>}>)
   | (StartTaskProjectJobRunOptions & Readonly<{kind: 'service'; serviceId: string}>)
-  | (StartTaskJobRunCommonOptions & Readonly<{kind: 'go_test'; baseSnapshotArtifactId: string; candidateSnapshotArtifactId: string}>);
+  | (StartTaskJobRunCommonOptions & Readonly<{kind: 'go_test'; baseSnapshotArtifactId: string; candidateSnapshotArtifactId: string; executeGoTest?: boolean}>);
 
 export type StopTaskJobRunOptions = Readonly<{
   companyId: string;
@@ -758,6 +758,8 @@ export type WorkbenchApi = Readonly<{
   completeDurableDeliveryManifest?(options: CompleteDurableDeliveryManifestOptions): Promise<DurableDeliveryManifestCompletionReceipt>;
   invalidateDurableDeliveryManifest?(options: InvalidateDurableDeliveryManifestOptions): Promise<DurableDeliveryManifestInvalidationReceipt>;
   recordDurableUserDisposition?(options: RecordDurableUserDispositionOptions): Promise<DurableUserDispositionCommandReceipt>;
+  publishGoPatch?(options: Readonly<{companyId: string; taskId: string; jobRunId: string; requestId: string}>): Promise<string>;
+  collectGoTestJobResult?(options: Readonly<{companyId: string; jobId: string; requestId: string}>): Promise<JobRunCommandReceipt>;
   getArtifactDeliveryManifest(options: Readonly<{companyId: string; artifactId: string}>): Promise<ArtifactDeliveryManifestResponse>;
   downloadArtifactPackage(options: Readonly<{companyId: string; artifactId: string}>): Promise<Blob>;
   getOperations(options: CompanyScopeOptions): Promise<OperationsView>;

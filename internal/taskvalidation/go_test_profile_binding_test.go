@@ -24,6 +24,19 @@ func TestTaskValidationBindingPinsOfflineGoTestProfile(t *testing.T) {
 	}
 }
 
+func TestNewGoBindingSelectsExplicitGoRunnerWithoutTextFallback(t *testing.T) {
+	b, err := Bind("task", "mission", &AcceptanceContract{Revision: AcceptanceContractGoTestRevision, GoTestProfileRevision: GoTestFixtureProfileRevision, RequiredText: []string{"package formatter"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b.RunnerKind != "fixed_go_test" || b.RunnerRevision != GoTestFixtureProfileRevision {
+		t.Fatalf("Go binding retained text-only runner: %+v", b)
+	}
+	if result := DefaultRegistry().Validate(b, "package formatter"); result.Status == StatusPass {
+		t.Fatal("a Go binding passed without execution evidence")
+	}
+}
+
 func TestGoTestAcceptanceBindingCannotPassThroughTextOnlyValidator(t *testing.T) {
 	contract := AcceptanceContract{
 		Revision:              AcceptanceContractGoTestRevision,

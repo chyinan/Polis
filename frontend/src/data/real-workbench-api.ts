@@ -1692,6 +1692,7 @@ export class RealWorkbenchApi implements WorkbenchApi {
       command = {
         taskId: options.taskId, kind: 'go_test', baseSnapshotArtifactId: options.baseSnapshotArtifactId,
         candidateSnapshotArtifactId: options.candidateSnapshotArtifactId, requestId: options.requestId,
+        ...(options.executeGoTest === true ? {executeGoTest: true} : {}),
       };
     } else {
       if (options.sessionId !== undefined && options.sessionId !== '') assertCompanyScope(options.sessionId);
@@ -1725,6 +1726,22 @@ export class RealWorkbenchApi implements WorkbenchApi {
     const result = validateJobRunCommandReceipt(raw, options.companyId);
     if (!result.success) throw new Error(`failed to parse JobRun stop receipt: ${validationMessage(result.issues)}`);
     return result.value;
+  }
+
+  async collectGoTestJobResult(options: Readonly<{companyId: string; jobId: string; requestId: string}>): Promise<JobRunCommandReceipt> {
+    assertCompanyScope(options.companyId); assertCompanyScope(options.jobId); assertRequestID(options.requestId);
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/jobs/${encodeURIComponent(options.jobId)}/collect`, options.requestId, {requestId: options.requestId});
+    const result = validateJobRunCommandReceipt(raw, options.companyId);
+    if (!result.success || result.value.jobId !== options.jobId) throw new Error('Go result collection receipt mismatch');
+    return result.value;
+  }
+
+  async publishGoPatch(options: Readonly<{companyId: string; taskId: string; jobRunId: string; requestId: string}>): Promise<string> {
+    assertCompanyScope(options.companyId); assertCompanyScope(options.taskId); assertCompanyScope(options.jobRunId); assertRequestID(options.requestId);
+    const raw: unknown = await this.post(`/companies/${encodeURIComponent(options.companyId)}/tasks/${encodeURIComponent(options.taskId)}/go-patch`, options.requestId, {jobRunId: options.jobRunId, requestId: options.requestId});
+    if (typeof raw !== 'object' || raw === null || !('artifact_id' in raw) || typeof raw.artifact_id !== 'string' || !('task_id' in raw) || raw.task_id !== options.taskId || !('delivery_state' in raw) || raw.delivery_state !== 'committed' || !('jobRunId' in raw) || raw.jobRunId !== options.jobRunId || !('requestId' in raw) || raw.requestId !== options.requestId) throw new Error('Go patch delivery receipt mismatch');
+    assertCompanyScope(raw.artifact_id);
+    return raw.artifact_id;
   }
 
   async getTaskJobLogs(options: TaskJobLogsQueryOptions): Promise<JobRunLogArtifactView> {

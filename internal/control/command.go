@@ -378,6 +378,7 @@ type DecideDependencyChangeRequest struct {
 }
 
 type StartProjectJobRequest struct {
+	ExecuteGoTest               bool     `json:"executeGoTest,omitempty"`
 	TaskID                      string   `json:"taskId"`
 	SessionID                   string   `json:"sessionId"`
 	EnvironmentRevisionID       string   `json:"environmentRevisionId"`

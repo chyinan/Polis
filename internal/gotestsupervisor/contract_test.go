@@ -97,3 +97,53 @@ func TestReportRejectsDifferentCandidateAndLogBytes(t *testing.T) {
 		t.Fatal("unbound log accepted")
 	}
 }
+
+func TestPassedReportRequiresActualFixedTestEventEvidence(t *testing.T) {
+	b := testBinding()
+	r := NewUnstartedReport(b, "real", "exited", "fixed_test_set_passed", HostCheck{Qualified: true, Limits: b.Profile.Limits, QualificationSHA256: strings.Repeat("a", 64)})
+	zero := 0
+	r.ProcessStarted, r.ExitObserved, r.ExitCode = true, true, &zero
+	r.Outcome, r.QualificationEligible = gotestprofile.OutcomePassed, true
+	r.TestResult = &gotestprofile.TestResult{Outcome: gotestprofile.OutcomePassed, StdoutSHA256: r.Stdout.SHA256, StderrSHA256: r.Stderr.SHA256}
+	if ValidateReport(b, r) == nil {
+		t.Fatal("a passed label without fixed Go test events was accepted as execution evidence")
+	}
+	var events bytes.Buffer
+	for _, name := range []string{"TestFrozenCompatibility", "TestFrozenNeighborChange"} {
+		events.WriteString(`{"Action":"pass","Package":"fixture","Test":"` + name + `"}` + "\n")
+	}
+	events.WriteString(`{"Action":"pass","Package":"fixture"}` + "\n")
+	r.Stdout = Log{Data: events.Bytes(), SHA256: SHA256(events.Bytes())}
+	result := gotestprofile.ClassifyResult(gotestprofile.ExecutionFacts{ExitCodeKnown: true, ExitCode: 0, ProcessTreeReaped: true, CgroupControlsApplied: true, ScratchQuotaApplied: true, NetworkIsolationApplied: true, Stdout: events.Bytes()})
+	r.TestResult = &result
+	if err := ValidateReport(b, r); err != nil {
+		t.Fatal(err)
+	}
+	r.TestResult.ResultSHA256 = strings.Repeat("f", 64)
+	if ValidateReport(b, r) == nil {
+		t.Fatal("tampered test result digest was accepted")
+	}
+}
+
+func TestMissingReportAfterDispatchRemainsUnknownWithoutCandidateExit(t *testing.T) {
+	b := testBinding()
+	r := NewUnstartedReport(b, "real", "outcome_unknown", "supervisor_result_missing", HostCheck{})
+	r.DispatchAccepted = true
+	if err := ValidateReport(b, r); err != nil {
+		t.Fatal(err)
+	}
+	zero := 0
+	r.ExitCode = &zero
+	if ValidateReport(b, r) == nil {
+		t.Fatal("missing result fabricated a candidate exit")
+	}
+}
+
+func TestSystemdAdapterDoesNotExecuteAnUninstalledReplacement(t *testing.T) {
+	b := testBinding()
+	e := NewSystemdExecutor("/tmp/not-an-approved-supervisor", "/tmp/not-a-toolchain")
+	r := e.Run(context.Background(), Request{Binding: b})
+	if r.State != "blocked" || r.ProcessStarted || r.DispatchAccepted || r.ExitObserved || r.ExitCode != nil || r.QualificationEligible {
+		t.Fatalf("untrusted adapter crossed the execution gate: %+v", r)
+	}
+}

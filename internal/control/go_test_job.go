@@ -19,6 +19,7 @@ import (
 )
 
 type StartBlockedGoTestJobRequest struct {
+	Execute                     bool   `json:"execute,omitempty"`
 	BaseSnapshotArtifactID      string `json:"baseSnapshotArtifactId"`
 	CandidateSnapshotArtifactID string `json:"candidateSnapshotArtifactId"`
 	RequestID                   string `json:"requestId"`
@@ -29,6 +30,19 @@ type GoTestJobLifecycleService interface {
 }
 
 func (s *Service) StartBlockedGoTestJob(ctx context.Context, companyID, taskID string, request StartBlockedGoTestJobRequest) (kernel.JobRunRecord, error) {
+	request.Execute = false
+	return s.startGoTestJob(ctx, companyID, taskID, request)
+}
+
+type GoTestJobExecutionService interface {
+	StartGoTestJob(context.Context, string, string, StartBlockedGoTestJobRequest) (kernel.JobRunRecord, error)
+}
+
+func (s *Service) StartGoTestJob(ctx context.Context, companyID, taskID string, request StartBlockedGoTestJobRequest) (kernel.JobRunRecord, error) {
+	return s.startGoTestJob(ctx, companyID, taskID, request)
+}
+
+func (s *Service) startGoTestJob(ctx context.Context, companyID, taskID string, request StartBlockedGoTestJobRequest) (kernel.JobRunRecord, error) {
 	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || !core.ValidID(taskID) ||
 		!core.ValidID(request.BaseSnapshotArtifactID) || !core.ValidID(request.CandidateSnapshotArtifactID) ||
 		request.BaseSnapshotArtifactID == request.CandidateSnapshotArtifactID || validateRequestID(request.RequestID) != nil {
@@ -67,22 +81,19 @@ func (s *Service) StartBlockedGoTestJob(ctx context.Context, companyID, taskID s
 	if err != nil || current.State != "accepted" {
 		return current, err
 	}
-	checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-	command := exec.CommandContext(checkCtx, executablePath, "--inspect", "--job-id="+binding.JobRunID)
-	command.Env = []string{"PATH=/usr/bin:/bin", "LANG=C"}
-	var captured supervisorDiagnosticBuffer
-	command.Stdout = &captured
-	command.Stderr = io.Discard
-	inspectErr := command.Run()
-	output := captured.Bytes()
-	report := gotestsupervisor.NewUnstartedReport(binding, "real", "blocked", "host_profile_unqualified", gotestsupervisor.HostCheck{})
-	if len(output) > 65536 || json.Unmarshal(output, &report.Host) != nil {
-		report.State, report.Reason = "failed", "supervisor_preflight_failed"
-	} else if inspectErr != nil && !supervisorBlockedExit(inspectErr) {
-		report.State, report.Reason = "failed", "supervisor_preflight_failed"
-	} else if report.Host.Qualified {
-		report.Reason = "candidate_execution_not_enabled"
+	s.projectJobsMu.Lock()
+	executor := s.goJobRunner
+	s.projectJobsMu.Unlock()
+	if executor == nil {
+		executor = gotestsupervisor.NewSystemdExecutor(executablePath, os.Getenv("POLIS_GO_TOOLCHAIN_ROOT"))
+	}
+	host := executor.Readiness(ctx, binding.JobRunID)
+	if request.Execute && host.Qualified && ctx.Err() == nil {
+		return s.dispatchGoTestJob(ctx, companyID, binding, executor, host)
+	}
+	report := gotestsupervisor.NewUnstartedReport(binding, goExecutionKind(executor), "blocked", "host_profile_unqualified", host)
+	if host.Qualified && !request.Execute {
+		report.Reason = "execution_not_requested"
 	}
 	if ctx.Err() != nil {
 		report.State = "cancelled"

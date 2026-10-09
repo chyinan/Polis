@@ -20,6 +20,7 @@ const (
 	GoTestFixtureProfileRevision     = gotestprofile.FixtureRevision
 	TextContainsAllRunnerKind        = "text_contains_all"
 	TextContainsAllRunnerRevision    = "text-contains-all@1"
+	FixedGoTestRunnerKind            = "fixed_go_test"
 	maxRequiredTextItems             = 8
 	maxRequiredTextBytes             = 512
 )
@@ -103,6 +104,10 @@ func Bind(taskID, missionID string, contract *AcceptanceContract) (*Binding, err
 		RunnerKind:         TextContainsAllRunnerKind,
 		RunnerRevision:     TextContainsAllRunnerRevision,
 		Contract:           bound,
+	}
+	if contract.GoTestProfileRevision != "" {
+		binding.RunnerKind = FixedGoTestRunnerKind
+		binding.RunnerRevision = contract.GoTestProfileRevision
 	}
 	binding.ConfigurationDigest = ConfigurationDigest(*binding)
 	return binding, nil

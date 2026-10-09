@@ -48,6 +48,7 @@ type Report struct {
 	Outcome               string                    `json:"outcome"`
 	Reason                string                    `json:"reason"`
 	ProcessStarted        bool                      `json:"processStarted"`
+	DispatchAccepted      bool                      `json:"dispatchAccepted,omitempty"`
 	LauncherStarted       bool                      `json:"launcherStarted"`
 	LauncherExitObserved  bool                      `json:"launcherExitObserved"`
 	LauncherExitCode      *int                      `json:"launcherExitCode,omitempty"`
@@ -116,7 +117,7 @@ func ValidateReport(b gotestprofile.JobBinding, r Report) error {
 		return ErrInvalid
 	}
 	if !r.ProcessStarted {
-		validOutcome := r.Outcome == gotestprofile.OutcomeInfrastructureFailed && (r.State == "blocked" || r.State == "failed") || r.Outcome == gotestprofile.OutcomeCancelled && r.State == "cancelled" && r.Cancelled || r.Outcome == gotestprofile.OutcomeTimedOut && r.TimedOut && r.State == "failed" || r.Outcome == gotestprofile.OutcomeResourceLimit && r.ResourceLimit != "" && r.State == "failed"
+		validOutcome := r.Outcome == gotestprofile.OutcomeInfrastructureFailed && (r.State == "blocked" || r.State == "failed" || r.State == "outcome_unknown" && r.DispatchAccepted) || r.Outcome == gotestprofile.OutcomeCancelled && r.State == "cancelled" && r.Cancelled || r.Outcome == gotestprofile.OutcomeTimedOut && r.TimedOut && r.State == "failed" || r.Outcome == gotestprofile.OutcomeResourceLimit && r.ResourceLimit != "" && r.State == "failed"
 		if r.ExitObserved || r.ExitCode != nil || r.TestResult != nil || r.QualificationEligible || !validOutcome {
 			return ErrInvalid
 		}
@@ -134,6 +135,21 @@ func ValidateReport(b gotestprofile.JobBinding, r Report) error {
 	eligible := r.ExecutionKind == "real" && r.Host.Qualified && r.Host.Limits == b.Profile.Limits && r.Host.QualificationSHA256 != "" && r.ExitObserved && r.ExitCode != nil && *r.ExitCode == 0 && r.CleanupConfirmed && r.Outcome == gotestprofile.OutcomePassed && !r.TimedOut && !r.Cancelled && r.ResourceLimit == ""
 	if r.QualificationEligible != eligible || r.Outcome == gotestprofile.OutcomePassed && !eligible {
 		return ErrInvalid
+	}
+	if r.Outcome == gotestprofile.OutcomePassed {
+		// Re-derive acceptance from the bounded Go event stream. A label, copied
+		// result digest, or caller-supplied list of passed tests is not evidence.
+		verified := gotestprofile.ClassifyResult(gotestprofile.ExecutionFacts{
+			ExitCodeKnown: r.ExitObserved && r.ExitCode != nil, ExitCode: *r.ExitCode,
+			ProcessTreeReaped: r.CleanupConfirmed, CgroupControlsApplied: r.Host.Qualified,
+			ScratchQuotaApplied: r.Host.Qualified, NetworkIsolationApplied: r.Host.Qualified,
+			Stdout: r.Stdout.Data, Stderr: r.Stderr.Data, StdoutTruncated: r.LogsTruncated,
+		})
+		actual, _ := json.Marshal(verified)
+		claimed, _ := json.Marshal(r.TestResult)
+		if verified.Outcome != gotestprofile.OutcomePassed || !bytes.Equal(actual, claimed) {
+			return ErrInvalid
+		}
 	}
 	return nil
 }

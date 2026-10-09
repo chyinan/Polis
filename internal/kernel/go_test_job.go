@@ -175,6 +175,13 @@ WHERE t.company_id=$1 AND t.id=$2 FOR SHARE OF t,m`, companyID, input.Binding.Ta
 		if missionID != input.Binding.MissionID || taskState != "working" || missionState != "active" || taskKind != string(core.TaskKindCompat) || taskOwner != core.EmployeeBackendID {
 			return Receipt{}, core.Denied
 		}
+		var outstanding bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM job_runs j JOIN LATERAL (SELECT state FROM job_run_events WHERE company_id=j.company_id AND job_id=j.job_id ORDER BY event_seq DESC LIMIT 1) event ON true WHERE j.company_id=$1 AND j.task_id=$2 AND j.kind='go_test' AND j.job_id<>$3 AND event.state IN ('accepted','starting','running','outcome_unknown'))`, companyID, input.Binding.TaskID, input.Binding.JobRunID).Scan(&outstanding); err != nil {
+			return Receipt{}, err
+		}
+		if outstanding {
+			return Receipt{}, core.Conflict
+		}
 		var acceptanceRevision, runnerKind, runnerRevision, configurationSHA256 string
 		var contractBytes []byte
 		if err := tx.QueryRow(ctx, `SELECT acceptance_revision,runner_kind,runner_revision,configuration_digest,contract FROM task_validation_bindings

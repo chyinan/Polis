@@ -95,6 +95,20 @@ func ToolchainTreeSHA256(root string) (string, error) {
 	return SHA256([]byte(strings.Join(refs, "\n"))), nil
 }
 func Inspect(ctx context.Context, id string, cfg Config, expectedQualification string) HostCheck {
+	h := InspectHost(ctx, id, cfg, expectedQualification)
+	if !h.Qualified {
+		return h
+	}
+	if err := runner.CheckFixedGoControls(h.Cgroup, cfg.ScratchRoot, h.Limits); err != nil {
+		h.Qualified, h.Reason = false, err.Error()
+	}
+	return h
+}
+
+// InspectHost validates the sealed host identity and unit policy without
+// launching an instance. Per-instance kernel controls remain mandatory inside
+// Inspect immediately before materialization and candidate execution.
+func InspectHost(ctx context.Context, id string, cfg Config, expectedQualification string) HostCheck {
 	p := gotestprofile.FixtureManifest(strings.Repeat("0", 64))
 	h := HostCheck{Reason: "linux_host_required", Limits: p.Limits}
 	if runtime.GOOS != "linux" {
@@ -109,10 +123,6 @@ func Inspect(ctx context.Context, id string, cfg Config, expectedQualification s
 		return h
 	}
 	h.Cgroup = "/sys/fs/cgroup/system.slice/polis-self-dev-go-job@" + id + ".service"
-	if err := runner.CheckFixedGoControls(h.Cgroup, cfg.ScratchRoot, p.Limits); err != nil {
-		h.Reason = err.Error()
-		return h
-	}
 	if err := checkSystemdUnit(ctx, id); err != nil {
 		h.Reason = "systemd_wall_or_cleanup_policy_unavailable"
 		return h

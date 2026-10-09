@@ -1,5 +1,7 @@
 // pattern: Functional Core
 
+import type {GoPatchView} from './go-patch';
+
 export type DataMode = 'real' | 'simulated' | 'unavailable';
 
 export type MissionCommandType = 'mission.create' | 'mission.start' | 'mission.pause' | 'mission.resume' | 'mission.cancel' | 'mission.closeout';
@@ -155,6 +157,7 @@ export type WorkspaceView = Readonly<{
 }>;
 
 export type ArtifactDetailView = Readonly<{
+	patch?: GoPatchView;
   artifactId: string;
   taskId: string;
   digest: string;

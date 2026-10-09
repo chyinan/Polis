@@ -3,7 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 repo_root="$PWD"
-evidence="$repo_root/evidence/development/polis-self-dev-v1-supervisor-pg-20261009/verification-runtime/$(date -u +%Y%m%dT%H%M%SZ)-$$"
+evidence_slice="${POLIS_SELF_DEV_EVIDENCE_SLICE:-polis-self-dev-v1-supervisor-pg-20261009}"
+[[ "$evidence_slice" =~ ^[A-Za-z0-9_-]+$ ]] || { printf 'invalid evidence slice\n' >&2; exit 2; }
+evidence="$repo_root/evidence/development/$evidence_slice/verification-runtime/$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -p "$evidence"
 temp_root="$(mktemp -d /tmp/polis-self-dev-go-check.XXXXXX)"
 cleanup() {

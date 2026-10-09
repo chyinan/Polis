@@ -78,7 +78,14 @@ func (s *PostgresReadStore) GetArtifactDeliveryPackage(ctx context.Context, comp
 	if !artifact.ContentAvailable || artifact.Digest != manifestResponse.Manifest.Content.SHA256 || artifact.Bytes != manifestResponse.Manifest.Content.ByteSize {
 		return ArtifactDeliveryPackage{}, core.Integrity
 	}
-	packaged, err := buildArtifactDeliveryPackage(manifestResponse.Manifest, []byte(artifact.Content))
+	content := []byte(artifact.Content)
+	if artifact.Patch != nil {
+		content, err = s.readVerifiedPatchBlob(companyID, artifact.Digest)
+		if err != nil {
+			return ArtifactDeliveryPackage{}, err
+		}
+	}
+	packaged, err := buildArtifactDeliveryPackage(manifestResponse.Manifest, content)
 	if err != nil {
 		return ArtifactDeliveryPackage{}, core.Integrity
 	}
