@@ -1,0 +1,3 @@
+# polis/internal/control
+# [polis/internal/control]
+vet: internal/control/real_provider_worker_test.go:10:2: "os" imported and not used

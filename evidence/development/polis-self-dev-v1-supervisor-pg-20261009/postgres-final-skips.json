@@ -1,0 +1,51 @@
+﻿[
+    {
+        "package":  "polis/internal/browser",
+        "test":  "TestPlaywrightRunnerWindowsChromeLoopbackTLSFixture",
+        "result":  "skip",
+        "elapsed":  0,
+        "skip_reason":  "=== RUN   TestPlaywrightRunnerWindowsChromeLoopbackTLSFixture\n    playwright_runner_test.go:56: requires the authorized Windows Chrome qualification host\n--- SKIP: TestPlaywrightRunnerWindowsChromeLoopbackTLSFixture (0.00s)"
+    },
+    {
+        "package":  "polis/internal/codex",
+        "test":  "TestNativeDynamicCallbackWithScriptedProvider",
+        "result":  "skip",
+        "elapsed":  0,
+        "skip_reason":  "=== RUN   TestNativeDynamicCallbackWithScriptedProvider\n    native_callback_test.go:24: pinned native binary required\n--- SKIP: TestNativeDynamicCallbackWithScriptedProvider (0.00s)"
+    },
+    {
+        "package":  "polis/internal/codex",
+        "test":  "TestR03AT10Codex1534NativeCompatibilityWithoutProvider",
+        "result":  "skip",
+        "elapsed":  0,
+        "skip_reason":  "=== RUN   TestR03AT10Codex1534NativeCompatibilityWithoutProvider\n    native_t10_test.go:25: independent 0.153.4 Linux binary required\n--- SKIP: TestR03AT10Codex1534NativeCompatibilityWithoutProvider (0.00s)"
+    },
+    {
+        "package":  "polis/internal/codex",
+        "test":  "TestNativeProtocolWithoutInference",
+        "result":  "skip",
+        "elapsed":  0,
+        "skip_reason":  "=== RUN   TestNativeProtocolWithoutInference\n    native_test.go:16: pinned native binary required\n--- SKIP: TestNativeProtocolWithoutInference (0.00s)"
+    },
+    {
+        "package":  "polis/internal/probe",
+        "test":  "TestReviewerPreflightAgainstPersistedR02Evidence",
+        "result":  "skip",
+        "elapsed":  0,
+        "skip_reason":  "=== RUN   TestReviewerPreflightAgainstPersistedR02Evidence\n    r02_h2_test.go:22: POLIS_R02_EVIDENCE required\n--- SKIP: TestReviewerPreflightAgainstPersistedR02Evidence (0.00s)"
+    },
+    {
+        "package":  "polis/internal/probe",
+        "test":  "TestLoadRecoveredRealEvidenceFixture",
+        "result":  "skip",
+        "elapsed":  0,
+        "skip_reason":  "=== RUN   TestLoadRecoveredRealEvidenceFixture\n    r02_recovery_test.go:113: POLIS_R02_EVIDENCE required\n--- SKIP: TestLoadRecoveredRealEvidenceFixture (0.00s)"
+    },
+    {
+        "package":  "polis/internal/provider",
+        "test":  "TestCurrentControlledProviderRuntimeIdentity",
+        "result":  "skip",
+        "elapsed":  0,
+        "skip_reason":  "=== RUN   TestCurrentControlledProviderRuntimeIdentity\n    runtime_binding_test.go:145: set POLIS_R05B11_RUNTIME_MANIFEST for the local controlled-runtime identity probe\n--- SKIP: TestCurrentControlledProviderRuntimeIdentity (0.00s)"
+    }
+]

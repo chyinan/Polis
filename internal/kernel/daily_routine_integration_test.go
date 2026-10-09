@@ -342,11 +342,11 @@ func TestLegacyRoutineWithoutInstructionWaitsThenDeliversOnceSupplemented(t *tes
 }
 
 func TestRoutineMaterializationRollsBackTaskAndManifestWhenOccurrenceInsertFails(t *testing.T) {
+	k, scope, fixture := newDailyRoutineEnv(t)
 	adminDSN := os.Getenv("POLIS_TEST_ADMIN_DSN")
 	if adminDSN == "" {
 		t.Skip("dedicated PostgreSQL admin connection required for failure injection")
 	}
-	k, scope, fixture := newDailyRoutineEnv(t)
 	ctx := context.Background()
 	admin, err := pgxpool.New(ctx, adminDSN)
 	must(t, err)
@@ -376,8 +376,8 @@ $$`); err != nil {
 	}
 	materializationRequestID := "routine-atomic-materialize-" + newID()
 	_, err = k.TXMaterializeDailyRoutine(ctx, scope, routineID, time.Date(2026, time.September, 30, 10, 0, 0, 0, time.UTC), materializationRequestID)
-	if err == nil {
-		t.Fatal("forced occurrence insert failure was ignored")
+	if err == nil || !strings.Contains(err.Error(), "forced Routine occurrence insertion failure") {
+		t.Fatalf("did not observe the injected occurrence insertion failure: %v", err)
 	}
 	var materializations, occurrences, tasks, manifests, workspaces int
 	queries := []struct {

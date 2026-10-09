@@ -1,0 +1,737 @@
+2026-10-09 00:19:15.048 CST [18302] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-09 00:19:15.052 CST [18302] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.B3O5U0/socket/.s.PGSQL.5432"
+2026-10-09 00:19:15.065 CST [18308] LOG:  database system was shut down at 2026-10-09 00:19:14 CST
+2026-10-09 00:19:15.074 CST [18302] LOG:  database system is ready to accept connections
+2026-10-09 00:19:29.758 CST [18485] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-09 00:19:29.758 CST [18485] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-09 00:19:30.875 CST [18503] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-09 00:19:30.875 CST [18503] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-09 00:20:43.484 CST [19309] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:43.484 CST [19309] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:43.490 CST [19310] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:43.490 CST [19310] STATEMENT:  DROP DATABASE "polis_r0_case_48e6ea098b3c7aedb4d10b02" WITH (FORCE)
+2026-10-09 00:20:43.674 CST [19315] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:43.674 CST [19315] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:43.677 CST [19316] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:43.677 CST [19316] STATEMENT:  DROP DATABASE "polis_r0_case_263d3ec7a0c6d7fd248447e0" WITH (FORCE)
+2026-10-09 00:20:43.882 CST [19319] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:43.882 CST [19319] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:43.887 CST [19320] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:43.887 CST [19320] STATEMENT:  DROP DATABASE "polis_r0_case_ebc6bf0b2660d1500f92ed53" WITH (FORCE)
+2026-10-09 00:20:44.086 CST [19323] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:44.086 CST [19323] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:44.090 CST [19324] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:44.090 CST [19324] STATEMENT:  DROP DATABASE "polis_r0_case_b427b789af9fe65ba6b9dc44" WITH (FORCE)
+2026-10-09 00:20:44.325 CST [19327] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:44.325 CST [19327] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:44.329 CST [19328] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:44.329 CST [19328] STATEMENT:  DROP DATABASE "polis_r0_case_8a3c16c7b23859adb18a648a" WITH (FORCE)
+2026-10-09 00:20:44.625 CST [19331] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:44.625 CST [19331] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:44.630 CST [19332] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:44.630 CST [19332] STATEMENT:  DROP DATABASE "polis_r0_case_8df62762c41699bf023356eb" WITH (FORCE)
+2026-10-09 00:20:44.993 CST [19335] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:44.993 CST [19335] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:44.997 CST [19336] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:44.997 CST [19336] STATEMENT:  DROP DATABASE "polis_r0_case_c980d3f28450ac196ef196e0" WITH (FORCE)
+2026-10-09 00:20:45.510 CST [19340] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:45.510 CST [19340] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:45.515 CST [19341] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:45.515 CST [19341] STATEMENT:  DROP DATABASE "polis_r0_case_2301229a01accaaa2c8dc4ce" WITH (FORCE)
+2026-10-09 00:20:45.965 CST [19344] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:45.965 CST [19344] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:45.969 CST [19345] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:45.969 CST [19345] STATEMENT:  DROP DATABASE "polis_r0_case_c7ab79824477cc310a79eaa8" WITH (FORCE)
+2026-10-09 00:20:46.330 CST [19348] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:46.330 CST [19348] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:46.334 CST [19349] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:46.334 CST [19349] STATEMENT:  DROP DATABASE "polis_r0_case_445b42c26660f85fe4c7fb60" WITH (FORCE)
+2026-10-09 00:20:46.731 CST [19352] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:46.731 CST [19352] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:46.735 CST [19353] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:46.735 CST [19353] STATEMENT:  DROP DATABASE "polis_r0_case_2976bfbf2a1a82095426b94a" WITH (FORCE)
+2026-10-09 00:20:47.146 CST [19356] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:47.146 CST [19356] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:47.151 CST [19357] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:47.151 CST [19357] STATEMENT:  DROP DATABASE "polis_r0_case_a61d6764762e42506a8173b0" WITH (FORCE)
+2026-10-09 00:20:47.544 CST [19360] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:47.544 CST [19360] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:47.549 CST [19361] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:47.549 CST [19361] STATEMENT:  DROP DATABASE "polis_r0_case_8490e52ef40c3ae417b24943" WITH (FORCE)
+2026-10-09 00:20:47.925 CST [19364] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:47.925 CST [19364] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:47.929 CST [19365] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:47.929 CST [19365] STATEMENT:  DROP DATABASE "polis_r0_case_9e2db26682af0a38777a0d72" WITH (FORCE)
+2026-10-09 00:20:48.976 CST [19372] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:48.976 CST [19372] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:48.980 CST [19373] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:48.980 CST [19373] STATEMENT:  DROP DATABASE "polis_r0_case_579f9fb11e59acff38818094" WITH (FORCE)
+2026-10-09 00:20:49.376 CST [19376] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:49.376 CST [19376] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:49.382 CST [19377] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:49.382 CST [19377] STATEMENT:  DROP DATABASE "polis_r0_case_89772622134257af77710bb9" WITH (FORCE)
+2026-10-09 00:20:49.806 CST [19380] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:49.806 CST [19380] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:49.810 CST [19381] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:49.810 CST [19381] STATEMENT:  DROP DATABASE "polis_r0_case_3b609756d20e68b3bcac6308" WITH (FORCE)
+2026-10-09 00:20:50.601 CST [19384] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:50.601 CST [19384] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:50.604 CST [19385] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:50.604 CST [19385] STATEMENT:  DROP DATABASE "polis_r0_case_aca65874f0a3c0565b372b15" WITH (FORCE)
+2026-10-09 00:20:51.079 CST [19388] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:51.079 CST [19388] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:51.082 CST [19389] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:51.082 CST [19389] STATEMENT:  DROP DATABASE "polis_r0_case_b05cd807a69f8f0e691aa36d" WITH (FORCE)
+2026-10-09 00:20:51.525 CST [19392] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:51.525 CST [19392] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:51.529 CST [19393] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:51.529 CST [19393] STATEMENT:  DROP DATABASE "polis_r0_case_e067354917cd161d2895a0db" WITH (FORCE)
+2026-10-09 00:20:52.047 CST [19396] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:52.047 CST [19396] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:52.052 CST [19397] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:52.052 CST [19397] STATEMENT:  DROP DATABASE "polis_r0_case_2785c17f427c1fd297f35e0d" WITH (FORCE)
+2026-10-09 00:20:52.525 CST [19400] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:52.525 CST [19400] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:52.529 CST [19401] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:52.529 CST [19401] STATEMENT:  DROP DATABASE "polis_r0_case_6feef9cb22cd654db5442593" WITH (FORCE)
+2026-10-09 00:20:53.004 CST [19404] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:53.004 CST [19404] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:53.009 CST [19405] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:53.009 CST [19405] STATEMENT:  DROP DATABASE "polis_r0_case_53056ea154345391f57fd71a" WITH (FORCE)
+2026-10-09 00:19:46.824 CST [19408] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:19:46.824 CST [19408] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:19:46.827 CST [19410] ERROR:  cannot drop the currently open database
+2026-10-09 00:19:46.827 CST [19410] STATEMENT:  DROP DATABASE "polis_r0_case_e7a5239749f0f7eb148a8188" WITH (FORCE)
+2026-10-09 00:20:54.471 CST [19413] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:54.471 CST [19413] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:54.475 CST [19414] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:54.475 CST [19414] STATEMENT:  DROP DATABASE "polis_r0_case_7327f7c5de865a1d257ba5bf" WITH (FORCE)
+2026-10-09 00:20:54.990 CST [19417] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:54.990 CST [19417] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:54.994 CST [19418] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:54.994 CST [19418] STATEMENT:  DROP DATABASE "polis_r0_case_8aed5fb1be4d383465f7f961" WITH (FORCE)
+2026-10-09 00:20:55.541 CST [19421] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:55.541 CST [19421] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:55.545 CST [19422] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:55.545 CST [19422] STATEMENT:  DROP DATABASE "polis_r0_case_026c63bfdda315847c05e624" WITH (FORCE)
+2026-10-09 00:20:56.133 CST [19425] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:56.133 CST [19425] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:56.137 CST [19426] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:56.137 CST [19426] STATEMENT:  DROP DATABASE "polis_r0_case_78bcee91d739748c0ac96c69" WITH (FORCE)
+2026-10-09 00:20:56.698 CST [19429] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:56.698 CST [19429] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:56.702 CST [19431] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:56.702 CST [19431] STATEMENT:  DROP DATABASE "polis_r0_case_fe216bb7459e051102fec6fa" WITH (FORCE)
+2026-10-09 00:20:57.295 CST [19434] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:57.295 CST [19434] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:57.299 CST [19435] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:57.299 CST [19435] STATEMENT:  DROP DATABASE "polis_r0_case_217d55ebefbcd6bb02be1d9d" WITH (FORCE)
+2026-10-09 00:20:57.884 CST [19439] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:57.884 CST [19439] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:57.888 CST [19440] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:57.888 CST [19440] STATEMENT:  DROP DATABASE "polis_r0_case_581eb9de843e9bc27428c0e8" WITH (FORCE)
+2026-10-09 00:20:58.497 CST [19443] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:58.497 CST [19443] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:58.501 CST [19444] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:58.501 CST [19444] STATEMENT:  DROP DATABASE "polis_r0_case_a5ef377943f8c39bfada295e" WITH (FORCE)
+2026-10-09 00:20:59.133 CST [19447] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:59.133 CST [19447] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:59.137 CST [19448] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:59.137 CST [19448] STATEMENT:  DROP DATABASE "polis_r0_case_6e5d91c5b3a26e29845e55a7" WITH (FORCE)
+2026-10-09 00:20:59.777 CST [19451] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:20:59.777 CST [19451] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:20:59.780 CST [19452] ERROR:  cannot drop the currently open database
+2026-10-09 00:20:59.780 CST [19452] STATEMENT:  DROP DATABASE "polis_r0_case_56a4907f58316e75c56ea08e" WITH (FORCE)
+2026-10-09 00:21:00.418 CST [19455] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:00.418 CST [19455] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:00.423 CST [19456] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:00.423 CST [19456] STATEMENT:  DROP DATABASE "polis_r0_case_8416fa7524c9805856d4f344" WITH (FORCE)
+2026-10-09 00:21:01.085 CST [19459] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:01.085 CST [19459] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:01.089 CST [19460] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:01.089 CST [19460] STATEMENT:  DROP DATABASE "polis_r0_case_312dc0d4c5f93e71d6f1f531" WITH (FORCE)
+2026-10-09 00:21:01.788 CST [19463] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:01.788 CST [19463] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:01.792 CST [19464] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:01.792 CST [19464] STATEMENT:  DROP DATABASE "polis_r0_case_5461ebfd4f69ebbb8ca5f922" WITH (FORCE)
+2026-10-09 00:21:02.512 CST [19467] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:02.512 CST [19467] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:02.517 CST [19468] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:02.517 CST [19468] STATEMENT:  DROP DATABASE "polis_r0_case_1c5ea5ccd437f0176328e471" WITH (FORCE)
+2026-10-09 00:21:03.248 CST [19471] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:03.248 CST [19471] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:03.254 CST [19472] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:03.254 CST [19472] STATEMENT:  DROP DATABASE "polis_r0_case_54ac6e911ce812b083a0253c" WITH (FORCE)
+2026-10-09 00:21:03.997 CST [19475] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:03.997 CST [19475] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:04.001 CST [19476] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:04.001 CST [19476] STATEMENT:  DROP DATABASE "polis_r0_case_a10d827a5f4aa947bae11bb2" WITH (FORCE)
+2026-10-09 00:21:04.774 CST [19479] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:04.774 CST [19479] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:04.779 CST [19480] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:04.779 CST [19480] STATEMENT:  DROP DATABASE "polis_r0_case_505d5f7c38e4176480709d42" WITH (FORCE)
+2026-10-09 00:21:05.627 CST [19483] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:05.627 CST [19483] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:05.631 CST [19484] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:05.631 CST [19484] STATEMENT:  DROP DATABASE "polis_r0_case_edc4ea8c9601ad3bb570ece3" WITH (FORCE)
+2026-10-09 00:21:06.498 CST [19487] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:06.498 CST [19487] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:06.501 CST [19488] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:06.501 CST [19488] STATEMENT:  DROP DATABASE "polis_r0_case_54d9fb5cd82890d9f13368ae" WITH (FORCE)
+2026-10-09 00:21:07.310 CST [19491] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:07.310 CST [19491] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:07.314 CST [19492] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:07.314 CST [19492] STATEMENT:  DROP DATABASE "polis_r0_case_24b6ead30b07da0692f8c047" WITH (FORCE)
+2026-10-09 00:21:08.117 CST [19495] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:08.117 CST [19495] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:08.121 CST [19496] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:08.121 CST [19496] STATEMENT:  DROP DATABASE "polis_r0_case_70c643583eefd79ec9a0d8c4" WITH (FORCE)
+2026-10-09 00:21:08.941 CST [19499] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:08.941 CST [19499] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:08.946 CST [19500] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:08.946 CST [19500] STATEMENT:  DROP DATABASE "polis_r0_case_06c18131f5795060adcd0fa2" WITH (FORCE)
+2026-10-09 00:21:09.794 CST [19503] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:09.794 CST [19503] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:09.798 CST [19504] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:09.798 CST [19504] STATEMENT:  DROP DATABASE "polis_r0_case_e144a30a014a29c53abf1fab" WITH (FORCE)
+2026-10-09 00:21:10.634 CST [19507] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:10.634 CST [19507] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:10.638 CST [19508] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:10.638 CST [19508] STATEMENT:  DROP DATABASE "polis_r0_case_2ae1520e520c7ef2674ca1f7" WITH (FORCE)
+2026-10-09 00:21:11.534 CST [19511] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:11.534 CST [19511] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:11.538 CST [19512] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:11.538 CST [19512] STATEMENT:  DROP DATABASE "polis_r0_case_cce4b75a30b859435ebfc7a7" WITH (FORCE)
+2026-10-09 00:21:12.427 CST [19515] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:12.427 CST [19515] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:12.431 CST [19516] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:12.431 CST [19516] STATEMENT:  DROP DATABASE "polis_r0_case_ef49f5279de8167291bebfd9" WITH (FORCE)
+2026-10-09 00:21:13.337 CST [19519] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:13.337 CST [19519] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:13.341 CST [19520] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:13.341 CST [19520] STATEMENT:  DROP DATABASE "polis_r0_case_4f7c251c9b2cce1b71c23b35" WITH (FORCE)
+2026-10-09 00:21:13.501 CST [18306] LOG:  checkpoint starting: wal
+2026-10-09 00:21:14.345 CST [19523] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:14.345 CST [19523] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:14.351 CST [19524] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:14.351 CST [19524] STATEMENT:  DROP DATABASE "polis_r0_case_b0086deb65815a43dea838de" WITH (FORCE)
+2026-10-09 00:21:35.101 CST [19880] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:35.101 CST [19880] STATEMENT:  DROP DATABASE "polis_r0_case_904c03a14a65c60e02146575" WITH (FORCE)
+2026-10-09 00:21:36.026 CST [19885] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:36.026 CST [19885] STATEMENT:  DROP DATABASE "polis_r0_case_349fc5199a3e42bb01b54b1b" WITH (FORCE)
+2026-10-09 00:21:37.697 CST [19890] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:37.697 CST [19890] STATEMENT:  DROP DATABASE "polis_r0_case_3855fbf9e63caad7efcbd106" WITH (FORCE)
+2026-10-09 00:21:38.626 CST [19895] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:38.626 CST [19895] STATEMENT:  DROP DATABASE "polis_r0_case_910fb184308f2049020a86f2" WITH (FORCE)
+2026-10-09 00:21:39.616 CST [19898] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:39.616 CST [19898] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:39.621 CST [19900] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:39.621 CST [19900] STATEMENT:  DROP DATABASE "polis_r0_case_01d4178c905eaf2035937a14" WITH (FORCE)
+2026-10-09 00:21:40.740 CST [19903] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:40.740 CST [19903] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:40.744 CST [19905] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:40.744 CST [19905] STATEMENT:  DROP DATABASE "polis_r0_case_bcfaebd18650f5c87bd831e5" WITH (FORCE)
+2026-10-09 00:21:41.722 CST [19908] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:41.722 CST [19908] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:41.726 CST [19910] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:41.726 CST [19910] STATEMENT:  DROP DATABASE "polis_r0_case_7e8a0920f7e40eb36f8c5328" WITH (FORCE)
+2026-10-09 00:21:42.842 CST [19914] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:42.842 CST [19914] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:42.846 CST [19916] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:42.846 CST [19916] STATEMENT:  DROP DATABASE "polis_r0_case_6205eedac7a1d7ca1676ea2b" WITH (FORCE)
+2026-10-09 00:21:42.850 CST [19917] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:42.850 CST [19917] STATEMENT:  DROP DATABASE "polis_r0_case_cbd3778974cb14adbbb93817" WITH (FORCE)
+2026-10-09 00:21:43.891 CST [19920] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:43.891 CST [19920] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:43.895 CST [19922] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:43.895 CST [19922] STATEMENT:  DROP DATABASE "polis_r0_case_f88696f90a70ca26d7bd61c8" WITH (FORCE)
+2026-10-09 00:21:45.036 CST [19926] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:45.036 CST [19926] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:45.040 CST [19928] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:45.040 CST [19928] STATEMENT:  DROP DATABASE "polis_r0_case_0add45ec12037ab256f8eb5c" WITH (FORCE)
+2026-10-09 00:21:45.043 CST [19929] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:45.043 CST [19929] STATEMENT:  DROP DATABASE "polis_r0_case_bdab50e677131e5da8c2c45f" WITH (FORCE)
+2026-10-09 00:21:46.128 CST [19933] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:46.128 CST [19933] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:46.132 CST [19935] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:46.132 CST [19935] STATEMENT:  DROP DATABASE "polis_r0_case_a5e611d22613aca925152db3" WITH (FORCE)
+2026-10-09 00:21:46.135 CST [19936] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:46.135 CST [19936] STATEMENT:  DROP DATABASE "polis_r0_case_fdd33c28cb1983404571f5ec" WITH (FORCE)
+2026-10-09 00:21:47.169 CST [19940] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:21:47.169 CST [19940] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:21:47.173 CST [19942] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:47.173 CST [19942] STATEMENT:  DROP DATABASE "polis_r0_case_ee036ec859840e6f1db06b39" WITH (FORCE)
+2026-10-09 00:21:47.175 CST [19943] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:47.175 CST [19943] STATEMENT:  DROP DATABASE "polis_r0_case_61ce7844ddc6beb24a3d85bb" WITH (FORCE)
+2026-10-09 00:21:48.233 CST [19948] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:48.233 CST [19948] STATEMENT:  DROP DATABASE "polis_r0_case_e5fa73b4895babf4e013cec9" WITH (FORCE)
+2026-10-09 00:21:49.284 CST [19953] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:49.284 CST [19953] STATEMENT:  DROP DATABASE "polis_r0_case_fc29a2036cc5ce23039676ae" WITH (FORCE)
+2026-10-09 00:21:50.238 CST [19958] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:50.238 CST [19958] STATEMENT:  DROP DATABASE "polis_r0_case_ce73e3b5438c0ce7ecd20dee" WITH (FORCE)
+2026-10-09 00:21:51.218 CST [19963] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:51.218 CST [19963] STATEMENT:  DROP DATABASE "polis_r0_case_da5368fdd6379a5195e2ec8c" WITH (FORCE)
+2026-10-09 00:21:52.201 CST [19968] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:52.201 CST [19968] STATEMENT:  DROP DATABASE "polis_r0_case_8b8b5e861f5f26359f63b110" WITH (FORCE)
+2026-10-09 00:21:53.165 CST [19973] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:53.165 CST [19973] STATEMENT:  DROP DATABASE "polis_r0_case_b09b1d87563fe883d3fe9351" WITH (FORCE)
+2026-10-09 00:21:54.133 CST [19977] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:54.133 CST [19977] STATEMENT:  DROP DATABASE "polis_r0_case_d23ec70f1820fb0e774105ae" WITH (FORCE)
+2026-10-09 00:21:56.015 CST [19983] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:56.015 CST [19983] STATEMENT:  DROP DATABASE "polis_r0_case_306d82c41ab7837518c14979" WITH (FORCE)
+2026-10-09 00:21:57.046 CST [19989] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:57.046 CST [19989] STATEMENT:  DROP DATABASE "polis_r0_case_35a14a75d8ff2c003e1c524b" WITH (FORCE)
+2026-10-09 00:21:58.103 CST [19994] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:58.103 CST [19994] STATEMENT:  DROP DATABASE "polis_r0_case_8689738bbe1dda9cea54ae02" WITH (FORCE)
+2026-10-09 00:21:59.191 CST [19999] ERROR:  cannot drop the currently open database
+2026-10-09 00:21:59.191 CST [19999] STATEMENT:  DROP DATABASE "polis_r0_case_78854090d887994cecac6a6d" WITH (FORCE)
+2026-10-09 00:22:00.241 CST [20004] ERROR:  cannot drop the currently open database
+2026-10-09 00:22:00.241 CST [20004] STATEMENT:  DROP DATABASE "polis_r0_case_bdbb5535414187df06729e1c" WITH (FORCE)
+2026-10-09 00:22:01.349 CST [20009] ERROR:  cannot drop the currently open database
+2026-10-09 00:22:01.349 CST [20009] STATEMENT:  DROP DATABASE "polis_r0_case_427e1a26aca7c75c228d782c" WITH (FORCE)
+2026-10-09 00:22:02.418 CST [20014] ERROR:  cannot drop the currently open database
+2026-10-09 00:22:02.418 CST [20014] STATEMENT:  DROP DATABASE "polis_r0_case_0bac95c0b1f0507af704eada" WITH (FORCE)
+2026-10-09 00:22:03.505 CST [20019] ERROR:  cannot drop the currently open database
+2026-10-09 00:22:03.505 CST [20019] STATEMENT:  DROP DATABASE "polis_r0_case_6b4ab36b983fb2db39eac516" WITH (FORCE)
+2026-10-09 00:22:04.598 CST [20022] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:22:04.598 CST [20022] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:22:04.602 CST [20024] ERROR:  cannot drop the currently open database
+2026-10-09 00:22:04.602 CST [20024] STATEMENT:  DROP DATABASE "polis_r0_case_a51ac0cee031875ef08f3626" WITH (FORCE)
+2026-10-09 00:22:05.698 CST [20027] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:22:05.698 CST [20027] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:22:05.703 CST [20029] ERROR:  cannot drop the currently open database
+2026-10-09 00:22:05.703 CST [20029] STATEMENT:  DROP DATABASE "polis_r0_case_66383bcc1d181a2d392174aa" WITH (FORCE)
+2026-10-09 00:22:10.712 CST [20030] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:10.712 CST [20030] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:10.712 CST [20030] STATEMENT:  CREATE DATABASE "polis_r0_case_fa862b34720ba99a707d3164" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:22:15.721 CST [20036] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:15.721 CST [20036] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:15.721 CST [20036] STATEMENT:  CREATE DATABASE "polis_r0_case_2659a41ba19a48bb9ba34b7b" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:22:20.729 CST [20043] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:20.729 CST [20043] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:20.729 CST [20043] STATEMENT:  CREATE DATABASE "polis_r0_case_03b2ac8411bd0ab1dbf1a3d9" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:21:19.268 CST [20051] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:21:19.268 CST [20051] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:21:19.268 CST [20051] STATEMENT:  CREATE DATABASE "polis_r0_case_af9ed336fdcaa661d03f17ae" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:21:24.279 CST [20061] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:21:24.279 CST [20061] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:21:24.279 CST [20061] STATEMENT:  CREATE DATABASE "polis_r0_case_00fe74adb15a43e5f7c15386" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:21:29.289 CST [20062] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:21:29.289 CST [20062] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:21:29.289 CST [20062] STATEMENT:  CREATE DATABASE "polis_r0_case_19f71faaea4125082cb07696" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:21:34.300 CST [20063] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:21:34.300 CST [20063] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:21:34.300 CST [20063] STATEMENT:  CREATE DATABASE "polis_r0_case_c0f3fccdf88246092aaa5a67" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:22:46.418 CST [20064] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:46.418 CST [20064] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:46.418 CST [20064] STATEMENT:  CREATE DATABASE "polis_r0_case_65c62ff71cf11bbea0218691" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:22:51.429 CST [20065] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:51.429 CST [20065] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:51.429 CST [20065] STATEMENT:  CREATE DATABASE "polis_r0_case_f33c7a62bb5eaa8838660e74" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:21:49.334 CST [20066] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:21:49.334 CST [20066] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:21:49.334 CST [20066] STATEMENT:  CREATE DATABASE "polis_r0_case_ceadb651a26d3ec9787556e0" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:01.449 CST [20068] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:01.449 CST [20068] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:01.449 CST [20068] STATEMENT:  CREATE DATABASE "polis_r0_case_d51d9a6a09f9e6fd6baa5a80" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:06.459 CST [20069] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:06.459 CST [20069] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:06.459 CST [20069] STATEMENT:  CREATE DATABASE "polis_r0_case_afe517e3d602592c54a5903e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:11.467 CST [20070] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:11.467 CST [20070] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:11.467 CST [20070] STATEMENT:  CREATE DATABASE "polis_r0_case_0cee54ef7aae8ec90965d6f7" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:16.476 CST [20071] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:16.476 CST [20071] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:16.476 CST [20071] STATEMENT:  CREATE DATABASE "polis_r0_case_293a4b8b6d25ca6b70b1a3ff" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:21.481 CST [20072] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:21.481 CST [20072] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:21.481 CST [20072] STATEMENT:  CREATE DATABASE "polis_r0_case_1ff5256260ed3dc470178e3f" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:22:20.372 CST [20073] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:20.372 CST [20073] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:20.372 CST [20073] STATEMENT:  CREATE DATABASE "polis_r0_case_2ab6f0ddea426c368e6a0305" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:32.489 CST [20075] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:32.489 CST [20075] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:32.489 CST [20075] STATEMENT:  CREATE DATABASE "polis_r0_case_c63f01ee24387b082fc6ef69" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:37.497 CST [20076] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:37.497 CST [20076] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:37.497 CST [20076] STATEMENT:  CREATE DATABASE "polis_r0_case_3e61c7acd7ecc4f8a2683031" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:42.507 CST [20082] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:42.507 CST [20082] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:42.507 CST [20082] STATEMENT:  CREATE DATABASE "polis_r0_case_cfb887ed3f0018c285a56f33" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:47.516 CST [20090] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:47.516 CST [20090] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:47.516 CST [20090] STATEMENT:  CREATE DATABASE "polis_r0_case_b4c56bb4b3865bc31122adcf" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:47.519 CST [20093] FATAL:  terminating autovacuum process due to administrator command
+2026-10-09 00:23:47.519 CST [20093] CONTEXT:  while scanning block 19 of relation "public.employees"
+2026-10-09 00:23:52.522 CST [20099] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:52.522 CST [20099] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:52.522 CST [20099] STATEMENT:  CREATE DATABASE "polis_r0_case_1e413b743407e7261090673e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:22:51.236 CST [20107] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:51.236 CST [20107] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:51.236 CST [20107] STATEMENT:  CREATE DATABASE "polis_r0_case_3f630f3d0a096151172c6d8f" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:22:56.245 CST [20116] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:22:56.245 CST [20116] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:22:56.245 CST [20116] STATEMENT:  CREATE DATABASE "polis_r0_case_d001ddc8c1cfabd841ce5143" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:23:01.253 CST [20117] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:23:01.253 CST [20117] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:23:01.253 CST [20117] STATEMENT:  CREATE DATABASE "polis_r0_case_c88737d0578b5cb55c18b63b" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:24:24.431 CST [20261] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:24:24.431 CST [20261] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:24:24.431 CST [20261] STATEMENT:  CREATE DATABASE "polis_r0_case_b903cb89be8cd0514ce5de3e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:24:29.436 CST [20262] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:24:29.436 CST [20262] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:24:29.436 CST [20262] STATEMENT:  CREATE DATABASE "polis_r0_case_c256ac27a42a2332f505ef36" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:24:34.445 CST [20264] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:24:34.445 CST [20264] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:24:34.445 CST [20264] STATEMENT:  CREATE DATABASE "polis_r0_case_c1e26744fe0dc0e471e3c18b" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:24:39.455 CST [20265] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:24:39.455 CST [20265] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:24:39.455 CST [20265] STATEMENT:  CREATE DATABASE "polis_r0_case_72483fc601406c1ea256a40e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:24:44.466 CST [20266] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:24:44.466 CST [20266] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:24:44.466 CST [20266] STATEMENT:  CREATE DATABASE "polis_r0_case_f02e7ed557748e3880c8022e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:24:49.472 CST [20267] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:24:49.472 CST [20267] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:24:49.472 CST [20267] STATEMENT:  CREATE DATABASE "polis_r0_case_73fc2a77fc41dcb80ca67037" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:24:54.476 CST [20268] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:24:54.476 CST [20268] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:24:54.476 CST [20268] STATEMENT:  CREATE DATABASE "polis_r0_case_c1210d8f7e9e113d3a66e061" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:00.659 CST [20269] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:00.659 CST [20269] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:00.659 CST [20269] STATEMENT:  CREATE DATABASE "polis_r0_case_057874a547b5a4921278703a" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:05.667 CST [20271] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:05.667 CST [20271] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:05.667 CST [20271] STATEMENT:  CREATE DATABASE "polis_r0_case_a9a1c46e7e54b72671865459" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:10.681 CST [20272] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:10.681 CST [20272] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:10.681 CST [20272] STATEMENT:  CREATE DATABASE "polis_r0_case_abe1c18ea52ecdbc575400f1" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:15.689 CST [20280] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:15.689 CST [20280] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:15.689 CST [20280] STATEMENT:  CREATE DATABASE "polis_r0_case_26da932666d922389b41bc83" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:20.696 CST [20289] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:20.696 CST [20289] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:20.696 CST [20289] STATEMENT:  CREATE DATABASE "polis_r0_case_0fff19384a5181844e968d0c" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:25.702 CST [20297] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:25.702 CST [20297] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:25.702 CST [20297] STATEMENT:  CREATE DATABASE "polis_r0_case_f4375105b6923bff7d8b85da" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:31.705 CST [20305] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:31.705 CST [20305] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:31.705 CST [20305] STATEMENT:  CREATE DATABASE "polis_r0_case_952fd52d674c64a41fdba3ea" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:36.712 CST [20346] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:36.712 CST [20346] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:36.712 CST [20346] STATEMENT:  CREATE DATABASE "polis_r0_case_6235e8a6c212e4e945468e70" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:41.718 CST [20507] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:41.718 CST [20507] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:41.718 CST [20507] STATEMENT:  CREATE DATABASE "polis_r0_case_cc03b188a06ffef6e0cab709" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:46.726 CST [20720] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:46.726 CST [20720] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:46.726 CST [20720] STATEMENT:  CREATE DATABASE "polis_r0_case_b65043677c1927fcc46886d9" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:51.734 CST [21713] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:51.734 CST [21713] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:51.734 CST [21713] STATEMENT:  CREATE DATABASE "polis_r0_case_1f198a720a9d8c3d5747c2ae" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:56.741 CST [23169] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:56.741 CST [23169] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:56.741 CST [23169] STATEMENT:  CREATE DATABASE "polis_r0_case_d5f2f8120fc996a9c90db6cd" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:25:56.744 CST [23235] FATAL:  terminating autovacuum process due to administrator command
+2026-10-09 00:25:56.744 CST [23235] CONTEXT:  while vacuuming block 4 of relation "public.employees"
+2026-10-09 00:26:04.469 CST [23311] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:04.469 CST [23311] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:04.469 CST [23311] STATEMENT:  CREATE DATABASE "polis_r0_case_80f391c5a1bcff8e6a62543e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:05.829 CST [18306] LOG:  checkpoint complete: wrote 1928 buffers (11.8%), wrote 6 SLRU buffers; 0 WAL file(s) added, 0 removed, 33 recycled; write=269.473 s, sync=22.764 s, total=292.328 s; sync files=110059, longest=0.014 s, average=0.001 s; distance=536618 kB, estimate=536618 kB; lsn=0/3867DF98, redo lsn=0/22360E00
+2026-10-09 00:26:09.476 CST [23369] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:09.476 CST [23369] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:09.476 CST [23369] STATEMENT:  CREATE DATABASE "polis_r0_case_80188467020271a14175299e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:14.486 CST [23420] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:14.486 CST [23420] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:14.486 CST [23420] STATEMENT:  CREATE DATABASE "polis_r0_case_ff0edfc580222a7b4fdd3c89" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:19.496 CST [23429] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:19.496 CST [23429] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:19.496 CST [23429] STATEMENT:  CREATE DATABASE "polis_r0_case_fb49e5cd730b6e9dfa7d5ccf" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:24.506 CST [23440] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:24.506 CST [23440] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:24.506 CST [23440] STATEMENT:  CREATE DATABASE "polis_r0_case_d412fd33ce536d82b2d81b95" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:29.513 CST [23448] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:29.513 CST [23448] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:29.513 CST [23448] STATEMENT:  CREATE DATABASE "polis_r0_case_2805e6292adf69329b39b2b4" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:35.145 CST [23457] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:35.145 CST [23457] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:35.145 CST [23457] STATEMENT:  CREATE DATABASE "polis_r0_case_84c8ee7067cbceff48a1b92e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:40.156 CST [23467] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:40.156 CST [23467] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:40.156 CST [23467] STATEMENT:  CREATE DATABASE "polis_r0_case_a1ec644d4f30c87270017528" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:45.165 CST [23475] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:45.165 CST [23475] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:45.165 CST [23475] STATEMENT:  CREATE DATABASE "polis_r0_case_61a9a0d3a094798be89e38c4" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:50.174 CST [23484] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:50.174 CST [23484] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:50.174 CST [23484] STATEMENT:  CREATE DATABASE "polis_r0_case_7372e222c29212100572bcf7" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:55.181 CST [23492] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:55.181 CST [23492] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:55.181 CST [23492] STATEMENT:  CREATE DATABASE "polis_r0_case_7cc053b1fb8177f0b5ae3cb2" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:27:00.185 CST [23500] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:27:00.185 CST [23500] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:27:00.185 CST [23500] STATEMENT:  CREATE DATABASE "polis_r0_case_20e6c4dbd8c5ebed350cc58f" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:27:00.188 CST [23502] FATAL:  terminating autovacuum process due to administrator command
+2026-10-09 00:27:00.188 CST [23502] CONTEXT:  while vacuuming block 16 of relation "public.employees"
+2026-10-09 00:25:59.230 CST [23509] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:25:59.230 CST [23509] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:25:59.230 CST [23509] STATEMENT:  CREATE DATABASE "polis_r0_case_76e027df36b3af320551df2b" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:27:44.723 CST [23931] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:27:44.723 CST [23931] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:27:44.723 CST [23931] STATEMENT:  CREATE DATABASE "polis_r0_case_58925c9b2fd8a03f1bdb5db3" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:27:49.732 CST [23932] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:27:49.732 CST [23932] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:27:49.732 CST [23932] STATEMENT:  CREATE DATABASE "polis_r0_case_b80c5a4d25e5bdf82ef9006e" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:27:54.741 CST [23933] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:27:54.741 CST [23933] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:27:54.741 CST [23933] STATEMENT:  CREATE DATABASE "polis_r0_case_0c3a5e37f2a3b243b8d77829" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:27:59.750 CST [23934] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:27:59.750 CST [23934] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:27:59.750 CST [23934] STATEMENT:  CREATE DATABASE "polis_r0_case_a4f5ed72527326ca230e8024" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:26:58.443 CST [23985] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:26:58.443 CST [23985] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:26:58.443 CST [23985] STATEMENT:  CREATE DATABASE "polis_r0_case_ecb3ad001ba1ca238a8dd862" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:10.557 CST [24027] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:10.557 CST [24027] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:10.557 CST [24027] STATEMENT:  CREATE DATABASE "polis_r0_case_6add648ae78bc02b3494480b" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:15.567 CST [24032] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:15.567 CST [24032] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:15.567 CST [24032] STATEMENT:  CREATE DATABASE "polis_r0_case_9f32365840d82d877bc6afe5" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:20.576 CST [24038] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:20.576 CST [24038] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:20.576 CST [24038] STATEMENT:  CREATE DATABASE "polis_r0_case_dc2a318919562f10c3a796b2" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:25.585 CST [24047] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:25.585 CST [24047] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:25.585 CST [24047] STATEMENT:  CREATE DATABASE "polis_r0_case_1d2cbc5492e7d8d8d440e9bf" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:30.595 CST [24055] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:30.595 CST [24055] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:30.595 CST [24055] STATEMENT:  CREATE DATABASE "polis_r0_case_05ee98827f2676ee3e2a50f6" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:27:29.107 CST [24063] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:27:29.107 CST [24063] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:27:29.107 CST [24063] STATEMENT:  CREATE DATABASE "polis_r0_case_0e4c5dd04b41d7e384aad979" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:41.226 CST [24073] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:41.226 CST [24073] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:41.226 CST [24073] STATEMENT:  CREATE DATABASE "polis_r0_case_c9fa1bea649fffac24d55921" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:46.235 CST [24082] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:46.235 CST [24082] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:46.235 CST [24082] STATEMENT:  CREATE DATABASE "polis_r0_case_e1707a2a3765276cbe210d05" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:51.245 CST [24090] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:51.245 CST [24090] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:51.245 CST [24090] STATEMENT:  CREATE DATABASE "polis_r0_case_9e46085e2cccf451ad905027" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:56.253 CST [24099] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:56.253 CST [24099] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:56.253 CST [24099] STATEMENT:  CREATE DATABASE "polis_r0_case_f59fee8ec1bd395c2c9248ac" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:29:01.259 CST [24107] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:01.259 CST [24107] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:01.259 CST [24107] STATEMENT:  CREATE DATABASE "polis_r0_case_e73bbac884395e973aad4ec1" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:00.310 CST [24115] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:00.310 CST [24115] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:00.310 CST [24115] STATEMENT:  CREATE DATABASE "polis_r0_case_e717e4a32cbdcfab8eeabca8" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:00.313 CST [24120] FATAL:  terminating autovacuum process due to administrator command
+2026-10-09 00:29:12.429 CST [24125] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:12.429 CST [24125] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:12.429 CST [24125] STATEMENT:  CREATE DATABASE "polis_r0_case_cc0a9651634ffe6390833cec" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:29:17.439 CST [24126] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:17.439 CST [24126] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:17.439 CST [24126] STATEMENT:  CREATE DATABASE "polis_r0_case_ceabf22c720906e192d0f852" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:29:22.451 CST [24127] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:22.451 CST [24127] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:22.451 CST [24127] STATEMENT:  CREATE DATABASE "polis_r0_case_3908a226267de6deda579f5a" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:29:27.460 CST [24128] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:27.460 CST [24128] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:27.460 CST [24128] STATEMENT:  CREATE DATABASE "polis_r0_case_e9af8a9459e3759d5b092262" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:29:32.466 CST [24129] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:32.466 CST [24129] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:32.466 CST [24129] STATEMENT:  CREATE DATABASE "polis_r0_case_89cb05e9bedc5b60710ab981" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:31.337 CST [24130] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:31.337 CST [24130] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:31.337 CST [24130] STATEMENT:  CREATE DATABASE "polis_r0_case_a001fa005a11d044244db634" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:36.347 CST [24132] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:36.347 CST [24132] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:36.347 CST [24132] STATEMENT:  CREATE DATABASE "polis_r0_case_e9a1c7090dc214320f240266" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:41.357 CST [24133] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:41.357 CST [24133] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:41.357 CST [24133] STATEMENT:  CREATE DATABASE "polis_r0_case_e8047f7915aea39582121fa5" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:28:46.367 CST [24134] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:28:46.367 CST [24134] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:28:46.367 CST [24134] STATEMENT:  CREATE DATABASE "polis_r0_case_d46dbfb4c6e170147575a871" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:29:58.472 CST [24135] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:58.472 CST [24135] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:58.472 CST [24135] STATEMENT:  CREATE DATABASE "polis_r0_case_1b5210b35c4ed0520e6e9e34" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:03.482 CST [24136] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:03.482 CST [24136] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:03.482 CST [24136] STATEMENT:  CREATE DATABASE "polis_r0_case_5324d0c946e17dd14f6fbf63" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:29:01.399 CST [24137] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:29:01.399 CST [24137] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:29:01.399 CST [24137] STATEMENT:  CREATE DATABASE "polis_r0_case_c39e0d7047d3f106efd23b9c" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:13.508 CST [24139] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:13.508 CST [24139] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:13.508 CST [24139] STATEMENT:  CREATE DATABASE "polis_r0_case_a48169997fe5e2150af27d95" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:18.517 CST [24140] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:18.517 CST [24140] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:18.517 CST [24140] STATEMENT:  CREATE DATABASE "polis_r0_case_08faf0b675b2117044adbf4a" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:23.526 CST [24147] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:23.526 CST [24147] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:23.526 CST [24147] STATEMENT:  CREATE DATABASE "polis_r0_case_47b23627bc2859c4445280eb" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:28.536 CST [24155] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:28.536 CST [24155] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:28.536 CST [24155] STATEMENT:  CREATE DATABASE "polis_r0_case_c7d6ec0b8214a203bf307b5b" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:33.546 CST [24163] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:33.546 CST [24163] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:33.546 CST [24163] STATEMENT:  CREATE DATABASE "polis_r0_case_73e1a90d4fa3c682f22b9877" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:39.136 CST [24172] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:39.136 CST [24172] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:39.136 CST [24172] STATEMENT:  CREATE DATABASE "polis_r0_case_4dc546d27ae3ed48ab21fd79" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:44.145 CST [24182] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:44.145 CST [24182] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:44.145 CST [24182] STATEMENT:  CREATE DATABASE "polis_r0_case_c835178355e80b36ce86d2f4" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:49.153 CST [24192] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:49.153 CST [24192] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:49.153 CST [24192] STATEMENT:  CREATE DATABASE "polis_r0_case_d7997462003a3ddc001c3690" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:54.162 CST [24200] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:54.162 CST [24200] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:54.162 CST [24200] STATEMENT:  CREATE DATABASE "polis_r0_case_5b0472aef42132fd23ef91cb" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:59.169 CST [24208] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:59.169 CST [24208] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:59.169 CST [24208] STATEMENT:  CREATE DATABASE "polis_r0_case_3cefe7fcdfe4aadf0d2b9b06" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:31:04.175 CST [24216] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:31:04.175 CST [24216] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:31:04.175 CST [24216] STATEMENT:  CREATE DATABASE "polis_r0_case_3038f10646674a99fa4cfd2b" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:31:10.310 CST [24225] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:31:10.310 CST [24225] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:31:10.310 CST [24225] STATEMENT:  CREATE DATABASE "polis_r0_case_ca7903084483af27f8776850" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:31:15.319 CST [24234] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:31:15.319 CST [24234] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:31:15.319 CST [24234] STATEMENT:  CREATE DATABASE "polis_r0_case_979330d00ebbdf476b0870f2" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:31:15.322 CST [24239] FATAL:  terminating autovacuum process due to administrator command
+2026-10-09 00:31:20.328 CST [24243] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:31:20.328 CST [24243] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:31:20.328 CST [24243] STATEMENT:  CREATE DATABASE "polis_r0_case_28acb5ba0efb8d645ee935f6" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:31:20.953 CST [18306] LOG:  checkpoint starting: time
+2026-10-09 00:31:25.337 CST [24251] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:31:25.337 CST [24251] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:31:25.337 CST [24251] STATEMENT:  CREATE DATABASE "polis_r0_case_4f0e4a7f9578922b4ba37ccb" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:31:30.346 CST [24259] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:31:30.346 CST [24259] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:31:30.346 CST [24259] STATEMENT:  CREATE DATABASE "polis_r0_case_d6c4a66ec98505bf54842927" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:31:35.351 CST [24268] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:31:35.351 CST [24268] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:31:35.351 CST [24268] STATEMENT:  CREATE DATABASE "polis_r0_case_64aabcaf7406202402f911a5" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:34.214 CST [24276] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:34.214 CST [24276] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:34.214 CST [24276] STATEMENT:  CREATE DATABASE "polis_r0_case_d6dd1edb8e6204ed4fa9be22" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:39.223 CST [24285] ERROR:  source database "polis_r0_self_dev_go_1791476353_18244" is being accessed by other users
+2026-10-09 00:30:39.223 CST [24285] DETAIL:  There are 2 other sessions using the database.
+2026-10-09 00:30:39.223 CST [24285] STATEMENT:  CREATE DATABASE "polis_r0_case_0aeed4cd7d8ef0522ab241cd" TEMPLATE "polis_r0_self_dev_go_1791476353_18244"
+2026-10-09 00:30:43.017 CST [24286] LOG:  could not send data to client: Broken pipe
+2026-10-09 00:30:43.017 CST [24286] FATAL:  connection to client lost
+2026-10-09 00:31:34.684 CST [28565] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:31:34.684 CST [28565] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:31:34.688 CST [28567] ERROR:  cannot drop the currently open database
+2026-10-09 00:31:34.688 CST [28567] STATEMENT:  DROP DATABASE "polis_r0_case_7228d8255445cc7889367dad" WITH (FORCE)
+2026-10-09 00:32:42.534 CST [28570] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:42.534 CST [28570] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:42.538 CST [28571] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:42.538 CST [28571] STATEMENT:  DROP DATABASE "polis_r0_case_e2f4416bbbf1e001ac8b5ed3" WITH (FORCE)
+2026-10-09 00:32:43.300 CST [28574] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:43.300 CST [28574] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:43.303 CST [28576] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:43.303 CST [28576] STATEMENT:  DROP DATABASE "polis_r0_case_ac7c3404d8dd765c0bbc99ee" WITH (FORCE)
+2026-10-09 00:32:44.040 CST [28579] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:44.040 CST [28579] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:44.044 CST [28580] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:44.044 CST [28580] STATEMENT:  DROP DATABASE "polis_r0_case_8fa1c2c4e14e915cf497a4e6" WITH (FORCE)
+2026-10-09 00:32:44.821 CST [28583] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:44.821 CST [28583] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:44.824 CST [28584] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:44.824 CST [28584] STATEMENT:  DROP DATABASE "polis_r0_case_fcaadcca6b88f61b866ac7f0" WITH (FORCE)
+2026-10-09 00:32:45.604 CST [28587] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:45.604 CST [28587] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:45.608 CST [28588] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:45.608 CST [28588] STATEMENT:  DROP DATABASE "polis_r0_case_62c8a661bba7b8c786f6fd4b" WITH (FORCE)
+2026-10-09 00:32:46.423 CST [28591] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:46.423 CST [28591] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:46.427 CST [28592] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:46.427 CST [28592] STATEMENT:  DROP DATABASE "polis_r0_case_dc2a7e2c40ccf89108386b1a" WITH (FORCE)
+2026-10-09 00:32:46.544 CST [28596] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:46.544 CST [28596] STATEMENT:  DROP DATABASE "polis_r0_case_915df0fff046534dc5542bf7" WITH (FORCE)
+2026-10-09 00:32:47.364 CST [28600] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:47.364 CST [28600] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:47.368 CST [28601] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:47.368 CST [28601] STATEMENT:  DROP DATABASE "polis_r0_case_6af4b8e87155638833bcf505" WITH (FORCE)
+2026-10-09 00:32:48.176 CST [28604] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:48.176 CST [28604] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:48.179 CST [28606] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:48.179 CST [28606] STATEMENT:  DROP DATABASE "polis_r0_case_e0a63a08e12b50298af00bdd" WITH (FORCE)
+2026-10-09 00:32:49.011 CST [28609] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:49.011 CST [28609] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:49.014 CST [28611] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:49.014 CST [28611] STATEMENT:  DROP DATABASE "polis_r0_case_0591dcc5908af00eb70ba3ca" WITH (FORCE)
+2026-10-09 00:32:49.857 CST [28614] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:49.857 CST [28614] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:49.861 CST [28616] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:49.861 CST [28616] STATEMENT:  DROP DATABASE "polis_r0_case_044237102e9a92651d1fb3b2" WITH (FORCE)
+2026-10-09 00:32:50.734 CST [28619] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:50.734 CST [28619] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:50.738 CST [28622] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:50.738 CST [28622] STATEMENT:  DROP DATABASE "polis_r0_case_516b9a6fab024bb2cda488e5" WITH (FORCE)
+2026-10-09 00:32:51.615 CST [28625] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:51.615 CST [28625] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:51.619 CST [28627] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:51.619 CST [28627] STATEMENT:  DROP DATABASE "polis_r0_case_aea23ba61ae8d0f0bce7c3d1" WITH (FORCE)
+2026-10-09 00:32:52.572 CST [28630] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:52.572 CST [28630] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:52.577 CST [28633] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:52.577 CST [28633] STATEMENT:  DROP DATABASE "polis_r0_case_663e6a29fd445430b1f8d6da" WITH (FORCE)
+2026-10-09 00:32:53.670 CST [28636] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:53.670 CST [28636] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:53.675 CST [28638] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:53.675 CST [28638] STATEMENT:  DROP DATABASE "polis_r0_case_310e8d4726becb42791536bc" WITH (FORCE)
+2026-10-09 00:32:54.774 CST [28642] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:54.774 CST [28642] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:54.779 CST [28644] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:54.779 CST [28644] STATEMENT:  DROP DATABASE "polis_r0_case_5e73e481bf88b6e58b5f449b" WITH (FORCE)
+2026-10-09 00:32:55.815 CST [28647] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:55.815 CST [28647] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:55.821 CST [28650] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:55.821 CST [28650] STATEMENT:  DROP DATABASE "polis_r0_case_8ff525530eb25a5fa694d188" WITH (FORCE)
+2026-10-09 00:32:56.791 CST [28653] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:56.791 CST [28653] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:56.796 CST [28656] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:56.796 CST [28656] STATEMENT:  DROP DATABASE "polis_r0_case_6914ecd4758db505590f9ef1" WITH (FORCE)
+2026-10-09 00:32:57.763 CST [28659] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:57.763 CST [28659] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:57.769 CST [28662] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:57.769 CST [28662] STATEMENT:  DROP DATABASE "polis_r0_case_ba0656516b4d6382e4131eb8" WITH (FORCE)
+2026-10-09 00:32:58.853 CST [28665] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:58.853 CST [28665] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:58.858 CST [28667] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:58.858 CST [28667] STATEMENT:  DROP DATABASE "polis_r0_case_d4ab2350db85626a132d7022" WITH (FORCE)
+2026-10-09 00:32:59.785 CST [28671] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:32:59.785 CST [28671] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:32:59.789 CST [28673] ERROR:  cannot drop the currently open database
+2026-10-09 00:32:59.789 CST [28673] STATEMENT:  DROP DATABASE "polis_r0_case_d0bfebfc73aaa39e3fcd0026" WITH (FORCE)
+2026-10-09 00:33:00.682 CST [28676] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:33:00.682 CST [28676] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:33:00.685 CST [28679] ERROR:  cannot drop the currently open database
+2026-10-09 00:33:00.685 CST [28679] STATEMENT:  DROP DATABASE "polis_r0_case_37edf2278f784be0f60ac48c" WITH (FORCE)
+2026-10-09 00:33:01.596 CST [28682] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:33:01.596 CST [28682] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:33:01.599 CST [28684] ERROR:  cannot drop the currently open database
+2026-10-09 00:33:01.599 CST [28684] STATEMENT:  DROP DATABASE "polis_r0_case_818a8f1e1a09c2d9ca92b900" WITH (FORCE)
+2026-10-09 00:33:02.515 CST [28687] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:33:02.515 CST [28687] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:33:02.518 CST [28690] ERROR:  cannot drop the currently open database
+2026-10-09 00:33:02.518 CST [28690] STATEMENT:  DROP DATABASE "polis_r0_case_33743b735099d4b6e76c54d0" WITH (FORCE)
+2026-10-09 00:33:03.460 CST [28693] ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+2026-10-09 00:33:03.460 CST [28693] STATEMENT:  SELECT incarnation FROM runtime_control WHERE singleton FOR SHARE
+2026-10-09 00:33:03.463 CST [28695] ERROR:  cannot drop the currently open database
+2026-10-09 00:33:03.463 CST [28695] STATEMENT:  DROP DATABASE "polis_r0_case_3d34f065fbecfaef0f5e9e61" WITH (FORCE)
+2026-10-09 00:33:05.708 CST [18302] LOG:  received fast shutdown request
+2026-10-09 00:33:05.711 CST [18302] LOG:  aborting any active transactions
+2026-10-09 00:33:05.713 CST [18302] LOG:  background worker "logical replication launcher" (PID 18311) exited with exit code 1
+2026-10-09 00:33:33.152 CST [18306] LOG:  checkpoint complete: wrote 950 buffers (5.8%), wrote 2 SLRU buffers; 0 WAL file(s) added, 0 removed, 22 recycled; write=104.395 s, sync=27.760 s, total=132.200 s; sync files=36227, longest=0.017 s, average=0.001 s; distance=363660 kB, estimate=519322 kB; lsn=0/4BC0C208, redo lsn=0/38684088
+2026-10-09 00:33:33.155 CST [18306] LOG:  shutting down
+2026-10-09 00:33:33.156 CST [18306] LOG:  checkpoint starting: shutdown immediate
+2026-10-09 00:33:34.032 CST [18306] LOG:  checkpoint complete: wrote 11839 buffers (72.3%), wrote 2 SLRU buffers; 0 WAL file(s) added, 0 removed, 19 recycled; write=0.156 s, sync=0.691 s, total=0.878 s; sync files=3865, longest=0.003 s, average=0.001 s; distance=316960 kB, estimate=499086 kB; lsn=0/4BC0C280, redo lsn=0/4BC0C280
+2026-10-09 00:33:34.058 CST [18302] LOG:  database system is shut down

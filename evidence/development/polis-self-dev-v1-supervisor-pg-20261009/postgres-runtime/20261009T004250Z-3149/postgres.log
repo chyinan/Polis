@@ -1,0 +1,33 @@
+2026-10-09 08:42:51.995 CST [3364] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-09 08:42:51.997 CST [3364] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.Zj1yew/socket/.s.PGSQL.5432"
+2026-10-09 08:42:52.003 CST [3370] LOG:  database system was shut down at 2026-10-09 08:42:51 CST
+2026-10-09 08:42:52.007 CST [3364] LOG:  database system is ready to accept connections
+2026-10-09 08:43:03.050 CST [3578] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-09 08:43:03.050 CST [3578] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-09 08:43:03.890 CST [3593] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-09 08:43:03.890 CST [3593] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-09 08:44:36.521 CST [5495] ERROR:  task_validation_bindings are immutable
+2026-10-09 08:44:36.521 CST [5495] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-10-09 08:44:36.521 CST [5495] STATEMENT:  UPDATE mcp_tool_call_events SET status='dispatching' WHERE company_id=$1 AND intent_id=$2
+2026-10-09 08:44:36.521 CST [5495] ERROR:  permission denied for table mcp_tool_call_intents
+2026-10-09 08:44:36.521 CST [5495] STATEMENT:  DELETE FROM mcp_tool_call_intents WHERE company_id=$1 AND intent_id=$2
+2026-10-09 08:44:36.597 CST [5495] ERROR:  task_validation_bindings are immutable
+2026-10-09 08:44:36.597 CST [5495] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-10-09 08:44:36.597 CST [5495] STATEMENT:  UPDATE mcp_runtime_qualification_records SET process_spec='{}'::jsonb WHERE company_id=$1 AND runtime_qualification_id=$2
+2026-10-09 08:44:36.598 CST [5495] ERROR:  permission denied for table mcp_runtime_qualification_events
+2026-10-09 08:44:36.598 CST [5495] STATEMENT:  DELETE FROM mcp_runtime_qualification_events WHERE company_id=$1 AND runtime_qualification_id=$2
+2026-10-09 08:44:36.602 CST [3368] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:44:36.818 CST [3368] LOG:  checkpoint complete: wrote 1794 buffers (10.9%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.012 s, sync=0.198 s, total=0.217 s; sync files=1336, longest=0.002 s, average=0.001 s; distance=24862 kB, estimate=24862 kB; lsn=0/2F9DFB8, redo lsn=0/2F9DF60
+2026-10-09 08:44:37.233 CST [3368] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:44:37.244 CST [3368] LOG:  checkpoint complete: wrote 14 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.002 s, sync=0.003 s, total=0.012 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9738 kB, estimate=23350 kB; lsn=0/3920B18, redo lsn=0/3920AC0
+2026-10-09 08:44:37.506 CST [3368] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:44:37.517 CST [3368] LOG:  checkpoint complete: wrote 10 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.002 s, sync=0.003 s, total=0.011 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9726 kB, estimate=21987 kB; lsn=0/42A0588, redo lsn=0/42A0530
+2026-10-09 08:44:37.791 CST [3368] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:44:37.801 CST [3368] LOG:  checkpoint complete: wrote 13 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.003 s, total=0.011 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9744 kB, estimate=20763 kB; lsn=0/4C24838, redo lsn=0/4C247E0
+2026-10-09 08:44:58.078 CST [3364] LOG:  received fast shutdown request
+2026-10-09 08:44:58.080 CST [3364] LOG:  aborting any active transactions
+2026-10-09 08:44:58.081 CST [3364] LOG:  background worker "logical replication launcher" (PID 3373) exited with exit code 1
+2026-10-09 08:44:58.081 CST [3368] LOG:  shutting down
+2026-10-09 08:44:58.083 CST [3368] LOG:  checkpoint starting: shutdown immediate
+2026-10-09 08:44:58.092 CST [3368] LOG:  checkpoint complete: wrote 19 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.004 s, total=0.011 s; sync files=10, longest=0.002 s, average=0.001 s; distance=150 kB, estimate=18702 kB; lsn=0/4C4A198, redo lsn=0/4C4A198
+2026-10-09 08:44:58.101 CST [3364] LOG:  database system is shut down

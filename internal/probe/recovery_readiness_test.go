@@ -124,8 +124,14 @@ func TestRecoveryReadinessUsesInstalledPostgreSQL18Clients(t *testing.T) {
 	}
 	cfg := readinessConfig()
 	cfg.Evidence = t.TempDir()
-	cfg.PostgresDumpPath = "/mnt/d/Programs/Polis/.tools/pg/usr/lib/postgresql/18/bin/pg_dump"
-	cfg.PostgresSnapshotPath = "/home/chyinan/.local/state/polis-recovery/readiness-only/no-source.dump"
+	cfg.PostgresDumpPath = os.Getenv("POLIS_PG_DUMP_PATH")
+	if cfg.PostgresDumpPath == "" {
+		t.Fatal("POLIS_PG_DUMP_PATH must identify the dedicated PG18 runtime")
+	}
+	cfg.PostgresSnapshotPath = filepath.Join(t.TempDir(), "no-source.dump")
+	cfg.PostgresSnapshotDSN = os.Getenv("POLIS_TEST_DSN")
+	// Client identity smoke only: recordR03ARecoveryReadiness neither opens a
+	// snapshot/database nor verifies the lexical recovery-root fixture.
 	if err := recordR03ARecoveryReadiness(context.Background(), cfg); err != nil {
 		t.Fatalf("installed PostgreSQL 18 readiness failed: %v", err)
 	}

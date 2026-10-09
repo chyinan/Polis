@@ -1,0 +1,120 @@
+2026-10-09 00:09:26.903 CST [11479] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-09 00:09:26.908 CST [11479] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.dKB4N5/socket/.s.PGSQL.5432"
+2026-10-09 00:09:26.921 CST [11485] LOG:  database system was shut down at 2026-10-09 00:09:26 CST
+2026-10-09 00:09:26.930 CST [11479] LOG:  database system is ready to accept connections
+2026-10-09 00:09:35.199 CST [11558] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-09 00:09:35.199 CST [11558] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-09 00:09:36.390 CST [11574] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-09 00:09:36.390 CST [11574] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-09 00:10:43.863 CST [11936] ERROR:  duplicate key value violates unique constraint "domain_workflow_content_drafts_pkey"
+2026-10-09 00:10:43.863 CST [11936] DETAIL:  Key (company_id, draft_input_id, draft_revision)=(r3-content-ops-1791475843639833849, fd5464b9f393d7ddc52f7016bfe32364, 2) already exists.
+2026-10-09 00:10:43.863 CST [11936] STATEMENT:  INSERT INTO domain_workflow_content_drafts(company_id,draft_input_id,draft_revision,draft_sha256,writer_employee_id,critical_claims,constraints_passed,request_id)
+	VALUES($1,$2,$3,$4,$5,$6::jsonb,$7,$8)
+2026-10-09 00:10:44.185 CST [11945] ERROR:  simulated publication requires an accepted post-correction review
+2026-10-09 00:10:44.185 CST [11945] CONTEXT:  PL/pgSQL function validate_domain_workflow_content_publication_correction_gate() line 10 at RAISE
+2026-10-09 00:10:44.185 CST [11945] STATEMENT:  INSERT INTO domain_workflow_content_publication_simulations(
+	company_id,publication_id,review_id,draft_input_id,draft_revision,draft_sha256,mode,external_side_effects,receipt_sha256,receipt_json,request_id)
+	VALUES($1,$2,$3,$4,$5,$6,'simulation',false,$7,$8::jsonb,$9)
+2026-10-09 00:10:50.483 CST [12003] ERROR:  new row for relation "job_runs" violates check constraint "job_runs_service_id_consistency"
+2026-10-09 00:10:50.483 CST [12003] DETAIL:  Failing row contains (project-job-1791475850311923005, project-job-service-null-id, project-job-task, project-job-session, env-9355cfc6ba706a95bc2fd4111ac149d1, service, 4b7227cc7abbb52ab170ef01123654f7ffdf88d2983694594377f28308772095, 1111111111111111111111111111111111111111111111111111111111111111, 2222222222222222222222222222222222222222222222222222222222222222, 3333333333333333333333333333333333333333333333333333333333333333, [], 30000, 65536, project-job-service-null-id, 2026-10-09 00:10:50.483159+08, null, null).
+2026-10-09 00:10:50.483 CST [12003] STATEMENT:  INSERT INTO job_runs(company_id,job_id,task_id,session_id,environment_revision_id,kind,service_id,source_revision_sha256,argv_sha256,working_directory_sha256,network_policy_sha256,environment_allowlist,timeout_ms,output_limit_bytes,request_id)
+	VALUES($1,'project-job-service-null-id',$2,$3,$4,'service',NULL,$5,$6,$7,$8,'[]'::jsonb,30000,65536,'project-job-service-null-id')
+2026-10-09 00:10:54.995 CST [12025] ERROR:  new row for relation "domain_workflow_research_simulation_runs" violates check constraint "domain_workflow_research_simulation_runs_risk_equation_check"
+2026-10-09 00:10:54.995 CST [12025] DETAIL:  Failing row contains (r3-research-run-1791475854910889688, research-simulation-run-a96af57287cea8ac5848295590c19e93-underre..., research-simulation-reference, research-simulation@1, 1, fac384808fe12a22f940a3453ff63449, 1, 9cc6617e510c576639499d7a8b31ea0f86966cd081fa638f6b9f1c87ff7fef43, bc49664ce60d418642df0eb654cdb35b, 1, 4440d116906e3e44dc2fe0b0a1535d9b9b5d0d061a0d3074bb23a3b702569db6, 42, specified control cohort, sample_draw, 1, 1, dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd, {"seed": "42", "riskUnit": "sample_draw", "algorithm": "bootstra..., r3-research-invalid-risk-accounting, 2026-10-09 00:10:54.992965+08).
+2026-10-09 00:10:54.995 CST [12025] STATEMENT:  INSERT INTO domain_workflow_research_simulation_runs(
+	company_id,run_id,profile_id,profile_revision,protocol_revision,dataset_input_id,dataset_input_revision,dataset_sha256,
+	method_input_id,method_input_revision,method_sha256,seed,control_definition,risk_unit,risk_budget_units,risk_consumed_units,
+	output_sha256,output_json,request_id)
+	SELECT company_id,run_id||'-underreported',profile_id,profile_revision,protocol_revision,dataset_input_id,dataset_input_revision,dataset_sha256,
+	method_input_id,method_input_revision,method_sha256,seed,control_definition,risk_unit,1,1,repeat('d',64),
+	jsonb_set(output_json,'{riskConsumedUnits}','1'::jsonb),'r3-research-invalid-risk-accounting'
+	FROM domain_workflow_research_simulation_runs WHERE company_id=$1 AND run_id=$2
+2026-10-09 00:11:49.639 CST [17102] ERROR:  column role.role_name does not exist at character 56
+2026-10-09 00:11:49.639 CST [17102] HINT:  Perhaps you meant to reference the column "e.role_name".
+2026-10-09 00:11:49.639 CST [17102] STATEMENT:  SELECT e.id,COALESCE(role.revision_sha256,''),COALESCE(role.role_name,''),COALESCE(role.task_types::text,'[]'),COALESCE(role.task_kinds::text,'[]'),COALESCE(role.owner_decision,''),COALESCE(role.qualification,''),e.epoch,
+	COALESCE(ws.id,''),COALESCE(ws.task_id,''),COALESCE(ws.state,''),COALESCE(ws.profile,''),
+	COALESCE(ws.epoch,e.epoch),COALESCE(ws.tool_call_limit,0),COALESCE(ws.tool_calls_used,0),
+	es.state,es.work_generation,es.checked_generation,es.next_due_at,COALESCE(es.pause_reason,'')
+	FROM employees e
+	LEFT JOIN LATERAL (
+	 SELECT revision_sha256 FROM employee_role_revisions
+	 WHERE company_id=e.company_id AND employee_id=e.id
+	 ORDER BY created_at DESC,revision_sha256 DESC LIMIT 1
+	) role ON true
+	LEFT JOIN employee_schedules es ON es.company_id=e.company_id AND es.employee_id=e.id
+	LEFT JOIN LATERAL (
+	  SELECT id,task_id,state,profile,epoch,tool_call_limit,tool_calls_used
+	  FROM worker_sessions
+	  WHERE company_id=e.company_id AND employee_id=e.id
+	  ORDER BY (state!='stopped') DESC,epoch DESC,id DESC LIMIT 1
+	) ws ON true
+	WHERE e.company_id=$1 ORDER BY e.id
+2026-10-09 00:12:59.644 CST [17111] ERROR:  column role.role_name does not exist at character 56
+2026-10-09 00:12:59.644 CST [17111] HINT:  Perhaps you meant to reference the column "e.role_name".
+2026-10-09 00:12:59.644 CST [17111] STATEMENT:  SELECT e.id,COALESCE(role.revision_sha256,''),COALESCE(role.role_name,''),COALESCE(role.task_types::text,'[]'),COALESCE(role.task_kinds::text,'[]'),COALESCE(role.owner_decision,''),COALESCE(role.qualification,''),e.epoch,
+	COALESCE(ws.id,''),COALESCE(ws.task_id,''),COALESCE(ws.state,''),COALESCE(ws.profile,''),
+	COALESCE(ws.epoch,e.epoch),COALESCE(ws.tool_call_limit,0),COALESCE(ws.tool_calls_used,0),
+	es.state,es.work_generation,es.checked_generation,es.next_due_at,COALESCE(es.pause_reason,'')
+	FROM employees e
+	LEFT JOIN LATERAL (
+	 SELECT revision_sha256 FROM employee_role_revisions
+	 WHERE company_id=e.company_id AND employee_id=e.id
+	 ORDER BY created_at DESC,revision_sha256 DESC LIMIT 1
+	) role ON true
+	LEFT JOIN employee_schedules es ON es.company_id=e.company_id AND es.employee_id=e.id
+	LEFT JOIN LATERAL (
+	  SELECT id,task_id,state,profile,epoch,tool_call_limit,tool_calls_used
+	  FROM worker_sessions
+	  WHERE company_id=e.company_id AND employee_id=e.id
+	  ORDER BY (state!='stopped') DESC,epoch DESC,id DESC LIMIT 1
+	) ws ON true
+	WHERE e.company_id=$1 ORDER BY e.id
+2026-10-09 00:13:04.807 CST [17130] ERROR:  could not determine data type of parameter $2
+2026-10-09 00:13:04.807 CST [17130] STATEMENT:  SELECT r.route_id,latest.state
+	FROM delivery_revision_routes r
+	JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+	WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+	ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r
+2026-10-09 00:13:05.695 CST [17133] ERROR:  could not determine data type of parameter $2
+2026-10-09 00:13:05.695 CST [17133] STATEMENT:  SELECT r.route_id,latest.state
+	FROM delivery_revision_routes r
+	JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+	WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+	ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r
+2026-10-09 00:13:06.686 CST [17136] ERROR:  could not determine data type of parameter $2
+2026-10-09 00:13:06.686 CST [17136] STATEMENT:  SELECT r.route_id,latest.state
+	FROM delivery_revision_routes r
+	JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+	WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+	ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r
+2026-10-09 00:13:08.604 CST [17143] ERROR:  could not determine data type of parameter $2
+2026-10-09 00:13:08.604 CST [17143] STATEMENT:  SELECT r.route_id,latest.state
+	FROM delivery_revision_routes r
+	JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+	WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+	ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r
+2026-10-09 00:13:10.634 CST [17151] ERROR:  could not determine data type of parameter $2
+2026-10-09 00:13:10.634 CST [17151] STATEMENT:  SELECT r.route_id,latest.state
+	FROM delivery_revision_routes r
+	JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+	WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+	ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r
+2026-10-09 00:13:14.726 CST [17161] ERROR:  could not determine data type of parameter $2
+2026-10-09 00:13:14.726 CST [17161] STATEMENT:  SELECT r.route_id,latest.state
+	FROM delivery_revision_routes r
+	JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+	WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+	ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r
+2026-10-09 00:13:15.866 CST [17164] ERROR:  could not determine data type of parameter $2
+2026-10-09 00:13:15.866 CST [17164] STATEMENT:  SELECT r.route_id,latest.state
+	FROM delivery_revision_routes r
+	JOIN LATERAL (SELECT state,successor_mission_id FROM delivery_revision_route_events e WHERE e.company_id=r.company_id AND e.route_id=r.route_id ORDER BY event_seq DESC LIMIT 1) latest ON latest.successor_mission_id=$3
+	WHERE r.company_id=$1 AND latest.state IN ('successor_mission_created','revision_task_ready')
+	ORDER BY r.created_at DESC LIMIT 1 FOR UPDATE OF r
+2026-10-09 00:13:18.384 CST [11479] LOG:  received fast shutdown request
+2026-10-09 00:13:18.388 CST [11479] LOG:  aborting any active transactions
+2026-10-09 00:13:18.390 CST [11479] LOG:  background worker "logical replication launcher" (PID 11488) exited with exit code 1
+2026-10-09 00:13:18.390 CST [11483] LOG:  shutting down
+2026-10-09 00:13:18.394 CST [11483] LOG:  checkpoint starting: shutdown immediate
+2026-10-09 00:13:18.931 CST [11483] LOG:  checkpoint complete: wrote 2408 buffers (14.7%), wrote 8 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.049 s, sync=0.470 s, total=0.541 s; sync files=1350, longest=0.005 s, average=0.001 s; distance=20473 kB, estimate=20473 kB; lsn=0/2B54B18, redo lsn=0/2B54B18
+2026-10-09 00:13:18.946 CST [11479] LOG:  database system is shut down

@@ -26,8 +26,14 @@ export POLIS_GO_TMP_ROOT="$temp_root" GOTOOLCHAIN=local GOFLAGS=
 run_check() {
   local name="$1"; shift
   printf 'check=%s\n' "$name"
-  printf '%q ' "$@" > "$evidence/$name.command"
-  printf '\n' >> "$evidence/$name.command"
+  local delimiter='' argument
+  {
+    for argument in "$@"; do
+      printf '%s%q' "$delimiter" "$argument"
+      delimiter=' '
+    done
+    printf '\n'
+  } > "$evidence/$name.command"
   if "$@" > "$evidence/$name.log" 2>&1; then
     printf '%s=PASS exit=0\n' "$name" >> "$evidence/status.txt"
   else

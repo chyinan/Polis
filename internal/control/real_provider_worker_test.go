@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"runtime"
 	"sync"
 	"testing"
@@ -239,7 +238,7 @@ func TestRealProviderWorkerAdapterCancelsOfflineTurnWithoutOrphan(t *testing.T) 
 }
 
 func TestRealProviderWorkerAdapterClosesReservationAfterPreTurnStop(t *testing.T) {
-	dsn := os.Getenv("POLIS_R0_5B16_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R0_5B16_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B16 PostgreSQL required")
 	}
@@ -709,7 +708,7 @@ func (session *stopRetryProviderSession) Stop(ctx context.Context) (runner.StopP
 }
 
 func TestRealProviderWorkerAdapterReservationBearingPreflightStopsBeforeTurn(t *testing.T) {
-	dsn := os.Getenv("POLIS_R0_5B16_TEST_DSN")
+	dsn := pgfixture.DSN(t, "POLIS_R0_5B16_TEST_DSN")
 	if dsn == "" {
 		t.Skip("dedicated R0.5B16 PostgreSQL required")
 	}

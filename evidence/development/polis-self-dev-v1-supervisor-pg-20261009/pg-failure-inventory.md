@@ -145,3 +145,26 @@ Source: previous `20261008T090040Z-303/go-postgres-tests.log` (unfiltered three-
 | TestZIPInputIsDeliveredToWorkerAndReadBackPerFile | task_input_delivery_read_integration_test.go:538: ERROR: could not determine data type of parameter $2 (SQLSTATE 42P18) | product SQL defect |
 
 The blanket claim that all failures were stale fixtures is not supported. In particular, undefined SQL aliases and untyped SQL parameters are production read-query defects. Grants will remain SELECT/INSERT/UPDATE plus sequence usage; no permission expansion is planned.
+
+## Resolution categories established by fresh reproductions
+
+The table above preserves the initial classification, not a retrospective claim that every early denial had one unique cause. The original non-verbose shared-DB run cannot disambiguate cascaded runtime lease/admission failures. Fresh per-test databases in the same disposable cluster and explicit current owner/coverage/budget setup removed that ambiguity. All intermediate failure output is retained in `postgres-runtime`; `postgres-run-inventory.json` indexes each completed diagnostic run and its original JSON events.
+
+| Category | Reproduced issue and correction |
+|---|---|
+| Product SQL | Workbench employee lateral query omitted fields it projected; delivery disposition query supplied an untyped unused parameter; revocation aggregate omitted a grouped field. Corrected queries without changing access policy. |
+| Product transactions | Read-only APIs attempted `FOR SHARE` on runtime_control. Read-only lease checks now use the same snapshot without a write lock; mutation transactions retain their lock/fence. |
+| Product lock isolation | Nested capability source/CAS lifecycle locks exhausted one shared two-connection lock pool. Separate bounded lock pools preserve both lock families; no runtime grant increase. |
+| Migration contract | Schema 125 removed supported historical Artifact contract values. Forward 130 restores those values, without changing Artifact qualification/publication policy. |
+| Migration trigger | The MCP permit trigger shadowed its unassigned RECORD with SQL alias `p`, then referenced fields not selected under those names. Forward 131 corrects the alias/field references while retaining all epoch, grant and consumed-permit checks. Tests use no external MCP transport. |
+| Product grant mismatch | Workspace snapshots and takeover handback attempted DELETE under a role intentionally lacking DELETE. Staging journals are retained. Forward 132 allows only terminal takeover pointer reuse; immutable lease events remain the active-state authority. No grants were expanded. |
+| Product representation | The single-file takeover guard recognized workspace.txt but not the existing formatter.go mirror. Both require one exact file, digest and source revision; additional/mismatched paths remain denied. |
+| Product normalization | Explicit empty assessment ID arrays normalized to nil and were then rejected. The new unit regression failed first and passed after preserving explicit empty slices; nil/missing remains rejected. |
+| Continuation regression | Conditional Git seeding initially retained ErrNoRows from the absent workspace root. Fixed before final verification. Git snapshots seed only fixed Go bindings; legacy text-only Worker contracts retain read-only Git context. |
+| Fixture contracts | Owner confirmation, company/Mission budget and installation slot policy are configured through real APIs. Missing acceptance and required Planning analysis are supplied explicitly. Planning transaction fixtures seed a ready review Task and then use real admission/assessment/stop APIs; this does not qualify production Planning dispatch. |
+| Fixture projections | Input identities no longer assume random-ID ordering or treat supported PNG as unsupported; excluded .bin input remains tested. Fulfilled peer state is checked in authoritative rows and excluded from pending projection. Company cursor ordering is retained. |
+| Test synchronization | Terminal provider observation is awaited together with stopped sessions, not inferred from the first turn event. Trusted sleeper ownership is stopped/confirmed before Mission pause. |
+| Harness/config | Per-test clones use reconstructed DSNs (pgx ConnString otherwise retains the original database). POSIX temp directories replace DrvFS permission semantics. Actual migration/recovery DSNs and the historical POLIS_R0_5B16_TEST_DSN alias are enabled; missing DSNs are not a PG PASS. |
+| Historical upgrade fixtures | Real migrations build the required old schema/specimen before upgrade; migration identity expectations follow embedded current migrations. Recovery uses real dump/restore and dedicated roles/databases. No successful result rows are hardcoded. |
+
+Runtime SQL grants remain SELECT/INSERT/UPDATE plus sequence USAGE/SELECT. No assertion was removed to suppress a failure, no failed case was skipped, and no test result was substituted for host execution qualification. Final executed/skipped outcomes are reported separately after the complete suite finishes.

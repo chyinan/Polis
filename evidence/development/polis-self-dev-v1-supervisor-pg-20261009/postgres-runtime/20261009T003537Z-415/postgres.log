@@ -1,0 +1,44 @@
+2026-10-09 08:35:38.283 CST [674] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-09 08:35:38.285 CST [674] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.vYARGk/socket/.s.PGSQL.5432"
+2026-10-09 08:35:38.291 CST [680] LOG:  database system was shut down at 2026-10-09 08:35:37 CST
+2026-10-09 08:35:38.295 CST [674] LOG:  database system is ready to accept connections
+2026-10-09 08:35:50.646 CST [904] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-09 08:35:50.646 CST [904] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-09 08:35:51.539 CST [920] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-09 08:35:51.539 CST [920] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-09 08:37:07.598 CST [678] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:37:07.817 CST [678] LOG:  checkpoint complete: wrote 1754 buffers (10.7%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.012 s, sync=0.200 s, total=0.219 s; sync files=1327, longest=0.002 s, average=0.001 s; distance=24487 kB, estimate=24487 kB; lsn=0/2F403D8, redo lsn=0/2F40380
+2026-10-09 08:37:23.066 CST [3786] ERROR:  record "p" has no field "employee_epoch"
+2026-10-09 08:37:23.066 CST [3786] CONTEXT:  PL/pgSQL expression "session_epoch IS DISTINCT FROM p.employee_epoch OR employee_epoch IS DISTINCT FROM p.employee_epoch
+	    OR current_grant_event IS DISTINCT FROM 'bound' OR current_grant_revision IS DISTINCT FROM p.grant_revision"
+	PL/pgSQL function enforce_mcp_tool_call_dispatch_permit() line 45 at IF
+2026-10-09 08:37:23.066 CST [3786] STATEMENT:  INSERT INTO mcp_tool_call_events(company_id,event_id,intent_id,status,request_id)
+	VALUES($1,$2,$3,'dispatching',$4)
+2026-10-09 08:37:23.080 CST [678] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:37:23.093 CST [678] LOG:  checkpoint complete: wrote 54 buffers (0.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.003 s, sync=0.004 s, total=0.014 s; sync files=18, longest=0.002 s, average=0.001 s; distance=10072 kB, estimate=23046 kB; lsn=0/39166C0, redo lsn=0/3916668
+2026-10-09 08:37:23.332 CST [3795] ERROR:  record "p" has no field "employee_epoch"
+2026-10-09 08:37:23.332 CST [3795] CONTEXT:  PL/pgSQL expression "session_epoch IS DISTINCT FROM p.employee_epoch OR employee_epoch IS DISTINCT FROM p.employee_epoch
+	    OR current_grant_event IS DISTINCT FROM 'bound' OR current_grant_revision IS DISTINCT FROM p.grant_revision"
+	PL/pgSQL function enforce_mcp_tool_call_dispatch_permit() line 45 at IF
+2026-10-09 08:37:23.332 CST [3795] STATEMENT:  INSERT INTO mcp_tool_call_events(company_id,event_id,intent_id,status,request_id)
+	VALUES($1,$2,$3,'dispatching',$4)
+2026-10-09 08:37:23.344 CST [678] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:37:23.357 CST [678] LOG:  checkpoint complete: wrote 14 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.003 s, sync=0.004 s, total=0.013 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9721 kB, estimate=21713 kB; lsn=0/4294D58, redo lsn=0/4294D00
+2026-10-09 08:37:26.741 CST [678] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:37:26.752 CST [678] LOG:  checkpoint complete: wrote 12 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.003 s, total=0.011 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9724 kB, estimate=20514 kB; lsn=0/4C14020, redo lsn=0/4C13FB0
+2026-10-09 08:37:26.987 CST [678] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:37:26.999 CST [678] LOG:  checkpoint complete: wrote 11 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.003 s, sync=0.003 s, total=0.013 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9704 kB, estimate=19433 kB; lsn=0/558E3D8, redo lsn=0/558E380
+2026-10-09 08:37:27.214 CST [3845] ERROR:  task_validation_bindings are immutable
+2026-10-09 08:37:27.214 CST [3845] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-10-09 08:37:27.214 CST [3845] STATEMENT:  UPDATE task_input_manifests SET delivery_status='delivered' WHERE company_id=$1 AND task_id=$2
+2026-10-09 08:37:27.218 CST [678] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:37:27.228 CST [678] LOG:  checkpoint complete: wrote 12 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.003 s, total=0.011 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9698 kB, estimate=18460 kB; lsn=0/5F06E78, redo lsn=0/5F06E20
+2026-10-09 08:37:27.450 CST [678] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:37:27.461 CST [678] LOG:  checkpoint complete: wrote 16 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.002 s, sync=0.003 s, total=0.012 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9705 kB, estimate=17584 kB; lsn=0/6881580, redo lsn=0/6881528
+2026-10-09 08:37:48.016 CST [674] LOG:  received fast shutdown request
+2026-10-09 08:37:48.018 CST [674] LOG:  aborting any active transactions
+2026-10-09 08:37:48.020 CST [674] LOG:  background worker "logical replication launcher" (PID 683) exited with exit code 1
+2026-10-09 08:37:48.020 CST [678] LOG:  shutting down
+2026-10-09 08:37:48.022 CST [678] LOG:  checkpoint starting: shutdown immediate
+2026-10-09 08:37:48.033 CST [678] LOG:  checkpoint complete: wrote 21 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.005 s, total=0.013 s; sync files=10, longest=0.002 s, average=0.001 s; distance=173 kB, estimate=15843 kB; lsn=0/68ACCE0, redo lsn=0/68ACCE0
+2026-10-09 08:37:48.041 CST [674] LOG:  database system is shut down

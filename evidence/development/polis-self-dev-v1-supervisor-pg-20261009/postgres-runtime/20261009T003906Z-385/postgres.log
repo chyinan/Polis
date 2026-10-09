@@ -1,0 +1,27 @@
+2026-10-09 08:39:07.473 CST [602] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-09 08:39:07.475 CST [602] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.5Kxvzq/socket/.s.PGSQL.5432"
+2026-10-09 08:39:07.481 CST [608] LOG:  database system was shut down at 2026-10-09 08:39:07 CST
+2026-10-09 08:39:07.486 CST [602] LOG:  database system is ready to accept connections
+2026-10-09 08:39:21.707 CST [810] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-09 08:39:21.707 CST [810] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-09 08:39:22.507 CST [825] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-09 08:39:22.507 CST [825] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-09 08:40:45.850 CST [606] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:40:46.065 CST [606] LOG:  checkpoint complete: wrote 1754 buffers (10.7%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.012 s, sync=0.196 s, total=0.215 s; sync files=1327, longest=0.003 s, average=0.001 s; distance=24497 kB, estimate=24497 kB; lsn=0/2F42C18, redo lsn=0/2F42BC0
+2026-10-09 08:40:46.335 CST [606] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:40:46.347 CST [606] LOG:  checkpoint complete: wrote 14 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.003 s, sync=0.003 s, total=0.012 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9724 kB, estimate=23020 kB; lsn=0/38C1D08, redo lsn=0/38C1CB0
+2026-10-09 08:40:46.885 CST [606] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:40:46.897 CST [606] LOG:  checkpoint complete: wrote 10 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.002 s, sync=0.003 s, total=0.012 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9722 kB, estimate=21690 kB; lsn=0/42407E8, redo lsn=0/4240790
+2026-10-09 08:40:47.177 CST [606] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:40:47.188 CST [606] LOG:  checkpoint complete: wrote 13 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.003 s, total=0.011 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9711 kB, estimate=20492 kB; lsn=0/4BBC478, redo lsn=0/4BBC420
+2026-10-09 08:40:47.435 CST [1892] ERROR:  permission denied for table task_takeover_active_slots
+2026-10-09 08:40:47.435 CST [1892] STATEMENT:  DELETE FROM task_takeover_active_slots WHERE company_id=$1 AND task_id=$2 AND lease_id=$3
+2026-10-09 08:40:47.439 CST [606] LOG:  checkpoint starting: immediate force wait
+2026-10-09 08:40:47.451 CST [606] LOG:  checkpoint complete: wrote 12 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.002 s, sync=0.003 s, total=0.012 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9705 kB, estimate=19413 kB; lsn=0/5536AC0, redo lsn=0/5536A68
+2026-10-09 08:41:12.812 CST [602] LOG:  received fast shutdown request
+2026-10-09 08:41:12.814 CST [602] LOG:  aborting any active transactions
+2026-10-09 08:41:12.816 CST [602] LOG:  background worker "logical replication launcher" (PID 611) exited with exit code 1
+2026-10-09 08:41:12.816 CST [606] LOG:  shutting down
+2026-10-09 08:41:12.817 CST [606] LOG:  checkpoint starting: shutdown immediate
+2026-10-09 08:41:12.828 CST [606] LOG:  checkpoint complete: wrote 56 buffers (0.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.005 s, total=0.013 s; sync files=16, longest=0.002 s, average=0.001 s; distance=453 kB, estimate=17517 kB; lsn=0/55A7F10, redo lsn=0/55A7F10
+2026-10-09 08:41:12.836 CST [602] LOG:  database system is shut down
