@@ -1,0 +1,4 @@
+unit_only_rule_start_exit=1
+unit_only_rule_stop_exit=not_started
+Failed to start polis-self-dev-go-probe@probe-diagallow.service: Interactive authentication required.
+See system logs and 'systemctl status polis-self-dev-go-probe@probe-diagallow.service' for details.

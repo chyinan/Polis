@@ -1,0 +1,12 @@
+start_exit=0
+Result=exit-code
+ExecMainCode=1
+ExecMainStatus=1
+ControlGroup=
+ActiveState=failed
+SubState=failed
+Oct 25 21:08:01 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag4...
+Oct 25 21:08:01 DESKTOP-L1ND50Q systemd[1]: Started Polis trusted Go job host probe probe-diag4.
+Oct 25 21:08:01 DESKTOP-L1ND50Q bash[462]: probe_controls_observed=cpu.max:200000 100000,memory.max:2147483648,memory.swap.max:0,pids.max:256,scratch:rw,nosuid,relatime,discard,errors=remount-ro,data=ordered,inodes:67108864
+Oct 25 21:08:01 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag4.service: Main process exited, code=exited, status=1/FAILURE
+Oct 25 21:08:01 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag4.service: Failed with result 'exit-code'.

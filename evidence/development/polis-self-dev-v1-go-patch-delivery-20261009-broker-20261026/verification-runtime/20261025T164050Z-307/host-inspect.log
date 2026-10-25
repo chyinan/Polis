@@ -1,0 +1,26 @@
+distribution=Ubuntu-22.04
+kernel=Linux 6.6.87.2-microsoft-standard-WSL2 x86_64 GNU/Linux
+init_systemd=systemd/running
+cgroup2_mount=/sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate
+available_controllers=cpuset,cpu,io,memory,hugetlb,pids,rdma
+root_subtree_control=memory,pids
+system_slice=/system.slice
+system_slice_available_controllers=memory,pids
+system_slice_subtree_control=memory,pids
+user_cgroup=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service
+user_available_controllers=memory,pids
+user_subtree_control=memory,pids
+delegated_controllers=memory,pids
+user_cgroup_writable=yes
+cgroup_kill=present-not-writable
+bwrap=bubblewrap 0.6.1
+scratch_target=/tmp
+scratch_source=/dev/sdd
+scratch_filesystem=ext4
+scratch_options=rw,relatime,discard,errors=remount-ro,data=ordered
+scratch_bytes_available=1018928836608
+scratch_inodes_available=67001373
+scratch_quota=not_verified_for_job
+probe_profile=polis-go-test-fixture@1
+system_service_profile=not_prepared
+privilege_gaps=cpu_controller_not_available_to_user_scope,cpu_controller_not_delegated,cgroup_kill_not_writable_in_user_scope,per_job_scratch_tmpfs_not_active

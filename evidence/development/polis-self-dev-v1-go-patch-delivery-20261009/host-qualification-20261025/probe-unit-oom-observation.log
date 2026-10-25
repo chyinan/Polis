@@ -1,0 +1,19 @@
+start_exit=0
+Result=success
+ExecMainPID=388
+ExecMainCode=0
+ExecMainStatus=0
+ControlGroup=/system.slice/polis-self-dev-go-probe@probe-diag8.service
+ActiveState=active
+SubState=running
+Oct 25 21:17:24 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag8...
+Oct 25 21:17:24 DESKTOP-L1ND50Q systemd[1]: Started Polis trusted Go job host probe probe-diag8.
+Oct 25 21:17:24 DESKTOP-L1ND50Q bash[388]: probe_controls_observed=cpu.max:200000 100000,memory.max:2147483648,memory.swap.max:0,pids.max:256,scratch:rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000,inodes:4096
+Oct 25 21:17:24 DESKTOP-L1ND50Q bash[388]: probe_scratch_mount=fstype:tmpfs;mount=/scratch,tmpfs,tmpfs,rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+Oct 25 21:17:24 DESKTOP-L1ND50Q bash[415]: 724 677 0:84 / /scratch rw,nosuid,nodev shared:315 - tmpfs tmpfs rw,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+Oct 25 21:17:26 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag8.service: A process of this unit has been killed by the OOM killer.
+Oct 25 21:17:26 DESKTOP-L1ND50Q bash[388]: memory_boundary=pass;max_events=90;oom_events=1;oom_kill_events=1;swap_current=0
+Oct 25 21:17:26 DESKTOP-L1ND50Q bash[388]: scratch_byte_boundary=pass
+Oct 25 21:17:26 DESKTOP-L1ND50Q bash[388]: /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh: line 502: /scratch/inode-boundary/file-4095: No space left on device
+Oct 25 21:17:26 DESKTOP-L1ND50Q bash[388]: /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh: line 509: /scratch/inode-boundary/over-limit: No space left on device
+Oct 25 21:17:26 DESKTOP-L1ND50Q bash[388]: scratch_inode_boundary=pass;created=4094

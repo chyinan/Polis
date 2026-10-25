@@ -20,6 +20,11 @@ import (
 )
 
 const InstalledBinary = "/usr/local/libexec/polis-selfdev-go-job-supervisor"
+const InstalledUnitControl = "/usr/local/libexec/polis-selfdev-go-unit-control"
+const UnitControlSealPath = "/etc/systemd/system/polis-self-dev-go-unit-control.sha256"
+const UnitControlPolicyPath = "/usr/share/polkit-1/actions/org.polis.selfdev.go-job.policy"
+const UnitControlPKLAPath = "/etc/polkit-1/localauthority/50-local.d/50-polis-selfdev-go-unit-control.pkla"
+const UnitControlSealMarker = "# POLIS_SELF_DEV_GO_JOB_HOST_V1"
 
 // Executor is a fixed Go-profile adapter, not a shell or another scheduler.
 type Executor interface {
@@ -64,6 +69,10 @@ func (e *SystemdExecutor) Readiness(ctx context.Context, id string) HostCheck {
 	if runtime.GOOS != "linux" || e.binary != InstalledBinary || !core.ValidID(id) {
 		return h
 	}
+	if !verifyInstalledUnitControl(ctx) {
+		h.Reason = "unit_control_broker_untrusted"
+		return h
+	}
 	qualificationSHA, trusted := trustedInstalledRunner(e.binary)
 	if !trusted {
 		h.Reason = "installed_runner_or_seal_untrusted"
@@ -90,10 +99,36 @@ func (e *SystemdExecutor) Readiness(ctx context.Context, id string) HostCheck {
 }
 
 func unitName(id string) (string, error) {
-	if !core.ValidID(id) || !strings.HasPrefix(id, "job-") {
+	if !core.ValidID(id) || !strings.HasPrefix(id, "job-") || len(id) == len("job-") {
 		return "", ErrInvalid
 	}
 	return "polis-self-dev-go-job@" + id + ".service", nil
+}
+
+func unitControlArgs(operation, id string) ([]string, error) {
+	if _, err := unitName(id); err != nil {
+		return nil, err
+	}
+	switch operation {
+	case "job-start":
+		return []string{"--disable-internal-agent", InstalledUnitControl, operation, id}, nil
+	case "job-stop":
+		return []string{"--disable-internal-agent", InstalledUnitControl, operation, id}, nil
+	default:
+		return nil, ErrInvalid
+	}
+}
+
+func (e *SystemdExecutor) controlUnit(ctx context.Context, operation, id string) error {
+	if runtime.GOOS != "linux" || !verifyInstalledUnitControl(ctx) {
+		return errors.New("unit_control_broker_untrusted")
+	}
+	args, err := unitControlArgs(operation, id)
+	if err != nil {
+		return err
+	}
+	_, err = commandOutput(ctx, "/usr/bin/pkexec", args...)
+	return err
 }
 
 func unitProperties(ctx context.Context, unit string) (map[string]string, error) {
@@ -137,7 +172,7 @@ func (e *SystemdExecutor) Stop(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	if _, err = commandOutput(ctx, "/usr/bin/systemctl", "stop", unit); err != nil {
+	if err = e.controlUnit(ctx, "job-stop", id); err != nil {
 		return err
 	}
 	props, err := unitProperties(ctx, unit)
@@ -223,7 +258,7 @@ func (e *SystemdExecutor) Run(ctx context.Context, r Request) Report {
 		report.State, report.Reason = "failed", "request_handoff_failed"
 		return report
 	}
-	if _, err = commandOutput(ctx, "/usr/bin/systemctl", "start", "--no-block", unit); err != nil {
+	if err = e.controlUnit(ctx, "job-start", r.Binding.JobRunID); err != nil {
 		// A timed-out D-Bus command may already have queued the unit. Reconcile
 		// the whole group; never infer that candidate execution did not start.
 		report.DispatchAccepted = true
@@ -250,16 +285,20 @@ func (e *SystemdExecutor) Run(ctx context.Context, r Request) Report {
 			}
 			pid, _ := strconv.Atoi(props["ExecMainPID"])
 			report.LauncherStarted = pid > 0
-			if unitTerminal(props) {
+			invocationObserved := unitTerminal(props)
+			terminalResultFallback := unitResultMayBeReady(props)
+			if invocationObserved || terminalResultFallback {
 				result, resultErr := readReport(filepath.Join(dir, "result.json"))
 				if resultErr == nil && ValidateReport(r.Binding, result) == nil && result.Host.QualificationSHA256 == r.HostQualificationSHA256 && result.Host.BootID == h.BootID {
 					result.DispatchAccepted = true
-					if result.QualificationEligible && (props["Result"] != "success" || props["ExecMainStatus"] != "0" || invocation == "" || !unitEmpty(unit)) {
+					if !unitEmpty(unit) || result.QualificationEligible && (props["Result"] != "success" || props["ExecMainStatus"] != "0") {
 						break
 					}
 					return result
 				}
-				break
+				if invocationObserved || resultErr == nil {
+					break
+				}
 			}
 		}
 		select {

@@ -1,0 +1,7 @@
+request_exit=1
+Failed to start polis-self-dev-go-probe@probe-polkitdebug.service: Interactive authentication required.
+See system logs and 'systemctl status polis-self-dev-go-probe@probe-polkitdebug.service' for details.
+Entering main event loop
+Connected to the system bus
+Using authority class PolkitBackendLocalAuthority
+Acquired the name org.freedesktop.PolicyKit1

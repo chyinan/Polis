@@ -179,6 +179,9 @@ ORDER BY revision DESC LIMIT 1 FOR UPDATE`, companyID, command.ArtifactID, manif
 			return Receipt{}, err
 		}
 		switch productDeliveryDispositionRoute(missionState, command.State) {
+		case "accepted":
+			// An explicit acceptance is the human disposition itself; it creates
+			// no parallel revision route and never applies source automatically.
 		case "mission_change_request":
 			if err = appendDeliveryMissionChangeRequestTX(ctx, tx, Scope{company: companyID}, storedMissionID, command.ArtifactID, manifestRevision, nextDispositionRevision, command.Reason, command.RequestID); err != nil {
 				return Receipt{}, err

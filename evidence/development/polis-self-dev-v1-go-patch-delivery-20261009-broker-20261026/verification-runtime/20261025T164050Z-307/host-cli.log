@@ -1,0 +1,1 @@
+PASS: host CLI is read-only in inspect/prepare and fails closed on verify/cleanup inputs

@@ -1,0 +1,8 @@
+{
+  "result": "failed",
+  "error": "RuntimeError: formal Patch publication returned 500: {\"error\":\"ERROR: new row for relation \\\"artifacts\\\" violates check constraint \\\"artifacts_check\\\" (SQLSTATE 23514)\",\"code\":\"COMMAND_FAILED\",\"targetType\":\"task\",\"targetId\":\"d1eba716ee5b96ce6bb72f62e4a144f1\"}\n",
+  "providerEgress": 0,
+  "realModelWorkerStarted": 0,
+  "automaticMerge": "NO",
+  "automaticDeploy": "NO"
+}

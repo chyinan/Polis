@@ -1,0 +1,7 @@
+2026-10-26T01:11:19+08:00
+your 131072x1 screen size is bogus. expect trouble
+cleaned=yes
+removed_only_marked_paths=yes
+your 131072x1 screen size is bogus. expect trouble
+supervisor_build=verified
+ERROR: Polkit did not load the fixed job-start action

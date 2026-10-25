@@ -1,0 +1,32 @@
+start_exit=0
+state=active
+profile_revision=polis-go-test-fixture@1
+cpu_max=200000 100000
+memory_max=2147483648
+memory_swap_max=0
+pids_max=256
+cgroup_kill=present_systemd_managed
+scratch_fstype=tmpfs
+scratch_options=rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+scratch_total_inodes=4096
+memory_boundary=pass;max_events=90;oom_events=1;oom_kill_events=1;swap_current=0
+scratch_byte_boundary=pass
+scratch_inode_boundary=pass;created=4094
+cpu_throttling=pass
+pids_boundary=pass;max_events=1;spawned=248;limit_hit=1
+candidate_execution=not_run
+probe_result=pass
+probe_pid=804
+Oct 25 21:24:59 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag12...
+Oct 25 21:25:00 DESKTOP-L1ND50Q systemd[1]: Started Polis trusted Go job host probe probe-diag12.
+Oct 25 21:25:00 DESKTOP-L1ND50Q bash[392]: probe_controls_observed=cpu.max:200000 100000,memory.max:2147483648,memory.swap.max:0,pids.max:256,scratch:rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000,inodes:4096
+Oct 25 21:25:00 DESKTOP-L1ND50Q bash[392]: probe_scratch_mount=fstype:tmpfs;mount=/scratch,tmpfs,tmpfs,rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+Oct 25 21:25:00 DESKTOP-L1ND50Q bash[422]: 724 677 0:84 / /scratch rw,nosuid,nodev shared:315 - tmpfs tmpfs rw,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+Oct 25 21:25:01 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag12.service: A process of this unit has been killed by the OOM killer.
+Oct 25 21:25:01 DESKTOP-L1ND50Q bash[392]: memory_boundary=pass;max_events=90;oom_events=1;oom_kill_events=1;swap_current=0
+Oct 25 21:25:02 DESKTOP-L1ND50Q bash[392]: scratch_byte_boundary=pass
+Oct 25 21:25:02 DESKTOP-L1ND50Q bash[392]: /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh: line 500: /scratch/inode-boundary/file-4095: No space left on device
+Oct 25 21:25:02 DESKTOP-L1ND50Q bash[392]: /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh: line 507: /scratch/inode-boundary/over-limit: No space left on device
+Oct 25 21:25:02 DESKTOP-L1ND50Q bash[392]: scratch_inode_boundary=pass;created=4094
+Oct 25 21:25:03 DESKTOP-L1ND50Q bash[392]: cpu_throttling=pass
+Oct 25 21:25:03 DESKTOP-L1ND50Q bash[392]: pids_boundary=pass;max_events=1;spawned=248;limit_hit=1

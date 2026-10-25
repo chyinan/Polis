@@ -1,0 +1,20 @@
+2026-10-26 05:13:13.754 CST [1914] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-26 05:13:13.756 CST [1914] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.iazhTM/socket/.s.PGSQL.5432"
+2026-10-26 05:13:13.762 CST [1920] LOG:  database system was shut down at 2026-10-26 05:13:13 CST
+2026-10-26 05:13:13.767 CST [1914] LOG:  database system is ready to accept connections
+2026-10-26 05:13:20.893 CST [1994] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-26 05:13:20.893 CST [1994] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-26 05:13:21.811 CST [2010] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-26 05:13:21.811 CST [2010] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-26 05:15:05.043 CST [2694] ERROR:  new row for relation "artifacts" violates check constraint "artifacts_check"
+2026-10-26 05:15:05.043 CST [2694] DETAIL:  Failing row contains (selfdev-e2e-haxvzvetpvow, d8496341b9308d6d3a5769f239e58384, d1eba716ee5b96ce6bb72f62e4a144f1, emp-backend, ab792237c9a05a2c2a311a164ce31d74bc512a1d3290dc3d8c183812932d79f2, 4132, ready, passed, null, r0-arithmetic@1, deliverable, null, null, go_patch).
+2026-10-26 05:15:05.043 CST [2694] STATEMENT:  INSERT INTO artifacts(company_id,id,task_id,author,digest,bytes,state,verdict,contract,content_format) SELECT $1,$2,$3,$4,$5,$6,'ready','passed',contract,'go_patch' FROM missions WHERE company_id=$1 AND id=$7
+2026-10-26 05:15:05.225 CST [1918] LOG:  checkpoint starting: immediate force wait
+2026-10-26 05:15:05.465 CST [1918] LOG:  checkpoint complete: wrote 1803 buffers (11.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.013 s, sync=0.219 s, total=0.240 s; sync files=1341, longest=0.004 s, average=0.001 s; distance=24959 kB, estimate=24959 kB; lsn=0/2FB6358, redo lsn=0/2FB6300
+2026-10-26 05:15:07.709 CST [1914] LOG:  received fast shutdown request
+2026-10-26 05:15:07.711 CST [1914] LOG:  aborting any active transactions
+2026-10-26 05:15:07.712 CST [1914] LOG:  background worker "logical replication launcher" (PID 1923) exited with exit code 1
+2026-10-26 05:15:07.713 CST [1918] LOG:  shutting down
+2026-10-26 05:15:07.714 CST [1918] LOG:  checkpoint starting: shutdown immediate
+2026-10-26 05:15:07.721 CST [1918] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.008 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=22463 kB; lsn=0/2FB6470, redo lsn=0/2FB6470
+2026-10-26 05:15:07.730 CST [1914] LOG:  database system is shut down

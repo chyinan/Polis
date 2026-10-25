@@ -1,0 +1,13 @@
+supervisor-build=PASS exit=0
+host-probe-build=PASS exit=0
+unit-control-build=PASS exit=0
+script-syntax=PASS exit=0
+host-cli=PASS exit=0
+host-inspect=PASS exit=0
+host-prepare=PASS exit=0
+go-tests=PASS exit=0
+go-race=PASS exit=0
+go-vet=PASS exit=0
+linux-build=PASS exit=0
+windows-build=PASS exit=0
+verification_exit=0

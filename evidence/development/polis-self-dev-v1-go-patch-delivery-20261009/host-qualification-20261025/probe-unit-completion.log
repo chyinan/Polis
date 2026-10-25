@@ -1,0 +1,19 @@
+start_exit=0
+state=failed
+probe_result_file=absent
+probe_pid_file=absent
+Oct 25 21:18:59 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag10...
+Oct 25 21:18:59 DESKTOP-L1ND50Q systemd[1]: Started Polis trusted Go job host probe probe-diag10.
+Oct 25 21:18:59 DESKTOP-L1ND50Q bash[394]: probe_controls_observed=cpu.max:200000 100000,memory.max:2147483648,memory.swap.max:0,pids.max:256,scratch:rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000,inodes:4096
+Oct 25 21:18:59 DESKTOP-L1ND50Q bash[394]: probe_scratch_mount=fstype:tmpfs;mount=/scratch,tmpfs,tmpfs,rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+Oct 25 21:18:59 DESKTOP-L1ND50Q bash[424]: 724 677 0:84 / /scratch rw,nosuid,nodev shared:315 - tmpfs tmpfs rw,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+Oct 25 21:19:00 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag10.service: A process of this unit has been killed by the OOM killer.
+Oct 25 21:19:00 DESKTOP-L1ND50Q bash[394]: memory_boundary=pass;max_events=90;oom_events=1;oom_kill_events=1;swap_current=0
+Oct 25 21:19:01 DESKTOP-L1ND50Q bash[394]: scratch_byte_boundary=pass
+Oct 25 21:19:01 DESKTOP-L1ND50Q bash[394]: /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh: line 502: /scratch/inode-boundary/file-4095: No space left on device
+Oct 25 21:19:01 DESKTOP-L1ND50Q bash[394]: /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh: line 509: /scratch/inode-boundary/over-limit: No space left on device
+Oct 25 21:19:01 DESKTOP-L1ND50Q bash[394]: scratch_inode_boundary=pass;created=4094
+Oct 25 21:19:02 DESKTOP-L1ND50Q bash[394]: cpu_throttling=pass
+Oct 25 21:19:17 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag10.service: Main process exited, code=exited, status=254/n/a
+Oct 25 21:19:17 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag10.service: Failed with result 'exit-code'.
+Oct 25 21:19:17 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag10.service: Consumed 4.242s CPU time.

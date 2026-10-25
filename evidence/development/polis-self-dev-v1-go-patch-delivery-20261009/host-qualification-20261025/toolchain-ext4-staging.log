@@ -1,0 +1,4 @@
+dr-xr-xr-x root:root /run/polis-self-dev-go-toolchain
+-r-xr-xr-x root:root /run/polis-self-dev-go-toolchain/bin/go
+copy_elapsed_seconds=130
+d9a2fa19c7ef8b57f420012c21f49f235c46f08a68c12077d9c753dbb6ccdc34  /run/polis-self-dev-go-toolchain/bin/go

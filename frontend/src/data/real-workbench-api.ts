@@ -1933,10 +1933,8 @@ export class RealWorkbenchApi implements WorkbenchApi {
 
   private async post(path: string, requestID: string, body: unknown, requireOwnerCSRF = false): Promise<unknown> {
     const headers = this.requestHeaders({'Accept': 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': requestID});
-    if (requireOwnerCSRF) {
-      const csrf = this.ownerCSRFCookie();
-      if (csrf !== '') headers['X-Polis-CSRF-Token'] = csrf;
-    }
+    const csrf = this.ownerCSRFCookie();
+    if (csrf !== '' && (requireOwnerCSRF || this.sessionToken === null)) headers['X-Polis-CSRF-Token'] = csrf;
     const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'POST',
       credentials: 'same-origin',
@@ -1961,10 +1959,13 @@ export class RealWorkbenchApi implements WorkbenchApi {
   }
 
   private async postMultipart(path: string, requestID: string, body: FormData, failureLabel = 'failed to upload mission input'): Promise<unknown> {
+    const headers = this.requestHeaders({'Accept': 'application/json', 'X-Request-ID': requestID});
+    const csrf = this.ownerCSRFCookie();
+    if (csrf !== '' && this.sessionToken === null) headers['X-Polis-CSRF-Token'] = csrf;
     const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'POST',
       credentials: 'same-origin',
-      headers: this.requestHeaders({'Accept': 'application/json', 'X-Request-ID': requestID}),
+      headers,
       body,
     });
     observeProtectedResponse(path, response.status);

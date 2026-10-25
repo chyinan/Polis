@@ -27,10 +27,16 @@ func TestProductDeliveryChangeRoutingRejectsUnknownMissionState(t *testing.T) {
 	}
 }
 
-func TestProductDeliveryDispositionRouteLeavesAcceptedAlone(t *testing.T) {
+func TestProductDeliveryDispositionRouteAcceptsWithoutCreatingRevisionRoute(t *testing.T) {
 	for _, missionState := range []string{"active", "paused", "succeeded", "ended_not_met", "cancelled"} {
-		if got := productDeliveryDispositionRoute(missionState, "accepted"); got != "" {
-			t.Errorf("productDeliveryDispositionRoute(%q, accepted) = %q, want empty", missionState, got)
+		if got := productDeliveryDispositionRoute(missionState, "accepted"); got != "accepted" {
+			t.Errorf("productDeliveryDispositionRoute(%q, accepted) = %q, want accepted", missionState, got)
 		}
+	}
+}
+
+func TestProductDeliveryDispositionRouteRejectsUnknownMissionForAcceptance(t *testing.T) {
+	if got := productDeliveryDispositionRoute("draft", "accepted"); got != "" {
+		t.Fatalf("productDeliveryDispositionRoute(draft, accepted) = %q, want empty", got)
 	}
 }

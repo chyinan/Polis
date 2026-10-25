@@ -1,0 +1,41 @@
+2026-10-25T20:36:27+08:00
+uid=0(root) gid=0(root) groups=0(root)
+drwxr-xr-x root:root /usr/local/libexec
+drwxr-xr-x root:root /etc/polkit-1/rules.d
+action=plan_only
+changes_applied=no
+target_distribution=Ubuntu-22.04
+target_user=chyinan
+target_uid=1000
+scope=one WSL distribution; systemd creates one resource-controlled cgroup per exact JobRun unit
+root_required=yes
+files_to_add:
+  /usr/local/libexec and /etc/polkit-1/rules.d (0755 parent directories only if absent)
+  /etc/systemd/system/polis-self-dev-go-job@.service
+  /etc/systemd/system/polis-self-dev-go-probe@.service
+  /etc/polkit-1/rules.d/49-polis-self-dev-go-job.rules
+  /etc/systemd/system/polis-self-dev-go-job-supervisor.sha256
+  /usr/local/libexec/polis-selfdev-go-job-supervisor (verified dedicated fixed-Go supervisor built from this checkout)
+  /usr/local/libexec/polis-selfdev-go-job-supervisor.identity.json
+  /run/polis-self-dev-go-job (0700; owned by chyinan; bounded request/result handoff only)
+source_supervisor=/mnt/d/Programs/Polis-cloud-main/bin/polis-selfdev-go-job-supervisor
+source_identity=/mnt/d/Programs/Polis-cloud-main/bin/polis-selfdev-go-job-supervisor.identity.json
+resource_contract:
+  CPUQuota=200%; CPUQuotaPeriodSec=100ms
+  MemoryMax=2147483648; MemorySwapMax=0
+  TasksMax=256 (cgroup pids controller counts tasks, including threads)
+  RuntimeMaxSec=120s; KillMode=control-group
+  TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=1000,gid=1000,nodev,nosuid
+  stdout/stderr limits remain 512 KiB each in the trusted supervisor
+cgroup_management=systemd-managed; no direct cgroupfs writes
+polkit_scope=only start/stop/kill on polis-self-dev-go-job@job-*.service and polis-self-dev-go-probe@probe-*.service for chyinan; no sudoers rule
+mount_scope=per-system-service private tmpfs; no physical device, global mount, /etc/wsl.conf, or .wslconfig change
+rollback=stop exact unit instances; run this script cleanup --target-uid 1000 --confirm; no recursive workspace or cgroup cleanup
+activation=systemd daemon-reload; actual controller and quota availability must pass the trusted probe
+prerequisite_command=sudo install -d -m 0755 /usr/local/libexec /etc/polkit-1/rules.d (review absent directories first; helper refuses missing/linked parents)
+parent_rollback=shared parent directories are retained; if created solely for this setup, remove only with rmdir after cleanup confirms they are empty
+your 131072x1 screen size is bogus. expect trouble
+supervisor_build=verified
+prepared=yes
+unit_templates=polis-self-dev-go-job@.service,polis-self-dev-go-probe@.service
+changes_applied=yes

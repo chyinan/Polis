@@ -1,0 +1,14 @@
+/*
+# POLIS_SELF_DEV_GO_JOB_HOST_V1
+*/
+polkit.addRule(function(action, subject) {
+  if (action.id === "org.freedesktop.systemd1.manage-units") polkit.log("POLIS_SELFDEV_DIAG unit=" + action.lookup("unit") + " verb=" + action.lookup("verb") + " user=" + subject.user);
+  var unit = action.lookup("unit");
+  var verb = action.lookup("verb");
+  var allowedUnit = typeof unit === "string" &&
+    /^polis-self-dev-go-(job@job-[A-Za-z0-9_-]{1,80}|probe@probe-[A-Za-z0-9_-]{1,80})\.service$/.test(unit);
+  var allowedVerb = verb === "start" || verb === "stop" || verb === "kill";
+  if (action.id === "org.freedesktop.systemd1.manage-units" && subject.user === "chyinan" && allowedUnit && allowedVerb) {
+    return polkit.Result.YES;
+  }
+});

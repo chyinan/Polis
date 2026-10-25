@@ -1,0 +1,2 @@
+boot_id=5f69cf7b-b188-487c-b8e7-2cfdcde684de
+drwx------ chyinan:chyinan /run/polis-self-dev-go-job

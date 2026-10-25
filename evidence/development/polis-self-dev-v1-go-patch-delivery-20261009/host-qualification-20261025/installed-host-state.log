@@ -1,0 +1,16 @@
+2026-10-25T20:37:10+08:00
+-rw-r--r-- root:root /etc/systemd/system/polis-self-dev-go-job@.service
+-rw-r--r-- root:root /etc/systemd/system/polis-self-dev-go-probe@.service
+-rw-r--r-- root:root /etc/polkit-1/rules.d/49-polis-self-dev-go-job.rules
+-rw-r--r-- root:root /etc/systemd/system/polis-self-dev-go-job-supervisor.sha256
+-rwxr-xr-x root:root /usr/local/libexec/polis-selfdev-go-job-supervisor
+-rw-r--r-- root:root /usr/local/libexec/polis-selfdev-go-job-supervisor.identity.json
+stat: cannot statx '/run/polis-self-dev-go-job': No such file or directory
+b07af7b7aeca924721d6fba4ac49ba01f0d9e7bee95d3f3c8f642c14dd66e377  /usr/local/libexec/polis-selfdev-go-job-supervisor
+7543242c39e47427613cb3488576e876bfb595f2be88ac5048151aa20852cdd2  /usr/local/libexec/polis-selfdev-go-job-supervisor.identity.json
+# POLIS_SELF_DEV_GO_JOB_HOST_V1
+b07af7b7aeca924721d6fba4ac49ba01f0d9e7bee95d3f3c8f642c14dd66e377
+7543242c39e47427613cb3488576e876bfb595f2be88ac5048151aa20852cdd2
+/lib/systemd/system/snapd.service:23: Unknown key name 'RestartMode' in section 'Service', ignoring.
+polis-self-dev-go-job@.service   static -
+polis-self-dev-go-probe@.service static -

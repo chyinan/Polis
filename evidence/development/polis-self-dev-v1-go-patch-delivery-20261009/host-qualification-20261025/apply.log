@@ -1,0 +1,4 @@
+2026-10-25T20:34:58+08:00
+uid=0(root) gid=0(root) groups=0(root)
+your 131072x1 screen size is bogus. expect trouble
+ERROR: trusted supervisor build is missing: /mnt/d/mnt/d/Programs/Polis-cloud-main/bin/polis-selfdev-go-job-supervisor

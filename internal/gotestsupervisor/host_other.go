@@ -5,7 +5,9 @@ package gotestsupervisor
 
 import "context"
 
-func trustedInstalledRunner(string) (string, bool) { return "", false }
+func trustedInstalledRunner(string) (string, bool)    { return "", false }
+func trustedInstalledUnitControl() bool               { return false }
+func verifyInstalledUnitControl(context.Context) bool { return false }
 
 func readRootQualification(string) ([]byte, error)   { return nil, ErrInvalid }
 func checkSystemdUnit(context.Context, string) error { return ErrInvalid }

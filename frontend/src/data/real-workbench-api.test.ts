@@ -5,6 +5,7 @@ import {FixtureWorkbenchApi, FIXTURE_COMPANY_ID} from './fixture-workbench-api';
 import {RealWorkbenchApi} from './real-workbench-api';
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
@@ -877,6 +878,24 @@ describe('RealWorkbenchApi', () => {
     expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toEqual({taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', requestId: 'go-job-start-1'});
     await api.startTaskJobRun({companyId: 'company-1', taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', executeGoTest: true, requestId: 'go-job-execute-1'});
     expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body))).toEqual({taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', executeGoTest: true, requestId: 'go-job-execute-1'});
+  });
+
+  it('forwards the owner CSRF cookie on ordinary Workbench writes in an owner-authenticated browser', async () => {
+    const response = {companyId: 'company-1', jobId: 'go-job-1', taskId: 'task-1', sessionId: '', environmentRevisionId: '', handoverId: '',
+      kind: 'go_test', serviceId: '', state: 'blocked', readiness: 'not_applicable', exitCode: null, reasonCode: 'host_profile_unqualified',
+      stdoutOffset: '0', stderrOffset: '0', stdoutBytes: '0', stderrBytes: '0', logsTruncated: false, logGap: false, logManifestSha256: null,
+      serviceEndpoint: null, createdAt: '2026-10-08T00:00:00Z', updatedAt: '2026-10-08T00:00:00Z'};
+    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => response});
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('document', {cookie: 'polis_owner_csrf=owner-csrf-fixture'});
+    const api = new RealWorkbenchApi('/api/workbench');
+
+    await api.startTaskJobRun({companyId: 'company-1', taskId: 'task-1', kind: 'go_test', baseSnapshotArtifactId: 'base-1', candidateSnapshotArtifactId: 'candidate-1', executeGoTest: true, requestId: 'go-job-owner-csrf'});
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/tasks/task-1/jobs', expect.objectContaining({
+      method: 'POST', credentials: 'same-origin',
+      headers: expect.objectContaining({'X-Request-ID': 'go-job-owner-csrf', 'X-Polis-CSRF-Token': 'owner-csrf-fixture'}),
+    }));
   });
 
   it('binds Go patch command receipts to the exact Task, JobRun and request', async () => {

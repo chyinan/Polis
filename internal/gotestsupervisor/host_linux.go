@@ -17,18 +17,8 @@ import (
 // Verify the installed program before executing its self-reported readiness.
 // Neither a writable identity sidecar nor an echoing replacement is authority.
 func trustedInstalledRunner(path string) (string, bool) {
-	if path != InstalledBinary {
+	if path != InstalledBinary || !trustedRootPath(path) {
 		return "", false
-	}
-	for current := path; current != "/"; current = filepath.Dir(current) {
-		i, err := os.Lstat(current)
-		if err != nil || i.Mode()&os.ModeSymlink != 0 || i.Mode().Perm()&0022 != 0 {
-			return "", false
-		}
-		stat, ok := i.Sys().(*syscall.Stat_t)
-		if !ok || stat.Uid != 0 {
-			return "", false
-		}
 	}
 	raw, err := readRootQualification(QualificationPath)
 	if err != nil {
@@ -43,6 +33,49 @@ func trustedInstalledRunner(path string) (string, bool) {
 		return "", false
 	}
 	return SHA256(raw), true
+}
+
+func trustedInstalledUnitControl() bool {
+	if !trustedRootPath(InstalledUnitControl) || !trustedRootPath(UnitControlPolicyPath) || !trustedRootPath("/usr/bin/pkexec") {
+		return false
+	}
+	raw, err := readRootQualification(UnitControlSealPath)
+	if err != nil {
+		return false
+	}
+	lines := strings.Split(strings.TrimSpace(string(raw)), "\n")
+	if len(lines) != 4 || lines[0] != UnitControlSealMarker {
+		return false
+	}
+	for index, path := range []string{InstalledUnitControl, UnitControlPolicyPath} {
+		sha, err := fileSHA(path)
+		if err != nil || sha != lines[index+1] {
+			return false
+		}
+	}
+	return validDigest(lines[3])
+}
+
+func verifyInstalledUnitControl(ctx context.Context) bool {
+	if !trustedInstalledUnitControl() {
+		return false
+	}
+	output, err := commandOutput(ctx, "/usr/bin/pkexec", "--disable-internal-agent", InstalledUnitControl, "--verify-installation")
+	return err == nil && string(output) == "unit_control_trusted=yes\n"
+}
+
+func trustedRootPath(path string) bool {
+	for current := path; current != "/"; current = filepath.Dir(current) {
+		i, err := os.Lstat(current)
+		if err != nil || i.Mode()&os.ModeSymlink != 0 || i.Mode().Perm()&0022 != 0 {
+			return false
+		}
+		stat, ok := i.Sys().(*syscall.Stat_t)
+		if !ok || stat.Uid != 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func readRootQualification(path string) ([]byte, error) {

@@ -1,0 +1,12 @@
+environment=disposable_PostgreSQL_18_unix_socket_only
+version=18.6
+database=polis_r0_self_dev_go_1792959420_34676
+runtime_role=polis_self_dev_go_runtime_1792959420_34676
+network_listener=disabled
+test_pattern=^TestRealGoPatchWorkbenchE2E$
+command=bash scripts/go.sh test -p 1 -count=1 -json -v ./...
+migration=PASS
+schema_identity=18:133
+least_privilege=PASS
+postgres_backed_tests=FAIL
+postgres_integration_exit=1

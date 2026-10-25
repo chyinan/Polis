@@ -84,10 +84,19 @@ func productDeliveryChangeRoute(missionState string) string {
 }
 
 func productDeliveryDispositionRoute(missionState, dispositionState string) string {
-	if dispositionState != "changes_requested" {
+	switch dispositionState {
+	case "accepted":
+		switch missionState {
+		case "active", "paused", "succeeded", "ended_not_met", "cancelled":
+			return "accepted"
+		default:
+			return ""
+		}
+	case "changes_requested":
+		return productDeliveryChangeRoute(missionState)
+	default:
 		return ""
 	}
-	return productDeliveryChangeRoute(missionState)
 }
 
 func buildReadyProductDeliveryManifest(input readyProductDeliveryManifestInput) (durableProductDeliveryManifest, []byte, string, error) {

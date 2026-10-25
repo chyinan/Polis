@@ -1,0 +1,2 @@
+{"qualified":true,"reason":"qualified","cgroup":"/sys/fs/cgroup/system.slice/polis-self-dev-go-job@job-qualification-check.service","bootId":"89e82fea-58e1-44c3-a79d-cc96ec7d8fcd","qualificationSha256":"2c56cb7e74322545aefde99e066f33c66d57f37add490d21343d9211365878a6","limits":{"cpuQuotaMicros":200000,"cpuPeriodMicros":100000,"memoryBytes":2147483648,"swapBytes":0,"pids":256,"wallTimeoutMs":120000,"scratchBytes":1073741824,"scratchInodes":4096,"stdoutBytes":524288,"stderrBytes":524288}}
+inspect_exit=0

@@ -1,0 +1,8 @@
+2026-10-26T04:04:39+08:00
+your 131072x1 screen size is bogus. expect trouble
+runtime_handoff_preserved=/run/polis-self-dev-go-job (contains job evidence)
+cleaned=yes
+removed_only_marked_paths=yes
+your 131072x1 screen size is bogus. expect trouble
+supervisor_build=verified
+ERROR: refusing to overwrite existing path: /run/polis-self-dev-go-job

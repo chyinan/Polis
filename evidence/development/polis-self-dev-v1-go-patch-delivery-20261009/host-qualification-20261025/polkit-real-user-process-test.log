@@ -1,0 +1,5 @@
+process_pid=377
+pkcheck_exit=2
+  UID     PID COMMAND
+ 1000     377 sleep 30
+Authorization requires authentication and -u wasn't passed.

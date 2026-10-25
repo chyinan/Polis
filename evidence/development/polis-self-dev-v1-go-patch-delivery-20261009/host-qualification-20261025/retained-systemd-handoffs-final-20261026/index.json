@@ -1,0 +1,122 @@
+[
+  {
+    "jobRunId": "job-7c02d57e804e57bb6e8b9f713c279789",
+    "unit": "polis-self-dev-go-job@job-7c02d57e804e57bb6e8b9f713c279789.service",
+    "systemd": {
+      "Result": "success",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "InvocationID": ""
+    },
+    "request.jsonSha256": "1655fc0d18de4677b52940d26efeacdfe61ddf58be9c04b46b2054172771c8f2",
+    "result.jsonSha256": "2d7470acb9f290c26acb9daa9f495ff998c0b937d6b8c6de7a16b8fc3c036834",
+    "state": "exited",
+    "outcome": "passed",
+    "processStarted": true,
+    "exitObserved": true,
+    "exitCode": 0,
+    "qualificationEligible": true,
+    "cleanupConfirmed": true,
+    "reason": "fixed_test_set_passed"
+  },
+  {
+    "jobRunId": "job-897278a7f21ca9e6c641b044401c9a54",
+    "unit": "polis-self-dev-go-job@job-897278a7f21ca9e6c641b044401c9a54.service",
+    "systemd": {
+      "Result": "success",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "InvocationID": ""
+    },
+    "request.jsonSha256": "3421c9cd2daa35975e02c983c0af42fc326e65525c39b1215fd0a9a710077389",
+    "result.jsonSha256": "195f9614c55e839eab808e772130ef8f5bcdbf4121400d13a6ac07a796f1aeba",
+    "state": "exited",
+    "outcome": "passed",
+    "processStarted": true,
+    "exitObserved": true,
+    "exitCode": 0,
+    "qualificationEligible": true,
+    "cleanupConfirmed": true,
+    "reason": "fixed_test_set_passed"
+  },
+  {
+    "jobRunId": "job-9bb195eeba316b69b2adf1313419776e",
+    "unit": "polis-self-dev-go-job@job-9bb195eeba316b69b2adf1313419776e.service",
+    "systemd": {
+      "Result": "success",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "InvocationID": ""
+    },
+    "request.jsonSha256": "a70d486d8e2f2dd748937ffe1aaf2f8bae01345057047604fece78c72017338a",
+    "result.jsonSha256": "fae05a0c6571931c235483eacbdff451f0b0a7bc3e64fa97ad2f1a96dec63305",
+    "state": "exited",
+    "outcome": "passed",
+    "processStarted": true,
+    "exitObserved": true,
+    "exitCode": 0,
+    "qualificationEligible": true,
+    "cleanupConfirmed": true,
+    "reason": "fixed_test_set_passed"
+  },
+  {
+    "jobRunId": "job-cdbb806b0e578419a30b513d6d80a742",
+    "unit": "polis-self-dev-go-job@job-cdbb806b0e578419a30b513d6d80a742.service",
+    "systemd": {
+      "Result": "success",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "InvocationID": ""
+    },
+    "request.jsonSha256": "0959601193fca1b1f826b1c8ddcc8cb90aae42d792ee723a7816e39b3b6f0080",
+    "result.jsonSha256": "008cecbf999a72a30a57aae23f458677e6b82436824f63c8f3acde91014fdbed",
+    "state": "exited",
+    "outcome": "passed",
+    "processStarted": true,
+    "exitObserved": true,
+    "exitCode": 0,
+    "qualificationEligible": true,
+    "cleanupConfirmed": true,
+    "reason": "fixed_test_set_passed"
+  },
+  {
+    "jobRunId": "job-d27704cb51d42946c4fe4d3aa984adb8",
+    "unit": "polis-self-dev-go-job@job-d27704cb51d42946c4fe4d3aa984adb8.service",
+    "systemd": {
+      "Result": "success",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "InvocationID": ""
+    },
+    "request.jsonSha256": "71eac7ff5ad7a6809b41967830886102326906df2412628645dd2e7927bfba60",
+    "result.jsonSha256": "497b8b19095941380d5801c04aa0e0b34c0ff49dce1747401e555b24f45b1602",
+    "state": "exited",
+    "outcome": "passed",
+    "processStarted": true,
+    "exitObserved": true,
+    "exitCode": 0,
+    "qualificationEligible": true,
+    "cleanupConfirmed": true,
+    "reason": "fixed_test_set_passed"
+  },
+  {
+    "jobRunId": "job-fbad409df9baadc74bca4da4e7df6b96",
+    "unit": "polis-self-dev-go-job@job-fbad409df9baadc74bca4da4e7df6b96.service",
+    "systemd": {
+      "Result": "success",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "InvocationID": ""
+    },
+    "request.jsonSha256": "3d49af87e159972e6c980f8fb2956820162d8f1bb799259fef8fe10433fad7a9",
+    "result.jsonSha256": "6c0964e3243298736b00a604896b4293187bbb2d2331e29fa624e883f95b8cb2",
+    "state": "exited",
+    "outcome": "passed",
+    "processStarted": true,
+    "exitObserved": true,
+    "exitCode": 0,
+    "qualificationEligible": true,
+    "cleanupConfirmed": true,
+    "reason": "fixed_test_set_passed"
+  }
+]

@@ -1,0 +1,17 @@
+2026-10-26 03:41:47.428 CST [28488] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-26 03:41:47.430 CST [28488] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.2uH9KU/socket/.s.PGSQL.5432"
+2026-10-26 03:41:47.437 CST [28494] LOG:  database system was shut down at 2026-10-26 03:41:47 CST
+2026-10-26 03:41:47.441 CST [28488] LOG:  database system is ready to accept connections
+2026-10-26 03:41:55.081 CST [28570] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-26 03:41:55.081 CST [28570] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-26 03:41:56.034 CST [28585] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-26 03:41:56.034 CST [28585] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-26 03:43:36.148 CST [28492] LOG:  checkpoint starting: immediate force wait
+2026-10-26 03:43:36.429 CST [28492] LOG:  checkpoint complete: wrote 1802 buffers (11.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.024 s, sync=0.248 s, total=0.281 s; sync files=1341, longest=0.003 s, average=0.001 s; distance=24924 kB, estimate=24924 kB; lsn=0/2FAD780, redo lsn=0/2FAD728
+2026-10-26 03:43:38.986 CST [28488] LOG:  received fast shutdown request
+2026-10-26 03:43:38.989 CST [28488] LOG:  aborting any active transactions
+2026-10-26 03:43:38.992 CST [28488] LOG:  background worker "logical replication launcher" (PID 28497) exited with exit code 1
+2026-10-26 03:43:38.993 CST [28492] LOG:  shutting down
+2026-10-26 03:43:38.994 CST [28492] LOG:  checkpoint starting: shutdown immediate
+2026-10-26 03:43:39.006 CST [28492] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.001 s, total=0.014 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=22432 kB; lsn=0/2FAD898, redo lsn=0/2FAD898
+2026-10-26 03:43:39.021 CST [28488] LOG:  database system is shut down

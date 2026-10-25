@@ -1,0 +1,6 @@
+supervisor_build=verified
+supervisor_binary_built=yes
+artifact=/mnt/d/Programs/Polis-cloud-main/bin/polis-selfdev-go-job-supervisor
+identity=/mnt/d/Programs/Polis-cloud-main/bin/polis-selfdev-go-job-supervisor.identity.json
+privileged_apply_authorized=no
+host_execution_profile_qualified=no

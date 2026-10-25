@@ -1,0 +1,7 @@
+environment=disposable_PostgreSQL_18_unix_socket_only
+version=18.6
+database=polis_r0_self_dev_go_1792947040_13868
+runtime_role=polis_self_dev_go_runtime_1792947040_13868
+network_listener=disabled
+command=bash scripts/go.sh test -p 1 -count=1 -json -v ./...
+postgres_integration_exit=0

@@ -1,0 +1,8 @@
+postgresql18_runtime=available
+version=18.6
+source=repository_runtime
+bin=/mnt/d/Programs/Polis-cloud-main/.tools/pg/usr/lib/postgresql/18/bin
+share=/mnt/d/Programs/Polis-cloud-main/.tools/pg/usr/share/postgresql/18
+postgres_integration=PASS
+evidence_dir=/mnt/d/Programs/Polis-cloud-main/evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-broker-20261026/postgres-runtime/20261025T183222Z-9178
+postgres_harness_exit=0

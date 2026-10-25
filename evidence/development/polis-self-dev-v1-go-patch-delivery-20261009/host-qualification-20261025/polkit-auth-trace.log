@@ -1,0 +1,3 @@
+request_exit=1
+Failed to start polis-self-dev-go-probe@probe-authtrace.service: Interactive authentication required.
+See system logs and 'systemctl status polis-self-dev-go-probe@probe-authtrace.service' for details.

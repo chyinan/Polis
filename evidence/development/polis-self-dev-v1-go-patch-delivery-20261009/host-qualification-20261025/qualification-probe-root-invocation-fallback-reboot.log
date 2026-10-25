@@ -1,0 +1,54 @@
+distribution=Ubuntu-22.04
+kernel=Linux 6.6.87.2-microsoft-standard-WSL2 x86_64 GNU/Linux
+init_systemd=systemd/running
+cgroup2_mount=/sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate
+available_controllers=cpuset,cpu,io,memory,hugetlb,pids,rdma
+root_subtree_control=memory,pids
+system_slice=/system.slice
+system_slice_available_controllers=memory,pids
+system_slice_subtree_control=memory,pids
+user_cgroup=/sys/fs/cgroup/user.slice/user-0.slice/user@0.service
+user_available_controllers=memory,pids
+user_subtree_control=memory,pids
+delegated_controllers=memory,pids
+user_cgroup_writable=yes
+cgroup_kill=present-writable
+bwrap=bubblewrap 0.6.1
+scratch_target=/tmp
+scratch_source=/dev/sdd
+scratch_filesystem=ext4
+scratch_options=rw,relatime,discard,errors=remount-ro,data=ordered
+scratch_bytes_available=1018930671616
+scratch_inodes_available=67001377
+scratch_quota=not_verified_for_job
+probe_profile=polis-go-test-fixture@1
+system_service_profile=not_prepared
+privilege_gaps=cpu_controller_not_available_to_user_scope,cpu_controller_not_delegated,per_job_scratch_tmpfs_not_active
+path_boundary=pass;network_namespace=pass;network_interfaces=loopback_only
+your 131072x1 screen size is bogus. expect trouble
+trusted_bwrap_boundary_probe=pass
+trusted_bwrap_pid_cleanup_probe=pass
+profile_revision=polis-go-test-fixture@1
+cpu_max=200000 100000
+memory_max=2147483648
+memory_swap_max=0
+pids_max=256
+cgroup_kill=present_systemd_managed
+scratch_fstype=tmpfs
+scratch_options=rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+scratch_total_inodes=4096
+memory_boundary=pass;max_events=82;oom_events=1;oom_kill_events=1;swap_current=0
+scratch_byte_boundary=pass
+scratch_inode_boundary=pass;created=4094
+cpu_throttling=pass
+pids_boundary=pass;max_events=1;spawned=248;limit_hit=1
+candidate_execution=not_run
+probe_result=pass
+wallclock_boundary=pass;result=timeout;elapsed_seconds=121;process_tree=empty
+path_boundary=pass
+network_boundary=pass
+process_tree_cleanup=pass
+probe_bundle_sha256=7412bd2ed5fe86d89de3d1e193b1e9d0a4ebefe1dda0af8c31ca4ca75951b7c4
+qualification=qualified
+candidate_execution=not_run
+verify_exit=0

@@ -1,0 +1,32 @@
+boot_id=89e82fea-58e1-44c3-a79d-cc96ec7d8fcd
+--- polis-self-dev-go-job@job-1c42afb2be93b984ee851ab911a737fa.service
+Result=success
+ExecMainStatus=0
+ControlGroup=
+ActiveState=inactive
+SubState=dead
+InvocationID=
+-rw------- chyinan:chyinan 3955 /run/polis-self-dev-go-job/job-1c42afb2be93b984ee851ab911a737fa/result.json
+-rw------- chyinan:chyinan 4480 /run/polis-self-dev-go-job/job-1c42afb2be93b984ee851ab911a737fa/request.json
+cgroup=absent
+--- polis-self-dev-go-job@job-678e4930b48d8bcebbeda8e46c9c60c7.service
+Result=success
+ExecMainStatus=0
+ControlGroup=
+ActiveState=inactive
+SubState=dead
+InvocationID=
+-rw------- chyinan:chyinan 3947 /run/polis-self-dev-go-job/job-678e4930b48d8bcebbeda8e46c9c60c7/result.json
+-rw------- chyinan:chyinan 4480 /run/polis-self-dev-go-job/job-678e4930b48d8bcebbeda8e46c9c60c7/request.json
+cgroup=absent
+--- polis-self-dev-go-job@job-eca8bb14cef2aeb5777aaae07d77a588.service
+Result=success
+ExecMainStatus=0
+ControlGroup=
+ActiveState=inactive
+SubState=dead
+InvocationID=
+-rw------- chyinan:chyinan 3947 /run/polis-self-dev-go-job/job-eca8bb14cef2aeb5777aaae07d77a588/result.json
+-rw------- chyinan:chyinan 4480 /run/polis-self-dev-go-job/job-eca8bb14cef2aeb5777aaae07d77a588/request.json
+cgroup=absent
+your 131072x1 screen size is bogus. expect trouble

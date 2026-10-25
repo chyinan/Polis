@@ -1,0 +1,6 @@
+start_exit=0
+Oct 25 21:11:43 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag6...
+Oct 25 21:11:43 DESKTOP-L1ND50Q systemd[1]: Started Polis trusted Go job host probe probe-diag6.
+Oct 25 21:11:43 DESKTOP-L1ND50Q bash[385]: probe_controls_observed=cpu.max:200000 100000,memory.max:2147483648,memory.swap.max:0,pids.max:256,scratch:rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000,inodes:4096
+Oct 25 21:11:43 DESKTOP-L1ND50Q bash[385]: probe_scratch_mount=fstype:tmpfs;mount=/scratch,tmpfs,tmpfs,rw,nosuid,nodev,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000
+Oct 25 21:11:43 DESKTOP-L1ND50Q bash[412]: 724 677 0:84 / /scratch rw,nosuid,nodev shared:315 - tmpfs tmpfs rw,size=1048576k,nr_inodes=4096,mode=700,uid=1000,gid=1000

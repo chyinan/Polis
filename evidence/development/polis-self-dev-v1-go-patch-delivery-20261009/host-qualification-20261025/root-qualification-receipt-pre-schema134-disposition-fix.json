@@ -1,0 +1,21 @@
+{
+  "Protocol": "polis-go-job-supervisor@1",
+  "ProfileRevision": "polis-go-test-fixture@1",
+  "BootID": "89e82fea-58e1-44c3-a79d-cc96ec7d8fcd",
+  "RunnerSHA256": "9fb299047f8846c76ffa7837e6dbc60ead169a6987250e640f3ffe81992bcc21",
+  "ToolchainTreeSHA256": "7643befa386325ee8037168d2a6d7f3887677c2e3bd4f096c4a3917f8a78cc23",
+  "BubblewrapSHA256": "bf6cf3d4456665f5d80c14eb79a76e0ce87b39a0883e614a161658b4ec33492c",
+  "ProbeSHA256": "7412bd2ed5fe86d89de3d1e193b1e9d0a4ebefe1dda0af8c31ca4ca75951b7c4",
+  "Limits": {
+    "cpuQuotaMicros": 200000,
+    "cpuPeriodMicros": 100000,
+    "memoryBytes": 2147483648,
+    "swapBytes": 0,
+    "pids": 256,
+    "wallTimeoutMs": 120000,
+    "scratchBytes": 1073741824,
+    "scratchInodes": 4096,
+    "stdoutBytes": 524288,
+    "stderrBytes": 524288
+  }
+}

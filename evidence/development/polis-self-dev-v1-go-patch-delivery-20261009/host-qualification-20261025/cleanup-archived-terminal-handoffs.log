@@ -1,0 +1,4 @@
+job=job-1c42afb2be93b984ee851ab911a737fa state=inactive result=success cgroup_empty=yes handoff_sha_verified=yes archived=yes ephemeral_removed=yes
+job=job-678e4930b48d8bcebbeda8e46c9c60c7 state=inactive result=success cgroup_empty=yes handoff_sha_verified=yes archived=yes ephemeral_removed=yes
+job=job-eca8bb14cef2aeb5777aaae07d77a588 state=inactive result=success cgroup_empty=yes handoff_sha_verified=yes archived=yes ephemeral_removed=yes
+runtime_handoff_root_removed=empty_only

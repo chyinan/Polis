@@ -1,0 +1,8 @@
+{
+  "result": "failed",
+  "error": "RuntimeError: owner disposition returned 409: {\"error\":\"delivery changes cannot be routed while the Mission is not active, paused, or terminal\",\"code\":\"REVISION_CONFLICT\",\"targetType\":\"artifact_delivery_disposition\",\"targetId\":\"416188728ca458da2b607a7d2701dc42\",\"currentState\":\"active\"}\n",
+  "providerEgress": 0,
+  "realModelWorkerStarted": 0,
+  "automaticMerge": "NO",
+  "automaticDeploy": "NO"
+}

@@ -46,7 +46,9 @@ run_check() {
 }
 run_check supervisor-build bash scripts/build-self-dev-go-supervisor.sh
 cp bin/polis-selfdev-go-job-supervisor.identity.json "$evidence/supervisor.identity.json"
-run_check script-syntax bash -n scripts/build-self-dev-go-supervisor.sh scripts/self-dev-go-job-host.sh scripts/self-dev-go-job-host-root.sh scripts/self-dev-go-job-host-test.sh scripts/self-dev-go-job-pg-test.sh scripts/self-dev-go-job-verify.sh scripts/go.sh
+run_check host-probe-build bash scripts/build-self-dev-go-host-probe.sh
+run_check unit-control-build bash scripts/build-self-dev-go-unit-control.sh
+run_check script-syntax bash -n scripts/build-self-dev-go-supervisor.sh scripts/build-self-dev-go-host-probe.sh scripts/build-self-dev-go-unit-control.sh scripts/self-dev-go-job-host.sh scripts/self-dev-go-job-host-root.sh scripts/self-dev-go-job-host-test.sh scripts/self-dev-go-job-pg-test.sh scripts/self-dev-go-job-verify.sh scripts/go.sh
 run_check host-cli bash scripts/self-dev-go-job-host-test.sh
 run_check host-inspect bash scripts/self-dev-go-job-host.sh inspect
 run_check host-prepare bash scripts/self-dev-go-job-host.sh prepare

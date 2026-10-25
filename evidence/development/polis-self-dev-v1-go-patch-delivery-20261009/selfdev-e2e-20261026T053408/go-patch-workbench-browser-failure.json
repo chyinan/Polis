@@ -1,0 +1,8 @@
+{
+  "result": "failed",
+  "error": "RuntimeError: durable DeliveryManifest readback returned 409: {\"error\":\"artifact delivery is blocked by an unresolved formal requirement change\"}\n",
+  "providerEgress": 0,
+  "realModelWorkerStarted": 0,
+  "automaticMerge": "NO",
+  "automaticDeploy": "NO"
+}

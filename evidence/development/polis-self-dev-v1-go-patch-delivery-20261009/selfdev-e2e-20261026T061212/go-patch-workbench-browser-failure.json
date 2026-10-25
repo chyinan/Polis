@@ -1,0 +1,8 @@
+{
+  "result": "failed",
+  "error": "AssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" with timeout 15000ms\n  - waiting for get_by_test_id(\"durable-user-disposition-form\").get_by_text(\"已接受\")\n",
+  "providerEgress": 0,
+  "realModelWorkerStarted": 0,
+  "automaticMerge": "NO",
+  "automaticDeploy": "NO"
+}

@@ -1,0 +1,47 @@
+changes_applied=no
+prepare_mode=plan_only
+target_distribution=Ubuntu-22.04
+target_uid=1000
+target_user=chyinan
+root_required=yes
+supervisor_source_path=/mnt/d/Programs/Polis-cloud-main/cmd/polis-selfdev-go-job-supervisor/main.go
+supervisor_command_source=present
+supervisor_binary_path=/mnt/d/Programs/Polis-cloud-main/bin/polis-selfdev-go-job-supervisor
+supervisor_binary=present
+host_probe_binary=present
+host_probe_binary_sha256=e0dce81c047aaf1e73630bae957d6f4c16dbe453549469205ecfff92eec3d0c7
+unit_control_binary=present
+unit_control_binary_sha256=be7c920fdae8226ea3831a1db898699e3097a11d2925153dda1ba20280150157
+apply_ready=yes
+setup_plan_valid=yes
+supervisor_binary_built=yes
+privileged_apply_authorized=no
+host_execution_profile_qualified=no
+exact_files:
+  /usr/local/libexec (create 0755 only if absent; retain the shared parent on cleanup)
+  /etc/systemd/system/polis-self-dev-go-job@.service
+  /etc/systemd/system/polis-self-dev-go-probe@.service
+  /usr/share/polkit-1/actions/org.polis.selfdev-go-unit-control.policy
+  /etc/polkit-1/localauthority/50-local.d/50-polis-selfdev-go-unit-control.pkla
+  /usr/local/libexec/polis-selfdev-go-job-supervisor (built from this checkout)
+  /usr/local/libexec/polis-selfdev-go-job-supervisor.identity.json
+  /usr/local/libexec/polis-selfdev-go-unit-control (fixed pkexec custom-action helper)
+  /etc/systemd/system/polis-self-dev-go-unit-control.sha256
+  /etc/systemd/system/polis-self-dev-go-job-supervisor.sha256
+  /run/polis-self-dev-go-job (0700; request/result handoff)
+  /scratch (empty root:root 0755 per-unit tmpfs mountpoint; cleanup only by exact empty rmdir)
+resource_settings:
+  CPUQuota=200%; CPUQuotaPeriodSec=100ms
+  MemoryMax=2147483648; MemorySwapMax=0
+  TasksMax=256 (pids.max counts all tasks, including processes and threads)
+  RuntimeMaxSec=120s; KillMode=control-group
+  termination=systemd-owned per-job cgroup; verify cgroup.kill presence and prove all child PIDs gone after stop
+  TemporaryFileSystem=/scratch:rw,size=1073741824,nr_inodes=4096,mode=0700,uid=1000,gid=1000,nodev,nosuid
+  nr_inodes=4096 caps all filesystem inodes on this per-job tmpfs (files, directories and links), not just regular files
+impact=only this WSL distribution's dedicated self-dev Go JobRun system units and their systemd-created per-job cgroups; no global WSL config, physical disk, firewall, sudoers, or running Polis change
+polkit=custom actions allow chyinan to invoke only fixed job-start/job-stop helper operations; no systemd manage-units grant
+rollback=stop exact probe/job units, then run: sudo bash /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host-root.sh cleanup --target-uid 1000 --confirm
+activation=systemd daemon-reload; actual controller and quota availability must still pass the probe before candidate execution
+prerequisite_command=sudo install -d -m 0755 /usr/local/libexec (review absent directories first; require existing polkit action and local-authority directories)
+apply_command=sudo bash /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host-root.sh apply --target-uid 1000 --confirm
+verify_command=bash /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh verify

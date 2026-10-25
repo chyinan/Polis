@@ -1,0 +1,27 @@
+{
+  "result": "passed",
+  "companyId": "selfdev-e2e-zbpdglrucgpp",
+  "taskId": "155a8554c3258fe597a2086a983b0237",
+  "jobRunId": "job-9bb195eeba316b69b2adf1313419776e",
+  "artifactId": "d267aaca4873bfb4e788306f7ca856fa",
+  "jobState": "exited",
+  "outcome": "passed",
+  "executionKind": "real",
+  "qualificationEligible": true,
+  "cleanupConfirmed": true,
+  "disposition": "accepted",
+  "diffVisible": true,
+  "noAutoApply": true,
+  "externalAction": "not_run",
+  "providerEgress": 0,
+  "realModelWorkerStarted": 0,
+  "automaticMerge": "NO",
+  "automaticDeploy": "NO",
+  "screenshots": [
+    "go-patch-workbench-diff.png",
+    "go-patch-workbench-disposition.png"
+  ],
+  "browserErrors": [],
+  "unexpectedHTTPFailures": [],
+  "expectedLocalOwnerStatusDenials": 2
+}

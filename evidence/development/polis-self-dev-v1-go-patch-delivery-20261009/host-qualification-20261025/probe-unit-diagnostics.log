@@ -1,0 +1,31 @@
+start_exit=0
+Result=exit-code
+ExecMainPID=369
+ExecMainCode=1
+ExecMainStatus=226
+ControlGroup=
+CPUQuotaPerSecUSec=2s
+MemoryMax=2147483648
+MemorySwapMax=0
+TasksMax=256
+ActiveState=failed
+SubState=failed
+× polis-self-dev-go-probe@probe-diag2.service - Polis trusted Go job host probe probe-diag2
+     Loaded: loaded (/etc/systemd/system/polis-self-dev-go-probe@.service; static)
+     Active: failed (Result: exit-code) since Sun 2026-10-25 20:50:17 CST; 1s ago
+    Process: 369 ExecStart=/bin/bash /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh probe-unit probe-diag2 (code=exited, status=226/NAMESPACE)
+   Main PID: 369 (code=exited, status=226/NAMESPACE)
+        CPU: 5ms
+
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag2...
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[369]: polis-self-dev-go-probe@probe-diag2.service: Failed to set up mount namespacing: /run/systemd/unit-root/scratch: No such file or directory
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[369]: polis-self-dev-go-probe@probe-diag2.service: Failed at step NAMESPACE spawning /bin/bash: No such file or directory
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag2.service: Main process exited, code=exited, status=226/NAMESPACE
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag2.service: Failed with result 'exit-code'.
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: Failed to start Polis trusted Go job host probe probe-diag2.
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag2...
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[369]: polis-self-dev-go-probe@probe-diag2.service: Failed to set up mount namespacing: /run/systemd/unit-root/scratch: No such file or directory
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[369]: polis-self-dev-go-probe@probe-diag2.service: Failed at step NAMESPACE spawning /bin/bash: No such file or directory
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag2.service: Main process exited, code=exited, status=226/NAMESPACE
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag2.service: Failed with result 'exit-code'.
+Oct 25 20:50:17 DESKTOP-L1ND50Q systemd[1]: Failed to start Polis trusted Go job host probe probe-diag2.

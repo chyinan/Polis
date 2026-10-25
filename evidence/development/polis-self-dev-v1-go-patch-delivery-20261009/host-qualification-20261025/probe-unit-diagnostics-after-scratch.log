@@ -1,0 +1,23 @@
+start_exit=0
+Result=exit-code
+ExecMainPID=380
+ExecMainCode=1
+ExecMainStatus=1
+ControlGroup=
+ActiveState=failed
+SubState=failed
+× polis-self-dev-go-probe@probe-diag3.service - Polis trusted Go job host probe probe-diag3
+     Loaded: loaded (/etc/systemd/system/polis-self-dev-go-probe@.service; static)
+     Active: failed (Result: exit-code) since Sun 2026-10-25 21:06:52 CST; 971ms ago
+    Process: 380 ExecStart=/bin/bash /mnt/d/Programs/Polis-cloud-main/scripts/self-dev-go-job-host.sh probe-unit probe-diag3 (code=exited, status=1/FAILURE)
+   Main PID: 380 (code=exited, status=1/FAILURE)
+        CPU: 40ms
+
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag3...
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: Started Polis trusted Go job host probe probe-diag3.
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag3.service: Main process exited, code=exited, status=1/FAILURE
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag3.service: Failed with result 'exit-code'.
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: Starting Polis trusted Go job host probe probe-diag3...
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: Started Polis trusted Go job host probe probe-diag3.
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag3.service: Main process exited, code=exited, status=1/FAILURE
+Oct 25 21:06:52 DESKTOP-L1ND50Q systemd[1]: polis-self-dev-go-probe@probe-diag3.service: Failed with result 'exit-code'.

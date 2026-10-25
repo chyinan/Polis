@@ -1,0 +1,3 @@
+process_pid=386
+pkcheck_exit=2
+Authorization requires authentication and -u wasn't passed.

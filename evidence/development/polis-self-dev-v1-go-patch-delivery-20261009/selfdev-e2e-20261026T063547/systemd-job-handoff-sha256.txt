@@ -1,0 +1,4 @@
+0959601193fca1b1f826b1c8ddcc8cb90aae42d792ee723a7816e39b3b6f0080  /run/polis-self-dev-go-job/job-cdbb806b0e578419a30b513d6d80a742/request.json
+0959601193fca1b1f826b1c8ddcc8cb90aae42d792ee723a7816e39b3b6f0080  /mnt/d/Programs/Polis-cloud-main/evidence/development/polis-self-dev-v1-go-patch-delivery-20261009/selfdev-e2e-20261026T063547/systemd-job-request.json
+008cecbf999a72a30a57aae23f458677e6b82436824f63c8f3acde91014fdbed  /run/polis-self-dev-go-job/job-cdbb806b0e578419a30b513d6d80a742/result.json
+008cecbf999a72a30a57aae23f458677e6b82436824f63c8f3acde91014fdbed  /mnt/d/Programs/Polis-cloud-main/evidence/development/polis-self-dev-v1-go-patch-delivery-20261009/selfdev-e2e-20261026T063547/systemd-job-result.json

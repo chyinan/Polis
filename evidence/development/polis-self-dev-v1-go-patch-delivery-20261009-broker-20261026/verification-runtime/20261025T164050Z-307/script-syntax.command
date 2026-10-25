@@ -1,0 +1,1 @@
+bash -n scripts/build-self-dev-go-supervisor.sh scripts/build-self-dev-go-host-probe.sh scripts/build-self-dev-go-unit-control.sh scripts/self-dev-go-job-host.sh scripts/self-dev-go-job-host-root.sh scripts/self-dev-go-job-host-test.sh scripts/self-dev-go-job-pg-test.sh scripts/self-dev-go-job-verify.sh scripts/go.sh

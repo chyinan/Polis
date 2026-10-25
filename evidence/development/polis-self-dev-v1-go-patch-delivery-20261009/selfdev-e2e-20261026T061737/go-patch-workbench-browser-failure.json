@@ -1,0 +1,8 @@
+{
+  "result": "failed",
+  "error": "AssertionError: Locator expected to be visible\nActual value: None\nError: strict mode violation: get_by_text(\"已接受\") resolved to 2 elements:\n    1) <span class=\"_detailValue_1lglk_1958\">已接受</span> aka get_by_text(\"已接受\", exact=True)\n    2) <strong>Disposition revision 2 · 已接受</strong> aka get_by_text(\"Disposition revision 2 · 已接受\")\n \nCall log:\n  - Expect \"to_be_visible\" with timeout 15000ms\n  - waiting for get_by_text(\"已接受\")\n",
+  "providerEgress": 0,
+  "realModelWorkerStarted": 0,
+  "automaticMerge": "NO",
+  "automaticDeploy": "NO"
+}

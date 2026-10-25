@@ -1,0 +1,8 @@
+{
+  "result": "failed",
+  "error": "RuntimeError: real Workbench Go JobRun start returned 403: {\"error\":\"owner request failed CSRF verification\"}\n",
+  "providerEgress": 0,
+  "realModelWorkerStarted": 0,
+  "automaticMerge": "NO",
+  "automaticDeploy": "NO"
+}
