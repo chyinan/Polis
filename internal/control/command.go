@@ -377,6 +377,11 @@ type DecideDependencyChangeRequest struct {
 	RequestID  string `json:"requestId"`
 }
 
+type MaterializeDependencyChangeRequest struct {
+	ProposalID string `json:"proposalId"`
+	RequestID  string `json:"requestId"`
+}
+
 type StartProjectJobRequest struct {
 	ExecuteGoTest               bool     `json:"executeGoTest,omitempty"`
 	TaskID                      string   `json:"taskId"`
@@ -408,8 +413,10 @@ type EnvironmentLifecycleService interface {
 }
 
 type DependencyChangeService interface {
+	ListDependencyChanges(ctx context.Context, companyID, missionID string) ([]kernel.DependencyChangeProposalRecord, error)
 	ProposeDependencyChange(ctx context.Context, companyID string, request ProposeDependencyChangeRequest) (kernel.DependencyChangeProposalRecord, error)
 	DecideDependencyChange(ctx context.Context, companyID string, request DecideDependencyChangeRequest) (kernel.DependencyChangeProposalRecord, error)
+	MaterializeDependencyChange(ctx context.Context, companyID string, request MaterializeDependencyChangeRequest) (kernel.DependencyChangeMaterializationRecord, error)
 }
 
 type ProjectJobLifecycleService interface {

@@ -13,6 +13,41 @@ import (
 
 var errDependencyMaterialization = errors.New("invalid dependency change materialization")
 
+// BuildWindowsNodeNPMDependencyResolutionArgs uses npm only to produce a
+// lockfile. Exactly one approved registry is supported; arbitrary scripts,
+// save operations, workspace expansion, shell commands, and host paths are not
+// accepted as inputs.
+func BuildWindowsNodeNPMDependencyResolutionArgs(plan NodeNPMProjectPlan, nodeExecutable, npmCLIScript, registryHost string) ([]string, error) {
+	if plan.ProfileID != WindowsNodeNPMProfile || plan.SourceKind != NodeSnapshotFilesSource || plan.InstallPolicy != WindowsNodeInstallPolicy ||
+		!isAbsoluteWindowsPath(nodeExecutable) || !isAbsoluteWindowsPath(npmCLIScript) {
+		return nil, errDependencyMaterialization
+	}
+	canonicalHosts, err := normalizeRegistryHosts([]string{registryHost})
+	if err != nil || len(plan.RegistryHosts) == 0 || canonicalHosts[0] != registryHost {
+		return nil, errDependencyMaterialization
+	}
+	allowed := false
+	for _, host := range plan.RegistryHosts {
+		if host == registryHost {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
+		return nil, errDependencyMaterialization
+	}
+	return []string{nodeExecutable, npmCLIScript, "install", "--package-lock-only", "--ignore-scripts", "--no-audit", "--no-fund", "--no-save", "--workspaces=false", "--registry=https://" + registryHost + "/"}, nil
+}
+
+func DependencyChangeHostsWithinPolicy(policyHosts, proposalHosts []string) bool {
+	canonicalPolicy, policyErr := normalizeRegistryHosts(policyHosts)
+	canonicalProposal, proposalErr := normalizeRegistryHosts(proposalHosts)
+	if policyErr != nil || proposalErr != nil {
+		return false
+	}
+	return dependencyChangeHostsWithinPolicy(canonicalProposal, canonicalPolicy)
+}
+
 // ApplyDependencyChangeToPackageJSON produces the only permitted source edit:
 // add or replace exact, semver-pinned entries in the root dependencies object.
 // It preserves all other package.json values and rejects ambiguous JSON,
@@ -118,8 +153,9 @@ func PrepareDependencyChangeProjectFiles(files []ProjectSourceFile, plan NodeNPM
 
 // ValidateDependencyChangeMaterialization accepts a lockfile only when it
 // forms a valid project snapshot with the exact deterministic package.json
-// overlay. The environment plan validator checks pinned registry tarballs,
-// lockfile bounds, and root dependency equality.
+// overlay. The environment plan validator checks pinned tarballs against the
+// full base-policy allowlist; resolver egress itself is separately narrowed to
+// the proposal's registry hosts.
 func ValidateDependencyChangeMaterialization(baseFiles []ProjectSourceFile, plan NodeNPMProjectPlan, proposal DependencyChangeProposal, updatedPackageJSON, resolvedLockfile []byte, allowedRegistryHosts []string) ([]ProjectSourceFile, NodeNPMProjectPlan, error) {
 	canonicalProposal, _, _, proposalErr := CanonicalizeDependencyChangeProposal(proposal)
 	policyHosts, policyErr := normalizeRegistryHosts(allowedRegistryHosts)
@@ -152,7 +188,7 @@ func ValidateDependencyChangeMaterialization(baseFiles []ProjectSourceFile, plan
 		return nil, NodeNPMProjectPlan{}, errDependencyMaterialization
 	}
 	expectedFiles[lockIndex].Content = bytes.Clone(resolvedLockfile)
-	resolvedPlan, err := InspectNodeNPMProjectFilesForProfile(expectedFiles, canonicalProposal.RegistryHosts, plan.ProfileID)
+	resolvedPlan, err := InspectNodeNPMProjectFilesForProfile(expectedFiles, policyHosts, plan.ProfileID)
 	if err != nil {
 		return nil, NodeNPMProjectPlan{}, fmt.Errorf("%w: resolved lockfile failed project validation: %v", errDependencyMaterialization, err)
 	}

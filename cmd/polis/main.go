@@ -341,6 +341,9 @@ func serveWorkbench() (returnErr error) {
 	if err = kernelRuntime.TXReconcileStdioMCPRuntimeObservationIntents(ctx, startupReconciliationID); err != nil {
 		return fmt.Errorf("failed to reconcile interrupted MCP runtime observations: %w", err)
 	}
+	if _, err = kernelRuntime.TXReconcileUnrestoredDependencyChangeMaterializations(ctx, startupReconciliationID+"-dependency-materialization"); err != nil {
+		return fmt.Errorf("failed to reconcile interrupted DependencyChange materializations: %w", err)
+	}
 	var linuxCgroupManager environment.LinuxNodeCgroupManager
 	var linuxInstanceIdentity string
 	if runtime.GOOS == "linux" {

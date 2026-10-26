@@ -14,17 +14,18 @@ import (
 )
 
 type DependencyChangeProposalRecord struct {
-	CompanyID      string                               `json:"companyId"`
-	ProposalID     string                               `json:"proposalId"`
-	MissionID      string                               `json:"missionId"`
-	BaseRevisionID string                               `json:"baseRevisionId"`
-	Proposal       environment.DependencyChangeProposal `json:"proposal"`
-	ProposalSHA256 string                               `json:"proposalSha256"`
-	State          string                               `json:"state"`
-	Actor          string                               `json:"actor"`
-	Rationale      string                               `json:"rationale"`
-	RequestID      string                               `json:"requestId"`
-	CreatedAt      string                               `json:"createdAt"`
+	CompanyID       string                                 `json:"companyId"`
+	ProposalID      string                                 `json:"proposalId"`
+	MissionID       string                                 `json:"missionId"`
+	BaseRevisionID  string                                 `json:"baseRevisionId"`
+	Proposal        environment.DependencyChangeProposal   `json:"proposal"`
+	ProposalSHA256  string                                 `json:"proposalSha256"`
+	State           string                                 `json:"state"`
+	Actor           string                                 `json:"actor"`
+	Rationale       string                                 `json:"rationale"`
+	RequestID       string                                 `json:"requestId"`
+	CreatedAt       string                                 `json:"createdAt"`
+	Materialization *DependencyChangeMaterializationRecord `json:"materialization,omitempty"`
 }
 
 type DependencyChangeDecisionInput struct {
@@ -91,6 +92,12 @@ func (k *Kernel) DecideDependencyChange(ctx context.Context, scope Scope, input 
 		return DependencyChangeProposalRecord{}, core.Malformed
 	}
 	_, err := k.TXWrite(ctx, scope, nil, input.RequestID, "environment.dependency_change.decide", input, func(tx pgx.Tx) (Receipt, error) {
+		var lockedProposalID string
+		if err := tx.QueryRow(ctx, `SELECT proposal_id FROM environment_dependency_change_proposals WHERE company_id=$1 AND proposal_id=$2 FOR UPDATE`, scope.company, input.ProposalID).Scan(&lockedProposalID); errors.Is(err, pgx.ErrNoRows) {
+			return Receipt{}, core.OutOfScope
+		} else if err != nil {
+			return Receipt{}, err
+		}
 		var currentState string
 		if err := tx.QueryRow(ctx, `SELECT state FROM environment_dependency_change_events WHERE company_id=$1 AND proposal_id=$2 ORDER BY event_seq DESC LIMIT 1 FOR UPDATE`, scope.company, input.ProposalID).Scan(&currentState); errors.Is(err, pgx.ErrNoRows) {
 			return Receipt{}, core.OutOfScope
@@ -137,7 +144,60 @@ WHERE p.company_id=$1 AND p.proposal_id=$2`, scope.company, proposalID).Scan(&re
 	}
 	record.Proposal = canonicalProposal
 	record.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+	if materialization, materializationErr := k.LatestDependencyChangeMaterialization(ctx, scope, proposalID); materializationErr == nil {
+		record.Materialization = &materialization
+	} else if !errors.Is(materializationErr, core.OutOfScope) {
+		return DependencyChangeProposalRecord{}, materializationErr
+	}
 	return record, nil
+}
+
+func (k *Kernel) ListDependencyChangeProposals(ctx context.Context, scope Scope, missionID string) ([]DependencyChangeProposalRecord, error) {
+	if !core.ValidID(scope.company) || !core.ValidID(missionID) {
+		return nil, core.Malformed
+	}
+	rows, err := k.pool.Query(ctx, `SELECT p.company_id,p.proposal_id,p.mission_id,p.base_revision_id,p.proposal,p.proposal_sha256,
+e.state,e.actor,e.rationale,e.request_id,p.created_at
+FROM environment_dependency_change_proposals p
+JOIN LATERAL (SELECT state,actor,rationale,request_id,created_at FROM environment_dependency_change_events
+ WHERE company_id=p.company_id AND proposal_id=p.proposal_id ORDER BY event_seq DESC LIMIT 1) e ON true
+WHERE p.company_id=$1 AND p.mission_id=$2 ORDER BY p.created_at DESC,p.proposal_id LIMIT 50`, scope.company, missionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := make([]DependencyChangeProposalRecord, 0, 16)
+	for rows.Next() {
+		var record DependencyChangeProposalRecord
+		var rawProposal []byte
+		var createdAt time.Time
+		if err := rows.Scan(&record.CompanyID, &record.ProposalID, &record.MissionID, &record.BaseRevisionID, &rawProposal, &record.ProposalSHA256, &record.State, &record.Actor, &record.Rationale, &record.RequestID, &createdAt); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(rawProposal, &record.Proposal); err != nil {
+			return nil, core.Integrity
+		}
+		canonical, _, digest, canonicalErr := environment.CanonicalizeDependencyChangeProposal(record.Proposal)
+		if canonicalErr != nil || digest != record.ProposalSHA256 || canonical.MissionID != record.MissionID || canonical.BaseRevisionID != record.BaseRevisionID {
+			return nil, core.Integrity
+		}
+		record.Proposal = canonical
+		record.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+		result = append(result, record)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	for index := range result {
+		materialization, materializationErr := k.LatestDependencyChangeMaterialization(ctx, scope, result[index].ProposalID)
+		if materializationErr == nil {
+			result[index].Materialization = &materialization
+		} else if !errors.Is(materializationErr, core.OutOfScope) {
+			return nil, materializationErr
+		}
+	}
+	return result, nil
 }
 
 func dependencyChangeHostsAllowed(policyHosts, proposalHosts []string) bool {

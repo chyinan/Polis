@@ -9,19 +9,20 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–326)
+## Latest local source increments (Slices 324–327)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
-ProjectJob lifecycle. REQ-36 `environment_ensure` now reaches the existing
-Control preparation executor through the exact active Worker binding and its
-approved environment/host gates. Slice326 adds pure, bounded REQ-36 package
-manifest overlay and lockfile validation; it does not run npm or create derived
-environment records. All changes preserve default-deny behavior and leave the
-real-provider `@4` contract unchanged. Offline Go/race/vet/build checks and
-disposable Schema134 integration tests pass; end-to-end dependency-change
-materialization and native process/restart qualification remain open. Continue
-the source backlog in `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
+ProjectJob lifecycle. REQ-36 Worker `environment_ensure` uses the exact active
+binding and existing Control gates. Slice327 adds the owner DependencyChange
+flow, durable single-use materialization attempts, immutable derived input and
+successor revision creation, plus a Windows registry-only lockfile resolver;
+the Linux deny-all profile remains blocked. The real-provider `@4` contract is
+unchanged. Full Go/race/vet/build, frontend checks, and disposable Schema136
+integration pass using recording resolvers only. No npm, registry or Provider
+request ran. Native Windows resolver/host qualification and REQ-37 native
+process/restart qualification remain open. Continue the source backlog in
+`docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 
 ## Historical handoff summaries
 

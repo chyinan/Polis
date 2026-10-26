@@ -17,6 +17,12 @@ describe('display labels', () => {
     expect(labelDisplayValue('blocked_unqualified')).toBe('等待隔离执行资格');
   });
 
+  it('labels dependency materialization states without implying package installation', () => {
+    expect(labelDisplayValue('materialized')).toBe('已生成后继环境版本');
+    expect(labelDisplayValue('resolver_outcome_unknown')).toBe('锁文件解析结果未知');
+    expect(labelDisplayValue('runtime_restarted_during_resolution')).toBe('解析期间服务重启；不会自动重放');
+  });
+
   it('distinguishes Linux deny-all and Windows registry policies', () => {
     const linux = {schemaVersion: 'project-environment-policy@1', profileId: 'linux-node-npm@1', registryHosts: ['registry.npmjs.org'], installPolicy: 'npm ci --ignore-scripts --no-audit --no-fund --offline', lifecycleScriptsPolicy: 'ignore', networkPolicy: 'deny_all', timeoutMs: 180000, outputLimitBytes: 1048576} as const;
     const windows = {schemaVersion: 'project-environment-policy@1', profileId: 'windows-node-npm@1', registryHosts: ['registry.npmjs.org'], installPolicy: 'npm ci --ignore-scripts --no-audit --no-fund', lifecycleScriptsPolicy: 'ignore', networkPolicy: 'registry_allowlist', timeoutMs: 180000, outputLimitBytes: 1048576} as const;

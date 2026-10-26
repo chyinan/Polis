@@ -38,6 +38,9 @@ import {validateTaskTakeoverWorkspaceFile, validateTaskTakeoverWorkspaceManifest
 import {containsC0OrDelControlCharacters} from '../domain/text-validation';
 import type {TaskTakeoverWorkspaceFileQueryOptions, TaskTakeoverWorkspaceManifestQueryOptions} from './workbench-api';
 import type {TaskTakeoverDirectorySnapshotOptions} from './workbench-api';
+import type {DependencyChangeMaterializationRecordView, DependencyChangeProposalRecordView} from '../domain/workbench';
+import {validateDependencyChangeMaterialization, validateDependencyChangeProposalRecord, validateDependencyChangeProposals} from '../domain/workbench-validation';
+import type {DecideDependencyChangeOptions, DependencyChangeQueryOptions, MaterializeDependencyChangeOptions, ProposeDependencyChangeOptions} from './workbench-api';
 import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type CompleteDurableDeliveryManifestOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type InvalidateDurableDeliveryManifestOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type RecordDurableUserDispositionOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
 
 function isSafeWorkspaceRelativePath(value: string): boolean {
@@ -1641,6 +1644,60 @@ export class RealWorkbenchApi implements WorkbenchApi {
     const raw = await this.post(path, options.requestId, {requestId: options.requestId});
     const result = validateEnvironmentPreparationRun(raw, options.companyId, options.revisionId);
     if (!result.success) throw new Error(`failed to parse environment preparation receipt: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async listDependencyChanges(options: DependencyChangeQueryOptions): Promise<ReadonlyArray<DependencyChangeProposalRecordView>> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    const raw = await this.get(`/companies/${encodeURIComponent(options.companyId)}/dependency-changes?missionId=${encodeURIComponent(options.missionId)}`);
+    const result = validateDependencyChangeProposals(raw, options.companyId, options.missionId);
+    if (!result.success) throw new Error(`failed to parse DependencyChange proposals: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async proposeDependencyChange(options: ProposeDependencyChangeOptions): Promise<DependencyChangeProposalRecordView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    assertCompanyScope(options.baseRevisionId);
+    assertRequestID(options.requestId);
+    if (options.rationale.trim() === '' || options.rationale.length > 4096 || options.registryHosts.length < 1 || options.registryHosts.length > 8
+      || Object.keys(options.dependencies).length < 1 || Object.keys(options.dependencies).length > 64) {
+      throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to propose DependencyChange: bounds are invalid');
+    }
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/dependency-changes`, options.requestId, {
+      missionId: options.missionId, baseRevisionId: options.baseRevisionId, registryHosts: [...options.registryHosts],
+      dependencies: {...options.dependencies}, rationale: options.rationale, requestId: options.requestId,
+    });
+    const result = validateDependencyChangeProposalRecord(raw, options.companyId, options.missionId);
+    if (!result.success) throw new Error(`failed to parse DependencyChange proposal receipt: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async decideDependencyChange(options: DecideDependencyChangeOptions): Promise<DependencyChangeProposalRecordView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.proposalId);
+    assertRequestID(options.requestId);
+    if (options.rationale.trim() === '' || options.rationale.length > 4096) {
+      throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to decide DependencyChange: rationale is invalid');
+    }
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/dependency-changes/${encodeURIComponent(options.proposalId)}/decision`, options.requestId, {
+      proposalId: options.proposalId, decision: options.decision, rationale: options.rationale, requestId: options.requestId,
+    });
+    const result = validateDependencyChangeProposalRecord(raw, options.companyId);
+    if (!result.success) throw new Error(`failed to parse DependencyChange decision receipt: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async materializeDependencyChange(options: MaterializeDependencyChangeOptions): Promise<DependencyChangeMaterializationRecordView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.proposalId);
+    assertRequestID(options.requestId);
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/dependency-changes/${encodeURIComponent(options.proposalId)}/materialize`, options.requestId, {
+      proposalId: options.proposalId, requestId: options.requestId,
+    });
+    const result = validateDependencyChangeMaterialization(raw, options.companyId, options.proposalId);
+    if (!result.success) throw new Error(`failed to parse DependencyChange materialization result: ${validationMessage(result.issues)}`);
     return result.value;
   }
 

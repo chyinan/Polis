@@ -2,6 +2,7 @@
 package control
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -207,6 +208,171 @@ func (executor *WindowsNodeNPMPreparationExecutor) PrepareProjectEnvironment(ctx
 	result.ReasonCode = "dependency_install_ready"
 	result.Evidence = environmentPreparationEvidence(input, exitCode)
 	return executor.finishInstall(owner, result, nil, input.Revision.RevisionID)
+}
+
+// ResolveProjectDependencyChange generates one lockfile in the existing
+// registry-only AppContainer boundary. It deliberately supports one exact
+// registry per proposal; unsupported or unqualified profiles fail closed.
+func (executor *WindowsNodeNPMPreparationExecutor) ResolveProjectDependencyChange(ctx context.Context, runID string, input kernel.ProjectEnvironmentExecutionSnapshot, proposal environment.DependencyChangeProposal, packageJSON []byte) (DependencyChangeResolutionResult, error) {
+	if executor == nil || ctx == nil || !core.ValidID(runID) ||
+		input.Revision.ProfileID != environment.WindowsNodeNPMProfile || input.Policy.ProfileID != environment.WindowsNodeNPMProfile ||
+		input.Policy.NetworkPolicy != "registry_allowlist" || input.Policy.LifecycleScriptsPolicy != "ignore" ||
+		input.Revision.RevisionID != proposal.BaseRevisionID || input.Revision.MissionID != proposal.MissionID || len(proposal.RegistryHosts) != 1 {
+		return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "blocked", ReasonCode: "resolver_profile_or_scope_unsupported", Cause: core.Denied}
+	}
+	canonicalProposal, _, _, proposalErr := environment.CanonicalizeDependencyChangeProposal(proposal)
+	if proposalErr != nil || !environment.DependencyChangeHostsWithinPolicy(input.Policy.RegistryHosts, canonicalProposal.RegistryHosts) {
+		return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "blocked", ReasonCode: "resolver_registry_policy_denied", Cause: core.Denied}
+	}
+	_, manifest, overlayErr := environment.PrepareDependencyChangeProjectFiles(input.Files, input.Plan, canonicalProposal)
+	if overlayErr != nil || !bytes.Equal(manifest, packageJSON) {
+		return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "failed", ReasonCode: "resolver_manifest_binding_failed", Cause: core.Integrity}
+	}
+	releaseSlot, finishPreparation, accepted, admissionErr := executor.beginPreparation(ctx)
+	if !accepted {
+		if ctx.Err() != nil {
+			return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "blocked", ReasonCode: "resolver_cancelled_before_start", Cause: ctx.Err()}
+		}
+		if errors.Is(admissionErr, errEnvironmentPreparationQueueFull) {
+			return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "blocked", ReasonCode: "resolver_executor_busy", Cause: admissionErr}
+		}
+		return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "blocked", ReasonCode: "resolver_executor_closed", Cause: errors.New("Windows Node/npm preparation executor is closed")}
+	}
+	defer finishPreparation()
+	transferredSlot := false
+	defer func() {
+		if !transferredSlot {
+			releaseSlot()
+		}
+	}()
+	if err := ctx.Err(); err != nil {
+		return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "blocked", ReasonCode: "resolver_cancelled_before_start", Cause: err}
+	}
+	identity, workspaceID, err := newWindowsEnvironmentExecutionIDs()
+	if err != nil {
+		return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "failed", ReasonCode: "resolver_execution_identity_unavailable", Cause: err}
+	}
+	baseSnapshot, err := environment.PrepareWindowsNodeNPMDependencyChangeSnapshot(
+		identity, workspaceID, input.Files, input.Plan, input.Policy.RegistryHosts, canonicalProposal.RegistryHosts,
+		input.Revision.ToolchainSHA256, executor.nodeSourcePath, executor.npmCLISourcePath,
+		environment.WindowsNodeWorkspaceStorageConfig{
+			WorkspaceRoot: executor.workspaceRoot, ControlRoot: executor.controlRoot, SystemRoot: executor.systemRoot,
+			ExpectedIsolationPolicySHA256: input.AuthorizedIsolationPolicySHA256,
+		},
+	)
+	if err != nil {
+		if baseSnapshot != nil {
+			if cleanupErr := retrySnapshotCleanup(baseSnapshot); cleanupErr != nil {
+				_ = executor.storePendingCleanup(retainedEnvironmentSnapshot{companyID: input.Revision.CompanyID, runID: runID, snapshot: baseSnapshot})
+				return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "outcome_unknown", ReasonCode: "resolver_snapshot_cleanup_unconfirmed", Cause: errors.Join(err, cleanupErr)}
+			}
+		}
+		return DependencyChangeResolutionResult{}, &DependencyChangeResolverError{State: "failed", ReasonCode: "resolver_snapshot_prepare_failed", Cause: err}
+	}
+	owner := retainedEnvironmentSnapshot{companyID: input.Revision.CompanyID, runID: runID, snapshot: baseSnapshot}
+	if err = baseSnapshot.StageDependencyChangePackageJSON(manifest); err != nil {
+		return DependencyChangeResolutionResult{}, executor.cleanupDependencyResolution(owner, "failed", "dependency_change_manifest_stage_failed", err, releaseSlot, &transferredSlot)
+	}
+	process, launchErr := baseSnapshot.LaunchNPMDependencyResolution(executor.systemRoot, canonicalProposal.RegistryHosts[0])
+	if launchErr != nil {
+		return DependencyChangeResolutionResult{}, executor.cleanupDependencyResolution(owner, "failed", "dependency_change_resolver_launch_failed", launchErr, releaseSlot, &transferredSlot)
+	}
+	owner.process = process
+	if stdin := process.Stdin(); stdin != nil {
+		_ = stdin.Close()
+	}
+	outputLimit := input.Policy.OutputLimitBytes
+	if outputLimit > maxEnvironmentPreparationArtifactBytes {
+		outputLimit = maxEnvironmentPreparationArtifactBytes
+	}
+	streamLimit := (outputLimit - len("stdout:\n") - len("\nstderr:\n")) / 2
+	stdout, stderr := capturePreparationStream(process.Stdout(), streamLimit), capturePreparationStream(process.Stderr(), streamLimit)
+	processID := process.PID()
+	runCtx, cancel := context.WithTimeout(ctx, time.Duration(input.Policy.TimeoutMS)*time.Millisecond)
+	exitCode, waitErr := process.Wait(runCtx)
+	wasCancelled := waitErr != nil && (errors.Is(waitErr, context.Canceled) || errors.Is(waitErr, context.DeadlineExceeded))
+	if waitErr != nil {
+		proof, stopErr := process.Stop()
+		stopConfirmed := stopErr == nil && proof.For(workspaceID) && proof.PID() == processID
+		if !stopConfirmed {
+			stdout.abort()
+			stderr.abort()
+			resultErr := executor.cleanupDependencyResolution(owner, "outcome_unknown", "dependency_change_stop_unconfirmed", errors.Join(waitErr, stopErr, runner.ErrAppContainerProcessStopUnconfirmed), releaseSlot, &transferredSlot)
+			cancel()
+			return DependencyChangeResolutionResult{}, resultErr
+		}
+		if !wasCancelled {
+			cancel()
+			stdout.abort()
+			stderr.abort()
+			return DependencyChangeResolutionResult{}, executor.cleanupDependencyResolution(owner, "outcome_unknown", "dependency_change_outcome_unknown", waitErr, releaseSlot, &transferredSlot)
+		}
+	}
+	cancel()
+	stdoutResult, stderrResult := stdout.wait(), stderr.wait()
+	logs, logsTruncated := combinePreparationLogs(stdoutResult, stderrResult)
+	logs = redactRegistryProxyCredentials(logs)
+	if waitErr != nil || stdoutResult.err != nil || stderrResult.err != nil {
+		state, reason := "outcome_unknown", "dependency_change_stream_outcome_unknown"
+		if wasCancelled {
+			state, reason = "failed", "dependency_change_cancelled"
+		}
+		return DependencyChangeResolutionResult{Logs: logs, LogsTruncated: logsTruncated}, executor.cleanupDependencyResolution(owner, state, reason, errors.Join(waitErr, stdoutResult.err, stderrResult.err), releaseSlot, &transferredSlot)
+	}
+	if exitCode != 0 {
+		return DependencyChangeResolutionResult{Logs: logs, LogsTruncated: logsTruncated}, executor.cleanupDependencyResolution(owner, "failed", "dependency_change_resolution_failed", fmt.Errorf("npm lockfile resolver exited with code %d", exitCode), releaseSlot, &transferredSlot)
+	}
+	var revokeErr error
+	for attempt := 0; attempt < 2; attempt++ {
+		revokeErr = baseSnapshot.RevokeRegistryEgress()
+		if revokeErr == nil {
+			break
+		}
+	}
+	if revokeErr != nil {
+		return DependencyChangeResolutionResult{Logs: logs, LogsTruncated: logsTruncated}, executor.cleanupDependencyResolution(owner, "outcome_unknown", "dependency_change_registry_revoke_failed", revokeErr, releaseSlot, &transferredSlot)
+	}
+	lockfile, readErr := baseSnapshot.ReadDependencyChangeResolutionOutput(manifest)
+	if readErr != nil {
+		return DependencyChangeResolutionResult{Logs: logs, LogsTruncated: logsTruncated}, executor.cleanupDependencyResolution(owner, "failed", "dependency_change_lockfile_read_failed", readErr, releaseSlot, &transferredSlot)
+	}
+	_, cleanupErr := executor.finishInstall(owner, EnvironmentPreparationResult{TerminalState: string(environment.PreparationReady)}, nil, "")
+	if cleanupErr != nil {
+		return DependencyChangeResolutionResult{Logs: logs, LogsTruncated: logsTruncated}, &DependencyChangeResolverError{State: "outcome_unknown", ReasonCode: "dependency_change_cleanup_unconfirmed", Cause: cleanupErr}
+	}
+	return DependencyChangeResolutionResult{Lockfile: lockfile, Logs: logs, LogsTruncated: logsTruncated}, nil
+}
+
+func (executor *WindowsNodeNPMPreparationExecutor) cleanupDependencyResolution(owner retainedEnvironmentSnapshot, state, reason string, cause error, releaseSlot func(), transferredSlot *bool) error {
+	result := EnvironmentPreparationResult{TerminalState: string(environment.PreparationOutcomeUnknown), ReasonCode: reason}
+	_, cleanupErr := executor.finishInstall(owner, result, cause, "")
+	if owner.snapshot != nil {
+		if retryErr := retrySnapshotCleanup(owner.snapshot); retryErr != nil {
+			var once sync.Once
+			owner.releasePreparationSlot = func() { once.Do(releaseSlot) }
+			if pendingErr := executor.storePendingCleanup(owner); pendingErr != nil {
+				cleanupErr = errors.Join(cleanupErr, retryErr, pendingErr)
+			} else {
+				if transferredSlot != nil {
+					*transferredSlot = true
+				}
+				executor.monitorPendingProcess(owner)
+				cleanupErr = errors.Join(cleanupErr, retryErr)
+			}
+		} else {
+			executor.preparedMu.Lock()
+			pending, exists := executor.pendingCleanup[fmt.Sprintf("%p", owner.snapshot)]
+			delete(executor.pendingCleanup, fmt.Sprintf("%p", owner.snapshot))
+			executor.preparedMu.Unlock()
+			if exists && pending.releasePreparationSlot != nil {
+				pending.releasePreparationSlot()
+			}
+		}
+	}
+	if transferredSlot != nil && *transferredSlot {
+		state = "outcome_unknown"
+	}
+	return &DependencyChangeResolverError{State: state, ReasonCode: reason, Cause: cleanupErr}
 }
 
 func (executor *WindowsNodeNPMPreparationExecutor) finishInstall(owner retainedEnvironmentSnapshot, result EnvironmentPreparationResult, cause error, retainRevisionID string) (EnvironmentPreparationResult, error) {

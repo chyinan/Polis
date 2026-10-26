@@ -105,6 +105,8 @@ import type {
   TaskTakeoverWorkspaceTreeBindingView,
   ProjectEnvironmentRevisionView,
   ProjectEnvironmentPolicyManifestView,
+  DependencyChangeMaterializationRecordView,
+  DependencyChangeProposalRecordView,
   ProjectServiceDefinitionView,
   ServiceEndpointView,
 } from './workbench';
@@ -2841,6 +2843,82 @@ export function validateProjectEnvironmentRevisions(value: unknown, companyId: s
     return {success: false, issues: [{path: '', message: 'project environment response contains duplicate revisions'}]};
   }
   return {success: true, value};
+}
+
+const DEPENDENCY_PACKAGE_NAME_PATTERN = /^(?:@[A-Za-z0-9][A-Za-z0-9._-]*\/)?[A-Za-z0-9][A-Za-z0-9._-]*$/;
+const EXACT_DEPENDENCY_VERSION_PATTERN = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
+const DEPENDENCY_CHANGE_PROPOSAL_STATES = ['proposed', 'approved', 'rejected', 'blocked'] as const;
+const DEPENDENCY_MATERIALIZATION_STATES = ['running', 'blocked', 'failed', 'outcome_unknown', 'materialized'] as const;
+
+function isDependencyChangeProposalRecordView(value: unknown, companyId: string): value is DependencyChangeProposalRecordView {
+  if (!isRecord(value) || !isRecord(value.proposal) || value.companyId !== companyId || typeof value.proposalId !== 'string') return false;
+  const proposal = value.proposal;
+  if (!Array.isArray(proposal.registryHosts) || proposal.registryHosts.length < 1 || proposal.registryHosts.length > 8
+    || !proposal.registryHosts.every(host => typeof host === 'string' && host === host.toLowerCase() && REGISTRY_HOST_PATTERN.test(host))
+    || new Set(proposal.registryHosts).size !== proposal.registryHosts.length
+    || !isRecord(proposal.dependencies)) return false;
+  const dependencyEntries = Object.entries(proposal.dependencies);
+  return hasString(value, 'proposalId')
+    && hasString(value, 'missionId')
+    && hasString(value, 'baseRevisionId')
+    && typeof value.proposalSha256 === 'string' && SHA256_PATTERN.test(value.proposalSha256)
+    && isOneOf(value.state, DEPENDENCY_CHANGE_PROPOSAL_STATES)
+    && hasString(value, 'actor')
+    && hasString(value, 'rationale')
+    && hasString(value, 'requestId')
+    && isTimestamp(value.createdAt)
+    && (value.materialization === undefined || value.materialization === null || isDependencyChangeMaterializationRecordView(value.materialization, companyId, value.proposalId))
+    && proposal.missionId === value.missionId
+    && proposal.baseRevisionId === value.baseRevisionId
+    && hasString(proposal, 'requestId')
+    && typeof proposal.rationale === 'string' && proposal.rationale.trim() !== '' && proposal.rationale.length <= 4096
+    && dependencyEntries.length >= 1 && dependencyEntries.length <= 64
+    && dependencyEntries.every(([name, version]) => DEPENDENCY_PACKAGE_NAME_PATTERN.test(name)
+      && typeof version === 'string' && EXACT_DEPENDENCY_VERSION_PATTERN.test(version));
+}
+
+function isDependencyChangeMaterializationRecordView(value: unknown, companyId: string, proposalId: string): value is DependencyChangeMaterializationRecordView {
+  if (!isRecord(value) || value.companyId !== companyId || value.proposalId !== proposalId
+    || !hasString(value, 'materializationId') || !hasString(value, 'baseRevisionId') || !hasString(value, 'requestId')
+    || typeof value.requestSha256 !== 'string' || !SHA256_PATTERN.test(value.requestSha256)
+    || !isOneOf(value.state, DEPENDENCY_MATERIALIZATION_STATES)
+    || typeof value.reasonCode !== 'string' || value.reasonCode.length > 128
+    || !isTimestamp(value.createdAt)) return false;
+  if (value.state !== 'materialized') {
+    return value.derivedInputId === undefined && value.derivedInputRevision === undefined && value.successorRevisionId === undefined
+      && value.packageJsonSha256 === undefined && value.lockfileSha256 === undefined
+      && (value.resolverLogsSha256 === undefined || typeof value.resolverLogsSha256 === 'string' && SHA256_PATTERN.test(value.resolverLogsSha256));
+  }
+  return hasString(value, 'derivedInputId')
+    && isDecimalCounter(value.derivedInputRevision)
+    && hasString(value, 'successorRevisionId')
+    && typeof value.packageJsonSha256 === 'string' && SHA256_PATTERN.test(value.packageJsonSha256)
+    && typeof value.lockfileSha256 === 'string' && SHA256_PATTERN.test(value.lockfileSha256)
+    && (value.resolverLogsSha256 === undefined || typeof value.resolverLogsSha256 === 'string' && SHA256_PATTERN.test(value.resolverLogsSha256));
+}
+
+export function validateDependencyChangeProposals(value: unknown, companyId: string, missionId: string): ValidationResult<ReadonlyArray<DependencyChangeProposalRecordView>> {
+  if (!Array.isArray(value) || value.length > 50 || !value.every(item => isDependencyChangeProposalRecordView(item, companyId) && item.missionId === missionId)) {
+    return {success: false, issues: [{path: '', message: 'DependencyChange response contains an unknown, malformed, or cross-scope proposal'}]};
+  }
+  const ids = value.map(item => item.proposalId);
+  if (new Set(ids).size !== ids.length) {
+    return {success: false, issues: [{path: '', message: 'DependencyChange response contains duplicate proposal ids'}]};
+  }
+  return {success: true, value};
+}
+
+export function validateDependencyChangeProposalRecord(value: unknown, companyId: string, missionId?: string): ValidationResult<DependencyChangeProposalRecordView> {
+  if (!isDependencyChangeProposalRecordView(value, companyId) || (missionId !== undefined && value.missionId !== missionId)) {
+    return {success: false, issues: [{path: '', message: 'DependencyChange proposal response is malformed or outside the requested scope'}]};
+  }
+  return {success: true, value};
+}
+
+export function validateDependencyChangeMaterialization(value: unknown, companyId: string, proposalId: string): ValidationResult<DependencyChangeMaterializationRecordView> {
+  return isDependencyChangeMaterializationRecordView(value, companyId, proposalId)
+    ? {success: true, value}
+    : {success: false, issues: [{path: '', message: 'DependencyChange materialization response is malformed or outside the requested scope'}]};
 }
 
 export function validateEnvironmentPolicyDecisionReceipt(value: unknown): ValidationResult<EnvironmentPolicyDecisionReceipt> {

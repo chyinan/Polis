@@ -1056,6 +1056,44 @@ describe('RealWorkbenchApi', () => {
     expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/workbench/companies/company-1/environments/environment-1/preparation', expect.objectContaining({method: 'POST', body: JSON.stringify({requestId: 'ensure-1'})}));
   });
 
+  it('lists, proposes, approves, and materializes a scoped DependencyChange through owner routes', async () => {
+    const proposal = {
+      companyId: 'company-1', proposalId: 'dependency-change-1', missionId: 'mission-1', baseRevisionId: 'environment-1',
+      proposal: {missionId: 'mission-1', baseRevisionId: 'environment-1', requestId: 'proposal-1', registryHosts: ['registry.npmjs.org'], dependencies: {'new-package': '1.2.3'}, rationale: 'bounded exact dependency'},
+      proposalSha256: 'a'.repeat(64), state: 'approved', actor: 'local-owner', rationale: 'approved exact registry and version', requestId: 'decision-1', createdAt: '2026-10-26T00:00:00Z',
+    } as const;
+    const materialization = {
+      companyId: 'company-1', materializationId: 'dependency-materialization-1', proposalId: 'dependency-change-1', baseRevisionId: 'environment-1',
+      requestId: 'materialize-1', requestSha256: 'b'.repeat(64), state: 'materialized', reasonCode: '', derivedInputId: 'input-1', derivedInputRevision: '2',
+      successorRevisionId: 'environment-2', packageJsonSha256: 'c'.repeat(64), lockfileSha256: 'd'.repeat(64), resolverLogsSha256: 'e'.repeat(64), createdAt: '2026-10-26T00:00:00Z',
+    } as const;
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({ok: true, json: async () => [proposal]})
+      .mockResolvedValueOnce({ok: true, json: async () => proposal})
+      .mockResolvedValueOnce({ok: true, json: async () => proposal})
+      .mockResolvedValueOnce({ok: true, json: async () => materialization});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+    const listed = await api.listDependencyChanges({companyId: 'company-1', missionId: 'mission-1'});
+    const proposed = await api.proposeDependencyChange({
+      companyId: 'company-1', missionId: 'mission-1', baseRevisionId: 'environment-1', registryHosts: ['registry.npmjs.org'],
+      dependencies: {'new-package': '1.2.3'}, rationale: 'bounded exact dependency', requestId: 'proposal-request',
+    });
+    const decided = await api.decideDependencyChange({companyId: 'company-1', proposalId: 'dependency-change-1', decision: 'approved', rationale: 'approved exact registry and version', requestId: 'decision-request'});
+    const resolved = await api.materializeDependencyChange({companyId: 'company-1', proposalId: 'dependency-change-1', requestId: 'materialize-request'});
+
+    expect(listed).toHaveLength(1);
+    expect(proposed.proposalId).toBe('dependency-change-1');
+    expect(decided.state).toBe('approved');
+    expect(resolved.state).toBe('materialized');
+    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/workbench/companies/company-1/dependency-changes?missionId=mission-1', expect.objectContaining({credentials: 'same-origin'}));
+    expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/workbench/companies/company-1/dependency-changes', expect.objectContaining({
+      method: 'POST', body: JSON.stringify({missionId: 'mission-1', baseRevisionId: 'environment-1', registryHosts: ['registry.npmjs.org'], dependencies: {'new-package': '1.2.3'}, rationale: 'bounded exact dependency', requestId: 'proposal-request'}),
+    }));
+    expect(fetchMock).toHaveBeenNthCalledWith(3, '/api/workbench/companies/company-1/dependency-changes/dependency-change-1/decision', expect.objectContaining({method: 'POST'}));
+    expect(fetchMock).toHaveBeenNthCalledWith(4, '/api/workbench/companies/company-1/dependency-changes/dependency-change-1/materialize', expect.objectContaining({method: 'POST'}));
+  });
+
   it('records executor qualification against a same-company evidence revision', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => ({id: 'executor-qualification-1', status: 'qualified'})});
     vi.stubGlobal('fetch', fetchMock);

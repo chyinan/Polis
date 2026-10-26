@@ -10,6 +10,13 @@ import (
 	"polis/internal/kernel"
 )
 
+func (s *Service) ListDependencyChanges(ctx context.Context, companyID, missionID string) ([]kernel.DependencyChangeProposalRecord, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || !core.ValidID(missionID) {
+		return nil, core.Malformed
+	}
+	return s.runtime.ListDependencyChangeProposals(ctx, s.runtime.LocalScope(companyID), missionID)
+}
+
 func (s *Service) ProposeDependencyChange(ctx context.Context, companyID string, request ProposeDependencyChangeRequest) (kernel.DependencyChangeProposalRecord, error) {
 	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || validateRequestID(request.RequestID) != nil {
 		return kernel.DependencyChangeProposalRecord{}, core.Malformed

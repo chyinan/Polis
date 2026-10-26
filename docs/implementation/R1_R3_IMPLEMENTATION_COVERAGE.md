@@ -1,4 +1,20 @@
-## Latest source increment (Slice 326, REQ-36 dependency overlay validation)
+## Latest source increment (Slice 327, REQ-36 durable DependencyChange materialization)
+
+The owner-facing flow now lists, proposes, approves/rejects and explicitly
+materializes DependencyChanges. Schema135/136 provides immutable attempt
+identity plus append-only running/failed/blocked/unknown/materialized events;
+startup marks stale attempts unknown without resolver replay. Control verifies
+the approved base and current executor qualification, validates the exact
+overlay/lockfile, stores a derived immutable MissionInput, and registers an
+unapproved successor revision. Windows has fixed lockfile-only npm execution
+inside a registry-only AppContainer; Linux deny-all is not used for resolution.
+Full Go/race/vet/build and frontend checks pass. Targeted disposable
+PostgreSQL18.6/Schema136 integration uses a recording resolver; no real npm,
+registry or Provider request ran. Native Windows host qualification remains
+open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-materialization-control-20261026/verification.md`.
+
+## Previous source increment (Slice 326, REQ-36 dependency overlay validation)
 
 Pure bounded helpers now apply an approved proposal only to root production
 dependencies and validate the resolver-produced lockfile against the exact
@@ -180,7 +196,7 @@ The legacy `workspace_replace` compatibility path now shares the file-tree trans
 The embedded fixed team coverage JSON now has a strict semantic validator for its canonical employee roster and assignments, disabled execution, immutable runtime roles, unverified qualification, required owner confirmation, checker policy, and trust/independence flags. Company creation and acknowledgment fail closed on drift; detail/switcher projections do not report confirmation from a malformed draft. This protects the draft's current fail-closed meaning and does not create executable role contracts, change Task admission, or qualify any role/provider. `go build ./...`, `git diff --check`, and JSON parsing pass; no tests, database operations, owner action, Worker/provider operation, or frozen scenario ran. The seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-26, Slice 326. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-26, Slice 327. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
 ## Slice 241: qualification handoff audit anchor
 

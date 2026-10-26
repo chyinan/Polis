@@ -1,3 +1,20 @@
+## Latest local source increment (Slice 327, REQ-36 durable DependencyChange materialization)
+
+Owner Workbench now lists, proposes, approves/rejects and explicitly requests
+DependencyChange materialization. Schema135/136 persists immutable attempts
+and append-only outcomes; startup changes stale `running` attempts to
+`outcome_unknown` and never replays them. The Control path checks the approved
+proposal and current base policy/executor qualification, verifies the exact
+manifest/lockfile and persists a derived immutable MissionInput plus an
+unapproved successor environment revision. The Windows-only resolver uses a
+fixed lockfile-only npm argv in a registry-only AppContainer, single proposal
+host, no lifecycle scripts, timeout and output limits. Linux remains blocked
+under deny-all. Full Go/race/vet/build, frontend typecheck/lint/tests, migration
+manifest checks and disposable Schema136 PostgreSQL tests pass with a recording
+resolver. No real npm, registry, Provider or network request ran; native Windows
+resolver/host qualification remains open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-materialization-control-20261026/verification.md`.
+
 ## Latest local source increment (Slice 326, REQ-36 dependency overlay validation)
 
 Added pure bounded helpers to construct the exact root `dependencies` overlay

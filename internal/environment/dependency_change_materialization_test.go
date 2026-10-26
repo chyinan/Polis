@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -36,6 +37,35 @@ func TestApplyDependencyChangeToPackageJSONChangesOnlyRootProductionDependencies
 	}
 	if bytes.Equal(input, updated) {
 		t.Fatal("dependency overlay returned the unchanged manifest")
+	}
+}
+
+func TestBuildWindowsDependencyResolutionArgsIsFixedAndRegistryBound(t *testing.T) {
+	plan := NodeNPMProjectPlan{
+		ProfileID: WindowsNodeNPMProfile, SourceKind: NodeSnapshotFilesSource,
+		InstallPolicy: WindowsNodeInstallPolicy, RegistryHosts: []string{"registry.npmjs.org"},
+	}
+	args, err := BuildWindowsNodeNPMDependencyResolutionArgs(plan, `C:\node\node.exe`, `C:\node\npm-cli.js`, "registry.npmjs.org")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{`C:\node\node.exe`, `C:\node\npm-cli.js`, "install", "--package-lock-only", "--ignore-scripts", "--no-audit", "--no-fund", "--no-save", "--workspaces=false", "--registry=https://registry.npmjs.org/"}
+	if !reflect.DeepEqual(args, want) {
+		t.Fatalf("resolver argv=%q, want fixed vector %q", args, want)
+	}
+	for _, forbidden := range []string{"cmd.exe", "powershell", "npm run", "--script-shell", "host/path"} {
+		for _, arg := range args {
+			if strings.Contains(strings.ToLower(arg), forbidden) {
+				t.Fatalf("resolver argv contains forbidden capability %q: %q", forbidden, arg)
+			}
+		}
+	}
+	if _, err = BuildWindowsNodeNPMDependencyResolutionArgs(plan, `C:\node\node.exe`, `C:\node\npm-cli.js`, "registry.example.invalid"); err == nil {
+		t.Fatal("resolver accepted a registry outside the plan")
+	}
+	plan.ProfileID = LinuxNodeNPMProfile
+	if _, err = BuildWindowsNodeNPMDependencyResolutionArgs(plan, `C:\node\node.exe`, `C:\node\npm-cli.js`, "registry.npmjs.org"); err == nil {
+		t.Fatal("Windows registry resolver accepted the Linux deny-all profile")
 	}
 }
 
@@ -125,6 +155,10 @@ func TestValidateDependencyChangeMaterializationRequiresExactManifestAndValidPin
 	unsafeLock := bytes.Replace(lock, []byte("registry.npmjs.org"), []byte("registry.example.invalid"), 1)
 	if _, _, err := ValidateDependencyChangeMaterialization(baseFiles, plan, proposal, manifest, unsafeLock, []string{"registry.npmjs.org"}); err == nil {
 		t.Fatal("lockfile containing an unapproved tarball host was accepted")
+	}
+	approvedMirrorLock := bytes.Replace(lock, []byte("https://registry.npmjs.org/new-package"), []byte("https://mirror.example.invalid/new-package"), 1)
+	if _, _, err := ValidateDependencyChangeMaterialization(baseFiles, plan, proposal, manifest, approvedMirrorLock, []string{"registry.npmjs.org", "mirror.example.invalid"}); err != nil {
+		t.Fatalf("existing base-policy mirror was rejected from resolved lockfile: %v", err)
 	}
 	if _, _, err := ValidateDependencyChangeMaterialization(baseFiles, plan, proposal, manifest, lock, []string{"packages.example.invalid"}); err == nil {
 		t.Fatal("proposal registry host outside the base environment policy was accepted")

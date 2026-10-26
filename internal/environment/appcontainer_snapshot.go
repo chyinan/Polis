@@ -2,7 +2,9 @@
 package environment
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,6 +15,7 @@ import (
 	"strings"
 	"sync"
 
+	"polis/internal/mcptransport"
 	"polis/internal/runner"
 )
 
@@ -21,6 +24,7 @@ type WindowsNodeAppContainerSnapshot struct {
 	sandbox         *runner.AppContainerSandbox
 	materialized    MaterializedProject
 	plan            NodeNPMProjectPlan
+	networkHosts    []string
 	toolchainSHA256 string
 	toolchainPaths  WindowsNodeToolchainPaths
 	toolchainLeases []io.Closer
@@ -56,17 +60,36 @@ func PrepareWindowsNodeAppContainerSnapshot(identity, workspaceID string, files 
 // before starting any project JobRun. If cleanup itself fails, it returns the
 // remaining snapshot with the error; callers must retry Close on that snapshot.
 func PrepareWindowsNodeNPMInstallSnapshot(identity, workspaceID string, files []ProjectSourceFile, plan NodeNPMProjectPlan, registryHosts []string, toolchainSHA256, nodeSourcePath, npmCLISourcePath string, storage WindowsNodeWorkspaceStorageConfig) (*WindowsNodeAppContainerSnapshot, error) {
+	return prepareWindowsNodeNPMExecutionSnapshot(identity, workspaceID, files, plan, registryHosts, registryHosts, toolchainSHA256, nodeSourcePath, npmCLISourcePath, storage)
+}
+
+// PrepareWindowsNodeNPMDependencyChangeSnapshot uses the base revision's
+// registry policy to verify its immutable source, but grants registry egress
+// only to the narrower host list bound to the approved DependencyChange.
+func PrepareWindowsNodeNPMDependencyChangeSnapshot(identity, workspaceID string, files []ProjectSourceFile, plan NodeNPMProjectPlan, policyHosts, dependencyChangeHosts []string, toolchainSHA256, nodeSourcePath, npmCLIScriptPath string, storage WindowsNodeWorkspaceStorageConfig) (*WindowsNodeAppContainerSnapshot, error) {
+	return prepareWindowsNodeNPMExecutionSnapshot(identity, workspaceID, files, plan, policyHosts, dependencyChangeHosts, toolchainSHA256, nodeSourcePath, npmCLIScriptPath, storage)
+}
+
+func prepareWindowsNodeNPMExecutionSnapshot(identity, workspaceID string, files []ProjectSourceFile, plan NodeNPMProjectPlan, policyHosts, networkHosts []string, toolchainSHA256, nodeSourcePath, npmCLIScriptPath string, storage WindowsNodeWorkspaceStorageConfig) (*WindowsNodeAppContainerSnapshot, error) {
 	if plan.ProfileID != WindowsNodeNPMProfile || plan.SourceKind != NodeSnapshotFilesSource || plan.InstallPolicy != WindowsNodeInstallPolicy {
+		return nil, ErrEnvironmentMaterialization
+	}
+	canonicalPolicyHosts, err := normalizeRegistryHosts(policyHosts)
+	if err != nil {
+		return nil, ErrEnvironmentMaterialization
+	}
+	canonicalNetworkHosts, err := normalizeRegistryHosts(networkHosts)
+	if err != nil || !dependencyChangeHostsWithinPolicy(canonicalNetworkHosts, canonicalPolicyHosts) {
 		return nil, ErrEnvironmentMaterialization
 	}
 	if !ValidWindowsNodeToolchainSHA256(toolchainSHA256) {
 		return nil, errWindowsNodeToolchain
 	}
-	sourceToolchainSHA256, err := WindowsNodeToolchainSHA256FromFiles(nodeSourcePath, npmCLISourcePath)
+	sourceToolchainSHA256, err := WindowsNodeToolchainSHA256FromFiles(nodeSourcePath, npmCLIScriptPath)
 	if err != nil || sourceToolchainSHA256 != toolchainSHA256 {
 		return nil, errWindowsNodeToolchain
 	}
-	if err := RevalidateNodeNPMProjectFiles(plan, files, registryHosts); err != nil {
+	if err := RevalidateNodeNPMProjectFiles(plan, files, canonicalPolicyHosts); err != nil {
 		return nil, err
 	}
 	var storageInfo WindowsNodeWorkspaceStorageInfo
@@ -88,9 +111,9 @@ func PrepareWindowsNodeNPMInstallSnapshot(identity, workspaceID string, files []
 	} else if runtime.GOOS == "windows" {
 		return nil, ErrWindowsNodeWorkspaceStorage
 	}
-	plan.RegistryHosts = append([]string(nil), plan.RegistryHosts...)
+	plan.RegistryHosts = append([]string(nil), canonicalPolicyHosts...)
 	sandbox, err := runner.NewWindowsNodeNPMInstallAppContainerSandbox(runner.RegistryNPMInstallSandboxOptions{
-		Identity: identity, AllowedHosts: registryHosts,
+		Identity: identity, AllowedHosts: canonicalNetworkHosts,
 		WorkspaceStorage: runner.AppContainerWorkspaceStorageBinding{
 			Root: storage.WorkspaceRoot, ControlRoot: storage.ControlRoot, SystemRoot: storage.SystemRoot,
 			ExpectedVolumeRoot: storageInfo.VolumeRoot, ExpectedVolumeGUID: storageInfo.VolumeGUID, ExpectedVolumeSerial: storageInfo.VolumeSerial,
@@ -103,13 +126,13 @@ func PrepareWindowsNodeNPMInstallSnapshot(identity, workspaceID string, files []
 		}
 		return nil, err
 	}
-	snapshot := &WindowsNodeAppContainerSnapshot{sandbox: sandbox, plan: plan, toolchainSHA256: toolchainSHA256}
-	materialized, err := MaterializeNodeNPMProjectFiles(sandbox.WorkspaceRoot(), workspaceID, files, plan, registryHosts)
+	snapshot := &WindowsNodeAppContainerSnapshot{sandbox: sandbox, plan: plan, toolchainSHA256: toolchainSHA256, networkHosts: append([]string(nil), canonicalNetworkHosts...)}
+	materialized, err := MaterializeNodeNPMProjectFiles(sandbox.WorkspaceRoot(), workspaceID, files, plan, canonicalPolicyHosts)
 	if err != nil {
 		return discardFailedAppContainerPreparation(snapshot, err)
 	}
 	snapshot.materialized = materialized
-	toolchainPaths, err := StageWindowsNodeToolchain(materialized.WorkspaceRoot, nodeSourcePath, npmCLISourcePath, toolchainSHA256)
+	toolchainPaths, err := StageWindowsNodeToolchain(materialized.WorkspaceRoot, nodeSourcePath, npmCLIScriptPath, toolchainSHA256)
 	if err != nil {
 		return discardFailedAppContainerPreparation(snapshot, err)
 	}
@@ -300,6 +323,108 @@ func (s *WindowsNodeAppContainerSnapshot) LaunchNPMInstall(systemRoot string) (r
 		return nil, err
 	}
 	return s.trackProcess(process, identity), nil
+}
+
+// StageDependencyChangePackageJSON replaces the staged root manifest before
+// any process has started. The generated manifest is size-bounded, strictly
+// decoded, and must target the exact validated project root.
+func (s *WindowsNodeAppContainerSnapshot) StageDependencyChangePackageJSON(packageJSON []byte) error {
+	if s == nil || len(packageJSON) == 0 || len(packageJSON) > maxNodeManifestBytes {
+		return errDependencyMaterialization
+	}
+	var metadata nodePackageManifest
+	if err := mcptransport.ValidateStrictJSONStructKeys(packageJSON, &metadata); err != nil || json.Unmarshal(packageJSON, &metadata) != nil || metadata.Name == "" || metadata.Version == "" || len(metadata.Workspaces) != 0 {
+		return errDependencyMaterialization
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.sandbox == nil || s.sandbox.RegistryProxyEndpoint() == "" || s.active != 0 || s.materialized.ProjectRoot == "" {
+		return runner.ErrAppContainerUnavailable
+	}
+	packagePath := filepath.Join(s.materialized.ProjectRoot, "package.json")
+	if !regularContainedToolchainFile(s.materialized.ProjectRoot, packagePath) {
+		return errDependencyMaterialization
+	}
+	if err := os.WriteFile(packagePath, packageJSON, 0600); err != nil {
+		return err
+	}
+	if !regularContainedToolchainFile(s.materialized.ProjectRoot, packagePath) {
+		return errDependencyMaterialization
+	}
+	return nil
+}
+
+// LaunchNPMDependencyResolution runs a lockfile-only npm operation using the
+// registry-only AppContainer lease. The argument vector is fixed and contains
+// no lifecycle scripts or caller-selected commands.
+func (s *WindowsNodeAppContainerSnapshot) LaunchNPMDependencyResolution(systemRoot, registryHost string) (runner.AppContainerProcess, error) {
+	if s == nil {
+		return nil, runner.ErrAppContainerUnavailable
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.sandbox == nil || s.sandbox.RegistryProxyEndpoint() == "" || !ValidWindowsNodeToolchainSHA256(s.toolchainSHA256) {
+		return nil, errors.New("dependency resolution requires an active registry-only AppContainer and pinned toolchain")
+	}
+	if len(s.networkHosts) != 1 || s.networkHosts[0] != registryHost {
+		return nil, errDependencyMaterialization
+	}
+	argv, err := BuildWindowsNodeNPMDependencyResolutionArgs(s.plan, s.toolchainPaths.NodeExecutable, s.toolchainPaths.NPMCLIScript, registryHost)
+	if err != nil {
+		return nil, err
+	}
+	if err = verifyWindowsNodeToolchainStaging(s.materialized.WorkspaceRoot, s.toolchainPaths, s.toolchainSHA256); err != nil {
+		return nil, errors.New("staged Node/npm toolchain bytes do not match the approved digest")
+	}
+	identity := workspaceIDForAppContainer(s.materialized.WorkspaceRoot)
+	process, err := s.launch(identity, argv[0], argv[1:], nil, systemRoot, runner.AppContainerNetworkRegistryOnly, s.sandbox.RegistryProxyEndpoint(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return s.trackProcess(process, identity), nil
+}
+
+// ReadDependencyChangeResolutionOutput is available only after registry
+// egress has been revoked and the child process has exited. Reads are bounded
+// and reject linked or non-regular files.
+func (s *WindowsNodeAppContainerSnapshot) ReadDependencyChangeResolutionOutput(expectedPackageJSON []byte) ([]byte, error) {
+	if s == nil || len(expectedPackageJSON) == 0 || len(expectedPackageJSON) > maxNodeManifestBytes {
+		return nil, errDependencyMaterialization
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.sandbox == nil || s.sandbox.RegistryProxyEndpoint() != "" || s.active != 0 || s.materialized.ProjectRoot == "" {
+		return nil, errors.New("dependency resolution output requires a stopped process and revoked registry egress")
+	}
+	packageJSON, err := readBoundedContainedFile(s.materialized.ProjectRoot, filepath.Join(s.materialized.ProjectRoot, "package.json"), maxNodeManifestBytes)
+	if err != nil || !bytes.Equal(packageJSON, expectedPackageJSON) {
+		return nil, errDependencyMaterialization
+	}
+	lockfile, err := readBoundedContainedFile(s.materialized.ProjectRoot, filepath.Join(s.materialized.ProjectRoot, "package-lock.json"), maxNodeLockfileBytes)
+	if err != nil {
+		return nil, err
+	}
+	return lockfile, nil
+}
+
+func readBoundedContainedFile(root, target string, maxBytes int64) ([]byte, error) {
+	if maxBytes <= 0 || !regularContainedToolchainFile(root, target) {
+		return nil, errDependencyMaterialization
+	}
+	info, err := os.Lstat(target)
+	if err != nil || info.Size() <= 0 || info.Size() > maxBytes {
+		return nil, errDependencyMaterialization
+	}
+	file, err := os.Open(target)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	content, err := io.ReadAll(io.LimitReader(file, maxBytes+1))
+	if err != nil || len(content) == 0 || int64(len(content)) > maxBytes || int64(len(content)) != info.Size() {
+		return nil, errDependencyMaterialization
+	}
+	return content, nil
 }
 
 func (s *WindowsNodeAppContainerSnapshot) RevokeRegistryEgress() error {

@@ -1,0 +1,3 @@
+temporary_memory_revocation_root=/tmp/polis-self-dev-go-pg.YAnyZf/memory-revocations
+mode=700 path=/tmp/polis-self-dev-go-pg.YAnyZf/memory-revocations
+mode=777 path=/mnt/d/Programs/Polis-cloud-main/.runtime/linux/test-tmp

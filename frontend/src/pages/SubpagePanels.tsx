@@ -2,11 +2,11 @@
 
 import {BadgeCheck, Check, FileCheck2, FileText, FolderOpen, Handshake, History, LockKeyhole, MessageSquare, Settings2, ShieldAlert, Wrench} from 'lucide-react';
 import {useRef, useState, type ChangeEvent, type FormEvent, type ReactNode} from 'react';
-import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, EmployeeSummary, JobRunView, ProjectEnvironmentRevisionView, TaskSummary, UserDispositionDecision} from '../domain/workbench';
+import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, DependencyChangeProposalRecordView, EmployeeSummary, JobRunView, ProjectEnvironmentRevisionView, TaskSummary, UserDispositionDecision} from '../domain/workbench';
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES} from '../data/workbench-api';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useArtifactDeliveryManifest, useArtifactDetail, useCompleteDurableDeliveryManifest, useCreateTaskEnvironmentHandover, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDurableDelivery, useEnsureProjectEnvironment, useMissionInputs, useProjectEnvironments, useRecordDurableUserDisposition, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
+import {useArtifactDeliveryManifest, useArtifactDetail, useCompleteDurableDeliveryManifest, useCreateTaskEnvironmentHandover, useDecideDependencyChange, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDependencyChanges, useDurableDelivery, useEnsureProjectEnvironment, useMaterializeDependencyChange, useMissionInputs, useProjectEnvironments, useProposeDependencyChange, useRecordDurableUserDisposition, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
 import {formatEntityId} from '../domain/activity-presentation';
 import {labelDisplayValue, labelProjectEnvironmentPolicy, labelRole} from '../domain/display-labels';
 import {selectCheckpointForTask} from '../domain/checkpoint-projection';
@@ -44,6 +44,25 @@ function clearPendingRequestIdentity(pendingIds: Map<string, string>, key: strin
   } catch {
     // Nothing else is required after a confirmed command.
   }
+}
+
+function parseDependencySpecifications(value: string): Readonly<Record<string, string>> {
+  const entries = value.split(/\r?\n/).map(line => line.trim()).filter(line => line !== '');
+  if (entries.length < 1 || entries.length > 64) throw new Error('输入 1–64 个依赖，每行一个 package=exact.version。');
+  const specifications = new Map<string, string>();
+  for (const entry of entries) {
+    const separator = entry.lastIndexOf('=');
+    if (separator < 1 || separator === entry.length - 1) throw new Error(`依赖格式无效：${entry}`);
+    const packageName = entry.slice(0, separator).trim();
+    const version = entry.slice(separator + 1).trim();
+    if (specifications.has(packageName)) throw new Error(`依赖重复：${packageName}`);
+    if (!/^(?:@[A-Za-z0-9][A-Za-z0-9._-]*\/)?[A-Za-z0-9][A-Za-z0-9._-]*$/.test(packageName)
+      || !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.test(version)) {
+      throw new Error(`只接受有效的包名和精确 semver：${entry}`);
+    }
+    specifications.set(packageName, version);
+  }
+  return Object.fromEntries(specifications.entries());
 }
 
 function hashPendingRequestKey(value: string): string {
@@ -567,6 +586,20 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
   const pendingEnvironmentPolicy = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   const pendingEnvironmentQualification = useRef<Readonly<{fingerprint: string; requestId: string}> | null>(null);
   const pendingEnvironmentPreparation = useRef(new Map<string, string>());
+  const [dependencyBaseRevisionId, setDependencyBaseRevisionId] = useState('');
+  const [dependencySpecifications, setDependencySpecifications] = useState('new-package=1.2.3');
+  const [dependencyRegistryHost, setDependencyRegistryHost] = useState('');
+  const [dependencyRationale, setDependencyRationale] = useState('');
+  const [dependencyActionMessage, setDependencyActionMessage] = useState<string | null>(null);
+  const [dependencyActionError, setDependencyActionError] = useState<string | null>(null);
+  const pendingDependencyRequests = useRef(new Map<string, string>());
+  const dependencyBaseEnvironments = (projectEnvironmentsQuery.data ?? []).filter(item => item.sourceBindingStatus === 'bound'
+    && item.profileId === 'windows-node-npm@1' && item.policyManifest !== null);
+  const dependencyBaseEnvironment = dependencyBaseEnvironments.find(item => item.revisionId === dependencyBaseRevisionId) ?? dependencyBaseEnvironments[0] ?? null;
+  const dependencyChangesQuery = useDependencyChanges(api, companyId, dependencyBaseEnvironment?.missionId ?? null, tab === 'jobs' && api.mode === 'real');
+  const proposeDependencyChange = useProposeDependencyChange(api, companyId);
+  const decideDependencyChange = useDecideDependencyChange(api, companyId, dependencyBaseEnvironment?.missionId ?? '');
+  const materializeDependencyChange = useMaterializeDependencyChange(api, companyId, dependencyBaseEnvironment?.missionId ?? '');
   if (task === null) return <section className={styles.sectionCard}><EmptyPanel detail="当前快照没有可选任务对象。" title="暂无任务详情" /></section>;
   const downloadArtifact = async () => {
     setDownloadingArtifact(true);
@@ -646,6 +679,69 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
       setEnvironmentActionError(`环境准备结果尚未确认：${detail} 已刷新准备记录；同一浏览器标签页重试该环境会复用原请求 ID。`);
+    }
+  };
+  const submitDependencyChangeProposal = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (dependencyBaseEnvironment === null || dependencyBaseEnvironment.policyManifest === null) return;
+    setDependencyActionMessage(null);
+    setDependencyActionError(null);
+    let dependencies: Readonly<Record<string, string>>;
+    try {
+      dependencies = parseDependencySpecifications(dependencySpecifications);
+    } catch (error) {
+      setDependencyActionError(error instanceof Error ? error.message : '依赖输入无效');
+      return;
+    }
+    const registryHost = dependencyRegistryHost || dependencyBaseEnvironment.policyManifest.registryHosts[0] || '';
+    const rationale = dependencyRationale.trim();
+    if (registryHost === '' || rationale === '') {
+      setDependencyActionError('请选择 registry 并填写变更理由。');
+      return;
+    }
+    const payload = {companyId, missionId: dependencyBaseEnvironment.missionId, baseRevisionId: dependencyBaseEnvironment.revisionId, registryHosts: [registryHost], dependencies, rationale};
+    const pending = pendingRequestIdentity(pendingDependencyRequests.current, 'dependency-change-propose', payload);
+    try {
+      const record = await proposeDependencyChange.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingDependencyRequests.current, pending.key);
+      setDependencyActionMessage(`提案 ${formatEntityId(record.proposalId)} 已记录为 ${labelDisplayValue(record.state)}；审批与物化是两个独立步骤。`);
+      await dependencyChangesQuery.refetch();
+    } catch (error) {
+      setDependencyActionError(`提案结果未确认：${error instanceof Error ? error.message : '未知错误'}。重试会复用原请求 ID。`);
+    }
+  };
+  const decideDependencyProposal = async (proposal: DependencyChangeProposalRecordView, decision: 'approved' | 'rejected') => {
+    const rationale = dependencyRationale.trim();
+    if (rationale === '') {
+      setDependencyActionError('填写变更理由后才能记录所有者决定。');
+      return;
+    }
+    setDependencyActionMessage(null);
+    setDependencyActionError(null);
+    const payload = {companyId, proposalId: proposal.proposalId, decision, rationale};
+    const pending = pendingRequestIdentity(pendingDependencyRequests.current, 'dependency-change-decision', payload);
+    try {
+      const record = await decideDependencyChange.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingDependencyRequests.current, pending.key);
+      setDependencyActionMessage(`提案 ${formatEntityId(record.proposalId)}：${labelDisplayValue(record.state)}。`);
+      await dependencyChangesQuery.refetch();
+    } catch (error) {
+      setDependencyActionError(`决定结果未确认：${error instanceof Error ? error.message : '未知错误'}。重试会复用原请求 ID。`);
+    }
+  };
+  const runDependencyMaterialization = async (proposal: DependencyChangeProposalRecordView) => {
+    setDependencyActionMessage(null);
+    setDependencyActionError(null);
+    const payload = {companyId, proposalId: proposal.proposalId};
+    const pending = pendingRequestIdentity(pendingDependencyRequests.current, 'dependency-change-materialize', payload);
+    try {
+      const record = await materializeDependencyChange.mutateAsync({...payload, requestId: pending.requestId});
+      clearPendingRequestIdentity(pendingDependencyRequests.current, pending.key);
+      setDependencyActionMessage(`物化尝试 ${formatEntityId(record.materializationId)}：${labelDisplayValue(record.state)} · ${labelDisplayValue(record.reasonCode)}。锁文件解析不会执行 package lifecycle scripts。`);
+      await dependencyChangesQuery.refetch();
+      await projectEnvironmentsQuery.refetch();
+    } catch (error) {
+      setDependencyActionError(`物化结果未确认：${error instanceof Error ? error.message : '未知错误'}。重试会复用原请求 ID，未知结果不会自动重跑 resolver。`);
     }
   };
   const readyJobEnvironments = (projectEnvironmentsQuery.data ?? []).filter(item => item.sourceBindingStatus === 'bound'
@@ -878,6 +974,51 @@ export function TaskSubpage({api, companyId, overview, task, tab}: Readonly<{api
           </div>)}</div>
         </> : <EmptyPanel detail="尚未登记项目环境版本；环境准备与文件/网络隔离资格未就绪时不会启动项目命令。" title="没有项目环境版本" />}
       </article>
+      {api.mode === 'real' ? <article className={styles.sectionCard}>
+        <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>依赖 / owner gate</span><h2 className={styles.sectionTitle}>受控依赖变更</h2></div><StatusBadge label={`${dependencyChangesQuery.data?.length ?? 0} 个提案`} tone="info" /></div>
+        <p className={styles.formHint}>提案只记录精确 semver 意图；所有者批准后才可请求 resolver。只有 Windows registry-only 执行器在当前主机/隔离资格有效时才会运行。Linux deny-all 保持不可联网。任何生命周期脚本都被忽略；materialize 不安装项目、不运行项目脚本，也不会自动批准后继环境版本。</p>
+        {dependencyBaseEnvironments.length === 0 ? <div className={styles.emptyState} role="status">没有可绑定的 Windows 项目环境版本；先登记一个绑定 MissionInput 的环境版本。</div> : <form className={styles.formStack} onSubmit={event => void submitDependencyChangeProposal(event)}>
+          <label className={styles.formLabel}>基准环境版本<select className={styles.formField} value={dependencyBaseEnvironment?.revisionId ?? ''} onChange={event => setDependencyBaseRevisionId(event.target.value)}>
+            {dependencyBaseEnvironments.map(item => <option key={item.revisionId} value={item.revisionId}>{formatEntityId(item.revisionId)} · {item.missionId} · policy {labelDisplayValue(item.policyDecision)} · executor {labelDisplayValue(item.executorQualification)}</option>)}
+          </select></label>
+          <label className={styles.formLabel}>唯一 registry<select className={styles.formField} value={dependencyRegistryHost || dependencyBaseEnvironment?.policyManifest?.registryHosts[0] || ''} onChange={event => setDependencyRegistryHost(event.target.value)}>
+            {(dependencyBaseEnvironment?.policyManifest?.registryHosts ?? []).map(host => <option key={host} value={host}>{host}</option>)}
+          </select></label>
+          <label className={styles.formLabel}>精确依赖版本（每行 `package=1.2.3`）<textarea className={styles.formField} maxLength={8192} rows={4} onChange={event => setDependencySpecifications(event.target.value)} value={dependencySpecifications} /></label>
+          <label className={styles.formLabel}>提案 / 决定理由<input className={styles.formField} maxLength={4096} onChange={event => setDependencyRationale(event.target.value)} value={dependencyRationale} /></label>
+          <button className={styles.textButton} disabled={proposeDependencyChange.isPending || dependencyRationale.trim() === '' || dependencyBaseEnvironment === null} type="submit">{proposeDependencyChange.isPending ? '正在记录…' : '记录依赖提案'}</button>
+        </form>}
+        {dependencyActionMessage ? <p className={styles.formHint} role="status">{dependencyActionMessage}</p> : null}
+        {dependencyActionError ? <div className={styles.errorState} role="alert">{dependencyActionError}</div> : null}
+        {dependencyChangesQuery.isPending ? <div className={styles.emptyState} role="status">正在读取此 Mission 的 DependencyChange 记录</div> : dependencyChangesQuery.isError ? <div className={styles.errorState} role="alert">DependencyChange 读取失败：{dependencyChangesQuery.error.message}</div> : dependencyChangesQuery.data && dependencyChangesQuery.data.length > 0 ? <div className={styles.recordList}>{dependencyChangesQuery.data.map(proposal => {
+          const base = projectEnvironmentsQuery.data?.find(item => item.revisionId === proposal.baseRevisionId) ?? null;
+          const materialization = proposal.materialization ?? null;
+          const hasUnresolvedAttempt = materialization?.state === 'running' || materialization?.state === 'outcome_unknown';
+          const canMaterialize = proposal.state === 'approved' && base?.profileId === 'windows-node-npm@1'
+            && base.sourceBindingStatus === 'bound' && base.policyDecision === 'approved' && base.executorQualification === 'qualified'
+            && materialization?.state !== 'materialized' && !hasUnresolvedAttempt;
+          return <div className={styles.recordRow} key={proposal.proposalId}>
+            <div className={styles.recordLead}><FileCheck2 aria-hidden="true" size={16} /><div>
+              <strong>提案 {formatEntityId(proposal.proposalId)} · {labelDisplayValue(proposal.state)}</strong>
+              <span>Mission {formatEntityId(proposal.missionId)} · 基准环境 {formatEntityId(proposal.baseRevisionId)}</span>
+              <span>registry {proposal.proposal.registryHosts.join(', ')}</span>
+              <span>依赖 {Object.entries(proposal.proposal.dependencies).map(([name, version]) => `${name}@${version}`).join(' · ')}</span>
+              <span>理由：{proposal.rationale}</span>
+              {materialization ? <span>物化 {labelDisplayValue(materialization.state)} · {labelDisplayValue(materialization.reasonCode)}{materialization.successorRevisionId ? ` · 后继 ${formatEntityId(materialization.successorRevisionId)}` : ''}{materialization.resolverLogsSha256 ? ` · resolver logs ${materialization.resolverLogsSha256.slice(0, 12)}` : ''}</span> : <span>尚无物化尝试</span>}
+            </div></div>
+            <div className={styles.recordMeta}>
+              <StatusBadge label={labelDisplayValue(materialization?.state ?? proposal.state)} tone={materialization?.state === 'materialized' ? 'success' : materialization?.state === 'outcome_unknown' || materialization?.state === 'failed' ? 'danger' : 'warning'} />
+              {proposal.state === 'proposed' ? <>
+                <button className={styles.textButton} disabled={decideDependencyChange.isPending || dependencyRationale.trim() === ''} onClick={() => { void decideDependencyProposal(proposal, 'approved'); }} type="button">批准提案</button>
+                <button className={styles.textButton} disabled={decideDependencyChange.isPending || dependencyRationale.trim() === ''} onClick={() => { void decideDependencyProposal(proposal, 'rejected'); }} type="button">拒绝提案</button>
+              </> : null}
+              {canMaterialize ? <button className={styles.textButton} disabled={materializeDependencyChange.isPending} onClick={() => { void runDependencyMaterialization(proposal); }} type="button">请求受限锁文件解析</button> : null}
+              {hasUnresolvedAttempt ? <span>运行中或结果未知：不会重放 resolver。</span> : null}
+              {proposal.state === 'approved' && !canMaterialize && !hasUnresolvedAttempt && materialization?.state !== 'materialized' ? <span>需要当前基准环境策略批准、Windows 执行器资格及可用 resolver。</span> : null}
+            </div>
+          </div>;
+        })}</div> : <EmptyPanel detail="此 Mission 尚无依赖变更提案。" title="暂无 DependencyChange" />}
+      </article> : null}
       <article className={styles.sectionCard}>
         <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>作业 / 持久状态</span><h2 className={styles.sectionTitle}>JobRun 与服务</h2></div><StatusBadge label={`${jobRunsQuery.data?.length ?? 0} 条记录`} tone="info" /></div>
         {jobRunsQuery.isPending ? <div className={styles.emptyState} role="status">正在读取 JobRun</div> : jobRunsQuery.isError ? <div className={styles.errorState} role="alert">JobRun 读取失败：{jobRunsQuery.error.message}</div> : jobRunsQuery.data?.length ? <div className={styles.recordList}>{jobRunsQuery.data.map(job => <div className={styles.recordRow} key={job.jobId}><div className={styles.recordLead}><Wrench aria-hidden="true" size={16} /><div><strong>{job.kind} · {formatEntityId(job.jobId)}</strong><span>状态 {labelDisplayValue(job.state)} · 就绪 {labelDisplayValue(job.readiness)}</span>{job.serviceId === 'legacy:unattributed' ? <span>历史服务 · 未归属</span> : job.serviceId ? <span>固定服务定义 {formatEntityId(job.serviceId)}</span> : null}<span>环境 {formatEntityId(job.environmentRevisionId)} · 会话 {formatEntityId(job.sessionId)}</span><span>stdout offset {job.stdoutOffset} · stderr offset {job.stderrOffset}{job.logsTruncated ? ' · 日志已截断' : ''}{job.logGap ? ' · 日志存在缺口' : ''}</span>{job.logManifestSha256 ? <span>日志清单 {job.logManifestSha256}</span> : null}{job.serviceEndpoint ? <span>服务 generation {job.serviceEndpoint.generation} · {job.serviceEndpoint.bindAddress}:{job.serviceEndpoint.port} · {labelDisplayValue(job.serviceEndpoint.readiness)}</span> : null}{job.exitCode !== null ? <span>退出码 {job.exitCode}</span> : null}<div className={styles.recordActions}>{job.logManifestSha256 ? <button className={styles.textButton} onClick={() => setSelectedJobLogId(job.jobId)} type="button">读取日志</button> : null}{job.state === 'running' || job.state === 'starting' || job.state === 'outcome_unknown' || (job.kind === 'service' && job.serviceId !== 'legacy:unattributed' && (job.state === 'exited' || job.state === 'failed' || job.state === 'cancelled') && job.serviceEndpoint?.readiness === 'unhealthy') ? <button className={styles.textButton} disabled={stopProjectJob.isPending} onClick={() => { void stopProjectJobRun(job.jobId); }} type="button">{job.state === 'exited' || job.state === 'failed' || job.state === 'cancelled' ? '重试端点撤销' : job.state === 'outcome_unknown' ? '重试停止' : '停止'}</button> : null}</div></div></div><StatusBadge label={labelDisplayValue(job.state)} tone={job.state === 'exited' && job.exitCode === 0 ? 'success' : job.state === 'exited' || job.state === 'failed' || job.state === 'cancelled' || job.state === 'outcome_unknown' ? 'danger' : 'warning'} /></div>)}</div> : <EmptyPanel detail="当前任务没有持久 JobRun；没有合格隔离执行器时不会启动项目命令。" title="暂无运行作业" />}

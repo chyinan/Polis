@@ -9,6 +9,25 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 327, REQ-36 durable DependencyChange materialization)
+
+Completed the source path from owner proposal and decision through explicit
+materialize action. Schema135/136 records immutable attempt identities and
+append-only state/output events; one exact RequestID is replayable only as a
+read, unresolved attempts become `outcome_unknown` at startup, and no resolver
+is automatically retried. Control checks current base policy/executor
+qualification, validates the exact package overlay and lockfile, persists a
+derived immutable MissionInput, and registers a successor environment revision
+without approving it. Owner Workbench routes/UI expose proposal, decision,
+status and explicit materialization. The Windows resolver uses a fixed
+`npm install --package-lock-only --ignore-scripts --no-audit --no-fund --no-save`
+argv inside the registry-only AppContainer, constrained to one approved host;
+Linux stays unavailable under deny-all. Full Go/race/vet/build and frontend
+checks pass; disposable PostgreSQL18.6/Schema136 integration uses only a
+recording resolver. No npm, registry, Provider or external request ran. Native
+Windows/AppContainer/registry host qualification remains open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-materialization-control-20261026/verification.md`.
+
 ## Latest local source increment (Slice 326, REQ-36 dependency overlay validation)
 
 Added pure bounded helpers to apply an approved DependencyChange only to the

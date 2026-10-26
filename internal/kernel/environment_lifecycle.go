@@ -321,6 +321,19 @@ func (k *Kernel) TXRecordEnvironmentPolicyDecision(ctx context.Context, companyI
 		if input.Decision == "revoked" && (currentDecision != "approved" || currentDigest != policyDigest) {
 			return Receipt{}, core.ConflictError{Reason: "current environment policy is not approved", CurrentState: currentDecision}
 		}
+		if input.Decision == "revoked" {
+			var resolverRunning bool
+			if err := tx.QueryRow(ctx, `SELECT EXISTS(
+ SELECT 1 FROM environment_dependency_change_materializations m
+ JOIN LATERAL (SELECT state FROM environment_dependency_change_materialization_events
+  WHERE company_id=m.company_id AND materialization_id=m.materialization_id ORDER BY event_seq DESC LIMIT 1) e ON true
+ WHERE m.company_id=$1 AND m.base_revision_id=$2 AND e.state='running')`, companyID, input.RevisionID).Scan(&resolverRunning); err != nil {
+				return Receipt{}, err
+			}
+			if resolverRunning {
+				return Receipt{}, core.ConflictError{Reason: "environment policy cannot be revoked while a dependency resolver is running", CurrentState: "dependency_materialization_running"}
+			}
+		}
 		if _, err := tx.Exec(ctx, `INSERT INTO environment_policy_events(company_id,event_id,revision_id,policy_sha256,decision,rationale,actor,request_id)
 VALUES($1,$2,$3,$4,$5,$6,'local-owner',$7)`, companyID, eventID, input.RevisionID, policyDigest, input.Decision, strings.TrimSpace(input.Rationale), input.RequestID); err != nil {
 			return Receipt{}, err

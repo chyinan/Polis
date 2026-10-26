@@ -4,7 +4,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import type {ImportStdioMCPPackageOptions, ObserveStdioMCPRuntimeOptions, ObserveStreamableHTTPMCPRuntimeOptions} from './workbench-api';
 import type {TaskTakeoverDirectorySnapshotOptions} from './workbench-api';
-import type {BindEmployeeCapabilityOptions, CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateMissionChangeRequestOptions, CreateTaskEnvironmentHandoverOptions, CreateOperatorInstructionOptions, CreateTaskTakeoverLeaseOptions, DecideCapabilityOptions, DecideGitHubFeedbackSourceOptions, EnvironmentExecutorQualificationOptions, EnvironmentPolicyDecisionOptions, EnsureEnvironmentOptions, ImportSkillOptions, ImportReadOnlySkillPackageOptions, MissionChangeRequestCommandOptions, MissionChangeRequestQueryOptions, MissionCommandOptions, PollGitHubFeedbackSourceOptions, ProbeGitHubFeedbackSourceOptions, QualifyCapabilityOptions, RecordDomainEvidenceOptions, RecordDomainEvidenceReviewOptions, RecordDomainEvidenceSubstantiveAssessmentOptions, RecordDomainProfileQualificationOptions, RegisterGitHubFeedbackSourceOptions, ReleaseTaskTakeoverLeaseOptions, ReviewCapabilityRevocationOptions, SetGitHubFeedbackBacklogStatusOptions, SetHumanInterventionStateOptions, TaskCrossBackendHandoversQueryOptions, TaskInputManifestQueryOptions, TaskJobLogsQueryOptions, TaskJobRunsQueryOptions, StartTaskJobRunOptions, StopTaskJobRunOptions, TaskTakeoverLeaseQueryOptions, TaskTakeoverSnapshotOptions, UploadMissionDirectoryInputOptions, UploadMissionInputOptions, UpdateCompanyOptions, ArchiveCompanyOptions, RegisterMCPOptions, TestNotificationOptions, UpdateRuntimeSettingsOptions, WorkbenchApi} from './workbench-api';
+import type {BindEmployeeCapabilityOptions, CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateMissionChangeRequestOptions, CreateTaskEnvironmentHandoverOptions, CreateOperatorInstructionOptions, CreateTaskTakeoverLeaseOptions, DecideCapabilityOptions, DecideDependencyChangeOptions, DecideGitHubFeedbackSourceOptions, DependencyChangeQueryOptions, EnvironmentExecutorQualificationOptions, EnvironmentPolicyDecisionOptions, EnsureEnvironmentOptions, ImportSkillOptions, ImportReadOnlySkillPackageOptions, MaterializeDependencyChangeOptions, MissionChangeRequestCommandOptions, MissionChangeRequestQueryOptions, MissionCommandOptions, PollGitHubFeedbackSourceOptions, ProbeGitHubFeedbackSourceOptions, ProposeDependencyChangeOptions, QualifyCapabilityOptions, RecordDomainEvidenceOptions, RecordDomainEvidenceReviewOptions, RecordDomainEvidenceSubstantiveAssessmentOptions, RecordDomainProfileQualificationOptions, RegisterGitHubFeedbackSourceOptions, ReleaseTaskTakeoverLeaseOptions, ReviewCapabilityRevocationOptions, SetGitHubFeedbackBacklogStatusOptions, SetHumanInterventionStateOptions, TaskCrossBackendHandoversQueryOptions, TaskInputManifestQueryOptions, TaskJobLogsQueryOptions, TaskJobRunsQueryOptions, StartTaskJobRunOptions, StopTaskJobRunOptions, TaskTakeoverLeaseQueryOptions, TaskTakeoverSnapshotOptions, UploadMissionDirectoryInputOptions, UploadMissionInputOptions, UpdateCompanyOptions, ArchiveCompanyOptions, RegisterMCPOptions, TestNotificationOptions, UpdateRuntimeSettingsOptions, WorkbenchApi} from './workbench-api';
 import type {ActivityStreamStatus} from './workbench-api';
 import type {MissionCloseoutOptions} from './workbench-api';
 import type {CreateProjectJobBrowserSessionOptions} from './workbench-api';
@@ -765,6 +765,45 @@ export function useProjectEnvironments(api: WorkbenchApi, companyId: string, ena
     queryFn: () => api.listProjectEnvironments({companyId}),
     enabled,
     staleTime: 5_000,
+  });
+}
+
+export function useDependencyChanges(api: WorkbenchApi, companyId: string, missionId: string | null, enabled = true) {
+  return useQuery({
+    queryKey: ['workbench', api.mode, 'dependency-changes', companyId, missionId],
+    queryFn: () => api.listDependencyChanges({companyId, missionId: missionId as string} satisfies DependencyChangeQueryOptions),
+    enabled: enabled && missionId !== null && missionId.trim() !== '',
+    staleTime: 5_000,
+  });
+}
+
+export function useProposeDependencyChange(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<ProposeDependencyChangeOptions, 'companyId'>) => api.proposeDependencyChange({...options, companyId}),
+    onSettled: async (_record, _error, options) => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'dependency-changes', companyId, options.missionId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
+    ]),
+  });
+}
+
+export function useDecideDependencyChange(api: WorkbenchApi, companyId: string, missionId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<DecideDependencyChangeOptions, 'companyId'>) => api.decideDependencyChange({...options, companyId}),
+    onSettled: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'dependency-changes', companyId, missionId]}),
+  });
+}
+
+export function useMaterializeDependencyChange(api: WorkbenchApi, companyId: string, missionId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<MaterializeDependencyChangeOptions, 'companyId'>) => api.materializeDependencyChange({...options, companyId}),
+    onSettled: async () => Promise.all([
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'dependency-changes', companyId, missionId]}),
+      queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'project-environments', companyId]}),
+    ]),
   });
 }
 

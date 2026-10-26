@@ -34,6 +34,42 @@ type ProjectEnvironmentPreparationExecutor interface {
 	PrepareProjectEnvironment(context.Context, string, ProjectEnvironmentSnapshotLoader) (EnvironmentPreparationResult, error)
 }
 
+type DependencyChangeResolutionResult struct {
+	Lockfile      []byte
+	Logs          []byte
+	LogsTruncated bool
+}
+
+type DependencyChangeResolverError struct {
+	State      string
+	ReasonCode string
+	Cause      error
+}
+
+func (failure *DependencyChangeResolverError) Error() string {
+	if failure == nil {
+		return "dependency change resolver failed"
+	}
+	if failure.Cause != nil {
+		return failure.Cause.Error()
+	}
+	return failure.ReasonCode
+}
+
+func (failure *DependencyChangeResolverError) Unwrap() error {
+	if failure == nil {
+		return nil
+	}
+	return failure.Cause
+}
+
+// ProjectDependencyChangeResolver resolves the approved exact manifest inside
+// the same qualified environment isolation boundary. It returns only lockfile
+// bytes and bounded logs; persistence remains owned by Control/Kernel.
+type ProjectDependencyChangeResolver interface {
+	ResolveProjectDependencyChange(context.Context, string, kernel.ProjectEnvironmentExecutionSnapshot, environment.DependencyChangeProposal, []byte) (DependencyChangeResolutionResult, error)
+}
+
 type ProjectEnvironmentSnapshotLoader func(context.Context) (kernel.ProjectEnvironmentExecutionSnapshot, error)
 
 func (s *Service) SetProjectEnvironmentPreparationExecutor(executor ProjectEnvironmentPreparationExecutor) {

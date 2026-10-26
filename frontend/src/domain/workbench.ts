@@ -376,6 +376,48 @@ export type EnvironmentPreparationRunView = Readonly<{
   createdAt: string;
 }>;
 
+export type DependencyChangeProposalPayloadView = Readonly<{
+  missionId: string;
+  baseRevisionId: string;
+  requestId: string;
+  registryHosts: ReadonlyArray<string>;
+  dependencies: Readonly<Record<string, string>>;
+  rationale: string;
+}>;
+
+export type DependencyChangeProposalRecordView = Readonly<{
+  companyId: string;
+  proposalId: string;
+  missionId: string;
+  baseRevisionId: string;
+  proposal: DependencyChangeProposalPayloadView;
+  proposalSha256: string;
+  state: 'proposed' | 'approved' | 'rejected' | 'blocked';
+  actor: string;
+  rationale: string;
+  requestId: string;
+  createdAt: string;
+  materialization?: DependencyChangeMaterializationRecordView | null;
+}>;
+
+export type DependencyChangeMaterializationRecordView = Readonly<{
+  companyId: string;
+  materializationId: string;
+  proposalId: string;
+  baseRevisionId: string;
+  requestId: string;
+  requestSha256: string;
+  state: 'running' | 'blocked' | 'failed' | 'outcome_unknown' | 'materialized';
+  reasonCode: string;
+  derivedInputId?: string;
+  derivedInputRevision?: string;
+  successorRevisionId?: string;
+  packageJsonSha256?: string;
+  lockfileSha256?: string;
+  resolverLogsSha256?: string;
+  createdAt: string;
+}>;
+
 export type ServiceEndpointView = Readonly<{
   generation: string;
   bindAddress: '127.0.0.1' | '::1' | 'localhost';

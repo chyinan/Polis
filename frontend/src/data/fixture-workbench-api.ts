@@ -11,7 +11,9 @@ import type {AllocateProblemToolCallsOptions, AllocateTaskToolCallsOptions, Chan
 import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, CompanyToolCallClosingReserveReceiptView, DailyRoutineCommandReceipt, DailyRoutineView, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {StdioMCPPackageRevisionView} from '../domain/workbench';
 import type {ServiceBrowserSessionView} from '../domain/workbench';
+import type {DependencyChangeMaterializationRecordView, DependencyChangeProposalRecordView} from '../domain/workbench';
 import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
+import type {DecideDependencyChangeOptions, DependencyChangeQueryOptions, MaterializeDependencyChangeOptions, ProposeDependencyChangeOptions} from './workbench-api';
 
 import type {
   ActivityEvent,
@@ -903,6 +905,24 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
 
   async ensureProjectEnvironment(_options: EnsureEnvironmentOptions): Promise<EnvironmentPreparationRunView> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'environment preparation is unavailable in fixture mode');
+  }
+
+  async listDependencyChanges(options: DependencyChangeQueryOptions): Promise<ReadonlyArray<DependencyChangeProposalRecordView>> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.missionId);
+    return [];
+  }
+
+  async proposeDependencyChange(_options: ProposeDependencyChangeOptions): Promise<DependencyChangeProposalRecordView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'DependencyChange proposals are unavailable in fixture mode');
+  }
+
+  async decideDependencyChange(_options: DecideDependencyChangeOptions): Promise<DependencyChangeProposalRecordView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'DependencyChange decisions are unavailable in fixture mode');
+  }
+
+  async materializeDependencyChange(_options: MaterializeDependencyChangeOptions): Promise<DependencyChangeMaterializationRecordView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'DependencyChange materialization is unavailable in fixture mode');
   }
 
   async listTaskJobRuns(options: TaskJobRunsQueryOptions): Promise<ReadonlyArray<JobRunView>> {

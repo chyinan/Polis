@@ -6,7 +6,7 @@ import type {CompanyToolCallBudgetChangeReceiptView, CompanyToolCallBudgetView, 
 import type {DailyRoutineCommandReceipt, MemoryCorrectionQueueView, MemoryTaskRevalidationPreviewView, MemoryTaskRevalidationReceipt, MemoryTaskStatusView, MissionToolCallBudgetChangeReceiptView, MissionToolCallBudgetListView, MissionToolCallClosingReserveReceiptView, ProblemToolCallAllocationReceiptView, ProblemToolCallBudgetListView, ProblemToolCallClosingReserveReceiptView, TaskToolCallAllocationReceiptView, TaskToolCallIncompleteClosureReceiptView} from '../domain/workbench';
 import type {ResearchSimulationRunView} from '../domain/workbench';
 import type {DomainContentFeedbackCategoryView, DomainContentFeedbackView, DomainContentCorrectionView, DomainContentPublicationView} from '../domain/workbench';
-import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DailyRoutineView, DataMode, DomainContentDraftView, DomainContentReviewView, DomainContentReviewSubmissionView, DomainContentSampleEvidenceView, DomainContentSourceEventView, DomainContentSourceStateView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceAreaAssessmentView, DomainEvidenceAreaView, DomainEvidenceItemView, DomainEvidenceLedgerView, DomainEvidencePreviewAttestationView, DomainEvidenceRecordView, DomainEvidenceReviewOutcomeView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, DurableDeliveryManifestCompletionReceipt, DurableDeliveryManifestInvalidationReceipt, DurableDeliveryResponse, DurableUserDispositionCommandReceipt, EmployeeDraft, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatus, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackCollectionPolicyReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, HumanInterventionState, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, ResearchSourceView, RuntimeSettingsView, ServiceBrowserSessionView, StdioMCPPackageRevisionView, TaskTakeoverLeaseView, UserDispositionDecision, WorkspaceView} from '../domain/workbench';
+import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDeliveryManifestResponse, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyFeedbackView, CompanyOverviewView, CompanySummaryView, CrossBackendHandoverView, DailyRoutineView, DataMode, DependencyChangeMaterializationRecordView, DependencyChangeProposalRecordView, DomainContentDraftView, DomainContentReviewView, DomainContentReviewSubmissionView, DomainContentSampleEvidenceView, DomainContentSourceEventView, DomainContentSourceStateView, DomainEvidenceArtifactPreviewManifestView, DomainEvidenceArtifactPreviewView, DomainEvidenceAreaAssessmentView, DomainEvidenceAreaView, DomainEvidenceItemView, DomainEvidenceLedgerView, DomainEvidencePreviewAttestationView, DomainEvidenceRecordView, DomainEvidenceReviewOutcomeView, DomainEvidenceReviewRecordView, DomainEvidenceSubstantiveAssessmentRecordView, DomainProfileQualificationRecordView, DurableDeliveryManifestCompletionReceipt, DurableDeliveryManifestInvalidationReceipt, DurableDeliveryResponse, DurableUserDispositionCommandReceipt, EmployeeDraft, EnvironmentExecutorQualificationReceipt, EnvironmentPolicyDecisionReceipt, EnvironmentPreparationRunView, GitHubCredentialReceipt, GitHubFeedbackBacklogStatus, GitHubFeedbackBacklogStatusReceipt, GitHubFeedbackCollectionPolicyReceipt, GitHubFeedbackPollReceipt, GitHubFeedbackProbeReceipt, GitHubFeedbackSourceCommandReceipt, HumanInterventionCommandReceipt, HumanInterventionState, JobRunCommandReceipt, JobRunLogArtifactView, JobRunView, MissionChangeRequestView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, ProjectEnvironmentRevisionView, ResearchSourceView, RuntimeSettingsView, ServiceBrowserSessionView, StdioMCPPackageRevisionView, TaskTakeoverLeaseView, UserDispositionDecision, WorkspaceView} from '../domain/workbench';
 import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 
 export type CompanyDraftOptions = Readonly<{
@@ -662,6 +662,35 @@ export type EnsureEnvironmentOptions = Readonly<{
   requestId: string;
 }>;
 
+export type DependencyChangeQueryOptions = Readonly<{
+  companyId: string;
+  missionId: string;
+}>;
+
+export type ProposeDependencyChangeOptions = Readonly<{
+  companyId: string;
+  missionId: string;
+  baseRevisionId: string;
+  registryHosts: ReadonlyArray<string>;
+  dependencies: Readonly<Record<string, string>>;
+  rationale: string;
+  requestId: string;
+}>;
+
+export type DecideDependencyChangeOptions = Readonly<{
+  companyId: string;
+  proposalId: string;
+  decision: 'approved' | 'rejected';
+  rationale: string;
+  requestId: string;
+}>;
+
+export type MaterializeDependencyChangeOptions = Readonly<{
+  companyId: string;
+  proposalId: string;
+  requestId: string;
+}>;
+
 export type MissionDirectoryFile = Readonly<{
   relativePath: string;
   file: File;
@@ -831,6 +860,10 @@ export type WorkbenchApi = Readonly<{
   decideProjectEnvironmentPolicy(options: EnvironmentPolicyDecisionOptions): Promise<EnvironmentPolicyDecisionReceipt>;
   decideProjectEnvironmentExecutorQualification(options: EnvironmentExecutorQualificationOptions): Promise<EnvironmentExecutorQualificationReceipt>;
   ensureProjectEnvironment(options: EnsureEnvironmentOptions): Promise<EnvironmentPreparationRunView>;
+  listDependencyChanges(options: DependencyChangeQueryOptions): Promise<ReadonlyArray<DependencyChangeProposalRecordView>>;
+  proposeDependencyChange(options: ProposeDependencyChangeOptions): Promise<DependencyChangeProposalRecordView>;
+  decideDependencyChange(options: DecideDependencyChangeOptions): Promise<DependencyChangeProposalRecordView>;
+  materializeDependencyChange(options: MaterializeDependencyChangeOptions): Promise<DependencyChangeMaterializationRecordView>;
   listTaskJobRuns(options: TaskJobRunsQueryOptions): Promise<ReadonlyArray<JobRunView>>;
   listTaskCrossBackendHandovers(options: TaskCrossBackendHandoversQueryOptions): Promise<ReadonlyArray<CrossBackendHandoverView>>;
   createTaskEnvironmentHandover(options: CreateTaskEnvironmentHandoverOptions): Promise<CrossBackendHandoverView>;

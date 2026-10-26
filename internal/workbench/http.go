@@ -429,6 +429,24 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 				return
 			}
 			writeJSON(response, http.StatusOK, environments)
+		case "dependency-changes":
+			dependencyService, ok := service.(control.DependencyChangeService)
+			if !ok {
+				writeError(response, http.StatusNotImplemented, "dependency change service is unavailable")
+				return
+			}
+			query := request.URL.Query()
+			missionIDs := query["missionId"]
+			if len(query) != 1 || len(missionIDs) != 1 || strings.TrimSpace(missionIDs[0]) == "" {
+				writeError(response, http.StatusBadRequest, "one missionId query parameter is required")
+				return
+			}
+			proposals, err := dependencyService.ListDependencyChanges(ctx, path.companyID, missionIDs[0])
+			if err != nil {
+				writeModelError(response, err)
+				return
+			}
+			writeJSON(response, http.StatusOK, proposals)
 		case "operations":
 			operationsReader, ok := model.(OperationsReader)
 			if !ok {
@@ -1139,6 +1157,59 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, run)
+	case "dependency-changes":
+		dependencyService, ok := service.(control.DependencyChangeService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("dependency change command service is unavailable"))
+			return
+		}
+		var input control.ProposeDependencyChangeRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
+			return
+		}
+		record, err := dependencyService.ProposeDependencyChange(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, record)
+	case "dependency_changes.decision":
+		dependencyService, ok := service.(control.DependencyChangeService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "dependency_change", errors.New("dependency change command service is unavailable"))
+			return
+		}
+		var input control.DecideDependencyChangeRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "dependency_change", err)
+			return
+		}
+		input.ProposalID = path.resourceID
+		record, err := dependencyService.DecideDependencyChange(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "dependency_change", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, record)
+	case "dependency_changes.materialize":
+		dependencyService, ok := service.(control.DependencyChangeService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.resourceID, "dependency_change", errors.New("dependency change materializer is unavailable"))
+			return
+		}
+		var input control.MaterializeDependencyChangeRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "dependency_change", err)
+			return
+		}
+		input.ProposalID = path.resourceID
+		record, err := dependencyService.MaterializeDependencyChange(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "dependency_change", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, record)
 	case "notifications.test":
 		notificationService, ok := service.(control.NotificationCommandService)
 		if !ok {
@@ -2364,7 +2435,7 @@ func parsePath(path string) (parsedPath, bool) {
 		}
 		return parsedPath{companyID: companyID, resourceID: problemKey, endpoint: "problem.budget.closing_reserve"}, true
 	}
-	if len(parts) == 2 && (parts[1] == "overview" || parts[1] == "activity" || parts[1] == "stream" || parts[1] == "missions" || parts[1] == "organization" || parts[1] == "archive" || parts[1] == "settings" || parts[1] == "instructions" || parts[1] == "collaboration" || parts[1] == "operations" || parts[1] == "notifications" || parts[1] == "capabilities" || parts[1] == "environments" || parts[1] == "feedback" || parts[1] == "domain-workflows") {
+	if len(parts) == 2 && (parts[1] == "overview" || parts[1] == "activity" || parts[1] == "stream" || parts[1] == "missions" || parts[1] == "organization" || parts[1] == "archive" || parts[1] == "settings" || parts[1] == "instructions" || parts[1] == "collaboration" || parts[1] == "operations" || parts[1] == "notifications" || parts[1] == "capabilities" || parts[1] == "environments" || parts[1] == "dependency-changes" || parts[1] == "feedback" || parts[1] == "domain-workflows") {
 		if parts[1] == "missions" {
 			return parsedPath{companyID: companyID, endpoint: "missions.create"}, true
 		}
@@ -2492,6 +2563,13 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: revisionID, endpoint: "environments.preparation"}, true
+	}
+	if len(parts) == 4 && parts[1] == "dependency-changes" && parts[2] != "" && (parts[3] == "decision" || parts[3] == "materialize") {
+		proposalID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: proposalID, endpoint: "dependency_changes." + parts[3]}, true
 	}
 	if len(parts) == 3 && parts[1] == "notifications" && (parts[2] == "route" || parts[2] == "test") {
 		return parsedPath{companyID: companyID, endpoint: "notifications." + parts[2]}, true

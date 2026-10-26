@@ -1,0 +1,21 @@
+2026-10-26 22:53:36.489 CST [422] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-26 22:53:36.491 CST [422] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.H8vPgv/socket/.s.PGSQL.5432"
+2026-10-26 22:53:36.497 CST [428] LOG:  database system was shut down at 2026-10-26 22:53:36 CST
+2026-10-26 22:53:36.501 CST [422] LOG:  database system is ready to accept connections
+2026-10-26 22:53:46.711 CST [542] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-26 22:53:46.711 CST [542] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-26 22:53:47.762 CST [557] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-26 22:53:47.762 CST [557] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-26 22:54:54.574 CST [426] LOG:  checkpoint starting: immediate force wait
+2026-10-26 22:54:54.831 CST [426] LOG:  checkpoint complete: wrote 1757 buffers (10.7%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.016 s, sync=0.234 s, total=0.257 s; sync files=1345, longest=0.004 s, average=0.001 s; distance=24631 kB, estimate=24631 kB; lsn=0/2F64570, redo lsn=0/2F64518
+2026-10-26 22:54:55.066 CST [426] LOG:  checkpoint starting: immediate force wait
+2026-10-26 22:54:55.080 CST [426] LOG:  checkpoint complete: wrote 13 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.004 s, sync=0.004 s, total=0.015 s; sync files=8, longest=0.002 s, average=0.001 s; distance=9829 kB, estimate=23151 kB; lsn=0/38FD998, redo lsn=0/38FD940
+2026-10-26 22:55:09.675 CST [426] LOG:  checkpoint starting: immediate force wait
+2026-10-26 22:55:09.698 CST [426] LOG:  checkpoint complete: wrote 718 buffers (4.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.005 s, sync=0.012 s, total=0.024 s; sync files=52, longest=0.002 s, average=0.001 s; distance=15021 kB, estimate=22338 kB; lsn=0/47A8E38, redo lsn=0/47A8DE0
+2026-10-26 22:55:30.406 CST [422] LOG:  received fast shutdown request
+2026-10-26 22:55:30.408 CST [422] LOG:  aborting any active transactions
+2026-10-26 22:55:30.409 CST [422] LOG:  background worker "logical replication launcher" (PID 431) exited with exit code 1
+2026-10-26 22:55:30.410 CST [426] LOG:  shutting down
+2026-10-26 22:55:30.411 CST [426] LOG:  checkpoint starting: shutdown immediate
+2026-10-26 22:55:30.423 CST [426] LOG:  checkpoint complete: wrote 54 buffers (0.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.005 s, total=0.013 s; sync files=17, longest=0.002 s, average=0.001 s; distance=424 kB, estimate=20147 kB; lsn=0/4812E28, redo lsn=0/4812E28
+2026-10-26 22:55:30.432 CST [422] LOG:  database system is shut down

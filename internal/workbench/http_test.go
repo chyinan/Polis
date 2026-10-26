@@ -911,6 +911,85 @@ func TestParseHumanInterventionStateCommand(t *testing.T) {
 	}
 }
 
+type fakeDependencyChangeService struct {
+	fakeCommandService
+	companyID string
+	missionID string
+	proposal  control.ProposeDependencyChangeRequest
+	decision  control.DecideDependencyChangeRequest
+	material  control.MaterializeDependencyChangeRequest
+}
+
+func (service *fakeDependencyChangeService) ListDependencyChanges(_ context.Context, companyID, missionID string) ([]kernel.DependencyChangeProposalRecord, error) {
+	service.companyID, service.missionID = companyID, missionID
+	return []kernel.DependencyChangeProposalRecord{{CompanyID: companyID, MissionID: missionID, ProposalID: "proposal-1", State: "approved"}}, nil
+}
+
+func (service *fakeDependencyChangeService) ProposeDependencyChange(_ context.Context, companyID string, request control.ProposeDependencyChangeRequest) (kernel.DependencyChangeProposalRecord, error) {
+	service.companyID, service.proposal = companyID, request
+	return kernel.DependencyChangeProposalRecord{CompanyID: companyID, MissionID: request.MissionID, ProposalID: "proposal-1", State: "proposed"}, nil
+}
+
+func (service *fakeDependencyChangeService) DecideDependencyChange(_ context.Context, companyID string, request control.DecideDependencyChangeRequest) (kernel.DependencyChangeProposalRecord, error) {
+	service.companyID, service.decision = companyID, request
+	return kernel.DependencyChangeProposalRecord{CompanyID: companyID, ProposalID: request.ProposalID, State: request.Decision}, nil
+}
+
+func (service *fakeDependencyChangeService) MaterializeDependencyChange(_ context.Context, companyID string, request control.MaterializeDependencyChangeRequest) (kernel.DependencyChangeMaterializationRecord, error) {
+	service.companyID, service.material = companyID, request
+	return kernel.DependencyChangeMaterializationRecord{CompanyID: companyID, ProposalID: request.ProposalID, MaterializationID: "materialization-1", State: "running"}, nil
+}
+
+func TestParseDependencyChangeOwnerRoutes(t *testing.T) {
+	for path, want := range map[string]struct {
+		endpoint, resourceID string
+	}{
+		"/api/workbench/companies/company-1/dependency-changes":                        {endpoint: "dependency-changes"},
+		"/api/workbench/companies/company-1/dependency-changes/proposal-1/decision":    {endpoint: "dependency_changes.decision", resourceID: "proposal-1"},
+		"/api/workbench/companies/company-1/dependency-changes/proposal-1/materialize": {endpoint: "dependency_changes.materialize", resourceID: "proposal-1"},
+	} {
+		parsed, ok := parsePath(path)
+		if !ok || parsed.companyID != "company-1" || parsed.endpoint != want.endpoint || parsed.resourceID != want.resourceID {
+			t.Fatalf("dependency change path %s parsed as %+v ok=%t, want %+v", path, parsed, ok, want)
+		}
+	}
+}
+
+func TestHTTPDependencyChangeProposalDecisionAndMaterializationOwnerCommands(t *testing.T) {
+	service := &fakeDependencyChangeService{}
+	requestBody := `{"missionId":"mission-1","baseRevisionId":"revision-1","registryHosts":["registry.npmjs.org"],"dependencies":{"pkg":"1.2.3"},"rationale":"bounded change","requestId":"proposal-request"}`
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/dependency-changes", strings.NewReader(requestBody))
+	request.Header.Set("Content-Type", "application/json")
+	NewHandler(fakeReadModel{}, service).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusAccepted || service.companyID != "company-1" || service.proposal.MissionID != "mission-1" || service.proposal.RequestID != "proposal-request" {
+		t.Fatalf("dependency proposal response=%d service=%+v body=%s", recorder.Code, service, recorder.Body.String())
+	}
+
+	recorder = httptest.NewRecorder()
+	request = httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/dependency-changes/proposal-1/decision", strings.NewReader(`{"proposalId":"forged-proposal","decision":"approved","rationale":"owner approval","requestId":"decision-request"}`))
+	request.Header.Set("Content-Type", "application/json")
+	NewHandler(fakeReadModel{}, service).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusAccepted || service.decision.ProposalID != "proposal-1" || service.decision.RequestID != "decision-request" {
+		t.Fatalf("dependency decision response=%d service=%+v body=%s", recorder.Code, service, recorder.Body.String())
+	}
+
+	recorder = httptest.NewRecorder()
+	request = httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/dependency-changes/proposal-1/materialize", strings.NewReader(`{"proposalId":"forged-proposal","requestId":"materialize-request"}`))
+	request.Header.Set("Content-Type", "application/json")
+	NewHandler(fakeReadModel{}, service).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusAccepted || service.material.ProposalID != "proposal-1" || service.material.RequestID != "materialize-request" {
+		t.Fatalf("dependency materialize response=%d service=%+v body=%s", recorder.Code, service, recorder.Body.String())
+	}
+
+	recorder = httptest.NewRecorder()
+	request = httptest.NewRequest(http.MethodGet, "/api/workbench/companies/company-1/dependency-changes?missionId=mission-1", nil)
+	NewHandler(fakeReadModel{}, service).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusOK || service.companyID != "company-1" || service.missionID != "mission-1" {
+		t.Fatalf("dependency change list response=%d service=%+v body=%s", recorder.Code, service, recorder.Body.String())
+	}
+}
+
 func TestParseMissionChangeRequestCollectionAndActions(t *testing.T) {
 	collection, ok := parsePath("/api/workbench/companies/company-1/missions/mission-1/change-requests")
 	if !ok || collection.companyID != "company-1" || collection.missionID != "mission-1" || collection.endpoint != "missions.change_requests" {
