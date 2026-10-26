@@ -9,6 +9,18 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 328, REQ-38 operation execution gate)
+
+Kernel now treats adapter injection and execution qualification as separate
+contracts. BrowserRun and ResearchOperation executor calls require an explicit
+typed authorization interface; an absent or negative authorizer leaves the
+durable request in its existing blocked/unavailable state and never calls the
+adapter. The current Playwright and research adapters do not implement a
+qualified authorizer, so external browser/research execution stays unavailable.
+Go targeted tests pass. No browser, HTTP, registry, Provider or external
+retrieval ran. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req38-execution-gate-20261026/verification.md`.
+
 ## Latest local source increment (Slice 327, REQ-36 durable DependencyChange materialization)
 
 Completed the source path from owner proposal and decision through explicit

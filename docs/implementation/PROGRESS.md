@@ -1,3 +1,14 @@
+## Latest local source increment (Slice 328, REQ-38 operation execution gate)
+
+BrowserRun and ResearchOperation now require a typed execution authorizer
+separate from executor injection. Missing or negative authorization keeps
+BrowserRun blocked / ResearchOperation unavailable and skips the external
+adapter call. Existing concrete adapters do not provide qualified authorizers,
+so execution remains default-deny. Go targeted tests pass; no browser, HTTP,
+Provider or external retrieval ran. Endpoint/credential and host/profile
+qualification remain open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req38-execution-gate-20261026/verification.md`.
+
 ## Latest local source increment (Slice 327, REQ-36 durable DependencyChange materialization)
 
 Owner Workbench now lists, proposes, approves/rejects and explicitly requests

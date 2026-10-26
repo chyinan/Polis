@@ -1,6 +1,6 @@
 # Remaining product feature implementation plan
 
-Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. REQ-36 increments 2a–2c (Worker ensure bridge, pure overlay validation, and durable owner materialization flow) are source-implemented; see the Slice325/326/327 verification records. Native Windows resolver and host qualification remain explicitly open; no real registry/npm operation was run.
+Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. REQ-36 increments 2a–2c (Worker ensure bridge, pure overlay validation, and durable owner materialization flow) are source-implemented; see the Slice325/326/327 verification records. Slice328 adds a separate execution authorization fence for BrowserRun/ResearchOperation; concrete adapters remain blocked because no qualified authorizer is installed. Host and provider qualification remain explicitly open; no real registry/npm/retrieval operation was run.
 
 ## Goal and boundaries
 
@@ -31,7 +31,7 @@ This plan is limited to product code and disposable offline verification. It doe
 
 ### 3. REQ-38 — BrowserRun/research product adapter wiring
 
-- Reconcile the existing default-off BrowserRun and ResearchOperation adapters against current schemas and owner configuration.
+- Completed Slice328: Kernel now requires a separate explicit execution authorizer in addition to adapter injection; absent/negative authorization leaves BrowserRun `blocked` and ResearchOperation `unavailable` without calling the adapter. Existing Playwright and research adapters do not implement a qualified authorizer and therefore stay fail-closed.
 - Wire only exact configured origins, credentials by protected reference, result bounds, and evidence Artifact checks. Never add ambient cookies, arbitrary headers, redirects, or caller-selected upstream URLs.
 - Keep execution unavailable until provider credential resolution, pinned endpoint/ranking, isolated profile/network policy, and qualified runner are all present.
 - Verify configuration, deny paths, evidence binding, and no-network default with offline tests; do not perform external retrieval.

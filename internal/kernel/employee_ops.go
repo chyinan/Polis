@@ -29,8 +29,21 @@ type BrowserRunExecutor interface {
 	ExecuteBrowserRun(context.Context, Binding, BrowserRunRequest, BrowserRunRecord) (BrowserRunSuccessInput, error)
 }
 
+// BrowserRunExecutionAuthorizer is a separate required gate from adapter
+// injection. An executor without a qualified host/profile/network authorizer
+// is never invoked; the control-plane record remains blocked.
+type BrowserRunExecutionAuthorizer interface {
+	AuthorizeBrowserRunExecution(context.Context, Binding, BrowserRunRequest, BrowserRunRecord) error
+}
+
 type ResearchOperationExecutor interface {
 	ExecuteResearchOperation(context.Context, Binding, ResearchOperationRequest, ResearchOperationRecord) (ResearchOperationSuccessInput, error)
+}
+
+// ResearchOperationExecutionAuthorizer keeps endpoint/credential/host
+// qualification distinct from the presence of an evidence-producing adapter.
+type ResearchOperationExecutionAuthorizer interface {
+	AuthorizeResearchOperationExecution(context.Context, Binding, ResearchOperationRequest, ResearchOperationRecord) error
 }
 
 // EmployeeTools is constructed by the trusted adapter. No payload can select
@@ -293,7 +306,7 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 			Input   BrowserRunRequest
 		}{b.SessionID(), input})[:48]
 		run, e := k.TXRequestBrowserRun(ctx, b, input, requestID)
-		if e == nil && t.BrowserExecutor != nil {
+		if e == nil && browserRunExecutionAuthorized(ctx, t.BrowserExecutor, b, input, run) {
 			completion, executeErr := t.BrowserExecutor.ExecuteBrowserRun(ctx, b, input, run)
 			if executeErr != nil {
 				return ToolResult{Data: run, Error: "BROWSER_RUN_FAILED", Detail: executeErr.Error()}, nil
@@ -327,8 +340,9 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		requestID := "research-search-" + fingerprint([]string{b.SessionID(), key, args.SourceID, args.Query})[:48]
 		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, requestID)
-		if e == nil && t.ResearchExecutor != nil {
-			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}, record)
+		request := ResearchOperationRequest{Kind: ResearchOperationKindSearch, SourceID: args.SourceID, Query: args.Query}
+		if e == nil && researchOperationExecutionAuthorized(ctx, t.ResearchExecutor, b, request, record) {
+			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, b, request, record)
 			if executeErr != nil {
 				return ToolResult{Data: record, Error: "RESEARCH_OPERATION_FAILED", Detail: executeErr.Error()}, nil
 			}
@@ -349,8 +363,8 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		requestID := "research-fetch-" + fingerprint([]string{b.SessionID(), key, args.SourceID, args.TargetURL})[:48]
 		record, e := k.TXRequestResearchOperation(ctx, b, ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}, requestID)
-		if e == nil && t.ResearchExecutor != nil {
-			request := ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}
+		request := ResearchOperationRequest{Kind: ResearchOperationKindFetch, SourceID: args.SourceID, TargetURL: args.TargetURL}
+		if e == nil && researchOperationExecutionAuthorized(ctx, t.ResearchExecutor, b, request, record) {
 			completion, executeErr := t.ResearchExecutor.ExecuteResearchOperation(ctx, b, request, record)
 			if executeErr != nil {
 				return ToolResult{Data: record, Error: "RESEARCH_OPERATION_FAILED", Detail: executeErr.Error()}, nil

@@ -9,7 +9,7 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–327)
+## Latest local source increments (Slices 324–328)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
@@ -18,10 +18,12 @@ binding and existing Control gates. Slice327 adds the owner DependencyChange
 flow, durable single-use materialization attempts, immutable derived input and
 successor revision creation, plus a Windows registry-only lockfile resolver;
 the Linux deny-all profile remains blocked. The real-provider `@4` contract is
-unchanged. Full Go/race/vet/build, frontend checks, and disposable Schema136
-integration pass using recording resolvers only. No npm, registry or Provider
-request ran. Native Windows resolver/host qualification and REQ-37 native
-process/restart qualification remain open. Continue the source backlog in
+unchanged. Slice328 adds a separate fail-closed authorization gate for
+BrowserRun/ResearchOperation; current concrete adapters cannot execute without
+a qualified authorizer. Full Go/race/vet/build, frontend checks, and disposable
+Schema136 integration pass using recording resolvers only. No npm, registry,
+Provider or external retrieval ran. Native Windows resolver/host qualification
+and REQ-37 native process/restart qualification remain open. Continue the source backlog in
 `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 
 ## Historical handoff summaries

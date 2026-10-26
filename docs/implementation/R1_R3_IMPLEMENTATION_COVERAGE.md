@@ -1,4 +1,14 @@
-## Latest source increment (Slice 327, REQ-36 durable DependencyChange materialization)
+## Latest source increment (Slice 328, REQ-38 operation execution gate)
+
+Kernel now requires separate typed authorization before invoking BrowserRun or
+ResearchOperation executors. No authorizer means no adapter call; durable
+requests remain `blocked` / `unavailable`. Existing concrete adapters do not
+yet implement a host/provider-qualified authorizer. Go targeted tests pass and
+no external request ran. REQ-38 remains open for credentials, endpoint/ranking,
+host/profile and external-evidence qualification. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req38-execution-gate-20261026/verification.md`.
+
+## Previous source increment (Slice 327, REQ-36 durable DependencyChange materialization)
 
 The owner-facing flow now lists, proposes, approves/rejects and explicitly
 materializes DependencyChanges. Schema135/136 provides immutable attempt
