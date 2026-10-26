@@ -1,4 +1,16 @@
-## Latest source increment (Slice 325, REQ-36 Worker environment ensure bridge)
+## Latest source increment (Slice 326, REQ-36 dependency overlay validation)
+
+Pure bounded helpers now apply an approved proposal only to root production
+dependencies and validate the resolver-produced lockfile against the exact
+manifest, proposal registry subset, and existing project-profile rules.
+Duplicate/case-variant JSON fields and dependency-category conflicts fail
+closed. Full Go tests/race/vet and Linux/Windows command builds pass. This is
+not an executor or end-to-end materialization: no npm, registry, CAS, derived
+MissionInput, or successor environment revision ran/was created. REQ-36 remains
+open for a qualified resolver and durable materialization. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-overlay-validator-20261026/verification.md`.
+
+## Previous source increment (Slice 325, REQ-36 Worker environment ensure bridge)
 
 The default-off fake-only `@16` `environment_ensure` Worker tool now invokes
 the existing Control preparation executor through a binding-scoped bridge.
@@ -168,7 +180,7 @@ The legacy `workspace_replace` compatibility path now shares the file-tree trans
 The embedded fixed team coverage JSON now has a strict semantic validator for its canonical employee roster and assignments, disabled execution, immutable runtime roles, unverified qualification, required owner confirmation, checker policy, and trust/independence flags. Company creation and acknowledgment fail closed on drift; detail/switcher projections do not report confirmation from a malformed draft. This protects the draft's current fail-closed meaning and does not create executable role contracts, change Task admission, or qualify any role/provider. `go build ./...`, `git diff --check`, and JSON parsing pass; no tests, database operations, owner action, Worker/provider operation, or frozen scenario ran. The seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-26, Slice 324. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-26, Slice 326. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
 ## Slice 241: qualification handoff audit anchor
 

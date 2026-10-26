@@ -1,6 +1,6 @@
 # Remaining product feature implementation plan
 
-Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. Increment 2a (REQ-36 Worker environment-ensure executor bridge) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-ensure-bridge-20261026/verification.md`; DependencyChange materialization remains open.
+Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. Increment 2a (REQ-36 Worker environment-ensure executor bridge) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-ensure-bridge-20261026/verification.md`. Slice326 adds the pure bounded package-manifest overlay and lockfile verifier; it does not execute npm or create MissionInput/environment records. End-to-end materialization remains open.
 
 ## Goal and boundaries
 
@@ -22,7 +22,8 @@ This plan is limited to product code and disposable offline verification. It doe
 ### 2. REQ-36 — Approved dependency materialization
 
 - Completed Slice 325: the Worker `environment_ensure` request now reaches the existing Control preparation executor only through the active WorkerSession/Task/Mission guard and the exact approved environment revision. The bridge remains fake-only @16 and default-off.
-- Trace the approved DependencyChange through existing environment revision and preparation services. The current proposal/approval path still does not materialize a package overlay, resolved lockfile, immutable derived MissionInput, or successor environment revision.
+- Completed Slice326: pure functions apply only exact approved versions to root `dependencies`, preserve other manifest values, and validate the generated lockfile against the exact overlay, registry subset, tarball host/integrity rules, and profile bounds. Duplicate/case-variant JSON fields are rejected. Evidence: `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-overlay-validator-20261026/verification.md`.
+- Still open: connect the validated overlay to a qualified isolated resolver, durable/recoverable materialization attempts, immutable derived MissionInput storage, and successor environment revision creation. DependencyChange proposal/approval is not yet exposed as a complete owner-facing flow.
 - Implement only the preselected registry allowlist, no-lifecycle-script, bounded timeout/output, and fixed network envelope; do not let Worker input choose commands, host paths, or executor profiles.
 - Keep approval distinct from materialization. Missing host qualification or executor keeps the request denied/blocked.
 - Verify exact replay, stale revision, cancellation/recovery, and fail-closed executor behavior using disposable data and injected fakes.

@@ -1,3 +1,15 @@
+## Latest local source increment (Slice 326, REQ-36 dependency overlay validation)
+
+Added pure bounded helpers to construct the exact root `dependencies` overlay
+from an approved proposal and verify a resolver-produced lockfile without
+mutating source bytes. Validation rejects duplicate/case-variant JSON keys,
+dependency-category collisions, invalid manifest shape, non-exact overlay,
+out-of-policy registry hosts, and lock entries that violate existing profile
+rules. Full Go tests/race/vet and Linux/Windows command builds pass. No npm,
+registry, external request, CAS write, or derived environment record occurred;
+durable materialization and a qualified resolver remain open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-overlay-validator-20261026/verification.md`.
+
 ## Latest local source increment (Slice 325, REQ-36 Worker environment ensure bridge)
 
 The default-off fake-only @16 `environment_ensure` Worker tool now reaches the

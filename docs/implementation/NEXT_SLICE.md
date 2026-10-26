@@ -9,6 +9,19 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 326, REQ-36 dependency overlay validation)
+
+Added pure bounded helpers to apply an approved DependencyChange only to the
+root production `dependencies` map and validate a resolver-produced
+`package-lock.json` against that exact manifest, the proposal's registry subset,
+the existing pinned-tarball rules, and the profile's project bounds. Duplicate
+JSON keys and case-variant package-manifest/lockfile fields are rejected; the
+base source slice is not mutated. Full Go tests/race/vet and Linux/Windows
+command builds pass. No npm, registry, CAS write, derived MissionInput,
+environment revision, or network egress ran. The durable Control flow and
+qualified resolver remain open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-overlay-validator-20261026/verification.md`.
+
 ## Latest local source increment (Slice 325, REQ-36 Worker environment ensure bridge)
 
 The default-off fake-only `@16` `environment_ensure` Worker tool is now wired

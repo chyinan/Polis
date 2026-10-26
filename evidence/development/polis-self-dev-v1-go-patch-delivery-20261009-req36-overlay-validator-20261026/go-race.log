@@ -1,0 +1,94 @@
+ok  	polis/cmd/polis	2.373s
+?   	polis/cmd/polis-probe	[no test files]
+?   	polis/cmd/polis-r02	[no test files]
+?   	polis/cmd/polis-r02-high	[no test files]
+?   	polis/cmd/polis-r02-high2	[no test files]
+?   	polis/cmd/polis-r03a	[no test files]
+?   	polis/cmd/polis-r03a-backend-l2-requalification	[no test files]
+?   	polis/cmd/polis-r03a-blob-durability	[no test files]
+?   	polis/cmd/polis-r03a-cas-validate	[no test files]
+?   	polis/cmd/polis-r03a-current-binary-l2-offline	[no test files]
+?   	polis/cmd/polis-r03a-database-binding	[no test files]
+?   	polis/cmd/polis-r03a-frontend-checker-feedback-l2-offline	[no test files]
+?   	polis/cmd/polis-r03a-frontend-config-probe	[no test files]
+?   	polis/cmd/polis-r03a-frontend-consumption-abi-offline	[no test files]
+?   	polis/cmd/polis-r03a-frontend-l2-offline	[no test files]
+?   	polis/cmd/polis-r03a-frontend-starting-state-probe	[no test files]
+?   	polis/cmd/polis-r03a-h1-review	[no test files]
+?   	polis/cmd/polis-r03a-pagination-v3	[no test files]
+?   	polis/cmd/polis-r03a-postgres-socket-validate	[no test files]
+?   	polis/cmd/polis-r03a-real-backend	[no test files]
+?   	polis/cmd/polis-r03a-real-frontend	[no test files]
+?   	polis/cmd/polis-r03a-recovery-closure-validate	[no test files]
+?   	polis/cmd/polis-r03a-recovery-cut	[no test files]
+?   	polis/cmd/polis-r03a-recovery-fence	[no test files]
+?   	polis/cmd/polis-r03a-recovery-package-validate	[no test files]
+?   	polis/cmd/polis-r03a-runtime-artifact	[no test files]
+?   	polis/cmd/polis-r03a-sample6-state-query	[no test files]
+?   	polis/cmd/polis-r03a-t11	[no test files]
+?   	polis/cmd/polis-r03a-t11a	[no test files]
+?   	polis/cmd/polis-r03a-t12	[no test files]
+?   	polis/cmd/polis-r03a-t13	[no test files]
+?   	polis/cmd/polis-r03a-t14	[no test files]
+?   	polis/cmd/polis-r03a-t14a	[no test files]
+?   	polis/cmd/polis-r03a-t14b	[no test files]
+?   	polis/cmd/polis-r03a-t14c	[no test files]
+?   	polis/cmd/polis-r03a-t16	[no test files]
+?   	polis/cmd/polis-r03a-t17	[no test files]
+?   	polis/cmd/polis-r03a-t18	[no test files]
+?   	polis/cmd/polis-r03a-t19	[no test files]
+?   	polis/cmd/polis-r03a-t2	[no test files]
+?   	polis/cmd/polis-r03a-t20	[no test files]
+?   	polis/cmd/polis-r03a-t21	[no test files]
+?   	polis/cmd/polis-r03a-t21b	[no test files]
+?   	polis/cmd/polis-r03a-t21d-offline	[no test files]
+?   	polis/cmd/polis-r03a-t3	[no test files]
+?   	polis/cmd/polis-r03a-t6	[no test files]
+?   	polis/cmd/polis-r03a-t9	[no test files]
+?   	polis/cmd/polis-r03a-terminal-result-status	[no test files]
+ok  	polis/cmd/polis-r05b10	1.070s
+ok  	polis/cmd/polis-r05b11	1.047s
+?   	polis/cmd/polis-r05b13	[no test files]
+?   	polis/cmd/polis-r05b14	[no test files]
+?   	polis/cmd/polis-r05b15	[no test files]
+?   	polis/cmd/polis-r05b16	[no test files]
+?   	polis/cmd/polis-r05b4	[no test files]
+ok  	polis/cmd/polis-r05b8	1.044s
+?   	polis/cmd/polis-selfdev-go-host-probe	[no test files]
+?   	polis/cmd/polis-selfdev-go-job-supervisor	[no test files]
+ok  	polis/cmd/polis-selfdev-go-unit-control	1.106s
+ok  	polis/cmd/polisd	1.072s
+ok  	polis/db	1.073s
+ok  	polis/internal/browser	1.086s
+ok  	polis/internal/capabilitysource	1.096s
+ok  	polis/internal/codex	2.186s
+ok  	polis/internal/control	8.587s
+ok  	polis/internal/core	1.048s
+?   	polis/internal/dbgen	[no test files]
+ok  	polis/internal/desktop	1.066s
+ok  	polis/internal/domainworkflow	1.050s
+ok  	polis/internal/environment	2.920s
+ok  	polis/internal/feedback/github	1.094s
+ok  	polis/internal/fixture	1.048s
+ok  	polis/internal/gotestprofile	1.061s
+ok  	polis/internal/gotestsupervisor	1.165s
+ok  	polis/internal/installationauth	1.375s
+ok  	polis/internal/intake	2.779s
+ok  	polis/internal/kernel	56.139s
+ok  	polis/internal/mcpowner	1.337s
+ok  	polis/internal/mcptransport	1.117s
+ok  	polis/internal/organization	1.037s
+ok  	polis/internal/pgfixture	1.060s
+ok  	polis/internal/probe	13.761s
+ok  	polis/internal/provider	2.195s
+ok  	polis/internal/qqnotify	1.104s
+ok  	polis/internal/recovery	1.418s
+ok  	polis/internal/research	1.050s
+ok  	polis/internal/runner	1.679s
+ok  	polis/internal/taskvalidation	1.039s
+ok  	polis/internal/workbench	3.212s
+ok  	polis/internal/workspacepatch	1.057s
+ok  	polis/internal/workspacepath	1.040s
+?   	polis/scripts	[no test files]
+ok  	polis/spec	1.038s
+go_race_exit=0
