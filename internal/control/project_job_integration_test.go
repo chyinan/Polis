@@ -130,21 +130,57 @@ func TestProjectJobLifecycleLaunchesOncePersistsLogsAndReplaysWithoutExecution(t
 	if err != nil || prepared.State != string(environment.PreparationReady) {
 		t.Fatalf("prepared environment=%+v error=%v", prepared, err)
 	}
-	taskID, sessionID := "project-job-task", "project-job-session"
+	taskID := "project-job-task"
 	_, err = qualificationPool.Exec(ctx, `INSERT INTO tasks(company_id,id,mission_id,owner,kind,state) VALUES($1,$2,$3,$4,'compat','working')`, companyID, taskID, missionID, core.EmployeeBackendID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = qualificationPool.Exec(ctx, `INSERT INTO worker_sessions(company_id,id,employee_id,task_id,generation,epoch,incarnation,profile,state) VALUES($1,$2,$3,$4,1,1,'offline-fixture','offline-fixture','active')`, companyID, sessionID, core.EmployeeBackendID, taskID)
+	workerBinding, err := runtime.TXNewWorkerWithToolBudget(ctx, scope, taskID, "offline-project-job/medium", 64)
 	if err != nil {
 		t.Fatal(err)
 	}
+	workerProcess, err := runner.Start(workerBinding.SessionID(), []string{"/bin/sleep", "1800"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = runtime.TXAttachWorker(ctx, workerBinding, workerProcess); err != nil {
+		_, _ = workerProcess.Stop()
+		t.Fatal(err)
+	}
+	if err = runtime.TXValidateWorker(ctx, workerBinding); err != nil {
+		_ = runtime.TXBeginStop(context.Background(), workerBinding)
+		_, _ = workerProcess.Stop()
+		t.Fatal(err)
+	}
+	if err = runtime.TXActivateWorker(ctx, workerBinding, "offline project-job fixture; no provider transport"); err != nil {
+		_ = runtime.TXBeginStop(context.Background(), workerBinding)
+		proof, _ := workerProcess.Stop()
+		_ = runtime.TXConfirmStopped(context.Background(), workerBinding, proof)
+		t.Fatal(err)
+	}
+	defer func() {
+		stopCtx, stopCancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer stopCancel()
+		if stopErr := runtime.TXBeginStop(stopCtx, workerBinding); stopErr != nil {
+			t.Errorf("begin fixture Worker stop: %v", stopErr)
+		}
+		proof, stopErr := workerProcess.Stop()
+		if stopErr != nil {
+			t.Errorf("stop fixture Worker process: %v", stopErr)
+			return
+		}
+		if stopErr = runtime.TXConfirmStopped(stopCtx, workerBinding, proof); stopErr != nil {
+			t.Errorf("confirm fixture Worker stop: %v", stopErr)
+		}
+	}()
+	sessionID := workerBinding.SessionID()
 	if _, err = qualificationPool.Exec(ctx, `INSERT INTO job_runs(company_id,job_id,task_id,session_id,environment_revision_id,kind,service_id,source_revision_sha256,argv_sha256,working_directory_sha256,network_policy_sha256,environment_allowlist,timeout_ms,output_limit_bytes,request_id)
 VALUES($1,'project-job-service-null-id',$2,$3,$4,'service',NULL,$5,$6,$7,$8,'[]'::jsonb,30000,65536,'project-job-service-null-id')`, companyID, taskID, sessionID, revision.RevisionID, revision.SourceRevisionSHA256, strings.Repeat("1", 64), strings.Repeat("2", 64), strings.Repeat("3", 64)); err == nil {
 		t.Fatal("Schema 32 accepted a service JobRun without a persisted service ID")
 	}
 	jobExecutor := &recordingProjectJobExecutor{processes: []runner.AppContainerProcess{
 		&finishedProjectJobProcess{stdout: []byte("build ok"), stderr: []byte("warning")},
+		&cancelledProjectJobProcess{stopped: make(chan struct{})},
 		&cancelledProjectJobProcess{stopped: make(chan struct{})},
 		&cancelledProjectJobProcess{stopped: make(chan struct{})},
 	}}
@@ -274,6 +310,35 @@ VALUES($1,'project-job-service-null-id',$2,$3,$4,'service',NULL,$5,$6,$7,$8,'[]'
 	var serviceEndpointReadiness string
 	if err = qualificationPool.QueryRow(ctx, `SELECT readiness FROM service_endpoint_events WHERE company_id=$1 AND job_id=$2 ORDER BY generation DESC,event_seq DESC LIMIT 1`, companyID, serviceStarted.JobID).Scan(&serviceEndpointReadiness); err != nil || serviceEndpointReadiness != environment.ServiceRevoked {
 		t.Fatalf("service stop endpoint readiness=%q error=%v", serviceEndpointReadiness, err)
+	}
+	workerTools := kernel.EmployeeTools{
+		Kernel: runtime, Binding: workerBinding, ProductSurface: true,
+		ReadOnlyJobsSurface: true, BorrowerLeaseSurface: true, ProjectJobsSurface: true,
+		ProjectJobLifecycle: service,
+	}
+	workerStartArgs, err := json.Marshal(map[string]any{
+		"environment_revision_id": revision.RevisionID,
+		"kind":                    "batch",
+		"service_id":              "",
+		"script_path":             "scripts/build.mjs",
+		"args":                    []string{"--worker-tool"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	workerStart := workerTools.Call(ctx, "jobs_start", "project-job-worker-start", workerStartArgs)
+	workerStarted, ok := workerStart.Data.(kernel.JobRunRecord)
+	if workerStart.Error != "" || !ok || workerStarted.State != string(environment.JobRunning) || workerStarted.TaskID != taskID || workerStarted.SessionID != workerBinding.SessionID() {
+		t.Fatalf("Task-bound jobs_start result=%+v", workerStart)
+	}
+	workerStopArgs, err := json.Marshal(map[string]string{"job_id": workerStarted.JobID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	workerStop := workerTools.Call(ctx, "jobs_stop", "project-job-worker-stop", workerStopArgs)
+	workerStopped, ok := workerStop.Data.(kernel.JobRunRecord)
+	if workerStop.Error != "" || !ok || workerStopped.State != string(environment.JobCancelled) || jobExecutor.launches != 4 {
+		t.Fatalf("Task-bound jobs_stop result=%+v launches=%d", workerStop, jobExecutor.launches)
 	}
 	restartedServiceJobID := "project-job-restart-terminal-revoke"
 	if _, err = qualificationPool.Exec(ctx, `INSERT INTO job_runs(company_id,job_id,task_id,session_id,environment_revision_id,kind,service_id,source_revision_sha256,argv_sha256,working_directory_sha256,network_policy_sha256,environment_allowlist,timeout_ms,output_limit_bytes,request_id)

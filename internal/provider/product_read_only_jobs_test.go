@@ -124,6 +124,42 @@ func TestProductReadOnlyJobsSurfaceIsFakeOnlyAndTaskBound(t *testing.T) {
 	}
 }
 
+func TestProductProjectJobsSurfaceIsFakeOnlyAndExact(t *testing.T) {
+	runtime := NewFakeRuntime(FakeRuntimeConfig{ProjectJobsSurface: true})
+	surface := ProductProjectJobsToolSurface()
+	profile := runtime.ExecutionProfile()
+	if surface.ToolCount != 14 || profile.ToolSurfaceQualification != ProductProjectJobsToolSurfaceQualification {
+		t.Fatalf("project jobs surface/profile=%+v/%+v, want 14/@20", surface, profile)
+	}
+	if err := runtime.Readiness(context.Background()); err != nil {
+		t.Fatalf("explicit project jobs Fake Runtime readiness: %v", err)
+	}
+	if err := ValidateOfflineFakeProjectJobsSurface("real", profile, surface); err == nil {
+		t.Fatal("project jobs surface passed the non-fake validator")
+	}
+	authorization := validProviderExecutionAuthorization("offline-model", "fake", profile.Purpose, profile.ExecutionEnvelope)
+	authorization.ToolSurfaceDigest = surface.ManifestDigest
+	authorization.ToolSurfaceQualification = profile.ToolSurfaceQualification
+	authorization.ToolCount = surface.ToolCount
+	authorization.AggregateSchemaBytes = surface.AggregateSchemaBytes
+	authorization.AggregateSchemaDigest = surface.AggregateSchemaDigest
+	authorization.ExactSurfaceExecutionFingerprint = profile.ExactSurfaceExecutionFingerprint
+	authorization.ProductProviderL2Fingerprint = profile.ProductProviderL2Fingerprint
+	if err := ValidateRuntimeExecutionAuthorization(authorization); err != nil {
+		t.Fatalf("exact fake project jobs authorization rejected: %v", err)
+	}
+	wrongDigest := authorization
+	wrongDigest.ToolSurfaceDigest = ProductReadOnlyJobsManifestDigest
+	if err := ValidateRuntimeExecutionAuthorization(wrongDigest); err == nil {
+		t.Fatal("project jobs authorization accepted a different surface digest")
+	}
+	realAuthorization := authorization
+	realAuthorization.ProviderMode = "real"
+	if err := ValidateRuntimeExecutionAuthorization(realAuthorization); err == nil {
+		t.Fatal("real provider accepted the fake-only project jobs surface")
+	}
+}
+
 func TestProductEnvironmentEnsureSurfaceIsFakeOnlyAndIncludesStatus(t *testing.T) {
 	runtime := NewFakeRuntime(FakeRuntimeConfig{EnvironmentEnsureSurface: true})
 	surface := ProductEnvironmentEnsureToolSurface()

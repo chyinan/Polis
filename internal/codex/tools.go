@@ -132,6 +132,26 @@ func ProductEmployeeToolsWithBorrowerLeases() []any {
 	return append(tools, leaseTools...)
 }
 
+// ProductEmployeeToolsWithProjectJobs is an exact fake-only extension. It
+// exposes only the existing bounded project-job lifecycle for the current
+// Task/WorkerSession; the qualified real-provider @4 surface is unchanged.
+func ProductEmployeeToolsWithProjectJobs() []any {
+	tools := ProductEmployeeToolsWithBorrowerLeases()
+	jobTools := productTools([]peerToolDefinition{
+		{"jobs_start", "Start one bounded project job for your current Task and WorkerSession using an exact approved environment revision. For kind=batch, provide script_path and args and leave service_id empty; for kind=service, provide a registered service_id and leave script_path/args empty. Polis rechecks the Task, active session, environment policy and qualified host executor. No shell command or host path is accepted.", map[string]any{
+			"environment_revision_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+			"kind":                    map[string]any{"type": "string", "enum": []string{"batch", "service"}},
+			"service_id":              map[string]any{"type": "string", "maxLength": 80},
+			"script_path":             map[string]any{"type": "string", "maxLength": 260},
+			"args":                    map[string]any{"type": "array", "maxItems": 32, "items": map[string]any{"type": "string", "maxLength": 1024}},
+		}},
+		{"jobs_stop", "Stop or reconcile one exact project JobRun started by your current Task and WorkerSession. This cannot stop another Task's job or an arbitrary process; an unresolved stop remains outcome_unknown.", map[string]any{
+			"job_id": map[string]any{"type": "string", "minLength": 1, "maxLength": 80},
+		}},
+	})
+	return append(tools, jobTools...)
+}
+
 // ProductEmployeeToolsWithBrowserRun is a separately versioned, fake-only
 // extension. It records a default-denied BrowserRun request and reads its
 // control-plane result; it does not grant browser, network or credential use.

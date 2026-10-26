@@ -38,6 +38,7 @@ type FakeRuntimeConfig struct {
 	EnvironmentEnsureSurface           bool
 	ReadOnlyJobsSurface                bool
 	BorrowerLeaseSurface               bool
+	ProjectJobsSurface                 bool
 	BrowserRunSurface                  bool
 	ResearchOperationsSurface          bool
 	ControlledMCPToolSurface           bool
@@ -70,7 +71,9 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 	}
 	if config.Purpose == "" {
 		config.Purpose = "product-artifact"
-		if config.CSVInputRangeSurface {
+		if config.ProjectJobsSurface {
+			config.Purpose = OfflineProjectJobsSurfacePurpose
+		} else if config.CSVInputRangeSurface {
 			config.Purpose = OfflineCSVInputRangeSurfacePurpose
 		} else if config.BorrowerLeaseSurface {
 			config.Purpose = OfflineBorrowerLeaseSurfacePurpose
@@ -114,7 +117,12 @@ func NewFakeRuntime(config FakeRuntimeConfig) *FakeRuntime {
 	qualification := ProductToolSurfaceQualification
 	exactSurfaceFingerprint := ProductExactSurfaceExecutionFingerprint
 	providerFingerprint := ProductProviderL2Fingerprint
-	if config.ResearchOperationsSurface {
+	if config.ProjectJobsSurface {
+		surface = ProductProjectJobsToolSurface()
+		qualification = ProductProjectJobsToolSurfaceQualification
+		exactSurfaceFingerprint = OfflineProjectJobsSurfaceSimulationMarker
+		providerFingerprint = OfflineProjectJobsSurfaceSimulationMarker
+	} else if config.ResearchOperationsSurface {
 		surface = ProductResearchOperationsToolSurface()
 		qualification = ProductResearchOperationsToolSurfaceQualification
 		exactSurfaceFingerprint = OfflineResearchOperationsSurfaceSimulationMarker
@@ -209,6 +217,9 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if r.config.ControlledMCPToolSurface && r.config.ControlledMCPToolSurfaceV2 {
 		return errors.New("offline MCP runtime must select exactly one versioned tool surface")
 	}
+	if r.config.ProjectJobsSurface && (r.config.ReadOnlySkillSurface || r.config.ReadOnlySkillDirectorySurface || r.config.DirectMessagingSurface || r.config.SharedMissionArtifactSurface || r.config.WorkspaceTreeSurface || r.config.WorkspaceSnapshotRevocationSurface || r.config.MissionChangeAssessmentSurface || r.config.CSVInputRangeSurface || r.config.EnvironmentStatusSurface || r.config.EnvironmentEnsureSurface || r.config.ReadOnlyJobsSurface || r.config.BorrowerLeaseSurface || r.config.BrowserRunSurface || r.config.ResearchOperationsSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
+		return errors.New("offline project jobs require their isolated versioned tool surface")
+	}
 	if r.config.CSVInputRangeSurface && (r.config.MissionChangeAssessmentSurface || r.config.WorkspaceTreeSurface || r.config.WorkspaceSnapshotRevocationSurface || r.config.ReadOnlySkillSurface || r.config.ReadOnlySkillDirectorySurface || r.config.DirectMessagingSurface || r.config.SharedMissionArtifactSurface || r.config.ControlledMCPToolSurface || r.config.ControlledMCPToolSurfaceV2) {
 		return errors.New("offline CSV range-read runtime requires its isolated versioned tool surface")
 	}
@@ -249,7 +260,7 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	if len(r.config.ControlledMCPCallFixture) > 0 && (!r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 || !json.Valid(r.config.ControlledMCPCallFixture)) {
 		return errors.New("offline MCP call fixture requires the exact controlled-MCP surface and valid JSON")
 	}
-	qualifiedSurface := !r.config.EnvironmentEnsureSurface && !r.config.ResearchOperationsSurface && !r.config.BrowserRunSurface && !r.config.BorrowerLeaseSurface && !r.config.ReadOnlyJobsSurface && !r.config.WorkspaceTreeSurface && !r.config.WorkspaceSnapshotRevocationSurface && !r.config.MissionChangeAssessmentSurface && !r.config.CSVInputRangeSurface && !r.config.EnvironmentStatusSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
+	qualifiedSurface := !r.config.ProjectJobsSurface && !r.config.EnvironmentEnsureSurface && !r.config.ResearchOperationsSurface && !r.config.BrowserRunSurface && !r.config.BorrowerLeaseSurface && !r.config.ReadOnlyJobsSurface && !r.config.WorkspaceTreeSurface && !r.config.WorkspaceSnapshotRevocationSurface && !r.config.MissionChangeAssessmentSurface && !r.config.CSVInputRangeSurface && !r.config.EnvironmentStatusSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && !r.config.DirectMessagingSurface && !r.config.ControlledMCPToolSurface && !r.config.ControlledMCPToolSurfaceV2 && r.profile.ToolSurfaceQualification == ProductToolSurfaceQualification && r.surface.ManifestDigest == ProductToolSurface().ManifestDigest && r.profile.Purpose != "" && r.profile.ExactSurfaceExecutionFingerprint == ProductExactSurfaceExecutionFingerprint && r.profile.ProductProviderL2Fingerprint == ProductProviderL2Fingerprint
 	offlineEnvironmentEnsureSurface := r.config.EnvironmentEnsureSurface && ValidateOfflineFakeEnvironmentEnsureSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineResearchOperationsSurface := r.config.ResearchOperationsSurface && ValidateOfflineFakeResearchOperationsSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineBrowserRunSurface := r.config.BrowserRunSurface && ValidateOfflineFakeBrowserRunSurface(r.Mode(), r.profile, r.surface) == nil
@@ -264,9 +275,10 @@ func (r *FakeRuntime) Readiness(ctx context.Context) error {
 	offlineMissionChangeAssessmentSurface := r.config.MissionChangeAssessmentSurface && ValidateOfflineFakeMissionChangeAssessmentSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineCSVInputRangeSurface := r.config.CSVInputRangeSurface && ValidateOfflineFakeCSVInputRangeSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineEnvironmentStatusSurface := r.config.EnvironmentStatusSurface && ValidateOfflineFakeEnvironmentStatusSurface(r.Mode(), r.profile, r.surface) == nil
+	offlineProjectJobsSurface := r.config.ProjectJobsSurface && ValidateOfflineFakeProjectJobsSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurface := r.config.ControlledMCPToolSurface && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurface(r.Mode(), r.profile, r.surface) == nil
 	offlineControlledMCPSurfaceV2 := r.config.ControlledMCPToolSurfaceV2 && !r.config.ReadOnlySkillSurface && !r.config.ReadOnlySkillDirectorySurface && ValidateOfflineFakeControlledMCPSurfaceV2(r.Mode(), r.profile, r.surface) == nil
-	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineEnvironmentEnsureSurface && !offlineResearchOperationsSurface && !offlineBrowserRunSurface && !offlineBorrowerLeaseSurface && !offlineReadOnlyJobsSurface && !offlineSkillSurface && !offlineSkillDirectorySurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineWorkspaceTreeSurface && !offlineWorkspaceSnapshotRevocationSurface && !offlineMissionChangeAssessmentSurface && !offlineCSVInputRangeSurface && !offlineEnvironmentStatusSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
+	if r.profile.Model == "" || r.profile.Effort != "medium" || r.profile.Profile != r.profile.Model+"/"+r.profile.Effort || r.profile.ToolCallLimit <= 0 || (!qualifiedSurface && !offlineProjectJobsSurface && !offlineEnvironmentEnsureSurface && !offlineResearchOperationsSurface && !offlineBrowserRunSurface && !offlineBorrowerLeaseSurface && !offlineReadOnlyJobsSurface && !offlineSkillSurface && !offlineSkillDirectorySurface && !offlineDirectMessagingSurface && !offlineSharedMissionArtifactSurface && !offlineWorkspaceTreeSurface && !offlineWorkspaceSnapshotRevocationSurface && !offlineMissionChangeAssessmentSurface && !offlineCSVInputRangeSurface && !offlineEnvironmentStatusSurface && !offlineControlledMCPSurface && !offlineControlledMCPSurfaceV2) {
 		return errors.New("offline provider runtime configuration is invalid")
 	}
 	return nil

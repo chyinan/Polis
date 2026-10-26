@@ -1,0 +1,21 @@
+2026-10-26 15:48:52.666 CST [430] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-10-26 15:48:52.668 CST [430] LOG:  listening on Unix socket "/tmp/polis-self-dev-go-pg.J1Myrp/socket/.s.PGSQL.5432"
+2026-10-26 15:48:52.673 CST [436] LOG:  database system was shut down at 2026-10-26 15:48:52 CST
+2026-10-26 15:48:52.679 CST [430] LOG:  database system is ready to accept connections
+2026-10-26 15:49:08.443 CST [547] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-10-26 15:49:08.443 CST [547] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-10-26 15:49:09.376 CST [562] ERROR:  permission denied for table self_dev_go_job_privilege_probe
+2026-10-26 15:49:09.376 CST [562] STATEMENT:  DELETE FROM self_dev_go_job_privilege_probe WHERE id=1
+2026-10-26 15:50:14.653 CST [837] ERROR:  new row for relation "job_runs" violates check constraint "job_runs_service_id_consistency"
+2026-10-26 15:50:14.653 CST [837] DETAIL:  Failing row contains (project-job-1793001014474538354, project-job-service-null-id, project-job-task, ae0f43e4e444d911d87a0b8697c64b5d, env-0e6d914d80e57c030c9f964138439d5d, service, 4b7227cc7abbb52ab170ef01123654f7ffdf88d2983694594377f28308772095, 1111111111111111111111111111111111111111111111111111111111111111, 2222222222222222222222222222222222222222222222222222222222222222, 3333333333333333333333333333333333333333333333333333333333333333, [], 30000, 65536, project-job-service-null-id, 2026-10-26 15:50:14.652887+08, null, null).
+2026-10-26 15:50:14.653 CST [837] STATEMENT:  INSERT INTO job_runs(company_id,job_id,task_id,session_id,environment_revision_id,kind,service_id,source_revision_sha256,argv_sha256,working_directory_sha256,network_policy_sha256,environment_allowlist,timeout_ms,output_limit_bytes,request_id)
+	VALUES($1,'project-job-service-null-id',$2,$3,$4,'service',NULL,$5,$6,$7,$8,'[]'::jsonb,30000,65536,'project-job-service-null-id')
+2026-10-26 15:50:16.095 CST [434] LOG:  checkpoint starting: immediate force wait
+2026-10-26 15:50:16.351 CST [434] LOG:  checkpoint complete: wrote 1763 buffers (10.8%), wrote 4 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.031 s, sync=0.217 s, total=0.257 s; sync files=1333, longest=0.002 s, average=0.001 s; distance=24750 kB, estimate=24750 kB; lsn=0/2F81FE8, redo lsn=0/2F81F90
+2026-10-26 15:50:49.202 CST [430] LOG:  received fast shutdown request
+2026-10-26 15:50:49.208 CST [430] LOG:  aborting any active transactions
+2026-10-26 15:50:49.210 CST [430] LOG:  background worker "logical replication launcher" (PID 439) exited with exit code 1
+2026-10-26 15:50:49.210 CST [434] LOG:  shutting down
+2026-10-26 15:50:49.212 CST [434] LOG:  checkpoint starting: shutdown immediate
+2026-10-26 15:50:49.226 CST [434] LOG:  checkpoint complete: wrote 51 buffers (0.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.006 s, total=0.015 s; sync files=16, longest=0.002 s, average=0.001 s; distance=407 kB, estimate=22316 kB; lsn=0/2FE7CA8, redo lsn=0/2FE7CA8
+2026-10-26 15:50:49.236 CST [430] LOG:  database system is shut down

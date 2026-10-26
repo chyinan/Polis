@@ -9,6 +9,24 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 324, REQ-37 Worker project JobRun tools)
+
+Added exact fake-only product tool surface `polis-product-tool-surface@20`
+with Task/WorkerSession-bound `jobs_start` and `jobs_stop`. The bridge reuses
+Control's existing bounded ProjectJob lifecycle; Company, Task and Session are
+derived from the trusted binding, batch scripts are normalized, services must
+be registered, and stops first recheck ownership through the read-only Kernel
+scope fence. The extension is default-off and rejected unless the isolated fake
+transport is selected; real-provider `@4` is unchanged. Full Go tests/race/vet,
+Linux/Windows command builds, and the targeted disposable Schema 134 PostgreSQL
+JobRun lifecycle test pass. That test uses a synthetic sleeper Worker process
+and an in-memory recording project-job executor; native job process/restart,
+Windows WFP/AppContainer, and real-provider qualification remain open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`.
+
+Next code work follows `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`;
+do not infer native-host or provider readiness from the fake-only surface.
+
 ## Latest continuation status (Slice 322, Windows profile and WFP qualification)
 
 The existing Windows Chrome + Playwright loopback runner passed again with an

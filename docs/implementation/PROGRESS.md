@@ -1,3 +1,16 @@
+## Latest local source increment (Slice 324, REQ-37 Worker project JobRun tools)
+
+The isolated fake-only `polis-product-tool-surface@20` now exposes bounded
+Task/WorkerSession-bound `jobs_start` and `jobs_stop`, routed through the
+existing Control ProjectJob lifecycle. The extension is default-off, cannot be
+combined with other offline surfaces, and does not alter the qualified real
+Provider `@4` contract. Full Go tests/race/vet, Linux/Windows command builds,
+and a targeted disposable Schema 134 PostgreSQL lifecycle exercise pass. The
+PostgreSQL test uses a synthetic sleeper WorkerSession and a recording
+ProjectJob executor; it does not qualify native job execution. REQ-37 remains
+open for service-generation recovery and native host/process qualification.
+Evidence: `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`.
+
 ## Latest continuation status (Slice 322, Windows profile and WFP qualification)
 
 The existing Windows-native Chrome + Playwright loopback runner passed with a

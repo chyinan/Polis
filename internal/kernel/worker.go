@@ -125,6 +125,7 @@ const (
 )
 
 func (b Binding) SessionID() string                   { return b.session }
+func (b Binding) CompanyID() string                   { return b.scope.company }
 func (b Binding) EmployeeID() string                  { return b.employee }
 func (b Binding) TaskID() string                      { return b.task }
 func (b Binding) Epoch() int64                        { return b.epoch }

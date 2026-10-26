@@ -140,6 +140,7 @@ const ProductEnvironmentEnsureToolSurfaceQualification = "polis-product-tool-sur
 const ProductBorrowerLeaseToolSurfaceQualification = "polis-product-tool-surface@17"
 const ProductBrowserRunToolSurfaceQualification = "polis-product-tool-surface@18"
 const ProductResearchOperationsToolSurfaceQualification = "polis-product-tool-surface@19"
+const ProductProjectJobsToolSurfaceQualification = "polis-product-tool-surface@20"
 
 const (
 	ProductEnvironmentStatusManifestDigest  = "b59ff6acd757764e66c73e1b5e638c3ff1a64a06f44491c919e017f91c48e0af"
@@ -160,6 +161,9 @@ const (
 	ProductResearchOperationsManifestDigest = "6149e0fd55fcdfe19575347c7b141536190e48d8cb4713b84ac1399f2e2c9554"
 	ProductResearchOperationsSchemaDigest   = "5a853c10ef4f97d9c39304acef65cd42dae2aaabab0d12dc1d3ee0fd42f89a0c"
 	ProductResearchOperationsSchemaBytes    = 4501
+	ProductProjectJobsManifestDigest        = "320c584c0a76c43b3b0e072da13d5904bbaf74bcd558d1dd3e0ec5f8e5f2c281"
+	ProductProjectJobsSchemaDigest          = "30ffa168a152b094f42b16fd0cc0fee992d949f9f00c1818a88f3bf454ed8e7a"
+	ProductProjectJobsSchemaBytes           = 3546
 )
 
 const (
@@ -179,6 +183,8 @@ const (
 	OfflineBrowserRunSurfaceSimulationMarker            = "offline-browser-run-tool-surface-unqualified"
 	OfflineResearchOperationsSurfacePurpose             = "offline-research-operations-tool-surface"
 	OfflineResearchOperationsSurfaceSimulationMarker    = "offline-research-operations-tool-surface-unqualified"
+	OfflineProjectJobsSurfacePurpose                    = "offline-project-jobs-tool-surface"
+	OfflineProjectJobsSurfaceSimulationMarker           = "offline-project-jobs-tool-surface-unqualified"
 	ProductMissionChangeAssessmentManifestDigest        = "cd9f4f852cd5674b1e0660868cb5af628a0186a0f137e8e1778e8fd6809c326d"
 	ProductMissionChangeAssessmentSchemaDigest          = "0be7f09a90c96ed73596617207ed1bac7575c6b8fd56cfe086a5880352c6b28a"
 	ProductMissionChangeAssessmentSchemaBytes           = 6740
@@ -224,6 +230,27 @@ func ProductBrowserRunToolSurface() ToolSurface {
 // surface. It records explicit intents without performing internet egress.
 func ProductResearchOperationsToolSurface() ToolSurface {
 	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithResearchOperations())
+}
+
+// ProductProjectJobsToolSurface is an opt-in fake-only extension. It does not
+// alter the fixed real-provider @4 contract.
+func ProductProjectJobsToolSurface() ToolSurface {
+	return ToolSurfaceFromTools(codex.ProductEmployeeToolsWithProjectJobs())
+}
+
+func ValidateOfflineFakeProjectJobsSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {
+	expected := ProductProjectJobsToolSurface()
+	observed := ToolSurfaceFromTools(surface.Tools)
+	if mode != "fake" || profile.ToolSurfaceQualification != ProductProjectJobsToolSurfaceQualification ||
+		profile.Purpose != OfflineProjectJobsSurfacePurpose || profile.ExecutionEnvelope != OfflineExecutionEnvelope ||
+		profile.ExactSurfaceExecutionFingerprint != OfflineProjectJobsSurfaceSimulationMarker ||
+		profile.ProductProviderL2Fingerprint != OfflineProjectJobsSurfaceSimulationMarker || profile.ToolCallLimit <= 0 ||
+		expected.ToolCount != 14 || expected.ManifestDigest != ProductProjectJobsManifestDigest || expected.AggregateSchemaBytes != ProductProjectJobsSchemaBytes || expected.AggregateSchemaDigest != ProductProjectJobsSchemaDigest ||
+		surface.ToolCount != 14 || observed.ToolCount != 14 || surface.ManifestDigest != ProductProjectJobsManifestDigest || observed.ManifestDigest != ProductProjectJobsManifestDigest ||
+		surface.AggregateSchemaBytes != ProductProjectJobsSchemaBytes || observed.AggregateSchemaBytes != ProductProjectJobsSchemaBytes || surface.AggregateSchemaDigest != ProductProjectJobsSchemaDigest || observed.AggregateSchemaDigest != ProductProjectJobsSchemaDigest {
+		return fmt.Errorf("project jobs surface is available only in its exact zero-egress fake simulation")
+	}
+	return nil
 }
 
 func ValidateOfflineFakeResearchOperationsSurface(mode string, profile ExecutionProfile, surface ToolSurface) error {

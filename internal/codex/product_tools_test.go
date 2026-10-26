@@ -194,6 +194,50 @@ func TestProductEmployeeBorrowerLeaseSurfaceExtendsReadOnlyJobsWithBoundedLeaseC
 	}
 }
 
+func TestProductEmployeeProjectJobsSurfaceAddsOnlyBoundedStartStop(t *testing.T) {
+	borrower := ProductEmployeeToolsWithBorrowerLeases()
+	tools := ProductEmployeeToolsWithProjectJobs()
+	if len(borrower) != 12 || len(tools) != 14 {
+		t.Fatalf("borrower/project-jobs tool counts=%d/%d, want 12/14", len(borrower), len(tools))
+	}
+	for index, tool := range borrower {
+		before, err := json.Marshal(tool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		after, err := json.Marshal(tools[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(before) != string(after) {
+			t.Fatalf("borrower-lease tool %d changed while adding project JobRun lifecycle", index)
+		}
+	}
+	for index, want := range []string{"polis_jobs_start", "polis_jobs_stop"} {
+		tool, ok := tools[12+index].(map[string]any)
+		if !ok || tool["name"] != want {
+			t.Fatalf("project JobRun tool %d=%v, want %s", index, tools[12+index], want)
+		}
+		schema, ok := tool["inputSchema"].(map[string]any)
+		if !ok || schema["additionalProperties"] != false {
+			t.Fatalf("%s schema is not closed: %v", want, tool["inputSchema"])
+		}
+		properties, ok := schema["properties"].(map[string]any)
+		if !ok {
+			t.Fatalf("%s schema properties missing: %v", want, schema)
+		}
+		if want == "polis_jobs_start" && (properties["environment_revision_id"] == nil || properties["kind"] == nil || properties["script_path"] == nil || properties["service_id"] == nil || properties["args"] == nil) {
+			t.Fatalf("jobs_start must use the fixed bounded batch/service contract: %v", schema)
+		}
+		if want == "polis_jobs_stop" && properties["job_id"] == nil {
+			t.Fatalf("jobs_stop must name one exact JobRun: %v", schema)
+		}
+		if properties["command"] != nil || properties["executable"] != nil || properties["host_path"] != nil {
+			t.Fatalf("%s exposes an arbitrary command or host path: %v", want, properties)
+		}
+	}
+}
+
 func TestProductEmployeeBrowserRunSurfaceAddsDefaultDeniedControlPlaneTools(t *testing.T) {
 	borrower := ProductEmployeeToolsWithBorrowerLeases()
 	tools := ProductEmployeeToolsWithBrowserRun()

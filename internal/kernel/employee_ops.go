@@ -48,6 +48,8 @@ type EmployeeTools struct {
 	EnvironmentEnsureSurface           bool
 	ReadOnlyJobsSurface                bool
 	BorrowerLeaseSurface               bool
+	ProjectJobsSurface                 bool
+	ProjectJobLifecycle                ProductTaskJobLifecycle
 	BrowserRunSurface                  bool
 	ResearchOperationSurface           bool
 	BrowserExecutor                    BrowserRunExecutor
@@ -163,6 +165,64 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		}
 		logs, e := k.ProductTaskJobLogs(ctx, b, args.JobID)
 		return ToolResult{Data: logs}, e
+	case "jobs_start":
+		if !t.ProductSurface || !t.ProjectJobsSurface || t.ReadOnly || t.ProjectJobLifecycle == nil {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			EnvironmentRevisionID string   `json:"environment_revision_id"`
+			Kind                  string   `json:"kind"`
+			ServiceID             string   `json:"service_id"`
+			ScriptPath            string   `json:"script_path"`
+			Args                  []string `json:"args"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		if !core.ValidID(args.EnvironmentRevisionID) {
+			return ToolResult{}, core.Malformed
+		}
+		if args.Args == nil {
+			args.Args = []string{}
+		}
+		switch args.Kind {
+		case "batch":
+			if args.ServiceID != "" || args.ScriptPath == "" {
+				return ToolResult{}, core.Malformed
+			}
+		case "service":
+			if !core.ValidID(args.ServiceID) || args.ScriptPath != "" || len(args.Args) != 0 {
+				return ToolResult{}, core.Malformed
+			}
+		default:
+			return ToolResult{}, core.Malformed
+		}
+		requestID := "worker-job-start-" + fingerprint([]string{b.SessionID(), key})[:40]
+		job, e := t.ProjectJobLifecycle.StartProductTaskJob(ctx, b, ProductTaskJobStartCommand{
+			EnvironmentRevisionID: args.EnvironmentRevisionID,
+			Kind:                  args.Kind,
+			ServiceID:             args.ServiceID,
+			ScriptPath:            args.ScriptPath,
+			Args:                  append([]string(nil), args.Args...),
+			RequestID:             requestID,
+		})
+		return ToolResult{Data: job}, e
+	case "jobs_stop":
+		if !t.ProductSurface || !t.ProjectJobsSurface || t.ReadOnly || t.ProjectJobLifecycle == nil {
+			return ToolResult{}, core.Denied
+		}
+		var args struct {
+			JobID string `json:"job_id"`
+		}
+		if e := strictArgs(raw, &args); e != nil {
+			return ToolResult{}, e
+		}
+		if !core.ValidID(args.JobID) {
+			return ToolResult{}, core.Malformed
+		}
+		requestID := "worker-job-stop-" + fingerprint([]string{b.SessionID(), key})[:40]
+		job, e := t.ProjectJobLifecycle.StopProductTaskJob(ctx, b, args.JobID, requestID)
+		return ToolResult{Data: job}, e
 	case "jobs_borrow":
 		if !t.ProductSurface || !t.BorrowerLeaseSurface || t.ReadOnly {
 			return ToolResult{}, core.Denied

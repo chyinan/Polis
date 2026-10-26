@@ -1,3 +1,16 @@
+## Latest source increment (Slice 324, REQ-37 Worker project JobRun tools)
+
+Added exact fake-only product tool surface `polis-product-tool-surface@20`
+with Task/WorkerSession-bound `jobs_start` and `jobs_stop`. Control reuses its
+existing ProjectJob lifecycle, and the worker-side bridge derives scope only
+from the trusted binding; the surface is default-off and real-provider `@4` is
+unchanged. Full offline Go/race/vet/build checks and a disposable Schema 134
+PostgreSQL integration exercise passed using a synthetic sleeper Worker and a
+recording project-job executor. This does not qualify a native executor,
+service-generation recovery, host isolation or a real Provider; REQ-37 remains
+partial pending those qualifications. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`.
+
 ## Latest continuation status (Slice 278, REQ-40 owner policy decisions)
 
 Ready delivery completion now opens a seven-day `awaiting_feedback` window. Deadline expiry rejects later disposition writes without implicit acceptance. Mission `succeeded` closeout requires a current ready DeliveryManifest and explicit latest `accepted` disposition for every supplied acceptance Artifact; `ended_not_met` and `cancelled` remain independent of user acceptance. Historical backfill remains `not_requested`, and pre-Schema111 runtimes fail closed for success closeout. Targeted Kernel tests and command build pass; no migration, runtime database, Worker/provider, browser or frozen scenario ran. REQ-40 remains partial pending full migration/runtime qualification and remaining revision/feedback projections. Evidence: `evidence/development/r1-r3-implementation-validation-20261006-slice-278-req40-owner-policy/verification.md`.
@@ -143,7 +156,7 @@ The legacy `workspace_replace` compatibility path now shares the file-tree trans
 The embedded fixed team coverage JSON now has a strict semantic validator for its canonical employee roster and assignments, disabled execution, immutable runtime roles, unverified qualification, required owner confirmation, checker policy, and trust/independence flags. Company creation and acknowledgment fail closed on drift; detail/switcher projections do not report confirmation from a malformed draft. This protects the draft's current fail-closed meaning and does not create executable role contracts, change Task admission, or qualify any role/provider. `go build ./...`, `git diff --check`, and JSON parsing pass; no tests, database operations, owner action, Worker/provider operation, or frozen scenario ran. The seven REQ-02 rows remain `partial/not_run`; all 232 scenarios remain `not_run`. Evidence: `evidence/development/r1-r3-implementation-validation-20261005-slice-242-req02-draft-semantic-guard/verification.md`.
 # R1–R3 implementation coverage
 
-> Updated: 2026-10-06, Slice 266. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
+> Updated: 2026-10-26, Slice 324. This is the live implementation ledger for the user-approved R1–R3 scope. The frozen v0.4.5 design package remains unchanged.
 
 ## Slice 241: qualification handoff audit anchor
 
