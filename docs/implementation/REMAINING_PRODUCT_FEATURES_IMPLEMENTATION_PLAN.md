@@ -1,6 +1,6 @@
 # Remaining product feature implementation plan
 
-Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. REQ-36 increments 2a–2c (Worker ensure bridge, pure overlay validation, and durable owner materialization flow) are source-implemented; see the Slice325/326/327 verification records. Slices328–329 add the BrowserRun/ResearchOperation execution authorization fence and isolated fake @18/@19 surface wiring; concrete adapters remain blocked because no qualified authorizer/credential resolver is installed. Slice330 adds owner-reviewed fixed-role drift repair; Slice331 exposes the existing TaskRevision owner decision lifecycle in Workbench without changing qualification or execution gates. Host and provider qualification remain explicitly open; no real registry/npm/retrieval operation was run.
+Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. REQ-36 increments 2a–2c (Worker ensure bridge, pure overlay validation, and durable owner materialization flow) are source-implemented; see the Slice325/326/327 verification records. Slices328–329 add the BrowserRun/ResearchOperation execution authorization fence and isolated fake @18/@19 surface wiring; concrete adapters remain blocked because no qualified authorizer/credential resolver is installed. Slice330 adds owner-reviewed fixed-role drift repair; Slice331 exposes the existing TaskRevision owner decision lifecycle in Workbench without changing qualification or execution gates. Slice332 makes absent PDF page rendering explicit in new extraction records while preserving historical canonical snapshots; actual rendering remains blocked pending renderer/license/runtime/fidelity selection. Host and provider qualification remain explicitly open; no real registry/npm/retrieval operation was run.
 
 ## Goal and boundaries
 
@@ -40,13 +40,14 @@ This plan is limited to product code and disposable offline verification. It doe
 ### 4. REQ-02 — Executable Task/Role contracts
 
 - Completed Slice330: historical fixed-role drift is projected to the owner and can be restored only to the embedded canonical mapping after exact-snapshot review, with no active work and a concurrent-admission fence. Qualification remains `unverified` and execution remains disabled.
-- Completed Slice331: the Schema123 TaskRevision owner-decision command is now reachable at a path-bound task route and visible in Task detail; approval/rejection/revocation remain descriptive and do not qualify or enable execution.
-- Complete the typed fixed-team TaskKind/RoleRevision binding and approval/audit projections while retaining `unverified` and execution-disabled until explicit owner review and qualifications exist.
+- Completed Slice331: the Schema123 TaskRevision owner-decision command is reachable at a path-bound task route and visible in Task detail; approval/rejection/revocation remain descriptive and do not qualify or enable execution.
+- Typed fixed-team TaskKind/RoleRevision binding, TaskRevision persistence/projection and owner-decision audit are implemented. Remaining REQ-02 work is qualification and separately approved admission policy; do not infer execution authority from approval.
 - Do not infer executable semantic mappings from display labels or fixed-roster confirmation alone.
 - Add default-deny regression tests for missing/stale/revoked role and TaskRevision bindings.
 
 ### 5. REQ-35 — Full-page PDF representation
 
+- Completed Slice332 fallback contract: new `polis-pdf-extraction@4` records explicitly state `fullPageRenderingStatus=unsupported` and a reason/warning when no bounded renderer is present. Historical `@1`/`@2`/`@3` packages remain canonical and verifiable. This is a truthful fail-closed boundary, not full-page rendering.
 - Design a bounded deterministic page-rendering contract compatible with canonical PDF snapshots, preserving source bytes and existing extraction versions.
 - Select an implementation only after checking dependency/license, memory/pixel/output caps, and fidelity/omission semantics. If the renderer cannot be included safely in the existing runtime envelope, leave page rendering explicitly unsupported rather than silently approximating it.
 - Test malformed, oversized, masked, multi-page, and non-rasterizable cases offline; provider image qualification stays separate.

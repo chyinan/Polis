@@ -9,6 +9,20 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 332, REQ-35 explicit PDF page-rendering boundary)
+
+No bounded complete-page renderer is present in the pinned Go runtime; the
+parser yields text and intrinsic embedded image objects only. New extraction
+records are now `polis-pdf-extraction@4` and carry
+`fullPageRenderingStatus=unsupported`, a reason and warning. The code does not
+approximate a page by composing embedded images on a blank canvas. Historical
+`@1`/`@2`/`@3` packages continue to verify canonically; `@3` embedded-object
+inputs remain supported. Full-page rasterization itself remains gated on a
+renderer/license/runtime and fidelity decision. Go full/race/vet/build,
+frontend checks and intake tests pass; no new dependency or external fetch was
+performed. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-pdf-page-rendering-boundary-20261027/verification.md`.
+
 ## Latest local source increment (Slice 331, REQ-02 TaskRevision owner decisions)
 
 The existing durable owner-decision route was unreachable because its task URL

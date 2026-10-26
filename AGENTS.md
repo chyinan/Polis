@@ -9,7 +9,7 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–331)
+## Latest local source increments (Slices 324–332)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
@@ -29,8 +29,11 @@ Slice330 adds an owner-reviewed, snapshot-CAS repair path for historical fixed
 role drift; it requires an idle Company and preserves `unverified` qualification
 and execution-disabled status. Slice331 wires the durable TaskRevision owner
 decision to its missing task-scoped route and Workbench UI; approve/reject/revoke
-remain descriptive only and cannot qualify or enable execution. Full source
-verification uses disposable data only; no Worker was started.
+remain descriptive only and cannot qualify or enable execution. Slice332 marks
+new PDF extraction records as not rendering complete pages while preserving
+historical snapshots; actual rendering awaits a bounded, compatible renderer
+decision. Full source verification uses disposable data only; no Worker was
+started.
 Continue the source backlog in
 `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 

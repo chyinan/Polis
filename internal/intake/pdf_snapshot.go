@@ -13,6 +13,7 @@ import (
 	"image/png"
 	"math"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -32,13 +33,17 @@ const (
 	pdfSnapshotRecordPath    = "pdf/extraction.json"
 	pdfExtractionSchemaV1    = "polis-pdf-extraction@1"
 	pdfExtractionSchemaV2    = "polis-pdf-extraction@2"
-	pdfExtractionSchema      = "polis-pdf-extraction@3"
+	pdfExtractionSchemaV3    = "polis-pdf-extraction@3"
+	pdfExtractionSchema      = "polis-pdf-extraction@4"
 	pdfExtractionParser      = "github.com/giraffesyo/pdf@v0.7.0"
 	pdfImageRepresentationV1 = "polis-pdf-embedded-image@1"
 	pdfImageRepresentation   = "polis-pdf-embedded-image@2"
 	pdfAppearanceSemantics   = "intrinsic_embedded_image_object"
 	pdfImageNumberMeaning    = "1_based_page_images_array_ordinal_not_pdf_object_id"
 	pdfAppearanceLimitations = "soft_masks_transparency_color_key_masks_and_rendering_intent_may_not_be_applied"
+	pdfFullPageRendering     = "unsupported"
+	pdfFullPageRenderReason  = "renderer_not_in_runtime_envelope"
+	pdfFullPageWarning       = "full_page_rendering_unsupported"
 	maxPDFExtractDuration    = 8 * time.Second
 	maxPDFStreamBytes        = 1 << 20
 	maxPDFOperatorsPerPage   = 20_000
@@ -53,24 +58,26 @@ const (
 )
 
 type PDFExtractionRecord struct {
-	SchemaVersion         string         `json:"schemaVersion"`
-	Parser                string         `json:"parser"`
-	Status                string         `json:"status"`
-	SourceSHA256          string         `json:"sourceSha256"`
-	ExtractedTextSHA256   string         `json:"extractedTextSha256,omitempty"`
-	PageCount             int            `json:"pageCount"`
-	PagesProcessed        int            `json:"pagesProcessed"`
-	TextBytes             int            `json:"textBytes"`
-	TextTruncated         bool           `json:"textTruncated"`
-	PageLimitReached      bool           `json:"pageLimitReached"`
-	ImagePages            int            `json:"imagePages"`
-	ImageRepresentation   string         `json:"imageRepresentation,omitempty"`
-	AppearanceSemantics   string         `json:"appearanceSemantics,omitempty"`
-	AppearanceLimitations string         `json:"appearanceLimitations,omitempty"`
-	ImageNumberMeaning    string         `json:"imageNumberMeaning,omitempty"`
-	PageImages            []PDFPageImage `json:"pageImages,omitempty"`
-	PageImagesTruncated   bool           `json:"pageImagesTruncated,omitempty"`
-	WarningCodes          []string       `json:"warningCodes"`
+	SchemaVersion           string         `json:"schemaVersion"`
+	Parser                  string         `json:"parser"`
+	Status                  string         `json:"status"`
+	SourceSHA256            string         `json:"sourceSha256"`
+	ExtractedTextSHA256     string         `json:"extractedTextSha256,omitempty"`
+	PageCount               int            `json:"pageCount"`
+	PagesProcessed          int            `json:"pagesProcessed"`
+	TextBytes               int            `json:"textBytes"`
+	TextTruncated           bool           `json:"textTruncated"`
+	PageLimitReached        bool           `json:"pageLimitReached"`
+	ImagePages              int            `json:"imagePages"`
+	ImageRepresentation     string         `json:"imageRepresentation,omitempty"`
+	AppearanceSemantics     string         `json:"appearanceSemantics,omitempty"`
+	AppearanceLimitations   string         `json:"appearanceLimitations,omitempty"`
+	ImageNumberMeaning      string         `json:"imageNumberMeaning,omitempty"`
+	FullPageRenderingStatus string         `json:"fullPageRenderingStatus,omitempty"`
+	FullPageRenderingReason string         `json:"fullPageRenderingReason,omitempty"`
+	PageImages              []PDFPageImage `json:"pageImages,omitempty"`
+	PageImagesTruncated     bool           `json:"pageImagesTruncated,omitempty"`
+	WarningCodes            []string       `json:"warningCodes"`
 }
 
 // PDFPageImage binds an intrinsic decoded PDF image object to the page and
@@ -105,6 +112,14 @@ type PDFPageRect struct {
 var errPDFVisualImageTooLarge = errors.New("PDF embedded image representation exceeds its byte bound")
 
 func preparePDFMissionInput(filename, declaredMediaType string, content []byte) (PreparedUpload, []byte, error) {
+	return preparePDFMissionInputWithSchema(filename, declaredMediaType, content, pdfExtractionSchema)
+}
+
+func preparePDFMissionInputV3(filename, declaredMediaType string, content []byte) (PreparedUpload, []byte, error) {
+	return preparePDFMissionInputWithSchema(filename, declaredMediaType, content, pdfExtractionSchemaV3)
+}
+
+func preparePDFMissionInputWithSchema(filename, declaredMediaType string, content []byte, schemaVersion string) (PreparedUpload, []byte, error) {
 	displayName, err := safeDisplayName(filename)
 	if err != nil {
 		return PreparedUpload{}, nil, err
@@ -126,7 +141,7 @@ func preparePDFMissionInput(filename, declaredMediaType string, content []byte) 
 		return PreparedUpload{}, nil, &UploadError{ReasonCode: "media_type_mismatch"}
 	}
 
-	text, record, pageImages, err := extractPDFRepresentation(content)
+	text, record, pageImages, err := extractPDFRepresentationForSchema(content, schemaVersion)
 	if err != nil {
 		reason := "pdf_invalid"
 		if errors.Is(err, context.DeadlineExceeded) {
@@ -213,7 +228,11 @@ func extractPDFText(content []byte) (text string, record PDFExtractionRecord, re
 }
 
 func extractPDFRepresentation(content []byte) (text string, record PDFExtractionRecord, files []DirectoryInputFile, resultErr error) {
-	return extractPDF(content, true, pdfExtractionSchema, false)
+	return extractPDFRepresentationForSchema(content, pdfExtractionSchema)
+}
+
+func extractPDFRepresentationForSchema(content []byte, schemaVersion string) (text string, record PDFExtractionRecord, files []DirectoryInputFile, resultErr error) {
+	return extractPDF(content, true, schemaVersion, false)
 }
 
 func extractPDFRepresentationV2(content []byte) (text string, record PDFExtractionRecord, files []DirectoryInputFile, resultErr error) {
@@ -234,6 +253,9 @@ func extractPDF(content []byte, includeImages bool, schemaVersion string, legacy
 	defer cancel()
 	var output strings.Builder
 	warnings := make(map[string]struct{})
+	if includeImages && schemaVersion == pdfExtractionSchema {
+		warnings[pdfFullPageWarning] = struct{}{}
+	}
 	imagePages := 0
 	pagesProcessed := 0
 	textTruncated := false
@@ -360,6 +382,10 @@ func extractPDF(content []byte, includeImages bool, schemaVersion string, legacy
 			record.AppearanceSemantics = pdfAppearanceSemantics
 			record.AppearanceLimitations = pdfAppearanceLimitations
 			record.ImageNumberMeaning = pdfImageNumberMeaning
+		}
+		if schemaVersion == pdfExtractionSchema {
+			record.FullPageRenderingStatus = pdfFullPageRendering
+			record.FullPageRenderingReason = pdfFullPageRenderReason
 		}
 		record.PageImages = pageImages
 		record.PageImagesTruncated = visualTruncated || pageLimitReached
@@ -509,7 +535,7 @@ func pdfImageMetadataByPath(files []DirectoryInputFile) (map[string]PDFPageImage
 		return nil, errors.New("PDF snapshot extraction record is missing")
 	}
 	var record PDFExtractionRecord
-	if err := json.Unmarshal(recordBytes, &record); err != nil || record.SchemaVersion != pdfExtractionSchema && record.SchemaVersion != pdfExtractionSchemaV2 && record.SchemaVersion != pdfExtractionSchemaV1 || record.PageCount < 1 || record.PagesProcessed < 1 || record.PagesProcessed > MaxPDFPages || record.PagesProcessed > record.PageCount || !validSHA256Digest(record.SourceSHA256) {
+	if err := json.Unmarshal(recordBytes, &record); err != nil || record.SchemaVersion != pdfExtractionSchema && record.SchemaVersion != pdfExtractionSchemaV3 && record.SchemaVersion != pdfExtractionSchemaV2 && record.SchemaVersion != pdfExtractionSchemaV1 || record.PageCount < 1 || record.PagesProcessed < 1 || record.PagesProcessed > MaxPDFPages || record.PagesProcessed > record.PageCount || !validSHA256Digest(record.SourceSHA256) {
 		return nil, errors.New("PDF snapshot extraction record is invalid")
 	}
 	original, exists := byPath[pdfSnapshotOriginalPath]
@@ -518,16 +544,21 @@ func pdfImageMetadataByPath(files []DirectoryInputFile) (map[string]PDFPageImage
 	}
 	switch record.SchemaVersion {
 	case pdfExtractionSchemaV1:
-		if record.ImageRepresentation != "" || record.AppearanceSemantics != "" || record.AppearanceLimitations != "" || record.ImageNumberMeaning != "" || len(record.PageImages) != 0 {
+		if record.ImageRepresentation != "" || record.AppearanceSemantics != "" || record.AppearanceLimitations != "" || record.ImageNumberMeaning != "" || record.FullPageRenderingStatus != "" || record.FullPageRenderingReason != "" || len(record.PageImages) != 0 {
 			return nil, errors.New("legacy PDF snapshot has unexpected visual metadata")
 		}
 	case pdfExtractionSchemaV2:
-		if record.ImageRepresentation != pdfImageRepresentationV1 || record.AppearanceSemantics != "" || record.AppearanceLimitations != "" || record.ImageNumberMeaning != "" {
+		if record.ImageRepresentation != pdfImageRepresentationV1 || record.AppearanceSemantics != "" || record.AppearanceLimitations != "" || record.ImageNumberMeaning != "" || record.FullPageRenderingStatus != "" || record.FullPageRenderingReason != "" {
 			return nil, errors.New("PDF extraction@2 image representation version is invalid")
 		}
-	case pdfExtractionSchema:
-		if record.ImageRepresentation != pdfImageRepresentation || record.AppearanceSemantics != pdfAppearanceSemantics || record.AppearanceLimitations != pdfAppearanceLimitations || record.ImageNumberMeaning != pdfImageNumberMeaning {
+	case pdfExtractionSchemaV3:
+		if record.ImageRepresentation != pdfImageRepresentation || record.AppearanceSemantics != pdfAppearanceSemantics || record.AppearanceLimitations != pdfAppearanceLimitations || record.ImageNumberMeaning != pdfImageNumberMeaning || record.FullPageRenderingStatus != "" || record.FullPageRenderingReason != "" {
 			return nil, errors.New("PDF extraction@3 image semantics are invalid")
+		}
+	case pdfExtractionSchema:
+		if record.ImageRepresentation != pdfImageRepresentation || record.AppearanceSemantics != pdfAppearanceSemantics || record.AppearanceLimitations != pdfAppearanceLimitations || record.ImageNumberMeaning != pdfImageNumberMeaning ||
+			record.FullPageRenderingStatus != pdfFullPageRendering || record.FullPageRenderingReason != pdfFullPageRenderReason || !slices.Contains(record.WarningCodes, pdfFullPageWarning) {
+			return nil, errors.New("PDF extraction@4 image/page rendering semantics are invalid")
 		}
 	default:
 		return nil, errors.New("PDF extraction schema is not supported")
@@ -579,7 +610,7 @@ func pdfSnapshotUsesCurrentImageSemantics(files []DirectoryInputFile) bool {
 		if json.Unmarshal(file.Content, &record) != nil {
 			return false
 		}
-		return record.SchemaVersion == pdfExtractionSchema &&
+		return (record.SchemaVersion == pdfExtractionSchemaV3 || record.SchemaVersion == pdfExtractionSchema) &&
 			record.ImageRepresentation == pdfImageRepresentation &&
 			record.AppearanceSemantics == pdfAppearanceSemantics &&
 			record.AppearanceLimitations == pdfAppearanceLimitations &&
@@ -643,6 +674,8 @@ func verifyPDFSnapshot(prepared PreparedUpload, content []byte) (PreparedUpload,
 		verified, rebuilt, err = prepareLegacyPDFMissionInput(prepared.DisplayName, source)
 	case pdfExtractionSchemaV2:
 		verified, rebuilt, err = preparePDFMissionInputV2(prepared.DisplayName, source)
+	case pdfExtractionSchemaV3:
+		verified, rebuilt, err = preparePDFMissionInputV3(prepared.DisplayName, "application/pdf", source)
 	case pdfExtractionSchema:
 		verified, rebuilt, err = preparePDFMissionInput(prepared.DisplayName, "application/pdf", source)
 	default:

@@ -1,3 +1,16 @@
+## Latest local source increment (Slice 332, REQ-35 explicit PDF page-rendering boundary)
+
+New PDF intake records now explicitly say full-page rendering is unsupported
+in this runtime and include a machine-readable reason/warning. The pinned parser
+still supplies only extracted text and a bounded subset of intrinsic embedded
+image objects; no blank-canvas approximation is emitted. Historical extraction
+@1/@2/@3 packages remain canonically verifiable, and @3 images remain eligible
+for existing active delivery. Full-page rasterization remains blocked pending a
+bounded renderer dependency/license/runtime and fidelity decision. Go intake
+tests and complete Go/frontend checks pass; no package install or external fetch
+ran. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-pdf-page-rendering-boundary-20261027/verification.md`.
+
 ## Latest local source increment (Slice 331, REQ-02 TaskRevision owner decisions)
 
 The durable TaskRevision owner-decision handler existed but its URL was missing

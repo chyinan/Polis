@@ -1,4 +1,16 @@
-## Latest source increment (Slice 331, REQ-02 TaskRevision owner decisions)
+## Latest source increment (Slice 332, REQ-35 explicit PDF page-rendering boundary)
+
+The pinned PDF parser does not provide a full-page raster path. New direct-PDF
+snapshots now record `polis-pdf-extraction@4` with explicit unsupported
+page-rendering status, reason and warning rather than implying a complete page
+image. Historical @1/@2/@3 packages remain verifiable and @3 intrinsic-image
+delivery stays supported. No renderer or dependency was installed; a full page
+renderer remains gated on bounded runtime/license/fidelity selection and later
+host/provider qualification. Full Go/race/vet/build and frontend checks pass.
+Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-pdf-page-rendering-boundary-20261027/verification.md`.
+
+## Previous source increment (Slice 331, REQ-02 TaskRevision owner decisions)
 
 The Schema123 decision command was unreachable from Workbench because its
 task-scoped path was missing, and there was no UI for the owner. Added the exact

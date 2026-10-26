@@ -58,6 +58,98 @@ func TestPrepareMissionInputPackagesPDFAndDeliversExtractedTextToWorker(t *testi
 	}
 }
 
+func TestPrepareMissionInputNamesFullPageRenderingAsUnsupported(t *testing.T) {
+	prepared, stored, err := PrepareMissionInput("vector.pdf", "application/pdf", testTextPDF("vector-only page"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	files, err := ExtractVerifiedInputArchive(prepared.SourceKind, stored)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var record map[string]any
+	if err = json.Unmarshal(findInputFile(files, pdfSnapshotRecordPath), &record); err != nil {
+		t.Fatal(err)
+	}
+	if record["schemaVersion"] != "polis-pdf-extraction@4" || record["fullPageRenderingStatus"] != "unsupported" || record["fullPageRenderingReason"] != "renderer_not_in_runtime_envelope" {
+		t.Fatalf("PDF rendering support was not explicitly bounded in the extraction record: %+v", record)
+	}
+	warnings, ok := record["warningCodes"].([]any)
+	if !ok || !containsJSONText(warnings, "full_page_rendering_unsupported") {
+		t.Fatalf("PDF full-page omission warning missing: %+v", record["warningCodes"])
+	}
+	for _, file := range files {
+		if strings.HasPrefix(file.RelativePath, "pdf/pages/") {
+			t.Fatalf("vector-only PDF unexpectedly produced a page raster: %s", file.RelativePath)
+		}
+	}
+}
+
+func TestVerifyPreparedUploadPreservesCanonicalPDFExtractionV3Snapshots(t *testing.T) {
+	const sentinel = "historical-v3-pdf"
+	source := testTextPDF(sentinel)
+	text, record, images, err := extractPDF(source, true, "polis-pdf-extraction@3", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	recordBytes, err := json.Marshal(record)
+	if err != nil {
+		t.Fatal(err)
+	}
+	files := []DirectoryInputFile{{RelativePath: pdfSnapshotOriginalPath, MediaType: "application/pdf", Content: source}}
+	files = append(files, DirectoryInputFile{RelativePath: pdfSnapshotRecordPath, MediaType: "application/json", Content: recordBytes})
+	if len(text) > 0 {
+		files = append(files, DirectoryInputFile{RelativePath: pdfSnapshotTextPath, MediaType: "text/plain", Content: []byte(text)})
+	}
+	files = append(files, images...)
+	prepared, stored, err := packagePDFSnapshot("historical-v3.pdf", files)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = VerifyPreparedUpload(prepared, stored); err != nil {
+		t.Fatalf("canonical historical extraction@3 package no longer verifies: %v", err)
+	}
+}
+
+func TestPDFActiveImageDeliveryKeepsCanonicalV3AndV4Semantics(t *testing.T) {
+	for _, schema := range []string{"polis-pdf-extraction@3", "polis-pdf-extraction@4"} {
+		record := PDFExtractionRecord{
+			SchemaVersion: schema, ImageRepresentation: pdfImageRepresentation,
+			AppearanceSemantics: pdfAppearanceSemantics, AppearanceLimitations: pdfAppearanceLimitations,
+			ImageNumberMeaning: pdfImageNumberMeaning,
+		}
+		if schema == pdfExtractionSchema {
+			record.FullPageRenderingStatus = pdfFullPageRendering
+			record.FullPageRenderingReason = pdfFullPageRenderReason
+		}
+		content, err := json.Marshal(record)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !pdfSnapshotUsesCurrentImageSemantics([]DirectoryInputFile{{RelativePath: pdfSnapshotRecordPath, Content: content}}) {
+			t.Fatalf("active embedded-image delivery rejected canonical %s semantics", schema)
+		}
+	}
+	for _, schema := range []string{"polis-pdf-extraction@1", "polis-pdf-extraction@2"} {
+		content, err := json.Marshal(PDFExtractionRecord{SchemaVersion: schema})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if pdfSnapshotUsesCurrentImageSemantics([]DirectoryInputFile{{RelativePath: pdfSnapshotRecordPath, Content: content}}) {
+			t.Fatalf("legacy %s snapshot gained new image-delivery semantics", schema)
+		}
+	}
+}
+
+func containsJSONText(values []any, expected string) bool {
+	for _, value := range values {
+		if value == expected {
+			return true
+		}
+	}
+	return false
+}
+
 func TestPrepareMissionInputRejectsMalformedAndOversizedPDFs(t *testing.T) {
 	if _, _, err := PrepareMissionInput("broken.pdf", "application/pdf", []byte("not a PDF")); uploadReason(err) != "pdf_invalid" {
 		t.Fatalf("malformed PDF error = %v, want pdf_invalid", err)
