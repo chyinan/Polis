@@ -1,6 +1,6 @@
 # Remaining product feature implementation plan
 
-Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. REQ-36 increments 2a–2c (Worker ensure bridge, pure overlay validation, and durable owner materialization flow) are source-implemented; see the Slice325/326/327 verification records. Slices328–329 add the BrowserRun/ResearchOperation execution authorization fence and isolated fake @18/@19 surface wiring; concrete adapters remain blocked because no qualified authorizer/credential resolver is installed. Host and provider qualification remain explicitly open; no real registry/npm/retrieval operation was run.
+Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. REQ-36 increments 2a–2c (Worker ensure bridge, pure overlay validation, and durable owner materialization flow) are source-implemented; see the Slice325/326/327 verification records. Slices328–329 add the BrowserRun/ResearchOperation execution authorization fence and isolated fake @18/@19 surface wiring; concrete adapters remain blocked because no qualified authorizer/credential resolver is installed. Slice330 adds the owner-reviewed fixed-role drift repair flow without changing qualification or execution gates. Host and provider qualification remain explicitly open; no real registry/npm/retrieval operation was run.
 
 ## Goal and boundaries
 
@@ -39,6 +39,7 @@ This plan is limited to product code and disposable offline verification. It doe
 
 ### 4. REQ-02 — Executable Task/Role contracts
 
+- Completed Slice330: historical fixed-role drift is projected to the owner and can be restored only to the embedded canonical mapping after exact-snapshot review, with no active work and a concurrent-admission fence. Qualification remains `unverified` and execution remains disabled.
 - Complete the typed fixed-team TaskKind/RoleRevision binding and approval/audit projections while retaining `unverified` and execution-disabled until explicit owner review and qualifications exist.
 - Do not infer executable semantic mappings from display labels or fixed-roster confirmation alone.
 - Add default-deny regression tests for missing/stale/revoked role and TaskRevision bindings.

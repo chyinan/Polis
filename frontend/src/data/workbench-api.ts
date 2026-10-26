@@ -32,6 +32,13 @@ export type ArchiveCompanyOptions = Readonly<{
   requestId: string;
 }>;
 
+export type ReconcileFixedTeamRoleAssignmentsOptions = Readonly<{
+  companyId: string;
+  expectedSnapshotSha256: string;
+  rationale: string;
+  requestId: string;
+}>;
+
 export type UpdateRuntimeSettingsOptions = Readonly<{
   companyId: string;
   provider: string;
@@ -764,6 +771,7 @@ export type WorkbenchApi = Readonly<{
   getCodexModelCatalog(options: CompanyScopeOptions): Promise<CodexModelCatalogView>;
   createCompany(options: CompanyDraftOptions): Promise<CompanyCommandReceipt>;
   updateCompany(options: UpdateCompanyOptions): Promise<CompanyCommandReceipt>;
+  reconcileFixedTeamRoleAssignments(options: ReconcileFixedTeamRoleAssignmentsOptions): Promise<CompanyCommandReceipt>;
   archiveCompany(options: ArchiveCompanyOptions): Promise<CompanyCommandReceipt>;
   updateRuntimeSettings(options: UpdateRuntimeSettingsOptions): Promise<CompanyCommandReceipt>;
   listOperatorInstructions(options: OperatorInstructionQueryOptions): Promise<ReadonlyArray<OperatorInstructionView>>;

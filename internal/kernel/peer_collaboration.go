@@ -655,6 +655,9 @@ func (k *Kernel) TXCreatePeerFixture(ctx context.Context, s Scope, mission strin
 	v1Schema := []byte(`{"items":["id","name"]}`)
 	v1Digest := digestPeerContent(v1Schema)
 	_, e := k.TXWrite(ctx, s, nil, "peer-fixture-"+mission, "peer.fixture.create", mission, func(tx pgx.Tx) (Receipt, error) {
+		if err := lockCompanyFixedRoleStateTX(ctx, tx, s.company); err != nil {
+			return Receipt{}, err
+		}
 		if _, e := tx.Exec(ctx, "INSERT INTO missions(company_id,id,state,activation_id,contract) VALUES($1,$2,'active',$3,'r03-api@1')", s.company, mission, newID()); e != nil {
 			return Receipt{}, e
 		}

@@ -9,7 +9,7 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–329)
+## Latest local source increments (Slices 324–330)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
@@ -25,6 +25,10 @@ without a qualified authorizer. Full Go/race/vet/build, frontend checks, and
 disposable Schema136 integration pass using recording resolvers only. No npm,
 registry, Provider or external retrieval ran. Native Windows resolver/host
 qualification and REQ-37 native process/restart qualification remain open.
+Slice330 adds an owner-reviewed, snapshot-CAS repair path for historical fixed
+role drift; it requires an idle Company and preserves `unverified` qualification
+and execution-disabled status. Full source verification uses disposable data
+only; no Worker was started.
 Continue the source backlog in
 `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 

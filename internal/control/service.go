@@ -566,6 +566,22 @@ func (s *Service) UpdateCompany(ctx context.Context, companyID string, request U
 	return commandReceiptForTarget(commandType, request.RequestID, "company", companyID, "active"), nil
 }
 
+func (s *Service) ReconcileFixedTeamRoleAssignments(ctx context.Context, companyID string, request ReconcileFixedTeamRoleAssignmentsRequest) (CommandReceipt, error) {
+	if s == nil || s.runtime == nil || ctx == nil || !installationauth.IsAuthenticated(ctx) || !core.ValidID(companyID) ||
+		validateRequestID(request.RequestID) != nil || strings.TrimSpace(request.Rationale) == "" || len(request.Rationale) > 512 {
+		return CommandReceipt{}, core.Denied
+	}
+	receipt, err := s.runtime.TXReconcileFixedTeamRoleAssignments(ctx, companyID, kernel.FixedTeamRoleReconciliationInput{
+		ExpectedSnapshotSHA256: request.ExpectedSnapshotSHA256,
+		Rationale:              strings.TrimSpace(request.Rationale),
+		RequestID:              request.RequestID,
+	})
+	if err != nil {
+		return CommandReceipt{}, err
+	}
+	return commandReceiptForTarget("company.team_roles.reconcile", request.RequestID, "company", companyID, receipt.Status), nil
+}
+
 func (s *Service) ArchiveCompany(ctx context.Context, companyID, requestID string) (CommandReceipt, error) {
 	if !core.ValidID(companyID) {
 		return CommandReceipt{}, core.Malformed
@@ -879,7 +895,8 @@ func (s *Service) UploadMissionInput(ctx context.Context, companyID string, requ
 func companySummary(company kernel.CompanyDetails) CompanySummary {
 	roster := make([]organization.EmployeeDraft, len(company.Roster))
 	copy(roster, company.Roster)
-	return CompanySummary{ID: company.ID, Name: company.Name, WorkspaceRoot: company.WorkspaceRoot, State: company.State, Roster: roster, TeamCoverageConfirmed: company.TeamCoverageConfirmed, TeamCoverageConfirmationSHA256: company.TeamCoverageConfirmationSHA256, TeamCoverageConfirmedAt: company.TeamCoverageConfirmedAt, TeamCoverageRoleRevision: company.TeamCoverageRoleRevision}
+	preview := company.FixedTeamRoleReconciliation
+	return CompanySummary{ID: company.ID, Name: company.Name, WorkspaceRoot: company.WorkspaceRoot, State: company.State, Roster: roster, TeamCoverageConfirmed: company.TeamCoverageConfirmed, TeamCoverageConfirmationSHA256: company.TeamCoverageConfirmationSHA256, TeamCoverageConfirmedAt: company.TeamCoverageConfirmedAt, TeamCoverageRoleRevision: company.TeamCoverageRoleRevision, FixedTeamRoleReconciliation: &preview}
 }
 
 func providerAuthReadiness(transport string) string {

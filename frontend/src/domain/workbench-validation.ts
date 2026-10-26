@@ -370,7 +370,26 @@ function isCompanySummary(value: unknown): value is CompanySummaryView {
     && (value.teamCoverageConfirmed === undefined || typeof value.teamCoverageConfirmed === 'boolean')
     && (value.teamCoverageConfirmationSha256 === undefined || typeof value.teamCoverageConfirmationSha256 === 'string')
     && (value.teamCoverageConfirmedAt === undefined || typeof value.teamCoverageConfirmedAt === 'string')
-    && (value.teamCoverageRoleRevision === undefined || isFixedTeamCoverageRoleRevision(value.teamCoverageRoleRevision));
+    && (value.teamCoverageRoleRevision === undefined || isFixedTeamCoverageRoleRevision(value.teamCoverageRoleRevision))
+    && (value.fixedTeamRoleReconciliation === undefined || isFixedTeamRoleReconciliationPreview(value.fixedTeamRoleReconciliation));
+}
+
+function isFixedTeamRoleReconciliationPreview(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.snapshotSha256 !== 'string' || !SHA256_PATTERN.test(value.snapshotSha256)
+    || typeof value.eligible !== 'boolean' || !isOneOf(value.reasonCode, ['no_role_drift', 'company_not_active', 'active_work_present', 'owner_reconciliation_required'])
+    || !Array.isArray(value.mismatches) || value.mismatches.length > 4) return false;
+  const mismatches: ReadonlyArray<unknown> = value.mismatches;
+  const mismatchIds: Array<string> = [];
+  for (const mismatch of mismatches) {
+    if (!isRecord(mismatch) || !hasString(mismatch, 'employeeId') || typeof mismatch.employeeId !== 'string'
+      || typeof mismatch.currentRole !== 'string' || typeof mismatch.expectedRole !== 'string' || mismatch.expectedRole.trim() === ''
+      || mismatch.currentRole === mismatch.expectedRole) return false;
+    mismatchIds.push(mismatch.employeeId);
+  }
+  if (new Set(mismatchIds).size !== mismatchIds.length) return false;
+  if (mismatches.length === 0) return !value.eligible && value.reasonCode === 'no_role_drift';
+  if (value.eligible) return value.reasonCode === 'owner_reconciliation_required';
+  return value.reasonCode === 'company_not_active' || value.reasonCode === 'active_work_present';
 }
 
 function isRuntimeReadiness(value: unknown): boolean {

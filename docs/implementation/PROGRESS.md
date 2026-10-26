@@ -1,3 +1,17 @@
+## Latest local source increment (Slice 330, REQ-02 fixed-role reconciliation)
+
+Historical Companies with canonical fixed Employee IDs but drifted role names
+now expose a read-only mismatch list and a snapshot digest bound to each exact
+current/expected assignment. An installation-owner command restores only the
+canonical role names after a fresh digest check and an idle-work check. A shared
+transaction advisory lock serializes repair against Mission activation,
+WorkerSession admission, ProjectJob session creation, Company organization
+updates and archive. Tests verify stale-snapshot conflict, active Mission block,
+audit event, and unchanged `unverified` qualification. Full Go/race/vet/build,
+frontend typecheck/lint/build/tests, and disposable PostgreSQL 18.6/Schema136
+integration pass. No Worker or provider action ran. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-fixed-role-reconciliation-20261027/verification.md`.
+
 ## Latest local source increment (Slice 329, REQ-38 isolated fake operation surfaces)
 
 Added opt-in fake-only @18 BrowserRun and @19 ResearchOperation surface

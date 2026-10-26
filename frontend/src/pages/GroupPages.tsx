@@ -6,7 +6,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import teamCoverage from '../../../spec/design-v0.4.5/product/TEAM_COVERAGE.json';
 import teamCoverageSource from '../../../spec/design-v0.4.5/product/TEAM_COVERAGE.json?raw';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useCompanyList, useCompanyOverview, useCreateCompany, useUpdateCompany} from '../data/workbench-query';
+import {useCompanyList, useCompanyOverview, useCreateCompany, useReconcileFixedTeamRoleAssignments, useUpdateCompany} from '../data/workbench-query';
 import type {CompanyOverviewView, CompanySummaryView, EmployeeDraft} from '../domain/workbench';
 import {labelDisplayValue, labelErrorMessage} from '../domain/display-labels';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
@@ -82,6 +82,58 @@ function ExistingCompanyCoverageConfirmation({api, company}: Readonly<{api: Work
   </details>;
 }
 
+function ExistingFixedRoleReconciliation({api, company}: Readonly<{api: WorkbenchApi; company: CompanySummaryView}>) {
+  const reconcile = useReconcileFixedTeamRoleAssignments(api);
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [rationale, setRationale] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [pendingRequest, setPendingRequest] = useState<Readonly<{snapshotSha256: string; rationale: string; requestId: string}> | null>(null);
+  const preview = company.fixedTeamRoleReconciliation;
+  if (api.mode !== 'real' || preview === undefined || preview.mismatches.length === 0) return null;
+
+  async function submitReconciliation(): Promise<void> {
+    if (!acknowledged || preview === undefined || !preview.eligible || rationale.trim() === '') return;
+    const cleanRationale = rationale.trim();
+    const pending = pendingRequest !== null && pendingRequest.snapshotSha256 === preview.snapshotSha256 && pendingRequest.rationale === cleanRationale
+      ? pendingRequest
+      : {snapshotSha256: preview.snapshotSha256, rationale: cleanRationale, requestId: `fixed-role-reconcile-${crypto.randomUUID()}`};
+    setPendingRequest(pending);
+    setError('');
+    setMessage('');
+    try {
+      await reconcile.mutateAsync({
+        companyId: company.id,
+        expectedSnapshotSha256: pending.snapshotSha256,
+        rationale: pending.rationale,
+        requestId: pending.requestId,
+      });
+      setPendingRequest(null);
+      setAcknowledged(false);
+      setRationale('');
+      setMessage('固定岗位映射已恢复。岗位资格仍为未验证，执行权限没有改变。');
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : '固定岗位恢复结果尚未确认；同一快照重试会复用原请求 ID。');
+    }
+  }
+
+  return <details className={styles.coverageConfirmation}>
+    <summary>检查历史固定岗位漂移</summary>
+    <p className={styles.formHint}>此修复只把已知固定 Employee ID 的 role_name 恢复到仓库内的 canonical 值，不修改角色资格、团队确认或执行准入。要求 Company 空闲，并以当前漂移快照摘要进行一次性确认。</p>
+    <div className={styles.coverageConfirmationRows}>{preview.mismatches.map(mismatch => <div className={styles.coverageConfirmationRow} key={mismatch.employeeId}>
+      <strong>{employeeLabels[mismatch.employeeId] ?? mismatch.employeeId} · {mismatch.employeeId}</strong>
+      <span>当前角色：{mismatch.currentRole || '（空）'} → 固定角色：{mismatch.expectedRole}</span>
+    </div>)}</div>
+    {!preview.eligible ? <p className={styles.formHint} role="status">当前不可修复：{labelDisplayValue(preview.reasonCode)}。刷新公司目录并确认没有活动 Mission、WorkerSession 或未决 JobRun。</p> : <>
+      <label className={styles.formLabel}>修复理由<input className={styles.formField} maxLength={512} onChange={event => {setRationale(event.target.value); setError('');}} value={rationale} /></label>
+      <label className={styles.reviewCheck}><input checked={acknowledged} onChange={event => {setAcknowledged(event.target.checked); setError('');}} type="checkbox" /><span>我作为安装负责人，已审阅上面的当前/固定角色差异，并确认只恢复固定岗位名称。</span></label>
+      <button className={styles.commandButton} disabled={!acknowledged || rationale.trim() === '' || reconcile.isPending} onClick={() => {void submitReconciliation();}} type="button">{reconcile.isPending ? '正在恢复固定角色…' : '确认恢复固定角色'}</button>
+    </>}
+    {message ? <p className={styles.formHint} role="status">{message}</p> : null}
+    {error ? <p className={styles.formError} role="alert">{error} {pendingRequest?.snapshotSha256 === preview.snapshotSha256 ? '相同快照和理由重试会复用原请求 ID。' : '快照变化后必须重新审阅并提交。'}</p> : null}
+  </details>;
+}
+
 export function GroupOverviewPage({api, companyId}: GroupPageProps) {
   const query = useCompanyOverview(api, companyId);
   const companiesQuery = useCompanyList(api);
@@ -96,8 +148,9 @@ export function GroupOverviewPage({api, companyId}: GroupPageProps) {
       <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>公司目录</span><h2 className={styles.sectionTitle}>已登记公司</h2></div><StatusBadge label={`${companies.length} 个`} tone="info" /></div>
       <div className={styles.recordList}>{companies.map(company => <div className={styles.companyDirectoryEntry} key={company.id}>
         <Link className={styles.recordRow} to={`/companies/${company.id}/overview`}><div className={styles.recordLead}><Building2 aria-hidden="true" size={16} /><div><strong>{company.name}</strong><span>{company.id} · {company.workspaceRoot}</span></div></div><div className={styles.recordMeta}><StatusBadge compact label={labelDisplayValue(company.state)} tone={company.state === 'active' ? 'success' : 'neutral'} /><StatusBadge compact label={company.teamCoverageConfirmed ? '矩阵已确认 · 岗位资格未验证' : '矩阵待负责人确认'} tone={company.teamCoverageConfirmed ? 'info' : 'neutral'} /></div></Link>
-        <ExistingCompanyCoverageConfirmation api={api} company={company} />
-      </div>)}</div>
+         <ExistingCompanyCoverageConfirmation api={api} company={company} />
+         <ExistingFixedRoleReconciliation api={api} company={company} />
+       </div>)}</div>
     </section>
     <section className={styles.sectionCard}>
       <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>导航覆盖</span><h2 className={styles.sectionTitle}>集团级入口</h2></div><Building2 aria-hidden="true" className={styles.icon} size={18} /></div>

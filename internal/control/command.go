@@ -172,15 +172,22 @@ type SetHumanInterventionStateRequest struct {
 }
 
 type CompanySummary struct {
-	ID                             string                              `json:"id"`
-	Name                           string                              `json:"name"`
-	WorkspaceRoot                  string                              `json:"workspaceRoot"`
-	State                          string                              `json:"state"`
-	Roster                         []organization.EmployeeDraft        `json:"roster"`
-	TeamCoverageConfirmed          bool                                `json:"teamCoverageConfirmed"`
-	TeamCoverageConfirmationSHA256 string                              `json:"teamCoverageConfirmationSha256"`
-	TeamCoverageConfirmedAt        string                              `json:"teamCoverageConfirmedAt"`
-	TeamCoverageRoleRevision       *spec.FixedTeamCoverageRoleRevision `json:"teamCoverageRoleRevision,omitempty"`
+	ID                             string                                           `json:"id"`
+	Name                           string                                           `json:"name"`
+	WorkspaceRoot                  string                                           `json:"workspaceRoot"`
+	State                          string                                           `json:"state"`
+	Roster                         []organization.EmployeeDraft                     `json:"roster"`
+	TeamCoverageConfirmed          bool                                             `json:"teamCoverageConfirmed"`
+	TeamCoverageConfirmationSHA256 string                                           `json:"teamCoverageConfirmationSha256"`
+	TeamCoverageConfirmedAt        string                                           `json:"teamCoverageConfirmedAt"`
+	TeamCoverageRoleRevision       *spec.FixedTeamCoverageRoleRevision              `json:"teamCoverageRoleRevision,omitempty"`
+	FixedTeamRoleReconciliation    *organization.FixedTeamRoleReconciliationPreview `json:"fixedTeamRoleReconciliation,omitempty"`
+}
+
+type ReconcileFixedTeamRoleAssignmentsRequest struct {
+	ExpectedSnapshotSHA256 string `json:"expectedSnapshotSha256"`
+	Rationale              string `json:"rationale"`
+	RequestID              string `json:"requestId"`
 }
 
 type CommandReceipt struct {
@@ -214,6 +221,7 @@ type OrganizationService interface {
 	GetCompany(ctx context.Context, companyID string) (CompanySummary, error)
 	CreateCompany(ctx context.Context, request CreateCompanyRequest) (CommandReceipt, error)
 	UpdateCompany(ctx context.Context, companyID string, request UpdateCompanyRequest) (CommandReceipt, error)
+	ReconcileFixedTeamRoleAssignments(ctx context.Context, companyID string, request ReconcileFixedTeamRoleAssignmentsRequest) (CommandReceipt, error)
 	ArchiveCompany(ctx context.Context, companyID, requestID string) (CommandReceipt, error)
 }
 

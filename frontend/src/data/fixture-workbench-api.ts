@@ -14,6 +14,7 @@ import type {ServiceBrowserSessionView} from '../domain/workbench';
 import type {DependencyChangeMaterializationRecordView, DependencyChangeProposalRecordView} from '../domain/workbench';
 import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 import type {DecideDependencyChangeOptions, DependencyChangeQueryOptions, MaterializeDependencyChangeOptions, ProposeDependencyChangeOptions} from './workbench-api';
+import type {ReconcileFixedTeamRoleAssignmentsOptions} from './workbench-api';
 
 import type {
   ActivityEvent,
@@ -447,6 +448,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
 
   async updateCompany(): Promise<CompanyCommandReceipt> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'commands are unavailable in fixture mode');
+  }
+
+  async reconcileFixedTeamRoleAssignments(_options: ReconcileFixedTeamRoleAssignmentsOptions): Promise<CompanyCommandReceipt> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'fixed-role reconciliation is unavailable in fixture mode');
   }
 
   async archiveCompany(): Promise<CompanyCommandReceipt> {

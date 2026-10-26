@@ -41,6 +41,7 @@ import type {TaskTakeoverDirectorySnapshotOptions} from './workbench-api';
 import type {DependencyChangeMaterializationRecordView, DependencyChangeProposalRecordView} from '../domain/workbench';
 import {validateDependencyChangeMaterialization, validateDependencyChangeProposalRecord, validateDependencyChangeProposals} from '../domain/workbench-validation';
 import type {DecideDependencyChangeOptions, DependencyChangeQueryOptions, MaterializeDependencyChangeOptions, ProposeDependencyChangeOptions} from './workbench-api';
+import type {ReconcileFixedTeamRoleAssignmentsOptions} from './workbench-api';
 import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type CompleteDurableDeliveryManifestOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type InvalidateDurableDeliveryManifestOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type RecordDurableUserDispositionOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
 
 function isSafeWorkspaceRelativePath(value: string): boolean {
@@ -111,6 +112,18 @@ export class RealWorkbenchApi implements WorkbenchApi {
     assertRequestID(options.requestId);
     const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/organization`, options.requestId, {name: options.name, workspaceRoot: options.workspaceRoot, roster: options.roster, requestId: options.requestId, teamCoverageConfirmationSha256: options.teamCoverageConfirmationSha256}, options.teamCoverageConfirmationSha256 !== undefined);
     return validateCompanyCommandReceipt(raw, options.teamCoverageConfirmationSha256 === undefined ? 'company.update' : 'company.team_coverage.confirm');
+  }
+
+  async reconcileFixedTeamRoleAssignments(options: ReconcileFixedTeamRoleAssignmentsOptions): Promise<CompanyCommandReceipt> {
+    assertCompanyScope(options.companyId);
+    assertRequestID(options.requestId);
+    if (!/^[a-f0-9]{64}$/.test(options.expectedSnapshotSha256) || options.rationale.trim() === '' || options.rationale.length > 512) {
+      throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to reconcile fixed roles: snapshot or rationale is invalid');
+    }
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/organization/role-reconciliation`, options.requestId, {
+      expectedSnapshotSha256: options.expectedSnapshotSha256, rationale: options.rationale, requestId: options.requestId,
+    }, true);
+    return validateCompanyCommandReceipt(raw, 'company.team_roles.reconcile');
   }
 
   async archiveCompany(options: ArchiveCompanyOptions): Promise<CompanyCommandReceipt> {
@@ -2075,7 +2088,7 @@ function validateCommandReceipt(raw: unknown, expectedType: MissionCommandReceip
 }
 
 function validateCompanyCommandReceipt(raw: unknown, expectedType: CompanyCommandReceipt['commandType']): CompanyCommandReceipt {
-  if (!isRecord(raw) || typeof raw.commandId !== 'string' || raw.commandType !== expectedType || raw.targetType !== 'company' || typeof raw.targetId !== 'string' || typeof raw.requestId !== 'string' || raw.accepted !== true || typeof raw.acceptedAt !== 'string' || !['active', 'archived', 'restart_required', 'configured', 'unverified', 'ready', 'revoked'].includes(String(raw.resultingState))) {
+  if (!isRecord(raw) || typeof raw.commandId !== 'string' || raw.commandType !== expectedType || raw.targetType !== 'company' || typeof raw.targetId !== 'string' || typeof raw.requestId !== 'string' || raw.accepted !== true || typeof raw.acceptedAt !== 'string' || !['active', 'archived', 'restart_required', 'configured', 'unverified', 'ready', 'revoked', 'reconciled'].includes(String(raw.resultingState))) {
     throw new Error('failed to parse company command receipt: response is malformed');
   }
   return raw as CompanyCommandReceipt;

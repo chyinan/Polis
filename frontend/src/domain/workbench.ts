@@ -46,6 +46,19 @@ export type FixedTeamCoverageRoleRevisionView = Readonly<{
   contract: FixedTeamCoverageDraftView;
 }>;
 
+export type FixedTeamRoleMismatchView = Readonly<{
+  employeeId: string;
+  currentRole: string;
+  expectedRole: string;
+}>;
+
+export type FixedTeamRoleReconciliationPreviewView = Readonly<{
+  snapshotSha256: string;
+  mismatches: ReadonlyArray<FixedTeamRoleMismatchView>;
+  eligible: boolean;
+  reasonCode: 'no_role_drift' | 'company_not_active' | 'active_work_present' | 'owner_reconciliation_required';
+}>;
+
 export type CompanySummaryView = Readonly<{
   id: string;
   name: string;
@@ -56,6 +69,7 @@ export type CompanySummaryView = Readonly<{
   teamCoverageConfirmationSha256?: string;
   teamCoverageConfirmedAt?: string;
   teamCoverageRoleRevision?: FixedTeamCoverageRoleRevisionView;
+  fixedTeamRoleReconciliation?: FixedTeamRoleReconciliationPreviewView;
 }>;
 
 export type RuntimeReadiness = 'configured' | 'missing' | 'invalid' | 'ready' | 'unavailable' | 'restart_required' | 'not_required' | 'not_applicable' | 'deferred';
@@ -1248,9 +1262,9 @@ export type DailyRoutineCommandReceipt = Readonly<{
   resultingState: 'active' | 'instruction_set';
 }>;
 
-export type CompanyCommandType = 'company.create' | 'company.update' | 'company.team_coverage.confirm' | 'company.archive' | 'runtime.settings.update' | 'notification.route.update';
+export type CompanyCommandType = 'company.create' | 'company.update' | 'company.team_coverage.confirm' | 'company.team_roles.reconcile' | 'company.archive' | 'runtime.settings.update' | 'notification.route.update';
 
-export type CompanyCommandResultState = 'active' | 'archived' | 'restart_required' | 'configured' | 'unverified' | 'ready' | 'revoked';
+export type CompanyCommandResultState = 'active' | 'archived' | 'restart_required' | 'configured' | 'unverified' | 'ready' | 'revoked' | 'reconciled';
 
 export type CompanyCommandReceipt = Readonly<{
   commandId: string;

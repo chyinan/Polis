@@ -261,6 +261,9 @@ func missionState(ctx context.Context, tx pgx.Tx, s Scope, id string) (string, e
 }
 func (k *Kernel) TXStartMission(ctx context.Context, s Scope, id, key string) (Receipt, error) {
 	return k.TXWrite(ctx, s, nil, key, "mission.start", id, func(tx pgx.Tx) (Receipt, error) {
+		if err := lockCompanyFixedRoleStateTX(ctx, tx, s.company); err != nil {
+			return Receipt{}, err
+		}
 		state, e := missionState(ctx, tx, s, id)
 		if e != nil {
 			return Receipt{}, e
@@ -293,6 +296,9 @@ func (k *Kernel) TXStartMission(ctx context.Context, s Scope, id, key string) (R
 
 func (k *Kernel) TXStartMissionCommand(ctx context.Context, s Scope, id, key string) (Receipt, error) {
 	return k.TXWrite(ctx, s, nil, key, "mission.start", id, func(tx pgx.Tx) (Receipt, error) {
+		if err := lockCompanyFixedRoleStateTX(ctx, tx, s.company); err != nil {
+			return Receipt{}, err
+		}
 		state, err := missionState(ctx, tx, s, id)
 		if err != nil {
 			return Receipt{}, err

@@ -10,6 +10,29 @@ afterEach(() => {
 });
 
 describe('RealWorkbenchApi', () => {
+  it('sends fixed-role reconciliation with the reviewed snapshot and owner CSRF route', async () => {
+    const receipt = {
+      commandId: 'role-reconcile-1', commandType: 'company.team_roles.reconcile', targetType: 'company', targetId: 'company-1',
+      requestId: 'role-reconcile-1', accepted: true, acceptedAt: '2026-10-27T00:00:00Z', resultingState: 'reconciled',
+    };
+    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => receipt});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+
+    await expect(api.reconcileFixedTeamRoleAssignments({
+      companyId: 'company-1', expectedSnapshotSha256: 'a'.repeat(64),
+      rationale: 'Reviewed the exact legacy role mismatch.', requestId: 'role-reconcile-1',
+    })).resolves.toEqual(receipt);
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/organization/role-reconciliation', expect.objectContaining({
+      method: 'POST', credentials: 'same-origin',
+      body: JSON.stringify({expectedSnapshotSha256: 'a'.repeat(64), rationale: 'Reviewed the exact legacy role mismatch.', requestId: 'role-reconcile-1'}),
+    }));
+    await expect(api.reconcileFixedTeamRoleAssignments({
+      companyId: 'company-1', expectedSnapshotSha256: 'invalid', rationale: 'Reviewed the mismatch.', requestId: 'role-reconcile-invalid',
+    })).rejects.toThrow('snapshot or rationale is invalid');
+  });
+
   it('lists, creates, and repairs mission-scoped daily Routines through authenticated routes', async () => {
     const routine = {
       routineId: 'routine-1', missionId: 'mission-1', employeeId: 'emp-backend', timezone: 'Asia/Shanghai', localTime: '09:00',

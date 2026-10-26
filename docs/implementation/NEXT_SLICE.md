@@ -9,6 +9,19 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 330, REQ-02 fixed-role reconciliation)
+
+Added a read-only Company projection for historical fixed-role drift, with a
+SHA-256 bound to the exact current/expected role pairs. Installation-owner
+reconciliation requires explicit rationale and the reviewed digest; it is
+serialized against Mission activation, WorkerSession admission, ProjectJob
+session creation, Company role edits and archive using a transaction advisory
+lock. Active Mission/WorkerSession/unresolved JobRun state blocks repair. Only
+canonical role names are restored; no coverage confirmation, qualification or
+execution permission is created. Full Go/race/vet/build, frontend checks and
+disposable PostgreSQL 18.6/Schema136 tests pass. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-fixed-role-reconciliation-20261027/verification.md`.
+
 ## Latest local source increment (Slice 329, REQ-38 isolated fake operation surfaces)
 
 Added exact opt-in fake-only @18 BrowserRun and @19 ResearchOperation surface

@@ -23,6 +23,13 @@ describe('display labels', () => {
     expect(labelDisplayValue('runtime_restarted_during_resolution')).toBe('解析期间服务重启；不会自动重放');
   });
 
+  it('labels fixed-role reconciliation outcomes without implying qualification', () => {
+    expect(labelDisplayValue('owner_reconciliation_required')).toBe('等待安装负责人审阅固定岗位差异');
+    expect(labelDisplayValue('active_work_present')).toBe('仍有活动或未决工作');
+    expect(labelDisplayValue('reconciled')).toBe('固定岗位已恢复');
+    expect(labelDisplayValue('unverified')).toBe('未验证');
+  });
+
   it('distinguishes Linux deny-all and Windows registry policies', () => {
     const linux = {schemaVersion: 'project-environment-policy@1', profileId: 'linux-node-npm@1', registryHosts: ['registry.npmjs.org'], installPolicy: 'npm ci --ignore-scripts --no-audit --no-fund --offline', lifecycleScriptsPolicy: 'ignore', networkPolicy: 'deny_all', timeoutMs: 180000, outputLimitBytes: 1048576} as const;
     const windows = {schemaVersion: 'project-environment-policy@1', profileId: 'windows-node-npm@1', registryHosts: ['registry.npmjs.org'], installPolicy: 'npm ci --ignore-scripts --no-audit --no-fund', lifecycleScriptsPolicy: 'ignore', networkPolicy: 'registry_allowlist', timeoutMs: 180000, outputLimitBytes: 1048576} as const;

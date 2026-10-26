@@ -21,6 +21,9 @@ func (k *Kernel) TXCreateProbe(ctx context.Context, s Scope, mission string) (Ta
 		return Task{}, e
 	}
 	r, e := k.TXWrite(ctx, s, nil, "probe-"+mission, "probe.create", mission, func(tx pgx.Tx) (Receipt, error) {
+		if err := lockCompanyFixedRoleStateTX(ctx, tx, s.company); err != nil {
+			return Receipt{}, err
+		}
 		var occupied bool
 		e := tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused','closing'))", s.company).Scan(&occupied)
 		if e != nil {
@@ -239,6 +242,9 @@ func (k *Kernel) txNewWorkerWithToolBudget(ctx context.Context, s Scope, task, p
 		ToolCallLimit int64
 		Product       bool
 	}{task, profile, toolCallLimit, productProvider}, func(tx pgx.Tx) (Receipt, error) {
+		if err := lockCompanyFixedRoleStateTX(ctx, tx, s.company); err != nil {
+			return Receipt{}, err
+		}
 		var productWorkspaceDigest, productValidationBindingDigest string
 		var productWorkspaceRevision int64
 		var workerSlotClass string

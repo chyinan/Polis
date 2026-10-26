@@ -1207,6 +1207,23 @@ func TestHTTPAcceptsNotificationRouteCommand(t *testing.T) {
 	}
 }
 
+func TestParseFixedTeamRoleReconciliationRoute(t *testing.T) {
+	parsed, ok := parsePath("/api/workbench/companies/company-1/organization/role-reconciliation")
+	if !ok || parsed.companyID != "company-1" || parsed.endpoint != "organization.role_reconciliation" {
+		t.Fatalf("fixed-role reconciliation path parsed as %+v, ok=%t", parsed, ok)
+	}
+}
+
+func TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/organization/role-reconciliation", strings.NewReader(`{"expectedSnapshotSha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","rationale":"reviewed fixed role drift","requestId":"role-reconcile-1"}`))
+	request.Header.Set("Content-Type", "application/json")
+	NewHandler(fakeReadModel{}, fakeOrganizationCommandService{}).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusUnauthorized {
+		t.Fatalf("unauthenticated fixed-role reconciliation status=%d body=%s, want %d", recorder.Code, recorder.Body.String(), http.StatusUnauthorized)
+	}
+}
+
 func TestHTTPAcceptsNotificationTestCommand(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/notifications/test", bytes.NewReader([]byte(`{"requestId":"test-1"}`)))
@@ -1245,6 +1262,10 @@ func (fakeOrganizationCommandService) CreateCompany(context.Context, control.Cre
 
 func (fakeOrganizationCommandService) UpdateCompany(context.Context, string, control.UpdateCompanyRequest) (control.CommandReceipt, error) {
 	return control.CommandReceipt{}, nil
+}
+
+func (fakeOrganizationCommandService) ReconcileFixedTeamRoleAssignments(context.Context, string, control.ReconcileFixedTeamRoleAssignmentsRequest) (control.CommandReceipt, error) {
+	return control.CommandReceipt{CommandID: "role-reconcile-1", CommandType: "company.team_roles.reconcile", TargetType: "company", TargetID: "company-1", RequestID: "role-reconcile-1", Accepted: true, AcceptedAt: "2026-10-27T00:00:00Z", ResultingState: "reconciled"}, nil
 }
 
 func (fakeOrganizationCommandService) ArchiveCompany(context.Context, string, string) (control.CommandReceipt, error) {

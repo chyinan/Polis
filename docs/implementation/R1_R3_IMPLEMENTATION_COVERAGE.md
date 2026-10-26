@@ -1,4 +1,16 @@
-## Latest source increment (Slice 329, REQ-38 isolated fake operation surfaces)
+## Latest source increment (Slice 330, REQ-02 fixed-role reconciliation)
+
+Added a Company-scoped drift snapshot and owner-only reconciliation command,
+bound to exact current and expected role names by SHA-256. The command checks
+that Company is active and has no active Mission, non-stopped WorkerSession, or
+accepted/starting/running/outcome-unknown JobRun. A transaction advisory lock
+serializes reconciliation against new work admission, role edits and archive.
+Only canonical role names change; qualification remains `unverified` and
+execution remains disabled. Full Go/race/vet/build, frontend checks, and
+disposable PostgreSQL18.6/Schema136 integration pass. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-fixed-role-reconciliation-20261027/verification.md`.
+
+## Previous source increment (Slice 329, REQ-38 isolated fake operation surfaces)
 
 Added isolated fake-only @18 BrowserRun / @19 ResearchOperation surface
 selection and exact Fake transport checks. Adapter wiring requires one selected

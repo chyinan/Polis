@@ -873,6 +873,20 @@ describe('Workbench view validation', () => {
     }
   });
 
+  it('validates a fixed-role drift preview and rejects malformed reconciliation digests', () => {
+    const company = {
+      id: companyId, name: 'Polis', workspaceRoot: 'C:/workspace', state: 'active',
+      roster: [{id: 'emp-backend', displayName: 'Backend', role: 'legacy-backend', modelProfile: 'deterministic/fake'}],
+      fixedTeamRoleReconciliation: {
+        snapshotSha256: 'a'.repeat(64), eligible: true, reasonCode: 'owner_reconciliation_required',
+        mismatches: [{employeeId: 'emp-backend', currentRole: 'legacy-backend', expectedRole: 'backend'}],
+      },
+    };
+    expect(validateCompanyList([company]).success).toBe(true);
+    expect(validateCompanyList([{...company, fixedTeamRoleReconciliation: {...company.fixedTeamRoleReconciliation, snapshotSha256: 'bad'}}]).success).toBe(false);
+    expect(validateCompanyList([{...company, fixedTeamRoleReconciliation: {...company.fixedTeamRoleReconciliation, eligible: true, reasonCode: 'active_work_present'}}]).success).toBe(false);
+  });
+
   it('accepts safe runtime settings statuses without credential material', () => {
     const result = validateRuntimeSettings({companyId, workerMode: 'deterministic', provider: 'deterministic', model: 'deterministic/fake', effort: 'bounded', profile: 'deterministic/fake', authReadiness: 'not_required', runtimeVersion: 'local', runtimeReadiness: 'ready', productSurfaceQualification: 'not_applicable', workspaceRoot: 'C:/workspace', postgresqlStatus: 'ready', casStatus: 'ready', eventStreamStatus: 'deferred'});
 

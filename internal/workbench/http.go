@@ -1824,6 +1824,36 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
+	case "organization.role_reconciliation":
+		organizationService, ok := asOrganizationService(service)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("organization service is unavailable"))
+			return
+		}
+		if !installationauth.IsAuthenticated(ctx) {
+			writeError(response, http.StatusUnauthorized, "installation owner authentication is required to reconcile fixed roles")
+			return
+		}
+		csrfCookie, _ := request.Cookie(installationauth.OwnerCSRFCookieName)
+		csrfValue := ""
+		if csrfCookie != nil {
+			csrfValue = csrfCookie.Value
+		}
+		if request.Header.Get("Origin") == "" || !installationauth.CSRFValid(ctx, csrfValue, request.Header.Get(installationauth.OwnerCSRFHeaderName)) {
+			writeError(response, http.StatusForbidden, "owner request failed CSRF verification")
+			return
+		}
+		var input control.ReconcileFixedTeamRoleAssignmentsRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
+			return
+		}
+		receipt, err := organizationService.ReconcileFixedTeamRoleAssignments(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
 	case "organization":
 		organizationService, ok := asOrganizationService(service)
 		if !ok {
@@ -2443,6 +2473,9 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{companyID: companyID, endpoint: "domain_workflows"}, true
 		}
 		return parsedPath{companyID: companyID, endpoint: parts[1]}, true
+	}
+	if len(parts) == 3 && parts[1] == "organization" && parts[2] == "role-reconciliation" {
+		return parsedPath{companyID: companyID, endpoint: "organization.role_reconciliation"}, true
 	}
 	if len(parts) == 3 && parts[1] == "domain-workflows" && parts[2] == "research-simulations" {
 		return parsedPath{companyID: companyID, endpoint: "domain.research.simulation"}, true

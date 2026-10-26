@@ -1,0 +1,363 @@
+{"Time":"2026-10-27T01:10:39.248075488+08:00","Action":"start","Package":"polis/cmd/polis"}
+{"Time":"2026-10-27T01:10:39.256566127+08:00","Action":"output","Package":"polis/cmd/polis","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:39.256721207+08:00","Action":"output","Package":"polis/cmd/polis","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:39.256917776+08:00","Action":"output","Package":"polis/cmd/polis","Output":"ok  \tpolis/cmd/polis\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:39.257077439+08:00","Action":"pass","Package":"polis/cmd/polis","Elapsed":0.009}
+{"Time":"2026-10-27T01:10:40.545258657+08:00","Action":"start","Package":"polis/cmd/polis-probe"}
+{"Time":"2026-10-27T01:10:40.545413964+08:00","Action":"output","Package":"polis/cmd/polis-probe","Output":"?   \tpolis/cmd/polis-probe\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:40.545550442+08:00","Action":"skip","Package":"polis/cmd/polis-probe","Elapsed":0}
+{"Time":"2026-10-27T01:10:40.741026909+08:00","Action":"start","Package":"polis/cmd/polis-r02"}
+{"Time":"2026-10-27T01:10:40.741175776+08:00","Action":"output","Package":"polis/cmd/polis-r02","Output":"?   \tpolis/cmd/polis-r02\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:40.741310923+08:00","Action":"skip","Package":"polis/cmd/polis-r02","Elapsed":0}
+{"Time":"2026-10-27T01:10:40.922605107+08:00","Action":"start","Package":"polis/cmd/polis-r02-high"}
+{"Time":"2026-10-27T01:10:40.922751459+08:00","Action":"output","Package":"polis/cmd/polis-r02-high","Output":"?   \tpolis/cmd/polis-r02-high\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:40.922894792+08:00","Action":"skip","Package":"polis/cmd/polis-r02-high","Elapsed":0}
+{"Time":"2026-10-27T01:10:41.105990031+08:00","Action":"start","Package":"polis/cmd/polis-r02-high2"}
+{"Time":"2026-10-27T01:10:41.106150784+08:00","Action":"output","Package":"polis/cmd/polis-r02-high2","Output":"?   \tpolis/cmd/polis-r02-high2\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:41.106307488+08:00","Action":"skip","Package":"polis/cmd/polis-r02-high2","Elapsed":0}
+{"Time":"2026-10-27T01:10:41.291795496+08:00","Action":"start","Package":"polis/cmd/polis-r03a"}
+{"Time":"2026-10-27T01:10:41.291957743+08:00","Action":"output","Package":"polis/cmd/polis-r03a","Output":"?   \tpolis/cmd/polis-r03a\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:41.292102615+08:00","Action":"skip","Package":"polis/cmd/polis-r03a","Elapsed":0}
+{"Time":"2026-10-27T01:10:41.46630801+08:00","Action":"start","Package":"polis/cmd/polis-r03a-backend-l2-requalification"}
+{"Time":"2026-10-27T01:10:41.466472372+08:00","Action":"output","Package":"polis/cmd/polis-r03a-backend-l2-requalification","Output":"?   \tpolis/cmd/polis-r03a-backend-l2-requalification\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:41.46661464+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-backend-l2-requalification","Elapsed":0}
+{"Time":"2026-10-27T01:10:41.664675769+08:00","Action":"start","Package":"polis/cmd/polis-r03a-blob-durability"}
+{"Time":"2026-10-27T01:10:41.664874307+08:00","Action":"output","Package":"polis/cmd/polis-r03a-blob-durability","Output":"?   \tpolis/cmd/polis-r03a-blob-durability\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:41.665065472+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-blob-durability","Elapsed":0}
+{"Time":"2026-10-27T01:10:41.867436734+08:00","Action":"start","Package":"polis/cmd/polis-r03a-cas-validate"}
+{"Time":"2026-10-27T01:10:41.867584826+08:00","Action":"output","Package":"polis/cmd/polis-r03a-cas-validate","Output":"?   \tpolis/cmd/polis-r03a-cas-validate\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:41.867710993+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-cas-validate","Elapsed":0}
+{"Time":"2026-10-27T01:10:42.04731547+08:00","Action":"start","Package":"polis/cmd/polis-r03a-current-binary-l2-offline"}
+{"Time":"2026-10-27T01:10:42.047467813+08:00","Action":"output","Package":"polis/cmd/polis-r03a-current-binary-l2-offline","Output":"?   \tpolis/cmd/polis-r03a-current-binary-l2-offline\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:42.04760043+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-current-binary-l2-offline","Elapsed":0}
+{"Time":"2026-10-27T01:10:42.237492972+08:00","Action":"start","Package":"polis/cmd/polis-r03a-database-binding"}
+{"Time":"2026-10-27T01:10:42.237642644+08:00","Action":"output","Package":"polis/cmd/polis-r03a-database-binding","Output":"?   \tpolis/cmd/polis-r03a-database-binding\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:42.237770761+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-database-binding","Elapsed":0}
+{"Time":"2026-10-27T01:10:42.411272709+08:00","Action":"start","Package":"polis/cmd/polis-r03a-frontend-checker-feedback-l2-offline"}
+{"Time":"2026-10-27T01:10:42.411427692+08:00","Action":"output","Package":"polis/cmd/polis-r03a-frontend-checker-feedback-l2-offline","Output":"?   \tpolis/cmd/polis-r03a-frontend-checker-feedback-l2-offline\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:42.411558584+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-frontend-checker-feedback-l2-offline","Elapsed":0}
+{"Time":"2026-10-27T01:10:42.59177864+08:00","Action":"start","Package":"polis/cmd/polis-r03a-frontend-config-probe"}
+{"Time":"2026-10-27T01:10:42.591922872+08:00","Action":"output","Package":"polis/cmd/polis-r03a-frontend-config-probe","Output":"?   \tpolis/cmd/polis-r03a-frontend-config-probe\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:42.592054284+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-frontend-config-probe","Elapsed":0}
+{"Time":"2026-10-27T01:10:42.808852965+08:00","Action":"start","Package":"polis/cmd/polis-r03a-frontend-consumption-abi-offline"}
+{"Time":"2026-10-27T01:10:42.809005228+08:00","Action":"output","Package":"polis/cmd/polis-r03a-frontend-consumption-abi-offline","Output":"?   \tpolis/cmd/polis-r03a-frontend-consumption-abi-offline\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:42.809145329+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-frontend-consumption-abi-offline","Elapsed":0}
+{"Time":"2026-10-27T01:10:42.980734471+08:00","Action":"start","Package":"polis/cmd/polis-r03a-frontend-l2-offline"}
+{"Time":"2026-10-27T01:10:42.980875784+08:00","Action":"output","Package":"polis/cmd/polis-r03a-frontend-l2-offline","Output":"?   \tpolis/cmd/polis-r03a-frontend-l2-offline\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:42.981009386+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-frontend-l2-offline","Elapsed":0}
+{"Time":"2026-10-27T01:10:43.182446751+08:00","Action":"start","Package":"polis/cmd/polis-r03a-frontend-starting-state-probe"}
+{"Time":"2026-10-27T01:10:43.182603726+08:00","Action":"output","Package":"polis/cmd/polis-r03a-frontend-starting-state-probe","Output":"?   \tpolis/cmd/polis-r03a-frontend-starting-state-probe\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:43.182739296+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-frontend-starting-state-probe","Elapsed":0}
+{"Time":"2026-10-27T01:10:43.358125447+08:00","Action":"start","Package":"polis/cmd/polis-r03a-h1-review"}
+{"Time":"2026-10-27T01:10:43.35830699+08:00","Action":"output","Package":"polis/cmd/polis-r03a-h1-review","Output":"?   \tpolis/cmd/polis-r03a-h1-review\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:43.358452205+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-h1-review","Elapsed":0}
+{"Time":"2026-10-27T01:10:43.576307415+08:00","Action":"start","Package":"polis/cmd/polis-r03a-pagination-v3"}
+{"Time":"2026-10-27T01:10:43.576466237+08:00","Action":"output","Package":"polis/cmd/polis-r03a-pagination-v3","Output":"?   \tpolis/cmd/polis-r03a-pagination-v3\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:43.576605023+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-pagination-v3","Elapsed":0}
+{"Time":"2026-10-27T01:10:43.597892872+08:00","Action":"start","Package":"polis/cmd/polis-r03a-postgres-socket-validate"}
+{"Time":"2026-10-27T01:10:43.598042226+08:00","Action":"output","Package":"polis/cmd/polis-r03a-postgres-socket-validate","Output":"?   \tpolis/cmd/polis-r03a-postgres-socket-validate\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:43.598190139+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-postgres-socket-validate","Elapsed":0}
+{"Time":"2026-10-27T01:10:43.791718333+08:00","Action":"start","Package":"polis/cmd/polis-r03a-real-backend"}
+{"Time":"2026-10-27T01:10:43.791869615+08:00","Action":"output","Package":"polis/cmd/polis-r03a-real-backend","Output":"?   \tpolis/cmd/polis-r03a-real-backend\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:43.792001552+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-real-backend","Elapsed":0}
+{"Time":"2026-10-27T01:10:43.971415675+08:00","Action":"start","Package":"polis/cmd/polis-r03a-real-frontend"}
+{"Time":"2026-10-27T01:10:43.971592378+08:00","Action":"output","Package":"polis/cmd/polis-r03a-real-frontend","Output":"?   \tpolis/cmd/polis-r03a-real-frontend\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:43.971723616+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-real-frontend","Elapsed":0}
+{"Time":"2026-10-27T01:10:43.991626851+08:00","Action":"start","Package":"polis/cmd/polis-r03a-recovery-closure-validate"}
+{"Time":"2026-10-27T01:10:43.991789523+08:00","Action":"output","Package":"polis/cmd/polis-r03a-recovery-closure-validate","Output":"?   \tpolis/cmd/polis-r03a-recovery-closure-validate\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:43.991949889+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-recovery-closure-validate","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.2381653+08:00","Action":"start","Package":"polis/cmd/polis-r03a-recovery-cut"}
+{"Time":"2026-10-27T01:10:44.238340097+08:00","Action":"output","Package":"polis/cmd/polis-r03a-recovery-cut","Output":"?   \tpolis/cmd/polis-r03a-recovery-cut\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.23847711+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-recovery-cut","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.470003594+08:00","Action":"start","Package":"polis/cmd/polis-r03a-recovery-fence"}
+{"Time":"2026-10-27T01:10:44.470159102+08:00","Action":"output","Package":"polis/cmd/polis-r03a-recovery-fence","Output":"?   \tpolis/cmd/polis-r03a-recovery-fence\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.47034334+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-recovery-fence","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.489520956+08:00","Action":"start","Package":"polis/cmd/polis-r03a-recovery-package-validate"}
+{"Time":"2026-10-27T01:10:44.489665372+08:00","Action":"output","Package":"polis/cmd/polis-r03a-recovery-package-validate","Output":"?   \tpolis/cmd/polis-r03a-recovery-package-validate\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.489812124+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-recovery-package-validate","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.508998394+08:00","Action":"start","Package":"polis/cmd/polis-r03a-runtime-artifact"}
+{"Time":"2026-10-27T01:10:44.509126786+08:00","Action":"output","Package":"polis/cmd/polis-r03a-runtime-artifact","Output":"?   \tpolis/cmd/polis-r03a-runtime-artifact\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.509256768+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-runtime-artifact","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.528431918+08:00","Action":"start","Package":"polis/cmd/polis-r03a-sample6-state-query"}
+{"Time":"2026-10-27T01:10:44.528582215+08:00","Action":"output","Package":"polis/cmd/polis-r03a-sample6-state-query","Output":"?   \tpolis/cmd/polis-r03a-sample6-state-query\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.528730618+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-sample6-state-query","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.71149876+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t11"}
+{"Time":"2026-10-27T01:10:44.711684983+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t11","Output":"?   \tpolis/cmd/polis-r03a-t11\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.711870841+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t11","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.731434077+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t11a"}
+{"Time":"2026-10-27T01:10:44.731598649+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t11a","Output":"?   \tpolis/cmd/polis-r03a-t11a\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.731754799+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t11a","Elapsed":0}
+{"Time":"2026-10-27T01:10:44.912074575+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t12"}
+{"Time":"2026-10-27T01:10:44.912230102+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t12","Output":"?   \tpolis/cmd/polis-r03a-t12\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:44.91239389+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t12","Elapsed":0}
+{"Time":"2026-10-27T01:10:45.092953978+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t13"}
+{"Time":"2026-10-27T01:10:45.093155892+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t13","Output":"?   \tpolis/cmd/polis-r03a-t13\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:45.093294471+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t13","Elapsed":0}
+{"Time":"2026-10-27T01:10:45.276679642+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t14"}
+{"Time":"2026-10-27T01:10:45.276832855+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t14","Output":"?   \tpolis/cmd/polis-r03a-t14\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:45.276970462+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t14","Elapsed":0}
+{"Time":"2026-10-27T01:10:45.479735544+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t14a"}
+{"Time":"2026-10-27T01:10:45.479880326+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t14a","Output":"?   \tpolis/cmd/polis-r03a-t14a\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:45.48002247+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t14a","Elapsed":0}
+{"Time":"2026-10-27T01:10:45.661195502+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t14b"}
+{"Time":"2026-10-27T01:10:45.661351494+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t14b","Output":"?   \tpolis/cmd/polis-r03a-t14b\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:45.661487811+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t14b","Elapsed":0}
+{"Time":"2026-10-27T01:10:45.854772789+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t14c"}
+{"Time":"2026-10-27T01:10:45.854942272+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t14c","Output":"?   \tpolis/cmd/polis-r03a-t14c\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:45.855071289+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t14c","Elapsed":0}
+{"Time":"2026-10-27T01:10:46.036853887+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t16"}
+{"Time":"2026-10-27T01:10:46.037008551+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t16","Output":"?   \tpolis/cmd/polis-r03a-t16\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:46.037155011+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t16","Elapsed":0}
+{"Time":"2026-10-27T01:10:46.216871356+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t17"}
+{"Time":"2026-10-27T01:10:46.217029588+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t17","Output":"?   \tpolis/cmd/polis-r03a-t17\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:46.217173581+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t17","Elapsed":0}
+{"Time":"2026-10-27T01:10:46.401062228+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t18"}
+{"Time":"2026-10-27T01:10:46.401221171+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t18","Output":"?   \tpolis/cmd/polis-r03a-t18\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:46.401354203+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t18","Elapsed":0}
+{"Time":"2026-10-27T01:10:46.589313895+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t19"}
+{"Time":"2026-10-27T01:10:46.589469018+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t19","Output":"?   \tpolis/cmd/polis-r03a-t19\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:46.5896016+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t19","Elapsed":0}
+{"Time":"2026-10-27T01:10:46.784331262+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t2"}
+{"Time":"2026-10-27T01:10:46.784483694+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t2","Output":"?   \tpolis/cmd/polis-r03a-t2\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:46.784647077+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t2","Elapsed":0}
+{"Time":"2026-10-27T01:10:46.966818326+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t20"}
+{"Time":"2026-10-27T01:10:46.966961968+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t20","Output":"?   \tpolis/cmd/polis-r03a-t20\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:46.967091156+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t20","Elapsed":0}
+{"Time":"2026-10-27T01:10:47.149467438+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t21"}
+{"Time":"2026-10-27T01:10:47.149618075+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t21","Output":"?   \tpolis/cmd/polis-r03a-t21\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:47.149749192+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t21","Elapsed":0}
+{"Time":"2026-10-27T01:10:47.335339301+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t21b"}
+{"Time":"2026-10-27T01:10:47.335486473+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t21b","Output":"?   \tpolis/cmd/polis-r03a-t21b\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:47.335615831+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t21b","Elapsed":0}
+{"Time":"2026-10-27T01:10:47.506105631+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t21d-offline"}
+{"Time":"2026-10-27T01:10:47.506261813+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t21d-offline","Output":"?   \tpolis/cmd/polis-r03a-t21d-offline\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:47.506418151+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t21d-offline","Elapsed":0}
+{"Time":"2026-10-27T01:10:47.684307616+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t3"}
+{"Time":"2026-10-27T01:10:47.684505179+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t3","Output":"?   \tpolis/cmd/polis-r03a-t3\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:47.684616326+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t3","Elapsed":0}
+{"Time":"2026-10-27T01:10:47.865463033+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t6"}
+{"Time":"2026-10-27T01:10:47.86561226+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t6","Output":"?   \tpolis/cmd/polis-r03a-t6\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:47.865747958+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t6","Elapsed":0}
+{"Time":"2026-10-27T01:10:48.045854298+08:00","Action":"start","Package":"polis/cmd/polis-r03a-t9"}
+{"Time":"2026-10-27T01:10:48.046001201+08:00","Action":"output","Package":"polis/cmd/polis-r03a-t9","Output":"?   \tpolis/cmd/polis-r03a-t9\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:48.046130388+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-t9","Elapsed":0}
+{"Time":"2026-10-27T01:10:48.243433431+08:00","Action":"start","Package":"polis/cmd/polis-r03a-terminal-result-status"}
+{"Time":"2026-10-27T01:10:48.243590018+08:00","Action":"output","Package":"polis/cmd/polis-r03a-terminal-result-status","Output":"?   \tpolis/cmd/polis-r03a-terminal-result-status\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:48.243731041+08:00","Action":"skip","Package":"polis/cmd/polis-r03a-terminal-result-status","Elapsed":0}
+{"Time":"2026-10-27T01:10:49.486529735+08:00","Action":"start","Package":"polis/cmd/polis-r05b10"}
+{"Time":"2026-10-27T01:10:49.49767252+08:00","Action":"output","Package":"polis/cmd/polis-r05b10","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:49.497851573+08:00","Action":"output","Package":"polis/cmd/polis-r05b10","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:49.498315967+08:00","Action":"output","Package":"polis/cmd/polis-r05b10","Output":"ok  \tpolis/cmd/polis-r05b10\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:49.498469693+08:00","Action":"pass","Package":"polis/cmd/polis-r05b10","Elapsed":0.012}
+{"Time":"2026-10-27T01:10:50.667285437+08:00","Action":"start","Package":"polis/cmd/polis-r05b11"}
+{"Time":"2026-10-27T01:10:50.674272265+08:00","Action":"output","Package":"polis/cmd/polis-r05b11","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:50.674456128+08:00","Action":"output","Package":"polis/cmd/polis-r05b11","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:50.67477887+08:00","Action":"output","Package":"polis/cmd/polis-r05b11","Output":"ok  \tpolis/cmd/polis-r05b11\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:50.674934071+08:00","Action":"pass","Package":"polis/cmd/polis-r05b11","Elapsed":0.008}
+{"Time":"2026-10-27T01:10:50.945684526+08:00","Action":"start","Package":"polis/cmd/polis-r05b13"}
+{"Time":"2026-10-27T01:10:50.945837078+08:00","Action":"output","Package":"polis/cmd/polis-r05b13","Output":"?   \tpolis/cmd/polis-r05b13\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:50.945969945+08:00","Action":"skip","Package":"polis/cmd/polis-r05b13","Elapsed":0}
+{"Time":"2026-10-27T01:10:51.213748838+08:00","Action":"start","Package":"polis/cmd/polis-r05b14"}
+{"Time":"2026-10-27T01:10:51.21389993+08:00","Action":"output","Package":"polis/cmd/polis-r05b14","Output":"?   \tpolis/cmd/polis-r05b14\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:51.214035592+08:00","Action":"skip","Package":"polis/cmd/polis-r05b14","Elapsed":0}
+{"Time":"2026-10-27T01:10:51.514939525+08:00","Action":"start","Package":"polis/cmd/polis-r05b15"}
+{"Time":"2026-10-27T01:10:51.515094553+08:00","Action":"output","Package":"polis/cmd/polis-r05b15","Output":"?   \tpolis/cmd/polis-r05b15\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:51.51522453+08:00","Action":"skip","Package":"polis/cmd/polis-r05b15","Elapsed":0}
+{"Time":"2026-10-27T01:10:51.817576176+08:00","Action":"start","Package":"polis/cmd/polis-r05b16"}
+{"Time":"2026-10-27T01:10:51.817729759+08:00","Action":"output","Package":"polis/cmd/polis-r05b16","Output":"?   \tpolis/cmd/polis-r05b16\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:51.817869306+08:00","Action":"skip","Package":"polis/cmd/polis-r05b16","Elapsed":0}
+{"Time":"2026-10-27T01:10:51.838266091+08:00","Action":"start","Package":"polis/cmd/polis-r05b4"}
+{"Time":"2026-10-27T01:10:51.838411573+08:00","Action":"output","Package":"polis/cmd/polis-r05b4","Output":"?   \tpolis/cmd/polis-r05b4\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:51.838572418+08:00","Action":"skip","Package":"polis/cmd/polis-r05b4","Elapsed":0}
+{"Time":"2026-10-27T01:10:53.018829612+08:00","Action":"start","Package":"polis/cmd/polis-r05b8"}
+{"Time":"2026-10-27T01:10:53.026202294+08:00","Action":"output","Package":"polis/cmd/polis-r05b8","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:53.026399662+08:00","Action":"output","Package":"polis/cmd/polis-r05b8","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:53.026866152+08:00","Action":"output","Package":"polis/cmd/polis-r05b8","Output":"ok  \tpolis/cmd/polis-r05b8\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:53.027006692+08:00","Action":"pass","Package":"polis/cmd/polis-r05b8","Elapsed":0.008}
+{"Time":"2026-10-27T01:10:53.04858756+08:00","Action":"start","Package":"polis/cmd/polis-selfdev-go-host-probe"}
+{"Time":"2026-10-27T01:10:53.048724012+08:00","Action":"output","Package":"polis/cmd/polis-selfdev-go-host-probe","Output":"?   \tpolis/cmd/polis-selfdev-go-host-probe\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:53.048852684+08:00","Action":"skip","Package":"polis/cmd/polis-selfdev-go-host-probe","Elapsed":0}
+{"Time":"2026-10-27T01:10:53.067439935+08:00","Action":"start","Package":"polis/cmd/polis-selfdev-go-job-supervisor"}
+{"Time":"2026-10-27T01:10:53.067599857+08:00","Action":"output","Package":"polis/cmd/polis-selfdev-go-job-supervisor","Output":"?   \tpolis/cmd/polis-selfdev-go-job-supervisor\t[no test files]\n"}
+{"Time":"2026-10-27T01:10:53.067751215+08:00","Action":"skip","Package":"polis/cmd/polis-selfdev-go-job-supervisor","Elapsed":0}
+{"Time":"2026-10-27T01:10:53.66346899+08:00","Action":"start","Package":"polis/cmd/polis-selfdev-go-unit-control"}
+{"Time":"2026-10-27T01:10:53.666373007+08:00","Action":"output","Package":"polis/cmd/polis-selfdev-go-unit-control","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:53.6665574+08:00","Action":"output","Package":"polis/cmd/polis-selfdev-go-unit-control","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:53.666809866+08:00","Action":"output","Package":"polis/cmd/polis-selfdev-go-unit-control","Output":"ok  \tpolis/cmd/polis-selfdev-go-unit-control\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:53.666962599+08:00","Action":"pass","Package":"polis/cmd/polis-selfdev-go-unit-control","Elapsed":0.003}
+{"Time":"2026-10-27T01:10:55.752281682+08:00","Action":"start","Package":"polis/cmd/polisd"}
+{"Time":"2026-10-27T01:10:55.759327201+08:00","Action":"output","Package":"polis/cmd/polisd","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:55.759505154+08:00","Action":"output","Package":"polis/cmd/polisd","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:55.759854802+08:00","Action":"output","Package":"polis/cmd/polisd","Output":"ok  \tpolis/cmd/polisd\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:55.760003767+08:00","Action":"pass","Package":"polis/cmd/polisd","Elapsed":0.008}
+{"Time":"2026-10-27T01:10:57.334646242+08:00","Action":"start","Package":"polis/db"}
+{"Time":"2026-10-27T01:10:57.340837569+08:00","Action":"output","Package":"polis/db","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:57.341045331+08:00","Action":"output","Package":"polis/db","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:57.341230713+08:00","Action":"output","Package":"polis/db","Output":"ok  \tpolis/db\t0.006s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:57.341386901+08:00","Action":"pass","Package":"polis/db","Elapsed":0.007}
+{"Time":"2026-10-27T01:10:58.57640846+08:00","Action":"start","Package":"polis/internal/browser"}
+{"Time":"2026-10-27T01:10:58.583272716+08:00","Action":"output","Package":"polis/internal/browser","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:58.583454609+08:00","Action":"output","Package":"polis/internal/browser","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:58.583854911+08:00","Action":"output","Package":"polis/internal/browser","Output":"ok  \tpolis/internal/browser\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:58.584029728+08:00","Action":"pass","Package":"polis/internal/browser","Elapsed":0.008}
+{"Time":"2026-10-27T01:10:59.449402753+08:00","Action":"start","Package":"polis/internal/capabilitysource"}
+{"Time":"2026-10-27T01:10:59.455906043+08:00","Action":"output","Package":"polis/internal/capabilitysource","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:10:59.456084566+08:00","Action":"output","Package":"polis/internal/capabilitysource","Output":"PASS\n"}
+{"Time":"2026-10-27T01:10:59.456436577+08:00","Action":"output","Package":"polis/internal/capabilitysource","Output":"ok  \tpolis/internal/capabilitysource\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:10:59.456580439+08:00","Action":"pass","Package":"polis/internal/capabilitysource","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:00.78912725+08:00","Action":"start","Package":"polis/internal/codex"}
+{"Time":"2026-10-27T01:11:00.795837174+08:00","Action":"output","Package":"polis/internal/codex","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:00.796033972+08:00","Action":"output","Package":"polis/internal/codex","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:00.796491709+08:00","Action":"output","Package":"polis/internal/codex","Output":"ok  \tpolis/internal/codex\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:00.796613296+08:00","Action":"pass","Package":"polis/internal/codex","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:04.307698908+08:00","Action":"start","Package":"polis/internal/control"}
+{"Time":"2026-10-27T01:11:04.315204289+08:00","Action":"output","Package":"polis/internal/control","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:04.315392021+08:00","Action":"output","Package":"polis/internal/control","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:04.31575871+08:00","Action":"output","Package":"polis/internal/control","Output":"ok  \tpolis/internal/control\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:04.31591059+08:00","Action":"pass","Package":"polis/internal/control","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:04.918791447+08:00","Action":"start","Package":"polis/internal/core"}
+{"Time":"2026-10-27T01:11:04.921677406+08:00","Action":"output","Package":"polis/internal/core","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:04.921845826+08:00","Action":"output","Package":"polis/internal/core","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:04.922196822+08:00","Action":"output","Package":"polis/internal/core","Output":"ok  \tpolis/internal/core\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:04.922358215+08:00","Action":"pass","Package":"polis/internal/core","Elapsed":0.004}
+{"Time":"2026-10-27T01:11:04.922887953+08:00","Action":"start","Package":"polis/internal/dbgen"}
+{"Time":"2026-10-27T01:11:04.923028856+08:00","Action":"output","Package":"polis/internal/dbgen","Output":"?   \tpolis/internal/dbgen\t[no test files]\n"}
+{"Time":"2026-10-27T01:11:04.923163638+08:00","Action":"skip","Package":"polis/internal/dbgen","Elapsed":0}
+{"Time":"2026-10-27T01:11:06.367817851+08:00","Action":"start","Package":"polis/internal/desktop"}
+{"Time":"2026-10-27T01:11:06.374219099+08:00","Action":"output","Package":"polis/internal/desktop","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:06.374448884+08:00","Action":"output","Package":"polis/internal/desktop","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:06.374844299+08:00","Action":"output","Package":"polis/internal/desktop","Output":"ok  \tpolis/internal/desktop\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:06.375014497+08:00","Action":"pass","Package":"polis/internal/desktop","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:07.211583797+08:00","Action":"start","Package":"polis/internal/domainworkflow"}
+{"Time":"2026-10-27T01:11:07.217981282+08:00","Action":"output","Package":"polis/internal/domainworkflow","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:07.218169637+08:00","Action":"output","Package":"polis/internal/domainworkflow","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:07.218576275+08:00","Action":"output","Package":"polis/internal/domainworkflow","Output":"ok  \tpolis/internal/domainworkflow\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:07.218719927+08:00","Action":"pass","Package":"polis/internal/domainworkflow","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:08.455979116+08:00","Action":"start","Package":"polis/internal/environment"}
+{"Time":"2026-10-27T01:11:08.462953808+08:00","Action":"output","Package":"polis/internal/environment","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:08.463126431+08:00","Action":"output","Package":"polis/internal/environment","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:08.463500279+08:00","Action":"output","Package":"polis/internal/environment","Output":"ok  \tpolis/internal/environment\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:08.463646739+08:00","Action":"pass","Package":"polis/internal/environment","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:09.601809002+08:00","Action":"start","Package":"polis/internal/feedback/github"}
+{"Time":"2026-10-27T01:11:09.608931327+08:00","Action":"output","Package":"polis/internal/feedback/github","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:09.6091162+08:00","Action":"output","Package":"polis/internal/feedback/github","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:09.609559012+08:00","Action":"output","Package":"polis/internal/feedback/github","Output":"ok  \tpolis/internal/feedback/github\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:09.609714855+08:00","Action":"pass","Package":"polis/internal/feedback/github","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:10.248839477+08:00","Action":"start","Package":"polis/internal/fixture"}
+{"Time":"2026-10-27T01:11:10.251698612+08:00","Action":"output","Package":"polis/internal/fixture","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:10.251952202+08:00","Action":"output","Package":"polis/internal/fixture","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:10.25212852+08:00","Action":"output","Package":"polis/internal/fixture","Output":"ok  \tpolis/internal/fixture\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:10.252284323+08:00","Action":"pass","Package":"polis/internal/fixture","Elapsed":0.003}
+{"Time":"2026-10-27T01:11:10.912073993+08:00","Action":"start","Package":"polis/internal/gotestprofile"}
+{"Time":"2026-10-27T01:11:10.914836517+08:00","Action":"output","Package":"polis/internal/gotestprofile","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:10.915018145+08:00","Action":"output","Package":"polis/internal/gotestprofile","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:10.915275859+08:00","Action":"output","Package":"polis/internal/gotestprofile","Output":"ok  \tpolis/internal/gotestprofile\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:10.915422291+08:00","Action":"pass","Package":"polis/internal/gotestprofile","Elapsed":0.003}
+{"Time":"2026-10-27T01:11:12.096423261+08:00","Action":"start","Package":"polis/internal/gotestsupervisor"}
+{"Time":"2026-10-27T01:11:12.102975051+08:00","Action":"output","Package":"polis/internal/gotestsupervisor","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:12.103150454+08:00","Action":"output","Package":"polis/internal/gotestsupervisor","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:12.103493609+08:00","Action":"output","Package":"polis/internal/gotestsupervisor","Output":"ok  \tpolis/internal/gotestsupervisor\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:12.103648912+08:00","Action":"pass","Package":"polis/internal/gotestsupervisor","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:13.573524205+08:00","Action":"start","Package":"polis/internal/installationauth"}
+{"Time":"2026-10-27T01:11:13.580667625+08:00","Action":"output","Package":"polis/internal/installationauth","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:13.580870483+08:00","Action":"output","Package":"polis/internal/installationauth","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:13.581133307+08:00","Action":"output","Package":"polis/internal/installationauth","Output":"ok  \tpolis/internal/installationauth\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:13.58130326+08:00","Action":"pass","Package":"polis/internal/installationauth","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:14.445435895+08:00","Action":"start","Package":"polis/internal/intake"}
+{"Time":"2026-10-27T01:11:14.452634417+08:00","Action":"output","Package":"polis/internal/intake","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:14.452829555+08:00","Action":"output","Package":"polis/internal/intake","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:14.453221286+08:00","Action":"output","Package":"polis/internal/intake","Output":"ok  \tpolis/internal/intake\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:14.453402299+08:00","Action":"pass","Package":"polis/internal/intake","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:19.400384304+08:00","Action":"start","Package":"polis/internal/kernel"}
+{"Time":"2026-10-27T01:11:19.40787517+08:00","Action":"run","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationUsesOwnerSnapshotAndPreservesUnverifiedQualification"}
+{"Time":"2026-10-27T01:11:19.408021394+08:00","Action":"output","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationUsesOwnerSnapshotAndPreservesUnverifiedQualification","Output":"=== RUN   TestFixedTeamRoleReconciliationUsesOwnerSnapshotAndPreservesUnverifiedQualification\n"}
+{"Time":"2026-10-27T01:11:19.863842547+08:00","Action":"output","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationUsesOwnerSnapshotAndPreservesUnverifiedQualification","Output":"--- PASS: TestFixedTeamRoleReconciliationUsesOwnerSnapshotAndPreservesUnverifiedQualification (0.46s)\n"}
+{"Time":"2026-10-27T01:11:19.86402503+08:00","Action":"pass","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationUsesOwnerSnapshotAndPreservesUnverifiedQualification","Elapsed":0.46}
+{"Time":"2026-10-27T01:11:19.864209038+08:00","Action":"run","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationBlocksActiveMission"}
+{"Time":"2026-10-27T01:11:19.864346335+08:00","Action":"output","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationBlocksActiveMission","Output":"=== RUN   TestFixedTeamRoleReconciliationBlocksActiveMission\n"}
+{"Time":"2026-10-27T01:11:20.012559833+08:00","Action":"output","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationBlocksActiveMission","Output":"--- PASS: TestFixedTeamRoleReconciliationBlocksActiveMission (0.15s)\n"}
+{"Time":"2026-10-27T01:11:20.013416807+08:00","Action":"pass","Package":"polis/internal/kernel","Test":"TestFixedTeamRoleReconciliationBlocksActiveMission","Elapsed":0.15}
+{"Time":"2026-10-27T01:11:20.013590183+08:00","Action":"output","Package":"polis/internal/kernel","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:20.013816104+08:00","Action":"output","Package":"polis/internal/kernel","Output":"ok  \tpolis/internal/kernel\t0.613s\n"}
+{"Time":"2026-10-27T01:11:20.013975584+08:00","Action":"pass","Package":"polis/internal/kernel","Elapsed":0.614}
+{"Time":"2026-10-27T01:11:21.22636091+08:00","Action":"start","Package":"polis/internal/mcpowner"}
+{"Time":"2026-10-27T01:11:21.233837065+08:00","Action":"output","Package":"polis/internal/mcpowner","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:21.234004963+08:00","Action":"output","Package":"polis/internal/mcpowner","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:21.234380794+08:00","Action":"output","Package":"polis/internal/mcpowner","Output":"ok  \tpolis/internal/mcpowner\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:21.234552722+08:00","Action":"pass","Package":"polis/internal/mcpowner","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:22.530829136+08:00","Action":"start","Package":"polis/internal/mcptransport"}
+{"Time":"2026-10-27T01:11:22.538299891+08:00","Action":"output","Package":"polis/internal/mcptransport","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:22.538477029+08:00","Action":"output","Package":"polis/internal/mcptransport","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:22.538674972+08:00","Action":"output","Package":"polis/internal/mcptransport","Output":"ok  \tpolis/internal/mcptransport\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:22.53882385+08:00","Action":"pass","Package":"polis/internal/mcptransport","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:23.186190661+08:00","Action":"start","Package":"polis/internal/organization"}
+{"Time":"2026-10-27T01:11:23.18936991+08:00","Action":"output","Package":"polis/internal/organization","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:23.189531797+08:00","Action":"output","Package":"polis/internal/organization","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:23.189822172+08:00","Action":"output","Package":"polis/internal/organization","Output":"ok  \tpolis/internal/organization\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:23.18997515+08:00","Action":"pass","Package":"polis/internal/organization","Elapsed":0.004}
+{"Time":"2026-10-27T01:11:24.565210628+08:00","Action":"start","Package":"polis/internal/pgfixture"}
+{"Time":"2026-10-27T01:11:24.57163075+08:00","Action":"output","Package":"polis/internal/pgfixture","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:24.571805306+08:00","Action":"output","Package":"polis/internal/pgfixture","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:24.572120651+08:00","Action":"output","Package":"polis/internal/pgfixture","Output":"ok  \tpolis/internal/pgfixture\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:24.572274911+08:00","Action":"pass","Package":"polis/internal/pgfixture","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:27.730327943+08:00","Action":"start","Package":"polis/internal/probe"}
+{"Time":"2026-10-27T01:11:27.737633041+08:00","Action":"output","Package":"polis/internal/probe","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:27.737820215+08:00","Action":"output","Package":"polis/internal/probe","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:27.738193903+08:00","Action":"output","Package":"polis/internal/probe","Output":"ok  \tpolis/internal/probe\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:27.738368943+08:00","Action":"pass","Package":"polis/internal/probe","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:28.995722315+08:00","Action":"start","Package":"polis/internal/provider"}
+{"Time":"2026-10-27T01:11:29.002661338+08:00","Action":"output","Package":"polis/internal/provider","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:29.00283466+08:00","Action":"output","Package":"polis/internal/provider","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:29.003316699+08:00","Action":"output","Package":"polis/internal/provider","Output":"ok  \tpolis/internal/provider\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:29.003475771+08:00","Action":"pass","Package":"polis/internal/provider","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:30.187216475+08:00","Action":"start","Package":"polis/internal/qqnotify"}
+{"Time":"2026-10-27T01:11:30.193924568+08:00","Action":"output","Package":"polis/internal/qqnotify","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:30.194101736+08:00","Action":"output","Package":"polis/internal/qqnotify","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:30.194532878+08:00","Action":"output","Package":"polis/internal/qqnotify","Output":"ok  \tpolis/internal/qqnotify\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:30.194696711+08:00","Action":"pass","Package":"polis/internal/qqnotify","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:32.795887322+08:00","Action":"start","Package":"polis/internal/recovery"}
+{"Time":"2026-10-27T01:11:32.80352833+08:00","Action":"output","Package":"polis/internal/recovery","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:32.803707292+08:00","Action":"output","Package":"polis/internal/recovery","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:32.804124084+08:00","Action":"output","Package":"polis/internal/recovery","Output":"ok  \tpolis/internal/recovery\t0.008s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:32.804276291+08:00","Action":"pass","Package":"polis/internal/recovery","Elapsed":0.008}
+{"Time":"2026-10-27T01:11:33.974703678+08:00","Action":"start","Package":"polis/internal/research"}
+{"Time":"2026-10-27T01:11:33.98100382+08:00","Action":"output","Package":"polis/internal/research","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:33.981207054+08:00","Action":"output","Package":"polis/internal/research","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:33.981977511+08:00","Action":"output","Package":"polis/internal/research","Output":"ok  \tpolis/internal/research\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:33.982138504+08:00","Action":"pass","Package":"polis/internal/research","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:35.24835303+08:00","Action":"start","Package":"polis/internal/runner"}
+{"Time":"2026-10-27T01:11:35.255008488+08:00","Action":"output","Package":"polis/internal/runner","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:35.255196723+08:00","Action":"output","Package":"polis/internal/runner","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:35.255548792+08:00","Action":"output","Package":"polis/internal/runner","Output":"ok  \tpolis/internal/runner\t0.007s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:35.255702074+08:00","Action":"pass","Package":"polis/internal/runner","Elapsed":0.007}
+{"Time":"2026-10-27T01:11:35.885171749+08:00","Action":"start","Package":"polis/internal/taskvalidation"}
+{"Time":"2026-10-27T01:11:35.888059162+08:00","Action":"output","Package":"polis/internal/taskvalidation","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:35.888237309+08:00","Action":"output","Package":"polis/internal/taskvalidation","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:35.888471188+08:00","Action":"output","Package":"polis/internal/taskvalidation","Output":"ok  \tpolis/internal/taskvalidation\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:35.888638308+08:00","Action":"pass","Package":"polis/internal/taskvalidation","Elapsed":0.003}
+{"Time":"2026-10-27T01:11:39.639328416+08:00","Action":"start","Package":"polis/internal/workbench"}
+{"Time":"2026-10-27T01:11:39.647202794+08:00","Action":"run","Package":"polis/internal/workbench","Test":"TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication"}
+{"Time":"2026-10-27T01:11:39.647362031+08:00","Action":"output","Package":"polis/internal/workbench","Test":"TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication","Output":"=== RUN   TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication\n"}
+{"Time":"2026-10-27T01:11:39.647552249+08:00","Action":"output","Package":"polis/internal/workbench","Test":"TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication","Output":"--- PASS: TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication (0.00s)\n"}
+{"Time":"2026-10-27T01:11:39.647683527+08:00","Action":"pass","Package":"polis/internal/workbench","Test":"TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication","Elapsed":0}
+{"Time":"2026-10-27T01:11:39.647833499+08:00","Action":"output","Package":"polis/internal/workbench","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:39.648012846+08:00","Action":"output","Package":"polis/internal/workbench","Output":"ok  \tpolis/internal/workbench\t0.008s\n"}
+{"Time":"2026-10-27T01:11:39.648154104+08:00","Action":"pass","Package":"polis/internal/workbench","Elapsed":0.009}
+{"Time":"2026-10-27T01:11:40.346089578+08:00","Action":"start","Package":"polis/internal/workspacepatch"}
+{"Time":"2026-10-27T01:11:40.349131912+08:00","Action":"output","Package":"polis/internal/workspacepatch","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:40.349317271+08:00","Action":"output","Package":"polis/internal/workspacepatch","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:40.34954614+08:00","Action":"output","Package":"polis/internal/workspacepatch","Output":"ok  \tpolis/internal/workspacepatch\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:40.349689946+08:00","Action":"pass","Package":"polis/internal/workspacepatch","Elapsed":0.004}
+{"Time":"2026-10-27T01:11:40.997379287+08:00","Action":"start","Package":"polis/internal/workspacepath"}
+{"Time":"2026-10-27T01:11:40.999663454+08:00","Action":"output","Package":"polis/internal/workspacepath","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:40.999838637+08:00","Action":"output","Package":"polis/internal/workspacepath","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:41.000180684+08:00","Action":"output","Package":"polis/internal/workspacepath","Output":"ok  \tpolis/internal/workspacepath\t0.003s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:41.000300556+08:00","Action":"pass","Package":"polis/internal/workspacepath","Elapsed":0.003}
+{"Time":"2026-10-27T01:11:41.272263325+08:00","Action":"start","Package":"polis/scripts"}
+{"Time":"2026-10-27T01:11:41.272384107+08:00","Action":"output","Package":"polis/scripts","Output":"?   \tpolis/scripts\t[no test files]\n"}
+{"Time":"2026-10-27T01:11:41.272479238+08:00","Action":"skip","Package":"polis/scripts","Elapsed":0}
+{"Time":"2026-10-27T01:11:41.900603199+08:00","Action":"start","Package":"polis/spec"}
+{"Time":"2026-10-27T01:11:41.902676348+08:00","Action":"output","Package":"polis/spec","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-10-27T01:11:41.902848276+08:00","Action":"output","Package":"polis/spec","Output":"PASS\n"}
+{"Time":"2026-10-27T01:11:41.903027204+08:00","Action":"output","Package":"polis/spec","Output":"ok  \tpolis/spec\t0.002s [no tests to run]\n"}
+{"Time":"2026-10-27T01:11:41.903174281+08:00","Action":"pass","Package":"polis/spec","Elapsed":0.003}

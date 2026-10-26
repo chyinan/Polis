@@ -32,6 +32,7 @@ type CompanyDetails struct {
 	TeamCoverageConfirmationSHA256 string
 	TeamCoverageConfirmedAt        string
 	TeamCoverageRoleRevision       *spec.FixedTeamCoverageRoleRevision
+	FixedTeamRoleReconciliation    organization.FixedTeamRoleReconciliationPreview
 }
 
 // TXCreateCompanyWithOrganization creates the fixed logical runtime roster in
@@ -174,6 +175,10 @@ FROM companies c LEFT JOIN LATERAL (
 	}
 	details.TeamCoverageConfirmed = details.TeamCoverageRoleRevision != nil &&
 		organization.ValidateFixedTeamRoleAssignments(details.Roster) == nil
+	details.FixedTeamRoleReconciliation, err = fixedTeamRoleReconciliationPreviewTX(ctx, tx, companyID, details.State, details.Roster)
+	if err != nil {
+		return CompanyDetails{}, err
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return CompanyDetails{}, err
 	}
@@ -218,15 +223,35 @@ FROM companies c LEFT JOIN LATERAL (
 	}
 	rows.Close()
 	for i := range companies {
-		if companies[i].TeamCoverageRoleRevision == nil {
-			continue
+		if companies[i].TeamCoverageRoleRevision != nil {
+			if err = ensureCompanyFixedTeamRolesTX(ctx, tx, companies[i].ID); errors.Is(err, core.Denied) {
+				companies[i].TeamCoverageConfirmed = false
+			} else if err != nil {
+				return nil, err
+			} else {
+				companies[i].TeamCoverageConfirmed = true
+			}
 		}
-		if err = ensureCompanyFixedTeamRolesTX(ctx, tx, companies[i].ID); errors.Is(err, core.Denied) {
-			continue
-		} else if err != nil {
+		rosterRows, queryErr := tx.Query(ctx, `SELECT id,display_name,role_name,model_profile FROM employees WHERE company_id=$1 AND enabled ORDER BY id`, companies[i].ID)
+		if queryErr != nil {
+			return nil, queryErr
+		}
+		for rosterRows.Next() {
+			var employee organization.EmployeeDraft
+			if queryErr = rosterRows.Scan(&employee.ID, &employee.DisplayName, &employee.Role, &employee.ModelProfile); queryErr != nil {
+				rosterRows.Close()
+				return nil, queryErr
+			}
+			companies[i].Roster = append(companies[i].Roster, employee)
+		}
+		rosterRows.Close()
+		if queryErr = rosterRows.Err(); queryErr != nil {
+			return nil, queryErr
+		}
+		companies[i].FixedTeamRoleReconciliation, err = fixedTeamRoleReconciliationPreviewTX(ctx, tx, companies[i].ID, companies[i].State, companies[i].Roster)
+		if err != nil {
 			return nil, err
 		}
-		companies[i].TeamCoverageConfirmed = true
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return nil, err
@@ -263,8 +288,11 @@ func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft orga
 		return k.TXWrite(ctx, Scope{company: draft.ID}, nil, key, "company.team_coverage.confirm", struct {
 			TemplateSHA256 string
 		}{TemplateSHA256: confirmationSHA256}, func(tx pgx.Tx) (Receipt, error) {
+			if err := lockCompanyFixedRoleStateTX(ctx, tx, draft.ID); err != nil {
+				return Receipt{}, err
+			}
 			var state string
-			if err := tx.QueryRow(ctx, "SELECT state FROM companies WHERE id=$1", draft.ID).Scan(&state); errors.Is(err, pgx.ErrNoRows) {
+			if err := tx.QueryRow(ctx, "SELECT state FROM companies WHERE id=$1 FOR UPDATE", draft.ID).Scan(&state); errors.Is(err, pgx.ErrNoRows) {
 				return Receipt{}, core.OutOfScope
 			} else if err != nil {
 				return Receipt{}, err
@@ -290,8 +318,11 @@ func (k *Kernel) txUpdateCompanyWithOrganization(ctx context.Context, draft orga
 		})
 	}
 	return k.TXWrite(ctx, Scope{company: draft.ID}, nil, key, "company.update", draft, func(tx pgx.Tx) (Receipt, error) {
+		if err := lockCompanyFixedRoleStateTX(ctx, tx, draft.ID); err != nil {
+			return Receipt{}, err
+		}
 		var state string
-		if err := tx.QueryRow(ctx, "SELECT state FROM companies WHERE id=$1", draft.ID).Scan(&state); errors.Is(err, pgx.ErrNoRows) {
+		if err := tx.QueryRow(ctx, "SELECT state FROM companies WHERE id=$1 FOR UPDATE", draft.ID).Scan(&state); errors.Is(err, pgx.ErrNoRows) {
 			return Receipt{}, core.OutOfScope
 		} else if err != nil {
 			return Receipt{}, err
@@ -445,6 +476,23 @@ func ensureCompanyFixedTeamRolesTX(ctx context.Context, tx pgx.Tx, companyID str
 	return nil
 }
 
+func fixedTeamRoleReconciliationPreviewTX(ctx context.Context, tx pgx.Tx, companyID, companyState string, roster []organization.EmployeeDraft) (organization.FixedTeamRoleReconciliationPreview, error) {
+	var hasActiveMission, hasActiveSession, hasUnresolvedJob bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM missions WHERE company_id=$1 AND state IN ('active','paused','closing'))`, companyID).Scan(&hasActiveMission); err != nil {
+		return organization.FixedTeamRoleReconciliationPreview{}, err
+	}
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM worker_sessions WHERE company_id=$1 AND state<>'stopped')`, companyID).Scan(&hasActiveSession); err != nil {
+		return organization.FixedTeamRoleReconciliationPreview{}, err
+	}
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(
+ SELECT 1 FROM job_runs j
+ LEFT JOIN LATERAL (SELECT state FROM job_run_events WHERE company_id=j.company_id AND job_id=j.job_id ORDER BY event_seq DESC LIMIT 1) e ON true
+ WHERE j.company_id=$1 AND (e.state IS NULL OR e.state IN ('accepted','starting','running','outcome_unknown')))`, companyID).Scan(&hasUnresolvedJob); err != nil {
+		return organization.FixedTeamRoleReconciliationPreview{}, err
+	}
+	return organization.BuildFixedTeamRoleReconciliationPreview(companyID, companyState, roster, hasActiveMission || hasActiveSession || hasUnresolvedJob)
+}
+
 // requireCompanyFixedTeamCoverageConfirmationTX keeps Worker admission behind
 // the installation owner's explicit acknowledgment of the exact embedded
 // matrix. The acknowledgment only confirms the fixed mapping; it does not
@@ -480,6 +528,9 @@ func (k *Kernel) TXArchiveCompany(ctx context.Context, companyID, key string) (R
 		return Receipt{}, core.Malformed
 	}
 	return k.TXWrite(ctx, Scope{company: companyID}, nil, key, "company.archive", companyID, func(tx pgx.Tx) (Receipt, error) {
+		if err := lockCompanyFixedRoleStateTX(ctx, tx, companyID); err != nil {
+			return Receipt{}, err
+		}
 		var state string
 		if err := tx.QueryRow(ctx, "SELECT state FROM companies WHERE id=$1", companyID).Scan(&state); errors.Is(err, pgx.ErrNoRows) {
 			return Receipt{}, core.OutOfScope

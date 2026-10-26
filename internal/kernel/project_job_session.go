@@ -10,6 +10,9 @@ import (
 )
 
 func (k *Kernel) txCreateProjectJobSession(ctx context.Context, tx pgx.Tx, companyID, taskID, targetProfile, requestID string) (string, error) {
+	if err := lockCompanyFixedRoleStateTX(ctx, tx, companyID); err != nil {
+		return "", err
+	}
 	var taskState, taskKind, taskOwner, missionState string
 	var employeeEpoch int64
 	err := tx.QueryRow(ctx, `SELECT t.state,t.kind,t.owner,m.state,e.epoch
