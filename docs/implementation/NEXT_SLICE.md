@@ -9,6 +9,18 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 329, REQ-38 isolated fake operation surfaces)
+
+Added exact opt-in fake-only @18 BrowserRun and @19 ResearchOperation surface
+selection. Both require `POLIS_WORKER_MODE=real` and fake transport; extension
+surfaces are mutually exclusive. Adapter enablement now requires one of these
+exact surfaces, but Slice328's separate runtime authorization fence remains
+mandatory and the current concrete adapters do not satisfy it. Thus enabling
+the surface records only blocked/unavailable operations and cannot trigger
+browser/HTTP egress. Full Go/race/vet/build and migration-manifest checks pass.
+No browser, external retrieval, credential or Provider action ran. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req38-fake-surface-wiring-20261027/verification.md`.
+
 ## Latest local source increment (Slice 328, REQ-38 operation execution gate)
 
 Kernel now treats adapter injection and execution qualification as separate

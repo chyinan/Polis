@@ -844,6 +844,33 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 	if err != nil {
 		return nil, err
 	}
+	offlineBrowserRun, err := environmentFlag("POLIS_OFFLINE_BROWSER_RUN_ENABLED")
+	if err != nil {
+		return nil, err
+	}
+	offlineResearchOperations, err := environmentFlag("POLIS_OFFLINE_RESEARCH_OPERATIONS_ENABLED")
+	if err != nil {
+		return nil, err
+	}
+	operationAdaptersEnabled, err := environmentFlag("POLIS_OPERATION_ADAPTERS_ENABLED")
+	if err != nil {
+		return nil, err
+	}
+	enabledOfflineSurfaces := 0
+	for _, enabled := range []bool{offlineDirectMessaging, offlineSharedMissionArtifacts, offlineSkillDirectory, offlineWorkspaceTree, offlineMissionChangeAssessment, offlineEnvironmentStatus, offlineEnvironmentEnsure, offlineProjectJobs, offlineBrowserRun, offlineResearchOperations} {
+		if enabled {
+			enabledOfflineSurfaces++
+		}
+	}
+	if enabledOfflineSurfaces > 1 {
+		return nil, fmt.Errorf("select exactly one isolated Fake product tool surface")
+	}
+	if operationAdaptersEnabled && !offlineBrowserRun && !offlineResearchOperations {
+		return nil, fmt.Errorf("POLIS_OPERATION_ADAPTERS_ENABLED=1 requires the isolated Fake @18 or @19 surface")
+	}
+	if operationAdaptersEnabled && (mode != "real" || os.Getenv("POLIS_PROVIDER_TRANSPORT") != "fake") {
+		return nil, fmt.Errorf("POLIS_OPERATION_ADAPTERS_ENABLED=1 requires POLIS_WORKER_MODE=real and POLIS_PROVIDER_TRANSPORT=fake")
+	}
 	if offlineProjectJobs && (offlineDirectMessaging || offlineSharedMissionArtifacts || offlineSkillDirectory || offlineWorkspaceTree || offlineMissionChangeAssessment || offlineEnvironmentStatus) {
 		return nil, fmt.Errorf("POLIS_OFFLINE_PROJECT_JOBS_ENABLED=1 requires its isolated Fake @20 tool surface")
 	}
@@ -896,6 +923,12 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 	if offlineEnvironmentEnsure && (mode != "real" || os.Getenv("POLIS_PROVIDER_TRANSPORT") != "fake") {
 		return nil, fmt.Errorf("POLIS_OFFLINE_ENVIRONMENT_ENSURE_ENABLED=1 requires POLIS_WORKER_MODE=real and POLIS_PROVIDER_TRANSPORT=fake")
 	}
+	if offlineBrowserRun && (mode != "real" || os.Getenv("POLIS_PROVIDER_TRANSPORT") != "fake") {
+		return nil, fmt.Errorf("POLIS_OFFLINE_BROWSER_RUN_ENABLED=1 requires POLIS_WORKER_MODE=real and POLIS_PROVIDER_TRANSPORT=fake")
+	}
+	if offlineResearchOperations && (mode != "real" || os.Getenv("POLIS_PROVIDER_TRANSPORT") != "fake") {
+		return nil, fmt.Errorf("POLIS_OFFLINE_RESEARCH_OPERATIONS_ENABLED=1 requires POLIS_WORKER_MODE=real and POLIS_PROVIDER_TRANSPORT=fake")
+	}
 	switch mode {
 	case "deterministic":
 		return control.NewDeterministicWorkerAdapter(kernelRuntime, workerCgroupArgs...), nil
@@ -907,12 +940,12 @@ func buildWorkerAdapter(kernelRuntime *kernel.Kernel, workerCgroupManagers ...en
 			return nil, fmt.Errorf("select only one versioned controlled MCP tool surface")
 		}
 		controlledMCP := controlledMCPV1 || controlledMCPV2
-		if controlledMCP && (offlineDirectMessaging || offlineSharedMissionArtifacts || offlineSkillDirectory || offlineWorkspaceTree || offlineMissionChangeAssessment || offlineEnvironmentStatus || offlineProjectJobs || offlineEnvironmentEnsure) {
+		if controlledMCP && (offlineDirectMessaging || offlineSharedMissionArtifacts || offlineSkillDirectory || offlineWorkspaceTree || offlineMissionChangeAssessment || offlineEnvironmentStatus || offlineProjectJobs || offlineEnvironmentEnsure || offlineBrowserRun || offlineResearchOperations) {
 			return nil, fmt.Errorf("offline product extensions require isolated Fake tool surfaces")
 		}
 		var providerRuntime provider.Runtime
 		if transport == "fake" {
-			providerRuntime = provider.NewFakeRuntime(provider.FakeRuntimeConfig{Model: os.Getenv("POLIS_PROVIDER_MODEL"), Effort: os.Getenv("POLIS_PROVIDER_EFFORT"), Profile: os.Getenv("POLIS_PROVIDER_PROFILE"), Purpose: os.Getenv("POLIS_PROVIDER_PURPOSE"), ToolCallLimit: envIntOrDefault("POLIS_PROVIDER_TOOL_CALL_LIMIT", 16), TurnDelay: 100 * time.Millisecond, DirectMessagingSurface: offlineDirectMessaging, SharedMissionArtifactSurface: offlineSharedMissionArtifacts, ReadOnlySkillDirectorySurface: offlineSkillDirectory, WorkspaceTreeSurface: offlineWorkspaceTree, MissionChangeAssessmentSurface: offlineMissionChangeAssessment, EnvironmentStatusSurface: offlineEnvironmentStatus, EnvironmentEnsureSurface: offlineEnvironmentEnsure, ProjectJobsSurface: offlineProjectJobs, ControlledMCPToolSurface: controlledMCPV1, ControlledMCPToolSurfaceV2: controlledMCPV2})
+			providerRuntime = provider.NewFakeRuntime(provider.FakeRuntimeConfig{Model: os.Getenv("POLIS_PROVIDER_MODEL"), Effort: os.Getenv("POLIS_PROVIDER_EFFORT"), Profile: os.Getenv("POLIS_PROVIDER_PROFILE"), Purpose: os.Getenv("POLIS_PROVIDER_PURPOSE"), ToolCallLimit: envIntOrDefault("POLIS_PROVIDER_TOOL_CALL_LIMIT", 16), TurnDelay: 100 * time.Millisecond, DirectMessagingSurface: offlineDirectMessaging, SharedMissionArtifactSurface: offlineSharedMissionArtifacts, ReadOnlySkillDirectorySurface: offlineSkillDirectory, WorkspaceTreeSurface: offlineWorkspaceTree, MissionChangeAssessmentSurface: offlineMissionChangeAssessment, EnvironmentStatusSurface: offlineEnvironmentStatus, EnvironmentEnsureSurface: offlineEnvironmentEnsure, ProjectJobsSurface: offlineProjectJobs, BrowserRunSurface: offlineBrowserRun, ResearchOperationsSurface: offlineResearchOperations, ControlledMCPToolSurface: controlledMCPV1, ControlledMCPToolSurfaceV2: controlledMCPV2})
 		} else if transport == "codex" {
 			if controlledMCP {
 				return nil, fmt.Errorf("real-provider controlled MCP surfaces are not qualified")

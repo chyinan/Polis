@@ -128,3 +128,59 @@ func TestBuildWorkerAdapterEnablesEnvironmentEnsureOnlyOnIsolatedFakeSurface(t *
 		t.Fatal("environment ensure and project JobRun tool surfaces were combined")
 	}
 }
+
+func TestBuildWorkerAdapterSelectsBrowserAndResearchOnlyAsIsolatedFakeSurfaces(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		flag string
+		want provider.ToolSurface
+	}{
+		{name: "BrowserRun @18", flag: "POLIS_OFFLINE_BROWSER_RUN_ENABLED", want: provider.ProductBrowserRunToolSurface()},
+		{name: "ResearchOperation @19", flag: "POLIS_OFFLINE_RESEARCH_OPERATIONS_ENABLED", want: provider.ProductResearchOperationsToolSurface()},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Setenv("POLIS_WORKER_MODE", "real")
+			t.Setenv("POLIS_PROVIDER_TRANSPORT", "fake")
+			t.Setenv("POLIS_PROVIDER_PURPOSE", "")
+			t.Setenv(test.flag, "1")
+			t.Setenv("POLIS_OPERATION_ADAPTERS_ENABLED", "1")
+			for _, name := range []string{
+				"POLIS_OFFLINE_DIRECT_MESSAGING_ENABLED", "POLIS_OFFLINE_SHARED_ARTIFACTS_ENABLED",
+				"POLIS_OFFLINE_SKILL_DIRECTORY_ENABLED", "POLIS_OFFLINE_WORKSPACE_TREE_ENABLED",
+				"POLIS_OFFLINE_MISSION_CHANGE_ASSESSMENT_ENABLED", "POLIS_OFFLINE_ENVIRONMENT_STATUS_ENABLED",
+				"POLIS_OFFLINE_ENVIRONMENT_ENSURE_ENABLED", "POLIS_OFFLINE_PROJECT_JOBS_ENABLED",
+				"POLIS_OFFLINE_BROWSER_RUN_ENABLED", "POLIS_OFFLINE_RESEARCH_OPERATIONS_ENABLED",
+				"POLIS_AUTO_WORKER_DISPATCH_ENABLED", "POLIS_CONTROLLED_MCP_TOOL_SURFACE", "POLIS_CONTROLLED_MCP_TOOL_SURFACE_V2",
+			} {
+				if name != test.flag {
+					t.Setenv(name, "")
+				}
+			}
+			adapter, err := buildWorkerAdapter(&kernel.Kernel{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer adapter.Close()
+			if adapter.ToolSurface().ManifestDigest != test.want.ManifestDigest {
+				t.Fatalf("selected surface=%s, want exact surface %s", adapter.ToolSurface().ManifestDigest, test.want.ManifestDigest)
+			}
+			if err = adapter.Readiness(context.Background()); err != nil {
+				t.Fatalf("isolated Fake readiness: %v", err)
+			}
+
+			t.Setenv("POLIS_PROVIDER_TRANSPORT", "codex")
+			if _, err = buildWorkerAdapter(&kernel.Kernel{}); err == nil {
+				t.Fatal("BrowserRun/ResearchOperation Fake surface was accepted with a real Provider transport")
+			}
+		})
+	}
+	t.Setenv("POLIS_WORKER_MODE", "real")
+	t.Setenv("POLIS_PROVIDER_TRANSPORT", "fake")
+	t.Setenv("POLIS_OPERATION_ADAPTERS_ENABLED", "1")
+	for _, name := range []string{"POLIS_OFFLINE_BROWSER_RUN_ENABLED", "POLIS_OFFLINE_RESEARCH_OPERATIONS_ENABLED"} {
+		t.Setenv(name, "")
+	}
+	if _, err := buildWorkerAdapter(&kernel.Kernel{}); err == nil {
+		t.Fatal("operation adapters were accepted without an isolated @18 or @19 tool surface")
+	}
+}

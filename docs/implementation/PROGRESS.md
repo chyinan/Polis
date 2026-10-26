@@ -1,3 +1,13 @@
+## Latest local source increment (Slice 329, REQ-38 isolated fake operation surfaces)
+
+Added opt-in fake-only @18 BrowserRun and @19 ResearchOperation surface
+selection, with exact fake transport and mutual-exclusion checks. The operation
+adapter flag requires one selected surface, but the independent Slice328
+authorization gate still blocks the current concrete adapters from executing.
+Go/race/vet/build and migration-manifest checks pass. No browser process,
+external retrieval, credential or Provider request ran. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req38-fake-surface-wiring-20261027/verification.md`.
+
 ## Latest local source increment (Slice 328, REQ-38 operation execution gate)
 
 BrowserRun and ResearchOperation now require a typed execution authorizer

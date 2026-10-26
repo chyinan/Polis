@@ -1,6 +1,6 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-26, after Slice328 REQ-38 local source implementation. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario. Overall REQ-38 provider configuration qualification remains blocked at Slice323.
+Updated: 2026-10-27, after Slice329 REQ-38 local source implementation. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario. Overall REQ-38 provider configuration qualification remains blocked at Slice323.
 
 Slice323 fixes local credential readiness false positives, but provider
 configuration qualification is `BLOCKED`: no active provider or Polis process

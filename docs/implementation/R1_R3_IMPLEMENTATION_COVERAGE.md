@@ -1,4 +1,15 @@
-## Latest source increment (Slice 328, REQ-38 operation execution gate)
+## Latest source increment (Slice 329, REQ-38 isolated fake operation surfaces)
+
+Added isolated fake-only @18 BrowserRun / @19 ResearchOperation surface
+selection and exact Fake transport checks. Adapter wiring requires one selected
+surface; the separate Slice328 authorizer is still required, and existing
+concrete adapters do not implement it. No external execution can occur through
+the current path. Full Go/race/vet/build checks pass; no network or Provider
+request ran. REQ-38 remains open for credential, endpoint/ranking, host/profile
+qualification and a qualified authorizer. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req38-fake-surface-wiring-20261027/verification.md`.
+
+## Previous source increment (Slice 328, REQ-38 operation execution gate)
 
 Kernel now requires separate typed authorization before invoking BrowserRun or
 ResearchOperation executors. No authorizer means no adapter call; durable
