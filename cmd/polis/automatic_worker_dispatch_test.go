@@ -91,3 +91,40 @@ func TestBuildWorkerAdapterEnablesProjectJobsOnlyOnIsolatedFakeSurface(t *testin
 		t.Fatal("project-job and direct-messaging tool surfaces were combined")
 	}
 }
+
+func TestBuildWorkerAdapterEnablesEnvironmentEnsureOnlyOnIsolatedFakeSurface(t *testing.T) {
+	t.Setenv("POLIS_WORKER_MODE", "real")
+	t.Setenv("POLIS_PROVIDER_TRANSPORT", "fake")
+	t.Setenv("POLIS_PROVIDER_PURPOSE", "")
+	t.Setenv("POLIS_OFFLINE_ENVIRONMENT_ENSURE_ENABLED", "1")
+	for _, name := range []string{
+		"POLIS_OFFLINE_DIRECT_MESSAGING_ENABLED", "POLIS_OFFLINE_SHARED_ARTIFACTS_ENABLED",
+		"POLIS_OFFLINE_SKILL_DIRECTORY_ENABLED", "POLIS_OFFLINE_WORKSPACE_TREE_ENABLED",
+		"POLIS_OFFLINE_MISSION_CHANGE_ASSESSMENT_ENABLED", "POLIS_OFFLINE_ENVIRONMENT_STATUS_ENABLED",
+		"POLIS_OFFLINE_PROJECT_JOBS_ENABLED", "POLIS_AUTO_WORKER_DISPATCH_ENABLED",
+		"POLIS_CONTROLLED_MCP_TOOL_SURFACE", "POLIS_CONTROLLED_MCP_TOOL_SURFACE_V2",
+	} {
+		t.Setenv(name, "")
+	}
+	adapter, err := buildWorkerAdapter(&kernel.Kernel{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer adapter.Close()
+	if adapter.ToolSurface().ManifestDigest != provider.ProductEnvironmentEnsureToolSurface().ManifestDigest {
+		t.Fatalf("selected surface digest=%s, want Fake @16 digest %s", adapter.ToolSurface().ManifestDigest, provider.ProductEnvironmentEnsureToolSurface().ManifestDigest)
+	}
+	if err = adapter.Readiness(context.Background()); err != nil {
+		t.Fatalf("Fake @16 readiness: %v", err)
+	}
+
+	t.Setenv("POLIS_PROVIDER_TRANSPORT", "codex")
+	if _, err = buildWorkerAdapter(&kernel.Kernel{}); err == nil {
+		t.Fatal("environment ensure Worker tools were accepted with a real Provider transport")
+	}
+	t.Setenv("POLIS_PROVIDER_TRANSPORT", "fake")
+	t.Setenv("POLIS_OFFLINE_PROJECT_JOBS_ENABLED", "1")
+	if _, err = buildWorkerAdapter(&kernel.Kernel{}); err == nil {
+		t.Fatal("environment ensure and project JobRun tool surfaces were combined")
+	}
+}

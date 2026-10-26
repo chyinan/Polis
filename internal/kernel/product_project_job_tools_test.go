@@ -3,7 +3,10 @@ package kernel
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"testing"
+
+	"polis/internal/core"
 )
 
 type productJobLifecycleFixture struct {
@@ -14,6 +17,21 @@ type productJobLifecycleFixture struct {
 	stoppedJobID   string
 	stopRequestID  string
 	stopCalls      int
+}
+
+type productEnvironmentLifecycleFixture struct {
+	binding   Binding
+	revision  string
+	requestID string
+	calls     int
+}
+
+func (fixture *productEnvironmentLifecycleFixture) EnsureProductTaskEnvironment(_ context.Context, binding Binding, revisionID, requestID string) (EnvironmentPreparationRun, error) {
+	fixture.binding = binding
+	fixture.revision = revisionID
+	fixture.requestID = requestID
+	fixture.calls++
+	return EnvironmentPreparationRun{CompanyID: binding.CompanyID(), RevisionID: revisionID, RunID: "environment-run-fixture", State: "ready"}, nil
 }
 
 func (fixture *productJobLifecycleFixture) StartProductTaskJob(_ context.Context, binding Binding, input ProductTaskJobStartCommand) (JobRunRecord, error) {
@@ -99,5 +117,29 @@ func TestProductProjectJobToolsRejectCrossModeAndMalformedStartArguments(t *test
 	}
 	if lifecycle.startCalls != 0 {
 		t.Fatalf("malformed start requests reached lifecycle adapter %d times", lifecycle.startCalls)
+	}
+}
+
+func TestProductEnvironmentEnsureRequiresControlBridgeAndUsesBoundWorkerRequest(t *testing.T) {
+	binding := Binding{scope: Scope{company: "company-1"}, task: "task-1", session: "session-1"}
+	args := json.RawMessage(`{"revision_id":"environment-1"}`)
+	if _, err := (EmployeeTools{Kernel: &Kernel{}, Binding: binding, ProductSurface: true, EnvironmentEnsureSurface: true}).call(context.Background(), "environment_ensure", "call", args); !errors.Is(err, core.Denied) {
+		t.Fatalf("environment_ensure without the Control executor returned %v, want denied", err)
+	}
+	lifecycle := &productEnvironmentLifecycleFixture{}
+	tools := EmployeeTools{Kernel: &Kernel{}, Binding: binding, ProductSurface: true, EnvironmentEnsureSurface: true, EnvironmentEnsureExecutor: lifecycle}
+	first, firstErr := tools.call(context.Background(), "environment_ensure", "same-call", args)
+	second, secondErr := tools.call(context.Background(), "environment_ensure", "same-call", args)
+	if firstErr != nil || secondErr != nil || first.Error != "" || second.Error != "" || lifecycle.calls != 2 {
+		t.Fatalf("environment_ensure results/calls=%+v/%+v/%d errors=%v/%v", first, second, lifecycle.calls, firstErr, secondErr)
+	}
+	if lifecycle.binding.CompanyID() != binding.CompanyID() || lifecycle.binding.TaskID() != binding.TaskID() || lifecycle.binding.SessionID() != binding.SessionID() || lifecycle.revision != "environment-1" {
+		t.Fatalf("environment ensure bridge lost trusted scope: binding=%+v revision=%s", lifecycle.binding, lifecycle.revision)
+	}
+	if lifecycle.requestID != "env-ensure-worker-"+fingerprint([]string{binding.SessionID(), "same-call"})[:40] {
+		t.Fatalf("environment ensure request id is not stable and session-bound: %q", lifecycle.requestID)
+	}
+	if _, err := tools.call(context.Background(), "environment_ensure", "bad-revision", json.RawMessage(`{"revision_id":"../outside"}`)); !errors.Is(err, core.Malformed) || lifecycle.calls != 2 {
+		t.Fatalf("malformed environment revision reached the Control executor: calls=%d err=%v", lifecycle.calls, err)
 	}
 }

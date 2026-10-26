@@ -46,6 +46,7 @@ type EmployeeTools struct {
 	CSVInputRangeSurface               bool
 	EnvironmentStatusSurface           bool
 	EnvironmentEnsureSurface           bool
+	EnvironmentEnsureExecutor          ProductTaskEnvironmentLifecycle
 	ReadOnlyJobsSurface                bool
 	BorrowerLeaseSurface               bool
 	ProjectJobsSurface                 bool
@@ -129,7 +130,7 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 	k, b := t.Kernel, t.Binding
 	switch name {
 	case "environment_ensure":
-		if !t.ProductSurface || !t.EnvironmentEnsureSurface || t.ReadOnly {
+		if !t.ProductSurface || !t.EnvironmentEnsureSurface || t.ReadOnly || t.EnvironmentEnsureExecutor == nil {
 			return ToolResult{}, core.Denied
 		}
 		var args struct {
@@ -138,8 +139,11 @@ func (t EmployeeTools) call(ctx context.Context, name, key string, raw []byte) (
 		if e := strictArgs(raw, &args); e != nil {
 			return ToolResult{}, e
 		}
-		requestID := "env-ensure-" + fingerprint([]string{b.SessionID(), key, args.RevisionID})[:48]
-		run, e := k.ProductTaskEnvironmentEnsure(ctx, b, args.RevisionID, requestID)
+		if !core.ValidID(args.RevisionID) {
+			return ToolResult{}, core.Malformed
+		}
+		requestID := "env-ensure-worker-" + fingerprint([]string{b.SessionID(), key})[:40]
+		run, e := t.EnvironmentEnsureExecutor.EnsureProductTaskEnvironment(ctx, b, args.RevisionID, requestID)
 		return ToolResult{Data: run}, e
 	case "jobs_status":
 		if !t.ProductSurface || !t.ReadOnlyJobsSurface {

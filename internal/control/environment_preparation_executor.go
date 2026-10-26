@@ -113,9 +113,28 @@ func (s *Service) reconcileUnrestoredProjectJobs(ctx context.Context, profileID 
 }
 
 func (s *Service) EnsureProjectEnvironment(ctx context.Context, companyID, revisionID string, request EnsureEnvironmentRequest) (kernel.EnvironmentPreparationRun, error) {
-	if !core.ValidID(companyID) || !core.ValidID(revisionID) || validateRequestID(request.RequestID) != nil {
+	if s == nil || s.runtime == nil || ctx == nil || !core.ValidID(companyID) || !core.ValidID(revisionID) || validateRequestID(request.RequestID) != nil {
 		return kernel.EnvironmentPreparationRun{}, core.Malformed
 	}
+	return s.ensureProjectEnvironment(ctx, companyID, revisionID, request, nil)
+}
+
+// EnsureProductTaskEnvironment is the bound Worker-tool path. The Kernel
+// records the request only after rechecking the active WorkerSession, exact
+// Task/Mission and approved environment revision; execution then reuses the
+// existing qualified preparation executor.
+func (s *Service) EnsureProductTaskEnvironment(ctx context.Context, binding kernel.Binding, revisionID, requestID string) (kernel.EnvironmentPreparationRun, error) {
+	if s == nil || s.runtime == nil || ctx == nil ||
+		!core.ValidID(binding.CompanyID()) || !core.ValidID(binding.TaskID()) || !core.ValidID(binding.SessionID()) ||
+		!core.ValidID(revisionID) || validateRequestID(requestID) != nil {
+		return kernel.EnvironmentPreparationRun{}, core.Malformed
+	}
+	return s.ensureProjectEnvironment(ctx, binding.CompanyID(), revisionID, EnsureEnvironmentRequest{RequestID: requestID}, &binding)
+}
+
+var _ kernel.ProductTaskEnvironmentLifecycle = (*Service)(nil)
+
+func (s *Service) ensureProjectEnvironment(ctx context.Context, companyID, revisionID string, request EnsureEnvironmentRequest, binding *kernel.Binding) (kernel.EnvironmentPreparationRun, error) {
 	revision, err := s.runtime.GetProjectEnvironmentRevision(ctx, companyID, revisionID)
 	if err != nil {
 		return kernel.EnvironmentPreparationRun{}, err
@@ -126,7 +145,12 @@ func (s *Service) EnsureProjectEnvironment(ctx context.Context, companyID, revis
 			authorizedStorageFingerprint = fingerprint.IsolationPolicySHA256
 		}
 	}
-	run, err := s.runtime.TXRequestEnvironmentPreparation(ctx, companyID, revisionID, request.RequestID)
+	var run kernel.EnvironmentPreparationRun
+	if binding != nil {
+		run, err = s.runtime.ProductTaskEnvironmentEnsure(ctx, *binding, revisionID, request.RequestID)
+	} else {
+		run, err = s.runtime.TXRequestEnvironmentPreparation(ctx, companyID, revisionID, request.RequestID)
+	}
 	if err != nil {
 		return run, err
 	}

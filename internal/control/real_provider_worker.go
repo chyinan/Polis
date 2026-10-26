@@ -30,6 +30,7 @@ type RealProviderWorkerAdapter struct {
 	localHostReconcile   map[string]bool
 	workerCgroupManager  environment.LinuxWorkerCgroupManager
 	projectJobLifecycle  kernel.ProductTaskJobLifecycle
+	productEnvironment   kernel.ProductTaskEnvironmentLifecycle
 	browserRunExecutor   kernel.BrowserRunExecutor
 	researchExecutor     kernel.ResearchOperationExecutor
 }
@@ -144,6 +145,21 @@ func (a *RealProviderWorkerAdapter) productTaskJobLifecycle() kernel.ProductTask
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.projectJobLifecycle
+}
+
+// SetProductTaskEnvironmentLifecycle installs the Control-owned environment
+// preparation bridge for the isolated fake-only @16 surface. The default is
+// nil, which keeps Worker-triggered preparation denied.
+func (a *RealProviderWorkerAdapter) SetProductTaskEnvironmentLifecycle(lifecycle kernel.ProductTaskEnvironmentLifecycle) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.productEnvironment = lifecycle
+}
+
+func (a *RealProviderWorkerAdapter) productTaskEnvironmentLifecycle() kernel.ProductTaskEnvironmentLifecycle {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.productEnvironment
 }
 
 func (a *RealProviderWorkerAdapter) executionAdapters() (kernel.BrowserRunExecutor, kernel.ResearchOperationExecutor) {
@@ -975,7 +991,7 @@ func (a *RealProviderWorkerAdapter) run(ctx context.Context, key string, worker 
 		skillLoadSurface := (profile.ToolSurfaceQualification == provider.ProductSkillToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillToolSurface().ManifestDigest) ||
 			(profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest)
 		skillDirectorySurface := profile.ToolSurfaceQualification == provider.ProductSkillDirectoryToolSurfaceQualification && a.runtime.ToolSurface().ManifestDigest == provider.ProductSkillDirectoryToolSurface().ManifestDigest
-		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, ReadOnlyJobsSurface: readOnlyJobsSurface, BorrowerLeaseSurface: borrowerLeaseSurface, ProjectJobsSurface: projectJobsSurface, ProjectJobLifecycle: a.productTaskJobLifecycle(), BrowserRunSurface: browserRunSurface, ResearchOperationSurface: researchOperationsSurface, BrowserExecutor: browserRunExecutor, ResearchExecutor: researchExecutor, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, EnvironmentEnsureSurface: environmentEnsureSurface, ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
+		tools := kernel.EmployeeTools{Kernel: a.kernel, Binding: worker.binding, ProductSurface: true, ReadOnlyJobsSurface: readOnlyJobsSurface, BorrowerLeaseSurface: borrowerLeaseSurface, ProjectJobsSurface: projectJobsSurface, ProjectJobLifecycle: a.productTaskJobLifecycle(), BrowserRunSurface: browserRunSurface, ResearchOperationSurface: researchOperationsSurface, BrowserExecutor: browserRunExecutor, ResearchExecutor: researchExecutor, SkillLoadSurface: skillLoadSurface, SkillDirectorySurface: skillDirectorySurface, DirectMessagingSurface: directMessagingSurface, SharedArtifactSurface: sharedMissionArtifactSurface, WorkspaceTreeSurface: workspaceTreeSurface, WorkspaceSnapshotRevocationSurface: workspaceSnapshotRevocationSurface, MissionChangeAssessmentSurface: missionChangeAssessmentSurface, CSVInputRangeSurface: csvInputRangeSurface, EnvironmentStatusSurface: environmentStatusSurface, EnvironmentEnsureSurface: environmentEnsureSurface, EnvironmentEnsureExecutor: a.productTaskEnvironmentLifecycle(), ControlledMCPSurface: controlledMCPSurface, ControlledStdioMCPEnabled: controlledMCPV1Surface || (controlledMCPV2Surface && a.mcpFactory != nil), StreamableHTTPMCPEnabled: controlledMCPV2Surface && os.Getenv("POLIS_MCP_STREAMABLE_HTTP_ENABLED") == "1"}
 		result := tools.Call(ctx, name, callID, raw)
 		encoded, _ := json.Marshal(result)
 		return encoded, false

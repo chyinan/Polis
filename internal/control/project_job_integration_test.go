@@ -126,9 +126,8 @@ func TestProjectJobLifecycleLaunchesOncePersistsLogsAndReplaysWithoutExecution(t
 	}
 	defer qualificationPool.Close()
 	qualifyTestEnvironmentExecutor(t, ctx, runtime, companyID, revision.RevisionID, evidenceInput, "project-job-qualify")
-	prepared, err := service.EnsureProjectEnvironment(ctx, companyID, revision.RevisionID, EnsureEnvironmentRequest{RequestID: "project-job-ensure"})
-	if err != nil || prepared.State != string(environment.PreparationReady) {
-		t.Fatalf("prepared environment=%+v error=%v", prepared, err)
+	if _, err = runtime.GetProjectEnvironmentExecutionSnapshot(ctx, companyID, revision.RevisionID); err != nil {
+		t.Fatalf("load approved immutable environment snapshot before Worker ensure: %v", err)
 	}
 	taskID := "project-job-task"
 	_, err = qualificationPool.Exec(ctx, `INSERT INTO tasks(company_id,id,mission_id,owner,kind,state) VALUES($1,$2,$3,$4,'compat','working')`, companyID, taskID, missionID, core.EmployeeBackendID)
@@ -157,6 +156,20 @@ func TestProjectJobLifecycleLaunchesOncePersistsLogsAndReplaysWithoutExecution(t
 		proof, _ := workerProcess.Stop()
 		_ = runtime.TXConfirmStopped(context.Background(), workerBinding, proof)
 		t.Fatal(err)
+	}
+	environmentTools := kernel.EmployeeTools{
+		Kernel: runtime, Binding: workerBinding, ProductSurface: true,
+		EnvironmentStatusSurface: true, EnvironmentEnsureSurface: true,
+		EnvironmentEnsureExecutor: service,
+	}
+	environmentArgs, err := json.Marshal(map[string]string{"revision_id": revision.RevisionID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	environmentResult := environmentTools.Call(ctx, "environment_ensure", "project-job-worker-environment-ensure", environmentArgs)
+	prepared, ok := environmentResult.Data.(kernel.EnvironmentPreparationRun)
+	if environmentResult.Error != "" || !ok || prepared.State != string(environment.PreparationReady) || preparation.calls != 1 {
+		t.Fatalf("Worker environment_ensure result=%+v executor calls=%d", environmentResult, preparation.calls)
 	}
 	defer func() {
 		stopCtx, stopCancel := context.WithTimeout(context.Background(), 10*time.Second)

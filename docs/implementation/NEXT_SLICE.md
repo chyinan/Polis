@@ -9,7 +9,41 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
-## Latest local source increment (Slice 324, REQ-37 Worker project JobRun tools)
+## Latest local source increment (Slice 325, REQ-36 Worker environment ensure bridge)
+
+The default-off fake-only `@16` `environment_ensure` Worker tool is now wired
+through a Control bridge to the existing preparation executor. The Kernel
+rechecks the active exact WorkerSession, Task/Mission binding, approved policy,
+source snapshot and executor qualification before preparation; a missing
+bridge/executor remains denied or blocked. Full Go/race/vet, Linux/Windows
+command builds and the targeted disposable Schema134 PostgreSQL lifecycle test
+pass. The test uses an injected recording executor only: no npm install,
+registry request, real Worker turn or host qualification ran. DependencyChange
+approval still does not materialize a changed package snapshot/lockfile or
+successor environment revision. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-ensure-bridge-20261026/verification.md`.
+
+See `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md` for
+the next code increment and the remaining source/qualification boundaries.
+
+## Latest local source increment (Slice 325, REQ-36 Worker environment ensure bridge)
+
+The default-off fake-only `@16` `environment_ensure` Worker tool is now wired
+through a Control bridge to the existing preparation executor. The Kernel
+rechecks the active exact WorkerSession, Task/Mission binding, approved policy,
+source snapshot and executor qualification before preparation; a missing
+bridge/executor remains denied or blocked. Full Go/race/vet, Linux/Windows
+command builds and the targeted disposable Schema134 PostgreSQL lifecycle test
+pass. The test uses an injected recording executor only: no npm install,
+registry request, real Worker turn or host qualification ran. DependencyChange
+approval still does not materialize a changed package snapshot/lockfile or
+successor environment revision. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-ensure-bridge-20261026/verification.md`.
+
+See `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md` for
+the next source increment and remaining gates.
+
+## Previous local source increment (Slice 324, REQ-37 Worker project JobRun tools)
 
 Added exact fake-only product tool surface `polis-product-tool-surface@20`
 with Task/WorkerSession-bound `jobs_start` and `jobs_stop`. The bridge reuses

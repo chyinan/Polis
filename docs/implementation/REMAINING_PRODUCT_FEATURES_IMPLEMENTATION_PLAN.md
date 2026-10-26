@@ -1,6 +1,6 @@
 # Remaining product feature implementation plan
 
-Status: active; increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`.
+Status: active. Increment 1 (REQ-37 Task-bound project JobRun tools) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req37-project-jobs-20261026/verification.md`. Increment 2a (REQ-36 Worker environment-ensure executor bridge) is implemented and offline-verified in `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-ensure-bridge-20261026/verification.md`; DependencyChange materialization remains open.
 
 ## Goal and boundaries
 
@@ -21,7 +21,8 @@ This plan is limited to product code and disposable offline verification. It doe
 
 ### 2. REQ-36 — Approved dependency materialization
 
-- Trace the approved DependencyChange through existing environment revision and preparation services.
+- Completed Slice 325: the Worker `environment_ensure` request now reaches the existing Control preparation executor only through the active WorkerSession/Task/Mission guard and the exact approved environment revision. The bridge remains fake-only @16 and default-off.
+- Trace the approved DependencyChange through existing environment revision and preparation services. The current proposal/approval path still does not materialize a package overlay, resolved lockfile, immutable derived MissionInput, or successor environment revision.
 - Implement only the preselected registry allowlist, no-lifecycle-script, bounded timeout/output, and fixed network envelope; do not let Worker input choose commands, host paths, or executor profiles.
 - Keep approval distinct from materialization. Missing host qualification or executor keeps the request denied/blocked.
 - Verify exact replay, stale revision, cancellation/recovery, and fail-closed executor behavior using disposable data and injected fakes.

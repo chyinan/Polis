@@ -9,14 +9,17 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increment (Slice 324)
+## Latest local source increments (Slices 324–325)
 
-REQ-37 now has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
+REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
-ProjectJob lifecycle. The real-provider `@4` contract remains unchanged. Offline
-Go/race/vet/build checks and a disposable Schema 134 lifecycle test pass; native
-process/restart and host/provider qualification remain open. Continue the
-source-level gap backlog in `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
+ProjectJob lifecycle. REQ-36 `environment_ensure` now reaches the existing
+Control preparation executor through the exact active Worker binding and its
+approved environment/host gates. Both additions preserve default-deny behavior
+and leave the real-provider `@4` contract unchanged. Offline Go/race/vet/build
+checks and disposable Schema134 integration tests pass; dependency-change
+materialization and native process/restart qualification remain open. Continue
+the source backlog in `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 
 ## Historical handoff summaries
 

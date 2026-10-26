@@ -1,4 +1,16 @@
-## Latest source increment (Slice 324, REQ-37 Worker project JobRun tools)
+## Latest source increment (Slice 325, REQ-36 Worker environment ensure bridge)
+
+The default-off fake-only `@16` `environment_ensure` Worker tool now invokes
+the existing Control preparation executor through a binding-scoped bridge.
+Kernel rechecks active WorkerSession, exact Task/Mission, approved environment
+policy, source snapshot and executor qualification. Full Go/race/vet, Linux/
+Windows command builds and targeted disposable Schema134 PostgreSQL lifecycle
+verification pass using an injected recording executor; no npm, registry,
+Provider or real Worker operation ran. DependencyChange materialization into a
+derived package snapshot/lockfile and successor revision remains open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req36-ensure-bridge-20261026/verification.md`.
+
+## Previous source increment (Slice 324, REQ-37 Worker project JobRun tools)
 
 Added exact fake-only product tool surface `polis-product-tool-surface@20`
 with Task/WorkerSession-bound `jobs_start` and `jobs_stop`. Control reuses its
