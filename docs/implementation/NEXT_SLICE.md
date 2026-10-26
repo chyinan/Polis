@@ -9,6 +9,20 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 331, REQ-02 TaskRevision owner decisions)
+
+The existing durable owner-decision route was unreachable because its task URL
+was not parsed, and there was no Workbench action. Added the task-scoped route,
+bound the Task ID from the path rather than the body, enforced owner+CSRF at the
+HTTP boundary and owner authentication in Control, and added explicit approve /
+reject / revoke controls to Task detail. The UI shows exact binding digests,
+requires rationale, reuses request identity on uncertain retries, and states
+that decisions do not qualify or enable execution. The schema-123 lifecycle
+remains monotonic (`proposed -> approved|rejected -> approved-only revoked`).
+Full Go/race/vet/build, frontend typecheck/lint/Vite build/171 tests and
+disposable PostgreSQL 18.6/Schema136 lifecycle integration pass. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-task-semantic-owner-decision-20261027/verification.md`.
+
 ## Latest local source increment (Slice 330, REQ-02 fixed-role reconciliation)
 
 Added a read-only Company projection for historical fixed-role drift, with a

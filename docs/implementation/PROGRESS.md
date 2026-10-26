@@ -1,3 +1,16 @@
+## Latest local source increment (Slice 331, REQ-02 TaskRevision owner decisions)
+
+The durable TaskRevision owner-decision handler existed but its URL was missing
+from `parsePath`, and Task detail had no decision UI. Added the task-bound API,
+path-derived Task ID, owner authentication/CSRF checks, frontend API/query hook
+and rationale-bearing approve/reject/revoke controls. The monotonic Schema123
+lifecycle remains descriptive only: qualification is `unverified`, and no
+Worker admission or execution gate consumes an approval. Full Go/race/vet/build,
+frontend typecheck/lint/Vite build/171 tests, migration-manifest check and
+disposable PostgreSQL18.6/Schema136 integration pass. No Worker/provider or
+external request ran. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-task-semantic-owner-decision-20261027/verification.md`.
+
 ## Latest local source increment (Slice 330, REQ-02 fixed-role reconciliation)
 
 Historical Companies with canonical fixed Employee IDs but drifted role names

@@ -1676,12 +1676,13 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 		}
 		var input control.DecideTaskSemanticRevisionRequest
 		if err := decodeJSON(response, request, &input); err != nil {
-			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, input.TaskID, "task_semantic_revision", err)
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.resourceID, "task_semantic_revision", err)
 			return
 		}
+		input.TaskID = path.resourceID
 		receipt, err := decisionService.DecideTaskSemanticRevision(ctx, path.companyID, input)
 		if err != nil {
-			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, input.TaskID, "task_semantic_revision", err)
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.resourceID, "task_semantic_revision", err)
 			return
 		}
 		writeJSON(response, http.StatusAccepted, receipt)
@@ -2627,6 +2628,20 @@ func parsePath(path string) (parsedPath, bool) {
 			return parsedPath{}, false
 		}
 		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.input_manifest"}, true
+	}
+	if len(parts) == 5 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "semantic-revision" && parts[4] == "decision" {
+		resourceID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.semantic_revision.decide"}, true
+	}
+	if len(parts) == 5 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "semantic-revision" && parts[4] == "decision" {
+		resourceID, err := url.PathUnescape(parts[2])
+		if err != nil {
+			return parsedPath{}, false
+		}
+		return parsedPath{companyID: companyID, resourceID: resourceID, endpoint: "tasks.semantic_revision.decide"}, true
 	}
 	if len(parts) == 4 && parts[1] == "tasks" && parts[2] != "" && parts[3] == "memory-impact" {
 		resourceID, err := url.PathUnescape(parts[2])

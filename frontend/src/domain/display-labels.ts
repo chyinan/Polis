@@ -22,6 +22,7 @@ const DISPLAY_LABELS: Readonly<Record<string, string>> = {
   active_work_present: '仍有活动或未决工作',
   owner_reconciliation_required: '等待安装负责人审阅固定岗位差异',
   reconciled: '固定岗位已恢复',
+  task_revision_unqualified: 'TaskRevision 未经资格验证',
   resolver_outcome_unknown: '锁文件解析结果未知',
   resolver_output_invalid: '解析输出未通过验证',
   derived_input_invalid: '派生输入无效',

@@ -1,4 +1,15 @@
-## Latest source increment (Slice 330, REQ-02 fixed-role reconciliation)
+## Latest source increment (Slice 331, REQ-02 TaskRevision owner decisions)
+
+The Schema123 decision command was unreachable from Workbench because its
+task-scoped path was missing, and there was no UI for the owner. Added the exact
+route, path-derived Task ID, owner+CSRF checks, API and Task detail controls for
+approve/reject/revoke with rationale and retry identity. The lifecycle remains
+monotonic and approval does not qualify or execute the TaskRevision. Full
+Go/race/vet/build, frontend typecheck/lint/build/171 tests and disposable
+PostgreSQL18.6/Schema136 integration pass. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-task-semantic-owner-decision-20261027/verification.md`.
+
+## Previous source increment (Slice 330, REQ-02 fixed-role reconciliation)
 
 Added a Company-scoped drift snapshot and owner-only reconciliation command,
 bound to exact current and expected role names by SHA-256. The command checks

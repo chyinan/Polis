@@ -42,6 +42,8 @@ import type {DependencyChangeMaterializationRecordView, DependencyChangeProposal
 import {validateDependencyChangeMaterialization, validateDependencyChangeProposalRecord, validateDependencyChangeProposals} from '../domain/workbench-validation';
 import type {DecideDependencyChangeOptions, DependencyChangeQueryOptions, MaterializeDependencyChangeOptions, ProposeDependencyChangeOptions} from './workbench-api';
 import type {ReconcileFixedTeamRoleAssignmentsOptions} from './workbench-api';
+import type {DecideTaskSemanticRevisionOptions} from './workbench-api';
+import type {TaskSemanticRevisionDecisionReceiptView} from '../domain/workbench';
 import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type BindEmployeeCapabilityOptions, type CompanyDraftOptions, type CompanyScopeOptions, type CompleteDurableDeliveryManifestOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateMissionChangeRequestOptions, type CreateOperatorInstructionOptions, type CreateTaskEnvironmentHandoverOptions, type CreateTaskTakeoverLeaseOptions, type DecideCapabilityOptions, type DecideGitHubFeedbackSourceOptions, type DeleteGitHubCredentialOptions, type EnvironmentExecutorQualificationOptions, type EnvironmentPolicyDecisionOptions, type EnsureEnvironmentOptions, type GetDomainEvidenceArtifactPreviewOptions, type ImportSkillOptions, type ImportReadOnlySkillPackageOptions, type InvalidateDurableDeliveryManifestOptions, type ListDomainEvidenceArtifactPreviewEntriesOptions, type MissionChangeRequestCommandOptions, type MissionChangeRequestQueryOptions, type MissionCommandOptions, type MissionInputQueryOptions, type PollGitHubFeedbackSourceOptions, type ProbeGitHubFeedbackSourceOptions, type QualifyCapabilityOptions, type RecordDomainEvidenceOptions, type RecordDomainEvidenceReviewOptions, type RecordDomainEvidenceSubstantiveAssessmentOptions, type RecordDomainProfileQualificationOptions, type RegisterGitHubFeedbackSourceOptions, type ReleaseTaskTakeoverLeaseOptions, type ReviewCapabilityRevocationOptions, type SetGitHubFeedbackBacklogStatusOptions, type SetHumanInterventionStateOptions, type StoreGitHubCredentialOptions, type TaskCrossBackendHandoversQueryOptions, type TaskInputManifestQueryOptions, type TaskJobLogsQueryOptions, type TaskJobRunsQueryOptions, type StartTaskJobRunOptions, type StopTaskJobRunOptions, type TaskTakeoverLeaseQueryOptions, type TaskTakeoverSnapshotOptions, type UploadMissionDirectoryInputOptions, type UploadMissionInputOptions, type OperatorInstructionQueryOptions, type RegisterMCPOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type RecordDurableUserDispositionOptions, type WorkbenchApi, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES, MAX_SKILL_PACKAGE_BYTES} from './workbench-api';
 
 function isSafeWorkspaceRelativePath(value: string): boolean {
@@ -124,6 +126,27 @@ export class RealWorkbenchApi implements WorkbenchApi {
       expectedSnapshotSha256: options.expectedSnapshotSha256, rationale: options.rationale, requestId: options.requestId,
     }, true);
     return validateCompanyCommandReceipt(raw, 'company.team_roles.reconcile');
+  }
+
+  async decideTaskSemanticRevision(options: DecideTaskSemanticRevisionOptions): Promise<TaskSemanticRevisionDecisionReceiptView> {
+    assertCompanyScope(options.companyId);
+    assertCompanyScope(options.taskId);
+    assertRequestID(options.requestId);
+    if (!/^[1-9]\d*$/.test(options.revision) || !/^[a-f0-9]{64}$/.test(options.bindingSha256)
+      || !Number.isSafeInteger(Number(options.revision)) || Number(options.revision) <= 0
+      || options.rationale.trim() === '' || options.rationale.length > 512) {
+      throw new CommandApiError('MALFORMED_INPUT', 400, 'failed to decide semantic TaskRevision: revision, binding or rationale is invalid');
+    }
+    const revision = Number(options.revision);
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/tasks/${encodeURIComponent(options.taskId)}/semantic-revision/decision`, options.requestId, {
+      revision, bindingSha256: options.bindingSha256, decision: options.decision,
+      rationale: options.rationale, requestId: options.requestId,
+    }, true);
+    if (!isRecord(raw) || typeof raw.id !== 'string' || raw.id === '' || raw.revision !== revision
+      || !['approved', 'rejected', 'revoked'].includes(String(raw.status))) {
+      throw new Error('failed to parse semantic TaskRevision decision receipt: response is malformed');
+    }
+    return {id: raw.id, revision, status: raw.status as TaskSemanticRevisionDecisionReceiptView['status']};
   }
 
   async archiveCompany(options: ArchiveCompanyOptions): Promise<CompanyCommandReceipt> {

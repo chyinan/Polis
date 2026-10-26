@@ -33,6 +33,45 @@ describe('RealWorkbenchApi', () => {
     })).rejects.toThrow('snapshot or rationale is invalid');
   });
 
+  it('decides a task-scoped semantic revision through the owner-only route', async () => {
+    const receipt = {id: 'task-semantic-decision-1', status: 'approved', revision: 1};
+    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => receipt});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+
+    await expect(api.decideTaskSemanticRevision({
+      companyId: 'company-1', taskId: 'task-1', revision: '1', bindingSha256: 'b'.repeat(64),
+      decision: 'approved', rationale: 'Reviewed the exact semantic TaskRevision.', requestId: 'task-semantic-decision-1',
+    })).resolves.toEqual(receipt);
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/workbench/companies/company-1/tasks/task-1/semantic-revision/decision', expect.objectContaining({
+      method: 'POST', credentials: 'same-origin',
+      body: JSON.stringify({revision: 1, bindingSha256: 'b'.repeat(64), decision: 'approved', rationale: 'Reviewed the exact semantic TaskRevision.', requestId: 'task-semantic-decision-1'}),
+    }));
+    await expect(api.decideTaskSemanticRevision({
+      companyId: 'company-1', taskId: 'task-1', revision: '01', bindingSha256: 'b'.repeat(64),
+      decision: 'approved', rationale: 'Reviewed the exact semantic TaskRevision.', requestId: 'task-semantic-invalid',
+    })).rejects.toThrow('revision, binding or rationale is invalid');
+  });
+
+  it('routes semantic TaskRevision decision to the path-bound Task and validates monotonic receipt shape', async () => {
+    const receipt = {id: 'task-semantic-decision-1', status: 'revoked', revision: 3};
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({ok: true, json: async () => receipt})
+      .mockResolvedValueOnce({ok: true, json: async () => ({...receipt, revision: 4})});
+    vi.stubGlobal('fetch', fetchMock);
+    const api = new RealWorkbenchApi('/api/workbench');
+
+    await expect(api.decideTaskSemanticRevision({
+      companyId: 'company-1', taskId: 'task-1', revision: '3', bindingSha256: 'c'.repeat(64),
+      decision: 'revoked', rationale: 'Owner revokes the exact TaskRevision.', requestId: 'task-revision-revoke-1',
+    })).resolves.toEqual(receipt);
+    await expect(api.decideTaskSemanticRevision({
+      companyId: 'company-1', taskId: 'task-1', revision: '3', bindingSha256: 'c'.repeat(64),
+      decision: 'revoked', rationale: 'Owner revokes the exact TaskRevision.', requestId: 'task-revision-revoke-2',
+    })).rejects.toThrow('semantic TaskRevision decision receipt');
+  });
+
   it('lists, creates, and repairs mission-scoped daily Routines through authenticated routes', async () => {
     const routine = {
       routineId: 'routine-1', missionId: 'mission-1', employeeId: 'emp-backend', timezone: 'Asia/Shanghai', localTime: '09:00',

@@ -1,0 +1,29 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mD:/Programs/Polis-cloud-main/frontend[39m
+
+ [32m鉁?[39m src/domain/daily-routine-validation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m鉁?[39m src/domain/domain-profile-qualification-report.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m鉁?[39m src/lib/desktop-bridge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m鉁?[39m src/domain/management-access.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m鉁?[39m src/domain/display-labels.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m鉁?[39m src/data/workbench-query.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m鉁?[39m src/domain/domain-evidence-form.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m鉁?[39m src/components/go-patch-preview/GoPatchPreview.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m鉁?[39m src/domain/go-patch.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m鉁?[39m src/data/fixture-workbench-api.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m鉁?[39m src/domain/workbench-validation.test.ts [2m([22m[2m56 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m鉁?[39m src/data/qq-notification-api.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m鉁?[39m src/data/mission-lifecycle-api.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m鉁?[39m src/data/mission-input-api.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m鉁?[39m src/data/real-workbench-api.test.ts [2m([22m[2m56 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+ [32m鉁?[39m src/domain/text-validation.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m鉁?[39m src/domain/checkpoint-projection.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m鉁?[39m src/domain/mission-input.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m鉁?[39m src/domain/task-input-delivery-presentation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m19 passed[39m[22m[90m (19)[39m
+[2m      Tests [22m [1m[32m171 passed[39m[22m[90m (171)[39m
+[2m   Start at [22m 02:26:32
+[2m   Duration [22m 1.99s[2m (transform 1.96s, setup 0ms, collect 6.08s, tests 180ms, environment 3ms, prepare 5.24s)[22m
+
+vitest_exit=0

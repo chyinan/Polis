@@ -1214,6 +1214,23 @@ func TestParseFixedTeamRoleReconciliationRoute(t *testing.T) {
 	}
 }
 
+func TestParseTaskSemanticRevisionDecisionRoute(t *testing.T) {
+	parsed, ok := parsePath("/api/workbench/companies/company-1/tasks/task-1/semantic-revision/decision")
+	if !ok || parsed.companyID != "company-1" || parsed.resourceID != "task-1" || parsed.endpoint != "tasks.semantic_revision.decide" {
+		t.Fatalf("TaskRevision decision route parsed as %+v, ok=%t", parsed, ok)
+	}
+}
+
+func TestTaskSemanticRevisionDecisionRouteRequiresInstallationOwnerAuthentication(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/tasks/task-1/semantic-revision/decision", strings.NewReader(`{"taskId":"forged-task","revision":1,"bindingSha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","decision":"approved","rationale":"reviewed mapping","requestId":"task-decision-1"}`))
+	request.Header.Set("Content-Type", "application/json")
+	NewHandler(fakeReadModel{}, fakeOrganizationCommandService{}).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusUnauthorized {
+		t.Fatalf("unauthenticated TaskRevision decision status=%d body=%s, want %d", recorder.Code, recorder.Body.String(), http.StatusUnauthorized)
+	}
+}
+
 func TestFixedTeamRoleReconciliationRouteRequiresInstallationOwnerAuthentication(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodPost, "/api/workbench/companies/company-1/organization/role-reconciliation", strings.NewReader(`{"expectedSnapshotSha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","rationale":"reviewed fixed role drift","requestId":"role-reconcile-1"}`))

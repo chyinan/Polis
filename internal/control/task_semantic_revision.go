@@ -5,11 +5,18 @@ import (
 	"context"
 
 	"polis/internal/core"
+	"polis/internal/installationauth"
 	"polis/internal/kernel"
 )
 
 func (s *Service) DecideTaskSemanticRevision(ctx context.Context, companyID string, request DecideTaskSemanticRevisionRequest) (kernel.Receipt, error) {
-	if s == nil || s.runtime == nil || !core.ValidID(companyID) || !core.ValidID(request.TaskID) || request.Revision < 1 || validateRequestID(request.RequestID) != nil {
+	if s == nil || s.runtime == nil || ctx == nil {
+		return kernel.Receipt{}, core.Malformed
+	}
+	if !installationauth.IsAuthenticated(ctx) {
+		return kernel.Receipt{}, core.Denied
+	}
+	if !core.ValidID(companyID) || !core.ValidID(request.TaskID) || request.Revision < 1 || validateRequestID(request.RequestID) != nil {
 		return kernel.Receipt{}, core.Malformed
 	}
 	return s.runtime.TXDecideTaskSemanticRevision(ctx, companyID, kernel.TaskSemanticRevisionDecisionInput{

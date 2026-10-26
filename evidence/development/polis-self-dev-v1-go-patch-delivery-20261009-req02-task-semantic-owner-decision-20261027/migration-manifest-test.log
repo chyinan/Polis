@@ -1,0 +1,1 @@
+MIGRATION_HASH_UPDATER=PASSED (rejects pinned edits, backward/duplicate/zero versions, uppercase extensions and missing manifest; admits a new forward migration)

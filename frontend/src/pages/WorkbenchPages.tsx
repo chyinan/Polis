@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState, type ReactElement, type ReactNode} from 'react';
 import {BadgeCheck, Check, CircleAlert, FileCheck2, Filter, Layers3, LockKeyhole, MessageSquare, Radio, Settings2, ShieldAlert, Target, UsersRound} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useCodexModelCatalog, useCollaboration, useCompanyList, useCompanyOverview, useArchiveCompany, useConfigureNotificationRoute, useNotifications, useOperations, useOperatorInstructions, useRuntimeSettings, useSendOperatorInstruction, useTestNotification, useUpdateCompany, useUpdateRuntimeSettings, useStartMission, usePauseMission, useResumeMission, useCancelMission} from '../data/workbench-query';
+import {useCodexModelCatalog, useCollaboration, useCompanyList, useCompanyOverview, useArchiveCompany, useConfigureNotificationRoute, useDecideTaskSemanticRevision, useNotifications, useOperations, useOperatorInstructions, useRuntimeSettings, useSendOperatorInstruction, useTestNotification, useUpdateCompany, useUpdateRuntimeSettings, useStartMission, usePauseMission, useResumeMission, useCancelMission} from '../data/workbench-query';
 import type {CompanyOverviewView, CompanySummaryView, EmployeeSummary, RuntimeSettingsView, StatusTone, TaskSummary} from '../domain/workbench';
 import {useNavigate} from 'react-router-dom';
 import {formatEntityId, formatEventTime} from '../domain/activity-presentation';
@@ -212,7 +212,69 @@ function taskTone(task: TaskSummary): 'info' | 'neutral' | 'success' | 'warning'
 function TaskDetail({api, companyId, overview, task}: Readonly<{api: WorkbenchApi; companyId: string; overview: CompanyOverviewView; task: TaskSummary}>) {
   const artifact = overview.artifacts.find(item => item.taskId === task.taskId) ?? null;
   const checkpoint = selectCheckpointForTask(overview.checkpoints, task.taskId, artifact);
-  return <><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>任务 / 工作</span><h2 className={styles.sectionTitle}>{task.title}</h2></div><StatusBadge label={labelDisplayValue(task.state)} tone={taskTone(task)} /></div><div className={styles.detailRows}><DataRow label="任务 ID" value={task.taskId} mono /><DataRow label="负责人" value={task.ownerEmployeeId} mono /><DataRow label="生成代数" value={task.generation} mono /><DataRow label="合同版本" value={task.contractRevisionId ?? '不可得'} mono /><DataRow label="语义版本" value={task.semanticRevision ? `${task.semanticRevision.taskType} / ${task.semanticRevision.decision}` : '不可得'} /><DataRow label="语义资格" value={task.semanticRevision ? `${task.semanticRevision.qualification} / 需人工` : '不可得'} /><DataRow label="工作区版本" value={task.workspaceRevision ?? '不可得'} mono /><DataRow label="检查点" value={checkpoint?.checkpointId ?? '暂无检查点'} mono /><DataRow label="检查点状态" value={checkpoint ? `${checkpoint.kind} / ${labelDisplayValue(checkpoint.qualificationState)}` : '暂无检查点'} /><DataRow label="验收状态" value={labelDisplayValue(task.acceptance)} /><DataRow label="依赖" value={task.dependencyLabel ?? '无已声明依赖'} /></div></section><TaskMemoryImpactPanel api={api} companyId={companyId} taskId={task.taskId} /></>;
+  return <><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>任务 / 工作</span><h2 className={styles.sectionTitle}>{task.title}</h2></div><StatusBadge label={labelDisplayValue(task.state)} tone={taskTone(task)} /></div><div className={styles.detailRows}><DataRow label="任务 ID" value={task.taskId} mono /><DataRow label="负责人" value={task.ownerEmployeeId} mono /><DataRow label="生成代数" value={task.generation} mono /><DataRow label="合同版本" value={task.contractRevisionId ?? '不可得'} mono /><DataRow label="语义版本" value={task.semanticRevision ? `${task.semanticRevision.taskType} / ${task.semanticRevision.decision}` : '不可得'} /><DataRow label="语义资格" value={task.semanticRevision ? `${task.semanticRevision.qualification} / 需人工` : '不可得'} /><DataRow label="工作区版本" value={task.workspaceRevision ?? '不可得'} mono /><DataRow label="检查点" value={checkpoint?.checkpointId ?? '暂无检查点'} mono /><DataRow label="检查点状态" value={checkpoint ? `${checkpoint.kind} / ${labelDisplayValue(checkpoint.qualificationState)}` : '暂无检查点'} /><DataRow label="验收状态" value={labelDisplayValue(task.acceptance)} /><DataRow label="依赖" value={task.dependencyLabel ?? '无已声明依赖'} /></div></section><TaskSemanticRevisionDecisionPanel api={api} companyId={companyId} task={task} /><TaskMemoryImpactPanel api={api} companyId={companyId} taskId={task.taskId} /></>;
+}
+
+function TaskSemanticRevisionDecisionPanel({api, companyId, task}: Readonly<{api: WorkbenchApi; companyId: string; task: TaskSummary}>) {
+  const decide = useDecideTaskSemanticRevision(api);
+  const [rationale, setRationale] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [pendingRequest, setPendingRequest] = useState<Readonly<{revision: string; bindingSha256: string; decision: 'approved' | 'rejected' | 'revoked'; rationale: string; requestId: string}> | null>(null);
+  const semantic = task.semanticRevision;
+  if (api.mode !== 'real' || semantic == null) return null;
+  const currentRevision = semantic as NonNullable<TaskSummary['semanticRevision']>;
+
+  const availableDecisions: ReadonlyArray<'approved' | 'rejected' | 'revoked'> = currentRevision.decision === 'proposed'
+    ? ['approved', 'rejected']
+    : currentRevision.decision === 'approved' ? ['revoked'] : [];
+  const decisionLabels: Readonly<Record<'approved' | 'rejected' | 'revoked', string>> = {
+    approved: '批准语义映射', rejected: '拒绝语义映射', revoked: '撤销先前批准',
+  };
+
+  async function submitDecision(decision: 'approved' | 'rejected' | 'revoked'): Promise<void> {
+    const cleanRationale = rationale.trim();
+    if (cleanRationale === '' || !availableDecisions.includes(decision)) return;
+    const pending = pendingRequest !== null && pendingRequest.revision === currentRevision.revision
+      && pendingRequest.bindingSha256 === currentRevision.bindingSha256 && pendingRequest.decision === decision
+      && pendingRequest.rationale === cleanRationale
+      ? pendingRequest
+      : {revision: currentRevision.revision, bindingSha256: currentRevision.bindingSha256, decision, rationale: cleanRationale, requestId: `task-semantic-decision-${crypto.randomUUID()}`};
+    setPendingRequest(pending);
+    setError('');
+    setMessage('');
+    try {
+      const receipt = await decide.mutateAsync({
+        companyId, taskId: task.taskId, revision: pending.revision, bindingSha256: pending.bindingSha256,
+        decision: pending.decision, rationale: pending.rationale, requestId: pending.requestId,
+      });
+      setPendingRequest(null);
+      setRationale('');
+      setMessage(`TaskRevision ${receipt.revision} 的负责人决定已记为 ${labelDisplayValue(receipt.status)}。资格仍未验证，执行准入未改变。`);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : '负责人决定结果尚未确认；同一绑定与理由重试会复用原请求 ID。');
+    }
+  }
+
+  return <section className={styles.sectionCard}>
+    <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>TaskRevision / owner decision</span><h2 className={styles.sectionTitle}>语义映射审阅</h2></div><StatusBadge label={labelDisplayValue(currentRevision.decision)} tone={currentRevision.decision === 'approved' ? 'success' : currentRevision.decision === 'rejected' || currentRevision.decision === 'revoked' ? 'danger' : 'warning'} /></div>
+    <p className={styles.formHint}>此决定只记录对精确 TaskRevision 绑定的人工意见，不代表角色资格，也不会授权 Worker 执行。当前绑定要求人工处理；资格保持 {labelDisplayValue(currentRevision.qualification)}。</p>
+    <div className={styles.detailRows}>
+      <DataRow label="TaskRevision" value={`${currentRevision.revision} · ${currentRevision.taskType} / ${currentRevision.taskKind}`} mono />
+      <DataRow label="Owner Employee" value={currentRevision.ownerEmployeeId} mono />
+      <DataRow label="Binding SHA-256" value={currentRevision.bindingSha256} mono />
+      <DataRow label="RoleRevision SHA-256" value={currentRevision.roleRevisionSha256} mono />
+      {currentRevision.decisionRationale !== '' ? <DataRow label="最近理由" value={currentRevision.decisionRationale} /> : null}
+      {currentRevision.decisionActor !== '' ? <DataRow label="决定人 / 请求" value={`${currentRevision.decisionActor} / ${currentRevision.decisionRequestId}`} mono /> : null}
+      {currentRevision.decisionCreatedAt !== '' ? <DataRow label="决定时间" value={formatEventTime(currentRevision.decisionCreatedAt)} /> : null}
+    </div>
+    {availableDecisions.length > 0 ? <div className={styles.formStack}>
+      <label className={styles.formLabel}>负责人审阅理由<input className={styles.formField} maxLength={512} onChange={event => {setRationale(event.target.value); setError('');}} value={rationale} /></label>
+      <div className={styles.filterGroup}>{availableDecisions.map(decision => <button className={styles.textButton} disabled={decide.isPending || rationale.trim() === ''} key={decision} onClick={() => {void submitDecision(decision);}} type="button">{decide.isPending ? '正在保存…' : decisionLabels[decision]}</button>)}</div>
+    </div> : null}
+    {message ? <p className={styles.formHint} role="status">{message}</p> : null}
+    {error ? <p className={styles.formError} role="alert">{error} {pendingRequest?.bindingSha256 === currentRevision.bindingSha256 ? '相同绑定和理由重试会复用原请求 ID。' : '绑定变化后必须重新审阅。'}</p> : null}
+  </section>;
 }
 
 export function TaskPage({api, companyId}: PageProps) {

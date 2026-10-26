@@ -1649,6 +1649,12 @@ export type TaskSemanticRevisionView = Readonly<{
   decisionCreatedAt: string;
 }>;
 
+export type TaskSemanticRevisionDecisionReceiptView = Readonly<{
+  id: string;
+  status: 'approved' | 'rejected' | 'revoked';
+  revision: number;
+}>;
+
 export type ContractRevisionSummary = Readonly<{
   revisionId: string;
   revision: string;

@@ -15,6 +15,8 @@ import type {DependencyChangeMaterializationRecordView, DependencyChangeProposal
 import type {TaskTakeoverWorkspaceFileView, TaskTakeoverWorkspaceManifestView} from '../domain/workbench';
 import type {DecideDependencyChangeOptions, DependencyChangeQueryOptions, MaterializeDependencyChangeOptions, ProposeDependencyChangeOptions} from './workbench-api';
 import type {ReconcileFixedTeamRoleAssignmentsOptions} from './workbench-api';
+import type {DecideTaskSemanticRevisionOptions} from './workbench-api';
+import type {TaskSemanticRevisionDecisionReceiptView} from '../domain/workbench';
 
 import type {
   ActivityEvent,
@@ -452,6 +454,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
 
   async reconcileFixedTeamRoleAssignments(_options: ReconcileFixedTeamRoleAssignmentsOptions): Promise<CompanyCommandReceipt> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'fixed-role reconciliation is unavailable in fixture mode');
+  }
+
+  async decideTaskSemanticRevision(_options: DecideTaskSemanticRevisionOptions): Promise<TaskSemanticRevisionDecisionReceiptView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'Task semantic revision decisions are unavailable in fixture mode');
   }
 
   async archiveCompany(): Promise<CompanyCommandReceipt> {
