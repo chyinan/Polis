@@ -1,3 +1,14 @@
+## Latest local policy decision (Slice 333, REQ-29 conservative file access)
+
+Selected Company-private explicit CAS snapshots as the default. `workspace_root`
+remains metadata; Workers do not mount/write host roots; there is no
+cross-Company/Group sharing or automatic snapshot reclamation; revocation blocks
+future reads but retains referenced bytes. This resolves default sharing and
+retention choices without claiming a native root adapter exists. The host-root
+read feature remains unavailable pending OS-native authorization, safe traversal
+and host qualification. Audit:
+`docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md`.
+
 ## Latest source increment (Slice 332, REQ-35 explicit PDF page-rendering boundary)
 
 The pinned PDF parser does not provide a full-page raster path. New direct-PDF

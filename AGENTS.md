@@ -9,7 +9,7 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–332)
+## Latest local source increments (Slices 324–333)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
@@ -32,8 +32,12 @@ decision to its missing task-scoped route and Workbench UI; approve/reject/revok
 remain descriptive only and cannot qualify or enable execution. Slice332 marks
 new PDF extraction records as not rendering complete pages while preserving
 historical snapshots; actual rendering awaits a bounded, compatible renderer
-decision. Full source verification uses disposable data only; no Worker was
-started.
+decision. Slice333 selects conservative REQ-29 defaults: `workspace_root` is
+metadata, access stays Company-private through explicit CAS snapshots, Workers
+never write to host roots, and revocation does not reclaim retained CAS bytes.
+Native root access remains disabled pending OS-specific implementation and host
+qualification. Full source verification uses disposable data only; no Worker
+was started.
 Continue the source backlog in
 `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 

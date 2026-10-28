@@ -1,6 +1,6 @@
 # REQ-29 authorized shared-file access audit
 
-Updated: 2026-10-06, Slice 264. This source map leaves the frozen v0.4.5 design unchanged.
+Updated: 2026-10-28, Slice 333. This source map leaves the frozen v0.4.5 design unchanged.
 
 ## Frozen requirements checked
 
@@ -19,9 +19,20 @@ Architecture section 3.1 describes REQ-29 as autonomous access to authorized wor
 
 ## Remaining gap
 
-REQ-29 is still partial. The logical tree supports only private Task-scoped UTF-8 files. It does not implement actual host mounts, OS-level symlink/special-file/TOCTOU controls, company shared documents, or a group public library. Revocation now denies future direct-ID reads, but it does not recall prior content or reclaim CAS objects. Retention/GC policy and all applicable full CAP qualification remain open.
+REQ-29 is still partial. The logical tree supports only private Task-scoped UTF-8 files. It does not implement actual host mounts or OS-level symlink/special-file/TOCTOU controls. Slice333 selects no Company/Group shared roots and indefinite CAS retention as defaults; no native host-root path exists. Revocation denies future direct-ID reads but does not recall previously returned content. All applicable full CAP qualification remains open.
 
 CAP-01–06 remain `not_run` as frozen scenarios. Slice 211 performed source/build verification only: no tests, migration application, populated WorkerSession end-to-end, Worker/provider execution or external operation occurred. The current environment has not supplied a database-confirmed active WorkerSession for qualification.
+
+## Selected conservative default policy (Slice 333)
+
+Under the user's delegated product-choice instruction, the default behavior is:
+
+- `companies.workspace_root` remains display metadata and never grants filesystem authority by itself.
+- Workspace visibility stays Company-private. There is no cross-Company or Group/public-library sharing by default.
+- Work enters through an explicit owner/user file-selection upload and becomes an immutable Company CAS snapshot. Workers use their existing logical CAS workspace; no Worker writes back to the host root.
+- Workspace-snapshot revocation blocks later direct-ID reads. Existing CAS references are retained; no automatic snapshot reclamation or expiry is selected.
+
+This choice favors privacy and recoverability over convenience. It makes sharing, host-write, and retention defaults explicit without claiming a native root binding exists. Native read-only root access remains unavailable until a supported owner-selected root handle, no-follow/special-file/TOCTOU implementation, durable binding/revocation path, and target-host qualification are implemented. A plain path string is not upgraded into authority.
 
 ## History
 
@@ -34,22 +45,22 @@ This audit checked the production Go/SQL paths and the frozen CAP-01–06 contra
 | Area | Present source behavior | Concrete missing contract |
 |---|---|---|
 | Host roots and mounts | `companies.workspace_root` is saved, returned, and shown by the Workbench, but no runtime authorizes it or resolves it to an OS root. Company creation also accepts it as metadata. Linux Node preparation and native Worker launch bind fresh application-managed directories; Windows AppContainer workspaces are likewise application-managed. The Worker logical tree uses Company CAS and relative paths. Git import reads a locally available, selected commit into an immutable snapshot and does not write the source repository. | No owner-authorized root handle/bookmark, canonical host identity, binding revision, read/write capability, revoke path, or Worker mount adapter exists. A path string is not authority. Physical symlink/special-file/TOCTOU protections for a mounted user root therefore do not exist. |
-| Company and Group sharing | Cross-Task published Artifact reads are bounded to another Task in the current active Mission and same Company, and record the exact digest/version and reader session. Workspace snapshot reads are exact-Artifact-ID, same-Mission reads. Neither is a Company-wide shared document root. There is no `groups` table or group membership/resource relation in the migrations. `skill_revisions.publisher_scope='group'` is still keyed by `company_id`; that enum does not create a cross-Company Group identity. | No Company shared-root ACL, Group entity/membership, cross-Company authorization join, revisioned sharing decision, or public-library visibility model exists. Employees in a Company do not gain a new root merely from their Company membership. |
-| Snapshot retention | Task snapshots are immutable `draft_not_accepted` Artifacts with per-file CAS references. Revocation is owner/session/epoch audited and blocks later direct reads; already returned bytes are not recalled. The generic CAS collector defaults to dry-run and, on apply, serializes with CAS writers/company writes and deletes only digest files that no company-owned database row references. | There is no snapshot expiry/retirement policy, owner decision record, retention class, deletion/tombstone lifecycle, or reference-release operation. `workspace_snapshot_files` and Artifact history continue referencing the objects, so generic orphan collection cannot reclaim them. Snapshot creation currently caps the lifetime row count at 32 per Task; revoked/corrupt records still count, and no operation releases a slot. |
+| Company and Group sharing | Cross-Task published Artifact reads are bounded to another Task in the current active Mission and same Company, and record the exact digest/version and reader session. Workspace snapshot reads are exact-Artifact-ID, same-Mission reads. Neither is a Company-wide shared document root. Slice333 chooses Company-private visibility and deliberately adds no cross-Company/Group sharing. | No host shared-root ACL, Group entity/membership, cross-Company authorization join, or public-library visibility model is implemented; this is consistent with the selected private-only default. |
+| Snapshot retention | Task snapshots are immutable `draft_not_accepted` Artifacts with per-file CAS references. Revocation is owner/session/epoch audited and blocks later direct reads; already returned bytes are not recalled. Slice333 selects indefinite retention: no automatic snapshot deletion or CAS reference release. Generic CAS collection deletes only digest files that no company-owned database row references. | There is no owner purge/reference-release lifecycle. `workspace_snapshot_files` and Artifact history continue referencing the objects, so the generic orphan collector cannot reclaim them. Snapshot creation caps the lifetime row count at 32 per Task; revoked/corrupt records still count, and once full, new snapshots fail closed. |
 
 ### CAP-01–06 implementation boundary
 
 - CAP-01 has bounded private logical-tree and same-Mission published-Artifact discovery/read paths, but no discovery of an owner-authorized host root or Company/Group root.
 - CAP-02 validates logical relative paths and CAS-root handling, but there is no mounted host path on which to exercise OS-level link, special-file, or replacement-race controls.
-- CAP-03 distinguishes a Task-private logical tree from narrowly published same-Mission Artifacts. It has no Company shared-document visibility or Group/public-library ACL.
+- CAP-03 distinguishes a Task-private logical tree from narrowly published same-Mission Artifacts. Company shared roots and Group/public-library ACLs remain intentionally unavailable under the selected private-only default.
 - CAP-04 binds private logical-tree writes to one current WorkerSession/epoch and root revision. No shared-root writer exists, so shared-root single-writer arbitration is not implemented.
 - CAP-05 reads immutable CAS digests and checks byte lengths; the filesystem-root consistency/truncation behavior for a live mounted source is absent.
 - CAP-06 has ready-state checks, immutable snapshot references, audited revocation, and a CAS orphan sweep. It has no obsolete/expiry transition or snapshot-reference reclamation policy; the generic collector is not a snapshot-retention engine.
 
-### Recommended next REQ-29 slice
+### Remaining REQ-29 implementation gate
 
-No host mount, Company/Group shared root, or snapshot reclamation behavior is safe to choose from source inspection alone: each needs an owner decision about which root is authorized, who shares it, whether access is read-only or writable, how revocation affects a running writer, and how long immutable snapshots remain retained. Do not make `workspace_root` executable authority or invent a default Group/retention policy.
+The default sharing/write/retention policy is now selected above. Implementing a native root binding is still not a safe source-only change: its owner-selected root handle/bookmark, OS identity, no-follow/special-file/TOCTOU behavior, and running-reader revocation semantics need a concrete supported native adapter and host tests. Do not make `workspace_root` executable authority or add cross-Company sharing/GC under the selected default.
 
-After those decisions, the narrowest first vertical slice is a **read-only Company root binding** on one explicitly qualified host: owner selection through the OS's native directory authorization mechanism; a durable immutable binding revision and revocation event; a root-handle-based bounded walker that rejects escapes, links and non-regular entries; digest/size-pinned immutable snapshots; and an isolated fake-only read surface. Keep Group sharing, writable mounts, and garbage collection out of that slice. Validate the filesystem races on the target OS before exposing the path to any Worker. The current Termux host is not evidence for Windows or delegated Linux mount qualification.
+If a native root is later needed, the narrowest first vertical slice remains a **read-only Company root binding** on one explicitly qualified host: native owner selection, durable binding/revocation, a bounded root-handle walker, digest-pinned CAS snapshots, and an isolated fake-only read surface. Group sharing, writable mounts, and automatic garbage collection remain out of scope. The current Windows development source/build is not evidence of no-follow or TOCTOU behavior on a qualified host.
 
 The audit was source-only. It did not change any frozen CAP row or execution state; CAP-01–06 remain `partial` / `not_run`. See `evidence/development/r1-r3-implementation-validation-20261006-req29-local-audit/verification.md`.

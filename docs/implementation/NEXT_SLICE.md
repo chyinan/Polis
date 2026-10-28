@@ -9,6 +9,20 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source/policy increment (Slice 333, REQ-29 conservative file-access defaults)
+
+Following the user's delegation of product choices, the default is now recorded
+as Company-private, explicit immutable CAS snapshots only. `workspace_root`
+remains metadata, not filesystem authority; Workers do not write to host roots;
+there is no cross-Company/Group sharing or automatic snapshot reclamation;
+revocation prevents future reads while preserving referenced bytes. The existing
+logical Task tree and same-Mission published-Artifact read remain the only
+Worker-accessible file surfaces. A native read-only root binding remains disabled
+until a supported OS-native owner-selected handle, no-follow/special-file/TOCTOU
+implementation, and target-host qualification are available. No code behavior,
+database or Worker state changed in this policy decision. Audit:
+`docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md`.
+
 ## Latest local source increment (Slice 332, REQ-35 explicit PDF page-rendering boundary)
 
 No bounded complete-page renderer is present in the pinned Go runtime; the

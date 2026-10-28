@@ -1,3 +1,15 @@
+## Latest local policy decision (Slice 333, REQ-29 conservative file access)
+
+Selected the default file-access policy: Company-private explicit snapshots in
+CAS; `workspace_root` stays metadata; no live host mount, host writes, cross-
+Company/Group shares, or automatic deletion; revocation blocks future reads but
+retains existing bytes. This avoids turning a path string into ambient
+filesystem authority and preserves existing logical Task-tree and same-Mission
+Artifact behavior. Native read-only root access is still unavailable pending an
+OS authorization handle, no-follow/special-file/TOCTOU implementation and host
+qualification. No code, database, Worker or external operation ran. Audit:
+`docs/implementation/REQ29_SHARED_FILE_ACCESS_AUDIT.md`.
+
 ## Latest local source increment (Slice 332, REQ-35 explicit PDF page-rendering boundary)
 
 New PDF intake records now explicitly say full-page rendering is unsupported
