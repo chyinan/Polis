@@ -1,6 +1,6 @@
 # Mission input contracts
 
-Last verified: 2026-10-28
+Last verified: 2026-10-29
 
 ## Purpose
 
@@ -9,6 +9,7 @@ Keep uploaded originals, derived file trees, and text actually supplied to a Wor
 ## Contracts
 
 - `PrepareMissionInput` returns the exact bytes to persist. Text, images, and ZIP keep their submitted bytes; a direct PDF becomes a canonical `pdf_snapshot` package that preserves the original PDF, bounded extracted text, and extraction metadata. Always persist the returned bytes, never the raw PDF after preparing it.
+- `PrepareReadOnlyRootSnapshot` accepts an already-open `*os.Root`, never a path string. It builds the existing bounded immutable directory package, exposes no absolute path, and rejects observed symlink/non-regular entries or identity changes. This primitive is not itself an owner authorization or a host qualification; do not wire it to a live Company root until the caller supplies a durable owner-approved root handle and target-host TOCTOU/mount-boundary evidence.
 - Nested PDFs inside directory and ZIP snapshots stay as preserved unsupported binary files; only a direct `.pdf` upload invokes extraction.
 - PDF extraction pins `github.com/giraffesyo/pdf@v0.7.0`, caps the source at 6 MiB, parses at most 40 pages with per-stream/operator/glyph/image limits, and caps extracted text at 16 KiB. It may include at most eight supported embedded image objects as PNG, each at most 1,000,000 pixels and 256 KiB, with a 960 KiB total. The strict visual path accepts exact-length unpacked samples and DCT images, rejects stencil masks and other codecs (including CCITT and JBIG2), and marks image-count mismatches or omitted objects in the extraction record. `ImageNumber` is a one-based ordinal in the parser's page image array, not a source PDF object ID. The immutable record binds each object to its page, dimensions, digest, page geometry and placement; Worker receipts repeat page number, dimensions, path and digest. These bytes represent only an intrinsic embedded-image object: the pinned parser does not expose or apply soft masks/transparency, color-key masks, or rendering intent, so visible appearance may differ. New extraction@4 records explicitly state `fullPageRenderingStatus=unsupported` with a bounded-renderer reason and warning. This is not a complete page raster: vector drawing, page composition and unsupported images remain unavailable, and no OCR is performed. The original PDF stays excluded from Worker input.
 - Preserve canonical verification for historical `polis-pdf-extraction@1`, `@2`, and `@3` packages while writing embedded-image `@4` records for new PDFs. The active Task/Worker delivery path excludes embedded images from historical `@1`/`@2` snapshots; historical @3 bytes remain verifiable and its intrinsic images remain distinguishable from a complete page raster.

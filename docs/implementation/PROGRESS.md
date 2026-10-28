@@ -1,3 +1,14 @@
+## Latest local source increment (Slice 334, REQ-29 bounded root snapshot primitive)
+
+Added a pathless root-handle walker in `internal/intake` that snapshots bounded
+regular files into the existing canonical directory package. It requires an
+already-open `os.Root`, rejects observed symlinks and special entries, checks
+file/directory identity around reads, and emits only relative snapshot paths.
+It is not connected to Company metadata or a Workbench/Worker route, so it
+grants no live filesystem authority. Intake tests cover normal snapshots and
+symlink denial. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req29-read-only-root-snapshot-20261029/verification.md`.
+
 ## Latest local policy decision (Slice 333, REQ-29 conservative file access)
 
 Selected the default file-access policy: Company-private explicit snapshots in

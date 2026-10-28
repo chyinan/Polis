@@ -9,6 +9,18 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
+## Latest local source increment (Slice 334, REQ-29 bounded root snapshot primitive)
+
+Added `intake.PrepareReadOnlyRootSnapshot(*os.Root)`: a pathless, bounded
+filesystem walker that rejects observed links and non-regular entries, checks
+file/directory identity around opens, and packages relative files using the
+existing immutable directory-snapshot contract. It does not accept a path
+string, open a root itself, expose host paths, or write to the host. The helper
+is not wired to Company `workspace_root`, Workbench, or Worker admission;
+no-follow/mount-boundary/TOCTOU behavior still requires target-host evidence.
+Intake tests cover normal snapshots and symlink denial. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req29-read-only-root-snapshot-20261029/verification.md`.
+
 ## Latest local source/policy increment (Slice 333, REQ-29 conservative file-access defaults)
 
 Following the user's delegation of product choices, the default is now recorded

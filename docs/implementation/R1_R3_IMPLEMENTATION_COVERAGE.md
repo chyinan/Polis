@@ -1,3 +1,13 @@
+## Latest source increment (Slice 334, REQ-29 bounded root snapshot primitive)
+
+Added an intake helper requiring an already-open `os.Root`; the bounded walker
+rejects observed links/special entries, checks opened-file identity, and emits
+only relative immutable snapshot bytes. No caller uses it yet, so it does not
+convert `workspace_root` metadata into authority or change Worker surfaces.
+Root-handle acquisition and OS no-follow/mount-boundary/TOCTOU qualification
+remain open. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req29-read-only-root-snapshot-20261029/verification.md`.
+
 ## Latest local policy decision (Slice 333, REQ-29 conservative file access)
 
 Selected Company-private explicit CAS snapshots as the default. `workspace_root`
