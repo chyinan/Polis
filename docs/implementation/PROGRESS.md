@@ -1,4 +1,15 @@
-## Latest local source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
+## Latest local implementation decision (Slice 337, REQ-35 renderer candidate review)
+
+Evaluated current Go PDF rendering options and kept page rendering explicitly
+unsupported. `go-fitz` is AGPL-3.0. `go-pdfium@v1.21.4` offers a cross-platform
+Wazero backend but embeds a 5.83 MB PDFium WASM artifact from a separate fork
+without an exact bundled third-party notice inventory in the consumer module;
+its default filesystem config mounts the host root/volume and its documented
+WASM ceilings are far above Polis's acceptable per-render budget. No binary or
+dependency was installed, no render ran, and no code behavior changed. Research:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-renderer-candidate-review-20261029/research.md`.
+
+## Previous local source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
 
 Hardened `TaskRevisionFor`/`AdmissionFor` against caller mutation of the exported
 compiled RoleRevision value. Both now require the exact current digest, fixed

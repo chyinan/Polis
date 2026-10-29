@@ -1,4 +1,14 @@
-## Latest source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
+## Latest implementation decision (Slice 337, REQ-35 renderer candidate review)
+
+Candidate review did not select a renderer: the AGPL-3.0 MuPDF Go binding is
+not adopted, and the MIT Go-PDFium wrapper's embedded wasm artifact lacks a
+verified exact third-party license/notice inventory and requires strict explicit
+WASI filesystem, memory, CPU and output caps before any render path. The current
+@4 unsupported status remains the correct product behavior. No code or
+qualification state changed. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-renderer-candidate-review-20261029/research.md`.
+
+## Previous source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
 
 The public compiled RoleRevision projection can be mutated after compilation.
 `TaskRevisionFor` and `AdmissionFor` now revalidate its digest, owner decision,

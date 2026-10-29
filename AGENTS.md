@@ -9,7 +9,7 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–336)
+## Latest local source increments (Slices 324–337)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
@@ -47,6 +47,10 @@ grant host-root access; native root binding remains unavailable.
 Slice336 hardens semantic TaskRevision mapping against missing/stale/revoked or
 mutated fixed-team RoleRevision values; invalid mappings stay unverified and
 human-gated. This adds no execution authority.
+Slice337 reviewed PDF renderer candidates but selected none: the available Go
+PDFium WASM artifact has unresolved exact-binary/third-party license evidence
+and requires further memory, file-system and output-budget qualification.
+New PDF records therefore remain honestly `unsupported`; no dependency was added.
 Continue the source backlog in
 `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 

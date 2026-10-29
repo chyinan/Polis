@@ -9,7 +9,25 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
-## Latest local source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
+## Latest local implementation decision (Slice 337, REQ-35 renderer candidate review)
+
+Reviewed the current Go renderer candidates. `go-fitz` is AGPL-3.0. The
+cross-platform `go-pdfium@v1.21.4` WebAssembly backend avoids CGO and embeds a
+5,828,543-byte PDFium module, but its exact wasm source is a separate
+`wasm-standalone` fork whose artifact-level third-party license/notice inventory
+is not provided in the consuming Go module. The upstream wrapper's README names
+Apache 2.0, while the canonical PDFium source license and included third-party
+components require exact distribution notices. Its default Wazero filesystem
+configuration also mounts the host root/volume, and upstream documents a
+near-2-GiB maximum single bitmap and up to 4-GiB 32-bit WASM instance. Although
+configuration hooks exist, no project-scoped empty-FS, lower memory/time budget,
+pixel/output cap or renderer conformance was qualified. Decision: do not add a
+renderer or dependency; preserve `fullPageRenderingStatus=unsupported` until
+exact notices and bounded runtime/fidelity evidence are established. No package,
+binary, Worker, Provider or database operation was run. Sources and review:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-renderer-candidate-review-20261029/research.md`.
+
+## Previous local source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
 
 `FixedTeamCoverageRoleRevision` is a public value containing mutable nested
 fields, so a compiled object could be copied and altered while retaining its
