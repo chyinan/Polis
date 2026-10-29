@@ -1,4 +1,14 @@
-## Latest implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
+## Latest source increment (Slice 339, REQ-35 parser operator audit)
+
+The pinned parser is now an exact local v0.7.0 fork. An opt-in bounded audit
+captures sorted unique names across visited page/Form/annotation appearance
+streams and reports truncation or parse failure. It is not a typed display list
+or rasterizer, and it does not alter default extraction or PDF @4. Fork tests and
+full Go/race/vet/Linux+Windows command builds pass; PostgreSQL tests requiring
+`POLIS_TEST_DSN` were skipped. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-parser-operator-audit-20261029/verification.md`.
+
+## Previous implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
 
 The pinned `pdf@v0.7.0` public API supplies extracted glyphs/images and page
 metadata, not the paint operators/display list needed for complete page

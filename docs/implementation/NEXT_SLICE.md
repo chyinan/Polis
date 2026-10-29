@@ -9,7 +9,20 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
-## Latest local implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
+## Latest local source increment (Slice 339, REQ-35 parser operator audit)
+
+Added the exact `github.com/giraffesyo/pdf@v0.7.0` source as a maintained local
+module fork and replaced only that dependency path. The opt-in
+`Options.AuditContentOperators` reports sorted unique operator names visited
+through page, nested Form, and annotation appearance streams. It is bounded to
+256 names of at most 128 bytes; malformed/limited/incomplete traversals return
+`ContentOperatorNamesComplete=false`. The option is off by default and changes
+no current PDF snapshot bytes or renderer status. Fork tests, full Go/race/vet,
+and Linux/Windows command builds pass. `POLIS_TEST_DSN` was unset, so database
+integration cases were skipped. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-parser-operator-audit-20261029/verification.md`.
+
+## Previous local implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
 
 Inspected the exact pinned `github.com/giraffesyo/pdf@v0.7.0` API and Polis
 integration. `pdf.Page` exposes extracted `Glyphs`, `Images`, page boxes,
@@ -20,10 +33,9 @@ Therefore combining public Glyph/Image results would omit vector paths, proper
 text/font rendering, clipping, compositing and masks; it would not be a complete
 page renderer and would repeat the forbidden blank-canvas approximation.
 Decision: no in-house subset is labeled a complete raster. A real self-renderer
-would require a parser-owned bounded drawing IR (or a maintained parser fork)
-plus complete per-page operator support before a page can be marked rendered.
-Keep @4's `unsupported` state. No code, dependency, database or external runtime
-changed. Evidence:
+requires a parser-owned bounded drawing IR plus complete per-page operator
+support before a page can be marked rendered. Slice339 adds an opt-in operator
+name inventory only; it does not change @4's `unsupported` state. Evidence:
 `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-in-house-renderer-feasibility-20261029/research.md`.
 
 ## Previous local implementation decision (Slice 337, REQ-35 renderer candidate review)

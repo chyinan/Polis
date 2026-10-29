@@ -13,6 +13,10 @@ require (
 	golang.org/x/sys v0.48.0
 )
 
+// Polis maintains a bounded parser extension locally. Keep the upstream module
+// path so its internal packages remain encapsulated within the fork.
+replace github.com/giraffesyo/pdf => ./third_party/giraffesyo-pdf
+
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect

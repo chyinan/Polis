@@ -1,0 +1,11 @@
+ok  	github.com/giraffesyo/pdf	4.006s
+ok  	github.com/giraffesyo/pdf/internal/codec/ccitt	6.424s
+ok  	github.com/giraffesyo/pdf/internal/codec/jbig2	6.759s
+ok  	github.com/giraffesyo/pdf/internal/crypt	1.074s
+ok  	github.com/giraffesyo/pdf/internal/encoding	1.031s
+ok  	github.com/giraffesyo/pdf/internal/filter	1.079s
+ok  	github.com/giraffesyo/pdf/internal/object	1.213s
+ok  	github.com/giraffesyo/pdf/internal/safeio	1.029s
+ok  	github.com/giraffesyo/pdf/ocr/tesseract	1.155s
+?   	github.com/giraffesyo/pdf/pdftest	[no test files]
+parser_fork_race_exit=0

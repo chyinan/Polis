@@ -9,7 +9,7 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–338)
+## Latest local source increments (Slices 324–339)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
@@ -55,6 +55,9 @@ Slice338 confirms the pinned PDF parser exposes glyphs/images and page metadata,
 not a public painting-operator stream. A complete in-house rasterizer would
 require a parser-owned drawing IR or maintained parser fork; no incomplete
 image-compositing shortcut was added.
+Slice339 adds an exact local v0.7.0 parser fork and an opt-in bounded operator
+name inventory. This is not a rendering claim and leaves PDF @4 unchanged;
+run `scripts/test-pdf-parser-fork.sh` for the fork's own suite.
 Continue the source backlog in
 `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 

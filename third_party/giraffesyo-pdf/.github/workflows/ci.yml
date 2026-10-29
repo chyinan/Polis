@@ -1,0 +1,176 @@
+name: CI
+
+on:
+  push:
+    branches: [canary]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: install tesseract (exercises ocr/tesseract against a real engine)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr
+      - name: build
+        run: go build ./...
+      - name: test
+        run: go test -race ./...
+      - name: go mod tidy check
+        if: runner.os != 'Windows'
+        run: go mod tidy -diff
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+
+  vulncheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  fuzz-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: fuzz Extract 60s
+        run: go test -run '^$' -fuzz '^FuzzExtract$' -fuzztime 60s .
+      - name: fuzz Reader 60s
+        run: go test -run '^$' -fuzz '^FuzzReader$' -fuzztime 60s ./internal/object
+      - name: fuzz ExtractImages 60s
+        run: go test -run '^$' -fuzz '^FuzzExtractImages$' -fuzztime 60s .
+
+  benchmarks:
+    runs-on: ubuntu-latest
+    # The regression check posts its comparison as a pull-request comment.
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: comparison matrix
+        working-directory: benchmarks
+        run: go test -run TestCompetitorComparison -v ./...
+      # Absolute bytes/allocs per extraction over the real-document corpus.
+      # Runs without -race (the test matrix has it), under which sync.Pool
+      # drops objects at random and the counts stop being deterministic.
+      - name: allocation budget
+        run: go test -run '^TestCorpusAllocationBudget$' -count=1 -v . 2>&1 | grep -v '^=== RUN'
+      - name: benchmarks
+        if: github.event_name != 'pull_request'
+        run: |
+          (cd benchmarks && go test -bench . -benchmem -run '^$' ./...)
+          go test -bench '^BenchmarkCorpus$' -benchmem -run '^$' .
+      - name: check out pull request base
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: benchmark-base
+      # The synthetic comparison benchmark and the real-document corpus
+      # (BenchmarkCorpus, which a base older than the corpus simply lacks).
+      - name: benchmark base
+        if: github.event_name == 'pull_request'
+        working-directory: benchmark-base
+        run: |
+          {
+            (cd benchmarks && go test -bench '^BenchmarkExtract$/^giraffesyo$' -benchmem -run '^$' -count=1 ./...)
+            go test -bench '^BenchmarkCorpus$' -benchmem -run '^$' -count=1 .
+          } | tee "$GITHUB_WORKSPACE/base-bench.txt"
+      - name: record base benchmark
+        if: github.event_name == 'pull_request'
+        uses: benchmark-action/github-action-benchmark@v1.22.2
+        with:
+          name: PDF extraction
+          tool: go
+          output-file-path: base-bench.txt
+          external-data-json-path: ${{ runner.temp }}/benchmark-data.json
+          skip-fetch-gh-pages: true
+      - name: benchmark pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          {
+            (cd benchmarks && go test -bench '^BenchmarkExtract$/^giraffesyo$' -benchmem -run '^$' -count=1 ./...)
+            go test -bench '^BenchmarkCorpus$' -benchmem -run '^$' -count=1 .
+          } | tee "$GITHUB_WORKSPACE/head-bench.txt"
+      - name: check for benchmark regressions
+        if: github.event_name == 'pull_request'
+        uses: benchmark-action/github-action-benchmark@v1.22.2
+        with:
+          name: PDF extraction
+          tool: go
+          output-file-path: head-bench.txt
+          external-data-json-path: ${{ runner.temp }}/benchmark-data.json
+          save-data-file: false
+          # Hosted runners commonly vary by 10–20%; alert above that range
+          # and fail only when the same-run result regresses by at least 25%.
+          alert-threshold: "120%"
+          fail-threshold: "125%"
+          fail-on-alert: true
+          summary-always: true
+          skip-fetch-gh-pages: true
+      # The gate above only fails the build; this reports what changed, as
+      # a table rather than the action's own commit comment (which a pull
+      # request does not show). benchstat compares the two runs already
+      # measured. Skipped for forks, whose token cannot write comments.
+      - name: comment benchmark comparison
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          go install golang.org/x/perf/cmd/benchstat@latest
+          benchstat="$(go env GOPATH)/bin/benchstat"
+          "$benchstat" -format csv base=base-bench.txt head=head-bench.txt > comparison.csv
+          "$benchstat" base=base-bench.txt head=head-bench.txt > comparison.txt
+          STAMP="$(date -u '+%Y-%m-%d %H:%M UTC')" \
+            python3 .github/scripts/bench_comment.py comparison.csv comparison.txt > comparison.md
+          marker='<!-- benchmark-comparison -->'
+          # Rewrite this job's own comment rather than adding one per run.
+          # GitHub keeps an edited comment where it was first posted, so
+          # the body carries the commit and time it last ran.
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$marker\")) | .id] | first // empty")
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -F body=@comparison.md >/dev/null
+            echo "updated comment $id"
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -F body=@comparison.md >/dev/null
+            echo "created comment"
+          fi

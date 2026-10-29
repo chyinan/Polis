@@ -1,6 +1,6 @@
 # Open R1–R3 qualification blockers
 
-Updated: 2026-10-29, after Slice338 REQ-35 in-house renderer feasibility review. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario. Overall REQ-38 provider configuration qualification remains blocked at Slice323.
+Updated: 2026-10-29, after Slice339 REQ-35 parser operator audit. This is an execution handoff for the still-open requirement IDs in `R1_R3_TRACEABILITY_DISPOSITION.json`; it does not close, downgrade, or re-scope any requirement or frozen scenario. Overall REQ-38 provider configuration qualification remains blocked at Slice323.
 
 Slice323 fixes local credential readiness false positives, but provider
 configuration qualification is `BLOCKED`: no active provider or Polis process
@@ -87,6 +87,8 @@ Evidence: `evidence/development/r1-r3-implementation-validation-20261007-slice-3
 These facts rule out session-backed execution in the current database and native Windows or delegated Linux qualification here. They do not prove that external accounts, certificates, or hosts do not exist elsewhere; none has been provided or connected for these product qualification tasks in this checkout.
 
 ## Requirement-by-requirement prerequisites
+
+Slice339 adds only an opt-in, bounded operator-name inventory in the parser fork. It exposes no operands/display list and changes no page-rendering or qualification status; REQ-35 remains open.
 
 | Open requirement | Remaining gate in the approved ledger | Evidence needed to resume |
 |---|---|---|

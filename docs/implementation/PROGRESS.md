@@ -1,4 +1,15 @@
-## Latest local implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
+## Latest local source increment (Slice 339, REQ-35 parser operator audit)
+
+Added the exact parser v0.7.0 to `third_party/giraffesyo-pdf` and wired the
+root module through a local `replace`. The opt-in bounded audit returns sorted
+unique operator names from page/Form/annotation appearance streams, with an
+explicit completeness bit. It does not capture image bytes or claim raster
+coverage; default extraction and PDF @4 are unchanged. Fork tests and full
+Go/race/vet/Linux+Windows command builds pass. PostgreSQL integration cases
+were skipped because `POLIS_TEST_DSN` was unset. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-parser-operator-audit-20261029/verification.md`.
+
+## Previous local implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
 
 The pinned parser's public API exposes glyphs, embedded images, page geometry,
 annotations and warnings, but no painting-operator stream/display list. The

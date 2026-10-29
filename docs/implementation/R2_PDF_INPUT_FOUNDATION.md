@@ -1,6 +1,6 @@
 # R2 PDF input foundation
 
-> Updated: 2026-10-29, Slice 338. Bounded PDF text extraction and a strict subset of embedded-image input are implemented locally; complete page rasterization and the R2 format profile remain open and unqualified.
+> Updated: 2026-10-29, Slice 339. Bounded PDF text extraction and a strict subset of embedded-image input are implemented locally; complete page rasterization and the R2 format profile remain open and unqualified.
 
 Direct `.pdf` uploads are stored as a deterministic `pdf_snapshot` gzip/tar package. The package contains the original PDF, a versioned extraction record, and extracted UTF-8 text when available. Its outer CAS digest binds all three; the internal directory manifest hashes each file. Revalidation rebuilds the package from the preserved PDF and requires byte-for-byte canonical equality.
 
@@ -27,6 +27,10 @@ Polis consumes only the public `github.com/giraffesyo/pdf@v0.7.0` extraction API
 Consequently, drawing a blank canvas with extracted glyphs and intrinsic images would omit vector paths, font glyph shapes/metrics, clipping, masks and compositing. That output cannot be labeled a complete page. A truthful self-built renderer requires a maintained parser extension/fork that exports a bounded typed drawing IR, followed by an implementation that either supports every operator encountered on a page or marks that page unsupported/partial. No such IR or subset renderer was added in this slice; @4 remains unchanged.
 
 Source references: [pinned parser v0.7.0](https://github.com/giraffesyo/pdf/tree/v0.7.0), [public Page/Glyph API](https://github.com/giraffesyo/pdf/blob/v0.7.0/extract.go), [page image semantics](https://github.com/giraffesyo/pdf/blob/v0.7.0/image.go). Feasibility evidence: `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-in-house-renderer-feasibility-20261029/research.md`.
+
+## Slice 339 bounded parser operator audit
+
+The exact v0.7.0 source is now maintained under `third_party/giraffesyo-pdf` via a root `go.mod` replacement. An opt-in parser option reports sorted unique operator names found in page/Form/annotation appearance streams, capped at 256 names of 128 bytes each. Structural, stream, work-limit, malformed, or audit-budget failures set `ContentOperatorNamesComplete=false`. The audit does not expose operands or graphics state, is not a display list, and does not qualify any operation as rendered. It is disabled by default, so PDF @4 snapshot bytes and historical verification remain unchanged. Fork tests run with `scripts/test-pdf-parser-fork.sh`; see `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-parser-operator-audit-20261029/verification.md`.
 
 The original Slice 12 offline tests cover text extraction reaching `PrepareModelInputContext`, canonical package/hash verification, original-byte preservation, no-text handling, text truncation, malformed/oversized/mislabeled input rejection, and nested PDF preservation without parser recursion. A disposable PostgreSQL 18 cluster applied migrations 00001–00026. `TestProductWorkerReceivesExtractedTextFromBoundPDFInput`, `TestWorkbenchMissionInputUploadStoresAndListsWithoutStartingMission`, and `TestZIPInputIsDeliveredToWorkerAndReadBackPerFile` passed against schema 26; the fake Worker receipt confirms extracted text inclusion, original-PDF exclusion, Workbench per-file readback, and `provider_egress=0`. The temporary cluster and database were removed. Full Go tests and command builds also passed at that stage. Evidence: `evidence/development/r1-r3-implementation-validation-20260924-slice-12/verification.md`.
 
