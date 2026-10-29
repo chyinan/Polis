@@ -1,4 +1,15 @@
-## Latest local source increment (Slice 334, REQ-29 bounded root snapshot primitive)
+## Latest local source increment (Slice 335, REQ-29 selected-directory review)
+
+Changed the existing browser directory picker from immediate upload to a local
+review step. It lists relative names and sizes, validates the existing file
+count/byte/path/collision bounds, identifies likely sensitive paths by name,
+and requires an explicit user confirmation before sending bytes. File objects
+and their request ID remain available for exact retry after an uncertain result.
+No file content is read for preview, and no Company `workspace_root` path is
+opened or authorized. Frontend typecheck/lint/build and 182 tests pass. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req29-directory-selection-review-20261029/verification.md`.
+
+## Previous local source increment (Slice 334, REQ-29 bounded root snapshot primitive)
 
 Added a pathless root-handle walker in `internal/intake` that snapshots bounded
 regular files into the existing canonical directory package. It requires an

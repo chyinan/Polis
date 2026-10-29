@@ -4,6 +4,7 @@ import {BadgeCheck, Check, FileCheck2, FileText, FolderOpen, Handshake, History,
 import {useRef, useState, type ChangeEvent, type FormEvent, type ReactNode} from 'react';
 import type {ActivityEvent, CompanyOverviewView, CrossBackendHandoverView, DependencyChangeProposalRecordView, EmployeeSummary, JobRunView, ProjectEnvironmentRevisionView, TaskSummary, UserDispositionDecision} from '../domain/workbench';
 import {isInputArchiveSource, type MissionInputState, type MissionInputView} from '../domain/mission-input';
+import {previewMissionDirectorySelection, type MissionDirectorySelectionIssue} from '../domain/mission-directory-preview';
 import {MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES, MAX_MISSION_INPUT_BYTES} from '../data/workbench-api';
 import type {WorkbenchApi} from '../data/workbench-api';
 import {useArtifactDeliveryManifest, useArtifactDetail, useCompleteDurableDeliveryManifest, useCreateTaskEnvironmentHandover, useDecideDependencyChange, useDecideProjectEnvironmentExecutorQualification, useDecideProjectEnvironmentPolicy, useDependencyChanges, useDurableDelivery, useEnsureProjectEnvironment, useMaterializeDependencyChange, useMissionInputs, useProjectEnvironments, useProposeDependencyChange, useRecordDurableUserDisposition, useStartTaskJobRun, useStopTaskJobRun, useTaskCrossBackendHandovers, useTaskInputManifest, useTaskJobLogs, useTaskJobRuns, useTaskWorkspace, useUploadMissionDirectoryInput, useUploadMissionInput} from '../data/workbench-query';
@@ -311,6 +312,18 @@ const missionInputStateLabels: Readonly<Record<MissionInputState, string>> = {
   rejected: '已拒绝',
 };
 
+const missionDirectoryIssueLabels: Readonly<Record<MissionDirectorySelectionIssue, string>> = {
+  no_files: '请选择至少一个文件。',
+  too_many_files: `文件数量超过 ${MAX_MISSION_DIRECTORY_FILES} 个上限。`,
+  invalid_file_size: '存在空文件或超出单文件大小限制的文件。',
+  directory_too_large: `文件总量超过 ${MAX_MISSION_DIRECTORY_BYTES / (1024 * 1024)} MB 上限。`,
+  invalid_path: '存在不安全或不支持的相对路径。',
+  reserved_path: '存在 Windows 保留设备名，不能保存到跨平台快照。',
+  root_mismatch: '所选文件不属于同一个目录根。',
+  path_collision: '存在大小写不敏感的重名路径。',
+  file_parent_collision: '存在文件与其子路径冲突的条目。',
+};
+
 function MissionInputsPanel({api, companyId, missionId, missionState}: MissionInputsPanelProps) {
   const query = useMissionInputs(api, companyId, missionId);
   const upload = useUploadMissionInput(api, companyId, missionId);
@@ -320,12 +333,16 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [retryTarget, setRetryTarget] = useState<MissionInputView | null>(null);
   const [pendingDirectoryUpload, setPendingDirectoryUpload] = useState<PendingMissionDirectoryUpload | null>(null);
+  const [directorySelectionAcknowledged, setDirectorySelectionAcknowledged] = useState(false);
   const inputs = query.data ?? [];
   const latestByID = new Map<string, MissionInputView>();
   for (const input of inputs) {
     if (!latestByID.has(input.inputId)) latestByID.set(input.inputId, input);
   }
   const canUpload = ['draft', 'active', 'paused'].includes(missionState);
+  const directoryPreview = pendingDirectoryUpload === null
+    ? null
+    : previewMissionDirectorySelection(pendingDirectoryUpload.files.map(entry => ({relativePath: entry.relativePath, byteSize: entry.file.size})));
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     const file = event.currentTarget.files?.item(0) ?? null;
@@ -360,6 +377,7 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
       });
       setInputId('');
       setPendingDirectoryUpload(null);
+      setDirectorySelectionAcknowledged(false);
       setNotice(receipt.displayName + ' 目录快照已保存为第 ' + receipt.revision + ' 版。上传不会启动使命，也不代表模型已读取。');
     } catch (error) {
       const detail = error instanceof Error ? error.message : '命令结果未知';
@@ -376,8 +394,10 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
       requestId: 'mission-directory-' + crypto.randomUUID(),
       files: selectedFiles.map(file => ({relativePath: file.webkitRelativePath, file})),
     };
+    setNotice(null);
+    setUploadError(null);
+    setDirectorySelectionAcknowledged(false);
     setPendingDirectoryUpload(pending);
-    await submitDirectoryUpload(pending);
   }
 
   return <section className={styles.detailGrid}>
@@ -388,7 +408,7 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
       </div>
       <div className={styles.formStack}>
         <label className={styles.formLabel}>保存为
-          <select className={styles.formField} value={inputId} onChange={event => setInputId(event.target.value)} disabled={!canUpload || upload.isPending || retryTarget !== null}>
+          <select className={styles.formField} value={inputId} onChange={event => setInputId(event.target.value)} disabled={!canUpload || upload.isPending || retryTarget !== null || pendingDirectoryUpload !== null}>
             <option value="">新建资料</option>
             {[...latestByID.values()].map(input => <option key={input.inputId} value={input.inputId}>{input.displayName} · 当前版本 {input.revision}</option>)}
           </select>
@@ -398,7 +418,7 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
             accept=".txt,.md,.go,.ts,.tsx,.js,.jsx,.html,.css,.json,.yaml,.yml,.toml,.sql,.rs,.py,.sh,.ps1,.csv,.png,.jpg,.jpeg,.pdf,.zip"
             className={styles.formField}
             data-testid="mission-input-file"
-            disabled={!canUpload || upload.isPending || directoryUpload.isPending}
+            disabled={!canUpload || upload.isPending || directoryUpload.isPending || pendingDirectoryUpload !== null}
             onChange={event => { void handleFileChange(event); }}
             type="file"
           />
@@ -416,9 +436,20 @@ function MissionInputsPanel({api, companyId, missionId, missionState}: MissionIn
         </label> : null}
         <p className={styles.formHint}>单文件上限 {MAX_MISSION_INPUT_BYTES / (1024 * 1024)} MB；PDF 原件最多 6 MB；目录最多 {MAX_MISSION_DIRECTORY_FILES} 个文件、合计 {MAX_MISSION_DIRECTORY_BYTES / (1024 * 1024)} MB。单文件支持 UTF-8 文本、代码、Markdown、CSV、PNG、JPEG 和 PDF。PDF 原件与有界文本抽取记录会一起保存，抽取文本可进入 Worker；扫描页不做 OCR，原 PDF 不会作为文本发送。ZIP 项目包仅在内存中有界检查，支持文本可进入 Worker 上下文，未支持文件会单独标示；上传只保存版本，不启动员工，也不代表模型已读取。</p>
         {retryTarget !== null ? <button className={styles.textButton} disabled={upload.isPending || directoryUpload.isPending} onClick={() => setRetryTarget(null)} type="button">取消续传</button> : null}
-        {pendingDirectoryUpload !== null ? <div className={styles.commandGroup}>
-          <button className={styles.commandButton} disabled={directoryUpload.isPending || upload.isPending} onClick={() => { void submitDirectoryUpload(pendingDirectoryUpload); }} type="button">用同一批文件和请求 ID 重试目录上传</button>
-          <button className={styles.textButton} disabled={directoryUpload.isPending || upload.isPending} onClick={() => setPendingDirectoryUpload(null)} type="button">放弃待确认上传并选择其他目录</button>
+        {pendingDirectoryUpload !== null && directoryPreview !== null ? <div className={styles.formStack} data-testid="mission-directory-preview">
+          <p className={styles.formHint}>文件来自你在系统文件选择器中主动选择的目录。当前仅在浏览器显示文件名与大小，不读取文件内容、访问主机根路径或上传任何文件。</p>
+          <p className={styles.formHint}>待审阅 {directoryPreview.entries.length} 个文件 · {directoryPreview.totalBytes.toLocaleString()} bytes。若上传结果暂时未知，重试会复用本次选择。</p>
+          {directoryPreview.issues.length > 0 ? <div className={styles.errorState} role="alert"><div><strong>此目录快照暂不能导入</strong><ul>{directoryPreview.issues.map(issue => <li key={issue}>{missionDirectoryIssueLabels[issue]}</li>)}</ul></div></div> : null}
+          {directoryPreview.entries.some(entry => entry.sensitiveHint) ? <div className={styles.errorState} role="alert"><div><strong>可能包含敏感文件</strong><p>路径名提示发现可能的凭据或密钥。此提示只检查名称，并不保证发现所有敏感内容；确认上传后，文件副本会保存在 Mission 私有 CAS，并可能进入后续 Worker 上下文。</p></div></div> : null}
+          <div className={styles.recordList}>{directoryPreview.entries.map((entry, index) => <div className={styles.recordRow} key={`${entry.relativePath}:${index}`}>
+            <div className={styles.recordLead}><FolderOpen aria-hidden="true" size={16} /><div><strong>{entry.relativePath}</strong><span>{entry.byteSize.toLocaleString()} bytes</span></div></div>
+            {entry.sensitiveHint ? <StatusBadge compact label="可能敏感" tone="danger" /> : null}
+          </div>)}</div>
+          <label className={styles.reviewCheck}><input checked={directorySelectionAcknowledged} onChange={event => setDirectorySelectionAcknowledged(event.target.checked)} type="checkbox" /><span>我已审阅上方文件清单，确认这些文件可以复制到此 Mission 的私有 CAS 快照，并可能用于后续 Worker 输入。</span></label>
+          <div className={styles.commandGroup}>
+            <button className={styles.commandButton} disabled={!canUpload || !directoryPreview.valid || !directorySelectionAcknowledged || directoryUpload.isPending || upload.isPending} onClick={() => { void submitDirectoryUpload(pendingDirectoryUpload); }} type="button">{directoryUpload.isPending ? '正在上传已确认的目录…' : '确认并上传目录快照'}</button>
+            <button className={styles.textButton} disabled={directoryUpload.isPending || upload.isPending} onClick={() => {setPendingDirectoryUpload(null); setDirectorySelectionAcknowledged(false); setUploadError(null);}} type="button">取消选择</button>
+          </div>
         </div> : null}
         {upload.isPending || directoryUpload.isPending ? <div className={styles.emptyState} role="status">正在保存输入快照…</div> : null}
         {uploadError ? <p className={styles.formError} role="alert">{uploadError}</p> : null}

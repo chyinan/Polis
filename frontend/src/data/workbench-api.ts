@@ -377,9 +377,7 @@ export type ActivityStreamOptions = Readonly<{
 
 export type ActivityStreamStatusListener = (status: ActivityStreamStatus) => void;
 
-export const MAX_MISSION_INPUT_BYTES = 8 * 1024 * 1024;
-export const MAX_MISSION_DIRECTORY_BYTES = 7 * 1024 * 1024;
-export const MAX_MISSION_DIRECTORY_FILES = 250;
+export {MAX_MISSION_INPUT_BYTES, MAX_MISSION_DIRECTORY_BYTES, MAX_MISSION_DIRECTORY_FILES} from '../domain/mission-directory-preview';
 
 export type MissionInputQueryOptions = Readonly<{
   companyId: string;

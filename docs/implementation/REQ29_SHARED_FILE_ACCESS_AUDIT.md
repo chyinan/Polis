@@ -31,6 +31,7 @@ Under the user's delegated product-choice instruction, the default behavior is:
 - `companies.workspace_root` remains display metadata and never grants filesystem authority by itself.
 - Workspace visibility stays Company-private. There is no cross-Company or Group/public-library sharing by default.
 - Work enters through an explicit owner/user file-selection upload and becomes an immutable Company CAS snapshot. Workers use their existing logical CAS workspace; no Worker writes back to the host root.
+- Slice335 adds a browser-local review/confirmation step to the existing directory picker. It shows only selected relative paths and sizes, warns heuristically about likely credential/key names, and sends no bytes before confirmation. This is not a `workspace_root` read or durable native root binding.
 - Workspace-snapshot revocation blocks later direct-ID reads. Existing CAS references are retained; no automatic snapshot reclamation or expiry is selected.
 
 This choice favors privacy and recoverability over convenience. It makes sharing, host-write, and retention defaults explicit without claiming a native root binding exists. Native read-only root access remains unavailable until a supported owner-selected root handle, no-follow/special-file/TOCTOU implementation, durable binding/revocation path, and target-host qualification are implemented. A plain path string is not upgraded into authority.

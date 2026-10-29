@@ -1,4 +1,14 @@
-## Latest source increment (Slice 334, REQ-29 bounded root snapshot primitive)
+## Latest source increment (Slice 335, REQ-29 selected-directory review)
+
+The existing browser-selected directory upload now presents names/sizes and
+validates bounded path/count/size/collision rules before upload. Likely secret
+paths get a heuristic warning and an explicit confirmation is required; the
+same selected files and RequestID are retained for retry. This is not a server
+filesystem read and does not make `workspace_root` authority. Frontend
+typecheck/lint/build and all 182 tests pass. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req29-directory-selection-review-20261029/verification.md`.
+
+## Previous source increment (Slice 334, REQ-29 bounded root snapshot primitive)
 
 Added an intake helper requiring an already-open `os.Root`; the bounded walker
 rejects observed links/special entries, checks opened-file identity, and emits

@@ -9,7 +9,20 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
-## Latest local source increment (Slice 334, REQ-29 bounded root snapshot primitive)
+## Latest local source increment (Slice 335, REQ-29 selected-directory review)
+
+Browser-selected directory snapshots now stop after selection for a local
+filename/size review. The UI applies the same count, aggregate-size, path,
+reserved-name, collision, and root-consistency bounds as intake, flags common
+credential/key paths by name only, and requires explicit confirmation before
+FormData upload. A failed upload retains the selected File objects and exact
+RequestID for retry. This uses only files the user selected in the browser; it
+does not open `companies.workspace_root`, read file contents for preview, or
+create a native root binding. Frontend typecheck, lint, build, and all 182 tests
+pass. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req29-directory-selection-review-20261029/verification.md`.
+
+## Previous local source increment (Slice 334, REQ-29 bounded root snapshot primitive)
 
 Added `intake.PrepareReadOnlyRootSnapshot(*os.Root)`: a pathless, bounded
 filesystem walker that rejects observed links and non-regular entries, checks
