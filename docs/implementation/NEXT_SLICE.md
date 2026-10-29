@@ -9,7 +9,21 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
-## Latest local source increment (Slice 335, REQ-29 selected-directory review)
+## Latest local source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
+
+`FixedTeamCoverageRoleRevision` is a public value containing mutable nested
+fields, so a compiled object could be copied and altered while retaining its
+compiled marker/digest. TaskRevision mapping and admission now revalidate the
+current digest, fixed owner decision, `unverified` qualification, and exact
+embedded contract. Missing, stale, revoked, or mutated role records return an
+unavailable/unverified TaskRevision and stay on the human path. Unit regressions
+cover those states; the existing TaskRevision decision lifecycle continues to
+reject resurrection after revocation. Full Go, race, vet, and Linux/Windows
+command builds pass. `POLIS_TEST_DSN` was unset, so PostgreSQL integration cases
+requiring it were skipped. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-role-revision-fail-closed-20261029/verification.md`.
+
+## Previous local source increment (Slice 335, REQ-29 selected-directory review)
 
 Browser-selected directory snapshots now stop after selection for a local
 filename/size review. The UI applies the same count, aggregate-size, path,

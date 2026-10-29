@@ -154,10 +154,10 @@ func CompileFixedTeamCoverageRoleRevision(snapshot []byte, revisionSHA256, owner
 // Unknown types, owner mismatches, disabled execution, and unqualified roles
 // remain on the human-required path.
 func (revision FixedTeamCoverageRoleRevision) AdmissionFor(taskType, owner string) FixedTeamCoverageAdmission {
-	result := FixedTeamCoverageAdmission{TaskType: taskType, RequiresHuman: true}
+	result := FixedTeamCoverageAdmission{TaskType: taskType, Qualification: "unverified", RequiresHuman: true}
 	taskRevision := revision.TaskRevisionFor(taskType, owner, FixedTeamCoverageTaskKind(taskType))
 	result.RequiresHuman = taskRevision.RequiresHuman
-	if !revision.compiled || revision.RevisionSHA256 != FixedTeamCoverageSHA256() || revision.OwnerDecision != FixedTeamCoverageOwnerDecision {
+	if taskRevision.ReasonCode == "role_revision_unavailable" {
 		return result
 	}
 	for _, assignment := range revision.Contract.Coverage {

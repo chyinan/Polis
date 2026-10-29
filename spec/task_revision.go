@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"reflect"
 )
 
 // FixedTeamTaskRevision is the semantic binding between an owner-confirmed
@@ -50,7 +51,8 @@ func (revision FixedTeamCoverageRoleRevision) TaskRevisionFor(taskType, owner, t
 		RequiresHuman:      true,
 		ReasonCode:         "role_revision_unavailable",
 	}
-	if !revision.compiled || revision.RevisionSHA256 != FixedTeamCoverageSHA256() || revision.OwnerDecision != FixedTeamCoverageOwnerDecision {
+	if !revision.isCurrentFixedTeamCoverageRoleRevision() {
+		result.Qualification = "unverified"
 		return withFixedTeamTaskRevisionDigest(result)
 	}
 	var assignment *FixedTeamCoverageAssignment
@@ -75,6 +77,19 @@ func (revision FixedTeamCoverageRoleRevision) TaskRevisionFor(taskType, owner, t
 	}
 	result.ReasonCode = "task_revision_unqualified"
 	return withFixedTeamTaskRevisionDigest(result)
+}
+
+// isCurrentFixedTeamCoverageRoleRevision revalidates the public projection
+// fields because callers can copy and mutate the exported struct after compile.
+// A compiled bit and copied digest alone do not make the nested contract
+// immutable.
+func (revision FixedTeamCoverageRoleRevision) isCurrentFixedTeamCoverageRoleRevision() bool {
+	if !revision.compiled || revision.RevisionSHA256 != FixedTeamCoverageSHA256() ||
+		revision.OwnerDecision != FixedTeamCoverageOwnerDecision || revision.Qualification != "unverified" {
+		return false
+	}
+	currentContract, err := CompileFixedTeamCoverageDraft()
+	return err == nil && reflect.DeepEqual(revision.Contract, currentContract)
 }
 
 func withFixedTeamTaskRevisionDigest(result FixedTeamTaskRevision) FixedTeamTaskRevision {

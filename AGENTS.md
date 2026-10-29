@@ -9,7 +9,7 @@ configuration or Polis process was active. No Worker, provider request or
 external retrieval ran. Continue from `docs/implementation/NEXT_SLICE.md` and
 the Slice323 evidence; REQ-38 remains `NOT_COMPLETE`.
 
-## Latest local source increments (Slices 324–335)
+## Latest local source increments (Slices 324–336)
 
 REQ-37 has an opt-in fake-only `polis-product-tool-surface@20` for bounded,
 Task/WorkerSession-bound project JobRun start/stop, reusing Control's existing
@@ -44,6 +44,9 @@ Slice335 changes browser-selected directory uploads to require a local filename/
 size review and explicit confirmation, with path/size bounds and likely-secret
 name hints before any bytes are uploaded. It does not read `workspace_root` or
 grant host-root access; native root binding remains unavailable.
+Slice336 hardens semantic TaskRevision mapping against missing/stale/revoked or
+mutated fixed-team RoleRevision values; invalid mappings stay unverified and
+human-gated. This adds no execution authority.
 Continue the source backlog in
 `docs/implementation/REMAINING_PRODUCT_FEATURES_IMPLEMENTATION_PLAN.md`.
 

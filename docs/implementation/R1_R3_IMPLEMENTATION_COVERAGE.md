@@ -1,4 +1,15 @@
-## Latest source increment (Slice 335, REQ-29 selected-directory review)
+## Latest source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
+
+The public compiled RoleRevision projection can be mutated after compilation.
+`TaskRevisionFor` and `AdmissionFor` now revalidate its digest, owner decision,
+unverified qualification, and exact embedded contract. Missing/stale/revoked or
+mutated values cannot report covered/qualified and stay human-gated. Regression
+tests and full Go/race/vet/Linux+Windows command builds pass. PostgreSQL
+integration cases requiring `POLIS_TEST_DSN` were skipped because it was unset.
+Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-role-revision-fail-closed-20261029/verification.md`.
+
+## Previous source increment (Slice 335, REQ-29 selected-directory review)
 
 The existing browser-selected directory upload now presents names/sizes and
 validates bounded path/count/size/collision rules before upload. Likely secret

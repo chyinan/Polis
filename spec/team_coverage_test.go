@@ -64,3 +64,62 @@ func TestFixedTeamTaskRevisionBindingRejectsSemanticMismatches(t *testing.T) {
 		})
 	}
 }
+
+func TestFixedTeamTaskRevisionFailsClosedForMissingStaleRevokedOrMutatedRoleRevision(t *testing.T) {
+	compiled, err := CompileFixedTeamCoverageRoleRevision(FixedTeamCoverageDraftSnapshot(), FixedTeamCoverageSHA256(), FixedTeamCoverageOwnerDecision, "unverified")
+	if err != nil {
+		t.Fatal(err)
+	}
+	stale := compiled
+	stale.RevisionSHA256 = "0000000000000000000000000000000000000000000000000000000000000000"
+	stale.Qualification = "qualified"
+	revoked := compiled
+	revoked.OwnerDecision = "revoked"
+	revoked.Qualification = "qualified"
+	mutated := compiled
+	for index := range mutated.Contract.Coverage {
+		if mutated.Contract.Coverage[index].TaskType == "backend" {
+			mutated.Contract.Coverage[index].Owner = "emp-frontend"
+		}
+	}
+
+	for _, test := range []struct {
+		name     string
+		revision FixedTeamCoverageRoleRevision
+		taskType string
+		owner    string
+	}{
+		{name: "missing role revision", revision: FixedTeamCoverageRoleRevision{}, taskType: "backend", owner: "emp-backend"},
+		{name: "stale role digest", revision: stale, taskType: "backend", owner: "emp-backend"},
+		{name: "revoked role decision", revision: revoked, taskType: "backend", owner: "emp-backend"},
+		{name: "mutated compiled role contract", revision: mutated, taskType: "backend", owner: "emp-frontend"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			binding := test.revision.TaskRevisionFor(test.taskType, test.owner, "compat")
+			if binding.ReasonCode != "role_revision_unavailable" || binding.Qualification != "unverified" || !binding.RequiresHuman {
+				t.Fatalf("invalid RoleRevision produced TaskRevision=%+v, want unavailable/unverified/human-gated", binding)
+			}
+			admission := test.revision.AdmissionFor(test.taskType, test.owner)
+			if admission.Covered || !admission.RequiresHuman {
+				t.Fatalf("invalid RoleRevision admission=%+v, want uncovered human path", admission)
+			}
+		})
+	}
+}
+
+func TestCompileFixedTeamCoverageRoleRevisionRejectsRevokedOrQualifiedRows(t *testing.T) {
+	for _, test := range []struct {
+		name          string
+		ownerDecision string
+		qualification string
+	}{
+		{name: "revoked owner decision", ownerDecision: "revoked", qualification: "unverified"},
+		{name: "qualified without qualification evidence", ownerDecision: FixedTeamCoverageOwnerDecision, qualification: "qualified"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if _, err := CompileFixedTeamCoverageRoleRevision(FixedTeamCoverageDraftSnapshot(), FixedTeamCoverageSHA256(), test.ownerDecision, test.qualification); err == nil {
+				t.Fatalf("compiled invalid RoleRevision decision=%q qualification=%q", test.ownerDecision, test.qualification)
+			}
+		})
+	}
+}

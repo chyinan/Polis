@@ -1,4 +1,16 @@
-## Latest local source increment (Slice 335, REQ-29 selected-directory review)
+## Latest local source increment (Slice 336, REQ-02 RoleRevision fail-closed guard)
+
+Hardened `TaskRevisionFor`/`AdmissionFor` against caller mutation of the exported
+compiled RoleRevision value. Both now require the exact current digest, fixed
+owner decision, unverified qualification, and embedded contract before exposing
+coverage; missing/stale/revoked/mutated values yield an unavailable, unverified,
+human-required result. New pure tests cover these denials and the existing
+TaskRevision lifecycle tests cover post-revocation resurrection. Full Go,
+race, vet and Linux/Windows command builds pass. PostgreSQL integration tests
+were skipped because `POLIS_TEST_DSN` was unset. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req02-role-revision-fail-closed-20261029/verification.md`.
+
+## Previous local source increment (Slice 335, REQ-29 selected-directory review)
 
 Changed the existing browser directory picker from immediate upload to a local
 review step. It lists relative names and sizes, validates the existing file
