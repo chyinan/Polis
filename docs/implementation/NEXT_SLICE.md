@@ -9,7 +9,24 @@ not injected, and the Codex upstream `base_url` is not pinned. No Worker,
 provider request or external retrieval ran. REQ-38 remains incomplete. Evidence:
 `evidence/development/r1-r3-implementation-validation-20261008-slice-323-provider-endpoint-ranking-qualification/verification.md`.
 
-## Latest local implementation decision (Slice 337, REQ-35 renderer candidate review)
+## Latest local implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
+
+Inspected the exact pinned `github.com/giraffesyo/pdf@v0.7.0` API and Polis
+integration. `pdf.Page` exposes extracted `Glyphs`, `Images`, page boxes,
+rotation, annotations and warnings; it does not expose painting operators or a
+renderable display list. Its content-stream interpreter and operand model are
+unexported, and its object parser is behind Go's `internal` import boundary.
+Therefore combining public Glyph/Image results would omit vector paths, proper
+text/font rendering, clipping, compositing and masks; it would not be a complete
+page renderer and would repeat the forbidden blank-canvas approximation.
+Decision: no in-house subset is labeled a complete raster. A real self-renderer
+would require a parser-owned bounded drawing IR (or a maintained parser fork)
+plus complete per-page operator support before a page can be marked rendered.
+Keep @4's `unsupported` state. No code, dependency, database or external runtime
+changed. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-in-house-renderer-feasibility-20261029/research.md`.
+
+## Previous local implementation decision (Slice 337, REQ-35 renderer candidate review)
 
 Reviewed the current Go renderer candidates. `go-fitz` is AGPL-3.0. The
 cross-platform `go-pdfium@v1.21.4` WebAssembly backend avoids CGO and embeds a

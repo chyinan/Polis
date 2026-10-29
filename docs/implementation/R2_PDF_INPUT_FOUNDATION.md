@@ -1,6 +1,6 @@
 # R2 PDF input foundation
 
-> Updated: 2026-10-29, Slice 337. Bounded PDF text extraction and a strict subset of embedded-image input are implemented locally; complete page rasterization and the R2 format profile remain open and unqualified.
+> Updated: 2026-10-29, Slice 338. Bounded PDF text extraction and a strict subset of embedded-image input are implemented locally; complete page rasterization and the R2 format profile remain open and unqualified.
 
 Direct `.pdf` uploads are stored as a deterministic `pdf_snapshot` gzip/tar package. The package contains the original PDF, a versioned extraction record, and extracted UTF-8 text when available. Its outer CAS digest binds all three; the internal directory manifest hashes each file. Revalidation rebuilds the package from the preserved PDF and requires byte-for-byte canonical equality.
 
@@ -19,6 +19,14 @@ No renderer was selected. `github.com/gen2brain/go-fitz` is marked AGPL-3.0 in i
 The go-pdfium v1.21.4 README documents a 32-bit WASM ceiling (less than 2 GiB for one bitmap and up to 4 GiB for the module), and the versioned `webassembly.go` mounts the host root/volume by default unless the caller supplies an explicit `FSConfig`. The API allows a custom Wazero runtime configuration, but Polis has not implemented or tested an empty filesystem, lower memory/time caps, output limits, one-render lifecycle, or a deterministic fidelity/omission record. The native backend additionally requires CGO and a platform PDFium install. These candidate facts do not justify replacing the current fail-closed `unsupported` status.
 
 Research evidence and source links: `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-renderer-candidate-review-20261029/research.md`.
+
+## Slice 338 in-house renderer feasibility
+
+Polis consumes only the public `github.com/giraffesyo/pdf@v0.7.0` extraction API via `pdf.ExtractPages` in `internal/intake/pdf_snapshot.go`. Its public `Page` projection contains `Glyphs`, `Images`, `ImageCount`, page boxes, rotation, annotations and warnings; it does not contain drawing operators, the graphics-state stack, clipping paths or a display list. The dependency parses content operators internally through unexported types/functions, and its `internal/object` package cannot be imported by Polis.
+
+Consequently, drawing a blank canvas with extracted glyphs and intrinsic images would omit vector paths, font glyph shapes/metrics, clipping, masks and compositing. That output cannot be labeled a complete page. A truthful self-built renderer requires a maintained parser extension/fork that exports a bounded typed drawing IR, followed by an implementation that either supports every operator encountered on a page or marks that page unsupported/partial. No such IR or subset renderer was added in this slice; @4 remains unchanged.
+
+Source references: [pinned parser v0.7.0](https://github.com/giraffesyo/pdf/tree/v0.7.0), [public Page/Glyph API](https://github.com/giraffesyo/pdf/blob/v0.7.0/extract.go), [page image semantics](https://github.com/giraffesyo/pdf/blob/v0.7.0/image.go). Feasibility evidence: `evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-in-house-renderer-feasibility-20261029/research.md`.
 
 The original Slice 12 offline tests cover text extraction reaching `PrepareModelInputContext`, canonical package/hash verification, original-byte preservation, no-text handling, text truncation, malformed/oversized/mislabeled input rejection, and nested PDF preservation without parser recursion. A disposable PostgreSQL 18 cluster applied migrations 00001–00026. `TestProductWorkerReceivesExtractedTextFromBoundPDFInput`, `TestWorkbenchMissionInputUploadStoresAndListsWithoutStartingMission`, and `TestZIPInputIsDeliveredToWorkerAndReadBackPerFile` passed against schema 26; the fake Worker receipt confirms extracted text inclusion, original-PDF exclusion, Workbench per-file readback, and `provider_egress=0`. The temporary cluster and database were removed. Full Go tests and command builds also passed at that stage. Evidence: `evidence/development/r1-r3-implementation-validation-20260924-slice-12/verification.md`.
 

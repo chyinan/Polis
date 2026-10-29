@@ -1,4 +1,15 @@
-## Latest implementation decision (Slice 337, REQ-35 renderer candidate review)
+## Latest implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
+
+The pinned `pdf@v0.7.0` public API supplies extracted glyphs/images and page
+metadata, not the paint operators/display list needed for complete page
+composition. Its operator interpreter/object layer cannot be reused from Polis
+without a maintained fork. A renderer built from the current public outputs
+would omit vectors, text rendering details, clipping and masks, so it must not
+be called a complete page raster. `unsupported` remains unchanged; no source or
+qualification state changed. Evidence:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-in-house-renderer-feasibility-20261029/research.md`.
+
+## Previous implementation decision (Slice 337, REQ-35 renderer candidate review)
 
 Candidate review did not select a renderer: the AGPL-3.0 MuPDF Go binding is
 not adopted, and the MIT Go-PDFium wrapper's embedded wasm artifact lacks a

@@ -1,4 +1,16 @@
-## Latest local implementation decision (Slice 337, REQ-35 renderer candidate review)
+## Latest local implementation decision (Slice 338, REQ-35 in-house renderer feasibility)
+
+The pinned parser's public API exposes glyphs, embedded images, page geometry,
+annotations and warnings, but no painting-operator stream/display list. The
+operator interpreter and parsed operands are private; its object layer is an
+unimportable Go `internal` package from Polis. Reconstructing a page from only
+glyphs and intrinsic images would omit vector drawing and rendering state and
+would not qualify as a complete page. No incomplete compositor or parser fork
+was added; extraction@4 stays explicitly unsupported for full-page rendering.
+No code or dependencies changed. Source audit:
+`evidence/development/polis-self-dev-v1-go-patch-delivery-20261009-req35-in-house-renderer-feasibility-20261029/research.md`.
+
+## Previous local implementation decision (Slice 337, REQ-35 renderer candidate review)
 
 Evaluated current Go PDF rendering options and kept page rendering explicitly
 unsupported. `go-fitz` is AGPL-3.0. `go-pdfium@v1.21.4` offers a cross-platform
