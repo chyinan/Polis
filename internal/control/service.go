@@ -214,6 +214,43 @@ func (s *Service) UpsertCapabilityBinding(ctx context.Context, companyID string,
 	return s.runtime.TXUpsertEmployeeCapabilityBinding(ctx, companyID, kernel.CapabilityBindingInput{EmployeeID: request.EmployeeID, SkillRevisionIDs: request.SkillRevisionIDs, MCPDefinitionIDs: request.MCPDefinitionIDs, Status: request.Status})
 }
 
+func (s *Service) ListMCPToolCallQualifications(ctx context.Context, companyID string, request ListMCPToolCallQualificationsRequest) ([]kernel.MCPToolCallQualification, error) {
+	if strings.TrimSpace(request.RequestID) == "" {
+		return nil, core.Malformed
+	}
+	return s.runtime.TXListMCPToolCallQualifications(ctx, companyID, request.BindingID)
+}
+
+func (s *Service) UpsertMCPToolCallQualification(ctx context.Context, companyID string, request UpsertMCPToolCallQualificationRequest) (kernel.MCPToolCallQualification, error) {
+	if strings.TrimSpace(request.RequestID) == "" {
+		return kernel.MCPToolCallQualification{}, core.Malformed
+	}
+	policy := strings.TrimSpace(request.PolicyRevision)
+	if policy == "" {
+		policy = "r15-tools-call@1"
+	}
+	effect := strings.TrimSpace(request.EffectClass)
+	if effect == "" {
+		effect = "unknown"
+	}
+	status := strings.TrimSpace(request.Status)
+	if status == "" {
+		status = "approved"
+	}
+	return s.runtime.TXUpsertMCPToolCallQualification(ctx, companyID, kernel.MCPToolCallQualificationInput{BindingID: request.BindingID, DefinitionID: request.DefinitionID, Handle: request.Handle, DescriptorDigest: request.DescriptorDigest, PolicyRevision: policy, EffectClass: effect, Status: status, AuthorizationRef: request.AuthorizationRef, QualifiedBy: request.QualifiedBy, Notes: request.Notes})
+}
+
+func (s *Service) CallMCPTool(ctx context.Context, companyID string, request CallMCPToolRequest) (kernel.MCPToolCallReceipt, error) {
+	if strings.TrimSpace(request.RequestID) == "" {
+		return kernel.MCPToolCallReceipt{}, core.Malformed
+	}
+	policy := strings.TrimSpace(request.PolicyRevision)
+	if policy == "" {
+		policy = "r15-tools-call@1"
+	}
+	return s.runtime.TXCallMCPTool(ctx, kernel.ToolCallRequest{CompanyID: companyID, EmployeeID: request.EmployeeID, TaskID: request.TaskID, BindingID: request.BindingID, Handle: request.Handle, DescriptorDigest: request.DescriptorDigest, Arguments: request.Arguments, IdempotencyKey: request.IdempotencyKey, PolicyRevision: policy, AuthorizationRef: request.AuthorizationRef})
+}
+
 func (s *Service) GetRuntimeSettings(ctx context.Context, companyID string) (RuntimeSettings, error) {
 	company, err := s.runtime.CompanyDetails(ctx, companyID)
 	if err != nil {

@@ -1,6 +1,6 @@
 # R0.15 — MCP Tool-Call Qualification Gate (PLAN ONLY)
 
-> Status: planning/design. **No implementation that starts MCP processes, performs network/OAuth egress, executes tool calls, runs Skill scripts, sends QQ, or starts provider turns is authorized by this document.** Any such work requires a separate bounded slice with explicit authorization.
+> Status: planning/design baseline completed; **bounded stdio-first implementation added 2026-11-07** (schema 16 active, deny-by-default gate, local fake-MCP tests). **No external MCP/OAuth/network egress, remote HTTP transport qualification, Skill scripts, QQ, or provider turns were exercised.** Further execution surfaces require separate bounded authorization.
 
 ## 1. Objective and boundary
 

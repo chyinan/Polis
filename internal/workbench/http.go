@@ -314,6 +314,57 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusOK, toolPage)
+	case "capabilities.tools.call":
+		capabilityService, ok := service.(control.CapabilityService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("capability catalog is unavailable"))
+			return
+		}
+		var call control.CallMCPToolRequest
+		if err := decodeJSON(response, request, &call); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
+			return
+		}
+		receipt, err := capabilityService.CallMCPTool(ctx, path.companyID, call)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
+			return
+		}
+		writeJSON(response, http.StatusOK, receipt)
+	case "capabilities.tools.call-qualification":
+		capabilityService, ok := service.(control.CapabilityService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("capability catalog is unavailable"))
+			return
+		}
+		var qual control.UpsertMCPToolCallQualificationRequest
+		if err := decodeJSON(response, request, &qual); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
+			return
+		}
+		item, err := capabilityService.UpsertMCPToolCallQualification(ctx, path.companyID, qual)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
+			return
+		}
+		writeJSON(response, http.StatusOK, item)
+	case "capabilities.tools.call-qualifications":
+		capabilityService, ok := service.(control.CapabilityService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("capability catalog is unavailable"))
+			return
+		}
+		var list control.ListMCPToolCallQualificationsRequest
+		if err := decodeJSON(response, request, &list); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
+			return
+		}
+		items, err := capabilityService.ListMCPToolCallQualifications(ctx, path.companyID, list)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
+			return
+		}
+		writeJSON(response, http.StatusOK, items)
 	case "capabilities.resources.list":
 		capabilityService, ok := service.(control.CapabilityService)
 		if !ok {
@@ -667,7 +718,7 @@ func parsePath(path string) (parsedPath, bool) {
 	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "skills" && (parts[3] == "manifest" || parts[3] == "library" || parts[3] == "approve" || parts[3] == "revoke" || parts[3] == "load" || parts[3] == "reference" || parts[3] == "list") {
 		return parsedPath{companyID: companyID, endpoint: "capabilities.skills." + parts[3]}, true
 	}
-	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "tools" && (parts[3] == "list" || parts[3] == "describe") {
+	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "tools" && (parts[3] == "list" || parts[3] == "describe" || parts[3] == "call" || parts[3] == "call-qualification" || parts[3] == "call-qualifications") {
 		return parsedPath{companyID: companyID, endpoint: "capabilities.tools." + parts[3]}, true
 	}
 	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "resources" && parts[3] == "list" {

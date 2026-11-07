@@ -226,6 +226,38 @@ type DescribeVisibleToolRequest struct {
 	RequestID  string `json:"requestId"`
 }
 
+type CallMCPToolRequest struct {
+	EmployeeID       string          `json:"employeeId"`
+	TaskID           string          `json:"taskId,omitempty"`
+	BindingID        string          `json:"bindingId"`
+	Handle           string          `json:"handle"`
+	DescriptorDigest string          `json:"descriptorDigest"`
+	Arguments        json.RawMessage `json:"arguments"`
+	IdempotencyKey   string          `json:"idempotencyKey"`
+	PolicyRevision   string          `json:"policyRevision,omitempty"`
+	AuthorizationRef string          `json:"authorizationRef,omitempty"`
+	RequestID        string          `json:"requestId"`
+}
+
+type UpsertMCPToolCallQualificationRequest struct {
+	BindingID        string `json:"bindingId"`
+	DefinitionID     string `json:"definitionId"`
+	Handle           string `json:"handle"`
+	DescriptorDigest string `json:"descriptorDigest"`
+	PolicyRevision   string `json:"policyRevision,omitempty"`
+	EffectClass      string `json:"effectClass,omitempty"`
+	Status           string `json:"status,omitempty"`
+	AuthorizationRef string `json:"authorizationRef,omitempty"`
+	QualifiedBy      string `json:"qualifiedBy,omitempty"`
+	Notes            string `json:"notes,omitempty"`
+	RequestID        string `json:"requestId"`
+}
+
+type ListMCPToolCallQualificationsRequest struct {
+	BindingID string `json:"bindingId,omitempty"`
+	RequestID string `json:"requestId"`
+}
+
 type ListVisibleSkillsRequest struct {
 	EmployeeID string `json:"employeeId"`
 	Cursor     string `json:"cursor"`
@@ -276,6 +308,9 @@ type CapabilityService interface {
 	RegisterMCP(ctx context.Context, companyID string, request RegisterMCPRequest) (kernel.MCPServerDefinition, error)
 	QualifyMCP(ctx context.Context, companyID string, request QualifyMCPRequest) (kernel.MCPServerDefinition, error)
 	UpsertCapabilityBinding(ctx context.Context, companyID string, request UpsertCapabilityBindingRequest) (kernel.EmployeeCapabilityBinding, error)
+	ListMCPToolCallQualifications(ctx context.Context, companyID string, request ListMCPToolCallQualificationsRequest) ([]kernel.MCPToolCallQualification, error)
+	UpsertMCPToolCallQualification(ctx context.Context, companyID string, request UpsertMCPToolCallQualificationRequest) (kernel.MCPToolCallQualification, error)
+	CallMCPTool(ctx context.Context, companyID string, request CallMCPToolRequest) (kernel.MCPToolCallReceipt, error)
 }
 
 type WorkerAdapter interface {

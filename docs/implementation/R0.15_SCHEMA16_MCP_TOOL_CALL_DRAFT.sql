@@ -1,10 +1,9 @@
--- DRAFT ONLY — NOT AN ACTIVE MIGRATION. DO NOT PLACE IN db/migrations/ OR APPLY.
--- Planning artifact for R0.15 (`docs/design-plans/R0_15_MCP_TOOL_CALL_QUALIFICATION_GATE.md`).
--- No execution/egress is authorized by this draft. Any real migration/application
--- requires a separately authorized implementation slice, final review, active
--- migration numbering, and `migrateVersion` gate update.
+-- SUPERSEDED BY ACTIVE MIGRATION (kept for traceability).
+-- Active migration: `db/migrations/00016_r15_mcp_tool_call.sql` (schema 16).
+-- This file remains a planning artifact and is NOT in `db/migrations/`.
+-- No external MCP/OAuth/network egress is authorized by the implementation.
 --
--- Target (if adopted): schema 16, additive.
+-- Original target: schema 16, additive.
 -- Dependencies (existing, schema <= 15): companies, employees, tasks,
 -- employee_capability_bindings, mcp_server_definitions, skill_loads context.
 
