@@ -1,0 +1,93 @@
+{
+    "qualification":  "R0.3A-AUTHORITATIVE-STATE-RECOVERY",
+    "status":  "PASSED",
+    "authoritative_state_recovery_qualification":  "PASSED",
+    "eligible_for_frontend_from_continuation_6":  false,
+    "eligible_for_new_backend_with_recovery":  true,
+    "continuation_6_modified":  false,
+    "continuation_6_frontend_continuity_result_preserved":  "FAILED",
+    "snapshot":  {
+                     "external_manifest_path":  "D:\\Polis-recovery\\r0.3a-recovery-anchor-qualification-v1\\run-20260914074847-490da92051d7\\snapshot-manifest.json",
+                     "snapshot_path":  "D:\\Polis-recovery\\r0.3a-recovery-anchor-qualification-v1\\run-20260914074847-490da92051d7\\polis-authoritative-state.dump",
+                     "snapshot_sha256":  "883c0ad98022904da65dcc1156d7b2ad5f1ba87dc779dfb3684b411b73b45c26",
+                     "snapshot_size":  61853,
+                     "postgres_major":  18,
+                     "schema_version":  5,
+                     "migration_schema_digest":  "e4622bbe77fb9ac23e479d317d9063870dee19b67884017a521b68b91693cd5e",
+                     "manifest_sha256":  "45e3f2543a87ff469a8a0e5edb2e1345f94c775db37fa6018912fa1351c57f02",
+                     "credentials_included":  false
+                 },
+    "blob_cas":  {
+                     "external_manifest_path":  "D:\\Polis-recovery\\r0.3a-recovery-anchor-qualification-v1\\run-20260914074847-490da92051d7\\blob-cas-manifest.json",
+                     "manifest_sha256":  "30b4e91415a447e6614e333c006704beed808be8fc85aed1ea1b3d6f86c281b1",
+                     "restored_cas_digest_match":  true,
+                     "logical_artifact_ids":  [
+                                                  "recovery-backend-artifact"
+                                              ],
+                     "content_digests":  [
+                                             "d68fc722eb7a4f12fd2488583dc48be5ff6be1638a388840d33b57623b5dd17a",
+                                             "019cca6d9dbfbc6a9075a87d291caa957009e5bdbc63022f79e4fa0a3258b0a7"
+                                         ],
+                     "physical_content_outside_evidence":  true
+                 },
+    "source_state":  {
+                         "company_id":  "recovery-company",
+                         "mission_id":  "recovery-mission",
+                         "state_export_sha256":  "888acee24937daad85de50c8581b50e8a681480907c5ad9eea0dc9efdb4c5777",
+                         "state_export_size":  10804,
+                         "committed_before_snapshot":  true
+                     },
+    "restore":  {
+                    "original_source_destroyed_before_restore":  true,
+                    "restored_into_fresh_database":  true,
+                    "identity_preserved_before_runtime_transition":  true,
+                    "state_anchor_digest":  "81c51b9915b7ebc3c8f49c7fb45117efb8f317930cf3001384fd96801339104f",
+                    "post_runtime_state_export":  "D:\\Polis-recovery\\r0.3a-recovery-anchor-qualification-v1\\run-20260914074847-490da92051d7\\post-recovery-state.json"
+                },
+    "identity_preservation":  {
+                                  "company":  true,
+                                  "mission":  true,
+                                  "tasks":  true,
+                                  "employee_identities":  true,
+                                  "responsibilities":  true,
+                                  "contract_revision_chain":  true,
+                                  "current_contract_revision":  "recovery-contract-v4",
+                                  "message_id":  "recovery-peer-message",
+                                  "obligation_id":  "recovery-peer-message",
+                                  "obligation_state":  "pending",
+                                  "checkpoints":  true,
+                                  "artifact_metadata":  true,
+                                  "workspace_revision_metadata":  true,
+                                  "event_company_sequence":  true,
+                                  "outbox_work_signal_state":  true,
+                                  "replacement_rows_synthesized":  false
+                              },
+    "runtime_incarnation_fencing":  {
+                                        "source_incarnation":  "source-incarnation",
+                                        "restored_incarnation":  "new-runtime-incarnation-set-and-kernel-recovered",
+                                        "old_worker_session_state":  "stopped",
+                                        "old_writer_fenced":  true,
+                                        "business_write_attempted":  false,
+                                        "old_grant_reactivated":  false
+                                    },
+    "negatives":  {
+                      "corrupted_snapshot":  "DENY",
+                      "missing_blob":  "DENY",
+                      "schema_version_mismatch":  "DENY",
+                      "partial_restore":  "DENY",
+                      "corrupted_snapshot_denied":  true,
+                      "missing_blob_denied":  true,
+                      "schema_mismatch_denied":  true,
+                      "partial_restore_denied":  true
+                  },
+    "tests":  {
+                  "snapshot_restore_suite":  "PASS",
+                  "runtime_fence":  "PASS",
+                  "CAS_digest_verification":  "PASS",
+                  "no_application_row_reconstruction":  "PASS",
+                  "medium":  0,
+                  "high":  0,
+                  "provider_egress":  0
+              },
+    "generated_at":  "2026-09-14T07:49:05.5158306Z"
+}

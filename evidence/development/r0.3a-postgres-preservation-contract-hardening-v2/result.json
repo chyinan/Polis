@@ -1,0 +1,9 @@
+{
+    "qualification":  "R0.3A-POSTGRES-PRESERVATION-CONTRACT",
+    "status":  "FAILED",
+    "error":  "bash command failed: export LD_LIBRARY_PATH=\u0027/mnt/d/Programs/Polis/.tools/pg/usr/lib/x86_64-linux-gnu\u0027; \u0027/mnt/d/Programs/Polis/.tools/pg/usr/lib/postgresql/18/bin/initdb\u0027 -D \u0027/mnt/d/Polis-recovery/r0.3a-postgres-preservation-qualification-v2/fixture/pgdata\u0027 -L \u0027/mnt/d/Programs/Polis/.tools/pg/usr/share/postgresql/18\u0027 --locale=C --encoding=UTF8 --auth-local=trust --auth-host=trust",
+    "medium":  0,
+    "high":  0,
+    "provider_egress":  0,
+    "historical_evidence_modified":  false
+}

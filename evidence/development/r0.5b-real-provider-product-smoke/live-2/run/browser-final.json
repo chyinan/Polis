@@ -1,0 +1,94 @@
+{
+  "companyId": "r05b-live-2",
+  "missionId": "fed04f193f1bc6afebf9c152832ccd76",
+  "missionCreatePostCount": 1,
+  "missionStartPostCount": 1,
+  "missionCancelPostCount": 1,
+  "overview": {
+    "missionCancelledVisible": true,
+    "taskCountTwoVisible": true,
+    "workerStoppedVisible": true,
+    "checkpointAbsenceVisible": true,
+    "artifactAbsenceVisible": true,
+    "screenshot": "browser-final-overview.png"
+  },
+  "tasks": {
+    "bootstrapPlanningTaskVisible": true,
+    "bootstrapCompletedVisible": true,
+    "compatBackendTaskVisible": true,
+    "compatCancelledVisible": true,
+    "screenshot": "browser-final-tasks.png"
+  },
+  "activity": {
+    "missionCreateVisible": true,
+    "missionStartVisible": true,
+    "providerTurnCompletedVisible": true,
+    "workerStoppedVisible": true,
+    "missionCancelVisible": true,
+    "screenshot": "browser-final-activity.png"
+  },
+  "sseRequests": 0,
+  "pageErrors": [],
+  "apiTraffic": [
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions/fed04f193f1bc6afebf9c152832ccd76/start"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/activity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions/fed04f193f1bc6afebf9c152832ccd76/cancel"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/activity"
+    }
+  ]
+}

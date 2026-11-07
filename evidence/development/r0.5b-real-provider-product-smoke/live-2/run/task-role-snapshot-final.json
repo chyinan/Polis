@@ -1,0 +1,16 @@
+[
+  {
+    "id": "489ea9fbe65d359327bd9bc979461138",
+    "kind": "bootstrap_plan",
+    "owner": "emp-planning",
+    "state": "completed",
+    "generation": 0
+  },
+  {
+    "id": "5b39875f8dc6463f36395b04e4504407",
+    "kind": "compat",
+    "owner": "emp-backend",
+    "state": "cancelled",
+    "generation": 1
+  }
+]

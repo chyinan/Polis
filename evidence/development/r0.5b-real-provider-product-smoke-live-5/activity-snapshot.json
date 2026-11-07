@@ -1,0 +1,1014 @@
+{
+    "meta":  {
+                 "schemaVersion":  2,
+                 "companyId":  "r05b-live-5",
+                 "entityRevision":  "company-seq:37",
+                 "snapshotCursor":  "company-seq:37",
+                 "observedAt":  "2026-09-21T03:55:49.7238372Z",
+                 "dataMode":  "real",
+                 "freshness":  "fresh",
+                 "sourceLabel":  "PostgreSQL runtime read model"
+             },
+    "items":  [
+                  {
+                      "id":  "r05b-live-5:37",
+                      "companySeq":  "37",
+                      "occurredAt":  "2026-09-21T03:50:56.8165297Z",
+                      "kind":  "employee_stopped",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.stopped"
+                                  },
+                      "summary":  "worker.stopped",
+                      "detail":  "authoritative company_seq=37; runtime event kind=worker.stopped",
+                      "tone":  "neutral",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.stopped",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:36",
+                      "companySeq":  "36",
+                      "occurredAt":  "2026-09-21T03:50:56.7952533Z",
+                      "kind":  "employee_stopped",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.stopping"
+                                  },
+                      "summary":  "worker.stopping",
+                      "detail":  "authoritative company_seq=36; runtime event kind=worker.stopping",
+                      "tone":  "neutral",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.stopping",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:35",
+                      "companySeq":  "35",
+                      "occurredAt":  "2026-09-21T03:50:56.7894703Z",
+                      "kind":  "provider_turn_completed",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "63535957711ddccbdf1a2960d5bc86f6",
+                                      "label":  "provider.turn.completed"
+                                  },
+                      "summary":  "provider.turn.completed",
+                      "detail":  "authoritative company_seq=35; runtime event kind=provider.turn.completed",
+                      "tone":  "success",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "provider.turn.completed",
+                                       "subjectId":  "63535957711ddccbdf1a2960d5bc86f6"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:34",
+                      "companySeq":  "34",
+                      "occurredAt":  "2026-09-21T03:50:48.5012555Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "task",
+                                      "id":  "9ba046913a0d58ca0ad58df867f297b9",
+                                      "label":  "task.delivery"
+                                  },
+                      "summary":  "task.delivery",
+                      "detail":  "authoritative company_seq=34; runtime event kind=task.delivery",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "task.delivery",
+                                       "subjectId":  "9ba046913a0d58ca0ad58df867f297b9"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:33",
+                      "companySeq":  "33",
+                      "occurredAt":  "2026-09-21T03:50:48.4870164Z",
+                      "kind":  "artifact_submitted",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "artifact",
+                                      "id":  "9ba046913a0d58ca0ad58df867f297b9",
+                                      "label":  "artifact.stage"
+                                  },
+                      "summary":  "artifact.stage",
+                      "detail":  "authoritative company_seq=33; runtime event kind=artifact.stage",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "artifact.stage",
+                                       "subjectId":  "9ba046913a0d58ca0ad58df867f297b9"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:32",
+                      "companySeq":  "32",
+                      "occurredAt":  "2026-09-21T03:50:48.4706005Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=32; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:31",
+                      "companySeq":  "31",
+                      "occurredAt":  "2026-09-21T03:50:44.8911964Z",
+                      "kind":  "checkpoint_saved",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "checkpoint",
+                                      "id":  "5af5e26b34558bcdad89f2f417501177",
+                                      "label":  "work.checkpoint"
+                                  },
+                      "summary":  "work.checkpoint",
+                      "detail":  "authoritative company_seq=31; runtime event kind=work.checkpoint",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "work.checkpoint",
+                                       "subjectId":  "5af5e26b34558bcdad89f2f417501177"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:30",
+                      "companySeq":  "30",
+                      "occurredAt":  "2026-09-21T03:50:44.8798459Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=30; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:29",
+                      "companySeq":  "29",
+                      "occurredAt":  "2026-09-21T03:50:37.1143665Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "77709bc20e5533e10ee4d4a4a25a1f22",
+                                      "label":  "workspace.check"
+                                  },
+                      "summary":  "workspace.check",
+                      "detail":  "authoritative company_seq=29; runtime event kind=workspace.check",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "workspace.check",
+                                       "subjectId":  "77709bc20e5533e10ee4d4a4a25a1f22"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:28",
+                      "companySeq":  "28",
+                      "occurredAt":  "2026-09-21T03:50:37.1037258Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=28; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:27",
+                      "companySeq":  "27",
+                      "occurredAt":  "2026-09-21T03:50:32.5747823Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "531f5988cba3b3edb01ad3671a0b4014fdf57df96bebaab9c9e199013d80021b",
+                                      "label":  "workspace.replace"
+                                  },
+                      "summary":  "workspace.replace",
+                      "detail":  "authoritative company_seq=27; runtime event kind=workspace.replace",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "workspace.replace",
+                                       "subjectId":  "531f5988cba3b3edb01ad3671a0b4014fdf57df96bebaab9c9e199013d80021b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:26",
+                      "companySeq":  "26",
+                      "occurredAt":  "2026-09-21T03:50:32.5610349Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=26; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:25",
+                      "companySeq":  "25",
+                      "occurredAt":  "2026-09-21T03:50:24.216568Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "44e238730e07b384c55eb85eaab1a70a",
+                                      "label":  "workspace.check"
+                                  },
+                      "summary":  "workspace.check",
+                      "detail":  "authoritative company_seq=25; runtime event kind=workspace.check",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "workspace.check",
+                                       "subjectId":  "44e238730e07b384c55eb85eaab1a70a"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:24",
+                      "companySeq":  "24",
+                      "occurredAt":  "2026-09-21T03:50:24.2064202Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=24; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:23",
+                      "companySeq":  "23",
+                      "occurredAt":  "2026-09-21T03:50:20.2271356Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "0dc3e902ae6c1c62415fe7cb367515a3d2eab724e2ab17f766a18c119f061815",
+                                      "label":  "workspace.replace"
+                                  },
+                      "summary":  "workspace.replace",
+                      "detail":  "authoritative company_seq=23; runtime event kind=workspace.replace",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "workspace.replace",
+                                       "subjectId":  "0dc3e902ae6c1c62415fe7cb367515a3d2eab724e2ab17f766a18c119f061815"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:22",
+                      "companySeq":  "22",
+                      "occurredAt":  "2026-09-21T03:50:20.2126709Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=22; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:21",
+                      "companySeq":  "21",
+                      "occurredAt":  "2026-09-21T03:50:11.2153551Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "87d9a3f2afafc3e9b125941fdf72a72a",
+                                      "label":  "workspace.check"
+                                  },
+                      "summary":  "workspace.check",
+                      "detail":  "authoritative company_seq=21; runtime event kind=workspace.check",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "workspace.check",
+                                       "subjectId":  "87d9a3f2afafc3e9b125941fdf72a72a"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:20",
+                      "companySeq":  "20",
+                      "occurredAt":  "2026-09-21T03:50:11.2032078Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=20; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:19",
+                      "companySeq":  "19",
+                      "occurredAt":  "2026-09-21T03:50:07.7425768Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "1473d5a4d9f499d04c29447b14f657c8c6ee9d8d74304d97a67962f529d6d2b8",
+                                      "label":  "workspace.replace"
+                                  },
+                      "summary":  "workspace.replace",
+                      "detail":  "authoritative company_seq=19; runtime event kind=workspace.replace",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "workspace.replace",
+                                       "subjectId":  "1473d5a4d9f499d04c29447b14f657c8c6ee9d8d74304d97a67962f529d6d2b8"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:18",
+                      "companySeq":  "18",
+                      "occurredAt":  "2026-09-21T03:50:07.7253226Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=18; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:17",
+                      "companySeq":  "17",
+                      "occurredAt":  "2026-09-21T03:49:58.817537Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=17; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:16",
+                      "companySeq":  "16",
+                      "occurredAt":  "2026-09-21T03:49:58.7988598Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=16; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:15",
+                      "companySeq":  "15",
+                      "occurredAt":  "2026-09-21T03:49:58.7786465Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.tool_call"
+                                  },
+                      "summary":  "worker.tool_call",
+                      "detail":  "authoritative company_seq=15; runtime event kind=worker.tool_call",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.tool_call",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:14",
+                      "companySeq":  "14",
+                      "occurredAt":  "2026-09-21T03:49:45.2055881Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "41d04996500c6bc6347bf76232102504",
+                                      "label":  "provider.runtime.lifecycle"
+                                  },
+                      "summary":  "provider.runtime.lifecycle",
+                      "detail":  "authoritative company_seq=14; runtime event kind=provider.runtime.lifecycle",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "provider.runtime.lifecycle",
+                                       "subjectId":  "41d04996500c6bc6347bf76232102504"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:13",
+                      "companySeq":  "13",
+                      "occurredAt":  "2026-09-21T03:49:45.1989029Z",
+                      "kind":  "employee_started_task",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.active"
+                                  },
+                      "summary":  "worker.active",
+                      "detail":  "authoritative company_seq=13; runtime event kind=worker.active",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.active",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:12",
+                      "companySeq":  "12",
+                      "occurredAt":  "2026-09-21T03:49:45.1927764Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.activation_pending_environment"
+                                  },
+                      "summary":  "worker.activation_pending_environment",
+                      "detail":  "authoritative company_seq=12; runtime event kind=worker.activation_pending_environment",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.activation_pending_environment",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:11",
+                      "companySeq":  "11",
+                      "occurredAt":  "2026-09-21T03:49:45.1866184Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.validating"
+                                  },
+                      "summary":  "worker.validating",
+                      "detail":  "authoritative company_seq=11; runtime event kind=worker.validating",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.validating",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:10",
+                      "companySeq":  "10",
+                      "occurredAt":  "2026-09-21T03:49:45.1803252Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "8a95624ad818aa40375e9ba23cb4cf17",
+                                      "label":  "provider.runtime.lifecycle"
+                                  },
+                      "summary":  "provider.runtime.lifecycle",
+                      "detail":  "authoritative company_seq=10; runtime event kind=provider.runtime.lifecycle",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "provider.runtime.lifecycle",
+                                       "subjectId":  "8a95624ad818aa40375e9ba23cb4cf17"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:9",
+                      "companySeq":  "9",
+                      "occurredAt":  "2026-09-21T03:49:45.1750904Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.process_attached"
+                                  },
+                      "summary":  "worker.process_attached",
+                      "detail":  "authoritative company_seq=9; runtime event kind=worker.process_attached",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.process_attached",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:8",
+                      "companySeq":  "8",
+                      "occurredAt":  "2026-09-21T03:49:45.1666842Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "ad8999a7e3ffde00651bd25e344fe045",
+                                      "label":  "provider.runtime.lifecycle"
+                                  },
+                      "summary":  "provider.runtime.lifecycle",
+                      "detail":  "authoritative company_seq=8; runtime event kind=provider.runtime.lifecycle",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "provider.runtime.lifecycle",
+                                       "subjectId":  "ad8999a7e3ffde00651bd25e344fe045"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:7",
+                      "companySeq":  "7",
+                      "occurredAt":  "2026-09-21T03:49:44.8273019Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "4be1eeff22fe2aad3c08aea713ac19cc",
+                                      "label":  "provider.runtime.lifecycle"
+                                  },
+                      "summary":  "provider.runtime.lifecycle",
+                      "detail":  "authoritative company_seq=7; runtime event kind=provider.runtime.lifecycle",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "provider.runtime.lifecycle",
+                                       "subjectId":  "4be1eeff22fe2aad3c08aea713ac19cc"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:6",
+                      "companySeq":  "6",
+                      "occurredAt":  "2026-09-21T03:49:44.8092528Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "1720a087dd256d25738705e68f33f32a",
+                                      "label":  "provider.runtime.lifecycle"
+                                  },
+                      "summary":  "provider.runtime.lifecycle",
+                      "detail":  "authoritative company_seq=6; runtime event kind=provider.runtime.lifecycle",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "provider.runtime.lifecycle",
+                                       "subjectId":  "1720a087dd256d25738705e68f33f32a"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:5",
+                      "companySeq":  "5",
+                      "occurredAt":  "2026-09-21T03:49:44.8022206Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "worker_session",
+                                      "id":  "dfc5dd021ec9550ca299903458a63e3b",
+                                      "label":  "worker.restore"
+                                  },
+                      "summary":  "worker.restore",
+                      "detail":  "authoritative company_seq=5; runtime event kind=worker.restore",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "worker.restore",
+                                       "subjectId":  "dfc5dd021ec9550ca299903458a63e3b"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:4",
+                      "companySeq":  "4",
+                      "occurredAt":  "2026-09-21T03:49:44.7898041Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "mission",
+                                      "id":  "7682cd197e8436a763f22ce3198a60ce",
+                                      "label":  "mission.task.prepare"
+                                  },
+                      "summary":  "mission.task.prepare",
+                      "detail":  "authoritative company_seq=4; runtime event kind=mission.task.prepare",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "mission.task.prepare",
+                                       "subjectId":  "7682cd197e8436a763f22ce3198a60ce"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:3",
+                      "companySeq":  "3",
+                      "occurredAt":  "2026-09-21T03:49:44.5207027Z",
+                      "kind":  "mission_started",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "mission",
+                                      "id":  "81ee562d602a059ed8a4ce2f5be80803",
+                                      "label":  "mission.start"
+                                  },
+                      "summary":  "mission.start",
+                      "detail":  "authoritative company_seq=3; runtime event kind=mission.start",
+                      "tone":  "success",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "mission.start",
+                                       "subjectId":  "81ee562d602a059ed8a4ce2f5be80803"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:2",
+                      "companySeq":  "2",
+                      "occurredAt":  "2026-09-21T03:49:34.6487508Z",
+                      "kind":  "mission_created",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "mission",
+                                      "id":  "81ee562d602a059ed8a4ce2f5be80803",
+                                      "label":  "mission.create"
+                                  },
+                      "summary":  "mission.create",
+                      "detail":  "authoritative company_seq=2; runtime event kind=mission.create",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "mission.create",
+                                       "subjectId":  "81ee562d602a059ed8a4ce2f5be80803"
+                                   }
+                  },
+                  {
+                      "id":  "r05b-live-5:1",
+                      "companySeq":  "1",
+                      "occurredAt":  "2026-09-21T03:48:48.1720263Z",
+                      "kind":  "workspace_updated",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "runtime_event",
+                                      "id":  "5d45d5d3f2d98d5e0c59a3ed82d0e2dd",
+                                      "label":  "controller.recovered"
+                                  },
+                      "summary":  "controller.recovered",
+                      "detail":  "authoritative company_seq=1; runtime event kind=controller.recovered",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "controller.recovered",
+                                       "subjectId":  "5d45d5d3f2d98d5e0c59a3ed82d0e2dd"
+                                   }
+                  }
+              ],
+    "nextCursor":  null
+}

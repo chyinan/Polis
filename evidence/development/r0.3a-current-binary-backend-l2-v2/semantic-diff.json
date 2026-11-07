@@ -1,0 +1,17 @@
+{
+  "explained": true,
+  "old_tool_count": 11,
+  "current_tool_count": 11,
+  "approved_changes": [
+    {
+      "tool": "polis_work_checkpoint",
+      "path": "polis_work_checkpoint.inputSchema.properties.evidence -\u003e evidence_refs",
+      "old_required": "evidence",
+      "new_required": "evidence_refs",
+      "old_schema_bytes": 782,
+      "new_schema_bytes": 792,
+      "reason": "approved checkpoint/behavioral hardening: receipt references replace free-text evidence"
+    }
+  ],
+  "unexplained_changes": null
+}

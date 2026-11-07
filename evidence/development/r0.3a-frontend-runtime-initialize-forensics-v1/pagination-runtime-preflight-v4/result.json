@@ -1,0 +1,14 @@
+{
+    "qualification":  "R0.3A-FRONTEND-PAGINATION-RUNTIME-PREFLIGHT",
+    "status":  "PASSED",
+    "runtime_os":  "windows",
+    "launch_mode":  "windows_native_direct",
+    "execution_envelope_fingerprint":  "e3dc30e477216733eceb54b01b15a545627d650f4414ebf6beb46a16ce8c4475",
+    "pagination_runtime_preflight":  "PASSED",
+    "required_blob_count":  4,
+    "provider_egress":  0,
+    "allowance_created":  0,
+    "business_mutation":  0,
+    "clean_stop":  true,
+    "historical_evidence_modified":  false
+}

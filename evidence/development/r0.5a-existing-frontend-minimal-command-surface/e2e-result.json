@@ -1,0 +1,99 @@
+{
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "company_id": "r05a-e2e-company",
+  "mission_id": "2143a725155c8f0df4d28295aa382b11",
+  "duplicate_mission_submission": {
+    "status": 202,
+    "same_target": true
+  },
+  "mission_start": {
+    "status": 202,
+    "receipt": {
+      "commandId": "7cef0c24-249f-4c75-8439-0bf9abb296ae",
+      "commandType": "mission.start",
+      "targetType": "mission",
+      "targetId": "2143a725155c8f0df4d28295aa382b11",
+      "requestId": "7cef0c24-249f-4c75-8439-0bf9abb296ae",
+      "accepted": true,
+      "acceptedAt": "2026-09-16T13:38:50.56051435Z",
+      "resultingState": "active"
+    }
+  },
+  "duplicate_start": {
+    "retry_status": 202,
+    "retry_same_target": true,
+    "new_request_status": 409,
+    "new_request_code": "REVISION_CONFLICT"
+  },
+  "mission_stop": {
+    "status": 202,
+    "receipt": {
+      "commandId": "b5abdb96-8e15-4f43-af09-1c50ae2d1ffc",
+      "commandType": "mission.cancel",
+      "targetType": "mission",
+      "targetId": "2143a725155c8f0df4d28295aa382b11",
+      "requestId": "b5abdb96-8e15-4f43-af09-1c50ae2d1ffc",
+      "accepted": true,
+      "acceptedAt": "2026-09-16T13:38:50.70074074Z",
+      "resultingState": "cancelled"
+    }
+  },
+  "invalid_stop": {
+    "status": 409,
+    "code": "REVISION_CONFLICT"
+  },
+  "invalid_target": {
+    "status": 400,
+    "code": "MALFORMED_INPUT"
+  },
+  "activity_events": {
+    "mission_created": true,
+    "mission_started": true,
+    "worker_stopped": true,
+    "mission_cancelled": true
+  },
+  "api_responses": [
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/overview",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/missions",
+      "status": 202,
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/overview",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/missions/2143a725155c8f0df4d28295aa382b11/start",
+      "status": 202,
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/overview",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/missions/2143a725155c8f0df4d28295aa382b11/cancel",
+      "status": 202,
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/overview",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/api/workbench/companies/r05a-e2e-company/activity?limit=50&snapshot_cursor=company-seq%3A11",
+      "status": 200,
+      "method": "GET"
+    }
+  ]
+}

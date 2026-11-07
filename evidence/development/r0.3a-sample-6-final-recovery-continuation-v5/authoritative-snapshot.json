@@ -1,0 +1,134 @@
+{
+  "schema_version": "r0.3a-backend-terminal-authoritative-snapshot-v1",
+  "runtime_incarnation": "a6b554d464dd71bd5dc1afdec8f95854",
+  "source_runtime_incarnation": "4c41d58bdc86ca84b41251aaec689143",
+  "employee_id": "emp-backend",
+  "epoch": 3,
+  "session_id": "",
+  "recovery_anchors": {
+    "company_id": "r03a-pagination-v3-company-1789379324974307400",
+    "mission_id": "r03a-pagination-v3-mission-1789379324974307400",
+    "backend_task_id": "dff11354ffe0afc1b93e8565dc5bb026",
+    "frontend_task_id": "629af90e4bc469dc3e961a9bdb7d555a",
+    "backend_session_id": "1bb014b85129c72da4e720fe67115df5",
+    "backend_session_incarnation": "4c41d58bdc86ca84b41251aaec689143",
+    "backend_session_epoch": 2,
+    "backend_session_state": "stopped",
+    "final_contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+    "final_contract_revision": 2,
+    "message_id": "45a77c6833518bd8fef1ddfe8d28b985",
+    "message_contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+    "message_state": "persisted",
+    "obligation_id": "45a77c6833518bd8fef1ddfe8d28b985",
+    "obligation_owner": "emp-frontend",
+    "obligation_state": "pending",
+    "backend_checkpoint_id": "13164a801bac0760050c5f456bfd3f82",
+    "backend_artifact_id": "f73981340227622e9c16dbf45e961a3f",
+    "backend_artifact_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "backend_workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "backend_workspace_revision": 3,
+    "company_sequence": 62
+  },
+  "handover": {
+    "EmployeeID": "emp-backend",
+    "TaskID": "dff11354ffe0afc1b93e8565dc5bb026",
+    "WorkspaceDigest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "ContractRevisionID": "92566d902cd328c0b694ef32188dabf5",
+    "MessageID": "45a77c6833518bd8fef1ddfe8d28b985",
+    "ObligationID": "45a77c6833518bd8fef1ddfe8d28b985",
+    "MessageState": "persisted",
+    "ObligationState": "pending",
+    "WorkspaceRevision": 3,
+    "Checkpoints": null,
+    "ToolBudget": {
+      "tool_call_limit": 0,
+      "tool_calls_used": 0,
+      "tool_calls_remaining": 0
+    }
+  },
+  "message_body": "Accepted current public contract 92566d902cd328c0b694ef32188dabf5 for GET /items. Implement/consume cursor and required integer limit; request initial cursor null, then reuse each returned next_cursor exactly; return {items:[{id,name}],next_cursor}; stop when next_cursor is null. Probe pages: null,2 =\u003e i1/i2 + cursor-2; cursor-2,2 =\u003e i3 + null.",
+  "contract": {
+    "id": "92566d902cd328c0b694ef32188dabf5",
+    "mission": "r03a-pagination-v3-mission-1789379324974307400",
+    "endpoint": "GET /items",
+    "schema": "{\"request\": {\"path\": \"/items\", \"limit\": {\"name\": \"limit\", \"type\": \"integer\", \"minimum\": 1, \"required\": true, \"semantics\": \"maximum number of items requested\"}, \"cursor\": {\"name\": \"cursor\", \"type\": \"string|null\", \"required\": false, \"semantics\": \"initial null; subsequent requests use the prior response next_cursor exactly\"}, \"method\": \"GET\"}, \"response\": {\"items\": {\"type\": \"array\u003cobject\u003e\", \"required_fields\": [\"id\", \"name\"]}, \"next_cursor\": {\"type\": \"string|null\", \"required\": true}}, \"pagination\": {\"next_page\": \"when next_cursor is a string, issue the same request with cursor exactly equal to next_cursor\", \"termination\": \"when next_cursor is null, stop and issue no further request\"}, \"probe_cases\": [{\"name\": \"first_page\", \"limit\": 2, \"cursor\": null, \"expected_items\": [{\"id\": \"i1\", \"name\": \"one\"}, {\"id\": \"i2\", \"name\": \"two\"}], \"expected_next_cursor\": \"cursor-2\"}, {\"name\": \"last_page\", \"limit\": 2, \"cursor\": \"cursor-2\", \"expected_items\": [{\"id\": \"i3\", \"name\": \"three\"}], \"expected_next_cursor\": null}]}",
+    "digest": "5bc44edeec9b490cf142fa2310f51d8257437f282dd1264e643de24ad57ce12a",
+    "state": "accepted",
+    "revision": 2,
+    "base_revision": 1
+  },
+  "workspace": {
+    "Digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+    "Content": "package backend\n\nconst Endpoint = \"GET /items\"\n\nfunc FetchItems(cursor string, limit int) string {\n\tif limit \u003c 1 {\n\t\treturn `{\"items\":[],\"next_cursor\":null}`\n\t}\n\n\tif cursor == \"\" || cursor == \"null\" {\n\t\tif limit == 1 {\n\t\t\treturn `{\"items\":[{\"id\":\"i1\",\"name\":\"one\"}],\"next_cursor\":\"cursor-1\"}`\n\t\t}\n\t\tif limit == 2 {\n\t\t\treturn `{\"items\":[{\"id\":\"i1\",\"name\":\"one\"},{\"id\":\"i2\",\"name\":\"two\"}],\"next_cursor\":\"cursor-2\"}`\n\t\t}\n\t\treturn `{\"items\":[{\"id\":\"i1\",\"name\":\"one\"},{\"id\":\"i2\",\"name\":\"two\"},{\"id\":\"i3\",\"name\":\"three\"}],\"next_cursor\":null}`\n\t}\n\n\tif cursor == \"cursor-1\" {\n\t\treturn `{\"items\":[{\"id\":\"i2\",\"name\":\"two\"}],\"next_cursor\":\"cursor-2\"}`\n\t}\n\n\tif cursor == \"cursor-2\" {\n\t\treturn `{\"items\":[{\"id\":\"i3\",\"name\":\"three\"}],\"next_cursor\":null}`\n\t}\n\n\treturn `{\"items\":[],\"next_cursor\":null}`\n}\n",
+    "Revision": 3
+  },
+  "state": {
+    "MissionState": "active",
+    "CompanySeq": 62,
+    "Tasks": [
+      {
+        "ID": "629af90e4bc469dc3e961a9bdb7d555a",
+        "Mission": "r03a-pagination-v3-mission-1789379324974307400",
+        "Owner": "emp-frontend",
+        "Kind": "peer_frontend",
+        "State": "ready",
+        "Generation": 0
+      },
+      {
+        "ID": "dff11354ffe0afc1b93e8565dc5bb026",
+        "Mission": "r03a-pagination-v3-mission-1789379324974307400",
+        "Owner": "emp-backend",
+        "Kind": "peer_backend",
+        "State": "candidate",
+        "Generation": 1
+      }
+    ],
+    "Employees": [
+      "emp-backend",
+      "emp-frontend",
+      "emp-planning",
+      "emp-review"
+    ],
+    "Messages": [
+      "45a77c6833518bd8fef1ddfe8d28b985"
+    ],
+    "Obligations": [
+      {
+        "ID": "45a77c6833518bd8fef1ddfe8d28b985",
+        "State": "pending"
+      }
+    ],
+    "Artifacts": [
+      {
+        "ID": "f73981340227622e9c16dbf45e961a3f",
+        "Digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+        "State": "ready",
+        "Verdict": "candidate"
+      }
+    ],
+    "FakeClaims": 0
+  },
+  "cas": [
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "cb58aa1ffbbf3e44f53f49ecedfdd7e1c0d19bb98a98d209bcaad9b0cff7d832",
+      "size": 1871
+    },
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "d8a78697f5450ace5134d8687ec00edad7137f38b02fee628cc728b030d89efa",
+      "size": 90
+    },
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "e2d27d8aa9187eb9ddd0a0ff547af31df440e9590ccdb313b242bda97b67ed8f",
+      "size": 89
+    },
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+      "size": 789
+    }
+  ],
+  "cas_manifest_digest": "18a13e34ca7b8dcaf926ab835514484d8b5a278818421a255089cf288abe8171"
+}

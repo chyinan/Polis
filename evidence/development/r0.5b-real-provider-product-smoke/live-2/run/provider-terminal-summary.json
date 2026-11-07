@@ -1,0 +1,105 @@
+{
+  "authorization_count": 1,
+  "reservation_count": 1,
+  "medium_turns": 1,
+  "high_turns": 0,
+  "provider_egress": 1,
+  "turn_terminal": "completed",
+  "turn_outcome": "COMPLETED",
+  "model": "gpt-5.6-luna",
+  "effort": "medium",
+  "purpose": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_2",
+  "surface_id": "polis-product-tool-surface@2",
+  "tool_count": 7,
+  "manifest_digest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+  "aggregate_schema_bytes": 1470,
+  "aggregate_schema_digest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+  "exact_surface_execution_fingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08",
+  "product_provider_l2_fingerprint": "4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532",
+  "task_validation_binding_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+  "initial_workspace_digest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+  "initial_workspace_revision": 1,
+  "elapsed_ms": 92336.433,
+  "time_to_first_output_ms": 9826.863,
+  "protocol_turn_start_count": 1,
+  "protocol_turn_completed_present": true,
+  "tool_calls": 13,
+  "reconnects_observed": 0,
+  "reconnect_evidence": "The terminal usage object did not persist the runtime reconnect counter; protocol.jsonl contains one turn/start and no reconnect/resume method markers.",
+  "token_usage": {
+    "last": {
+      "inputTokens": 15505,
+      "totalTokens": 15587,
+      "outputTokens": 82,
+      "cachedInputTokens": 13056,
+      "cacheWriteInputTokens": 0,
+      "reasoningOutputTokens": 41
+    },
+    "total": {
+      "inputTokens": 162336,
+      "totalTokens": 164811,
+      "outputTokens": 2475,
+      "cachedInputTokens": 124416,
+      "cacheWriteInputTokens": 0,
+      "reasoningOutputTokens": 1053
+    }
+  },
+  "terminal_observation": {
+    "state": "completed",
+    "usage": {
+      "started_at": "2026-09-17T10:50:57.1652362Z",
+      "tool_calls": 0,
+      "finished_at": "2026-09-17T10:52:29.5016692Z",
+      "token_usage": {
+        "last": {
+          "inputTokens": 15505,
+          "totalTokens": 15587,
+          "outputTokens": 82,
+          "cachedInputTokens": 13056,
+          "cacheWriteInputTokens": 0,
+          "reasoningOutputTokens": 41
+        },
+        "total": {
+          "inputTokens": 162336,
+          "totalTokens": 164811,
+          "outputTokens": 2475,
+          "cachedInputTokens": 124416,
+          "cacheWriteInputTokens": 0,
+          "reasoningOutputTokens": 1053
+        }
+      },
+      "authorization": {
+        "Epoch": 3,
+        "Model": "gpt-5.6-luna",
+        "Effort": "medium",
+        "TaskID": "5b39875f8dc6463f36395b04e4504407",
+        "Profile": "gpt-5.6-luna/medium",
+        "Purpose": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_2",
+        "TaskKind": "compat",
+        "CompanyID": "r05b-live-2",
+        "MissionID": "fed04f193f1bc6afebf9c152832ccd76",
+        "SessionID": "f3a7f944f2749750becda51ad9d0e5bb",
+        "ToolCount": 7,
+        "EmployeeID": "emp-backend",
+        "Incarnation": "071de211c19356d584cc5546ed877289",
+        "TaskOwnerID": "emp-backend",
+        "EmployeeRole": "backend",
+        "ProviderMode": "real",
+        "ToolCallLimit": 16,
+        "WorkspaceDigest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+        "ExecutionEnvelope": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+        "ToolSurfaceDigest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+        "WorkspaceRevision": 1,
+        "AggregateSchemaBytes": 1470,
+        "AggregateSchemaDigest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+        "TransportPolicyRevision": "r03a-transport-policy@1",
+        "ToolSurfaceQualification": "polis-product-tool-surface@2",
+        "TaskValidationBindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+        "ProductProviderL2Fingerprint": "4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532",
+        "ExactSurfaceExecutionFingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08"
+      },
+      "provider_egress": 1
+    },
+    "outcome": "COMPLETED"
+  }
+}

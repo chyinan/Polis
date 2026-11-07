@@ -1,0 +1,9 @@
+{
+  "status": "PASSED",
+  "runner_compile": "PASSED",
+  "recovery_readiness_cli": "PASSED",
+  "cli_argument_contract": "recovery-readiness",
+  "context_wiring": "PASSED",
+  "source_started": false,
+  "provider_egress": 0
+}

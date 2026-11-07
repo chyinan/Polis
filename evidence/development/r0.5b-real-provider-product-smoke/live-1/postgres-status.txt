@@ -1,0 +1,2 @@
+pg_ctl: server is running (PID: 396)
+/mnt/d/Programs/Polis/.tools/pg/usr/lib/postgresql/18/bin/postgres "-D" "/tmp/polis-r05b-live-1-pg.G1MubB/data" "-k" "/tmp/polis-r05b-live-1-pg.G1MubB/socket" "-h" "172.24.72.52" "-p" "55481"

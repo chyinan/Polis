@@ -1,0 +1,50 @@
+{
+  "qualification": "R0.3A-T21D",
+  "status": "PASSED",
+  "tool_count": 11,
+  "tool_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+  "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+  "aggregate_schema_bytes": 2038,
+  "handler_binding_digest": "66e1721838c8b523dcd0d6a06de26995be29078eeb0e0574e2104ab56bf45b9a",
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "semantic_diff": [
+    {
+      "approved_scope": true,
+      "current": "checkpoint-effective-contract@2",
+      "field": "checkpoint_policy_revision",
+      "old": ""
+    },
+    {
+      "approved_scope": true,
+      "current": "artifact-commit-qualification@2",
+      "field": "artifact_eligibility_policy_revision",
+      "old": ""
+    },
+    {
+      "approved_scope": true,
+      "current": "peer-contract-supersession@2",
+      "field": "contract_supersession_policy_revision",
+      "old": ""
+    },
+    {
+      "approved_scope": true,
+      "current": "peer-semantic-checker@2",
+      "field": "acceptance_checker_revision",
+      "old": ""
+    }
+  ],
+  "unrelated_drift": false,
+  "execution_fingerprint": {
+    "fingerprint_schema_version": "canonical-manifest-v7",
+    "canonical_manifest_digest": "cf0dbbfef50223a17a3c57922ec4b016a6eb8c97cd8239032a8718e1e9b76029"
+  },
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0,
+  "generated_at": "2026-09-12T09:21:08.484207925Z"
+}

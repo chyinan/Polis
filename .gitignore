@@ -4,3 +4,21 @@ bin/
 *.test
 *.exe
 
+# build / deps / caches
+node_modules/
+dist/
+__pycache__/
+*.pyc
+target/
+
+# local compiled probe binaries (root)
+/polis-r03a-*
+/polis-r05b*
+
+# accidental/temp
+/System.Collections.Specialized.OrderedDictionary/
+
+# evidence runtime temp debris (special files git can't index on Windows)
+/evidence/development/r0.3a-t10/*/home/tmp/
+/evidence/development/r0.3a-t10/**/home/tmp/
+

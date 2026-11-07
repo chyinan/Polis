@@ -1,0 +1,13 @@
+{
+  "status": "NOT_STARTED",
+  "reason": "live canary was blocked before provider process start",
+  "process_start": null,
+  "initialize": null,
+  "thread_start": null,
+  "turn_start": null,
+  "first_output_latency_ms": null,
+  "reconnect_count": 0,
+  "turn_completed": false,
+  "clean_stop": null,
+  "provider_egress": 0
+}

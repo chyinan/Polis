@@ -1,0 +1,53 @@
+{
+  "qualification": "R0.3A-PAGINATION-V3-REAL-PEER-COLLABORATION",
+  "status": "NOT_STARTED",
+  "freshness": "FAILED",
+  "stop_boundary": "before_PG_and_before_allowance",
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "subject_revision": "r03a-pagination-v3-business-subject@1",
+  "public_contract_revision": "r03a-pagination-contract@3",
+  "runtime_verifier_revision": "r03a-pagination-behavior@1",
+  "blocking_reason": "current provider-visible Backend tool surface is not equivalent to frozen Backend L2 qualification",
+  "qualified_backend_l2": {
+    "path": "evidence/development/r0.3a-current-binary-l2/execution-manifest.json",
+    "execution_fingerprint": "1ecbe56408ce5aee5c680f6db8cb85bba0b24d05183b3992350e813c1c5f280d",
+    "tool_count": 11,
+    "aggregate_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+    "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+    "aggregate_schema_bytes": 2038,
+    "work_checkpoint_schema_bytes": 782,
+    "thread_start_payload_digest": "059c3eeba08bc0052386e7b7b1de26912c41077a2c9b42d7b2bdb280798cfc20",
+    "thread_start_payload_bytes": 4032,
+    "acceptance_checker_revision": "peer-semantic-checker@2"
+  },
+  "current_formal_backend_surface": {
+    "source": "codex.PeerBackendTools() via current formal registry",
+    "tool_count": 11,
+    "aggregate_manifest_digest": "f1a112788fb1c879a1e7e8e73b515e0ae560352d1f0ee8f5a6f19cf5fc8c0c16",
+    "aggregate_schema_digest": "ad2d5e53c585ba3eea65614432e05fb8ad3056c234faee57ac43eb2d125b8763",
+    "aggregate_schema_bytes": 2048,
+    "work_checkpoint_schema_bytes": 792,
+    "thread_start_payload_digest": "8f4d8d37ca7ec5440828657bbfd2160e28c61428a757c4ce3aa3b0be3bdd97ab",
+    "thread_start_payload_bytes": 4042,
+    "acceptance_checker_revision": "peer-semantic-checker@3"
+  },
+  "exact_drift": [
+    "work_checkpoint schema bytes 782 -> 792",
+    "aggregate schema bytes 2038 -> 2048",
+    "aggregate schema digest changed",
+    "aggregate manifest digest changed",
+    "thread/start payload digest and bytes changed"
+  ],
+  "business_state": {
+    "allowance_created": false,
+    "worker_started": false,
+    "medium_started": 0,
+    "high_started": 0,
+    "provider_egress": 0,
+    "candidate_mutations": 0,
+    "historical_evidence_modified": false
+  },
+  "provider_surface_changed": true,
+  "eligible_for_new_peer_collaboration_run": "NO",
+  "next_required_step": "new offline current-binary Backend L2 qualification; no automatic live canary or business rerun"
+}

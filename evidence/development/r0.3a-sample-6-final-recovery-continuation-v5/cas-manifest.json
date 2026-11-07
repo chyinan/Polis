@@ -1,0 +1,35 @@
+{
+  "schema_version": "r03a-sample-6-recovery-cas@1",
+  "package_generation_id": "r03a-sample-6-recovery-20260914T150111Z-307",
+  "entries": [
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "cb58aa1ffbbf3e44f53f49ecedfdd7e1c0d19bb98a98d209bcaad9b0cff7d832",
+      "size": 1871
+    },
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "d8a78697f5450ace5134d8687ec00edad7137f38b02fee628cc728b030d89efa",
+      "size": 90
+    },
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "e2d27d8aa9187eb9ddd0a0ff547af31df440e9590ccdb313b242bda97b67ed8f",
+      "size": 89
+    },
+    {
+      "company_id": "r03a-pagination-v3-company-1789379324974307400",
+      "content_sha256": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+      "size": 789
+    }
+  ],
+  "manifest_digest": "18a13e34ca7b8dcaf926ab835514484d8b5a278818421a255089cf288abe8171",
+  "continuation_manifest_hash": "c9dd09e74d0f21214253ed704d9bb3b1b25ef2c6fa5902f2743d20c17133a4b8",
+  "dump_hash": "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+  "cluster_system_identifier": "7685325910591533502",
+  "database_oid": "16384",
+  "canonical_root": "/mnt/d/Polis-recovery/r0.3a-pagination-v3-backend-sample-6-runtime/backend/blobs",
+  "layout_revision": "r03a-cas-layout@1",
+  "inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+  "historical_evidence_modified": false
+}

@@ -1,0 +1,111 @@
+{
+    "qualification":  "R0.3A-AUTHORITATIVE-STATE-CONTINUITY",
+    "status":  "PASSED",
+    "backend_real_execution":  "PASSED",
+    "authoritative_state_continuity":  "PASSED",
+    "eligible_for_frontend_phase":  true,
+    "continuation_6_frontend_state_continuity":  "FAILED",
+    "parent_problem_key":  "r03a-real-peer-collaboration-v1",
+    "current_execution_fingerprint":  "1ecbe56408ce5aee5c680f6db8cb85bba0b24d05183b3992350e813c1c5f280d",
+    "current_l1_fingerprint":  "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+    "tool_call_limit":  48,
+    "backend_medium":  {
+                           "started":  1,
+                           "high":  0,
+                           "provider_egress":  1,
+                           "transport":  "terminally_reconciled"
+                       },
+    "source_database":  {
+                            "semantic_identity":  "continuation-7:r03a-t2-company-1789221294871371900/r03a-t2-mission-1789221294871371900",
+                            "destroyed_before_fresh_restore":  true,
+                            "snapshot_created_before_cleanup":  true
+                        },
+    "snapshot":  {
+                     "external_path":  "D:\\Polis-recovery\\r0.3a-backend-continuation-7\\run-20260912135427-17a3e1a3b6c3\\polis-authoritative-state.dump",
+                     "sha256":  "02ef513bfc83d9069a229cfe7ce18e5d79cf837bc59d57fe0d7b262217edf2da",
+                     "size":  69408,
+                     "postgres_major":  18,
+                     "schema_version":  5,
+                     "migration_schema_digest":  "e4622bbe77fb9ac23e479d317d9063870dee19b67884017a521b68b91693cd5e",
+                     "manifest_sha256":  "6a6f7852a991e71adf180a50c0945efb9161d45ed76d36d5a31b4c5c4ad3d826",
+                     "credentials_included":  false
+                 },
+    "cas":  {
+                "manifest_external_path":  "D:\\Polis-recovery\\r0.3a-backend-continuation-7\\run-20260912135427-17a3e1a3b6c3\\blob-cas-manifest.json",
+                "manifest_sha256":  "0fa1cce2205e07e167aa173b652780774c8c02468b3c48bbf857b93e52c7fbf3",
+                "restored_digest_match":  true,
+                "required_blob_count":  2,
+                "artifact_id":  "5bf77f15ee867b857f116faad0312c4f",
+                "artifact_digest":  "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2"
+            },
+    "restored_database":  {
+                              "fresh_restore":  true,
+                              "schema_version":  5,
+                              "identity_equal_before_runtime_transition":  true,
+                              "source_state_digest":  "357655816325b3729c43e0b4e7837810c0523b49e413039c6d6b2e6b9bd08070",
+                              "post_recovery_state_export":  "D:\\Polis-recovery\\r0.3a-backend-continuation-7\\run-20260912135427-17a3e1a3b6c3\\recovery-only-20260912140258-55996adbb7c8\\post-recovery-state.json"
+                          },
+    "anchors":  {
+                    "company_id":  "r03a-t2-company-1789221294871371900",
+                    "mission_id":  "",
+                    "final_contract_revision_id":  "4f57c71061c10ab5a78f632d8db59321",
+                    "final_contract_revision":  3,
+                    "message_id":  "7d027b5a8fd2267a68b364e47f4635ca",
+                    "obligation_id":  "7d027b5a8fd2267a68b364e47f4635ca",
+                    "obligation_owner":  "emp-frontend",
+                    "obligation_state":  "pending",
+                    "checkpoint_id":  "b3869930af22ae19ae4353e321b45371",
+                    "artifact_id":  "5bf77f15ee867b857f116faad0312c4f",
+                    "artifact_digest":  "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+                    "workspace_revision":  9
+                },
+    "contract_message_obligation_continuity":  {
+                                                   "final_contract_current":  true,
+                                                   "message_current":  true,
+                                                   "obligation_pending_for_emp_frontend":  true,
+                                                   "all_bound_to_final_revision":  true,
+                                                   "planner_relay":  0,
+                                                   "synthesized_rows":  0
+                                               },
+    "event_ordering":  {
+                           "source_company_sequence_preserved_before_runtime_transition":  true,
+                           "relevant_outbox_work_signal_preserved":  true
+                       },
+    "runtime_incarnation":  {
+                                "old_incarnation":  "e942e86329dc3179004e54e09aee0402",
+                                "new_incarnation":  "dffbe13e341475fb72ed5a7c1ad50092",
+                                "old_worker_rejected":  true,
+                                "old_worker_state":  "stopped",
+                                "old_grant_reactivated":  false
+                            },
+    "negatives":  {
+                      "corrupted_snapshot":  "DENY",
+                      "missing_blob":  "DENY",
+                      "schema_version_mismatch":  "DENY",
+                      "partial_restore":  "DENY",
+                      "corrupted_snapshot_denied":  true,
+                      "missing_blob_denied":  true,
+                      "schema_mismatch_denied":  true,
+                      "partial_restore_denied":  true
+                  },
+    "cleanup":  {
+                    "source_db_destroyed":  true,
+                    "restored_db_destroyed":  true,
+                    "partial_db_destroyed":  true,
+                    "pg_stopped":  true,
+                    "recovery_package_retained":  true
+                },
+    "tests":  {
+                  "full_tests":  "PASS",
+                  "race":  "PASS",
+                  "vet":  "PASS",
+                  "linux_build":  "PASS",
+                  "windows_build":  "PASS",
+                  "postgresql_restore_suite":  "PASS",
+                  "diff_check":  "PASS",
+                  "medium":  1,
+                  "high":  0,
+                  "provider_egress":  1
+              },
+    "generated_at":  "2026-09-12T14:03:08.8062425Z"
+}

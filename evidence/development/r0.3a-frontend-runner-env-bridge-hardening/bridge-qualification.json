@@ -1,0 +1,29 @@
+{
+  "qualification": "R0.3A-FRONTEND-RUNNER-ENV-BRIDGE",
+  "status": "PASSED",
+  "frontend_runner_env_bridge_hardening": "PASSED",
+  "frontend_execution_config_preflight": "PASSED",
+  "legacy_launch_without_explicit_config": "DENIED_BEFORE_BUSINESS_SETUP",
+  "powerShell_to_wsl_roundtrip": "PASSED",
+  "secret_values_in_probe_evidence": false,
+  "provider_visible_surface_changed": false,
+  "frontend_l2_status": "QUALIFIED_REUSABLE",
+  "reused_frontend_l2_execution_fingerprint": "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+  "reused_frontend_l2_tool_manifest_digest": "91bfe5116ae4e7c2b6ab1c117e03879e67f9ee0a863d68e77b513958b9c99615",
+  "reused_frontend_l2_aggregate_schema_digest": "e1ea83e2bd757af47f12fa6d6931821b5b47c5feb0e8c5e5f023d4e5f2ee6c66",
+  "reused_frontend_l2_aggregate_schema_bytes": 2217,
+  "reused_frontend_l2_tool_count": 12,
+  "offline_current_policy_refresh": {
+    "status": "PASSED",
+    "acceptance_checker_revision": "peer-semantic-checker@3",
+    "execution_fingerprint": "3794c0ced81061f3de78d4e39a4219e387e77cb34e8cd84ac00f0c16718d93ac",
+    "provider_registration_manifest_unchanged": true,
+    "medium": 0,
+    "high": 0,
+    "provider_egress": 0
+  },
+  "historical_evidence_modified": false,
+  "business_frontend_started": false,
+  "successor_started": false,
+  "reviewer_started": false
+}

@@ -18,20 +18,26 @@ import (
 )
 
 type R02Result struct {
-	Status           string    `json:"status"`
-	Model            string    `json:"model"`
-	Version          string    `json:"codex_version"`
-	SchemaDigest     string    `json:"schema_digest"`
-	CapabilityDigest string    `json:"capability_digest"`
-	Started          time.Time `json:"started"`
-	Finished         time.Time `json:"finished"`
-	Turns            []R02Turn `json:"turns"`
-	SingleWorker     string    `json:"single_worker"`
-	Handover         string    `json:"handover"`
-	Behavior         string    `json:"behavior"`
-	OldWriter        string    `json:"old_writer"`
-	Error            string    `json:"error,omitempty"`
-	Usage            R02Usage  `json:"usage"`
+	Status             string    `json:"status"`
+	Model              string    `json:"model"`
+	SubjectRevision    string    `json:"subject_revision,omitempty"`
+	Preflight          string    `json:"contamination_preflight,omitempty"`
+	Version            string    `json:"codex_version"`
+	SchemaDigest       string    `json:"schema_digest"`
+	CapabilityDigest   string    `json:"capability_digest"`
+	Started            time.Time `json:"started"`
+	Finished           time.Time `json:"finished"`
+	Turns              []R02Turn `json:"turns"`
+	SingleWorker       string    `json:"single_worker"`
+	Handover           string    `json:"handover"`
+	Behavior           string    `json:"behavior"`
+	ReviewerVerdict    string    `json:"reviewer_verdict"`
+	ReviewerConfidence string    `json:"reviewer_confidence,omitempty"`
+	HiddenVerifier     string    `json:"hidden_verifier_result"`
+	ReviewIsolation    string    `json:"review_isolation_result"`
+	OldWriter          string    `json:"old_writer"`
+	Error              string    `json:"error,omitempty"`
+	Usage              R02Usage  `json:"usage"`
 }
 type R02Usage struct {
 	Medium int    `json:"medium_turns"`
@@ -40,23 +46,26 @@ type R02Usage struct {
 	Limit  string `json:"limit"`
 }
 type R02Turn struct {
-	Number        int       `json:"number"`
-	Purpose       string    `json:"purpose"`
-	Profile       string    `json:"profile"`
-	Status        string    `json:"status"`
-	Started       time.Time `json:"started"`
-	Finished      time.Time `json:"finished"`
-	DurationMS    int64     `json:"duration_ms"`
-	ThreadID      string    `json:"thread_id,omitempty"`
-	SessionID     string    `json:"session_id,omitempty"`
-	ToolEvents    []string  `json:"tool_events"`
-	Receipts      []string  `json:"receipts"`
-	StopReceipt   string    `json:"stop_receipt,omitempty"`
-	StopConfirmed bool      `json:"stop_confirmed"`
-	ArtifactID    string    `json:"artifact_id,omitempty"`
-	CheckpointID  string    `json:"checkpoint_id,omitempty"`
-	CheckPassed   bool      `json:"check_passed"`
-	Error         string    `json:"error,omitempty"`
+	Number                    int       `json:"number"`
+	Purpose                   string    `json:"purpose"`
+	Profile                   string    `json:"profile"`
+	Status                    string    `json:"status"`
+	Started                   time.Time `json:"started"`
+	Finished                  time.Time `json:"finished"`
+	DurationMS                int64     `json:"duration_ms"`
+	ThreadID                  string    `json:"thread_id,omitempty"`
+	SessionID                 string    `json:"session_id,omitempty"`
+	ToolEvents                []string  `json:"tool_events"`
+	Receipts                  []string  `json:"receipts"`
+	StopReceipt               string    `json:"stop_receipt,omitempty"`
+	StopConfirmed             bool      `json:"stop_confirmed"`
+	ArtifactID                string    `json:"artifact_id,omitempty"`
+	CheckpointID              string    `json:"checkpoint_id,omitempty"`
+	CheckPassed               bool      `json:"check_passed"`
+	ReviewerVerdict           string    `json:"reviewer_verdict,omitempty"`
+	ReviewerConfidence        string    `json:"reviewer_confidence,omitempty"`
+	ReviewerSubmissionReceipt string    `json:"review_submission_receipt,omitempty"`
+	Error                     string    `json:"error,omitempty"`
 }
 type r02Session struct {
 	binding              kernel.Binding
@@ -194,25 +203,36 @@ func RunR02(cfg Config) (result R02Result, err error) {
 	if e = budget.Reserve("high"); e != nil {
 		return result, e
 	}
-	reviewer, e := runR02ReviewSession(ctx, cfg, k, scope, reviewTask.ID, secondRun.artifact, bundle, checker, 3, "independent behavior acceptance")
+	reviewer, e := runR02ReviewSession(ctx, cfg, k, scope, reviewTask.ID, secondRun.artifact, 3, "independent behavior acceptance")
 	result.CapabilityDigest = reviewer.capability
 	result.Turns = append(result.Turns, reviewer.turn)
+	result.ReviewerVerdict = reviewer.turn.ReviewerVerdict
 	result.Usage.Medium = budget.Medium
 	result.Usage.High = budget.High
 	if e != nil {
 		return result, e
 	}
-	if !reviewer.turn.CheckPassed {
-		return result, errors.New("High profile did not produce a passed behavior-check receipt")
+	report, verifyErr := k.VerifyProbe(ctx, scope, secondRun.artifact, "full", checker)
+	if report.Passed {
+		result.HiddenVerifier = "passed"
+	} else {
+		result.HiddenVerifier = "failed"
 	}
-	if reviewer.turn.CheckpointID == "" {
-		return result, errors.New("High profile did not produce a checkpoint")
+	if reviewer.turn.ReviewerVerdict != "" && reviewer.turn.ReviewerSubmissionReceipt != "" {
+		result.ReviewIsolation = "passed"
+		if !hasAll(reviewer.turn.ToolEvents, "workspace_read", "work_current", "context_read", "review_submit") || containsAny(reviewer.turn.ToolEvents, "workspace_replace", "artifact_submit", "workspace_check", "work_checkpoint") {
+			result.ReviewIsolation = "failed"
+		}
+	} else {
+		result.ReviewIsolation = "failed"
 	}
-	if ok, e := k.CheckpointEvidence(ctx, reviewer.binding, reviewer.turn.CheckpointID); e != nil || !ok {
-		return result, errors.New("High checkpoint evidence is not bound to its session and digest")
+	if verifyErr != nil {
+		return result, verifyErr
 	}
-	if _, e = k.VerifyProbe(ctx, scope, secondRun.artifact, "full", checker); e != nil {
-		return result, e
+	if reviewer.turn.ReviewerVerdict != "passed" || result.HiddenVerifier != "passed" || result.ReviewIsolation != "passed" {
+		result.Behavior = "failed"
+		result.Status = "failed"
+		return result, errors.New("independent review, hidden verifier and isolation did not all pass")
 	}
 	result.Behavior = "passed"
 	result.Status = "passed"
@@ -357,13 +377,128 @@ func runR02SessionWithBinding(ctx context.Context, cfg Config, k *kernel.Kernel,
 	out.turn.Status = "passed"
 	return out, nil
 }
-func runR02ReviewSession(ctx context.Context, cfg Config, k *kernel.Kernel, s kernel.Scope, task, artifact string, bundle kernel.HandoverBundle, checker kernel.CheckRunner, num int, purpose string) (r r02Session, err error) {
+func runR02ReviewSession(ctx context.Context, cfg Config, k *kernel.Kernel, s kernel.Scope, task, artifact string, num int, purpose string) (out r02Session, err error) {
 	b, e := k.TXNewWorker(ctx, s, task, cfg.Model+"/high")
 	if e != nil {
-		return r, e
+		return out, e
 	}
-	prompt := "Perform independent behavior acceptance of artifact " + artifact + ". Read the workspace and run workspace_check. Verify negative zero remains -0 and positive values carry +. The compiled check result is authoritative. Record a checkpoint with observed evidence, why the constraint matters, and why collapsing all zeros was rejected. Do not write the candidate or submit an artifact; prose is not acceptance. Source facts:\n"
-	raw, _ := json.Marshal(bundle)
-	prompt += string(raw)
-	return runR02SessionWithBinding(ctx, cfg, k, b, kernel.HandoverBundle{}, "high", prompt, "full", false, true, checker, num, purpose)
+	out.binding = b
+	out.turn = R02Turn{Number: num, Purpose: purpose, Profile: cfg.Model + "/high"}
+	start := time.Now().UTC()
+	out.turn.Started = start
+	root := filepath.Join(cfg.Root, b.SessionID())
+	if e = os.MkdirAll(root, 0700); e != nil {
+		return out, e
+	}
+	args, capDigest, e := runner.NativeArgs(cfg.Binary, filepath.Join(root, "home"), cfg.AuthFile, cfg.ProxyURL)
+	if e != nil {
+		return out, e
+	}
+	out.capability = capDigest
+	p, e := runner.Start(b.SessionID(), args, []string{"PATH=/usr/bin:/bin"})
+	if e != nil {
+		return out, e
+	}
+	stopped := false
+	var c *codex.Client
+	defer func() {
+		if !stopped {
+			if e := k.TXBeginStop(context.Background(), b); e == nil {
+				if proof, stopErr := p.Stop(); stopErr == nil {
+					if e2 := k.TXConfirmStopped(context.Background(), b, proof); e2 == nil {
+						out.turn.StopReceipt = proof.Description()
+						out.turn.StopConfirmed = proof.For(b.SessionID())
+						stopped = true
+					}
+				}
+			}
+		}
+		if c != nil {
+			c.Close()
+		}
+		p.Stop()
+		out.turn.Finished = time.Now().UTC()
+		out.turn.DurationMS = out.turn.Finished.Sub(start).Milliseconds()
+		if err != nil {
+			out.turn.Status = "failed"
+			out.turn.Error = err.Error()
+		}
+		_ = writeJSON(filepath.Join(cfg.Evidence, b.SessionID(), "r02-session.json"), out.turn)
+	}()
+	if e = k.TXAttachWorker(ctx, b, p); e != nil {
+		return out, e
+	}
+	c, e = codex.NewWithModel(p, filepath.Join(cfg.Evidence, b.SessionID()), cfg.Model)
+	if e != nil {
+		return out, e
+	}
+	if e = c.Initialize(ctx); e != nil {
+		return out, e
+	}
+	thread, e := c.StartReviewerThread(ctx, "high")
+	if e != nil {
+		return out, e
+	}
+	out.turn.ThreadID = thread
+	out.turn.SessionID = b.SessionID()
+	if e = k.TXValidateWorker(ctx, b); e != nil {
+		return out, e
+	}
+	if e = k.TXActivateWorker(ctx, b, capDigest); e != nil {
+		return out, e
+	}
+	workspace, e := k.Workspace(ctx, b)
+	if e != nil {
+		return out, e
+	}
+	pack := reviewerEvidencePack{SubjectRevision: R02SubjectRevision, ArtifactID: artifact, CandidateDigest: workspace.Digest, Contract: "signed-zero@1", TaskInput: "Preserve the signed-zero compatibility contract and implement the authorized formatting milestones for the frozen formatter candidate.", AllowedPath: "formatter.go", CandidateContent: workspace.Content}
+	prompt, e := buildReviewerPrompt(pack)
+	if e != nil {
+		return out, e
+	}
+	tools := kernel.ReviewerTools{Kernel: k, Binding: b, Evidence: kernel.ReviewerEvidence{SubjectRevision: pack.SubjectRevision, ArtifactID: pack.ArtifactID, CandidateDigest: pack.CandidateDigest, Contract: pack.Contract, TaskInput: pack.TaskInput, AllowedPath: pack.AllowedPath}}
+	turnResult, e := c.Turn(ctx, thread, "high", prompt, func(name, callID string, raw json.RawMessage) (json.RawMessage, bool) {
+		out.turn.ToolEvents = append(out.turn.ToolEvents, name)
+		r := tools.Call(ctx, name, callID, raw)
+		if r.Receipt != nil {
+			out.turn.Receipts = append(out.turn.Receipts, r.Receipt.ID)
+		}
+		if name == "review_submit" && r.Error == "" {
+			if verdict, ok := r.Data.(kernel.ReviewerSubmission); ok && r.Receipt != nil {
+				out.turn.ReviewerVerdict = verdict.Verdict
+				out.turn.ReviewerConfidence = verdict.Confidence
+				out.turn.ReviewerSubmissionReceipt = r.Receipt.ID
+			}
+		}
+		data, _ := json.Marshal(r)
+		if r.Error == "OUTCOME_UNKNOWN" {
+			err = errors.New("outcome_unknown: " + r.Detail)
+			return data, true
+		}
+		return data, false
+	})
+	if e != nil {
+		return out, e
+	}
+	if turnResult.State != "completed" {
+		return out, fmt.Errorf("native reviewer turn ended %s", turnResult.State)
+	}
+	if out.turn.ReviewerVerdict == "" || out.turn.ReviewerSubmissionReceipt == "" {
+		return out, errors.New("reviewer did not produce an explicit persisted verdict")
+	}
+	if e = k.TXBeginStop(ctx, b); e != nil {
+		return out, e
+	}
+	proof, e := p.Stop()
+	if e != nil {
+		return out, e
+	}
+	if e = k.TXConfirmStopped(ctx, b, proof); e != nil {
+		return out, e
+	}
+	stopped = true
+	out.turn.StopReceipt = proof.Description()
+	out.turn.StopConfirmed = proof.For(b.SessionID())
+	out.turn.Status = "passed"
+	return out, nil
 }

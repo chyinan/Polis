@@ -1,0 +1,369 @@
+跳到主要内容
+P
+polis
+R1 WORKBENCH
+r05b-live-2
+作用域公司
+公司
+公司总览
+使命
+任务
+员工
+组织关系
+活动
+资源
+证据
+待决事项
+反馈
+Bot提醒
+设置
+浅色主题
+Polis
+/
+r05b-live-2
+
+公司 / 活动
+
+活动时间线
+筛选时间线
+全部活动
+协作与责任
+生命周期
+合同与证据
+2026/9/17 GMT+8 18:52
+员工停止
+worker.stopped
+
+authoritative company_seq=28; runtime event kind=worker.stopped
+
+Polis runtime
+·
+worker.stopped
+·
+seq 28
+展开证据与调试信息
+2026/9/17 GMT+8 18:52
+员工停止
+worker.stopping
+
+authoritative company_seq=27; runtime event kind=worker.stopping
+
+Polis runtime
+·
+worker.stopping
+·
+seq 27
+展开证据与调试信息
+2026/9/17 GMT+8 18:52
+Provider turn 已完成
+provider.turn.completed
+
+authoritative company_seq=26; runtime event kind=provider.turn.completed
+
+Polis runtime
+·
+provider.turn.completed
+·
+seq 26
+展开证据与调试信息
+2026/9/17 GMT+8 18:52
+工作区更新
+worker.tool_call
+
+authoritative company_seq=25; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 25
+展开证据与调试信息
+2026/9/17 GMT+8 18:52
+工作区更新
+worker.historical
+
+authoritative company_seq=24; runtime event kind=worker.historical
+
+Polis runtime
+·
+worker.historical
+·
+seq 24
+展开证据与调试信息
+2026/9/17 GMT+8 18:52
+工作区更新
+worker.tool_call
+
+authoritative company_seq=23; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 23
+展开证据与调试信息
+2026/9/17 GMT+8 18:52
+工作区更新
+worker.tool_call
+
+authoritative company_seq=22; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 22
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=21; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 21
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=20; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 20
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=19; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 19
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=18; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 18
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=17; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 17
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+workspace.check
+
+authoritative company_seq=16; runtime event kind=workspace.check
+
+Polis runtime
+·
+workspace.check
+·
+seq 16
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=15; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 15
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+workspace.replace
+
+authoritative company_seq=14; runtime event kind=workspace.replace
+
+Polis runtime
+·
+workspace.replace
+·
+seq 14
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=13; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 13
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=12; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 12
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=11; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 11
+展开证据与调试信息
+2026/9/17 GMT+8 18:51
+工作区更新
+worker.tool_call
+
+authoritative company_seq=10; runtime event kind=worker.tool_call
+
+Polis runtime
+·
+worker.tool_call
+·
+seq 10
+展开证据与调试信息
+2026/9/17 GMT+8 18:50
+开始任务
+worker.active
+
+authoritative company_seq=9; runtime event kind=worker.active
+
+Polis runtime
+·
+worker.active
+·
+seq 9
+展开证据与调试信息
+2026/9/17 GMT+8 18:50
+工作区更新
+worker.activation_pending_environment
+
+authoritative company_seq=8; runtime event kind=worker.activation_pending_environment
+
+Polis runtime
+·
+worker.activation_pending_environment
+·
+seq 8
+展开证据与调试信息
+2026/9/17 GMT+8 18:50
+工作区更新
+worker.validating
+
+authoritative company_seq=7; runtime event kind=worker.validating
+
+Polis runtime
+·
+worker.validating
+·
+seq 7
+展开证据与调试信息
+2026/9/17 GMT+8 18:50
+工作区更新
+worker.process_attached
+
+authoritative company_seq=6; runtime event kind=worker.process_attached
+
+Polis runtime
+·
+worker.process_attached
+·
+seq 6
+展开证据与调试信息
+2026/9/17 GMT+8 18:50
+工作区更新
+worker.restore
+
+authoritative company_seq=5; runtime event kind=worker.restore
+
+Polis runtime
+·
+worker.restore
+·
+seq 5
+展开证据与调试信息
+2026/9/17 GMT+8 18:50
+工作区更新
+mission.task.prepare
+
+authoritative company_seq=4; runtime event kind=mission.task.prepare
+
+Polis runtime
+·
+mission.task.prepare
+·
+seq 4
+展开证据与调试信息
+2026/9/17 GMT+8 18:50
+Mission 已启动
+mission.start
+
+authoritative company_seq=3; runtime event kind=mission.start
+
+Polis runtime
+·
+mission.start
+·
+seq 3
+展开证据与调试信息
+2026/9/17 GMT+8 18:44
+Mission 已创建
+mission.create
+
+authoritative company_seq=2; runtime event kind=mission.create
+
+Polis runtime
+·
+mission.create
+·
+seq 2
+展开证据与调试信息
+2026/9/17 GMT+8 18:41
+工作区更新
+controller.recovered
+
+authoritative company_seq=1; runtime event kind=controller.recovered
+
+Polis runtime
+·
+controller.recovered
+·
+seq 1
+展开证据与调试信息
+已到当前快照末尾

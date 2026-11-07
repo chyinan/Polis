@@ -1,0 +1,9 @@
+{
+  "configured_directory": "/tmp/polis-pg-restore-v9",
+  "resolved_directory": "/tmp/polis-pg-restore-v9",
+  "port": 55432,
+  "effective_socket_path": "/tmp/polis-pg-restore-v9/.s.PGSQL.55432",
+  "path_bytes": 39,
+  "maximum_bytes": 107,
+  "compatibility": "PASS"
+}

@@ -1,0 +1,23 @@
+SELECT jsonb_pretty(jsonb_build_object(
+  'company_count', (SELECT count(*) FROM companies WHERE id='r05b-live-2'),
+  'employee_count', (SELECT count(*) FROM employees WHERE company_id='r05b-live-2'),
+  'mission_count', (SELECT count(*) FROM missions WHERE company_id='r05b-live-2'),
+  'mission_state', (SELECT state FROM missions WHERE company_id='r05b-live-2'),
+  'task_count', (SELECT count(*) FROM tasks WHERE company_id='r05b-live-2'),
+  'bootstrap_plan_count', (SELECT count(*) FROM tasks WHERE company_id='r05b-live-2' AND kind='bootstrap_plan'),
+  'bootstrap_plan_states', COALESCE((SELECT jsonb_agg(state ORDER BY id) FROM tasks WHERE company_id='r05b-live-2' AND kind='bootstrap_plan'),'[]'::jsonb),
+  'compat_count', (SELECT count(*) FROM tasks WHERE company_id='r05b-live-2' AND kind='compat'),
+  'provider_executable_task_count', (SELECT count(*) FROM tasks WHERE company_id='r05b-live-2' AND kind='compat' AND owner='emp-backend'),
+  'worker_session_count', (SELECT count(*) FROM worker_sessions WHERE company_id='r05b-live-2'),
+  'provider_bearing_session_count', (SELECT count(*) FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id WHERE s.company_id='r05b-live-2' AND t.kind='compat' AND t.owner='emp-backend'),
+  'provider_live_session_count', (SELECT count(*) FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id WHERE s.company_id='r05b-live-2' AND t.kind='compat' AND t.owner='emp-backend' AND s.state!='stopped'),
+  'task_validation_binding_count', (SELECT count(*) FROM task_validation_bindings WHERE company_id='r05b-live-2'),
+  'passing_product_checks', (SELECT count(*) FROM worker_checks WHERE company_id='r05b-live-2' AND phase='product' AND passed),
+  'qualified_checkpoints', (SELECT count(*) FROM worker_checkpoints q JOIN worker_sessions s ON s.company_id=q.company_id AND s.id=q.session_id JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id WHERE q.company_id='r05b-live-2' AND t.kind='compat' AND q.data->>'kind'='qualified'),
+  'artifact_count', (SELECT count(*) FROM artifacts WHERE company_id='r05b-live-2'),
+  'artifact_qualification_count', (SELECT count(*) FROM task_validation_artifact_qualifications WHERE company_id='r05b-live-2'),
+  'provider_terminal_observation_count', (SELECT count(*) FROM worker_observations WHERE company_id='r05b-live-2' AND reason='provider_terminal'),
+  'event_count', (SELECT count(*) FROM events WHERE company_id='r05b-live-2'),
+  'start_event_count', (SELECT count(*) FROM events WHERE company_id='r05b-live-2' AND kind='mission.start'),
+  'cancel_event_count', (SELECT count(*) FROM events WHERE company_id='r05b-live-2' AND kind='mission.cancel')
+));

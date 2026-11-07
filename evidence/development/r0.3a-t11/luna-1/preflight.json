@@ -1,0 +1,6 @@
+{
+  "error": "preflight_failed: current opaque auth identity differs from T9",
+  "model_calls": 0,
+  "passed": false,
+  "status": "preflight_failed"
+}

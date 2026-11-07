@@ -1,0 +1,26 @@
+{
+  "explained": true,
+  "old_tool_count": 11,
+  "current_tool_count": 11,
+  "approved_changes": [
+    {
+      "tool": "polis_collab_send",
+      "path": "polis_collab_send.inputSchema.properties.to_task -\u003e to_employee_id + to_task_id",
+      "old_required": "to_task",
+      "new_required": "to_employee_id,to_task_id",
+      "old_schema_bytes": 270,
+      "new_schema_bytes": 328,
+      "reason": "approved collaboration target hardening: employee and responsibility task IDs are explicit"
+    },
+    {
+      "tool": "polis_work_checkpoint",
+      "path": "polis_work_checkpoint.inputSchema.properties.evidence -\u003e evidence_refs",
+      "old_required": "evidence",
+      "new_required": "evidence_refs",
+      "old_schema_bytes": 782,
+      "new_schema_bytes": 792,
+      "reason": "approved checkpoint/behavioral hardening: receipt references replace free-text evidence"
+    }
+  ],
+  "unexplained_changes": null
+}

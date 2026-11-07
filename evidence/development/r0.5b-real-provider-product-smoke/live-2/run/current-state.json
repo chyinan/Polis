@@ -1,0 +1,456 @@
+{
+    "tasks": [
+        {
+            "id": "489ea9fbe65d359327bd9bc979461138",
+            "kind": "bootstrap_plan",
+            "owner": "emp-planning",
+            "state": "completed",
+            "generation": 0,
+            "mission_id": "fed04f193f1bc6afebf9c152832ccd76"
+        },
+        {
+            "id": "5b39875f8dc6463f36395b04e4504407",
+            "kind": "compat",
+            "owner": "emp-backend",
+            "state": "cancelled",
+            "generation": 1,
+            "mission_id": "fed04f193f1bc6afebf9c152832ccd76"
+        }
+    ],
+    "checks": [
+        {
+            "id": "5d571cd58e6dc80707aa66171a1aff5f",
+            "phase": "product",
+            "digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+            "passed": true,
+            "report": {
+                "epoch": 3,
+                "status": "PASS",
+                "task_id": "5b39875f8dc6463f36395b04e4504407",
+                "feedback": "All public required-text criteria are present in the current Task workspace.",
+                "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+                "session_id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "reason_code": "all_required_text_present",
+                "runner_kind": "text_contains_all",
+                "runner_revision": "text-contains-all@1",
+                "workspace_digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+                "workspace_revision": 2,
+                "acceptance_revision": "text-acceptance@1",
+                "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+            },
+            "session_id": "f3a7f944f2749750becda51ad9d0e5bb"
+        }
+    ],
+    "company": {
+        "id": "r05b-live-2",
+        "employees": [
+            {
+                "id": "emp-backend",
+                "epoch": 3
+            },
+            {
+                "id": "emp-frontend",
+                "epoch": 2
+            },
+            {
+                "id": "emp-planning",
+                "epoch": 2
+            },
+            {
+                "id": "emp-review",
+                "epoch": 2
+            }
+        ],
+        "company_seq": 29
+    },
+    "mission": {
+        "id": "fed04f193f1bc6afebf9c152832ccd76",
+        "goal": "Create one small product integration smoke artifact through the Polis real-provider product path.",
+        "state": "cancelled",
+        "title": "R0.5B LIVE_2 real-provider product smoke",
+        "contract": "r0-arithmetic@1",
+        "acceptance_contract": {
+            "revision": "text-acceptance@1",
+            "required_text": [
+                "Mission ID: {{mission_id}}",
+                "Task ID: {{task_id}}",
+                "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+                "Task summary: This artifact records one small product integration smoke."
+            ]
+        }
+    },
+    "activity": [
+        {
+            "kind": "controller.recovered",
+            "payload": {
+                "id": "071de211c19356d584cc5546ed877289",
+                "status": "fake_only",
+                "occurred_at": "2026-09-17T10:41:05.6591782Z"
+            },
+            "company_seq": 1
+        },
+        {
+            "kind": "mission.create",
+            "payload": {
+                "id": "fed04f193f1bc6afebf9c152832ccd76",
+                "status": "draft",
+                "occurred_at": "2026-09-17T10:44:24.5647643Z"
+            },
+            "company_seq": 2
+        },
+        {
+            "kind": "mission.start",
+            "payload": {
+                "id": "fed04f193f1bc6afebf9c152832ccd76",
+                "status": "active",
+                "occurred_at": "2026-09-17T10:50:52.7594481Z"
+            },
+            "company_seq": 3
+        },
+        {
+            "kind": "mission.task.prepare",
+            "payload": {
+                "id": "5b39875f8dc6463f36395b04e4504407",
+                "status": "ready",
+                "occurred_at": "2026-09-17T10:50:53.0247018Z"
+            },
+            "company_seq": 4
+        },
+        {
+            "kind": "worker.restore",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "restoring",
+                "occurred_at": "2026-09-17T10:50:53.0344525Z"
+            },
+            "company_seq": 5
+        },
+        {
+            "kind": "worker.process_attached",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "attached",
+                "occurred_at": "2026-09-17T10:50:53.61745Z"
+            },
+            "company_seq": 6
+        },
+        {
+            "kind": "worker.validating",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "validating",
+                "occurred_at": "2026-09-17T10:50:53.6280727Z"
+            },
+            "company_seq": 7
+        },
+        {
+            "kind": "worker.activation_pending_environment",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "activation_pending_environment",
+                "occurred_at": "2026-09-17T10:50:53.6328897Z"
+            },
+            "company_seq": 8
+        },
+        {
+            "kind": "worker.active",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "active",
+                "occurred_at": "2026-09-17T10:50:53.6379513Z"
+            },
+            "company_seq": 9
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:07.0919988Z"
+            },
+            "company_seq": 10
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:07.103678Z"
+            },
+            "company_seq": 11
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:07.1133864Z"
+            },
+            "company_seq": 12
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:15.4163484Z"
+            },
+            "company_seq": 13
+        },
+        {
+            "kind": "workspace.replace",
+            "payload": {
+                "id": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+                "status": "persisted",
+                "revision": 2,
+                "occurred_at": "2026-09-17T10:51:15.4261405Z"
+            },
+            "company_seq": 14
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:19.4257867Z"
+            },
+            "company_seq": 15
+        },
+        {
+            "kind": "workspace.check",
+            "payload": {
+                "id": "5d571cd58e6dc80707aa66171a1aff5f",
+                "status": "persisted",
+                "occurred_at": "2026-09-17T10:51:19.4353703Z"
+            },
+            "company_seq": 16
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:26.846634Z"
+            },
+            "company_seq": 17
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:33.8211414Z"
+            },
+            "company_seq": 18
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:39.570465Z"
+            },
+            "company_seq": 19
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:44.8373861Z"
+            },
+            "company_seq": 20
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:51:57.4337102Z"
+            },
+            "company_seq": 21
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:52:05.3523386Z"
+            },
+            "company_seq": 22
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:52:09.88873Z"
+            },
+            "company_seq": 23
+        },
+        {
+            "kind": "worker.historical",
+            "payload": {
+                "id": "e4983a21d8f445652f72e8f3bb03c2eb",
+                "status": "historical_only",
+                "occurred_at": "2026-09-17T10:52:09.8974755Z"
+            },
+            "company_seq": 24
+        },
+        {
+            "kind": "worker.tool_call",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "tool_call",
+                "occurred_at": "2026-09-17T10:52:24.8103354Z"
+            },
+            "company_seq": 25
+        },
+        {
+            "kind": "provider.turn.completed",
+            "payload": {
+                "id": "5b03fce8d5f820904a7e3bf83161dabc",
+                "status": "completed",
+                "occurred_at": "2026-09-17T10:52:29.5058878Z"
+            },
+            "company_seq": 26
+        },
+        {
+            "kind": "worker.stopping",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "stopping",
+                "occurred_at": "2026-09-17T10:52:29.5101588Z"
+            },
+            "company_seq": 27
+        },
+        {
+            "kind": "worker.stopped",
+            "payload": {
+                "id": "f3a7f944f2749750becda51ad9d0e5bb",
+                "status": "stopped",
+                "occurred_at": "2026-09-17T10:52:29.5265658Z"
+            },
+            "company_seq": 28
+        },
+        {
+            "kind": "mission.cancel",
+            "payload": {
+                "id": "fed04f193f1bc6afebf9c152832ccd76",
+                "status": "cancelled",
+                "occurred_at": "2026-09-17T11:06:33.7067394Z"
+            },
+            "company_seq": 29
+        }
+    ],
+    "artifacts": [
+    ],
+    "workspaces": [
+        {
+            "digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+            "task_id": "5b39875f8dc6463f36395b04e4504407",
+            "revision": 2
+        }
+    ],
+    "checkpoints": [
+    ],
+    "worker_sessions": [
+        {
+            "id": "f3a7f944f2749750becda51ad9d0e5bb",
+            "epoch": 3,
+            "state": "stopped",
+            "profile": "gpt-5.6-luna/medium",
+            "task_id": "5b39875f8dc6463f36395b04e4504407",
+            "employee_id": "emp-backend",
+            "incarnation": "071de211c19356d584cc5546ed877289",
+            "process_pid": 19100,
+            "stop_receipt": "windows-process-handle:19100:waited",
+            "tool_call_limit": 16,
+            "tool_calls_used": 13
+        }
+    ],
+    "artifact_qualifications": [
+    ],
+    "task_validation_bindings": [
+        {
+            "task_id": "5b39875f8dc6463f36395b04e4504407",
+            "contract": {
+                "revision": "text-acceptance@1",
+                "required_text": [
+                    "Mission ID: fed04f193f1bc6afebf9c152832ccd76",
+                    "Task ID: 5b39875f8dc6463f36395b04e4504407",
+                    "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+                    "Task summary: This artifact records one small product integration smoke."
+                ]
+            },
+            "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+            "runner_kind": "text_contains_all",
+            "runner_revision": "text-contains-all@1",
+            "acceptance_revision": "text-acceptance@1",
+            "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+        }
+    ],
+    "provider_terminal_observations": [
+        {
+            "data": {
+                "state": "completed",
+                "usage": {
+                    "started_at": "2026-09-17T10:50:57.1652362Z",
+                    "tool_calls": 0,
+                    "finished_at": "2026-09-17T10:52:29.5016692Z",
+                    "token_usage": {
+                        "last": {
+                            "inputTokens": 15505,
+                            "totalTokens": 15587,
+                            "outputTokens": 82,
+                            "cachedInputTokens": 13056,
+                            "cacheWriteInputTokens": 0,
+                            "reasoningOutputTokens": 41
+                        },
+                        "total": {
+                            "inputTokens": 162336,
+                            "totalTokens": 164811,
+                            "outputTokens": 2475,
+                            "cachedInputTokens": 124416,
+                            "cacheWriteInputTokens": 0,
+                            "reasoningOutputTokens": 1053
+                        }
+                    },
+                    "authorization": {
+                        "Epoch": 3,
+                        "Model": "gpt-5.6-luna",
+                        "Effort": "medium",
+                        "TaskID": "5b39875f8dc6463f36395b04e4504407",
+                        "Profile": "gpt-5.6-luna/medium",
+                        "Purpose": "R0.5B_REAL_PROVIDER_PRODUCT_SMOKE_LIVE_2",
+                        "TaskKind": "compat",
+                        "CompanyID": "r05b-live-2",
+                        "MissionID": "fed04f193f1bc6afebf9c152832ccd76",
+                        "SessionID": "f3a7f944f2749750becda51ad9d0e5bb",
+                        "ToolCount": 7,
+                        "EmployeeID": "emp-backend",
+                        "Incarnation": "071de211c19356d584cc5546ed877289",
+                        "TaskOwnerID": "emp-backend",
+                        "EmployeeRole": "backend",
+                        "ProviderMode": "real",
+                        "ToolCallLimit": 16,
+                        "WorkspaceDigest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+                        "ExecutionEnvelope": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+                        "ToolSurfaceDigest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+                        "WorkspaceRevision": 1,
+                        "AggregateSchemaBytes": 1470,
+                        "AggregateSchemaDigest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+                        "TransportPolicyRevision": "r03a-transport-policy@1",
+                        "ToolSurfaceQualification": "polis-product-tool-surface@2",
+                        "TaskValidationBindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+                        "ProductProviderL2Fingerprint": "4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532",
+                        "ExactSurfaceExecutionFingerprint": "fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08"
+                    },
+                    "provider_egress": 1
+                },
+                "outcome": "COMPLETED"
+            },
+            "session_id": "f3a7f944f2749750becda51ad9d0e5bb"
+        }
+    ]
+}

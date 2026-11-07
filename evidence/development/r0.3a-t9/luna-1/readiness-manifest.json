@@ -1,0 +1,20 @@
+{
+  "readiness": {
+    "binary_sha256": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+    "callback_host": "not_applicable_no_dynamic_tools",
+    "capability_digest": "04a855290926ed2b6a21d9f95798fb655f1f6e96125fbe575b8327054a605e95",
+    "code_mode_host_sha256": "a9adcea47799d8caaec5fbf073966fef2869f754bc7b463e30783880dfb12913",
+    "cwd": "/work",
+    "dynamic_tool_count": 0,
+    "effort": "medium",
+    "employee_binding": "not_applicable_transport_canary",
+    "model": "gpt-5.6-luna",
+    "native_version": "codex-cli 0.151.0",
+    "proxy_category": "not_configured",
+    "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+    "sandbox": "read-only",
+    "schema_bytes": 0
+  },
+  "registration_completed_before_turn_start": true,
+  "thread_id": "01a0851a-5848-7d32-8951-c7318edf6d7f"
+}

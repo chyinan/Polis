@@ -1,0 +1,15 @@
+{
+    "request_count":  1,
+    "response_count":  1,
+    "request_sent_at":  "2026-09-21T03:49:45.2205185Z",
+    "response_received_at":  "2026-09-21T03:49:45.3964446Z",
+    "lifecycle_phases":  [
+                             "initialize_prepare_started",
+                             "initialize_payload_ready",
+                             "initialize_write_started",
+                             "initialize_write_completed",
+                             "initialize_ack_received"
+                         ],
+    "ack_received":  true,
+    "user_agent":  "polis/0.154.0-alpha.6.2 (Windows 10.0.26200; x86_64) unknown (polis; 0.1.0)"
+}

@@ -1,0 +1,14 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-FINAL-RECOVERY-CONTINUATION-V5",
+  "status": "INCONCLUSIVE",
+  "sample_6_final_recovery_continuation_v5": "INCONCLUSIVE",
+  "error": "final recovery continuation failed",
+  "recovery_package_complete": true,
+  "destructive_boundary": true,
+  "source_database_destroyed": true,
+  "historical_preservation_manifest": "NOT_FOUND",
+  "historical_evidence_modified": false,
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0
+}

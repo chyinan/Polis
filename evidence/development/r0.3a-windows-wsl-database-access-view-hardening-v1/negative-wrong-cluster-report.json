@@ -1,0 +1,32 @@
+{
+  "status": "WINDOWS_DATABASE_ACCESS_PREFLIGHT_FAILED",
+  "reason_code": "database_identity_mismatch",
+  "actionable_summary": "reachable PostgreSQL does not match the authoritative runtime database binding",
+  "consumer_os": "windows",
+  "configured_dsn_redacted": "host=127.0.0.1 port=55432 dbname=polis_r0_3a_frontend_clean_baseline_v6 user=polis_runtime",
+  "access_view": {
+    "schema_version": "r03a-database-access-view@1",
+    "consumer_os": "windows",
+    "transport": "tcp",
+    "host": "127.0.0.1",
+    "port": 55432,
+    "endpoint_source": "negative-wrong-cluster",
+    "access_strategy_revision": "r03a-windows-localhost-forwarding@1",
+    "runtime_database_binding_fingerprint": "244a1d73c8cddf27c6594ac7469c4be8f7bca50d6292b932ed71d1a71a7f8e34"
+  },
+  "runtime_database_binding": {
+    "schema_version": "r03a-runtime-database-binding@1",
+    "postgres_major": 18,
+    "cluster_system_identifier": "WRONG-CLUSTER",
+    "database_name": "polis_r0_3a_frontend_clean_baseline_v6",
+    "database_oid": "16384",
+    "schema_migration_identity": "5",
+    "fingerprint": "244a1d73c8cddf27c6594ac7469c4be8f7bca50d6292b932ed71d1a71a7f8e34"
+  },
+  "observed_postgres_major": 18,
+  "observed_cluster_system_identifier": "7685937128561021478",
+  "observed_database_name": "polis_r0_3a_frontend_clean_baseline_v6",
+  "observed_database_oid": "16384",
+  "observed_schema_migration_identity": "5",
+  "mutation": false
+}

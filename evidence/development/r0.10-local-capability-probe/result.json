@@ -1,0 +1,30 @@
+{
+  "mcp": {
+    "descriptorDigest": "sha256:d5508366390a8278f1a32fdcf73c0592bb3ac1f7e24dacec32cac8b6301ccf3c",
+    "networkRestricted": false,
+    "package": "@modelcontextprotocol/server-memory@2.0.1",
+    "protocolVersion": "2024-11-05",
+    "serverName": "memory-server",
+    "serverVersion": "2.0.1",
+    "toolNames": [
+      "create_entities",
+      "create_relations",
+      "add_observations",
+      "delete_entities",
+      "delete_observations",
+      "delete_relations",
+      "read_graph",
+      "search_nodes",
+      "open_nodes"
+    ],
+    "toolsCalled": 0
+  },
+  "skill": {
+    "contentDigest": "sha256:a0aa0a21ebf9e8511a045cc234bc839adc2b6706db727add14e9855f242e11a7",
+    "displayName": "brand-guidelines",
+    "executed": false,
+    "packageId": "brand-guidelines",
+    "scriptsPresent": false,
+    "sourceRef": "library://skills/brand-guidelines/SKILL.md"
+  }
+}

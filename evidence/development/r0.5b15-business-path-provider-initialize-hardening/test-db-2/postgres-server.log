@@ -1,0 +1,22 @@
+2026-09-20 20:45:44.126 CST [122011] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-09-20 20:45:44.126 CST [122011] LOG:  listening on IPv4 address "127.0.0.1", port 55486
+2026-09-20 20:45:44.134 CST [122011] LOG:  listening on Unix socket "/tmp/polis-r05b15.K4rDeh/socket/.s.PGSQL.55486"
+2026-09-20 20:45:44.145 CST [122017] LOG:  database system was shut down at 2026-09-20 20:45:43 CST
+2026-09-20 20:45:44.151 CST [122011] LOG:  database system is ready to accept connections
+2026-09-20 20:45:53.814 CST [122157] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-09-20 20:45:53.814 CST [122157] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-09-20 20:50:52.202 CST [122015] LOG:  checkpoint starting: time
+2026-09-20 20:52:47.944 CST [122015] LOG:  checkpoint complete: wrote 1123 buffers (6.9%), wrote 3 SLRU buffers; 1 WAL file(s) added, 0 removed, 0 recycled; write=115.600 s, sync=0.109 s, total=115.743 s; sync files=437, longest=0.008 s, average=0.001 s; distance=5807 kB, estimate=5807 kB; lsn=0/1D0ED70, redo lsn=0/1D023A0
+2026-09-20 20:55:57.253 CST [122015] LOG:  checkpoint starting: time
+2026-09-20 20:56:00.496 CST [122015] LOG:  checkpoint complete: wrote 32 buffers (0.2%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=3.211 s, sync=0.016 s, total=3.244 s; sync files=31, longest=0.007 s, average=0.001 s; distance=91 kB, estimate=5235 kB; lsn=0/1D193A8, redo lsn=0/1D19350
+2026-09-20 21:01:05.537 CST [122015] LOG:  checkpoint starting: time
+2026-09-20 21:01:13.890 CST [122015] LOG:  checkpoint complete: wrote 83 buffers (0.5%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=8.320 s, sync=0.015 s, total=8.353 s; sync files=44, longest=0.004 s, average=0.001 s; distance=656 kB, estimate=4778 kB; lsn=0/1DBD6B0, redo lsn=0/1DBD620
+2026-09-20 21:06:12.777 CST [122015] LOG:  checkpoint starting: time
+2026-09-20 21:06:19.127 CST [122015] LOG:  checkpoint complete: wrote 63 buffers (0.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=6.317 s, sync=0.016 s, total=6.351 s; sync files=38, longest=0.005 s, average=0.001 s; distance=374 kB, estimate=4337 kB; lsn=0/1E1B148, redo lsn=0/1E1B0B8
+2026-09-20 21:09:17.400 CST [122011] LOG:  received fast shutdown request
+2026-09-20 21:09:17.406 CST [122011] LOG:  aborting any active transactions
+2026-09-20 21:09:17.408 CST [122011] LOG:  background worker "logical replication launcher" (PID 122020) exited with exit code 1
+2026-09-20 21:09:17.408 CST [122015] LOG:  shutting down
+2026-09-20 21:09:17.412 CST [122015] LOG:  checkpoint starting: shutdown immediate
+2026-09-20 21:09:17.450 CST [122015] LOG:  checkpoint complete: wrote 81 buffers (0.5%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.017 s, total=0.043 s; sync files=45, longest=0.006 s, average=0.001 s; distance=534 kB, estimate=3957 kB; lsn=0/1EA0BB0, redo lsn=0/1EA0BB0
+2026-09-20 21:09:17.466 CST [122011] LOG:  database system is shut down

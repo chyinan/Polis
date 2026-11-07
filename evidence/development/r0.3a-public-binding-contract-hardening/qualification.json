@@ -1,0 +1,64 @@
+{
+  "qualification": "R0.3A-PUBLIC-BINDING-CONTRACT-HARDENING",
+  "status": "PASSED",
+  "acceptance_remediation": "PASSED",
+  "eligible_for_new_peer_collaboration_run": "YES",
+  "public_binding_contract": {
+    "revision": "r03a-backend-binding@1",
+    "source": "internal/fixture/backend_binding.go:BackendBindingContractV1",
+    "sha256": "56042f5096e8c4abce06530ca7d4bb910c2deb7c914cabd8f663779576ffb717",
+    "package": "backend",
+    "entrypoint": "FetchItems",
+    "declaration_kind": "function",
+    "parameters": [
+      { "name": "cursor", "type": "string" },
+      { "name": "limit", "type": "int" }
+    ],
+    "return_type": "string",
+    "allowed_top_level_declarations": ["const"],
+    "imports_allowed": false,
+    "receiver_allowed": false
+  },
+  "business_contract": "r03a-pagination-contract@3",
+  "implementation_binding_contract": "r03a-backend-binding@1",
+  "future_public_contract": {
+    "revision": "r03a-pagination-contract@3",
+    "sha256": "5bc44edeec9b490cf142fa2310f51d8257437f282dd1264e643de24ad57ce12a"
+  },
+  "behavioral_verifier": {
+    "revision": "r03a-pagination-behavior@1",
+    "source_digest": "59eb2a6986eb08fd2d0e093d7d8e45921b5b124c4193e361399ceeddc73e76a3"
+  },
+  "behavior_verifier": "r03a-pagination-behavior@1",
+  "checker_binding_feedback_quality": "PASSED",
+  "provider_surface": {
+    "changed": false,
+    "tool_count": 11,
+    "manifest_digest": "f1a112788fb1c879a1e7e8e73b515e0ae560352d1f0ee8f5a6f19cf5fc8c0c16",
+    "aggregate_schema_digest": "ad2d5e53c585ba3eea65614432e05fb8ad3056c234faee57ac43eb2d125b8763",
+    "aggregate_schema_bytes": 2048,
+    "qualification_action": "business/acceptance qualification only; no L1/L2 live canary"
+  },
+  "frozen_v3_regression": {
+    "old_coarse_outcome_unknown_reproduced": true,
+    "wrong_bindings_fail_with_public_reason": true,
+    "correct_binding_behavior_negative_remains_fail": true,
+    "check_receipt_regression": true,
+    "hidden_oracle_exposed": false
+  },
+  "verification": {
+    "full_tests": "PASS",
+    "race": "PASS",
+    "vet": "PASS",
+    "linux_build": "PASS",
+    "windows_build": "PASS",
+    "postgresql_deterministic_suite": "PASS",
+    "diff_check": "PASS",
+    "medium": 0,
+    "high": 0,
+    "provider_egress": 0,
+    "historical_evidence_modified": false
+  },
+  "public_binding_contract_hardening": "PASSED",
+  "eligible_for_new_v3_backend_sample": true
+}

@@ -1,0 +1,61 @@
+{
+  "status": "FRONTEND_RUNTIME_ACTIVATION_PREFLIGHT_PASSED",
+  "launch_envelope": {
+    "schema_version": "r03a-native-launch-envelope@1",
+    "launch_mode": "windows_native_direct",
+    "runtime_os": "windows",
+    "process_executable": "codex.exe",
+    "binary_path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+    "helper_path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex-code-mode-host.exe",
+    "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+    "helper_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+    "argv": [
+      "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+      "app-server",
+      "--stdio"
+    ],
+    "working_directory": "D:\\Programs\\Polis\\evidence\\development\\r03a-frontend-clean-baseline-v6\\windows-runtime",
+    "home": "D:\\Programs\\Polis\\evidence\\development\\r03a-frontend-clean-baseline-v6\\windows-runtime\\frontend-runtime-preflight-home",
+    "codex_home": "D:\\Programs\\Polis\\evidence\\development\\r03a-frontend-clean-baseline-v6\\windows-runtime\\frontend-runtime-preflight-home",
+    "stdio": "stdin_stdout_jsonl;stderr_separate_bounded",
+    "boundary": "Windows native process handle",
+    "transport_policy": {
+      "revision": "r03a-transport-policy@1",
+      "initialize_timeout_ms": 30000,
+      "start_acknowledgement_ms": 30000,
+      "first_output_deadline_ms": 90000,
+      "reconnect_grace_ms": 30000,
+      "streaming_idle_ms": 90000,
+      "total_turn_deadline_ms": 600000,
+      "reconciliation_ms": 5000
+    },
+    "fingerprint": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51"
+  },
+  "execution_envelope_fingerprint": "676052c13ae0380250c4fcb9dbdb3cd8794167e214e6b3766e6e38b4d68bdc51",
+  "transport_policy": {
+    "transport_policy_revision": "r03a-transport-policy@1",
+    "initialize_timeout_ms": 30000,
+    "start_acknowledgement_ms": 30000,
+    "first_output_deadline_ms": 90000,
+    "reconnect_grace_ms": 30000,
+    "streaming_idle_ms": 90000,
+    "total_turn_deadline_ms": 600000,
+    "reconciliation_ms": 5000
+  },
+  "pagination_runtime_preflight": "PASSED",
+  "capability_digest": "551161f33eba0a4bc48eb47d3b752e7f9a889d57c25fed2034b12c23f01bb2c4",
+  "process_started": true,
+  "initialize_started": true,
+  "initialize_completed": true,
+  "local_protocol_ready": true,
+  "turn_started": false,
+  "provider_egress": false,
+  "registered_tool_count": 12,
+  "initialize_latency_ms": 148,
+  "thread_start_latency_ms": 2313,
+  "protocol_evidence_path": "D:\\Programs\\Polis\\evidence\\development\\r03a-frontend-clean-baseline-v6\\runtime-evidence-v5-20260916012012\\frontend-runtime-preflight-native\\protocol.jsonl",
+  "process_exit": "intentional_stop",
+  "stop_confirmed": true,
+  "business_mutation": false,
+  "allowance_created": false
+}

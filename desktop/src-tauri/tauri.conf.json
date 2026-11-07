@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Polis",
+  "version": "0.7.0",
+  "identifier": "com.polis.desktop",
+  "build": {
+    "beforeDevCommand": "npm --prefix ../../frontend run dev -- --host 127.0.0.1",
+    "devUrl": "http://127.0.0.1:4173",
+    "frontendDist": "../../frontend/dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "security": { "capabilities": ["default"] },
+    "windows": [{
+      "label": "main",
+      "title": "Polis",
+      "width": 1440,
+      "height": 920,
+      "minWidth": 1080,
+      "minHeight": 720,
+      "resizable": true,
+      "visible": true
+    }]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "createUpdaterArtifacts": false,
+    "externalBin": ["binaries/polis"],
+    "resources": {
+      "../../.tools/pg-windows-runtime": "postgres"
+    },
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "aggregate_schema_bytes": 2106,
+  "aggregate_schema_digest": "ec3470aba99b816f4d366b802f1933acd146b8cdc6e9590eef3caa40aabc9806",
+  "business_acceptance_contract": "r03a-pagination-contract@3",
+  "business_acceptance_verifier": "r03a-pagination-behavior@1",
+  "current_binary_l1": "QUALIFIED",
+  "high": 0,
+  "historical_evidence_modified": false,
+  "l1_fingerprint": "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+  "medium": 0,
+  "passed": true,
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@3",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "provider_egress": 0,
+  "provider_visible_drift_explained": true,
+  "qualification": "R0.3A-CURRENT-BINARY-REVISED-11-TOOL-L2",
+  "status": "offline_preflight_passed",
+  "tool_count": 11,
+  "tool_manifest_digest": "c93c4d7399c5ffe8c7f057e60231dd00fb542ad30938005b59b164f9134dc0e4",
+  "unexplained_drift": false
+}

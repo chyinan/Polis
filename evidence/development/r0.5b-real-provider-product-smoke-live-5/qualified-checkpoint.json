@@ -1,0 +1,27 @@
+{
+    "kind":  "qualified",
+    "epoch":  3,
+    "facts":  [
+                  "current workspace passed the bound Task validation"
+              ],
+    "summary":  "current validated workspace submitted as final Task deliverable",
+    "rejected":  [
+
+                 ],
+    "decisions":  [
+                      "submit the current validated workspace"
+                  ],
+    "session_id":  "dfc5dd021ec9550ca299903458a63e3b",
+    "evidence_refs":  [
+                          "77709bc20e5533e10ee4d4a4a25a1f22"
+                      ],
+    "workspace_digest":  "531f5988cba3b3edb01ad3671a0b4014fdf57df96bebaab9c9e199013d80021b",
+    "validation_status":  "PASS",
+    "finalization_state":  "current",
+    "workspace_revision":  4,
+    "checkpoint_policy_revision":  "checkpoint-effective-contract@2",
+    "acceptance_checker_revision":  "text-contains-all@1",
+    "task_validation_binding_digest":  "c637152c5dd1824c996f3f20e1c6e3881d9feb1060929d1b4506f5629eda1734",
+    "artifact_eligibility_policy_revision":  "artifact-commit-qualification@2",
+    "contract_supersession_policy_revision":  "peer-contract-supersession@2"
+}

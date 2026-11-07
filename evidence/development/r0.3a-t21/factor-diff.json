@@ -1,0 +1,63 @@
+{
+  "controlled_same": [
+    "model",
+    "effort",
+    "auth_identity",
+    "auth_credential_revision",
+    "runtime",
+    "codex_version",
+    "binary",
+    "code_mode_host",
+    "proxy_policy",
+    "transport_policy",
+    "CODEX_HOME/config_semantics",
+    "diagnostic_prompt_semantics",
+    "deadline_policy",
+    "stop_semantics"
+  ],
+  "legal_tool_surface_derived_differences": [
+    {
+      "field": "dynamic_tool_count",
+      "t20": 0,
+      "t21": 11
+    },
+    {
+      "field": "tool_manifest_digest",
+      "t20": "not-present-in-v6",
+      "t21": "b36063bf6b136b8116a1b744042e5f0228f46d559ba711e080e82b271e59645a"
+    },
+    {
+      "field": "aggregate_schema_digest",
+      "t20": "not-present-in-v6",
+      "t21": "f2fed5d1c86ce1cddc2c609bb31567fdced409b4eb12010f70b93456a72dc338"
+    },
+    {
+      "field": "aggregate_schema_bytes",
+      "t20": 0,
+      "t21": 1792
+    },
+    {
+      "field": "capability_digest",
+      "t20": "360807ca722a760c1fcb2afd743f276b962f1aeaa89cabeb4fb0859263a08f33",
+      "t21": "76a3f76b68973dc2e5640ac0656f34caf5d4748282c108a858ea863280db0a6f"
+    },
+    {
+      "field": "thread_start_payload_digest",
+      "t20": "not-recorded",
+      "t21": "8f76af5527da0b4197c40933074d9dcb48bf9140b0e5840e01a4a03ba7de7202"
+    },
+    {
+      "field": "thread_start_payload_bytes",
+      "t20": "not-recorded",
+      "t21": 3591
+    },
+    {
+      "field": "canonical_manifest_schema",
+      "t20": "canonical-manifest-v6",
+      "t21": "canonical-manifest-v7"
+    }
+  ],
+  "t20_control_fingerprint": "b653e94bf2adfd4caa7f9982774f8d1143bdc55c0c64d50d620afdad3c8bfb7d",
+  "t21_fingerprint": "f3f4e0f8dc64ed373bea7716237ad14932cf98c887acead7e6b5d193216b90af",
+  "unexpectedly_different": []
+}

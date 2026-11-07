@@ -1,0 +1,2862 @@
+﻿{
+    "GeneratedAt":  "2026-09-08T18:19:11.5816205Z",
+    "SourceRuns":  {
+                       "Failing":  "evidence/development/r0.3a-real/luna-1/70a7fb6d45e09588eca30154d2789732/protocol.jsonl",
+                       "KnownGood":  "evidence/development/r0.2/luna-1/e9485489eeece81bcce3678779e3f91c/protocol.jsonl"
+                   },
+    "KnownGoodManifest":  [
+                              {
+                                  "Name":  "polis_work_current",
+                                  "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                  "SchemaBytes":  76,
+                                  "DescriptionBytes":  74,
+                                  "DescriptionDigest":  "376c2c1a7c3085063fadf1d6e038fa4346c63caf41d0d7cba6a6aa38a0bfd286",
+                                  "Required":  [
+
+                                               ],
+                                  "PropertyNames":  [
+                                                        null
+                                                    ],
+                                  "NestedDepth":  0,
+                                  "SchemaValidation":  {
+                                                           "Valid":  true,
+                                                           "Issues":  [
+
+                                                                      ],
+                                                           "RootType":  "object",
+                                                           "Required":  [
+
+                                                                        ],
+                                                           "PropertyNames":  [
+                                                                                 null
+                                                                             ],
+                                                           "Depth":  0
+                                                       },
+                                  "Handler":  "EmployeeTools.call-\u003eHandover",
+                                  "AuthorizationClass":  "employee_default",
+                                  "CapabilityBinding":  "employee_default",
+                                  "RegistrationOrdinal":  1
+                              },
+                              {
+                                  "Name":  "polis_context_read",
+                                  "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                  "SchemaBytes":  76,
+                                  "DescriptionBytes":  43,
+                                  "DescriptionDigest":  "851a7524c0293a0b34652351716ce51e3ea51523f5f0c14e097b7747be227bf1",
+                                  "Required":  [
+
+                                               ],
+                                  "PropertyNames":  [
+                                                        null
+                                                    ],
+                                  "NestedDepth":  0,
+                                  "SchemaValidation":  {
+                                                           "Valid":  true,
+                                                           "Issues":  [
+
+                                                                      ],
+                                                           "RootType":  "object",
+                                                           "Required":  [
+
+                                                                        ],
+                                                           "PropertyNames":  [
+                                                                                 null
+                                                                             ],
+                                                           "Depth":  0
+                                                       },
+                                  "Handler":  "EmployeeTools.call-\u003eHandover",
+                                  "AuthorizationClass":  "employee_default",
+                                  "CapabilityBinding":  "employee_default",
+                                  "RegistrationOrdinal":  2
+                              },
+                              {
+                                  "Name":  "polis_workspace_read",
+                                  "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                  "SchemaBytes":  76,
+                                  "DescriptionBytes":  63,
+                                  "DescriptionDigest":  "44d01b6ee84b5c60dd04d35880410caad9a606c4780aae7d8ac59775c25d5d82",
+                                  "Required":  [
+
+                                               ],
+                                  "PropertyNames":  [
+                                                        null
+                                                    ],
+                                  "NestedDepth":  0,
+                                  "SchemaValidation":  {
+                                                           "Valid":  true,
+                                                           "Issues":  [
+
+                                                                      ],
+                                                           "RootType":  "object",
+                                                           "Required":  [
+
+                                                                        ],
+                                                           "PropertyNames":  [
+                                                                                 null
+                                                                             ],
+                                                           "Depth":  0
+                                                       },
+                                  "Handler":  "EmployeeTools.call-\u003eWorkspace",
+                                  "AuthorizationClass":  "employee_default",
+                                  "CapabilityBinding":  "employee_default",
+                                  "RegistrationOrdinal":  3
+                              },
+                              {
+                                  "Name":  "polis_workspace_replace",
+                                  "SchemaCanonicalDigest":  "b9456af0a1c8481c548051c40bb621dfff8fa6637daf5a9912504a40ac71b138",
+                                  "SchemaBytes":  183,
+                                  "DescriptionBytes":  222,
+                                  "DescriptionDigest":  "9eaa25ba67bb9d48df5ec61242eefbf4797faddda3861b17d1b8c89835a03817",
+                                  "Required":  [
+                                                   "expected_digest",
+                                                   "content"
+                                               ],
+                                  "PropertyNames":  [
+                                                        "content",
+                                                        "expected_digest"
+                                                    ],
+                                  "NestedDepth":  0,
+                                  "SchemaValidation":  {
+                                                           "Valid":  true,
+                                                           "Issues":  [
+
+                                                                      ],
+                                                           "RootType":  "object",
+                                                           "Required":  [
+                                                                            "expected_digest",
+                                                                            "content"
+                                                                        ],
+                                                           "PropertyNames":  [
+                                                                                 "content",
+                                                                                 "expected_digest"
+                                                                             ],
+                                                           "Depth":  0
+                                                       },
+                                  "Handler":  "EmployeeTools.call-\u003eTXReplace",
+                                  "AuthorizationClass":  "employee_default",
+                                  "CapabilityBinding":  "employee_default",
+                                  "RegistrationOrdinal":  4
+                              },
+                              {
+                                  "Name":  "polis_workspace_check",
+                                  "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                  "SchemaBytes":  76,
+                                  "DescriptionBytes":  93,
+                                  "DescriptionDigest":  "1f5f72472c4e94c464c6ff6009d53a09ebfdafbd08737b9ac06ec27f23d9400f",
+                                  "Required":  [
+
+                                               ],
+                                  "PropertyNames":  [
+                                                        null
+                                                    ],
+                                  "NestedDepth":  0,
+                                  "SchemaValidation":  {
+                                                           "Valid":  true,
+                                                           "Issues":  [
+
+                                                                      ],
+                                                           "RootType":  "object",
+                                                           "Required":  [
+
+                                                                        ],
+                                                           "PropertyNames":  [
+                                                                                 null
+                                                                             ],
+                                                           "Depth":  0
+                                                       },
+                                  "Handler":  "EmployeeTools.call-\u003eworkspace.check",
+                                  "AuthorizationClass":  "employee_default",
+                                  "CapabilityBinding":  "employee_default",
+                                  "RegistrationOrdinal":  5
+                              },
+                              {
+                                  "Name":  "polis_work_checkpoint",
+                                  "SchemaCanonicalDigest":  "0475e790f3e91d00181dc4d827f82d8db6c80b34612150bfbf0edf39fb2b083f",
+                                  "SchemaBytes":  536,
+                                  "DescriptionBytes":  166,
+                                  "DescriptionDigest":  "b03f8acd227ea6b80b987e3e4ee8e24a297e42541ada65831f132ae31554e742",
+                                  "Required":  [
+                                                   "summary",
+                                                   "facts",
+                                                   "decisions",
+                                                   "rejected",
+                                                   "evidence"
+                                               ],
+                                  "PropertyNames":  [
+                                                        "decisions",
+                                                        "evidence",
+                                                        "facts",
+                                                        "rejected",
+                                                        "summary"
+                                                    ],
+                                  "NestedDepth":  0,
+                                  "SchemaValidation":  {
+                                                           "Valid":  true,
+                                                           "Issues":  [
+
+                                                                      ],
+                                                           "RootType":  "object",
+                                                           "Required":  [
+                                                                            "summary",
+                                                                            "facts",
+                                                                            "decisions",
+                                                                            "rejected",
+                                                                            "evidence"
+                                                                        ],
+                                                           "PropertyNames":  [
+                                                                                 "decisions",
+                                                                                 "evidence",
+                                                                                 "facts",
+                                                                                 "rejected",
+                                                                                 "summary"
+                                                                             ],
+                                                           "Depth":  0
+                                                       },
+                                  "Handler":  "EmployeeTools.call-\u003eTXCheckpoint",
+                                  "AuthorizationClass":  "employee_default",
+                                  "CapabilityBinding":  "employee_default",
+                                  "RegistrationOrdinal":  6
+                              },
+                              {
+                                  "Name":  "polis_artifact_submit",
+                                  "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                  "SchemaBytes":  76,
+                                  "DescriptionBytes":  109,
+                                  "DescriptionDigest":  "f699465373b0062b8db4ee512ed1d44b0ed393daf6335c39971766d6f6246cbe",
+                                  "Required":  [
+
+                                               ],
+                                  "PropertyNames":  [
+                                                        null
+                                                    ],
+                                  "NestedDepth":  0,
+                                  "SchemaValidation":  {
+                                                           "Valid":  true,
+                                                           "Issues":  [
+
+                                                                      ],
+                                                           "RootType":  "object",
+                                                           "Required":  [
+
+                                                                        ],
+                                                           "PropertyNames":  [
+                                                                                 null
+                                                                             ],
+                                                           "Depth":  0
+                                                       },
+                                  "Handler":  "EmployeeTools.call-\u003eTXSubmit",
+                                  "AuthorizationClass":  "employee_default",
+                                  "CapabilityBinding":  "employee_default",
+                                  "RegistrationOrdinal":  7
+                              }
+                          ],
+    "FailingBackendManifest":  [
+                                   {
+                                       "Name":  "polis_work_current",
+                                       "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                       "SchemaBytes":  76,
+                                       "DescriptionBytes":  72,
+                                       "DescriptionDigest":  "6eea77df8e1c0001868462a4a33bb23825410814d5ab57b279c0778f09416195",
+                                       "Required":  [
+
+                                                    ],
+                                       "PropertyNames":  [
+                                                             null
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      null
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eHandover",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  1
+                                   },
+                                   {
+                                       "Name":  "polis_context_read",
+                                       "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                       "SchemaBytes":  76,
+                                       "DescriptionBytes":  39,
+                                       "DescriptionDigest":  "91ecab79f2a297bb3cb08d77dfef1623b0efee76ac0ec77985dca973ab97afa0",
+                                       "Required":  [
+
+                                                    ],
+                                       "PropertyNames":  [
+                                                             null
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      null
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eHandover",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  2
+                                   },
+                                   {
+                                       "Name":  "polis_workspace_read",
+                                       "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                       "SchemaBytes":  76,
+                                       "DescriptionBytes":  46,
+                                       "DescriptionDigest":  "6c0db78530af7ca6afe62f5bb0162773f1a51c5cb614a9b4bab429de435a6bc1",
+                                       "Required":  [
+
+                                                    ],
+                                       "PropertyNames":  [
+                                                             null
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      null
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eWorkspace",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  3
+                                   },
+                                   {
+                                       "Name":  "polis_workspace_replace",
+                                       "SchemaCanonicalDigest":  "80e7634d8bea5be0a65de9b6f2cc0aa609dda591c085b6df8dfb85da143927e3",
+                                       "SchemaBytes":  183,
+                                       "DescriptionBytes":  61,
+                                       "DescriptionDigest":  "e3a79ace42e3abac73dfec23618b1f011c637b127b170bc77dc1909b2595e57e",
+                                       "Required":  [
+                                                        "content",
+                                                        "expected_digest"
+                                                    ],
+                                       "PropertyNames":  [
+                                                             "content",
+                                                             "expected_digest"
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+                                                                                 "content",
+                                                                                 "expected_digest"
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      "content",
+                                                                                      "expected_digest"
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eTXReplace",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  4
+                                   },
+                                   {
+                                       "Name":  "polis_contract_propose",
+                                       "SchemaCanonicalDigest":  "76d4b529294c78d6247848e3d195afa2b61937c11699f535a16efc7e9c4a188f",
+                                       "SchemaBytes":  183,
+                                       "DescriptionBytes":  53,
+                                       "DescriptionDigest":  "fed466791d9ab845d4777f515806d017259ba40ed9f44383ab11999230a7ae92",
+                                       "Required":  [
+                                                        "endpoint",
+                                                        "schema"
+                                                    ],
+                                       "PropertyNames":  [
+                                                             "endpoint",
+                                                             "schema"
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+                                                                                 "endpoint",
+                                                                                 "schema"
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      "endpoint",
+                                                                                      "schema"
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eTXProposePeerContract",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  5
+                                   },
+                                   {
+                                       "Name":  "polis_contract_accept",
+                                       "SchemaCanonicalDigest":  "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+                                       "SchemaBytes":  120,
+                                       "DescriptionBytes":  40,
+                                       "DescriptionDigest":  "a8a4b6977d3bc6d1c449b628896ea50dd15aa76fd5dc05e611c6a7102aba7d1e",
+                                       "Required":  [
+                                                        "revision_id"
+                                                    ],
+                                       "PropertyNames":  [
+                                                             "revision_id"
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+                                                                                 "revision_id"
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      "revision_id"
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eTXAcceptPeerContract",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  6
+                                   },
+                                   {
+                                       "Name":  "polis_contract_read",
+                                       "SchemaCanonicalDigest":  "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+                                       "SchemaBytes":  120,
+                                       "DescriptionBytes":  52,
+                                       "DescriptionDigest":  "b34544694d3dedcd5c0b4d71b350805b854daca79dc5b6cc4c92d466e18fd878",
+                                       "Required":  [
+                                                        "revision_id"
+                                                    ],
+                                       "PropertyNames":  [
+                                                             "revision_id"
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+                                                                                 "revision_id"
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      "revision_id"
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003ePeerContractRead",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  7
+                                   },
+                                   {
+                                       "Name":  "polis_collab_send",
+                                       "SchemaCanonicalDigest":  "3506df54159d11c3f0a061deeea8662fbdc0276476517bfa1692b1ea33422a98",
+                                       "SchemaBytes":  270,
+                                       "DescriptionBytes":  64,
+                                       "DescriptionDigest":  "278343ef2020fe5d52685362585da0a685a57c8aad05b210519a08bbeba5fdc9",
+                                       "Required":  [
+                                                        "actionable",
+                                                        "body",
+                                                        "contract_revision_id",
+                                                        "to_task"
+                                                    ],
+                                       "PropertyNames":  [
+                                                             "actionable",
+                                                             "body",
+                                                             "contract_revision_id",
+                                                             "to_task"
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+                                                                                 "actionable",
+                                                                                 "body",
+                                                                                 "contract_revision_id",
+                                                                                 "to_task"
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      "actionable",
+                                                                                      "body",
+                                                                                      "contract_revision_id",
+                                                                                      "to_task"
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eTXPeerSend",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  8
+                                   },
+                                   {
+                                       "Name":  "polis_workspace_check",
+                                       "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                       "SchemaBytes":  76,
+                                       "DescriptionBytes":  70,
+                                       "DescriptionDigest":  "8b8235f2612d5943ad3462a14b5f744d67df496a3271e3ce673b0db38174ed98",
+                                       "Required":  [
+
+                                                    ],
+                                       "PropertyNames":  [
+                                                             null
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      null
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eworkspace.check",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  9
+                                   },
+                                   {
+                                       "Name":  "polis_work_checkpoint",
+                                       "SchemaCanonicalDigest":  "d8b5b03f809b0dc3cdd995a6b6ef19db0a69b038fa62ca155d7014181659b040",
+                                       "SchemaBytes":  536,
+                                       "DescriptionBytes":  58,
+                                       "DescriptionDigest":  "3324b3ecf3f03cc847eace378a20ed794366dbd5fda5fce4c72b964805d68e78",
+                                       "Required":  [
+                                                        "decisions",
+                                                        "evidence",
+                                                        "facts",
+                                                        "rejected",
+                                                        "summary"
+                                                    ],
+                                       "PropertyNames":  [
+                                                             "decisions",
+                                                             "evidence",
+                                                             "facts",
+                                                             "rejected",
+                                                             "summary"
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+                                                                                 "decisions",
+                                                                                 "evidence",
+                                                                                 "facts",
+                                                                                 "rejected",
+                                                                                 "summary"
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      "decisions",
+                                                                                      "evidence",
+                                                                                      "facts",
+                                                                                      "rejected",
+                                                                                      "summary"
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eTXCheckpoint",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  10
+                                   },
+                                   {
+                                       "Name":  "polis_artifact_submit",
+                                       "SchemaCanonicalDigest":  "d746974fa9afd5e951f76f9af38954b0ad7f436f2120dc974da65e5ee39f856f",
+                                       "SchemaBytes":  76,
+                                       "DescriptionBytes":  38,
+                                       "DescriptionDigest":  "f1b7ff79b704b8c8a85bc26941ac04446640f9a6bb3604da3fb8df2f18e5f7a8",
+                                       "Required":  [
+
+                                                    ],
+                                       "PropertyNames":  [
+                                                             null
+                                                         ],
+                                       "NestedDepth":  0,
+                                       "SchemaValidation":  {
+                                                                "Valid":  true,
+                                                                "Issues":  [
+
+                                                                           ],
+                                                                "RootType":  "object",
+                                                                "Required":  [
+
+                                                                             ],
+                                                                "PropertyNames":  [
+                                                                                      null
+                                                                                  ],
+                                                                "Depth":  0
+                                                            },
+                                       "Handler":  "PeerEmployeeTools.call-\u003eTXSubmit",
+                                       "AuthorizationClass":  "peer_backend",
+                                       "CapabilityBinding":  "peer_backend",
+                                       "RegistrationOrdinal":  11
+                                   }
+                               ],
+    "Intersection":  [
+                         {
+                             "Name":  "polis_work_current",
+                             "SchemaDigestSame":  true,
+                             "SchemaBytesDelta":  0,
+                             "DescriptionDigestSame":  false,
+                             "DescriptionBytesDelta":  -2,
+                             "HandlerChanged":  true,
+                             "RegistrationOrdinalGood":  1,
+                             "RegistrationOrdinalFail":  1,
+                             "GoodHandler":  "EmployeeTools.call-\u003eHandover",
+                             "FailHandler":  "PeerEmployeeTools.call-\u003eHandover"
+                         },
+                         {
+                             "Name":  "polis_context_read",
+                             "SchemaDigestSame":  true,
+                             "SchemaBytesDelta":  0,
+                             "DescriptionDigestSame":  false,
+                             "DescriptionBytesDelta":  -4,
+                             "HandlerChanged":  true,
+                             "RegistrationOrdinalGood":  2,
+                             "RegistrationOrdinalFail":  2,
+                             "GoodHandler":  "EmployeeTools.call-\u003eHandover",
+                             "FailHandler":  "PeerEmployeeTools.call-\u003eHandover"
+                         },
+                         {
+                             "Name":  "polis_workspace_read",
+                             "SchemaDigestSame":  true,
+                             "SchemaBytesDelta":  0,
+                             "DescriptionDigestSame":  false,
+                             "DescriptionBytesDelta":  -17,
+                             "HandlerChanged":  true,
+                             "RegistrationOrdinalGood":  3,
+                             "RegistrationOrdinalFail":  3,
+                             "GoodHandler":  "EmployeeTools.call-\u003eWorkspace",
+                             "FailHandler":  "PeerEmployeeTools.call-\u003eWorkspace"
+                         },
+                         {
+                             "Name":  "polis_workspace_replace",
+                             "SchemaDigestSame":  false,
+                             "SchemaBytesDelta":  0,
+                             "DescriptionDigestSame":  false,
+                             "DescriptionBytesDelta":  -161,
+                             "HandlerChanged":  true,
+                             "RegistrationOrdinalGood":  4,
+                             "RegistrationOrdinalFail":  4,
+                             "GoodHandler":  "EmployeeTools.call-\u003eTXReplace",
+                             "FailHandler":  "PeerEmployeeTools.call-\u003eTXReplace"
+                         },
+                         {
+                             "Name":  "polis_workspace_check",
+                             "SchemaDigestSame":  true,
+                             "SchemaBytesDelta":  0,
+                             "DescriptionDigestSame":  false,
+                             "DescriptionBytesDelta":  -23,
+                             "HandlerChanged":  true,
+                             "RegistrationOrdinalGood":  5,
+                             "RegistrationOrdinalFail":  9,
+                             "GoodHandler":  "EmployeeTools.call-\u003eworkspace.check",
+                             "FailHandler":  "PeerEmployeeTools.call-\u003eworkspace.check"
+                         },
+                         {
+                             "Name":  "polis_work_checkpoint",
+                             "SchemaDigestSame":  false,
+                             "SchemaBytesDelta":  0,
+                             "DescriptionDigestSame":  false,
+                             "DescriptionBytesDelta":  -108,
+                             "HandlerChanged":  true,
+                             "RegistrationOrdinalGood":  6,
+                             "RegistrationOrdinalFail":  10,
+                             "GoodHandler":  "EmployeeTools.call-\u003eTXCheckpoint",
+                             "FailHandler":  "PeerEmployeeTools.call-\u003eTXCheckpoint"
+                         },
+                         {
+                             "Name":  "polis_artifact_submit",
+                             "SchemaDigestSame":  true,
+                             "SchemaBytesDelta":  0,
+                             "DescriptionDigestSame":  false,
+                             "DescriptionBytesDelta":  -71,
+                             "HandlerChanged":  true,
+                             "RegistrationOrdinalGood":  7,
+                             "RegistrationOrdinalFail":  11,
+                             "GoodHandler":  "EmployeeTools.call-\u003eTXSubmit",
+                             "FailHandler":  "PeerEmployeeTools.call-\u003eTXSubmit"
+                         }
+                     ],
+    "NewTools":  [
+                     {
+                         "Name":  "polis_contract_propose",
+                         "SchemaCanonicalDigest":  "76d4b529294c78d6247848e3d195afa2b61937c11699f535a16efc7e9c4a188f",
+                         "SchemaBytes":  183,
+                         "DescriptionBytes":  53,
+                         "DescriptionDigest":  "fed466791d9ab845d4777f515806d017259ba40ed9f44383ab11999230a7ae92",
+                         "Required":  [
+                                          "endpoint",
+                                          "schema"
+                                      ],
+                         "PropertyNames":  [
+                                               "endpoint",
+                                               "schema"
+                                           ],
+                         "NestedDepth":  0,
+                         "SchemaValidation":  {
+                                                  "Valid":  true,
+                                                  "Issues":  [
+
+                                                             ],
+                                                  "RootType":  "object",
+                                                  "Required":  [
+                                                                   "endpoint",
+                                                                   "schema"
+                                                               ],
+                                                  "PropertyNames":  [
+                                                                        "endpoint",
+                                                                        "schema"
+                                                                    ],
+                                                  "Depth":  0
+                                              },
+                         "Handler":  "PeerEmployeeTools.call-\u003eTXProposePeerContract",
+                         "AuthorizationClass":  "peer_backend",
+                         "CapabilityBinding":  "peer_backend",
+                         "RegistrationOrdinal":  5
+                     },
+                     {
+                         "Name":  "polis_contract_accept",
+                         "SchemaCanonicalDigest":  "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+                         "SchemaBytes":  120,
+                         "DescriptionBytes":  40,
+                         "DescriptionDigest":  "a8a4b6977d3bc6d1c449b628896ea50dd15aa76fd5dc05e611c6a7102aba7d1e",
+                         "Required":  [
+                                          "revision_id"
+                                      ],
+                         "PropertyNames":  [
+                                               "revision_id"
+                                           ],
+                         "NestedDepth":  0,
+                         "SchemaValidation":  {
+                                                  "Valid":  true,
+                                                  "Issues":  [
+
+                                                             ],
+                                                  "RootType":  "object",
+                                                  "Required":  [
+                                                                   "revision_id"
+                                                               ],
+                                                  "PropertyNames":  [
+                                                                        "revision_id"
+                                                                    ],
+                                                  "Depth":  0
+                                              },
+                         "Handler":  "PeerEmployeeTools.call-\u003eTXAcceptPeerContract",
+                         "AuthorizationClass":  "peer_backend",
+                         "CapabilityBinding":  "peer_backend",
+                         "RegistrationOrdinal":  6
+                     },
+                     {
+                         "Name":  "polis_contract_read",
+                         "SchemaCanonicalDigest":  "9d84956a23db52364349792ee916714bba6b5fd8087fa158d7fc86056199ad46",
+                         "SchemaBytes":  120,
+                         "DescriptionBytes":  52,
+                         "DescriptionDigest":  "b34544694d3dedcd5c0b4d71b350805b854daca79dc5b6cc4c92d466e18fd878",
+                         "Required":  [
+                                          "revision_id"
+                                      ],
+                         "PropertyNames":  [
+                                               "revision_id"
+                                           ],
+                         "NestedDepth":  0,
+                         "SchemaValidation":  {
+                                                  "Valid":  true,
+                                                  "Issues":  [
+
+                                                             ],
+                                                  "RootType":  "object",
+                                                  "Required":  [
+                                                                   "revision_id"
+                                                               ],
+                                                  "PropertyNames":  [
+                                                                        "revision_id"
+                                                                    ],
+                                                  "Depth":  0
+                                              },
+                         "Handler":  "PeerEmployeeTools.call-\u003ePeerContractRead",
+                         "AuthorizationClass":  "peer_backend",
+                         "CapabilityBinding":  "peer_backend",
+                         "RegistrationOrdinal":  7
+                     },
+                     {
+                         "Name":  "polis_collab_send",
+                         "SchemaCanonicalDigest":  "3506df54159d11c3f0a061deeea8662fbdc0276476517bfa1692b1ea33422a98",
+                         "SchemaBytes":  270,
+                         "DescriptionBytes":  64,
+                         "DescriptionDigest":  "278343ef2020fe5d52685362585da0a685a57c8aad05b210519a08bbeba5fdc9",
+                         "Required":  [
+                                          "actionable",
+                                          "body",
+                                          "contract_revision_id",
+                                          "to_task"
+                                      ],
+                         "PropertyNames":  [
+                                               "actionable",
+                                               "body",
+                                               "contract_revision_id",
+                                               "to_task"
+                                           ],
+                         "NestedDepth":  0,
+                         "SchemaValidation":  {
+                                                  "Valid":  true,
+                                                  "Issues":  [
+
+                                                             ],
+                                                  "RootType":  "object",
+                                                  "Required":  [
+                                                                   "actionable",
+                                                                   "body",
+                                                                   "contract_revision_id",
+                                                                   "to_task"
+                                                               ],
+                                                  "PropertyNames":  [
+                                                                        "actionable",
+                                                                        "body",
+                                                                        "contract_revision_id",
+                                                                        "to_task"
+                                                                    ],
+                                                  "Depth":  0
+                                              },
+                         "Handler":  "PeerEmployeeTools.call-\u003eTXPeerSend",
+                         "AuthorizationClass":  "peer_backend",
+                         "CapabilityBinding":  "peer_backend",
+                         "RegistrationOrdinal":  8
+                     }
+                 ],
+    "Variants":  [
+                     {
+                         "Name":  "A",
+                         "CanonicalRequestDigest":  "874dc3c50624997225ae18f3d8ab4d201cc38156325813b07fe821e218d748b6",
+                         "TotalBytes":  2975,
+                         "ToolBytes":  2446,
+                         "NonToolBytes":  531,
+                         "ToolOrder":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit"
+                                       ],
+                         "SerializationRoundTripDigest":  "874dc3c50624997225ae18f3d8ab4d201cc38156325813b07fe821e218d748b6",
+                         "RoundTripStable":  true
+                     },
+                     {
+                         "Name":  "B",
+                         "CanonicalRequestDigest":  "80ecbcf9443d55cc502755937ce88369fae437bb7b4b06fff00a451283b84e16",
+                         "TotalBytes":  2874,
+                         "ToolBytes":  2446,
+                         "NonToolBytes":  430,
+                         "ToolOrder":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit"
+                                       ],
+                         "SerializationRoundTripDigest":  "80ecbcf9443d55cc502755937ce88369fae437bb7b4b06fff00a451283b84e16",
+                         "RoundTripStable":  true
+                     },
+                     {
+                         "Name":  "C",
+                         "CanonicalRequestDigest":  "19d2935eb5ff00668b6dce39f4aca246bc02159e8e0eb6feda2bf7610f4c3c82",
+                         "TotalBytes":  3818,
+                         "ToolBytes":  3289,
+                         "NonToolBytes":  531,
+                         "ToolOrder":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_contract_read",
+                                           "polis_collab_send",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit"
+                                       ],
+                         "SerializationRoundTripDigest":  "19d2935eb5ff00668b6dce39f4aca246bc02159e8e0eb6feda2bf7610f4c3c82",
+                         "RoundTripStable":  true
+                     },
+                     {
+                         "Name":  "D",
+                         "CanonicalRequestDigest":  "7440a9da941a81345e5f6bfe510a01dc68c7b511f59e6431d7b150ebcf5cc740",
+                         "TotalBytes":  3717,
+                         "ToolBytes":  3289,
+                         "NonToolBytes":  430,
+                         "ToolOrder":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_contract_read",
+                                           "polis_collab_send",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit"
+                                       ],
+                         "SerializationRoundTripDigest":  "7440a9da941a81345e5f6bfe510a01dc68c7b511f59e6431d7b150ebcf5cc740",
+                         "RoundTripStable":  true
+                     }
+                 ],
+    "SyntheticPaddingTests":  [
+                                  {
+                                      "PaddingBytes":  3072,
+                                      "SerializedBytes":  6639,
+                                      "Digest":  "2bfe0f3097c913f29857843520261b182bcb4215d816ff02377843c29ef2f54e",
+                                      "RoundTripStable":  true,
+                                      "Truncated":  false
+                                  },
+                                  {
+                                      "PaddingBytes":  4096,
+                                      "SerializedBytes":  7663,
+                                      "Digest":  "3d0de59da1455e0e5f0f330f4ef1f709f66943f6878c48644e4147b1159b37c1",
+                                      "RoundTripStable":  true,
+                                      "Truncated":  false
+                                  },
+                                  {
+                                      "PaddingBytes":  8192,
+                                      "SerializedBytes":  11759,
+                                      "Digest":  "d8772976f20667640e56e7134820b640713a5f02c7ec4c245233a6ec8d0642d9",
+                                      "RoundTripStable":  true,
+                                      "Truncated":  false
+                                  },
+                                  {
+                                      "PaddingBytes":  16384,
+                                      "SerializedBytes":  19951,
+                                      "Digest":  "5d30e349da75bca26339d4e5542074662d31e26a4b12b695870fe0726154197a",
+                                      "RoundTripStable":  true,
+                                      "Truncated":  false
+                                  }
+                              ],
+    "All16Subsets":  [
+                         {
+                             "Mask":  0,
+                             "Order":  "canonical",
+                             "ToolCount":  7,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask0-canonical",
+                                             "CanonicalRequestDigest":  "7de7d1396749cfbe05d13c8c3c0236bd1cea459c23e60bd562c53f74b333876e",
+                                             "TotalBytes":  2488,
+                                             "ToolBytes":  2060,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "7de7d1396749cfbe05d13c8c3c0236bd1cea459c23e60bd562c53f74b333876e",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  0,
+                             "Order":  "reversed",
+                             "ToolCount":  7,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask0-reversed",
+                                             "CanonicalRequestDigest":  "86681c8590e98dc060576419a47c6508aa2cddc8c4f548a61c2bd96f9205e0ae",
+                                             "TotalBytes":  2488,
+                                             "ToolBytes":  2060,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "86681c8590e98dc060576419a47c6508aa2cddc8c4f548a61c2bd96f9205e0ae",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  0,
+                             "Order":  "alternate",
+                             "ToolCount":  7,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask0-alternate",
+                                             "CanonicalRequestDigest":  "0c25df0f122ec380ef1311dc20f848743b223ae4ea61e3e1965ebe3d8b10ce68",
+                                             "TotalBytes":  2488,
+                                             "ToolBytes":  2060,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "0c25df0f122ec380ef1311dc20f848743b223ae4ea61e3e1965ebe3d8b10ce68",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  1,
+                             "Order":  "canonical",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask1-canonical",
+                                             "CanonicalRequestDigest":  "6eb39ec874e5d0321e8949878351b1eb6aff2310a528b565e40c5d3033dccdb9",
+                                             "TotalBytes":  2808,
+                                             "ToolBytes":  2380,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "6eb39ec874e5d0321e8949878351b1eb6aff2310a528b565e40c5d3033dccdb9",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  1,
+                             "Order":  "reversed",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_propose",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask1-reversed",
+                                             "CanonicalRequestDigest":  "dd9c56e45095be108c13f5e16bd069cfa9c8c4c483cd5e235cbdc0817bef4009",
+                                             "TotalBytes":  2808,
+                                             "ToolBytes":  2380,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_propose",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "dd9c56e45095be108c13f5e16bd069cfa9c8c4c483cd5e235cbdc0817bef4009",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  1,
+                             "Order":  "alternate",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_contract_propose",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask1-alternate",
+                                             "CanonicalRequestDigest":  "50239bc75ba4ed28596ec866196366b52b61f152eae63e2475c3e9b1460557de",
+                                             "TotalBytes":  2808,
+                                             "ToolBytes":  2380,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_contract_propose",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "50239bc75ba4ed28596ec866196366b52b61f152eae63e2475c3e9b1460557de",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  2,
+                             "Order":  "canonical",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_accept"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask2-canonical",
+                                             "CanonicalRequestDigest":  "8ab21f8b62a8e40c91a6de7d539960f5556c10124d83900037e8fd58de3952b4",
+                                             "TotalBytes":  2731,
+                                             "ToolBytes":  2303,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_accept"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "8ab21f8b62a8e40c91a6de7d539960f5556c10124d83900037e8fd58de3952b4",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  2,
+                             "Order":  "reversed",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask2-reversed",
+                                             "CanonicalRequestDigest":  "ded1bf76834dfc68afb4541366f067f83279e539c3e8a2ac6f7501e60f131519",
+                                             "TotalBytes":  2731,
+                                             "ToolBytes":  2303,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "ded1bf76834dfc68afb4541366f067f83279e539c3e8a2ac6f7501e60f131519",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  2,
+                             "Order":  "alternate",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask2-alternate",
+                                             "CanonicalRequestDigest":  "3635ec49ff800a415db9aa82c955cd2ead2741a26ae08cbcda0816c219ab9b85",
+                                             "TotalBytes":  2731,
+                                             "ToolBytes":  2303,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "3635ec49ff800a415db9aa82c955cd2ead2741a26ae08cbcda0816c219ab9b85",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  3,
+                             "Order":  "canonical",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask3-canonical",
+                                             "CanonicalRequestDigest":  "bd76a230eeea1243964fa7cdad03c71b7fb179078d4e29e9826b247a4c8ea83d",
+                                             "TotalBytes":  3051,
+                                             "ToolBytes":  2623,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "bd76a230eeea1243964fa7cdad03c71b7fb179078d4e29e9826b247a4c8ea83d",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  3,
+                             "Order":  "reversed",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask3-reversed",
+                                             "CanonicalRequestDigest":  "ddc5b18fac7ca1ced5079b8fb545e79a5a9b0e0618bec3e3cb8d75470916f42c",
+                                             "TotalBytes":  3051,
+                                             "ToolBytes":  2623,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "ddc5b18fac7ca1ced5079b8fb545e79a5a9b0e0618bec3e3cb8d75470916f42c",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  3,
+                             "Order":  "alternate",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_contract_propose",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask3-alternate",
+                                             "CanonicalRequestDigest":  "1a932c0c3d782e45f809b8b5eea87d273b5125469b5b811e33d59bfb840c1767",
+                                             "TotalBytes":  3051,
+                                             "ToolBytes":  2623,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_propose",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "1a932c0c3d782e45f809b8b5eea87d273b5125469b5b811e33d59bfb840c1767",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  4,
+                             "Order":  "canonical",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_read"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask4-canonical",
+                                             "CanonicalRequestDigest":  "f34b30e2ab7d85f4554942945394ef31e3fde08cd53f30d5a11e606d474ca18d",
+                                             "TotalBytes":  2741,
+                                             "ToolBytes":  2313,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_read"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "f34b30e2ab7d85f4554942945394ef31e3fde08cd53f30d5a11e606d474ca18d",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  4,
+                             "Order":  "reversed",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask4-reversed",
+                                             "CanonicalRequestDigest":  "3a81186fdcd299c511e27cb3a91417a78507d9f42a63032c35167592ff349e62",
+                                             "TotalBytes":  2741,
+                                             "ToolBytes":  2313,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "3a81186fdcd299c511e27cb3a91417a78507d9f42a63032c35167592ff349e62",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  4,
+                             "Order":  "alternate",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask4-alternate",
+                                             "CanonicalRequestDigest":  "b03b14eab755eb317a2347532ec322d24a131035e464248bbc012edaa5f918a7",
+                                             "TotalBytes":  2741,
+                                             "ToolBytes":  2313,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "b03b14eab755eb317a2347532ec322d24a131035e464248bbc012edaa5f918a7",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  5,
+                             "Order":  "canonical",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose",
+                                           "polis_contract_read"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask5-canonical",
+                                             "CanonicalRequestDigest":  "af01e50dfde9f7c26a25bc6f410087d0991da6d036cc4372ec499542a90ebaa7",
+                                             "TotalBytes":  3061,
+                                             "ToolBytes":  2633,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_read"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "af01e50dfde9f7c26a25bc6f410087d0991da6d036cc4372ec499542a90ebaa7",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  5,
+                             "Order":  "reversed",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_contract_propose",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask5-reversed",
+                                             "CanonicalRequestDigest":  "a9400b9472a5e7306abdc932e87a2b586e763978b7397304887386902e114a4c",
+                                             "TotalBytes":  3061,
+                                             "ToolBytes":  2633,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_contract_propose",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "a9400b9472a5e7306abdc932e87a2b586e763978b7397304887386902e114a4c",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  5,
+                             "Order":  "alternate",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_contract_propose",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask5-alternate",
+                                             "CanonicalRequestDigest":  "ff018ef3905ad2e0f607b92cd1f4bbc6ba04b71591b084e8e3fe8caf89526b7d",
+                                             "TotalBytes":  3061,
+                                             "ToolBytes":  2633,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "ff018ef3905ad2e0f607b92cd1f4bbc6ba04b71591b084e8e3fe8caf89526b7d",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  6,
+                             "Order":  "canonical",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_accept",
+                                           "polis_contract_read"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask6-canonical",
+                                             "CanonicalRequestDigest":  "6998741a2d3b37321c41dc41af35cd02d1aeb34fa50cac5536e20f2e26d23cf6",
+                                             "TotalBytes":  2984,
+                                             "ToolBytes":  2556,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_read"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "6998741a2d3b37321c41dc41af35cd02d1aeb34fa50cac5536e20f2e26d23cf6",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  6,
+                             "Order":  "reversed",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask6-reversed",
+                                             "CanonicalRequestDigest":  "767759dc6232f35b9a8559517e4df3ae2e0ebda234878a83396684391cb3dde9",
+                                             "TotalBytes":  2984,
+                                             "ToolBytes":  2556,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "767759dc6232f35b9a8559517e4df3ae2e0ebda234878a83396684391cb3dde9",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  6,
+                             "Order":  "alternate",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask6-alternate",
+                                             "CanonicalRequestDigest":  "fbec6ae8d9f01f2a4c86568eb7385f3613d1ed7f2b85f30bd9fb5f9d1bc1cc8e",
+                                             "TotalBytes":  2984,
+                                             "ToolBytes":  2556,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "fbec6ae8d9f01f2a4c86568eb7385f3613d1ed7f2b85f30bd9fb5f9d1bc1cc8e",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  7,
+                             "Order":  "canonical",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_contract_read"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask7-canonical",
+                                             "CanonicalRequestDigest":  "622e9f5f748ff6ac52d909778ee96dae95f3060bfe7270d9566799f590faa296",
+                                             "TotalBytes":  3304,
+                                             "ToolBytes":  2876,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_read"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "622e9f5f748ff6ac52d909778ee96dae95f3060bfe7270d9566799f590faa296",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  7,
+                             "Order":  "reversed",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask7-reversed",
+                                             "CanonicalRequestDigest":  "4a9bdeed55ed0fa2d347fdd794ad3852624ffa71f418e89a8afedaff576fea18",
+                                             "TotalBytes":  3304,
+                                             "ToolBytes":  2876,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "4a9bdeed55ed0fa2d347fdd794ad3852624ffa71f418e89a8afedaff576fea18",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  7,
+                             "Order":  "alternate",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_contract_propose",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask7-alternate",
+                                             "CanonicalRequestDigest":  "8e354b800c4d82f0dfdcc6ff2de49aa28dea67a3a4e4b67ccf64b7b4e5e0636d",
+                                             "TotalBytes":  3304,
+                                             "ToolBytes":  2876,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "8e354b800c4d82f0dfdcc6ff2de49aa28dea67a3a4e4b67ccf64b7b4e5e0636d",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  8,
+                             "Order":  "canonical",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask8-canonical",
+                                             "CanonicalRequestDigest":  "04714d4e56b17075491ef7ffb3f859446ca12f6fffa95cd7b503042cdb5efd33",
+                                             "TotalBytes":  2901,
+                                             "ToolBytes":  2473,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "04714d4e56b17075491ef7ffb3f859446ca12f6fffa95cd7b503042cdb5efd33",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  8,
+                             "Order":  "reversed",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask8-reversed",
+                                             "CanonicalRequestDigest":  "5217beb8aa73655c15aad4289d16401ca1aa51c08ef1ea9e1056ec0038d05f0f",
+                                             "TotalBytes":  2901,
+                                             "ToolBytes":  2473,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "5217beb8aa73655c15aad4289d16401ca1aa51c08ef1ea9e1056ec0038d05f0f",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  8,
+                             "Order":  "alternate",
+                             "ToolCount":  8,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask8-alternate",
+                                             "CanonicalRequestDigest":  "d873d2b5d473debe43edc370d18441f0570969de24fe07d6afaef4665b26812f",
+                                             "TotalBytes":  2901,
+                                             "ToolBytes":  2473,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "d873d2b5d473debe43edc370d18441f0570969de24fe07d6afaef4665b26812f",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  9,
+                             "Order":  "canonical",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask9-canonical",
+                                             "CanonicalRequestDigest":  "bb6865106cda08622fbc1df9edb9c31f206a65c5b7afa9cd4bf7efc6024ada2a",
+                                             "TotalBytes":  3221,
+                                             "ToolBytes":  2793,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "bb6865106cda08622fbc1df9edb9c31f206a65c5b7afa9cd4bf7efc6024ada2a",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  9,
+                             "Order":  "reversed",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_propose",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask9-reversed",
+                                             "CanonicalRequestDigest":  "1c0a546b5f55357c1f87d924e877daa9ddd092138e9287e35d6124fefa2c5ef0",
+                                             "TotalBytes":  3221,
+                                             "ToolBytes":  2793,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_propose",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "1c0a546b5f55357c1f87d924e877daa9ddd092138e9287e35d6124fefa2c5ef0",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  9,
+                             "Order":  "alternate",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_contract_propose",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask9-alternate",
+                                             "CanonicalRequestDigest":  "e24cd197b6e16472f7cc6581bc10197f0b371d1db1e35cffbdd19500b5bbc9d3",
+                                             "TotalBytes":  3221,
+                                             "ToolBytes":  2793,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_contract_propose",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "e24cd197b6e16472f7cc6581bc10197f0b371d1db1e35cffbdd19500b5bbc9d3",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  10,
+                             "Order":  "canonical",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_accept",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask10-canonical",
+                                             "CanonicalRequestDigest":  "b190cbf0fea1de6a8c5bbbf648303cea76d190895260933755f776f4734bb428",
+                                             "TotalBytes":  3144,
+                                             "ToolBytes":  2716,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_accept",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "b190cbf0fea1de6a8c5bbbf648303cea76d190895260933755f776f4734bb428",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  10,
+                             "Order":  "reversed",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask10-reversed",
+                                             "CanonicalRequestDigest":  "f6291425d69b5dde3d4c644c954543dc6cb429fb0752239f94e5554e108671ee",
+                                             "TotalBytes":  3144,
+                                             "ToolBytes":  2716,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "f6291425d69b5dde3d4c644c954543dc6cb429fb0752239f94e5554e108671ee",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  10,
+                             "Order":  "alternate",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask10-alternate",
+                                             "CanonicalRequestDigest":  "33126a1be24b25273ee1416a360b107d17ed500b57bc337c73992f0eb028e196",
+                                             "TotalBytes":  3144,
+                                             "ToolBytes":  2716,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "33126a1be24b25273ee1416a360b107d17ed500b57bc337c73992f0eb028e196",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  11,
+                             "Order":  "canonical",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask11-canonical",
+                                             "CanonicalRequestDigest":  "44725812daa328f2e96dda49f3c2dfd0e4e815fdfc5afc6cd0e95df9e38c808e",
+                                             "TotalBytes":  3464,
+                                             "ToolBytes":  3036,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "44725812daa328f2e96dda49f3c2dfd0e4e815fdfc5afc6cd0e95df9e38c808e",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  11,
+                             "Order":  "reversed",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask11-reversed",
+                                             "CanonicalRequestDigest":  "dcbcdb3ee1ea3ca3c16125f38bad225f1d87f4c178d62f3fa51deb88f6e799ce",
+                                             "TotalBytes":  3464,
+                                             "ToolBytes":  3036,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "dcbcdb3ee1ea3ca3c16125f38bad225f1d87f4c178d62f3fa51deb88f6e799ce",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  11,
+                             "Order":  "alternate",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_contract_propose",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask11-alternate",
+                                             "CanonicalRequestDigest":  "fb7a2968ba66da37cce7af5cf70d9b7d3576b661a5f1c253a12c44ab27cfa6cd",
+                                             "TotalBytes":  3464,
+                                             "ToolBytes":  3036,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_propose",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "fb7a2968ba66da37cce7af5cf70d9b7d3576b661a5f1c253a12c44ab27cfa6cd",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  12,
+                             "Order":  "canonical",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_read",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask12-canonical",
+                                             "CanonicalRequestDigest":  "7d7fe5e84b2742a5aa781775c671ecd1670976c22de8bc16d3c9445dff95f566",
+                                             "TotalBytes":  3154,
+                                             "ToolBytes":  2726,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_read",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "7d7fe5e84b2742a5aa781775c671ecd1670976c22de8bc16d3c9445dff95f566",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  12,
+                             "Order":  "reversed",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask12-reversed",
+                                             "CanonicalRequestDigest":  "86a3a181adb1e1aac68a784d3b8d87a04fdddc535dfc5c0e9c5cc8996cd85afb",
+                                             "TotalBytes":  3154,
+                                             "ToolBytes":  2726,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "86a3a181adb1e1aac68a784d3b8d87a04fdddc535dfc5c0e9c5cc8996cd85afb",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  12,
+                             "Order":  "alternate",
+                             "ToolCount":  9,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask12-alternate",
+                                             "CanonicalRequestDigest":  "3c313854405a19e5eaee7bb8fb3603b624b4c48e4602c0f76fec155133a415fd",
+                                             "TotalBytes":  3154,
+                                             "ToolBytes":  2726,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "3c313854405a19e5eaee7bb8fb3603b624b4c48e4602c0f76fec155133a415fd",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  13,
+                             "Order":  "canonical",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose",
+                                           "polis_contract_read",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask13-canonical",
+                                             "CanonicalRequestDigest":  "c43a3dc0b7032c9a1a2d7fe7d344ebb90d19c9019d8dfdc204df353da1c21d3a",
+                                             "TotalBytes":  3474,
+                                             "ToolBytes":  3046,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_read",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "c43a3dc0b7032c9a1a2d7fe7d344ebb90d19c9019d8dfdc204df353da1c21d3a",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  13,
+                             "Order":  "reversed",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_contract_propose",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask13-reversed",
+                                             "CanonicalRequestDigest":  "ef35b10aa1ec995ee569bedbbc96307457de6874bfa164ed8e3b2478b9155490",
+                                             "TotalBytes":  3474,
+                                             "ToolBytes":  3046,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_contract_propose",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "ef35b10aa1ec995ee569bedbbc96307457de6874bfa164ed8e3b2478b9155490",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  13,
+                             "Order":  "alternate",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_contract_propose",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask13-alternate",
+                                             "CanonicalRequestDigest":  "753f663cdaaefbf470d89d3e86369f7e98a6c2e9a25b4f3a46ec528cc6d9283f",
+                                             "TotalBytes":  3474,
+                                             "ToolBytes":  3046,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "753f663cdaaefbf470d89d3e86369f7e98a6c2e9a25b4f3a46ec528cc6d9283f",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  14,
+                             "Order":  "canonical",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_accept",
+                                           "polis_contract_read",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask14-canonical",
+                                             "CanonicalRequestDigest":  "9273679483325d7371f3b5a571eb037f78e8d1a7df9de9dbf5fa0e4c0db7c33b",
+                                             "TotalBytes":  3397,
+                                             "ToolBytes":  2969,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_read",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "9273679483325d7371f3b5a571eb037f78e8d1a7df9de9dbf5fa0e4c0db7c33b",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  14,
+                             "Order":  "reversed",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask14-reversed",
+                                             "CanonicalRequestDigest":  "24b84e9c929adca3988f0bd0fbe7a2cb213ba28c6718562c7f8dc22b3b498c41",
+                                             "TotalBytes":  3397,
+                                             "ToolBytes":  2969,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "24b84e9c929adca3988f0bd0fbe7a2cb213ba28c6718562c7f8dc22b3b498c41",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  14,
+                             "Order":  "alternate",
+                             "ToolCount":  10,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask14-alternate",
+                                             "CanonicalRequestDigest":  "d01f43c23034b9862761e9134915f7e02bcef689dafeded10d49c35c1571075f",
+                                             "TotalBytes":  3397,
+                                             "ToolBytes":  2969,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "d01f43c23034b9862761e9134915f7e02bcef689dafeded10d49c35c1571075f",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  15,
+                             "Order":  "canonical",
+                             "ToolCount":  11,
+                             "Names":  [
+                                           "polis_work_current",
+                                           "polis_context_read",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace",
+                                           "polis_workspace_check",
+                                           "polis_work_checkpoint",
+                                           "polis_artifact_submit",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_contract_read",
+                                           "polis_collab_send"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask15-canonical",
+                                             "CanonicalRequestDigest":  "2b8f2c87969f25afb9c17151de984b6bbe5af88d5ca4290ab42928c01d9dd9e0",
+                                             "TotalBytes":  3717,
+                                             "ToolBytes":  3289,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_work_current",
+                                                               "polis_context_read",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_check",
+                                                               "polis_work_checkpoint",
+                                                               "polis_artifact_submit",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_read",
+                                                               "polis_collab_send"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "2b8f2c87969f25afb9c17151de984b6bbe5af88d5ca4290ab42928c01d9dd9e0",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  15,
+                             "Order":  "reversed",
+                             "ToolCount":  11,
+                             "Names":  [
+                                           "polis_workspace_replace",
+                                           "polis_workspace_read",
+                                           "polis_workspace_check",
+                                           "polis_work_current",
+                                           "polis_work_checkpoint",
+                                           "polis_contract_read",
+                                           "polis_contract_propose",
+                                           "polis_contract_accept",
+                                           "polis_context_read",
+                                           "polis_collab_send",
+                                           "polis_artifact_submit"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask15-reversed",
+                                             "CanonicalRequestDigest":  "7922ae33b225b160f9028f8a5745e9afa063969f21a0a49c030a3a8977a1d29f",
+                                             "TotalBytes":  3717,
+                                             "ToolBytes":  3289,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_workspace_replace",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_check",
+                                                               "polis_work_current",
+                                                               "polis_work_checkpoint",
+                                                               "polis_contract_read",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_accept",
+                                                               "polis_context_read",
+                                                               "polis_collab_send",
+                                                               "polis_artifact_submit"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "7922ae33b225b160f9028f8a5745e9afa063969f21a0a49c030a3a8977a1d29f",
+                                             "RoundTripStable":  true
+                                         }
+                         },
+                         {
+                             "Mask":  15,
+                             "Order":  "alternate",
+                             "ToolCount":  11,
+                             "Names":  [
+                                           "polis_artifact_submit",
+                                           "polis_collab_send",
+                                           "polis_context_read",
+                                           "polis_contract_accept",
+                                           "polis_contract_propose",
+                                           "polis_contract_read",
+                                           "polis_work_checkpoint",
+                                           "polis_work_current",
+                                           "polis_workspace_check",
+                                           "polis_workspace_read",
+                                           "polis_workspace_replace"
+                                       ],
+                             "UniqueNames":  true,
+                             "AllSchemasValid":  true,
+                             "AllHandlersBound":  true,
+                             "Request":  {
+                                             "Name":  "mask15-alternate",
+                                             "CanonicalRequestDigest":  "4159bf720ea92fb4bba416b44222625c713b7ca6d8909481ab31b8092df2e987",
+                                             "TotalBytes":  3717,
+                                             "ToolBytes":  3289,
+                                             "NonToolBytes":  430,
+                                             "ToolOrder":  [
+                                                               "polis_artifact_submit",
+                                                               "polis_collab_send",
+                                                               "polis_context_read",
+                                                               "polis_contract_accept",
+                                                               "polis_contract_propose",
+                                                               "polis_contract_read",
+                                                               "polis_work_checkpoint",
+                                                               "polis_work_current",
+                                                               "polis_workspace_check",
+                                                               "polis_workspace_read",
+                                                               "polis_workspace_replace"
+                                                           ],
+                                             "SerializationRoundTripDigest":  "4159bf720ea92fb4bba416b44222625c713b7ca6d8909481ab31b8092df2e987",
+                                             "RoundTripStable":  true
+                                         }
+                         }
+                     ],
+    "CompatibilityStatement":  "local schema/serialization/handler validity does not prove provider compatibility for app-server 0.151.0"
+}

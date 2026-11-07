@@ -1,0 +1,56 @@
+{
+  "status": "not_run",
+  "model": "gpt-5.6-luna",
+  "subject_revision": "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+  "contamination_preflight": "passed",
+  "codex_version": "codex-cli 0.151.0",
+  "schema_digest": "",
+  "capability_digest": "f94d2c5df3f8870b36c13395917757e4634467071e830501195aabec3c3c37a0",
+  "started": "2026-09-08T10:11:17.514608431Z",
+  "finished": "2026-09-08T10:12:24.669895537Z",
+  "turns": [
+    {
+      "number": 1,
+      "purpose": "R0.2H2 independent behavioral review",
+      "profile": "gpt-5.6-luna/high",
+      "status": "failed",
+      "started": "2026-09-08T10:11:17.590236937Z",
+      "finished": "2026-09-08T10:12:24.666165072Z",
+      "duration_ms": 67075,
+      "thread_id": "01a08080-30a3-7340-b487-dedc938400d6",
+      "session_id": "29cc9b2c27041fbd434392ab3b90bad0",
+      "tool_events": [
+        "workspace_check",
+        "workspace_read",
+        "work_current",
+        "context_read",
+        "work_checkpoint",
+        "review_submit",
+        "work_checkpoint",
+        "review_submit",
+        "work_checkpoint"
+      ],
+      "receipts": [
+        "4a54f625505fc2e2c62bcf566f9d51a1"
+      ],
+      "stop_receipt": "process-group:14407:waited",
+      "stop_confirmed": true,
+      "check_passed": true,
+      "error": "reviewer did not produce a passed check, checkpoint and explicit verdict"
+    }
+  ],
+  "single_worker": "",
+  "handover": "",
+  "behavior": "",
+  "reviewer_verdict": "",
+  "hidden_verifier_result": "",
+  "review_isolation_result": "",
+  "old_writer": "",
+  "error": "reviewer did not produce a passed check, checkpoint and explicit verdict",
+  "usage": {
+    "medium_turns": 0,
+    "high_turns": 1,
+    "money": "not_estimated",
+    "limit": "R0.2H2: one independent High; concurrency 1; no Medium"
+  }
+}

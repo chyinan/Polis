@@ -1,0 +1,75 @@
+{
+  "allowance_binding": {
+    "execution_fingerprint": "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+    "employee_id": "emp-frontend",
+    "problem_key": "r03a-real-peer-collaboration-v1",
+    "purpose": "real_backend_peer_collaboration",
+    "model": "gpt-5.6-luna",
+    "profile": "gpt-5.6-luna/medium",
+    "effort": "medium",
+    "allowance_limits": {
+      "medium_limit": 1,
+      "high_limit": 0,
+      "concurrency": 1,
+      "tool_call_limit": 48
+    }
+  },
+  "allowance_created": true,
+  "employee_id": "emp-frontend",
+  "frontend_real_execution": "FAILED",
+  "frontend_session": {
+    "number": 1,
+    "employee": "emp-frontend",
+    "purpose": "pagination V3 Frontend single-session employee",
+    "profile": "gpt-5.6-luna/medium",
+    "status": "failed",
+    "started": "2026-09-15T07:46:29.178684127Z",
+    "finished": "2026-09-15T07:46:29.641144124Z",
+    "duration_ms": 462,
+    "native_duration_ms": 0,
+    "process_started": true,
+    "initialize_completed": false,
+    "thread_started": false,
+    "turn_started": false,
+    "provider_egress": false,
+    "turn_completed": false,
+    "epoch": 4,
+    "incarnation": "55014b3247dc7d8d680b6988e2d8afb6",
+    "tool_calls_used": 0,
+    "tool_calls_remaining": 48,
+    "tool_events": null,
+    "receipts": null,
+    "stop_receipt": "process-group:853:waited",
+    "stop_confirmed": true,
+    "token_usage": {
+      "total": {
+        "totalTokens": 0,
+        "inputTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 0,
+        "reasoningOutputTokens": 0
+      },
+      "last": {
+        "totalTokens": 0,
+        "inputTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 0,
+        "reasoningOutputTokens": 0
+      }
+    },
+    "native_usage_updates": 0,
+    "error": "outcome_unknown: transport: EOF"
+  },
+  "high_started": 0,
+  "historical_evidence_modified": false,
+  "medium_started": 1,
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "provider_egress": 0,
+  "qualification": "R0.3A-PAGINATION-V3-FRONTEND-SINGLE-SESSION",
+  "real_peer_collaboration_v3": "FAILED",
+  "status": "NOT_STARTED",
+  "successor": "NOT_NEEDED",
+  "tool_call_limit": 48
+}

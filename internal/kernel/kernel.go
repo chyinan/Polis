@@ -14,24 +14,33 @@ import (
 	"os"
 	"polis/internal/core"
 	"polis/internal/dbgen"
+	"polis/internal/taskvalidation"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Scope struct{ company string }
 type Binding struct {
-	scope                 Scope
-	employee, incarnation string
-	epoch                 int64
-	session               string
+	scope                       Scope
+	task                        string
+	employee, incarnation       string
+	epoch                       int64
+	session                     string
+	workspaceDigest             string
+	workspaceRevision           int64
+	taskValidationBindingDigest string
 }
 type Receipt struct {
-	ID     string `json:"id"`
-	Status string `json:"status"`
+	ID       string `json:"id"`
+	Status   string `json:"status"`
+	Revision int64  `json:"revision,omitempty"`
 }
 type Task struct {
-	ID, Mission, Owner, Kind, State string
-	Generation                      int64
+	ID, Mission, Owner, State string
+	Kind                      core.TaskKind
+	Generation                int64
+	ValidationBinding         *taskvalidation.Binding `json:"validation_binding,omitempty"`
 }
 type Obligation struct{ ID, State string }
 type Artifact struct{ ID, Digest, State, Verdict string }
@@ -49,11 +58,27 @@ type Kernel struct {
 	pool              *pgxpool.Pool
 	lease             *pgxpool.Conn
 	leaseMu           sync.Mutex
-	incarnation, root string
+	incarnation       string
+	sourceIncarnation string
+	root              string
+	runtimeCASBinding *RuntimeCASBinding
 }
 
 // Open never migrates schema. Only in-process fake work can be recovered in R0.
 func Open(ctx context.Context, dsn, root string) (*Kernel, error) {
+	return openKernel(ctx, dsn, root, nil)
+}
+
+// OpenWithRuntimeCASBinding is the activation path. Its recovery phase checks
+// every persisted artifact blob before txRecover may mutate control state.
+func OpenWithRuntimeCASBinding(ctx context.Context, dsn string, binding RuntimeCASBinding) (*Kernel, error) {
+	if err := binding.ValidateSyntax(); err != nil {
+		return nil, err
+	}
+	return openKernel(ctx, dsn, binding.CanonicalRoot, &binding)
+}
+
+func openKernel(ctx context.Context, dsn, root string, binding *RuntimeCASBinding) (*Kernel, error) {
 	cfg, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		return nil, err
@@ -66,7 +91,7 @@ func Open(ctx context.Context, dsn, root string) (*Kernel, error) {
 	if err != nil {
 		return nil, err
 	}
-	k := &Kernel{pool: p, incarnation: newID(), root: root}
+	k := &Kernel{pool: p, incarnation: newID(), root: root, runtimeCASBinding: binding}
 	fail := func(e error) (*Kernel, error) { k.Close(); return nil, e }
 	k.lease, err = p.Acquire(ctx)
 	if err != nil {
@@ -89,18 +114,26 @@ func Open(ctx context.Context, dsn, root string) (*Kernel, error) {
 	if version < 180000 || version >= 190000 || super {
 		return fail(core.Denied)
 	}
+	if err = p.QueryRow(ctx, "SELECT incarnation FROM runtime_control WHERE singleton").Scan(&k.sourceIncarnation); err != nil {
+		return fail(err)
+	}
 	var schema int64
 	err = p.QueryRow(ctx, "SELECT max(version_id) FROM goose_db_version WHERE is_applied").Scan(&schema)
 	if err != nil {
 		return fail(err)
 	}
-	if schema != 2 {
+	if schema != 15 {
 		return fail(fmt.Errorf("incompatible schema: %d", schema))
 	}
 	if err = os.MkdirAll(root, 0700); err != nil {
 		return fail(err)
 	}
-	if err = k.txRecover(ctx); err != nil {
+	if binding != nil {
+		err = k.txRecoverWithRuntimeCASBinding(ctx)
+	} else {
+		err = k.txRecover(ctx)
+	}
+	if err != nil {
 		return fail(err)
 	}
 	return k, nil
@@ -123,6 +156,16 @@ func (k *Kernel) Close() {
 
 // LocalScope is a trusted local OS management entry, never offered to workers.
 func (k *Kernel) LocalScope(id string) Scope { return Scope{id} }
+
+// Incarnation returns the runtime incarnation bound to this kernel instance.
+// Callers use it for evidence identity; worker authorization still validates
+// the incarnation inside the guarded database transaction.
+func (k *Kernel) Incarnation() string { return k.incarnation }
+
+// SourceIncarnation returns the runtime incarnation observed before recovery
+// advanced runtime_control for this kernel instance. It is evidence only.
+func (k *Kernel) SourceIncarnation() string { return k.sourceIncarnation }
+
 func newID() string {
 	b := make([]byte, 16)
 	if _, e := rand.Read(b); e != nil {
@@ -251,6 +294,21 @@ func appendEvent(ctx context.Context, tx pgx.Tx, s Scope, kind string, payload a
 	if e != nil {
 		return e
 	}
+	var object map[string]any
+	if json.Unmarshal(raw, &object) == nil {
+		object["occurred_at"] = time.Now().UTC().Format(time.RFC3339Nano)
+		raw, e = json.Marshal(object)
+		if e != nil {
+			return e
+		}
+	}
 	_, e = tx.Exec(ctx, "INSERT INTO events(company_id,company_seq,kind,payload) VALUES($1,$2,$3,$4)", s.company, seq, kind, raw)
+	if e != nil {
+		return e
+	}
+	_, e = tx.Exec(ctx, "SELECT pg_notify('polis_company_events',$1)", s.company)
+	if notificationEventKind(kind) != "" {
+		_ = appendNotificationIntent(ctx, tx, s, notificationEventKind(kind), raw)
+	}
 	return e
 }

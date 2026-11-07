@@ -1,0 +1,38 @@
+{
+  "layer": "L0_native_process_and_protocol_compatibility",
+  "status": "qualified",
+  "evidence_result": "passed",
+  "codex_0_153_4_native_compatibility": "PASSED",
+  "eligible_for_version_only_live_canary": "YES",
+  "fingerprint_schema_version": "canonical-manifest-v1",
+  "canonical_manifest_digest": "587ec5235f96fae24f688d49a8549e8251e394fa81d88f940cd04c2a8f8d1099",
+  "combination": {
+    "codex_version": "0.153.4",
+    "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "runtime_profile": "wsl-linux-amd64",
+    "sandbox_class": "read-only",
+    "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+    "auth_source_class": "local_codex_auth_file",
+    "code_mode_host_sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+    "capability_digest": "105552b04a3e7379adf28dd266c1c5108fedbef824173a6455003af20647affb",
+    "native_protocol_digest": "d052a9f423be59cd61cffb9dd8bf65b4e1a161b49800706c136c2f8862976244"
+  },
+  "historical_t7": {
+    "execution_key": "58c8d49d9545d179820f03a4505163970bcaf461d6720fd3541640a5113cba45",
+    "fingerprint_schema_version": "legacy-json-serialization-v0",
+    "canonical_manifest_digest": null,
+    "classification": "historical/legacy serialization",
+    "recomputed_or_overwritten": false
+  },
+  "t9_preserved": {
+    "minimal_transport_canary": "INCONCLUSIVE",
+    "no_proxy_L1": "unqualified_for_business_execution"
+  },
+  "provider_dependent_fields": {
+    "first_valid_model_output": "not_run / compatibility_unproven",
+    "normal_turn_completed": "not_run / compatibility_unproven",
+    "business_execution": "not_run / compatibility_unproven"
+  }
+}

@@ -1,0 +1,5 @@
+180006|55481|on|on|7|0|0|0|0
+wsl_ip=172.24.72.52
+gateway=172.24.64.1
+port=55481
+database=polis_r0_5b_live_1

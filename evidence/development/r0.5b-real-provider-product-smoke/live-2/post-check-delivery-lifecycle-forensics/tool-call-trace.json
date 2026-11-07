@@ -1,0 +1,762 @@
+{
+  "derivedFrom": "Frozen provider protocol.jsonl, Mission/Task/TaskValidationBinding snapshots, terminal record, and browser evidence.",
+  "rawEvidenceModified": false,
+  "hiddenReasoningInspected": false,
+  "taskProviderPrompt": "Complete the assigned product task using only the registered Polis tools. Persist the requested artifact and checkpoint, then stop.",
+  "workerDeveloperInstruction": "You are one Polis product employee. Use only the registered Polis employee tools; do not use shell, web, delegation, external MCP or account tools.",
+  "checkPass": {
+    "ordinal": 5,
+    "tool": "workspace_check",
+    "result": {
+      "status": "PASS",
+      "reasonCode": "all_required_text_present",
+      "workspaceRevision": 2,
+      "workspaceDigest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+      "validationBindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+    },
+    "publicFeedback": "All public required-text criteria are present in the current Task workspace.",
+    "toolCallsUsedAfter": 5,
+    "remainingAfter": 11
+  },
+  "budget": {
+    "limit": 16,
+    "toolCallsUsedAtPass": 5,
+    "callsRemainingAtPass": 11,
+    "callsAfterPass": 8,
+    "callsUnusedAtTerminal": 3
+  },
+  "toolCallCounts": {
+    "work_current": 2,
+    "context_read": 1,
+    "workspace_read": 1,
+    "workspace_replace": 1,
+    "workspace_check": 1,
+    "work_checkpoint": 6,
+    "artifact_submit": 1
+  },
+  "checkpointAttemptCount": 6,
+  "checkpointAttemptSummary": [
+    {
+      "ordinal": 6,
+      "kind": "qualified",
+      "schemaValid": false,
+      "missingMinItems": [
+        "minItems:rejected"
+      ],
+      "evidenceRefs": [
+        {
+          "chars": 20,
+          "validCoreId": false,
+          "matchesCheckReceipt": false,
+          "matchesWorkspaceReplace": false
+        },
+        {
+          "chars": 51,
+          "validCoreId": false,
+          "matchesCheckReceipt": false,
+          "matchesWorkspaceReplace": false
+        }
+      ],
+      "error": "MALFORMED_INPUT"
+    },
+    {
+      "ordinal": 7,
+      "kind": "qualified",
+      "schemaValid": false,
+      "missingMinItems": [
+        "minItems:rejected"
+      ],
+      "evidenceRefs": [
+        {
+          "chars": 32,
+          "validCoreId": true,
+          "matchesCheckReceipt": true,
+          "matchesWorkspaceReplace": false
+        }
+      ],
+      "error": "MALFORMED_INPUT"
+    },
+    {
+      "ordinal": 9,
+      "kind": "progress",
+      "schemaValid": false,
+      "missingMinItems": [
+        "minItems:decisions",
+        "minItems:rejected",
+        "minItems:evidence_refs"
+      ],
+      "evidenceRefs": [],
+      "error": "MALFORMED_INPUT"
+    },
+    {
+      "ordinal": 10,
+      "kind": "qualified",
+      "schemaValid": true,
+      "missingMinItems": [],
+      "evidenceRefs": [
+        {
+          "chars": 51,
+          "validCoreId": false,
+          "matchesCheckReceipt": false,
+          "matchesWorkspaceReplace": false
+        },
+        {
+          "chars": 80,
+          "validCoreId": false,
+          "matchesCheckReceipt": false,
+          "matchesWorkspaceReplace": false
+        }
+      ],
+      "error": "MALFORMED_INPUT"
+    },
+    {
+      "ordinal": 11,
+      "kind": "qualified",
+      "schemaValid": false,
+      "missingMinItems": [
+        "minItems:facts",
+        "minItems:decisions",
+        "minItems:rejected",
+        "minItems:evidence_refs"
+      ],
+      "evidenceRefs": [],
+      "error": "MALFORMED_INPUT"
+    },
+    {
+      "ordinal": 13,
+      "kind": "qualified",
+      "schemaValid": false,
+      "missingMinItems": [
+        "minItems:rejected"
+      ],
+      "evidenceRefs": [
+        {
+          "chars": 32,
+          "validCoreId": true,
+          "matchesCheckReceipt": true,
+          "matchesWorkspaceReplace": false
+        },
+        {
+          "chars": 64,
+          "validCoreId": true,
+          "matchesCheckReceipt": false,
+          "matchesWorkspaceReplace": true
+        }
+      ],
+      "error": "MALFORMED_INPUT"
+    }
+  ],
+  "artifactAttempt": {
+    "ordinal": 12,
+    "callId": "exec-bc32d70a-222c-4577-9dbd-30bea2d8934c",
+    "requestAt": "2026-09-17T10:52:09.8840397Z",
+    "responseAt": "2026-09-17T10:52:09.8998507Z",
+    "tool": "artifact_submit",
+    "argumentCategory": {
+      "category": "submit full current workspace as candidate Artifact",
+      "argumentKeys": []
+    },
+    "resultCategory": "submission_denied",
+    "toolHandlerSuccess": false,
+    "toolResultKeys": [
+      "error"
+    ],
+    "visibleFeedback": "POLICY_DENIED",
+    "receipt": null,
+    "resultSummary": null,
+    "taskStateBefore": "working",
+    "taskStateAfter": "working",
+    "workspaceRevisionBefore": 2,
+    "workspaceRevisionAfter": 2,
+    "toolCallsUsedAfter": 12,
+    "toolCallsRemainingAfter": 4
+  },
+  "exactOrderedTrace": [
+    {
+      "ordinal": 1,
+      "callId": "exec-e2618108-94a7-4733-99f4-27eb30493ec9",
+      "requestAt": "2026-09-17T10:51:07.0866867Z",
+      "responseAt": "2026-09-17T10:51:07.0998022Z",
+      "tool": "work_current",
+      "argumentCategory": {
+        "category": "parameterless/read",
+        "keys": []
+      },
+      "resultCategory": "read",
+      "toolHandlerSuccess": true,
+      "toolResultKeys": [
+        "data"
+      ],
+      "visibleFeedback": null,
+      "receipt": null,
+      "resultSummary": {
+        "taskId": "5b39875f8dc6463f36395b04e4504407",
+        "taskKind": "compat",
+        "taskOwner": "emp-backend",
+        "taskState": "working",
+        "bindingRevision": "text-acceptance@1",
+        "bindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+        "requiredTextCount": 4,
+        "workspaceRevision": 1,
+        "workspaceDigest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+        "toolCallLimit": 16,
+        "toolCallsUsed": 1,
+        "toolCallsRemaining": 15,
+        "handoverContract": "signed-zero@1"
+      },
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 1,
+      "workspaceRevisionAfter": 1,
+      "toolCallsUsedAfter": 1,
+      "toolCallsRemainingAfter": 15
+    },
+    {
+      "ordinal": 2,
+      "callId": "exec-2e22fdb1-8e5f-41e8-a1a7-5ed686850a32",
+      "requestAt": "2026-09-17T10:51:07.1005447Z",
+      "responseAt": "2026-09-17T10:51:07.1095707Z",
+      "tool": "context_read",
+      "argumentCategory": {
+        "category": "parameterless/read",
+        "keys": []
+      },
+      "resultCategory": "read",
+      "toolHandlerSuccess": true,
+      "toolResultKeys": [
+        "data"
+      ],
+      "visibleFeedback": null,
+      "receipt": null,
+      "resultSummary": {
+        "taskId": "5b39875f8dc6463f36395b04e4504407",
+        "taskKind": "compat",
+        "taskOwner": "emp-backend",
+        "taskState": "working",
+        "bindingRevision": "text-acceptance@1",
+        "bindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+        "requiredTextCount": 4,
+        "workspaceRevision": 1,
+        "workspaceDigest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+        "toolCallLimit": 16,
+        "toolCallsUsed": 2,
+        "toolCallsRemaining": 14,
+        "handoverContract": "signed-zero@1"
+      },
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 1,
+      "workspaceRevisionAfter": 1,
+      "toolCallsUsedAfter": 2,
+      "toolCallsRemainingAfter": 14
+    },
+    {
+      "ordinal": 3,
+      "callId": "exec-8a980b23-c779-4660-9070-95158a2ef860",
+      "requestAt": "2026-09-17T10:51:07.1100817Z",
+      "responseAt": "2026-09-17T10:51:07.1187683Z",
+      "tool": "workspace_read",
+      "argumentCategory": {
+        "category": "parameterless/read",
+        "keys": []
+      },
+      "resultCategory": "read",
+      "toolHandlerSuccess": true,
+      "toolResultKeys": [
+        "data"
+      ],
+      "visibleFeedback": null,
+      "receipt": null,
+      "resultSummary": {
+        "workspaceRevision": 1,
+        "workspaceDigest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+        "contentBytes": 148,
+        "requiredStringsPresent": 0
+      },
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 1,
+      "workspaceRevisionAfter": 1,
+      "toolCallsUsedAfter": 3,
+      "toolCallsRemainingAfter": 13
+    },
+    {
+      "ordinal": 4,
+      "callId": "exec-9cd59e5f-5909-4bd7-aadc-65e52c046c59",
+      "requestAt": "2026-09-17T10:51:15.4120936Z",
+      "responseAt": "2026-09-17T10:51:15.4283786Z",
+      "tool": "workspace_replace",
+      "argumentCategory": {
+        "category": "workspace content CAS replace",
+        "expectedRevision": 1,
+        "expectedDigestPresent": true,
+        "contentBytes": 399,
+        "publicAcceptanceStringsPresent": 4,
+        "requiredCount": 4
+      },
+      "resultCategory": "CAS_replace_persisted",
+      "toolHandlerSuccess": true,
+      "toolResultKeys": [
+        "receipt"
+      ],
+      "visibleFeedback": null,
+      "receipt": {
+        "id": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+        "status": "persisted",
+        "revision": 2
+      },
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 1,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 4,
+      "toolCallsRemainingAfter": 12
+    },
+    {
+      "ordinal": 5,
+      "callId": "exec-0b19e3ae-02ef-4c1f-95ca-90c700facb77",
+      "requestAt": "2026-09-17T10:51:19.4215371Z",
+      "responseAt": "2026-09-17T10:51:19.4375363Z",
+      "tool": "workspace_check",
+      "argumentCategory": {
+        "category": "parameterless/read",
+        "keys": []
+      },
+      "resultCategory": "acceptance_check",
+      "toolHandlerSuccess": true,
+      "toolResultKeys": [
+        "receipt",
+        "data"
+      ],
+      "visibleFeedback": "All public required-text criteria are present in the current Task workspace.",
+      "receipt": {
+        "id": "5d571cd58e6dc80707aa66171a1aff5f",
+        "status": "persisted",
+        "revision": null
+      },
+      "resultSummary": {
+        "status": "PASS",
+        "reasonCode": "all_required_text_present",
+        "workspaceRevision": 2,
+        "workspaceDigest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+        "validationBindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+      },
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 5,
+      "toolCallsRemainingAfter": 11
+    },
+    {
+      "ordinal": 6,
+      "callId": "exec-51a2b197-68d5-42b7-8461-ebfbd4c79489",
+      "requestAt": "2026-09-17T10:51:26.8419349Z",
+      "responseAt": "2026-09-17T10:51:26.8487189Z",
+      "tool": "work_checkpoint",
+      "argumentCategory": {
+        "category": "checkpoint request",
+        "kind": "qualified",
+        "summaryChars": 83,
+        "arrayCounts": {
+          "facts": 2,
+          "decisions": 1,
+          "rejected": 0,
+          "evidence_refs": 2,
+          "failed_checks": 0
+        },
+        "requiredKeysMissing": [],
+        "jsonSchemaValid": false,
+        "jsonSchemaReasons": [
+          "minItems:rejected"
+        ],
+        "evidenceRefEvidence": [
+          {
+            "chars": 20,
+            "validCoreId": false,
+            "matchesCheckReceipt": false,
+            "matchesWorkspaceReplace": false
+          },
+          {
+            "chars": 51,
+            "validCoreId": false,
+            "matchesCheckReceipt": false,
+            "matchesWorkspaceReplace": false
+          }
+        ]
+      },
+      "resultCategory": "input_error",
+      "toolHandlerSuccess": false,
+      "toolResultKeys": [
+        "error"
+      ],
+      "visibleFeedback": "MALFORMED_INPUT",
+      "receipt": null,
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 6,
+      "toolCallsRemainingAfter": 10
+    },
+    {
+      "ordinal": 7,
+      "callId": "exec-317fe705-744b-436d-84bd-3d4e58cc9bbb",
+      "requestAt": "2026-09-17T10:51:33.8163353Z",
+      "responseAt": "2026-09-17T10:51:33.823733Z",
+      "tool": "work_checkpoint",
+      "argumentCategory": {
+        "category": "checkpoint request",
+        "kind": "qualified",
+        "summaryChars": 49,
+        "arrayCounts": {
+          "facts": 1,
+          "decisions": 1,
+          "rejected": 0,
+          "evidence_refs": 1,
+          "failed_checks": 0
+        },
+        "requiredKeysMissing": [],
+        "jsonSchemaValid": false,
+        "jsonSchemaReasons": [
+          "minItems:rejected"
+        ],
+        "evidenceRefEvidence": [
+          {
+            "chars": 32,
+            "validCoreId": true,
+            "matchesCheckReceipt": true,
+            "matchesWorkspaceReplace": false
+          }
+        ]
+      },
+      "resultCategory": "input_error",
+      "toolHandlerSuccess": false,
+      "toolResultKeys": [
+        "error"
+      ],
+      "visibleFeedback": "MALFORMED_INPUT",
+      "receipt": null,
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 7,
+      "toolCallsRemainingAfter": 9
+    },
+    {
+      "ordinal": 8,
+      "callId": "exec-951db19d-b213-45ee-924a-12c0ebc124ec",
+      "requestAt": "2026-09-17T10:51:39.5667896Z",
+      "responseAt": "2026-09-17T10:51:39.5768058Z",
+      "tool": "work_current",
+      "argumentCategory": {
+        "category": "parameterless/read",
+        "keys": []
+      },
+      "resultCategory": "read",
+      "toolHandlerSuccess": true,
+      "toolResultKeys": [
+        "data"
+      ],
+      "visibleFeedback": null,
+      "receipt": null,
+      "resultSummary": {
+        "taskId": "5b39875f8dc6463f36395b04e4504407",
+        "taskKind": "compat",
+        "taskOwner": "emp-backend",
+        "taskState": "working",
+        "bindingRevision": "text-acceptance@1",
+        "bindingDigest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+        "requiredTextCount": 4,
+        "workspaceRevision": 2,
+        "workspaceDigest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+        "toolCallLimit": 16,
+        "toolCallsUsed": 8,
+        "toolCallsRemaining": 8,
+        "handoverContract": "signed-zero@1"
+      },
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 8,
+      "toolCallsRemainingAfter": 8
+    },
+    {
+      "ordinal": 9,
+      "callId": "exec-cf8e649f-6ca9-4f5b-8ded-ada946678eea",
+      "requestAt": "2026-09-17T10:51:44.8331894Z",
+      "responseAt": "2026-09-17T10:51:44.8394796Z",
+      "tool": "work_checkpoint",
+      "argumentCategory": {
+        "category": "checkpoint request",
+        "kind": "progress",
+        "summaryChars": 41,
+        "arrayCounts": {
+          "facts": 1,
+          "decisions": 0,
+          "rejected": 0,
+          "evidence_refs": 0,
+          "failed_checks": 0
+        },
+        "requiredKeysMissing": [],
+        "jsonSchemaValid": false,
+        "jsonSchemaReasons": [
+          "minItems:decisions",
+          "minItems:rejected",
+          "minItems:evidence_refs"
+        ],
+        "evidenceRefEvidence": []
+      },
+      "resultCategory": "input_error",
+      "toolHandlerSuccess": false,
+      "toolResultKeys": [
+        "error"
+      ],
+      "visibleFeedback": "MALFORMED_INPUT",
+      "receipt": null,
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 9,
+      "toolCallsRemainingAfter": 7
+    },
+    {
+      "ordinal": 10,
+      "callId": "exec-9512573b-e2d2-4932-b5c9-9776f03178ea",
+      "requestAt": "2026-09-17T10:51:57.4290441Z",
+      "responseAt": "2026-09-17T10:51:57.4362853Z",
+      "tool": "work_checkpoint",
+      "argumentCategory": {
+        "category": "checkpoint request",
+        "kind": "qualified",
+        "summaryChars": 40,
+        "arrayCounts": {
+          "facts": 1,
+          "decisions": 1,
+          "rejected": 1,
+          "evidence_refs": 2,
+          "failed_checks": 1
+        },
+        "requiredKeysMissing": [],
+        "jsonSchemaValid": true,
+        "jsonSchemaReasons": [],
+        "evidenceRefEvidence": [
+          {
+            "chars": 51,
+            "validCoreId": false,
+            "matchesCheckReceipt": false,
+            "matchesWorkspaceReplace": false
+          },
+          {
+            "chars": 80,
+            "validCoreId": false,
+            "matchesCheckReceipt": false,
+            "matchesWorkspaceReplace": false
+          }
+        ]
+      },
+      "resultCategory": "input_error",
+      "toolHandlerSuccess": false,
+      "toolResultKeys": [
+        "error"
+      ],
+      "visibleFeedback": "MALFORMED_INPUT",
+      "receipt": null,
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 10,
+      "toolCallsRemainingAfter": 6
+    },
+    {
+      "ordinal": 11,
+      "callId": "exec-c1ac7493-e4c4-4e43-a122-23df45fa3d04",
+      "requestAt": "2026-09-17T10:52:05.3343213Z",
+      "responseAt": "2026-09-17T10:52:05.3600929Z",
+      "tool": "work_checkpoint",
+      "argumentCategory": {
+        "category": "checkpoint request",
+        "kind": "qualified",
+        "summaryChars": 0,
+        "arrayCounts": {
+          "facts": 0,
+          "decisions": 0,
+          "rejected": 0,
+          "evidence_refs": 0,
+          "failed_checks": 0
+        },
+        "requiredKeysMissing": [],
+        "jsonSchemaValid": false,
+        "jsonSchemaReasons": [
+          "minItems:facts",
+          "minItems:decisions",
+          "minItems:rejected",
+          "minItems:evidence_refs"
+        ],
+        "evidenceRefEvidence": []
+      },
+      "resultCategory": "input_error",
+      "toolHandlerSuccess": false,
+      "toolResultKeys": [
+        "error"
+      ],
+      "visibleFeedback": "MALFORMED_INPUT",
+      "receipt": null,
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 11,
+      "toolCallsRemainingAfter": 5
+    },
+    {
+      "ordinal": 12,
+      "callId": "exec-bc32d70a-222c-4577-9dbd-30bea2d8934c",
+      "requestAt": "2026-09-17T10:52:09.8840397Z",
+      "responseAt": "2026-09-17T10:52:09.8998507Z",
+      "tool": "artifact_submit",
+      "argumentCategory": {
+        "category": "submit full current workspace as candidate Artifact",
+        "argumentKeys": []
+      },
+      "resultCategory": "submission_denied",
+      "toolHandlerSuccess": false,
+      "toolResultKeys": [
+        "error"
+      ],
+      "visibleFeedback": "POLICY_DENIED",
+      "receipt": null,
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 12,
+      "toolCallsRemainingAfter": 4
+    },
+    {
+      "ordinal": 13,
+      "callId": "exec-f069b8ae-35a8-441c-94e7-59daeba550b8",
+      "requestAt": "2026-09-17T10:52:24.8056395Z",
+      "responseAt": "2026-09-17T10:52:24.8124787Z",
+      "tool": "work_checkpoint",
+      "argumentCategory": {
+        "category": "checkpoint request",
+        "kind": "qualified",
+        "summaryChars": 58,
+        "arrayCounts": {
+          "facts": 5,
+          "decisions": 1,
+          "rejected": 0,
+          "evidence_refs": 2,
+          "failed_checks": 0
+        },
+        "requiredKeysMissing": [],
+        "jsonSchemaValid": false,
+        "jsonSchemaReasons": [
+          "minItems:rejected"
+        ],
+        "evidenceRefEvidence": [
+          {
+            "chars": 32,
+            "validCoreId": true,
+            "matchesCheckReceipt": true,
+            "matchesWorkspaceReplace": false
+          },
+          {
+            "chars": 64,
+            "validCoreId": true,
+            "matchesCheckReceipt": false,
+            "matchesWorkspaceReplace": true
+          }
+        ]
+      },
+      "resultCategory": "input_error",
+      "toolHandlerSuccess": false,
+      "toolResultKeys": [
+        "error"
+      ],
+      "visibleFeedback": "MALFORMED_INPUT",
+      "receipt": null,
+      "resultSummary": null,
+      "taskStateBefore": "working",
+      "taskStateAfter": "working",
+      "workspaceRevisionBefore": 2,
+      "workspaceRevisionAfter": 2,
+      "toolCallsUsedAfter": 13,
+      "toolCallsRemainingAfter": 3
+    }
+  ],
+  "finalVisibleAssistantMessage": "Artifact persisted and validation passed at workspace revision 2. However, Polis rejected all checkpoint attempts as `MALFORMED_INPUT`, so submission was blocked by the checkpoint tool.",
+  "finalOutputConsistentWithDatabase": false,
+  "stateEvidence": {
+    "rawResult": "FAILED",
+    "turnState": "completed",
+    "turnOutcome": "COMPLETED",
+    "providerEgress": 1,
+    "taskBeforeCleanup": [
+      {
+        "id": "489ea9fbe65d359327bd9bc979461138",
+        "kind": "bootstrap_plan",
+        "owner": "emp-planning",
+        "state": "completed"
+      },
+      {
+        "id": "5b39875f8dc6463f36395b04e4504407",
+        "kind": "compat",
+        "owner": "emp-backend",
+        "state": "working"
+      }
+    ],
+    "workerSessionsBeforeCleanup": [
+      {
+        "id": "f3a7f944f2749750becda51ad9d0e5bb",
+        "taskId": "5b39875f8dc6463f36395b04e4504407",
+        "employeeId": "emp-backend",
+        "state": "stopped",
+        "toolCallsUsed": 13
+      }
+    ],
+    "passingProductChecks": 1,
+    "workspaceAfterCheck": [
+      {
+        "digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+        "task_id": "5b39875f8dc6463f36395b04e4504407",
+        "revision": 2
+      }
+    ],
+    "qualifiedCheckpoints": 0,
+    "artifacts": 0,
+    "artifactQualifications": 0,
+    "missionAfterCleanup": "cancelled",
+    "tasksAfterCleanup": [
+      {
+        "kind": "bootstrap_plan",
+        "owner": "emp-planning",
+        "state": "completed"
+      },
+      {
+        "kind": "compat",
+        "owner": "emp-backend",
+        "state": "cancelled"
+      }
+    ],
+    "workerSessionsAfterCleanup": [
+      {
+        "state": "stopped",
+        "toolCallsUsed": 13
+      }
+    ],
+    "finalActivityCount": 29
+  }
+}

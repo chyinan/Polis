@@ -3,7 +3,6 @@ package runner
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -14,6 +13,7 @@ import (
 
 type Process struct {
 	cmd     *exec.Cmd
+	spec    ProcessLaunchSpec
 	In      io.WriteCloser
 	Out     io.ReadCloser
 	Err     io.ReadCloser
@@ -24,39 +24,66 @@ type Process struct {
 	proof   StopProof
 }
 
-// StopProof cannot be fabricated by a model or constructed outside this package.
-type StopProof struct {
-	id      string
-	pid     int
-	stopped bool
+func (p StopProof) Description() string    { return processStopDescription("process-group", p.pid) }
+func (p *Process) Identity() (string, int) { return p.id, p.cmd.Process.Pid }
+func (p *Process) PID() int {
+	if p == nil || p.cmd == nil || p.cmd.Process == nil {
+		return 0
+	}
+	return p.cmd.Process.Pid
+}
+func (p *Process) HasExited() bool {
+	if p == nil {
+		return true
+	}
+	select {
+	case <-p.done:
+		return true
+	default:
+		return false
+	}
+}
+func Start(id string, argv, env []string) (*Process, error) {
+	return StartWithWorkingDir(id, argv, env, "")
 }
 
-func (p StopProof) For(id string) bool     { return p.stopped && p.id == id && p.pid > 0 }
-func (p StopProof) Description() string    { return fmt.Sprintf("process-group:%d:waited", p.pid) }
-func (p StopProof) PID() int               { return p.pid }
-func (p *Process) Identity() (string, int) { return p.id, p.cmd.Process.Pid }
-func Start(id string, argv, env []string) (*Process, error) {
-	if id == "" || len(argv) == 0 {
-		return nil, errors.New("invalid process identity")
+func StartWithWorkingDir(id string, argv, env []string, workingDir string) (*Process, error) {
+	spec, err := NewProcessLaunchSpec(argv, env, workingDir, ProcessLaunchDirectories{RuntimeHome: workingDir + "/home", TempDirectory: workingDir + "/tmp"})
+	if err != nil {
+		return nil, err
 	}
-	cmd := exec.Command(argv[0], argv[1:]...)
-	if env != nil {
-		cmd.Env = env
+	return StartWithLaunchSpec(id, spec)
+}
+
+func StartWithLaunchSpec(id string, spec ProcessLaunchSpec) (*Process, error) {
+	if id == "" {
+		return nil, &LaunchFailure{Phase: LaunchPhaseValidate, ReasonCode: LaunchReasonInvalidArgument, SafeMessage: "process identity is required"}
+	}
+	cmd := exec.Command(spec.Argv[0], spec.Argv[1:]...)
+	if spec.WorkingDirectory != "" {
+		if _, err := os.Stat(spec.WorkingDirectory); err != nil {
+			return nil, NewLaunchFailure(LaunchPhaseWorkingDirectory, LaunchReasonCWDMissing, err, false, 0)
+		}
+		cmd.Dir = spec.WorkingDirectory
+	}
+	if spec.Environment != nil {
+		cmd.Env = spec.Environment
 	}
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGKILL}
 	in, e := cmd.StdinPipe()
 	if e != nil {
-		return nil, e
+		return nil, ClassifyPipeSetupFailure(e)
 	}
 	outR, outW, e := os.Pipe()
 	if e != nil {
-		return nil, e
+		in.Close()
+		return nil, ClassifyPipeSetupFailure(e)
 	}
 	errR, errW, e := os.Pipe()
 	if e != nil {
 		outR.Close()
 		outW.Close()
-		return nil, e
+		return nil, ClassifyPipeSetupFailure(e)
 	}
 	cmd.Stdout = outW
 	cmd.Stderr = errW
@@ -66,11 +93,11 @@ func Start(id string, argv, env []string) (*Process, error) {
 		outW.Close()
 		errR.Close()
 		errW.Close()
-		return nil, e
+		return nil, ClassifyProcessCreateFailure(e, spec.WorkingDirectory)
 	}
 	outW.Close()
 	errW.Close()
-	p := &Process{cmd: cmd, In: in, Out: outR, Err: errR, done: make(chan struct{}), id: id}
+	p := &Process{cmd: cmd, spec: spec, In: in, Out: outR, Err: errR, done: make(chan struct{}), id: id}
 	go func() { p.waitErr = cmd.Wait(); close(p.done) }()
 	return p, nil
 }
@@ -95,6 +122,14 @@ func (p *Process) Stop() (StopProof, error) {
 	// --die-with-parent. Its namespace init death also destroys escaped descendants.
 	p.proof = StopProof{p.id, p.cmd.Process.Pid, true}
 	return p.proof, nil
+}
+
+func (p *Process) WaitError() error {
+	if p == nil {
+		return nil
+	}
+	<-p.done
+	return p.waitErr
 }
 
 func Run(argv, env []string, limit time.Duration) ([]byte, error) {

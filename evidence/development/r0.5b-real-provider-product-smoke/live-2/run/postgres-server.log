@@ -1,0 +1,70 @@
+2026-09-17 18:39:19.612 CST [26384] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-09-17 18:39:19.612 CST [26384] LOG:  listening on IPv4 address "127.0.0.1", port 55483
+2026-09-17 18:39:19.615 CST [26384] LOG:  listening on Unix socket "/tmp/polis-r05b-live2.eT3tJm/socket/.s.PGSQL.55483"
+2026-09-17 18:39:19.620 CST [26390] LOG:  database system was shut down at 2026-09-17 18:39:19 CST
+2026-09-17 18:39:19.622 CST [26384] LOG:  database system is ready to accept connections
+2026-09-17 18:39:30.953 CST [26495] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-09-17 18:39:30.953 CST [26495] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-09-17 18:44:55.497 CST [26388] LOG:  checkpoint starting: time
+2026-09-17 18:46:51.631 CST [26388] LOG:  checkpoint complete: wrote 1090 buffers (6.7%), wrote 3 SLRU buffers; 1 WAL file(s) added, 0 removed, 0 recycled; write=116.048 s, sync=0.062 s, total=116.134 s; sync files=437, longest=0.002 s, average=0.001 s; distance=5786 kB, estimate=5786 kB; lsn=0/1CFFBA8, redo lsn=0/1CFD130
+2026-09-17 18:47:36.366 CST [26783] ERROR:  syntax error at or near ":" at character 304
+2026-09-17 18:47:36.366 CST [26783] STATEMENT:  SELECT
+	  (SELECT count(*) FROM companies WHERE id='r05b-live-2') || '|' ||
+	  (SELECT count(*) FROM employees WHERE company_id='r05b-live-2') || '|' ||
+	  (SELECT count(*) FROM missions WHERE company_id='r05b-live-2') || '|' ||
+	  COALESCE((SELECT state FROM missions WHERE company_id='r05b-live-2' AND id=:'mission'),'missing') || '|' ||
+	  (SELECT count(*) FROM tasks WHERE company_id='r05b-live-2' AND mission_id=:'mission') || '|' ||
+	  (SELECT count(*) FROM worker_sessions WHERE company_id='r05b-live-2')
+2026-09-17 18:48:35.915 CST [26821] ERROR:  syntax error at or near ":" at character 3324
+2026-09-17 18:48:35.915 CST [26821] STATEMENT:  SELECT jsonb_pretty(jsonb_build_object(
+	  'company', jsonb_build_object(
+	    'id', c.id,
+	    'company_seq', c.company_seq,
+	    'employees', COALESCE((SELECT jsonb_agg(jsonb_build_object('id', e.id, 'epoch', e.epoch) ORDER BY e.id)
+	      FROM employees e WHERE e.company_id=c.id), '[]'::jsonb)
+	  ),
+	  'mission', (SELECT jsonb_build_object('id',m.id,'title',m.title,'goal',m.goal,'state',m.state,'contract',m.contract,'acceptance_contract',m.acceptance_contract)
+	    FROM missions m WHERE m.company_id=c.id AND m.id='fed04f193f1bc6afebf9c152832ccd76'),
+	  'tasks', COALESCE((SELECT jsonb_agg(jsonb_build_object('id',t.id,'mission_id',t.mission_id,'kind',t.kind,'owner',t.owner,'state',t.state,'generation',t.generation)
+	    ORDER BY t.kind,t.id) FROM tasks t WHERE t.company_id=c.id AND t.mission_id='fed04f193f1bc6afebf9c152832ccd76'), '[]'::jsonb),
+	  'task_validation_bindings', COALESCE((SELECT jsonb_agg(jsonb_build_object('task_id',v.task_id,'mission_id',v.mission_id,'acceptance_revision',v.acceptance_revision,'runner_kind',v.runner_kind,'runner_revision',v.runner_revision,'configuration_digest',v.configuration_digest,'contract',v.contract)
+	    ORDER BY v.task_id) FROM task_validation_bindings v WHERE v.company_id=c.id AND v.mission_id='fed04f193f1bc6afebf9c152832ccd76'), '[]'::jsonb),
+	  'workspaces', COALESCE((SELECT jsonb_agg(jsonb_build_object('task_id',w.task_id,'digest',w.digest,'revision',w.revision) ORDER BY w.task_id)
+	    FROM worker_workspaces w JOIN tasks t ON t.company_id=w.company_id AND t.id=w.task_id
+	    WHERE w.company_id=c.id AND t.mission_id='fed04f193f1bc6afebf9c152832ccd76'), '[]'::jsonb),
+	  'worker_sessions', COALESCE((SELECT jsonb_agg(jsonb_build_object('id',s.id,'task_id',s.task_id,'employee_id',s.employee_id,'profile',s.profile,'state',s.state,'epoch',s.epoch,'incarnation',s.incarnation,'process_pid',s.process_pid,'stop_receipt',s.stop_receipt,'tool_call_limit',s.tool_call_limit,'tool_calls_used',s.tool_calls_used)
+	    ORDER BY s.id) FROM worker_sessions s JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+	    WHERE s.company_id=c.id AND t.mission_id='fed04f193f1bc6afebf9c152832ccd76'), '[]'::jsonb),
+	  'checks', COALESCE((SELECT jsonb_agg(jsonb_build_object('id',q.id,'session_id',q.session_id,'digest',q.digest,'phase',q.phase,'passed',q.passed,'report',q.report) ORDER BY q.id)
+	    FROM worker_checks q JOIN worker_sessions s ON s.company_id=q.company_id AND s.id=q.session_id
+	    JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+	    WHERE q.company_id=c.id AND t.mission_id='fed04f193f1bc6afebf9c152832ccd76'), '[]'::jsonb),
+	  'checkpoints', COALESCE((SELECT jsonb_agg(jsonb_build_object('id',q.id,'session_id',q.session_id,'digest',q.digest,'data',q.data) ORDER BY q.id)
+	    FROM worker_checkpoints q JOIN worker_sessions s ON s.company_id=q.company_id AND s.id=q.session_id
+	    JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+	    WHERE q.company_id=c.id AND t.mission_id='fed04f193f1bc6afebf9c152832ccd76'), '[]'::jsonb),
+	  'artifacts', COALESCE((SELECT jsonb_agg(jsonb_build_object('id',a.id,'task_id',a.task_id,'digest',a.digest,'state',a.state,'verdict',a.verdict,'contract',a.contract) ORDER BY a.id)
+	    FROM artifacts a WHERE a.company_id=c.id AND a.task_id IN (SELECT t.id FROM tasks t WHERE t.company_id=c.id AND t.mission_id=:'mission)), '[]'::jsonb),
+	  'artifact_qualifications', COALESCE((SELECT jsonb_agg(jsonb_build_object('task_id',q.task_id,'artifact_id',q.artifact_id,'checkpoint_id',q.checkpoint_id,'check_id',q.check_id,'session_id',q.session_id,'validation_binding_digest',q.validation_binding_digest,'workspace_digest',q.workspace_digest,'workspace_revision',q.workspace_revision,'runner_revision',q.runner_revision) ORDER BY q.task_id)
+	    FROM task_validation_artifact_qualifications q WHERE q.company_id=c.id AND q.task_id IN (SELECT t.id FROM tasks t WHERE t.company_id=c.id AND t.mission_id=:'mission)), '[]'::jsonb),
+	  'provider_terminal_observations', COALESCE((SELECT jsonb_agg(jsonb_build_object('session_id',s.id,'data',o.data) ORDER BY o.id)
+	    FROM worker_observations o JOIN worker_sessions s ON s.company_id=o.company_id AND s.id=o.session_id
+	    JOIN tasks t ON t.company_id=s.company_id AND t.id=s.task_id
+	    WHERE o.company_id=c.id AND o.reason='provider_terminal' AND t.mission_id='fed04f193f1bc6afebf9c152832ccd76'), '[]'::jsonb),
+	  'activity', COALESCE((SELECT jsonb_agg(jsonb_build_object('company_seq',e.company_seq,'kind',e.kind,'payload',e.payload) ORDER BY e.company_seq)
+	    FROM events e WHERE e.company_id=c.id), '[]'::jsonb)
+	))
+	FROM companies c WHERE c.id='r05b-live-2';
+2026-09-17 18:50:17.595 CST [26388] LOG:  checkpoint starting: time
+2026-09-17 18:50:18.712 CST [26388] LOG:  checkpoint complete: wrote 11 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=1.103 s, sync=0.004 s, total=1.117 s; sync files=10, longest=0.002 s, average=0.001 s; distance=33 kB, estimate=5211 kB; lsn=0/1D05738, redo lsn=0/1D056E0
+2026-09-17 18:55:45.550 CST [26388] LOG:  checkpoint starting: time
+2026-09-17 18:55:49.876 CST [26388] LOG:  checkpoint complete: wrote 43 buffers (0.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=4.307 s, sync=0.007 s, total=4.327 s; sync files=31, longest=0.003 s, average=0.001 s; distance=43 kB, estimate=4694 kB; lsn=0/1D10458, redo lsn=0/1D10400
+2026-09-17 19:12:05.357 CST [26388] LOG:  checkpoint starting: time
+2026-09-17 19:12:09.705 CST [26388] LOG:  checkpoint complete: wrote 14 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=4.333 s, sync=0.010 s, total=4.349 s; sync files=15, longest=0.007 s, average=0.001 s; distance=24 kB, estimate=4227 kB; lsn=0/1D164E8, redo lsn=0/1D16490
+2026-09-17 19:25:45.151 CST [26384] LOG:  received fast shutdown request
+2026-09-17 19:25:45.153 CST [26384] LOG:  aborting any active transactions
+2026-09-17 19:25:45.154 CST [26384] LOG:  background worker "logical replication launcher" (PID 26393) exited with exit code 1
+2026-09-17 19:25:45.155 CST [26388] LOG:  shutting down
+2026-09-17 19:25:45.156 CST [26388] LOG:  checkpoint starting: shutdown immediate
+2026-09-17 19:25:45.164 CST [26388] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 0 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.010 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=3804 kB; lsn=0/1D16598, redo lsn=0/1D16598
+2026-09-17 19:25:45.173 CST [26384] LOG:  database system is shut down

@@ -1,0 +1,9 @@
+{
+  "record_type": "polis-product-diagnostic-duplicate-guard@1",
+  "authorization_id": "r0.5b10-live-canary-1",
+  "prior_reservation_number": 1,
+  "second_reservation_status": "DENIED",
+  "second_provider_process_started": false,
+  "second_provider_egress": 0,
+  "checked_at": "2026-09-19T19:58:43.0715406Z"
+}

@@ -1,0 +1,187 @@
+{
+  "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+  "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+  "auth_snapshot_used": false,
+  "bind_preflight_passed": true,
+  "bind_report": {
+    "passed": true,
+    "host_home_path": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+    "guest_home_path": "/home/codex",
+    "host_home_path_is_host": true,
+    "guest_home_path_is_guest": true,
+    "sources": [
+      {
+        "host_path": "/usr",
+        "guest_path": "/usr",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/lib",
+        "guest_path": "/lib",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/lib64",
+        "guest_path": "/lib64",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/etc/ssl",
+        "guest_path": "/etc/ssl",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/etc/resolv.conf",
+        "guest_path": "/etc/resolv.conf",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/etc/hosts",
+        "guest_path": "/etc/hosts",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+        "guest_path": "/home/codex",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/d/Programs/Polis/.tools/codex-linux-0.153.4/package/vendor/x86_64-unknown-linux-musl/bin/codex",
+        "guest_path": "/codex",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/c/Users/chyinan/.codex/auth.json",
+        "guest_path": "/home/codex/auth.json",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/d/Programs/Polis/.tools/codex-linux-0.153.4/package/vendor/x86_64-unknown-linux-musl/bin/codex-code-mode-host",
+        "guest_path": "/codex-code-mode-host",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      }
+    ],
+    "guest_targets": [
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc/ssl",
+      "/etc/resolv.conf",
+      "/etc/hosts",
+      "/home/codex",
+      "/codex",
+      "/home/codex/auth.json",
+      "/codex-code-mode-host"
+    ],
+    "launch_home_binding": true,
+    "no_guest_source_conflation": true
+  },
+  "canonical_manifest_digest": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+  "derivation_schema_version": "effective-execution-config-v1",
+  "derived_for_cross_schema_comparison_only": true,
+  "fingerprint_schema_version": "canonical-manifest-v3",
+  "guest_home_path": "/home/codex",
+  "host_home_path": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+  "launch_config_digest": "e808305f1065f404996a150f394eeb3f13dc4b37080d122d163d11b73a028fd7",
+  "medium_calls": 0,
+  "model_calls": 0,
+  "offline_regression_passed": true,
+  "passed": true,
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "provider_egress": 0,
+  "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+  "status": "preflight_passed",
+  "t13_control_reexpressed_v3": true,
+  "t13_t14c_factor_diff": {
+    "auth_comparison": {
+      "source_class": "SAME",
+      "identity": "SAME",
+      "credential_revision": "SAME",
+      "strict_experiment_comparable": true,
+      "incomparable_fingerprint_types": false
+    },
+    "changed_fields": [
+      "combination.capability_digest",
+      "transport.provider_transport_policy",
+      "transport.websocket_policy"
+    ],
+    "corrected_host_guest_mapping_is_equivalent": true,
+    "derived_for_cross_schema_comparison_only": true,
+    "non_transport_divergence": null,
+    "passed": true,
+    "t13_control_reexpressed_v3_fingerprint": "ea49b5df52d7923a520cd80f053ba3f6a055698121e3985cdd51eb58b2d9cbd3",
+    "t13_host_guest_mapping": {
+      "current_guest_home": "/home/codex",
+      "current_host_home_source": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+      "equivalence_basis": "T13 native initialize/readiness observed guest /home/codex and /work; T14C uses the same guest targets with a distinct host source path",
+      "historical_t13_guest_codex_home_observed": true,
+      "historical_t13_guest_cwd_observed": true,
+      "host_guest_namespace_separated": true
+    },
+    "t13_v2_control_fingerprint": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+    "t14c_native_default_v3_fingerprint": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+    "transport_policy": {
+      "candidate_provider_transport_policy": "native_default",
+      "candidate_websocket_policy": "native_default",
+      "control_provider_transport_policy": "explicitly_disabled",
+      "control_websocket_policy": "explicitly_disabled"
+    },
+    "unchanged_fields": [
+      "auth identity",
+      "credential revision",
+      "runtime",
+      "sandbox",
+      "proxy environment",
+      "HOME/CODEX_HOME semantics",
+      "model",
+      "effort",
+      "dynamic tools",
+      "developer instruction",
+      "prompt",
+      "deadlines",
+      "stop semantics",
+      "host/guest mapping semantics"
+    ]
+  }
+}

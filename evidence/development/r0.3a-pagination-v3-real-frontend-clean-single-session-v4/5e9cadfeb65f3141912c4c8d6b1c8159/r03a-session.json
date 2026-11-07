@@ -1,0 +1,45 @@
+{
+  "number": 1,
+  "employee": "emp-frontend",
+  "purpose": "pagination V3 Frontend single-session employee",
+  "profile": "gpt-5.6-luna/medium",
+  "status": "failed",
+  "started": "2026-09-15T07:46:29.178684127Z",
+  "finished": "2026-09-15T07:46:29.641144124Z",
+  "duration_ms": 462,
+  "native_duration_ms": 0,
+  "process_started": true,
+  "initialize_completed": false,
+  "thread_started": false,
+  "turn_started": false,
+  "provider_egress": false,
+  "turn_completed": false,
+  "epoch": 4,
+  "incarnation": "55014b3247dc7d8d680b6988e2d8afb6",
+  "tool_calls_used": 0,
+  "tool_calls_remaining": 48,
+  "tool_events": null,
+  "receipts": null,
+  "stop_receipt": "process-group:853:waited",
+  "stop_confirmed": true,
+  "token_usage": {
+    "total": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    },
+    "last": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    }
+  },
+  "native_usage_updates": 0,
+  "error": "outcome_unknown: transport: EOF"
+}

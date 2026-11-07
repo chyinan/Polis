@@ -1,0 +1,224 @@
+{
+    "meta":  {
+                 "schemaVersion":  2,
+                 "companyId":  "r05b-live-1",
+                 "entityRevision":  "company-seq:1",
+                 "snapshotCursor":  "company-seq:1",
+                 "observedAt":  "2026-09-17T05:53:12.5317145Z",
+                 "dataMode":  "real",
+                 "freshness":  "fresh",
+                 "sourceLabel":  "PostgreSQL runtime read model"
+             },
+    "company":  {
+                    "companyId":  "r05b-live-1",
+                    "name":  "r05b-live-1",
+                    "description":  "runtime company scope from PostgreSQL"
+                },
+    "mission":  {
+                    "missionId":  "4f000865902ec201d528c8ce3a039798",
+                    "title":  "R0.5B LIVE_1 Product Smoke",
+                    "goal":  "Create one concise Markdown artifact in the current Task workspace that contains each public acceptance line verbatim, with the Mission ID and Task ID placeholders resolved.",
+                    "state":  "draft",
+                    "contract":  "r0-arithmetic@1",
+                    "acceptanceContract":  {
+                                               "revision":  "text-acceptance@1",
+                                               "required_text":  [
+                                                                     "Mission ID: {{mission_id}}",
+                                                                     "Task ID: {{task_id}}",
+                                                                     "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+                                                                     "Task summary: This artifact records one small product integration smoke."
+                                                                 ]
+                                           },
+                    "currentContractRevision":  null,
+                    "nextMilestone":  "不可得",
+                    "verifiedMilestones":  "0",
+                    "milestoneTotal":  "0",
+                    "milestones":  [
+
+                                   ]
+                },
+    "team":  {
+                 "total":  "4",
+                 "working":  "0",
+                 "sleeping":  "4",
+                 "waiting":  "0",
+                 "stopped":  "0"
+             },
+    "employees":  [
+                      {
+                          "employeeId":  "emp-backend",
+                          "displayName":  "emp-backend",
+                          "role":  "Backend Employee",
+                          "roleRevision":  null,
+                          "epoch":  "1",
+                          "sessionId":  null,
+                          "sessionState":  null,
+                          "profile":  null,
+                          "currentTask":  null,
+                          "status":  {
+                                         "primary":  "sleeping",
+                                         "tone":  "neutral",
+                                         "reason":  "no active WorkerSession",
+                                         "activeModelRequests":  "不可得",
+                                         "inFlightTools":  "不可得",
+                                         "observedAt":  "2026-09-17T05:53:12.5317145Z"
+                                     },
+                          "toolBudget":  {
+                                             "limit":  null,
+                                             "used":  null,
+                                             "remaining":  null,
+                                             "quality":  "unavailable"
+                                         },
+                          "qualification":  {
+                                                "status":  "unverified",
+                                                "evidenceId":  null,
+                                                "policyRevision":  null
+                                            },
+                          "openObligationCount":  "0"
+                      },
+                      {
+                          "employeeId":  "emp-frontend",
+                          "displayName":  "emp-frontend",
+                          "role":  "Frontend Employee",
+                          "roleRevision":  null,
+                          "epoch":  "1",
+                          "sessionId":  null,
+                          "sessionState":  null,
+                          "profile":  null,
+                          "currentTask":  null,
+                          "status":  {
+                                         "primary":  "sleeping",
+                                         "tone":  "neutral",
+                                         "reason":  "no active WorkerSession",
+                                         "activeModelRequests":  "不可得",
+                                         "inFlightTools":  "不可得",
+                                         "observedAt":  "2026-09-17T05:53:12.5317145Z"
+                                     },
+                          "toolBudget":  {
+                                             "limit":  null,
+                                             "used":  null,
+                                             "remaining":  null,
+                                             "quality":  "unavailable"
+                                         },
+                          "qualification":  {
+                                                "status":  "unverified",
+                                                "evidenceId":  null,
+                                                "policyRevision":  null
+                                            },
+                          "openObligationCount":  "0"
+                      },
+                      {
+                          "employeeId":  "emp-planning",
+                          "displayName":  "emp-planning",
+                          "role":  "Planning Employee",
+                          "roleRevision":  null,
+                          "epoch":  "1",
+                          "sessionId":  null,
+                          "sessionState":  null,
+                          "profile":  null,
+                          "currentTask":  null,
+                          "status":  {
+                                         "primary":  "sleeping",
+                                         "tone":  "neutral",
+                                         "reason":  "no active WorkerSession",
+                                         "activeModelRequests":  "不可得",
+                                         "inFlightTools":  "不可得",
+                                         "observedAt":  "2026-09-17T05:53:12.5317145Z"
+                                     },
+                          "toolBudget":  {
+                                             "limit":  null,
+                                             "used":  null,
+                                             "remaining":  null,
+                                             "quality":  "unavailable"
+                                         },
+                          "qualification":  {
+                                                "status":  "unverified",
+                                                "evidenceId":  null,
+                                                "policyRevision":  null
+                                            },
+                          "openObligationCount":  "0"
+                      },
+                      {
+                          "employeeId":  "emp-review",
+                          "displayName":  "emp-review",
+                          "role":  "Review Employee",
+                          "roleRevision":  null,
+                          "epoch":  "1",
+                          "sessionId":  null,
+                          "sessionState":  null,
+                          "profile":  null,
+                          "currentTask":  null,
+                          "status":  {
+                                         "primary":  "sleeping",
+                                         "tone":  "neutral",
+                                         "reason":  "no active WorkerSession",
+                                         "activeModelRequests":  "不可得",
+                                         "inFlightTools":  "不可得",
+                                         "observedAt":  "2026-09-17T05:53:12.5317145Z"
+                                     },
+                          "toolBudget":  {
+                                             "limit":  null,
+                                             "used":  null,
+                                             "remaining":  null,
+                                             "quality":  "unavailable"
+                                         },
+                          "qualification":  {
+                                                "status":  "unverified",
+                                                "evidenceId":  null,
+                                                "policyRevision":  null
+                                            },
+                          "openObligationCount":  "0"
+                      }
+                  ],
+    "tasks":  [
+
+              ],
+    "obligations":  [
+
+                    ],
+    "artifacts":  [
+
+                  ],
+    "resources":  {
+                      "toolCallsUsed":  "不可得",
+                      "toolCallsLimit":  "不可得",
+                      "toolBudgetQuality":  "unavailable",
+                      "moneyQuality":  "unavailable",
+                      "moneyAmount":  null,
+                      "currency":  null,
+                      "asOf":  "2026-09-17T05:53:12.5317145Z",
+                      "note":  "money and token usage are not exposed by this read model"
+                  },
+    "attention":  [
+
+                  ],
+    "recentActivity":  [
+                           {
+                               "id":  "r05b-live-1:1",
+                               "companySeq":  "1",
+                               "occurredAt":  "2026-09-17T05:48:41.2639576Z",
+                               "kind":  "mission_created",
+                               "actor":  {
+                                             "kind":  "system",
+                                             "id":  "runtime",
+                                             "label":  "Polis runtime"
+                                         },
+                               "subject":  {
+                                               "kind":  "mission",
+                                               "id":  "4f000865902ec201d528c8ce3a039798",
+                                               "label":  "mission.create"
+                                           },
+                               "summary":  "mission.create",
+                               "detail":  "authoritative company_seq=1; runtime event kind=mission.create",
+                               "tone":  "info",
+                               "evidenceRefs":  [
+
+                                                ],
+                               "metadata":  {
+                                                "observed":  "false",
+                                                "runtimeKind":  "mission.create",
+                                                "subjectId":  "4f000865902ec201d528c8ce3a039798"
+                                            }
+                           }
+                       ]
+}

@@ -1,0 +1,3 @@
+postgres_stopped=true
+cluster_removed=true
+removed_path=/tmp/polis-r05b-live-1-pg.G1MubB

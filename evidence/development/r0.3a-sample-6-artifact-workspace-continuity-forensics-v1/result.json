@@ -1,0 +1,50 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-ARTIFACT-WORKSPACE-CONTINUITY-FORENSICS",
+  "status": "PASSED",
+  "package_integrity": {
+    "package_generation_id": "r03a-sample-6-recovery-20260914T150111Z-307",
+    "dump_hash": "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+    "cas_manifest_hash": "9a7d103f56f9dd7300ba10bd88d337cafd286dbcd09177c483f4129125a7ff0f",
+    "continuation_manifest_hash": "c9dd09e74d0f21214253ed704d9bb3b1b25ef2c6fa5902f2743d20c17133a4b8",
+    "required_cas_blobs": 4,
+    "cas_digests_exact": true,
+    "package_files_unchanged": true
+  },
+  "failed_restore_specimen": {
+    "fresh_cluster_inspected_read_only": true,
+    "source_cluster_id": "7685325910591533502",
+    "fresh_cluster_id_different": true,
+    "source_state_export": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6-final-recovery-continuation-v5/work/source-state.json",
+    "restored_state_export": "/home/chyinan/.local/state/polis-recovery/r03a-sample-6-final-recovery-continuation-v5/work/restored-state.json"
+  },
+  "continuity_matrix": {
+    "artifact_id": {"expected": "f73981340227622e9c16dbf45e961a3f", "actual": "f73981340227622e9c16dbf45e961a3f", "source_of_expected": "recovery_anchors/package", "source_of_actual": "restored_database", "result": "PASS"},
+    "artifact_digest": {"expected": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "actual": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "source_of_expected": "recovery_anchors/CAS_manifest", "source_of_actual": "restored_database/CAS", "result": "PASS"},
+    "artifact_workspace_binding": {"expected_revision": 3, "actual_revision": 3, "expected_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "actual_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "result": "PASS"},
+    "current_backend_workspace": {"expected_task_id": "dff11354ffe0afc1b93e8565dc5bb026", "actual_task_id": "dff11354ffe0afc1b93e8565dc5bb026", "expected_revision": 3, "actual_revision": 3, "expected_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "actual_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "result": "PASS"},
+    "qualified_checkpoint_binding": {"checkpoint_id": "13164a801bac0760050c5f456bfd3f82", "workspace_revision": 3, "workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "contract_revision_id": "92566d902cd328c0b694ef32188dabf5", "result": "PASS"},
+    "artifact_qualification_binding": {"artifact_id": "f73981340227622e9c16dbf45e961a3f", "checkpoint_id": "13164a801bac0760050c5f456bfd3f82", "workspace_revision": 3, "workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672", "contract_revision_id": "92566d902cd328c0b694ef32188dabf5", "result": "PASS"},
+    "artifact_storage_state": {"expected_by_current_schema": {"state": "ready", "verdict": "candidate"}, "actual": {"state": "ready", "verdict": "candidate"}, "result": "PASS"},
+    "cas_blob_binding": {"required_count": 4, "present_count": 4, "digest_match_count": 4, "artifact_blob_exact": true, "result": "PASS"}
+  },
+  "verifier_failure": {
+    "verifier": "VerifyR03APaginationV3BackendRestore",
+    "predicate": "artifact.State == candidate",
+    "expected_by_verifier": {"artifact_state": "candidate"},
+    "actual_schema_state": {"artifact_state": "ready", "artifact_verdict": "candidate"},
+    "source_of_expected": "continuity verifier implementation",
+    "source_of_actual": "restored database and package state export",
+    "result": "PREDICATE_MISMATCH"
+  },
+  "dump_relation_status": "EXACT",
+  "restored_relation_status": "EXACT",
+  "CAS_relation_status": "EXACT",
+  "classification": "CONTINUITY_VERIFIER_DEFECT",
+  "package_contains_sufficient_authoritative_state": true,
+  "recovery_package_complete_predicate_sound": false,
+  "sample_6_recovery_salvageable": true,
+  "new_backend_sample_required": false,
+  "eligible_for_restore_continuation": "CONDITIONAL_ON_LOCAL_VERIFIER_HARDENING_AND_REQUALIFICATION",
+  "historical_evidence_modified": false,
+  "provider_egress": 0
+}

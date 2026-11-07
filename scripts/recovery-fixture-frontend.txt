@@ -1,0 +1,7 @@
+package frontend
+
+func ConsumeItems(body string) string {
+	return "items"
+}
+
+// contract-v1

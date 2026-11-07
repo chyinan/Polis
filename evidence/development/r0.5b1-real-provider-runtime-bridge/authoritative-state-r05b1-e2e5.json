@@ -1,0 +1,24 @@
+{
+  "schema_version": 6,
+  "database": "polis_r0_r05b1_e2e5_20260917",
+  "company_id": "r05b1-e2e-company",
+  "mission": {"id": "51b7a0ce3bcd1e4ddc6c9bf9007845bb", "state": "active", "title": "R0.5B1 offline provider bridge", "goal": "persist one product artifact through the provider runtime seam"},
+  "tasks": [
+    {"id": "45faf8ef86ca39823a8fdb2556c69a9b", "owner": "emp-planning", "kind": "bootstrap_plan", "state": "completed", "generation": 0},
+    {"id": "502c072c558c79adbd3f3fe1a6a9bb6d", "owner": "emp-backend", "kind": "compat", "state": "candidate", "generation": 1}
+  ],
+  "worker_sessions": [{"id": "9e66a1c43df794e807c81cfbf67e6475", "employee_id": "emp-backend", "task_id": "502c072c558c79adbd3f3fe1a6a9bb6d", "state": "stopped", "profile": "offline-model/medium", "stop_receipt": "process-group:12571:waited"}],
+  "artifacts": [{"id": "bfa42e71e7ffd47c1e0c9d899eed4a03", "task_id": "502c072c558c79adbd3f3fe1a6a9bb6d", "state": "ready", "verdict": "candidate", "digest": "820ca576d94e7adfd1affadee2553891b578e80f4d072272f5eb68de018cea73"}],
+  "provider_terminal_observations": [{
+    "state": "completed", "outcome": "PROVIDER_TERMINAL", "tool_calls": 5, "provider_egress": 0,
+    "authorization": {
+      "CompanyID": "r05b1-e2e-company", "MissionID": "51b7a0ce3bcd1e4ddc6c9bf9007845bb", "TaskID": "502c072c558c79adbd3f3fe1a6a9bb6d", "EmployeeID": "emp-backend", "EmployeeRole": "backend", "SessionID": "9e66a1c43df794e807c81cfbf67e6475", "Epoch": 3, "Incarnation": "fd89c20c2816bc53dc45c926efbba418", "Model": "offline-model", "Profile": "offline-model/medium", "Effort": "medium", "ProviderMode": "fake", "Purpose": "product-artifact", "ToolSurfaceDigest": "730b9b2aba9de7ca015e800b1a597de37a22bd0c299dc7ad10e022c8399388d9", "ToolSurfaceQualification": "polis-product-tool-surface@1", "ExecutionEnvelope": "polis-product-offline-runtime@1", "TransportPolicyRevision": "r03a-transport-policy@1", "ToolCallLimit": 16
+    }
+  }],
+  "events": ["controller.recovered", "mission.create", "mission.start", "mission.task.prepare", "worker.restore", "worker.process_attached", "worker.validating", "worker.activation_pending_environment", "worker.active", "worker.tool_call", "worker.tool_call", "workspace.replace", "worker.tool_call", "workspace.check", "worker.tool_call", "work.checkpoint", "worker.tool_call", "artifact.stage", "artifact.submit", "provider.turn.completed", "worker.stopping", "worker.stopped"],
+  "live_worker_sessions": 0,
+  "provider_reservation": 0,
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0
+}

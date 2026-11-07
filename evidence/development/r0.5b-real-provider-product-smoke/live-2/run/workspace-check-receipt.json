@@ -1,0 +1,22 @@
+{
+  "id": "5d571cd58e6dc80707aa66171a1aff5f",
+  "phase": "product",
+  "digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+  "passed": true,
+  "report": {
+    "epoch": 3,
+    "status": "PASS",
+    "task_id": "5b39875f8dc6463f36395b04e4504407",
+    "feedback": "All public required-text criteria are present in the current Task workspace.",
+    "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+    "session_id": "f3a7f944f2749750becda51ad9d0e5bb",
+    "reason_code": "all_required_text_present",
+    "runner_kind": "text_contains_all",
+    "runner_revision": "text-contains-all@1",
+    "workspace_digest": "562b5c53a66e9e5c8e326d8d5d13a55cbf56504ea70ac1b085b5a7a4efd805f2",
+    "workspace_revision": 2,
+    "acceptance_revision": "text-acceptance@1",
+    "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+  },
+  "session_id": "f3a7f944f2749750becda51ad9d0e5bb"
+}

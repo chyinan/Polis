@@ -1,0 +1,59 @@
+{
+  "EmployeeID": "emp-frontend",
+  "TaskID": "3243c57410762f2cd8b666e3ad35c8c9",
+  "WorkspaceDigest": "c9f13d62fc208dfe2152af28891ef782f566a9fbb4ffdf171422bfedb242980c",
+  "ContractRevisionID": "4f57c71061c10ab5a78f632d8db59321",
+  "MessageID": "7d027b5a8fd2267a68b364e47f4635ca",
+  "ObligationID": "7d027b5a8fd2267a68b364e47f4635ca",
+  "MessageState": "applied",
+  "ObligationState": "applied",
+  "WorkspaceRevision": 2,
+  "Checkpoints": [
+    {
+      "acceptance_checker_revision": "peer-semantic-checker@3",
+      "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+      "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+      "contract_supersession_policy_revision": "peer-contract-supersession@2",
+      "finalization_state": "not_qualified",
+      "kind": "progress",
+      "summary": "Applied the accepted cursor contract to the persisted frontend workspace, but semantic checking found the response consumer incomplete.",
+      "facts": [
+        "Workspace revision 2 persisted with digest c9f13d62fc208dfe2152af28891ef782f566a9fbb4ffdf171422bfedb242980c.",
+        "Candidate syntax is valid.",
+        "Accepted response shape requires items array and next_cursor string|null."
+      ],
+      "decisions": [
+        "Use GET /items?cursor={cursor}\u0026limit={limit}.",
+        "Render items[].id/name and advance pagination from next_cursor; null ends paging."
+      ],
+      "rejected": [
+        "Do not submit an artifact.",
+        "Do not resolve the obligation.",
+        "Current candidate is not semantically complete because items and next_cursor are not both consumed."
+      ],
+      "evidence_refs": [
+        "c9f13d62fc208dfe2152af28891ef782f566a9fbb4ffdf171422bfedb242980c",
+        "7d027b5a8fd2267a68b364e47f4635ca",
+        "1562cf1670d108167fd7974fc3244a3e"
+      ],
+      "workspace_digest": "c9f13d62fc208dfe2152af28891ef782f566a9fbb4ffdf171422bfedb242980c",
+      "workspace_revision": 2,
+      "contract_revision_id": "4f57c71061c10ab5a78f632d8db59321",
+      "failed_checks": [
+        "response_shape_compatibility: response_shape_mismatch"
+      ],
+      "pending_message_id": "7d027b5a8fd2267a68b364e47f4635ca",
+      "pending_message_state": "applied",
+      "pending_obligation_id": "7d027b5a8fd2267a68b364e47f4635ca",
+      "pending_obligation_state": "applied",
+      "session_id": "a300088a9d514a9c85e7beff5399ace9",
+      "epoch": 3,
+      "next_action": "Update the response consumer to consume both items and next_cursor, then rerun workspace_check."
+    }
+  ],
+  "ToolBudget": {
+    "tool_call_limit": 48,
+    "tool_calls_used": 0,
+    "tool_calls_remaining": 48
+  }
+}

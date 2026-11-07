@@ -1,0 +1,145 @@
+;
+; Archive created at 2026-09-14 23:01:42 CST
+;     dbname: polis_r0_3a_pagination_v3_backend_20260914174837_31960
+;     TOC Entries: 134
+;     Compression: gzip
+;     Dump Version: 1.16-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 18.6 (Ubuntu 18.6-1.pgdg22.04+2)
+;     Dumped by pg_dump version: 18.6 (Ubuntu 18.6-1.pgdg22.04+2)
+;
+;
+; Selected TOC Entries:
+;
+242; 1259 16961 TABLE public artifact_qualifications chyinan
+228; 1259 16568 TABLE public artifact_staging chyinan
+227; 1259 16528 TABLE public artifacts chyinan
+222; 1259 16408 TABLE public companies chyinan
+237; 1259 16782 TABLE public contract_revisions chyinan
+223; 1259 16420 TABLE public employees chyinan
+231; 1259 16645 TABLE public events chyinan
+220; 1259 16387 TABLE public goose_db_version chyinan
+219; 1259 16386 SEQUENCE public goose_db_version_id_seq chyinan
+240; 1259 16883 TABLE public integration_candidates chyinan
+226; 1259 16491 TABLE public messages chyinan
+224; 1259 16438 TABLE public missions chyinan
+229; 1259 16592 TABLE public obligations chyinan
+238; 1259 16823 TABLE public peer_work_signals chyinan
+230; 1259 16627 TABLE public receipts chyinan
+241; 1259 16920 TABLE public review_records chyinan
+221; 1259 16397 TABLE public runtime_control chyinan
+239; 1259 16854 TABLE public task_revisions chyinan
+225; 1259 16459 TABLE public tasks chyinan
+235; 1259 16737 TABLE public worker_checkpoints chyinan
+234; 1259 16717 TABLE public worker_checks chyinan
+236; 1259 16754 TABLE public worker_observations chyinan
+232; 1259 16670 TABLE public worker_sessions chyinan
+233; 1259 16699 TABLE public worker_workspaces chyinan
+3633; 0 16961 TABLE DATA public artifact_qualifications chyinan
+3619; 0 16568 TABLE DATA public artifact_staging chyinan
+3618; 0 16528 TABLE DATA public artifacts chyinan
+3613; 0 16408 TABLE DATA public companies chyinan
+3628; 0 16782 TABLE DATA public contract_revisions chyinan
+3614; 0 16420 TABLE DATA public employees chyinan
+3622; 0 16645 TABLE DATA public events chyinan
+3611; 0 16387 TABLE DATA public goose_db_version chyinan
+3631; 0 16883 TABLE DATA public integration_candidates chyinan
+3617; 0 16491 TABLE DATA public messages chyinan
+3615; 0 16438 TABLE DATA public missions chyinan
+3620; 0 16592 TABLE DATA public obligations chyinan
+3629; 0 16823 TABLE DATA public peer_work_signals chyinan
+3621; 0 16627 TABLE DATA public receipts chyinan
+3632; 0 16920 TABLE DATA public review_records chyinan
+3612; 0 16397 TABLE DATA public runtime_control chyinan
+3630; 0 16854 TABLE DATA public task_revisions chyinan
+3616; 0 16459 TABLE DATA public tasks chyinan
+3626; 0 16737 TABLE DATA public worker_checkpoints chyinan
+3625; 0 16717 TABLE DATA public worker_checks chyinan
+3627; 0 16754 TABLE DATA public worker_observations chyinan
+3623; 0 16670 TABLE DATA public worker_sessions chyinan
+3624; 0 16699 TABLE DATA public worker_workspaces chyinan
+3640; 0 0 SEQUENCE SET public goose_db_version_id_seq chyinan
+3419; 2606 16978 CONSTRAINT public artifact_qualifications artifact_qualifications_pkey chyinan
+3377; 2606 16581 CONSTRAINT public artifact_staging artifact_staging_company_id_task_id_key chyinan
+3379; 2606 16579 CONSTRAINT public artifact_staging artifact_staging_pkey chyinan
+3373; 2606 16552 CONSTRAINT public artifacts artifacts_company_id_task_id_key chyinan
+3375; 2606 16550 CONSTRAINT public artifacts artifacts_pkey chyinan
+3356; 2606 16419 CONSTRAINT public companies companies_pkey chyinan
+3401; 2606 16802 CONSTRAINT public contract_revisions contract_revisions_company_id_mission_id_revision_key chyinan
+3403; 2606 16800 CONSTRAINT public contract_revisions contract_revisions_pkey chyinan
+3358; 2606 16432 CONSTRAINT public employees employees_pkey chyinan
+3388; 2606 16657 CONSTRAINT public events events_pkey chyinan
+3352; 2606 16396 CONSTRAINT public goose_db_version goose_db_version_pkey chyinan
+3413; 2606 16899 CONSTRAINT public integration_candidates integration_candidates_pkey chyinan
+3370; 2606 16507 CONSTRAINT public messages messages_pkey chyinan
+3361; 2606 16452 CONSTRAINT public missions missions_pkey chyinan
+3381; 2606 16606 CONSTRAINT public obligations obligations_pkey chyinan
+3405; 2606 16838 CONSTRAINT public peer_work_signals peer_work_signals_company_id_message_id_key chyinan
+3407; 2606 16836 CONSTRAINT public peer_work_signals peer_work_signals_pkey chyinan
+3385; 2606 16639 CONSTRAINT public receipts receipts_pkey chyinan
+3415; 2606 16941 CONSTRAINT public review_records review_records_company_id_task_id_key chyinan
+3417; 2606 16939 CONSTRAINT public review_records review_records_pkey chyinan
+3354; 2606 16407 CONSTRAINT public runtime_control runtime_control_pkey chyinan
+3409; 2606 16872 CONSTRAINT public task_revisions task_revisions_company_id_task_id_revision_key chyinan
+3411; 2606 16870 CONSTRAINT public task_revisions task_revisions_pkey chyinan
+3364; 2606 16479 CONSTRAINT public tasks tasks_company_id_mission_id_kind_key chyinan
+3367; 2606 16477 CONSTRAINT public tasks tasks_pkey chyinan
+3397; 2606 16748 CONSTRAINT public worker_checkpoints worker_checkpoints_pkey chyinan
+3395; 2606 16731 CONSTRAINT public worker_checks worker_checks_pkey chyinan
+3399; 2606 16765 CONSTRAINT public worker_observations worker_observations_pkey chyinan
+3391; 2606 16687 CONSTRAINT public worker_sessions worker_sessions_pkey chyinan
+3393; 2606 16711 CONSTRAINT public worker_workspaces worker_workspaces_pkey chyinan
+3359; 1259 16458 INDEX public company_mission_slot chyinan
+3362; 1259 16490 INDEX public employee_work_slot chyinan
+3386; 1259 16666 INDEX public events_pending chyinan
+3368; 1259 16664 INDEX public messages_mission chyinan
+3382; 1259 16665 INDEX public obligations_task chyinan
+3389; 1259 16698 INDEX public one_live_worker chyinan
+3371; 1259 16952 INDEX public peer_messages_recipient chyinan
+3383; 1259 16953 INDEX public peer_obligations_owner chyinan
+3365; 1259 16663 INDEX public tasks_mission chyinan
+3460; 2606 16979 FK CONSTRAINT public artifact_qualifications artifact_qualifications_company_id_artifact_id_fkey chyinan
+3461; 2606 16984 FK CONSTRAINT public artifact_qualifications artifact_qualifications_company_id_checkpoint_id_fkey chyinan
+3462; 2606 16989 FK CONSTRAINT public artifact_qualifications artifact_qualifications_company_id_contract_revision_id_fkey chyinan
+3433; 2606 16582 FK CONSTRAINT public artifact_staging artifact_staging_company_id_task_id_fkey chyinan
+3430; 2606 16558 FK CONSTRAINT public artifacts artifacts_company_id_author_fkey chyinan
+3431; 2606 16553 FK CONSTRAINT public artifacts artifacts_company_id_task_id_fkey chyinan
+3432; 2606 16563 FK CONSTRAINT public artifacts artifacts_company_id_verifier_fkey chyinan
+3446; 2606 16813 FK CONSTRAINT public contract_revisions contract_revisions_company_id_accepter_fkey chyinan
+3447; 2606 16803 FK CONSTRAINT public contract_revisions contract_revisions_company_id_mission_id_fkey chyinan
+3448; 2606 16808 FK CONSTRAINT public contract_revisions contract_revisions_company_id_proposer_fkey chyinan
+3420; 2606 16433 FK CONSTRAINT public employees employees_company_id_fkey chyinan
+3439; 2606 16658 FK CONSTRAINT public events events_company_id_fkey chyinan
+3454; 2606 16905 FK CONSTRAINT public integration_candidates integration_candidates_company_id_backend_artifact_id_fkey chyinan
+3455; 2606 16915 FK CONSTRAINT public integration_candidates integration_candidates_company_id_contract_revision_id_fkey chyinan
+3456; 2606 16910 FK CONSTRAINT public integration_candidates integration_candidates_company_id_frontend_artifact_id_fkey chyinan
+3457; 2606 16900 FK CONSTRAINT public integration_candidates integration_candidates_company_id_mission_id_fkey chyinan
+3424; 2606 16818 FK CONSTRAINT public messages messages_company_id_contract_revision_id_fkey chyinan
+3425; 2606 16587 FK CONSTRAINT public messages messages_company_id_evidence_id_fkey chyinan
+3426; 2606 16508 FK CONSTRAINT public messages messages_company_id_mission_id_fkey chyinan
+3427; 2606 16523 FK CONSTRAINT public messages messages_company_id_recipient_fkey chyinan
+3428; 2606 16518 FK CONSTRAINT public messages messages_company_id_sender_fkey chyinan
+3429; 2606 16513 FK CONSTRAINT public messages messages_company_id_task_id_fkey chyinan
+3421; 2606 16453 FK CONSTRAINT public missions missions_company_id_fkey chyinan
+3434; 2606 16622 FK CONSTRAINT public obligations obligations_company_id_evidence_id_fkey chyinan
+3435; 2606 16607 FK CONSTRAINT public obligations obligations_company_id_id_fkey chyinan
+3436; 2606 16617 FK CONSTRAINT public obligations obligations_company_id_owner_fkey chyinan
+3437; 2606 16612 FK CONSTRAINT public obligations obligations_company_id_task_id_fkey chyinan
+3449; 2606 16839 FK CONSTRAINT public peer_work_signals peer_work_signals_company_id_message_id_fkey chyinan
+3450; 2606 16844 FK CONSTRAINT public peer_work_signals peer_work_signals_company_id_obligation_id_fkey chyinan
+3451; 2606 16849 FK CONSTRAINT public peer_work_signals peer_work_signals_company_id_recipient_fkey chyinan
+3438; 2606 16640 FK CONSTRAINT public receipts receipts_company_id_fkey chyinan
+3458; 2606 16947 FK CONSTRAINT public review_records review_records_company_id_integration_id_fkey chyinan
+3459; 2606 16942 FK CONSTRAINT public review_records review_records_company_id_task_id_fkey chyinan
+3452; 2606 16878 FK CONSTRAINT public task_revisions task_revisions_company_id_contract_revision_id_fkey chyinan
+3453; 2606 16873 FK CONSTRAINT public task_revisions task_revisions_company_id_task_id_fkey chyinan
+3422; 2606 16480 FK CONSTRAINT public tasks tasks_company_id_mission_id_fkey chyinan
+3423; 2606 16485 FK CONSTRAINT public tasks tasks_company_id_owner_fkey chyinan
+3444; 2606 16749 FK CONSTRAINT public worker_checkpoints worker_checkpoints_company_id_session_id_fkey chyinan
+3443; 2606 16732 FK CONSTRAINT public worker_checks worker_checks_company_id_session_id_fkey chyinan
+3445; 2606 16766 FK CONSTRAINT public worker_observations worker_observations_company_id_session_id_fkey chyinan
+3440; 2606 16688 FK CONSTRAINT public worker_sessions worker_sessions_company_id_employee_id_fkey chyinan
+3441; 2606 16693 FK CONSTRAINT public worker_sessions worker_sessions_company_id_task_id_fkey chyinan
+3442; 2606 16712 FK CONSTRAINT public worker_workspaces worker_workspaces_company_id_task_id_fkey chyinan

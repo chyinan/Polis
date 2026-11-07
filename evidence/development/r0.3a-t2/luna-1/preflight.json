@@ -1,0 +1,10 @@
+{
+  "high_limit": 0,
+  "medium_limit": 1,
+  "model_calls": 0,
+  "old_allowance": "sealed",
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "passed": true,
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "t1": "passed"
+}

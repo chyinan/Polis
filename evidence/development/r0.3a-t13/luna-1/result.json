@@ -1,0 +1,67 @@
+{
+  "status": "inconclusive",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "model": "gpt-5.6-luna",
+  "profile": "gpt-5.6-luna/medium",
+  "started": "2026-09-10T08:48:21.460936535Z",
+  "finished": "2026-09-10T08:50:09.005218463Z",
+  "medium_started": 1,
+  "high_started": 0,
+  "dynamic_tool_count": 0,
+  "readiness": {
+    "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+    "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+    "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+    "capability_digest": "105552b04a3e7379adf28dd266c1c5108fedbef824173a6455003af20647affb",
+    "code_mode_host_sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+    "cwd": "/work",
+    "dynamic_tool_count": 0,
+    "effort": "medium",
+    "model": "gpt-5.6-luna",
+    "native_version": "codex-cli 0.153.4",
+    "proxy_category": "not_configured",
+    "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+    "sandbox": "read-only",
+    "schema_bytes": 0,
+    "websocket_policy": "disabled"
+  },
+  "auth_source_class": "mounted_codex_auth_file",
+  "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+  "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+  "canonical_manifest_digest": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+  "turn_state": "first_valid_output_deadline_exceeded",
+  "transport": "inconclusive",
+  "sentinel_match": "failed",
+  "first_valid_output": false,
+  "reconnect_count": 2,
+  "reconnect_phases": [
+    "pre_first_output_reconnecting",
+    "pre_first_output_reconnecting"
+  ],
+  "first_disconnect_delta_ms": 38240,
+  "native_usage_updates": 0,
+  "token_usage": {
+    "total": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    },
+    "last": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    }
+  },
+  "stop_receipt": "process-group:435:waited",
+  "stop_confirmed": true,
+  "tool_events": [],
+  "unresolved_transport_state": false,
+  "case": "B",
+  "error": "first_valid_output_deadline_exceeded: elapsed=1m30.008283989s"
+}

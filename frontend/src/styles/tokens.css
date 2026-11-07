@@ -1,0 +1,84 @@
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-warm: #fafafa;
+  --fg: #0d0d0d;
+  --fg-2: #333333;
+  --muted: #666666;
+  --meta: #888888;
+  --border: rgba(0, 0, 0, 0.05);
+  --border-soft: var(--border);
+  --accent: #18E299;
+  --accent-on: #0d0d0d;
+  --accent-hover: #0fa76e;
+  --accent-active: color-mix(in oklab, var(--accent-hover), black 12%);
+  --success: #16a34a;
+  --warn: #c37d0d;
+  --danger: #d45656;
+  --font-display: "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-body: "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 40px;
+  --text-4xl: 64px;
+  --leading-body: 1.5;
+  --leading-tight: 1.15;
+  --tracking-display: -0.02em;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --section-y-desktop: 96px;
+  --section-y-tablet: 64px;
+  --section-y-phone: 48px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+  --elev-flat: none;
+  --elev-ring: 0 0 0 1px var(--border);
+  --elev-raised: 0 2px 4px rgba(0, 0, 0, 0.03);
+  --focus-ring: 0 0 0 2px var(--accent);
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --container-max: 1200px;
+  --container-gutter-desktop: 32px;
+  --container-gutter-tablet: 24px;
+  --container-gutter-phone: 24px;
+}
+
+
+/* Shared compatibility aliases for the read-only domain components. */
+:root {
+  --color-canvas: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-warm);
+  --color-text: var(--fg);
+  --color-text-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--accent-on);
+  --color-border: var(--border);
+  --color-control-border: var(--border);
+  --color-focus: var(--accent);
+  --color-success: var(--success);
+  --color-success-bg: color-mix(in oklab, var(--success) 10%, var(--surface));
+  --color-warning: var(--warn);
+  --color-warning-bg: color-mix(in oklab, var(--warn) 10%, var(--surface));
+  --color-danger: var(--danger);
+  --color-danger-bg: color-mix(in oklab, var(--danger) 10%, var(--surface));
+  --color-info: var(--accent-hover);
+  --color-info-bg: color-mix(in oklab, var(--accent) 10%, var(--surface));
+  --radius-control: var(--radius-sm);
+  --radius-panel: var(--radius-md);
+  --motion-duration: var(--motion-fast);
+}

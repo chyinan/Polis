@@ -1,0 +1,14 @@
+{
+  "runtime_manifest_loader": "PASS",
+  "staged_binary_hash": "PASS",
+  "staged_code_mode_host_hash": "PASS",
+  "staged_binary_version_command": "PASS",
+  "same_bytes_changed_path_regression": "PASS",
+  "same_path_binary_drift_regression": "PASS",
+  "missing_helper_regression": "PASS",
+  "helper_hash_drift_regression": "PASS",
+  "staged_copy_mismatch_regression": "PASS",
+  "historical_source_deleted_staged_pair_regression": "PASS",
+  "provider_egress": 0,
+  "business_allowance_created": false
+}

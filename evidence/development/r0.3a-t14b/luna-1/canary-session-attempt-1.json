@@ -1,0 +1,9 @@
+{
+  "actual_transport": "not_observable",
+  "allowance_start": "2026-09-10T10:54:46.948801963Z",
+  "dynamic_tool_count": 0,
+  "process_start": "2026-09-10T10:54:46.960456836Z",
+  "process_stop": "2026-09-10T10:54:46.971981315Z",
+  "stop_confirmed": true,
+  "stop_receipt": "process-group:421:waited"
+}

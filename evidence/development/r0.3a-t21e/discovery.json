@@ -1,0 +1,30 @@
+{
+  "provider_started": false,
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0,
+  "current_artifacts": [
+    {
+      "role": "codex_binary",
+      "path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\bin\\bffc5354119c8421\\codex.exe",
+      "size": 297858352,
+      "sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+      "version_observed": "codex-cli 0.154.0-alpha.6.2"
+    },
+    {
+      "role": "code_mode_host",
+      "path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\bin\\bffc5354119c8421\\codex-code-mode-host.exe",
+      "size": 72471856,
+      "sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23",
+      "version_observed": "not_reported_by_helper"
+    }
+  ],
+  "historical_qualified_inputs": {
+    "codex_version": "codex-cli 0.153.4",
+    "codex_binary_sha256": "ccdc9eb9dd71fbcfb03ad42c4eca2b0d6ff6fbd32ebe9416550e6244561e559b",
+    "code_mode_host_sha256": "11a2ca7db48ee292f177584768657e7488ce8ef1e851b065b2f4d5f37f89a71d"
+  },
+  "historical_binary_equivalence": false,
+  "historical_l1_for_current_binary": "STALE",
+  "source_installation_modified": false
+}

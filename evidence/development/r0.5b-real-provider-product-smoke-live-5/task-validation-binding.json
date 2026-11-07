@@ -1,0 +1,20 @@
+{
+    "company_id":  "r05b-live-5",
+    "task_id":  "7682cd197e8436a763f22ce3198a60ce",
+    "mission_id":  "81ee562d602a059ed8a4ce2f5be80803",
+    "acceptance_revision":  "text-acceptance@1",
+    "runner_kind":  "text_contains_all",
+    "runner_revision":  "text-contains-all@1",
+    "configuration_digest":  "c637152c5dd1824c996f3f20e1c6e3881d9feb1060929d1b4506f5629eda1734",
+    "contract":  {
+                     "revision":  "text-acceptance@1",
+                     "required_text":  [
+                                           "The workspace deliverable is a small Markdown file named product-smoke.md.",
+                                           "It states the Mission ID.",
+                                           "It states the provider-executable Task ID.",
+                                           "It acknowledges Polis real-provider execution.",
+                                           "It includes one sentence summarizing the Task."
+                                       ]
+                 },
+    "created_at":  "2026-09-21T11:50:42.087993+08:00"
+}

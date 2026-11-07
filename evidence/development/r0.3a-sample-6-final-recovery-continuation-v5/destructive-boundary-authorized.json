@@ -1,0 +1,11 @@
+{
+  "status": "AUTHORIZED_AFTER_PACKAGE_COMPLETE",
+  "package_generation_id": "r03a-sample-6-recovery-20260914T150111Z-307",
+  "salvage_manifest_hash": "147e47ddf7a833d91eb184998586f00954580bc44604e226b03653ad4400bad7",
+  "continuation_manifest_hash": "c9dd09e74d0f21214253ed704d9bb3b1b25ef2c6fa5902f2743d20c17133a4b8",
+  "dump_hash": "1b2acaacad9e9b907c041be58734bd5baaa4c7baffa09531dc28e4154b5401bd",
+  "cas_manifest_hash": "9a7d103f56f9dd7300ba10bd88d337cafd286dbcd09177c483f4129125a7ff0f",
+  "cluster_system_identifier": "7685325910591533502",
+  "database_oid": "16384",
+  "recovery_package_complete": true
+}

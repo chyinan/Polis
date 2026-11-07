@@ -1,0 +1,43 @@
+{
+  "status": "FRONTEND_RUNTIME_ACTIVATION_PREFLIGHT_FAILED",
+  "failure_class": "RUNTIME_INITIALIZE_OR_LOCAL_PROTOCOL_FAILURE",
+  "error": "open D:\\Programs\\Polis\\evidence\\development\\r0.3a-frontend-runtime-initialize-forensics-v1\\windows-runner-integration\\frontend-runtime-preflight-native\\protocol.jsonl: The file exists.",
+  "launch_envelope": {
+    "schema_version": "r03a-native-launch-envelope@1",
+    "launch_mode": "windows_native_direct",
+    "runtime_os": "windows",
+    "process_executable": "codex.exe",
+    "binary_path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+    "helper_path": "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex-code-mode-host.exe",
+    "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+    "helper_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+    "argv": [
+      "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+      "app-server",
+      "--stdio"
+    ],
+    "working_directory": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-frontend-runtime-initialize-forensics-v1\\windows-runner-integration\\runtime",
+    "home": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-frontend-runtime-initialize-forensics-v1\\windows-runner-integration\\runtime\\frontend-runtime-preflight-home",
+    "codex_home": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-frontend-runtime-initialize-forensics-v1\\windows-runner-integration\\runtime\\frontend-runtime-preflight-home",
+    "stdio": "stdin_stdout_jsonl;stderr_separate_bounded",
+    "boundary": "Windows native process handle",
+    "fingerprint": "c97f7b7d00f7674bc137d63c6be8499b48a607e102f07a2e12b2518537950e33"
+  },
+  "execution_envelope_fingerprint": "c97f7b7d00f7674bc137d63c6be8499b48a607e102f07a2e12b2518537950e33",
+  "capability_digest": "551161f33eba0a4bc48eb47d3b752e7f9a889d57c25fed2034b12c23f01bb2c4",
+  "process_started": true,
+  "initialize_started": false,
+  "initialize_completed": false,
+  "local_protocol_ready": false,
+  "turn_started": false,
+  "provider_egress": false,
+  "registered_tool_count": 12,
+  "initialize_latency_ms": 0,
+  "thread_start_latency_ms": 0,
+  "protocol_evidence_path": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-frontend-runtime-initialize-forensics-v1\\windows-runner-integration\\frontend-runtime-preflight-native\\protocol.jsonl",
+  "stderr_classification": "BOUNDED_STDERR_PRESENT",
+  "process_exit": "exit status 1",
+  "stop_confirmed": false,
+  "business_mutation": false,
+  "allowance_created": false
+}

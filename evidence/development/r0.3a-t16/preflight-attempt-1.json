@@ -1,0 +1,8 @@
+{
+  "error": "preflight_failed: guest namespace observation: exit status 1 stderr_digest=0d96bf3b34f12cdd016de95209b8c5b16cb7f3432c031364ce22ed022c6ae823",
+  "high_consumed": 0,
+  "medium_consumed": 0,
+  "passed": false,
+  "provider_model_egress": 0,
+  "status": "preflight_failed"
+}

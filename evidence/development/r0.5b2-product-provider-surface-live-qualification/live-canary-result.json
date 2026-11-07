@@ -1,0 +1,11 @@
+{
+  "status": "NOT_STARTED",
+  "reason": "product_tool_surface_semantics_not_current",
+  "provider_reservation": 0,
+  "provider_egress": 0,
+  "turn_start": 0,
+  "tool_calls": 0,
+  "company_mission_task_worker_session_created": 0,
+  "retry": 0,
+  "high": 0
+}

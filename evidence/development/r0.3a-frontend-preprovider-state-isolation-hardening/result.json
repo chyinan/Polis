@@ -1,0 +1,18 @@
+{
+  "qualification": "R0.3A-FRONTEND-PREPROVIDER-STATE-ISOLATION-HARDENING",
+  "status": "PASSED",
+  "frontend_preprovider_state_isolation_hardening": "PASSED",
+  "starting_state_probe_read_only": "PASSED",
+  "allowance_after_all_local_gates": "ENFORCED",
+  "provider_surface_changed": false,
+  "contaminated_v9_fixture": "detected_without_new_mutation",
+  "frontend_sessions_observed": 1,
+  "probe_rejection": [
+    "frontend_sessions_expected_zero",
+    "frontend_live_writer_expected_zero"
+  ],
+  "new_allowance": false,
+  "new_worker": false,
+  "new_provider_egress": 0,
+  "historical_evidence_modified": false
+}

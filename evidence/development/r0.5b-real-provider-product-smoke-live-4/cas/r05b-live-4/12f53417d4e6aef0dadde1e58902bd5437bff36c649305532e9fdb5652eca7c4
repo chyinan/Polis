@@ -1,0 +1,3 @@
+# Mission 073f6cd7178f0b074c597c388dfee71e
+
+Goal: Produce a tiny Markdown deliverable named product-smoke.md in the Task workspace acknowledging Polis real-provider execution and giving the Mission ID, Task ID, and one-sentence Task summary. Use only the public acceptance criteria below. Do not use internet, peer collaboration, coding benchmark, pagination, hidden requirements, or shell. After writing, run workspace_check; if PASS, call task_submit.

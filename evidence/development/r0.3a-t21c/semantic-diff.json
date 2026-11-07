@@ -1,0 +1,155 @@
+[
+  {
+    "current": "Read your backend task, v1 starting contract, assigned peer task, and observable tool-call budget.",
+    "field": "description",
+    "name": "polis_work_current",
+    "old": "Read your backend task, v1 starting contract and the assigned peer task.",
+    "within_hardening_scope": true
+  },
+  {
+    "current": "Read the approved v1 task context and observable tool-call budget only.",
+    "field": "description",
+    "name": "polis_context_read",
+    "old": "Read the approved v1 task context only.",
+    "within_hardening_scope": true
+  },
+  {
+    "current": "Persist a progress or qualified peer checkpoint. Progress checkpoints preserve incomplete work; qualified checkpoints require passed check evidence and are eligible for final artifact submission.",
+    "field": "description",
+    "name": "polis_work_checkpoint",
+    "old": "Persist a checkpoint using successful peer check evidence.",
+    "within_hardening_scope": true
+  },
+  {
+    "current": {
+      "additionalProperties": false,
+      "properties": {
+        "decisions": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "facts": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "failed_checks": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "progress",
+            "qualified"
+          ],
+          "type": "string"
+        },
+        "next_action": {
+          "maxLength": 512,
+          "type": "string"
+        },
+        "rejected": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 512,
+          "type": "string"
+        }
+      },
+      "required": [
+        "decisions",
+        "evidence",
+        "facts",
+        "failed_checks",
+        "kind",
+        "next_action",
+        "rejected",
+        "summary"
+      ],
+      "type": "object"
+    },
+    "field": "inputSchema",
+    "name": "polis_work_checkpoint",
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "decisions": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "facts": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "rejected": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "decisions",
+        "evidence",
+        "facts",
+        "rejected",
+        "summary"
+      ],
+      "type": "object"
+    },
+    "within_hardening_scope": true
+  }
+]

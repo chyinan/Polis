@@ -1,0 +1,52 @@
+{
+  "business_side_effects": 0,
+  "derived_repair": true,
+  "disconnect_count": 2,
+  "dynamic_tool_count": 0,
+  "first_valid_output": null,
+  "initialize": {
+    "present": true
+  },
+  "native_usage_updates": 0,
+  "process_start": "2026-09-10T08:48:23.260646296Z",
+  "process_stop": "2026-09-10T08:50:08.991015099Z",
+  "provider_transport_events": "native/protocol.jsonl",
+  "readiness_manifest": "2026-09-10T08:48:23.25531518Z",
+  "reconnect_phases": [
+    "pre_first_output_reconnecting",
+    "pre_first_output_reconnecting"
+  ],
+  "recovery_timestamps": null,
+  "stop_confirmed": true,
+  "stop_receipt": "process-group:435:waited",
+  "terminal_state": "first_valid_output_deadline_exceeded",
+  "thread_start": {
+    "sent": true,
+    "started": true
+  },
+  "time_to_first_valid_output_ms": 0,
+  "token_counts": {
+    "total": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    },
+    "last": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    }
+  },
+  "turn_completed": null,
+  "turn_start": {
+    "sent": true,
+    "started": true
+  },
+  "user_message_item": true
+}

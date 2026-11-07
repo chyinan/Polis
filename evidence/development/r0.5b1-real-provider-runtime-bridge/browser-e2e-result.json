@@ -1,0 +1,14 @@
+{
+  "browser_submit": "PASS",
+  "browser_start": "PASS",
+  "mission_id": "51b7a0ce3bcd1e4ddc6c9bf9007845bb",
+  "duplicate_retry": 202,
+  "duplicate_new_request": 409,
+  "provider_transport": "fake",
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "artifact_visible": true,
+  "provider_turn_completed_event": true,
+  "orphan_check": "deferred_to_authoritative_sql"
+}

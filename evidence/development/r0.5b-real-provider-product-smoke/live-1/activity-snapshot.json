@@ -1,0 +1,42 @@
+{
+    "meta":  {
+                 "schemaVersion":  2,
+                 "companyId":  "r05b-live-1",
+                 "entityRevision":  "company-seq:1",
+                 "snapshotCursor":  "company-seq:1",
+                 "observedAt":  "2026-09-17T05:53:12.6025678Z",
+                 "dataMode":  "real",
+                 "freshness":  "fresh",
+                 "sourceLabel":  "PostgreSQL runtime read model"
+             },
+    "items":  [
+                  {
+                      "id":  "r05b-live-1:1",
+                      "companySeq":  "1",
+                      "occurredAt":  "2026-09-17T05:48:41.2639576Z",
+                      "kind":  "mission_created",
+                      "actor":  {
+                                    "kind":  "system",
+                                    "id":  "runtime",
+                                    "label":  "Polis runtime"
+                                },
+                      "subject":  {
+                                      "kind":  "mission",
+                                      "id":  "4f000865902ec201d528c8ce3a039798",
+                                      "label":  "mission.create"
+                                  },
+                      "summary":  "mission.create",
+                      "detail":  "authoritative company_seq=1; runtime event kind=mission.create",
+                      "tone":  "info",
+                      "evidenceRefs":  [
+
+                                       ],
+                      "metadata":  {
+                                       "observed":  "false",
+                                       "runtimeKind":  "mission.create",
+                                       "subjectId":  "4f000865902ec201d528c8ce3a039798"
+                                   }
+                  }
+              ],
+    "nextCursor":  null
+}

@@ -1,0 +1,115 @@
+{
+  "artifact": {
+    "ID": "fdb47635d9454e3103c0123820d7f1d8",
+    "Digest": "ac433d9849808a507badb288e68a7825767f30737c052c5c6a2128e7193f8603",
+    "State": "ready",
+    "Verdict": "candidate"
+  },
+  "backend_session": {
+    "number": 1,
+    "employee": "emp-backend",
+    "purpose": "pagination V3 Backend employee",
+    "profile": "gpt-5.6-luna/medium",
+    "status": "passed",
+    "started": "2026-09-14T08:22:37.0276673Z",
+    "finished": "2026-09-14T08:25:42.7806108Z",
+    "duration_ms": 185752,
+    "native_duration_ms": 5036,
+    "process_started": true,
+    "initialize_completed": true,
+    "thread_started": true,
+    "turn_started": true,
+    "provider_egress": true,
+    "turn_completed": true,
+    "epoch": 2,
+    "incarnation": "8b7581ddf3967e909ab0d91fd05d5bf5",
+    "tool_calls_used": 20,
+    "tool_calls_remaining": 28,
+    "thread_id": "01a09f02-dff0-7922-a194-40892f479efa",
+    "session_id": "4ed7b321f1d6ac22f47b70d4a0e9d1f5",
+    "tool_events": [
+      "work_current",
+      "contract_propose",
+      "contract_accept",
+      "collab_send",
+      "workspace_read",
+      "workspace_replace",
+      "workspace_check",
+      "workspace_replace",
+      "workspace_check",
+      "workspace_replace",
+      "workspace_check",
+      "workspace_read",
+      "workspace_replace",
+      "workspace_check",
+      "work_checkpoint",
+      "work_checkpoint",
+      "context_read",
+      "work_checkpoint",
+      "work_checkpoint",
+      "artifact_submit"
+    ],
+    "receipts": [
+      "83e41594fd9bdb747bd2a867f9d1a8a5958fad9d5c2a0ff5bdf552cd1e3f07d0",
+      "cfd0e194101c8f0ed576d95dc0d12a6b",
+      "b6b8c4c2b7c0ffd93e10b520fbe285bb79d2ff91e30ef9a2c659e3fc906519a5",
+      "c9a79da6cf96b58a5b3b604489634092",
+      "e8f36944979ba0850695e3f107c6787a905ea56160c014e0500d88cefe635bb5",
+      "e3d85785a539d27a5611daf263e97bfe",
+      "ac433d9849808a507badb288e68a7825767f30737c052c5c6a2128e7193f8603",
+      "574187f96b94376a15f5e25e9ed71745",
+      "4f11d75f31b70d17c6e394cad60d3219",
+      "5d50fce75f4fbb3ff2ef283c337e025d",
+      "fdb47635d9454e3103c0123820d7f1d8"
+    ],
+    "stop_receipt": "windows-process-handle:29216:waited",
+    "stop_confirmed": true,
+    "checkpoint_id": "5d50fce75f4fbb3ff2ef283c337e025d",
+    "artifact_id": "fdb47635d9454e3103c0123820d7f1d8",
+    "message_id": "420e11bfe5690853af96f0a60709c707",
+    "obligation_id": "420e11bfe5690853af96f0a60709c707",
+    "contract_revision_id": "9667c267be7fabf4a36dafea6b535060",
+    "token_usage": {
+      "total": {
+        "totalTokens": 365994,
+        "inputTokens": 360719,
+        "cachedInputTokens": 316672,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 5275,
+        "reasoningOutputTokens": 1543
+      },
+      "last": {
+        "totalTokens": 22027,
+        "inputTokens": 21916,
+        "cachedInputTokens": 21248,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 111,
+        "reasoningOutputTokens": 25
+      }
+    },
+    "native_usage_updates": 21
+  },
+  "contract": {
+    "id": "9667c267be7fabf4a36dafea6b535060",
+    "mission": "r03a-pagination-v3-mission-1789374157001614500",
+    "endpoint": "GET /items",
+    "schema": "{\"request\": {\"path\": \"/items\", \"limit\": {\"name\": \"limit\", \"type\": \"integer\", \"minimum\": 1, \"required\": true, \"semantics\": \"maximum number of items requested\"}, \"cursor\": {\"name\": \"cursor\", \"type\": \"string|null\", \"required\": false, \"semantics\": \"initial null; subsequent requests use the prior response next_cursor exactly\"}, \"method\": \"GET\"}, \"response\": {\"items\": {\"type\": \"array\u003cobject\u003e\", \"required_fields\": [\"id\", \"name\"]}, \"next_cursor\": {\"type\": \"string|null\", \"required\": true}}, \"pagination\": {\"next_page\": \"when next_cursor is a string, issue the same request with cursor exactly equal to next_cursor\", \"termination\": \"when next_cursor is null, stop and issue no further request\"}, \"probe_cases\": [{\"name\": \"first_page\", \"limit\": 2, \"cursor\": null, \"expected_items\": [{\"id\": \"i1\", \"name\": \"one\"}, {\"id\": \"i2\", \"name\": \"two\"}], \"expected_next_cursor\": \"cursor-2\"}, {\"name\": \"last_page\", \"limit\": 2, \"cursor\": \"cursor-2\", \"expected_items\": [{\"id\": \"i3\", \"name\": \"three\"}], \"expected_next_cursor\": null}]}",
+    "digest": "5bc44edeec9b490cf142fa2310f51d8257437f282dd1264e643de24ad57ce12a",
+    "state": "accepted",
+    "revision": 2,
+    "base_revision": 1
+  },
+  "message": {
+    "id": "420e11bfe5690853af96f0a60709c707",
+    "task_id": "a5b9179aeac5740b232be71402550955",
+    "obligation_id": "420e11bfe5690853af96f0a60709c707",
+    "contract_revision_id": "9667c267be7fabf4a36dafea6b535060",
+    "delivery_state": "persisted"
+  },
+  "obligation_state": "pending",
+  "workspace": {
+    "Digest": "ac433d9849808a507badb288e68a7825767f30737c052c5c6a2128e7193f8603",
+    "Content": "package backend\n\nconst Endpoint = \"GET /items\"\n\nfunc FetchItems(cursor string, limit int) string {\n  if limit \u003c 1 {\n    return `{\"items\":[],\"next_cursor\":null}`\n  }\n  start := 0\n  if cursor == \"cursor-1\" {\n    start = 1\n  }\n  if cursor == \"cursor-2\" {\n    start = 2\n  }\n  if cursor != \"\" \u0026\u0026 cursor != \"cursor-1\" \u0026\u0026 cursor != \"cursor-2\" {\n    return `{\"items\":[],\"next_cursor\":null}`\n  }\n  end := start + limit\n  if end \u003e 3 {\n    end = 3\n  }\n  items := \"[\"\n  if start == 0 {\n    items += `{\"id\":\"i1\",\"name\":\"one\"}`\n    if end \u003e 1 {\n      items += `,{\"id\":\"i2\",\"name\":\"two\"}`\n    }\n    if end \u003e 2 {\n      items += `,{\"id\":\"i3\",\"name\":\"three\"}`\n    }\n  }\n  if start == 1 {\n    items += `{\"id\":\"i2\",\"name\":\"two\"}`\n    if end \u003e 2 {\n      items += `,{\"id\":\"i3\",\"name\":\"three\"}`\n    }\n  }\n  if start == 2 {\n    items += `{\"id\":\"i3\",\"name\":\"three\"}`\n  }\n  items += \"]\"\n  nextCursor := \"null\"\n  if end \u003c 3 {\n    if end == 1 {\n      nextCursor = `\"cursor-1\"`\n    } else {\n      nextCursor = `\"cursor-2\"`\n    }\n  }\n  return `{\"items\":` + items + `,\"next_cursor\":` + nextCursor + `}`\n}\n",
+    "Revision": 5
+  }
+}

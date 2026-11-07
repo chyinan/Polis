@@ -1,0 +1,29 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-V9-SEMANTIC-CLOSURE-DETERMINISM-FORENSICS",
+  "status": "PASSED",
+  "v9_raw_classification": "RESTORE_MAPPING_DEFECT",
+  "v9_raw_evidence_modified": false,
+  "current_v9_specimen_recheck": {
+    "source_events": 62,
+    "restored_events": 62,
+    "ordered_equality": true,
+    "keyed_set_equality": true,
+    "keyed_multiset_equality": true,
+    "event_ordering_key": "company_seq",
+    "artifact_workspace_continuity": "PASSED",
+    "package_semantic_closure": "PASSED"
+  },
+  "repeated_closure_runs": 5,
+  "repeated_verdicts": ["PASS", "PASS", "PASS", "PASS", "PASS"],
+  "repeated_closure_digest": "9b0720862316504709452ef414d349cf27c2561ef6f9b4c1fe845b7f0b38278f",
+  "semantic_closure_checker_determinism": "PASSED",
+  "classification": "CANONICALIZATION_DEFECT",
+  "true_restore_mapping_defect": false,
+  "package_contains_sufficient_authoritative_state": true,
+  "v9_restore_content_correct": true,
+  "sample_6_recovery_salvageable": true,
+  "new_backend_sample_required": false,
+  "package_mutated": false,
+  "v9_specimen_mutated": false,
+  "provider_egress": 0
+}

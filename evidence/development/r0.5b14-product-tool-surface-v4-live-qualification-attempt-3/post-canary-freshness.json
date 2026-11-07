@@ -1,0 +1,19 @@
+{
+  "record_type": "polis-r0.5b14-post-canary-freshness@1",
+  "status": "PASSED",
+  "surface_unchanged": true,
+  "runtime_binding_unchanged": true,
+  "launch_envelope_unchanged": true,
+  "execution_fingerprint_unchanged": true,
+  "surface_id": "polis-product-tool-surface@4",
+  "tool_count": 7,
+  "manifest_digest": "60192ba130e504ad380fd524ec02ab536a8724723098f0d3fb91ecc0f3983ea4",
+  "schema_bytes": 2206,
+  "schema_digest": "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+  "runtime_version": "0.154.0-alpha.6.2",
+  "binary_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+  "helper_sha256": "fdf360c3a02adce2a29272357d61681bdddc2ab9828a5fa615c4528e4384a23e",
+  "launch_envelope_fingerprint": "dfa3a3d252b2b781e47f932ff350e5eb99f0d6ac0112c1153531248dee0df24d",
+  "exact_surface_execution_fingerprint": "e736d8298f0920c6dd81796006b2486881647f0fdbc66bb111bbd2387a1e99ff",
+  "checked_at": "2026-09-20T11:24:17.39598Z"
+}

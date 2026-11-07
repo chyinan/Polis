@@ -1,0 +1,93 @@
+{
+  "qualification": "R0.3A-T10",
+  "codex_0_153_4_native_compatibility": "PASSED",
+  "eligible_for_version_only_live_canary": "YES",
+  "provider_egress": "prohibited_and_not_run",
+  "live_model_turns": 0,
+  "business_execution": "not_run",
+  "source": {
+    "classification": "official OpenAI npm platform package, obtained through the configured npm registry mirror",
+    "package": "@openai/codex@0.153.4-linux-x64",
+    "registry": "https://registry.npmmirror.com/",
+    "tarball": "openai-codex-0.153.4-linux-x64.tgz",
+    "tarball_sha256": "54818cb9fce3360cc6e44cfc5a96952cd5c1243efb43cbe488e11dda84663e08",
+    "npm_integrity": "sha512-x1EcwBlY3AObM1VTUHNM2AzAJQsyreGdagpF+qFiYi/Oa30VBktvvG0C6tLtCzqW6hjZNWkGZQWmeVk7MuJKWg==",
+    "package_metadata": {
+      "version": "0.153.4",
+      "target": "x86_64-unknown-linux-musl",
+      "variant": "codex",
+      "entrypoint": "bin/codex"
+    }
+  },
+  "binary": {
+    "path": ".tools/codex-linux-0.153.4/package/vendor/x86_64-unknown-linux-musl/bin/codex",
+    "version_output": "codex-cli 0.153.4",
+    "sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+    "platform": "Linux amd64, static-pie ELF"
+  },
+  "historical_0_151_0_binary": {
+    "path": ".tools/codex-linux/package/vendor/x86_64-unknown-linux-musl/bin/codex",
+    "sha256": "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+    "modified": false
+  },
+  "code_mode_host": {
+    "path": ".tools/codex-linux-0.153.4/package/vendor/x86_64-unknown-linux-musl/bin/codex-code-mode-host",
+    "sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+    "same_bwrap_envelope": true,
+    "help_execution": "passed"
+  },
+  "native_protocol": {
+    "app_server_help": "passed",
+    "stdio_invocation": "app-server --stdio supported and used",
+    "schema_generation": "passed_without_provider",
+    "schema_v1_sha256": "e8284c5cb8157554a3dd1e035aadbd4325aea501af56887e9c2e12eb1b9b9448",
+    "schema_v2_sha256": "d3eace08be5dca386bfd1f1e8df650058b4113f1e10870a284d775d75517576a",
+    "schema_diff": "schema-diff.json",
+    "relevant_paths": {
+      "initialize": "passed",
+      "thread/start": "passed",
+      "thread/started": "passed",
+      "turn/start": "not_started_in_real_binary_check; parser covered by local fixture",
+      "turn/completed": "parser covered by local fixture",
+      "item/tool/call": "registration surface preserved; parser regression covered by existing T1 fixture",
+      "error.responseStreamDisconnected": "structured local 0.153.4-shaped fixture passed"
+    }
+  },
+  "execution_architecture": {
+    "runtime": "WSL Linux amd64",
+    "sandbox": "bwrap with unchanged T9 process envelope",
+    "invocation": "app-server --stdio",
+    "cwd": "/work",
+    "home": "/home/codex isolated bind",
+    "proxy_environment": {
+      "POLIS_NATIVE_PROXY": "absent",
+      "HTTP_PROXY": "absent",
+      "HTTPS_PROXY": "absent",
+      "ALL_PROXY": "absent",
+      "NO_PROXY": "absent"
+    },
+    "websocket_policy": "unchanged WS-disabled configuration",
+    "dynamic_tool_count": 7,
+    "auth_file": "not mounted for local no-provider qualification"
+  },
+  "native_client_checks": {
+    "process_start": "passed",
+    "initialize_handshake": "passed",
+    "thread_start_local_protocol": "passed",
+    "dynamic_tool_registration": "passed",
+    "stop_termination": "passed_with_StopProof",
+    "protocol_parser": "passed",
+    "structured_error_classification": "passed_with_local_fixture",
+    "t1_reconnect_lifecycle": "passed",
+    "t2_1_phase_aware_reconnect_lifecycle": "passed",
+    "provider_response": "not_run / compatibility_unproven"
+  },
+  "evidence": {
+    "native_protocol_trace": "evidence/development/r0.3a-t10/native-client-0.153.4/evidence/protocol.jsonl",
+    "native_protocol_trace_sha256": "85a5b64d3b001f450202c562b2b8669a607982217ba98bee1813c8a15e74c33d",
+    "schema_diff": "evidence/development/r0.3a-t10/schema-diff.json",
+    "native_schema": "evidence/development/r0.3a-t10/native-schema-0.153.4/",
+    "test_command": "unset POLIS_NATIVE_PROXY HTTP_PROXY HTTPS_PROXY ALL_PROXY NO_PROXY && POLIS_CODEX_T10_BINARY=<0.153.4 Linux path> bash scripts/go.sh test ./internal/codex -count=1",
+    "test_result": "passed; 2 native 0.153.4 tests passed; existing T1/T2.1 and qualification tests passed; unrelated historical native tests skipped when POLIS_CODEX_BINARY was unset"
+  }
+}

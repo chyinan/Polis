@@ -1,0 +1,21 @@
+{
+  "full_go_tests_without_pg": "PASS",
+  "race": "PASS",
+  "vet": "PASS",
+  "linux_build": "PASS",
+  "windows_cross_build": "PASS",
+  "diff_check": "PASS",
+  "postgresql_deterministic_suite": "FAIL",
+  "postgresql_failure": {
+    "test": "TestPeerHandoverBoundarySnapshotReadsStoppedInitialSession",
+    "location": "internal/kernel/peer_collaboration_test.go:31",
+    "error": "POLICY_DENIED",
+    "phase": "TXPeerSend",
+    "database": "polis_r0_h1_adjudication_20260913_2105",
+    "cleanup": "dropped_and_pg_stopped",
+    "relation_to_adjudication": "independent_existing_pg_regression; not used to determine H1 disagreement"
+  },
+  "provider_calls": 0,
+  "business_mutations": 0,
+  "historical_evidence_modified": false
+}

@@ -1,0 +1,9 @@
+{
+  "schema_version": "r03a-runtime-database-binding@1",
+  "postgres_major": 18,
+  "cluster_system_identifier": "7685937128561021478",
+  "database_name": "polis_r0_3a_frontend_clean_baseline_v6",
+  "database_oid": "16384",
+  "schema_migration_identity": "5",
+  "fingerprint": "3169383be36c40901474396f46171938ffc2987e522a5c4a5328f3ab953bb148"
+}

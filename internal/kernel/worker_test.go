@@ -146,7 +146,7 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 	if r.Error != "" {
 		t.Fatal(r.Error)
 	}
-	cp := Checkpoint{Summary: "positive sign added; unit milestone remains", Facts: []string{"negative zero encodes debit direction"}, Decisions: []string{"retain signed-zero branch"}, Rejected: []string{"v >= 0 would classify negative zero as positive"}, Evidence: []string{r.Receipt.ID}}
+	cp := Checkpoint{Summary: "positive sign added; unit milestone remains", Facts: []string{"negative zero encodes debit direction"}, Decisions: []string{"retain signed-zero branch"}, Rejected: []string{"v >= 0 would classify negative zero as positive"}, EvidenceRefs: []string{r.Receipt.ID}}
 	raw, _ = json.Marshal(cp)
 	r = tools.Call(ctx, "work_checkpoint", "checkpoint", raw)
 	if r.Error != "" {
@@ -159,6 +159,26 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 	must(t, e)
 	if len(bundle.Checkpoints) != 1 || len(bundle.Obligations) != 1 {
 		t.Fatal("neutral bundle lost knowledge or responsibility")
+	}
+	reviewerTools := ReviewerTools{Kernel: k, Binding: b2, Evidence: ReviewerEvidence{SubjectRevision: "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c", ArtifactID: "candidate", CandidateDigest: bundle.Workspace.Digest, Contract: "signed-zero@1", TaskInput: "Preserve the signed-zero compatibility contract for the frozen candidate.", AllowedPath: "formatter.go"}}
+	current := reviewerTools.Call(ctx, "work_current", "review-current", []byte(`{}`))
+	if current.Error != "" {
+		t.Fatal(current.Error)
+	}
+	currentJSON, e := json.Marshal(current.Data)
+	must(t, e)
+	if strings.Contains(string(currentJSON), "Checkpoints") || strings.Contains(string(currentJSON), "Obligations") {
+		t.Fatalf("reviewer context exposed handover internals: %s", currentJSON)
+	}
+	workspaceRead := reviewerTools.Call(ctx, "workspace_read", "review-workspace", []byte(`{}`))
+	if workspaceRead.Error != "" {
+		t.Fatal(workspaceRead.Error)
+	}
+	if _, ok := workspaceRead.Data.(ReviewerWorkspaceView); !ok {
+		t.Fatalf("reviewer workspace returned unexpected type %T", workspaceRead.Data)
+	}
+	if write := reviewerTools.Call(ctx, "workspace_replace", "review-write", []byte(`{"expected_digest":"x","content":"bad"}`)); write.Error != string(core.Denied) {
+		t.Fatalf("reviewer write was not denied: %s", write.Error)
 	}
 	late := tools.Call(ctx, "workspace_replace", "late", []byte(`{"expected_digest":"x","content":"bad"}`))
 	if late.Error != string(core.StaleEpoch) {
@@ -186,7 +206,7 @@ func TestEmployeeOpsBehavioralHandover(t *testing.T) {
 	if r.Error != "" {
 		t.Fatal(r.Error)
 	}
-	cp.Evidence = []string{r.Receipt.ID}
+	cp.EvidenceRefs = []string{r.Receipt.ID}
 	raw, _ = json.Marshal(cp)
 	r = tools.Call(ctx, "work_checkpoint", "second-checkpoint", raw)
 	if r.Error != "" {

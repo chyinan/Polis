@@ -1,0 +1,8 @@
+{
+  "clicked": true,
+  "responseStatus": 202,
+  "responseBody": "{\"commandId\":\"a3ab9a23-8e8c-481c-b743-d07f9e657c53\",\"commandType\":\"mission.cancel\",\"targetType\":\"mission\",\"targetId\":\"fed04f193f1bc6afebf9c152832ccd76\",\"requestId\":\"a3ab9a23-8e8c-481c-b743-d07f9e657c53\",\"accepted\":true,\"acceptedAt\":\"2026-09-17T11:06:33.7078313Z\",\"resultingState\":\"cancelled\"}\n",
+  "missionCancelPostCount": 1,
+  "providerEgressAfterStart": 0,
+  "pageErrors": []
+}

@@ -1,0 +1,10 @@
+status=PASSED
+postgres_database=polis_r0_r05b10_post_60212
+postgres_temp_root=/tmp/polis-r05b10-post-pg.fYH4lc
+database_prefix=polis_r0_
+deterministic_delivery_transaction=PASSED
+cas_and_post_publication_fencing=PASSED
+real_provider_worker_adapter=PASSED
+workbench_projection=PASSED
+provider_traffic=0
+business_mutations=0

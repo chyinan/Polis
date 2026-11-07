@@ -1,0 +1,96 @@
+--- worker_sessions ---
+ company_id  |                id                | employee_id |             task_id              | generation | epoch |           incarnation            |       profile       |  state  |  capability_digest  | process_pid |            stop_receipt            | tool_call_limit | tool_calls_used 
+-------------+----------------------------------+-------------+----------------------------------+------------+-------+----------------------------------+---------------------+---------+---------------------+-------------+------------------------------------+-----------------+-----------------
+ r05b-live-4 | 4fc969762beee091c99dceadd73bc17a | emp-backend | c6875ffd3c5889b3b89483d3718c2714 |          1 |     3 | 05a32bc0db6b2f581c378d95339e7a0a | gpt-5.6-luna/medium | stopped | gpt-5.6-luna/medium |        2624 | windows-process-handle:2624:waited |              16 |               0
+(1 row)
+
+--- events ---
+ company_id  | company_seq |                  kind                  |                                                                payload                                                                | observed 
+-------------+-------------+----------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------+----------
+ r05b-live-4 |           1 | controller.recovered                   | {"id": "05a32bc0db6b2f581c378d95339e7a0a", "status": "fake_only", "occurred_at": "2026-09-21T01:54:13.3270908Z"}                      | f
+ r05b-live-4 |           2 | mission.create                         | {"id": "073f6cd7178f0b074c597c388dfee71e", "status": "draft", "occurred_at": "2026-09-21T01:55:10.6840738Z"}                          | f
+ r05b-live-4 |           3 | mission.start                          | {"id": "073f6cd7178f0b074c597c388dfee71e", "status": "active", "occurred_at": "2026-09-21T01:55:17.3950999Z"}                         | f
+ r05b-live-4 |           4 | mission.task.prepare                   | {"id": "c6875ffd3c5889b3b89483d3718c2714", "status": "ready", "occurred_at": "2026-09-21T01:55:17.6662958Z"}                          | f
+ r05b-live-4 |           5 | worker.restore                         | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "restoring", "occurred_at": "2026-09-21T01:55:17.6784169Z"}                      | f
+ r05b-live-4 |           6 | worker.process_attached                | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "attached", "occurred_at": "2026-09-21T01:55:18.0351193Z"}                       | f
+ r05b-live-4 |           7 | worker.validating                      | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "validating", "occurred_at": "2026-09-21T01:55:18.0420747Z"}                     | f
+ r05b-live-4 |           8 | worker.activation_pending_environment  | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "activation_pending_environment", "occurred_at": "2026-09-21T01:55:18.0483937Z"} | f
+ r05b-live-4 |           9 | worker.active                          | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "active", "occurred_at": "2026-09-21T01:55:18.0578346Z"}                         | f
+ r05b-live-4 |          10 | provider.runtime.initialization_failed | {"id": "75f03484f3011acf27a346f04b612983", "status": "initialization_failed", "occurred_at": "2026-09-21T01:55:18.0644317Z"}          | f
+ r05b-live-4 |          11 | worker.stopping                        | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "stopping", "occurred_at": "2026-09-21T01:55:18.0714745Z"}                       | f
+ r05b-live-4 |          12 | worker.stopped                         | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "stopped", "occurred_at": "2026-09-21T01:55:18.0825164Z"}                        | f
+(12 rows)
+
+--- provider terminal observations ---
+            session_id            |         reason          |                                                                                                                                                         data                                                                                                                                                          
+----------------------------------+-------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 4fc969762beee091c99dceadd73bc17a | provider_initialization | {"phase": "initialize", "pid_present": true, "reason_code": "", "safe_message": "", "process_created": true, "stderr_category": "unavailable", "stdout_pipe_state": "open", "child_exit_observed": false, "initialize_ack_received": false, "initialize_request_sent": false, "initialized_notification_sent": false}
+(1 row)
+
+--- authoritative product rows ---
+### missions
+ company_id  |                id                | state  |          activation_id           |    contract     |        title         |                                                                                                                                                                                                        goal                                                                                                                                                                                                         |                                                                                                                  acceptance_contract                                                                                                                  
+-------------+----------------------------------+--------+----------------------------------+-----------------+----------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ r05b-live-4 | 073f6cd7178f0b074c597c388dfee71e | active | 63d4f89ff8c2315b37e06f53b51b6637 | r0-arithmetic@1 | LIVE_4 product smoke | Produce a tiny Markdown deliverable named product-smoke.md in the Task workspace acknowledging Polis real-provider execution and giving the Mission ID, Task ID, and one-sentence Task summary. Use only the public acceptance criteria below. Do not use internet, peer collaboration, coding benchmark, pagination, hidden requirements, or shell. After writing, run workspace_check; if PASS, call task_submit. | {"revision": "text-acceptance@1", "required_text": ["Mission ID: {{mission_id}}", "Task ID: {{task_id}}", "Acknowledgement: Polis real-provider execution completed.", "Task summary: product-smoke.md records the requested one-sentence summary."]}
+(1 row)
+
+### tasks
+ company_id  |                id                |            mission_id            |    owner     |      kind      |   state   | generation |                                             plan                                              
+-------------+----------------------------------+----------------------------------+--------------+----------------+-----------+------------+-----------------------------------------------------------------------------------------------
+ r05b-live-4 | 7bf1a131dce3a91ed352c4cc68d2b83b | 073f6cd7178f0b074c597c388dfee71e | emp-planning | bootstrap_plan | completed |          0 | {"owner": "emp-backend", "template": "product-task@2", "ambiguities": [], "dependencies": []}
+ r05b-live-4 | c6875ffd3c5889b3b89483d3718c2714 | 073f6cd7178f0b074c597c388dfee71e | emp-backend  | compat         | working   |          1 | 
+(2 rows)
+
+### task_validation_bindings
+ company_id  |             task_id              |            mission_id            | acceptance_revision |    runner_kind    |   runner_revision   |                       configuration_digest                       |                                                                                                                                           contract                                                                                                                                           |          created_at           
+-------------+----------------------------------+----------------------------------+---------------------+-------------------+---------------------+------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------
+ r05b-live-4 | c6875ffd3c5889b3b89483d3718c2714 | 073f6cd7178f0b074c597c388dfee71e | text-acceptance@1   | text_contains_all | text-contains-all@1 | 6aed54594b5193184e9875f0755ecdeb845949660105be16be05404831b2eac6 | {"revision": "text-acceptance@1", "required_text": ["Mission ID: 073f6cd7178f0b074c597c388dfee71e", "Task ID: c6875ffd3c5889b3b89483d3718c2714", "Acknowledgement: Polis real-provider execution completed.", "Task summary: product-smoke.md records the requested one-sentence summary."]} | 2026-09-21 09:56:15.398233+08
+(1 row)
+
+### worker_workspaces
+ company_id  |             task_id              |                              digest                              | revision 
+-------------+----------------------------------+------------------------------------------------------------------+----------
+ r05b-live-4 | c6875ffd3c5889b3b89483d3718c2714 | 12f53417d4e6aef0dadde1e58902bd5437bff36c649305532e9fdb5652eca7c4 |        1
+(1 row)
+
+### worker_checks
+ company_id | id | session_id | digest | phase | passed | report 
+------------+----+------------+--------+-------+--------+--------
+(0 rows)
+
+### worker_checkpoints
+ company_id | id | session_id | digest | data 
+------------+----+------------+--------+------
+(0 rows)
+
+### artifacts
+ company_id | id | task_id | author | digest | bytes | state | verdict | verifier | contract 
+------------+----+---------+--------+--------+-------+-------+---------+----------+----------
+(0 rows)
+
+### artifact_staging
+ company_id | id | task_id | digest 
+------------+----+---------+--------
+(0 rows)
+
+### task_validation_artifact_qualifications
+ company_id | task_id | artifact_id | checkpoint_id | check_id | session_id | validation_binding_digest | workspace_digest | workspace_revision | runner_revision | created_at 
+------------+---------+-------------+---------------+----------+------------+---------------------------+------------------+--------------------+-----------------+------------
+(0 rows)
+
+### receipts
+ company_id  |    actor    |                               key                               |                           fingerprint                            |                                         result                                         
+-------------+-------------+-----------------------------------------------------------------+------------------------------------------------------------------+----------------------------------------------------------------------------------------
+ r05b-live-4 | local-owner | db574883-0714-4361-b49c-424d1b417c4d                            | 387ce53437445a441d5f8f1148ee2878acbcbed3267c750391fc44e4173f86ac | {"id": "073f6cd7178f0b074c597c388dfee71e", "status": "draft"}
+ r05b-live-4 | local-owner | 9be4ca57-27a9-4caa-b14b-acde8add341c                            | 8b8875d2bada6f5d1b56df866bdcac62c274d81c45e397400de587bb5f8ba975 | {"id": "073f6cd7178f0b074c597c388dfee71e", "status": "active"}
+ r05b-live-4 | local-owner | product-task-073f6cd7178f0b074c597c388dfee71e                   | 55182342dac637fee90ab80f80767063c8b6bc961b49b90e675aa6042ede8e8f | {"id": "c6875ffd3c5889b3b89483d3718c2714", "status": "ready"}
+ r05b-live-4 | local-owner | 70bb3a9c178344abddce6acb2898bc96                                | 404c72b07febc2bef3e837b110d5dd57b167ac15895ec46146a0e03e2f159962 | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "restoring"}
+ r05b-live-4 | local-owner | 5fc58e30220020ca856aed3292fd020f                                | 4d0500b62016185b7dcc0b30873b9d12ebcde05691959aeb0b2470987419444c | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "attached"}
+ r05b-live-4 | local-owner | 7fea12e9a83d870b80f219502f25ce7e                                | 0345dc9b4bd6d9b7e632641b1a46ac41f249cbc2bcf1cc6cb9d36a0b7a976a69 | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "validating"}
+ r05b-live-4 | local-owner | f2ab9f2f04cae4d351b8cd8c16218141                                | d0e809325889aa298f979203bb2e72538d3d4bfbc1bc57eec39a425c321af1da | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "activation_pending_environment"}
+ r05b-live-4 | local-owner | 632fa4d901bb551086368738e6d7dc9b                                | 84c2ad786a7de4b0026c2958be1787fc86d5e9275d0ca6cd845a2cd86ae8bc43 | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "active"}
+ r05b-live-4 | emp-backend | provider-initialization-failed-4fc969762beee091c99dceadd73bc17a | c163d663a151007eded2ad688108901fa403ab334005cf0bc10872713452643f | {"id": "75f03484f3011acf27a346f04b612983", "status": "initialization_failed"}
+ r05b-live-4 | local-owner | e6cc37542ac2697997e7bb30847a32cc                                | 81288fabfcf3181c69ed591d00f8ff8298ee6fa718fdec4315263e8423d1e0e8 | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "stopping"}
+ r05b-live-4 | local-owner | 453f3576050baf68872ffdc79d42837a                                | 06755e63c4800c72918dd026984cacc2349b9d3696842a2edfd7925932163e9c | {"id": "4fc969762beee091c99dceadd73bc17a", "status": "stopped"}
+(11 rows)
+

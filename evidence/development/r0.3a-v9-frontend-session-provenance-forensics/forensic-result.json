@@ -1,0 +1,69 @@
+{
+  "qualification": "R0.3A-V9-FRONTEND-SESSION-PROVENANCE-FORENSICS",
+  "status": "PASSED",
+  "session_identity": {
+    "company_id": "r03a-pagination-v3-company-1789379324974307400",
+    "mission_id": "r03a-pagination-v3-mission-1789379324974307400",
+    "task_id": "629af90e4bc469dc3e961a9bdb7d555a",
+    "employee_id": "emp-frontend",
+    "session_id": "afb2408e34744a4b4b078c609d57dcc5",
+    "generation": 1,
+    "epoch": 6,
+    "runtime_incarnation": "9ec379534cdaf1562908b748a203d72e",
+    "profile": "gpt-5.6-luna/medium",
+    "state": "reconcile_required",
+    "process_pid": null,
+    "stop_receipt": null,
+    "tool_call_limit": 48,
+    "tool_calls_used": 0
+  },
+  "creation_event": {
+    "company_seq": 66,
+    "kind": "worker.restore",
+    "payload_id": "afb2408e34744a4b4b078c609d57dcc5",
+    "causal_attempt": "r0.3a-pagination-v3-real-frontend-single-session-v4",
+    "allowance_started_at": "2026-09-15T03:03:26.407466924Z",
+    "session_started_at": "2026-09-15T03:03:26.424035733Z",
+    "allowance_created_before_session": true,
+    "allowance_medium_consumed": 1,
+    "worker_created": true,
+    "provider_reservation": false,
+    "provider_execution": "NONE"
+  },
+  "attempt_evidence": {
+    "v4_allowance": "present",
+    "v4_result": "frontend process/helper setup failed before process start",
+    "v4_process_started": false,
+    "v4_provider_egress": 0,
+    "v5_v6_starting_state_gate": "observed the persisted session and stopped before allowance"
+  },
+  "business_state_delta": {
+    "workspace_revision_changed": false,
+    "message_state_changed": false,
+    "obligation_state_changed": false,
+    "contract_revision_changed": false,
+    "checkpoint_created": false,
+    "artifact_created": false,
+    "collaboration_receipts_created": false,
+    "frontend_task_state_changed": false,
+    "session_control_state_changed": true,
+    "employee_epoch_changed": true,
+    "runtime_incarnation_changed": true
+  },
+  "flags": {
+    "frontend_session_provider_backed": false,
+    "frontend_session_business_mutation": true,
+    "frontend_session_terminal": false,
+    "current_epoch_changed": true,
+    "current_writer_changed": true,
+    "planner_relay": 0
+  },
+  "classification": "MIXED",
+  "classification_components": [
+    "PREFLIGHT_SESSION_CREATION_ORDERING_DEFECT",
+    "RESTORE_SPECIMEN_MUTATED_BY_LOCAL_RUNNER"
+  ],
+  "current_v9_specimen_reusability": "CURRENT_V9_SPECIMEN_CONTAMINATED",
+  "clean_state_from_immutable_v5_without_backend_or_provider": "YES",
+  "recommended_next_step": "Do not delete or reset this row. Fix the runner so all read-only starting-state validation uses a non-recovering read-only connection before allowance/worker creation; obtain a clean specimen from the immutable v5 package in a separately authorized recovery run."
+}

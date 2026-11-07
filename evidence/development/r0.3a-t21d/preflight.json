@@ -1,0 +1,19 @@
+{
+  "aggregate_schema_bytes": 2038,
+  "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+  "high": 0,
+  "medium": 0,
+  "passed": true,
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "provider_egress": 0,
+  "qualification": "R0.3A-T21D",
+  "status": "offline_preflight_passed",
+  "t21_fingerprint": "cf0dbbfef50223a17a3c57922ec4b016a6eb8c97cd8239032a8718e1e9b76029",
+  "tool_count": 11,
+  "tool_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22"
+}

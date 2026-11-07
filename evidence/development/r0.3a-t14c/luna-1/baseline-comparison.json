@@ -1,0 +1,236 @@
+{
+  "candidate": "T14C current-auth 0.153.4 native-default policy",
+  "capability_digest_candidate": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+  "capability_digest_control": "105552b04a3e7379adf28dd266c1c5108fedbef824173a6455003af20647affb",
+  "control": "T13 current-auth 0.153.4 explicitly-disabled policy re-expressed as v3",
+  "derived_for_cross_schema_comparison_only": true,
+  "factor_diff": {
+    "auth_comparison": {
+      "source_class": "SAME",
+      "identity": "SAME",
+      "credential_revision": "SAME",
+      "strict_experiment_comparable": true,
+      "incomparable_fingerprint_types": false
+    },
+    "changed_fields": [
+      "combination.capability_digest",
+      "transport.provider_transport_policy",
+      "transport.websocket_policy"
+    ],
+    "corrected_host_guest_mapping_is_equivalent": true,
+    "derived_for_cross_schema_comparison_only": true,
+    "non_transport_divergence": null,
+    "passed": true,
+    "t13_control_reexpressed_v3_fingerprint": "ea49b5df52d7923a520cd80f053ba3f6a055698121e3985cdd51eb58b2d9cbd3",
+    "t13_host_guest_mapping": {
+      "current_guest_home": "/home/codex",
+      "current_host_home_source": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+      "equivalence_basis": "T13 native initialize/readiness observed guest /home/codex and /work; T14C uses the same guest targets with a distinct host source path",
+      "historical_t13_guest_codex_home_observed": true,
+      "historical_t13_guest_cwd_observed": true,
+      "host_guest_namespace_separated": true
+    },
+    "t13_v2_control_fingerprint": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+    "t14c_native_default_v3_fingerprint": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+    "transport_policy": {
+      "candidate_provider_transport_policy": "native_default",
+      "candidate_websocket_policy": "native_default",
+      "control_provider_transport_policy": "explicitly_disabled",
+      "control_websocket_policy": "explicitly_disabled"
+    },
+    "unchanged_fields": [
+      "auth identity",
+      "credential revision",
+      "runtime",
+      "sandbox",
+      "proxy environment",
+      "HOME/CODEX_HOME semantics",
+      "model",
+      "effort",
+      "dynamic tools",
+      "developer instruction",
+      "prompt",
+      "deadlines",
+      "stop semantics",
+      "host/guest mapping semantics"
+    ]
+  },
+  "historical_evidence_recomputed_or_overwritten": false,
+  "host_guest_bind_report": {
+    "passed": true,
+    "host_home_path": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+    "guest_home_path": "/home/codex",
+    "host_home_path_is_host": true,
+    "guest_home_path_is_guest": true,
+    "sources": [
+      {
+        "host_path": "/usr",
+        "guest_path": "/usr",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/lib",
+        "guest_path": "/lib",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/lib64",
+        "guest_path": "/lib64",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/etc/ssl",
+        "guest_path": "/etc/ssl",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/etc/resolv.conf",
+        "guest_path": "/etc/resolv.conf",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/etc/hosts",
+        "guest_path": "/etc/hosts",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+        "guest_path": "/home/codex",
+        "expected_type": "directory",
+        "actual_type": "directory",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/d/Programs/Polis/.tools/codex-linux-0.153.4/package/vendor/x86_64-unknown-linux-musl/bin/codex",
+        "guest_path": "/codex",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/c/Users/chyinan/.codex/auth.json",
+        "guest_path": "/home/codex/auth.json",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      },
+      {
+        "host_path": "/mnt/d/Programs/Polis/.tools/codex-linux-0.153.4/package/vendor/x86_64-unknown-linux-musl/bin/codex-code-mode-host",
+        "guest_path": "/codex-code-mode-host",
+        "expected_type": "regular_file",
+        "actual_type": "regular_file",
+        "source_namespace": "host",
+        "exists": true,
+        "readable": true
+      }
+    ],
+    "guest_targets": [
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc/ssl",
+      "/etc/resolv.conf",
+      "/etc/hosts",
+      "/home/codex",
+      "/codex",
+      "/home/codex/auth.json",
+      "/codex-code-mode-host"
+    ],
+    "launch_home_binding": true,
+    "no_guest_source_conflation": true
+  },
+  "launch_config_digest_candidate": "e808305f1065f404996a150f394eeb3f13dc4b37080d122d163d11b73a028fd7",
+  "launch_config_digest_control": "32e29080d85cffce1fa5c7fe7a1319475041fa6da25f0713c37baf2594254ec4",
+  "passed": true,
+  "source_execution_config_digest_candidate": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+  "source_execution_config_digest_control": "60a7cb6151571dc6e1d7d73573360fca1257ce890d9b2df85e1d03e524ecdcb6",
+  "t13_control_reexpressed_v3": {
+    "fingerprint_schema_version": "canonical-manifest-v3",
+    "combination": {
+      "codex_version": "0.153.4",
+      "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+      "model": "gpt-5.6-luna",
+      "effort": "medium",
+      "runtime_profile": "wsl-linux-amd64",
+      "sandbox_class": "read-only",
+      "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+      "auth_source_class": "mounted_codex_auth_file",
+      "code_mode_host_sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+      "capability_digest": "105552b04a3e7379adf28dd266c1c5108fedbef824173a6455003af20647affb",
+      "native_protocol_digest": "d052a9f423be59cd61cffb9dd8bf65b4e1a161b49800706c136c2f8862976244"
+    },
+    "auth": {
+      "auth_source_class": "mounted_codex_auth_file",
+      "auth_identity_fingerprint_schema_version": "auth-identity-v1",
+      "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+      "auth_identity_fingerprint_status": "available",
+      "auth_credential_revision_fingerprint_schema_version": "auth-credential-revision-v1",
+      "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+      "auth_credential_revision_fingerprint_status": "available"
+    },
+    "transport": {
+      "provider_transport_policy": "explicitly_disabled",
+      "websocket_policy": "explicitly_disabled"
+    }
+  },
+  "t13_v2_fingerprint": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+  "t14c_candidate_v3": {
+    "fingerprint_schema_version": "canonical-manifest-v3",
+    "combination": {
+      "codex_version": "0.153.4",
+      "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+      "model": "gpt-5.6-luna",
+      "effort": "medium",
+      "runtime_profile": "wsl-linux-amd64",
+      "sandbox_class": "read-only",
+      "proxy_config_digest": "0b36bacf04723f9d4afb312885e74c63ef5730dac2efde5f32e9b0e78921d6c3",
+      "auth_source_class": "mounted_codex_auth_file",
+      "code_mode_host_sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+      "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+      "native_protocol_digest": "d052a9f423be59cd61cffb9dd8bf65b4e1a161b49800706c136c2f8862976244"
+    },
+    "auth": {
+      "auth_source_class": "mounted_codex_auth_file",
+      "auth_identity_fingerprint_schema_version": "auth-identity-v1",
+      "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+      "auth_identity_fingerprint_status": "available",
+      "auth_credential_revision_fingerprint_schema_version": "auth-credential-revision-v1",
+      "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+      "auth_credential_revision_fingerprint_status": "available"
+    },
+    "transport": {
+      "provider_transport_policy": "native_default",
+      "websocket_policy": "native_default"
+    }
+  }
+}

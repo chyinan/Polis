@@ -1,0 +1,10 @@
+{
+  "record_type": "polis-product-artifact-evidence@1",
+  "status": "NOT_CREATED",
+  "task_id": null,
+  "mission_id": "4f000865902ec201d528c8ce3a039798",
+  "artifact_id": null,
+  "digest": null,
+  "cas_resolution": "NOT_APPLICABLE",
+  "reason": "No Task was started and the harness did not write or repair an artifact."
+}

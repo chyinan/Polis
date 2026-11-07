@@ -1,0 +1,75 @@
+ok  	polis/internal/taskvalidation	0.026s
+--- FAIL: TestRealProviderWorkerAdapterUsesOfflineRuntimeAndFinalizesWorkerLifecycle (10.11s)
+    real_provider_worker_test.go:60: timed out waiting for offline provider terminal state
+--- FAIL: TestRealProviderWorkerAdapterMissingBindingCannotQualifyOrSubmit (10.10s)
+    real_provider_worker_test.go:159: missing-binding task did not fail closed: err=<nil>
+FAIL
+FAIL	polis/internal/control	20.562s
+--- FAIL: TestPeerWorkspaceCheckReturnsActionableSemanticCriteria (0.02s)
+    behavioral_hardening_test.go:82: POLICY_DENIED
+--- FAIL: TestProgressCheckpointIsHandoverStateButNotArtifactAcceptance (0.01s)
+    behavioral_hardening_test.go:156: POLICY_DENIED
+--- FAIL: TestContractBoundObligationIsSupersededAndReplacementIsCurrent (0.01s)
+    behavioral_hardening_test.go:220: POLICY_DENIED
+--- FAIL: TestPeerSendMissingTaskTargetReturnsActionableFailureAndNoRows (0.01s)
+    behavioral_hardening_test.go:259: POLICY_DENIED
+--- FAIL: TestQualifiedCheckpointFreshness (0.07s)
+    --- FAIL: TestQualifiedCheckpointFreshness/current (0.01s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/workspace (0.01s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/checker (0.01s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/policy (0.01s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/contract-recovery (0.01s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/progress-history (0.01s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+    --- FAIL: TestQualifiedCheckpointFreshness/old-check (0.01s)
+        checkpoint_freshness_test.go:40: POLICY_DENIED
+--- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance (0.07s)
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/0 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/1 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/2 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/3 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/4 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/5 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/6 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+    --- FAIL: TestCheckpointFinalizationConcurrentContractAcceptance/7 (0.01s)
+        checkpoint_freshness_test.go:122: POLICY_DENIED
+--- FAIL: TestFaultBoundaries (0.01s)
+    fault_test.go:28: POLICY_DENIED
+--- FAIL: TestProcessCrashRecovery (0.01s)
+    fault_test.go:179: POLICY_DENIED
+--- FAIL: TestFrontendCollabApplyRejectsCandidateContentAndRequiresStructuredReferences (0.01s)
+    frontend_interaction_contract_test.go:12: POLICY_DENIED
+--- FAIL: TestFrontendCollabApplyAndProgressCheckpointUseReceiptReferences (0.01s)
+    frontend_interaction_contract_test.go:55: POLICY_DENIED
+--- FAIL: TestFrontendCollabApplyReportsUnsupportedCheckpointReceipt (0.01s)
+    frontend_interaction_contract_test.go:108: POLICY_DENIED
+--- FAIL: TestFrontendInteractionRejectsStaleAndAmbiguousReferences (0.01s)
+    frontend_interaction_contract_test.go:154: POLICY_DENIED
+--- FAIL: TestPostgresSlice (0.01s)
+    kernel_test.go:25: POLICY_DENIED
+--- FAIL: TestLostLeaseCannotRecoverOverSuccessor (0.01s)
+    lifecycle_test.go:21: POLICY_DENIED
+--- FAIL: TestCloseReleasesLeaseMutexBeforeWaitingForTransactions (0.01s)
+    lifecycle_test.go:45: POLICY_DENIED
+--- FAIL: TestMissionCommandGoalAndTerminalTransitions (0.01s)
+    mission_command_test.go:20: POLICY_DENIED
+--- FAIL: TestMissionCommandCreateIsIdempotentByRequestKey (0.01s)
+    mission_command_test.go:63: POLICY_DENIED
+--- FAIL: TestProductWorkerFailureAndStopFenceStaleWriter (0.01s)
+    mission_command_test.go:93: POLICY_DENIED
+FAIL
+FAIL	polis/internal/kernel	112.707s
+ok  	polis/internal/workbench	0.045s
+FAIL

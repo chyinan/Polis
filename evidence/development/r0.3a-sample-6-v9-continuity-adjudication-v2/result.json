@@ -1,0 +1,7 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-V9-CONTINUITY-ADJUDICATION",
+  "status": "INCONCLUSIVE",
+  "error": "v9 restored database missing",
+  "provider_egress": 0,
+  "historical_evidence_modified": false
+}

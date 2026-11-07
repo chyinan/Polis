@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "id": "review-20260913T123920.807156200Z",
+    "status": "failed"
+  },
+  "submission": {
+    "verdict": "failed",
+    "findings": [
+      "The final candidates fail the declared paginated Backend-to-Frontend integration."
+    ],
+    "evidence": [
+      "4f57c71061c10ab5a78f632d8db59321"
+    ],
+    "confidence": "high",
+    "limitations": [
+      "Limited to frozen read-only tool outputs."
+    ]
+  },
+  "subject": {
+    "subject_revision": "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+    "task_input": "Independently assess the frozen public R0.3A peer-collaboration contract, final candidates, direct responsibility lifecycle, same-employee handover and integrated acceptance.",
+    "contract_revision_id": "4f57c71061c10ab5a78f632d8db59321",
+    "message_id": "7d027b5a8fd2267a68b364e47f4635ca",
+    "obligation_id": "7d027b5a8fd2267a68b364e47f4635ca",
+    "backend_artifact_id": "5bf77f15ee867b857f116faad0312c4f",
+    "frontend_artifact_id": "a0191e5ce29a56eb347b421df39fb86e",
+    "backend_digest": "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+    "frontend_digest": "16f3c32b05a6a57edaf38d42b4c7ebf706be593c09b836ea70097dc2a0af768f",
+    "allowed_refs": [
+      "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+      "4f57c71061c10ab5a78f632d8db59321",
+      "7d027b5a8fd2267a68b364e47f4635ca",
+      "7d027b5a8fd2267a68b364e47f4635ca",
+      "5bf77f15ee867b857f116faad0312c4f",
+      "a0191e5ce29a56eb347b421df39fb86e",
+      "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+      "16f3c32b05a6a57edaf38d42b4c7ebf706be593c09b836ea70097dc2a0af768f",
+      "a300088a9d514a9c85e7beff5399ace9",
+      "ccd5906064dce787c3dc864f6eb8aa7b"
+    ]
+  },
+  "submitted_at": "2026-09-13T12:39:20.8071562Z"
+}

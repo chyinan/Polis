@@ -1,0 +1,85 @@
+{
+  "guest_default_route": true,
+  "guest_inventory": {
+    "interface_categories": [
+      "lo:UNKNOWN:ipv4,ipv4,ipv6",
+      "eth0:UP:ipv4,ipv6"
+    ],
+    "loopback_state": "UNKNOWN:ipv4,ipv4,ipv6",
+    "default_route_present": true,
+    "default_route_interface": "eth0",
+    "route_entries": 2,
+    "resolver": {
+      "metadata_classification": "644 regular",
+      "content_digest": "88ffc821cae3cb5358773865583b3673370661e9f106e42e21a49b728af45f39",
+      "dns_server_categories": [
+        "private_ipv4"
+      ],
+      "search_domain_present": true
+    },
+    "proc_net": {
+      "route_entries": 3,
+      "tcp_entries": 4,
+      "tcp6_entries": 1,
+      "state_digest": "88ffc821cae3cb5358773865583b3673370661e9f106e42e21a49b728af45f39"
+    },
+    "topology": "networked_with_default_route"
+  },
+  "guest_namespaces": {
+    "mnt": {
+      "target": "mnt:[4026532234]",
+      "inode": "4026532235"
+    },
+    "net": {
+      "target": "net:[4026531840]",
+      "inode": "4026531840"
+    },
+    "user": {
+      "target": "user:[4026532229]",
+      "inode": "4026532230"
+    }
+  },
+  "host_inventory": {
+    "interface_categories": [
+      "lo:UNKNOWN:ipv4,ipv4,ipv6",
+      "eth0:UP:ipv4,ipv6"
+    ],
+    "loopback_state": "UNKNOWN:ipv4,ipv4,ipv6",
+    "default_route_present": true,
+    "default_route_interface": "eth0",
+    "route_entries": 2,
+    "resolver": {
+      "metadata_classification": "644 regular",
+      "content_digest": "88ffc821cae3cb5358773865583b3673370661e9f106e42e21a49b728af45f39",
+      "dns_server_categories": [
+        "private_ipv4"
+      ],
+      "search_domain_present": true
+    },
+    "proc_net": {
+      "route_entries": 3,
+      "tcp_entries": 4,
+      "tcp6_entries": 1,
+      "state_digest": "88ffc821cae3cb5358773865583b3673370661e9f106e42e21a49b728af45f39"
+    },
+    "topology": "networked_with_default_route"
+  },
+  "host_namespaces": {
+    "mnt": {
+      "target": "mnt:[4026532219]",
+      "inode": "4026532219"
+    },
+    "net": {
+      "target": "net:[4026531840]",
+      "inode": "4026531840"
+    },
+    "user": {
+      "target": "user:[4026531837]",
+      "inode": "4026531837"
+    }
+  },
+  "net_namespace_relation": "SAME",
+  "network_topology_guest": "shared_wsl_interfaces",
+  "network_topology_host": "shared_wsl_interfaces",
+  "route_relation": "SAME"
+}

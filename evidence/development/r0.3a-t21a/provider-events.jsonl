@@ -1,0 +1,6 @@
+{"timestamp":"2026-09-11T09:11:34.0396458Z","direction":"send","line_ending":"CRLF","id":"1","method":"initialize"}
+{"timestamp":"2026-09-11T09:11:34.2065523Z","direction":"receive","line_ending":"LF","id":"1"}
+{"timestamp":"2026-09-11T09:11:34.2120612Z","direction":"send","line_ending":"CRLF","method":"initialized"}
+{"timestamp":"2026-09-11T09:11:34.2140594Z","direction":"send","line_ending":"CRLF","id":"2","method":"thread/start"}
+{"timestamp":"2026-09-11T09:11:34.2243712Z","direction":"receive","line_ending":"LF","method":"remoteControl/status/changed"}
+{"timestamp":"2026-09-11T09:11:37.4986703Z","direction":"receive","line_ending":"LF","id":"2"}

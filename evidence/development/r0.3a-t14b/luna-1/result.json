@@ -1,0 +1,23 @@
+{
+  "status": "NOT_STARTED",
+  "result": "preflight_failed",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "model": "gpt-5.6-luna",
+  "profile": "gpt-5.6-luna/medium",
+  "medium_started": 0,
+  "high_started": 0,
+  "dynamic_tool_count": 0,
+  "auth_source_class": "mounted_codex_auth_file",
+  "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+  "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+  "canonical_manifest_digest": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "configured_transport_policy": "native_default",
+  "actual_transport": "not_observable",
+  "process_launch_attempted": true,
+  "turn_started": false,
+  "first_valid_output": false,
+  "native_usage_updates": 0,
+  "stop_receipt": "process-group:421:waited",
+  "stop_confirmed": true,
+  "error": "host_guest_home_path_conflation: bwrap: Can't find source path /home/codex"
+}

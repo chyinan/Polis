@@ -1,0 +1,9 @@
+postgres_database=polis_r0_r05b8_post_31914
+postgres_temp_root=/tmp/polis-r05b8-post-pg.sCkjRc
+database_prefix=polis_r0_
+checkpoint_lifecycle=PASSED
+post_publication_fencing=PASSED
+workbench_projection=PASSED
+real_provider_worker_adapter_compatibility=PASSED
+provider_traffic=0
+business_mutations=0

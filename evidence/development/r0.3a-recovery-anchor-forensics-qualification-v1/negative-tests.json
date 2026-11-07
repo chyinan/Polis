@@ -1,0 +1,10 @@
+{
+    "corrupted_snapshot":  "DENY",
+    "missing_blob":  "DENY",
+    "schema_version_mismatch":  "DENY",
+    "partial_restore":  "DENY",
+    "corrupted_snapshot_denied":  true,
+    "missing_blob_denied":  true,
+    "schema_mismatch_denied":  true,
+    "partial_restore_denied":  true
+}

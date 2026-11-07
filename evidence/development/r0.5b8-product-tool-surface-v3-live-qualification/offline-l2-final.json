@@ -1,0 +1,43 @@
+{
+  "record_type": "polis-product-surface-offline-l2-final@1",
+  "status": "PASSED",
+  "surface_id": "polis-product-tool-surface@3",
+  "tool_count": 7,
+  "manifest_digest": "95d4f2e2b1551096f05c7683786ec09a2d75189f8411fc66ffc759514de32257",
+  "aggregate_schema_bytes": 2206,
+  "aggregate_schema_digest": "5ee61b10d249a11614d176fda5c3df86f26e0b650c1074b705dc48b4405c35cc",
+  "gates": {
+    "artifact_policy": true,
+    "authorization_coverage": true,
+    "candidate_state_fencing_integration": true,
+    "checkpoint_lifecycle": true,
+    "corrected_live2_call7_equivalent": true,
+    "deterministic_manifest": true,
+    "dispatcher_coverage": true,
+    "frozen_malformed_live2_payloads": true,
+    "post_publication_fencing": true,
+    "product_adapter_compatibility": true,
+    "receipt_reference_binding": true,
+    "registration_validity": true,
+    "schema_parseability": true,
+    "task_validation_binding_integration": true,
+    "workspace_fencing": true
+  },
+  "test_artifacts": [
+    "exact-product-surface-test.txt",
+    "offline/provider-codex-tests.txt",
+    "offline/taskvalidation-tests.txt",
+    "offline/control-tests.txt",
+    "offline/kernel-tests.txt",
+    "offline/workbench-tests.txt",
+    "offline/result.txt",
+    "post-hardening-provider-tests.txt"
+  ],
+  "provider_reservations": 0,
+  "provider_egress": 0,
+  "disposable_database_removed": true,
+  "business_database_used": false,
+  "historical_b2_surface_status": "HISTORICAL",
+  "historical_r03a_surfaces_status": "HISTORICAL / NOT_REUSABLE",
+  "recorded_at": "2026-09-19T16:48:17.819348631Z"
+}

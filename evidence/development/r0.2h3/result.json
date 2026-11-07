@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "model": "gpt-5.6-luna",
+  "subject_revision": "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+  "contamination_preflight": "passed",
+  "codex_version": "codex-cli 0.151.0",
+  "schema_digest": "",
+  "capability_digest": "9f009fe3b4ffb8041aae0a0ae85161a1596fdba5def4104183b56eac43b01724",
+  "started": "2026-09-08T11:29:06.454542212Z",
+  "finished": "2026-09-08T11:31:31.948698962Z",
+  "turns": [
+    {
+      "number": 1,
+      "purpose": "R0.2H2 independent behavioral review",
+      "profile": "gpt-5.6-luna/high",
+      "status": "passed",
+      "started": "2026-09-08T11:29:06.520994251Z",
+      "finished": "2026-09-08T11:31:18.917569138Z",
+      "duration_ms": 132396,
+      "thread_id": "01a080c7-6f8a-7e01-b5c8-225fda344805",
+      "session_id": "30dbe7437478dbd0b9af8d64a9912698",
+      "tool_events": [
+        "workspace_read",
+        "context_read",
+        "work_current",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit",
+        "review_submit"
+      ],
+      "receipts": [
+        "30dbe7437478dbd0b9af8d64a9912698"
+      ],
+      "stop_receipt": "process-group:841:waited",
+      "stop_confirmed": true,
+      "check_passed": false,
+      "reviewer_verdict": "passed",
+      "reviewer_confidence": "high",
+      "review_submission_receipt": "30dbe7437478dbd0b9af8d64a9912698"
+    }
+  ],
+  "single_worker": "",
+  "handover": "passed",
+  "behavior": "passed",
+  "reviewer_verdict": "passed",
+  "hidden_verifier_result": "passed",
+  "review_isolation_result": "passed",
+  "old_writer": "",
+  "usage": {
+    "medium_turns": 0,
+    "high_turns": 1,
+    "money": "not_estimated",
+    "limit": "R0.2H2: one independent High; concurrency 1; no Medium"
+  }
+}

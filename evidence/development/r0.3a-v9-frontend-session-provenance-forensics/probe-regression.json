@@ -1,0 +1,34 @@
+{
+  "mutation": false,
+  "read_only": true,
+  "reasons": [
+    "frontend_sessions_expected_zero",
+    "frontend_live_writer_expected_zero"
+  ],
+  "state": {
+    "company_id": "r03a-pagination-v3-company-1789379324974307400",
+    "mission_id": "r03a-pagination-v3-mission-1789379324974307400",
+    "backend_task_id": "dff11354ffe0afc1b93e8565dc5bb026",
+    "frontend_task_id": "629af90e4bc469dc3e961a9bdb7d555a",
+    "message_id": "45a77c6833518bd8fef1ddfe8d28b985",
+    "obligation_id": "45a77c6833518bd8fef1ddfe8d28b985",
+    "contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+    "frontend_task_state": "ready",
+    "message_state": "persisted",
+    "obligation_state": "pending",
+    "obligation_owner": "emp-frontend",
+    "contract_state": "accepted",
+    "backend_session_state": "stopped",
+    "frontend_session_count": 1,
+    "live_writer_count": 1,
+    "employee_epoch": 8,
+    "runtime_incarnation": "a383396251da6eeecfb7ec58183a9f35",
+    "current_writer_session": "afb2408e34744a4b4b078c609d57dcc5",
+    "planner_relay_count": 0,
+    "company_sequence": 68,
+    "event_count": 68,
+    "workspace_revision": 1,
+    "workspace_digest": "e2d27d8aa9187eb9ddd0a0ff547af31df440e9590ccdb313b242bda97b67ed8f"
+  },
+  "status": "FRONTEND_STARTING_STATE_MISMATCH"
+}

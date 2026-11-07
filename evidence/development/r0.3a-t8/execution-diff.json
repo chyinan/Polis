@@ -1,0 +1,1451 @@
+﻿{
+    "generated_at":  "2026-09-09T07:12:52.6565996Z",
+    "safety":  "no provider call; no secret values recorded",
+    "A":  {
+              "name":  "A_working_codex_desktop_cli",
+              "executable":  {
+                                 "present":  true,
+                                 "class":  "windows_codex_executable",
+                                 "path_category":  "user_profile_or_install",
+                                 "sha256":  "e5aa76d19c7c94e2e9ef9b707d590206a73ac0e97c8ddc8382181242494bef75",
+                                 "bytes":  295408944
+                             },
+              "version":  "codex-cli 0.153.4",
+              "code_mode_host":  {
+                                     "present":  true,
+                                     "class":  "windows_code_mode_host",
+                                     "path_category":  "user_profile_or_install",
+                                     "sha256":  "3eb2083b58f0982506e5c3cb7a550fb6538d718c29f0a75ca4848852a0aff0c7",
+                                     "bytes":  72475952
+                                 },
+              "runtime":  "windows_x64_desktop",
+              "cwd":  "D:\\Programs\\Polis",
+              "home":  {
+                           "HOME":  "absent_env_default_windows_profile",
+                           "CODEX_HOME":  "absent_env_default_user_dot_codex"
+                       },
+              "config":  {
+                             "file":  {
+                                          "present":  true,
+                                          "class":  "user_codex_config",
+                                          "path_category":  "user_profile_or_install",
+                                          "sha256":  "95e8b796b32bb68d738982e19bcf31751abb0b37b7195ba9e2dba235bbf4cfbc",
+                                          "bytes":  9758
+                                      },
+                             "keys":  [
+                                          {
+                                              "name":  "model",
+                                              "category":  "string",
+                                              "semantic":  "gpt-5.6-luna",
+                                              "digest":  "1da996bb8acb84180ac4b7a5a58453c847f472c2b6f4d1a15218509ce5984884"
+                                          },
+                                          {
+                                              "name":  "review_model",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "3d026fc97f356f1bf7f2914d2a7aade746e31476e1774dbb5894cfeb337314bd"
+                                          },
+                                          {
+                                              "name":  "model_reasoning_effort",
+                                              "category":  "string",
+                                              "semantic":  "max",
+                                              "digest":  "9f8bce6a0f469f0a823a32bc247b3419317ad5a7d73802e0d910cf7458989b9b"
+                                          },
+                                          {
+                                              "name":  "disable_response_storage",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "network_access",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "6e30bc5c1535567991cb179e5c19469e0c91016ca7e917f8afe2161acd506591"
+                                          },
+                                          {
+                                              "name":  "windows_wsl_setup_acknowledged",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "model_context_window",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "6cce36d9f8a9e151b100234af75cca89d55bcb94c153f51847debdf1f39cae45"
+                                          },
+                                          {
+                                              "name":  "model_auto_compact_token_limit",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "d1d282f04815e254882e9fee0144155003a6c2383f1614c3c3a8f575b6f2db2f"
+                                          },
+                                          {
+                                              "name":  "sandbox_mode",
+                                              "category":  "string",
+                                              "semantic":  "danger-full-access",
+                                              "digest":  "25dbdb69602e7e7ee8d64540c0d1cb511db652bbaf922a5df402cd12f8dad4ee"
+                                          },
+                                          {
+                                              "name":  "approval_policy",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "48c4ee8f1739566a5ab22826f6409654a11b3e7b014f0ec17fc8bef69ac2fba4"
+                                          },
+                                          {
+                                              "name":  "service_tier",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "360c05205088fe390b52b275662ac6ba2fe1be3f77a7a17abf7299c23309fb3a"
+                                          },
+                                          {
+                                              "name":  "notify",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "5f792757d88e5ebcf80cd92e774f623e32d77c20a97ccddd1fe7fa563603e169"
+                                          },
+                                          {
+                                              "name":  "features.goals",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "features.js_repl",
+                                              "category":  "boolean:false",
+                                              "semantic":  null,
+                                              "digest":  "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027D:\\Programs\\Kokoro-Engine\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027C:\\Users\\chyinan\\.openclaw\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\dee71joc\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\\dolby-encoder-gui-pro\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\鏋搷engine\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\windows\\system32\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\\dolby_encoding_engine\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\\omnivoice\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\\gpt-sovits-v2pro-20250604-nvidia50\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\hmall\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\php\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\desktop\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\寰湇鍔″疄璁?.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\uvr-headless-runner\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\ideaprojects\\hmall-micro\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\鍚嶇О鏈畾锛?.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\aetherflow\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\local rag agent system\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\rag-local-system\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\desktop\\鏂板缓鏂囦欢澶?.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\desktop\\鏂板缓鏂囦欢澶?(2)\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\desktop\\鏂板缓鏂囦欢澶?(3)\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\\sillytavern\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\\comfyui_windows_portable\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\routine-95c713c1-cb22-44f6-a764-e9e2d55f18ea\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\local\\programs\\open design\\resources\\app\\prebundled\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\routine-75fea6a2-3392-4d48-8906-78a16e74c8d3\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\tools\\bento4-sdk-1-6-0-641.x86_64-microsoft-win32\\bin\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\routine-596eb083-afbf-4b64-8b15-096ce11917ec\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\routine-955c21b0-4f09-4c69-9599-c3db0983130c\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\desktop\\鏂板缓鏂囦欢澶?(4)\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\routine-0d9aa16f-0630-4078-911b-fa69fd63e458\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\lyricforge\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\900e39d9-cb15-472a-9baa-c186e13736a9\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\launcher\\channels\\stable\\namespaces\\release-stable-win\\versions\\0.14.0\\payload\\resources\\app\\prebundled\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\routine-dd738eef-c7e4-48e1-bb59-aa999bb592cf\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\openjoc\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\aegisrag\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\documents\\codex\\2026-08-31\\venv-ps-d-programs-mini-rednote\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\documents\\codex\\2026-08-31\\b-w\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\program files\\dolby media encoder\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\jocforge\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\documents\\codex\\2026-09-02\\agent-reach-https-raw-githubusercontent-com\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\local\\temp\\od-conn-test-tqjzak\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\6ae25bf4-1e62-415b-bb18-8e74eb59e252\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\appdata\\roaming\\open design\\namespaces\\release-stable-win\\data\\projects\\routine-35bf965a-8b67-4429-9941-8248379a8329\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\documents\\codex\\2026-09-06\\c-users-chyinan-downloads-wallpaper-engine\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\polis\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027d:\\programs\\openjoc-browser\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\documents\\codex\\2026-09-09\\s\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "projects.\u0027c:\\users\\chyinan\\documents\\codex\\2026-09-09\\1-ai-agent-1-coze-t\u0027.trust_level",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2baf1155f83f4bffedaca0fd12b78cd7dc51e55c3644f4bd2a69a975460c65ac"
+                                          },
+                                          {
+                                              "name":  "windows.sandbox",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "14c5714354bab7d2c1cd941faecb0be1f24fdbc516015afa4d200b0385058f0f"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.cdp-bridge.command",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "bc383da2eb696e590cb20aa525de75f9b784dc4dfd01e39db2954c5ab7a14985"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.cdp-bridge.args",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "14c5392fba60210b025d6c51dba1aea434c5bd2591c08d82041db6f72f597455"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.cdp-bridge.enabled",
+                                              "category":  "boolean:false",
+                                              "semantic":  null,
+                                              "digest":  "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.cdp-bridge.tools.browser_execute_js.approval_mode",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "6ef4cbc4f3f0a1af3187e96c208a6b7737cfa1cdfe40d84822a94d8d5eea0ac3"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.cdp-bridge.tools.browser_get_tabs.approval_mode",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "6ef4cbc4f3f0a1af3187e96c208a6b7737cfa1cdfe40d84822a94d8d5eea0ac3"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.openaiDeveloperDocs.url",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "54159cda485a812bb6bcac10fd0632cf092733adeb2eb9527d2f301ebfd7f9a4"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.claude-peers.command",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2b0ea32710d63b14bef8daa2637222ab504edfa6353df634c8d7775f1dc6229c"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.claude-peers.args",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "6f6658c493dff06aa495868e2a35589f66dcc07b7f0c98ddab069e07a70c58aa"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.claude-peers.enabled",
+                                              "category":  "boolean:false",
+                                              "semantic":  null,
+                                              "digest":  "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.args",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.command",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "2f55031cee7c50169b90f0d40700a124fc25841625a631c60e2b8ca41030a257"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.startup_timeout_sec",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "2abaca4911e68fa9bfbf3482ee797fd5b9045b841fdff7253557c5fe15de6477"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "ea33dc847d962e75874bfed11cf65b69acebbfa3cabec313effeb7c8b4fc90e1"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.NODE_REPL_NODE_MODULE_DIRS",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "f1e062886f7a39e928550ebdbf0f3c05bc96de2b5e53277dcd4c1c450c2a43ea"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.NODE_REPL_NODE_PATH",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "fd4db4626b7267787c8e14aa70060dac344c1045ca412455998d4f5fe252799d"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.NODE_REPL_TRUSTED_CODE_PATHS",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "3a2397f91bf4b34d74ecb349b454b9f8ac62026f0df0fb43500458e0a2e6d3ad"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.CODEX_HOME",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "9812a7efea8e97d6e5d4ec7f3a95ca971a0c0bb0ff21911dd48a36025f1ad215"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.BROWSER_USE_AVAILABLE_BACKENDS",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "e87f224e87ddf7292e451b139c427d8aa26812d2ee2d40f70c29f82f86a3f1c5"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.BROWSER_USE_TINYSKY_ENABLED",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "391552c099c101b131feaf24c5795a6a15bc8ec82015424e0d2b4274a369a0bf"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.BROWSER_USE_CODEX_APP_BUILD_FLAVOR",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "4120bf0e89c30b878b5d1830d3e31493080be0f6dfd295deceacea83cd4dbb50"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.BROWSER_USE_CODEX_APP_VERSION",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "5987373a44b570f3cb20751e1cf6ddbfd1cfc9c964a20e91929fc5e1fcb76395"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.NODE_REPL_TRUSTED_SERVICES",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "4401f2416296cd34a3d2301e717db3cbfba309aef0ef0a44dead733288a5e8ee"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.SKY_CUA_NATIVE_PIPE",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "391552c099c101b131feaf24c5795a6a15bc8ec82015424e0d2b4274a369a0bf"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.SKY_CUA_NATIVE_PIPE_DIRECTORY",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "d59d9ccd5861a905e42485d949fc892d7e19257594d9fbc8af7ab1c366b69756"
+                                          },
+                                          {
+                                              "name":  "mcp_servers.node_repl.env.CODEX_CLI_PATH",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "54a2317876c5074e165ff69abf1a90317356d8daed0fdb14dad577f30f27c3fa"
+                                          },
+                                          {
+                                              "name":  "plugins.\"superpowers@openai-curated\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"documents@openai-primary-runtime\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"pdf@openai-primary-runtime\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"spreadsheets@openai-primary-runtime\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"presentations@openai-primary-runtime\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"template-creator@openai-primary-runtime\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"chrome@openai-bundled\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"visualize@openai-bundled\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"sites@openai-bundled\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"computer-use@openai-bundled\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"browser@openai-bundled\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"codex-app-tools@openai-bundled\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "plugins.\"unified-computer-use@openai-bundled\".enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "marketplaces.openai-bundled.source_type",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "ea17e25c6c7aa6ef9407f976a670e87e37bc7e2a86b7bd4a3305bb16f1ba6052"
+                                          },
+                                          {
+                                              "name":  "marketplaces.openai-bundled.source",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "24fd5a272a1acb8693dac792b94f560d9415a5c7319ff84ec5cc08c1c0beddcd"
+                                          },
+                                          {
+                                              "name":  "marketplaces.openai-primary-runtime.source_type",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "ea17e25c6c7aa6ef9407f976a670e87e37bc7e2a86b7bd4a3305bb16f1ba6052"
+                                          },
+                                          {
+                                              "name":  "marketplaces.openai-primary-runtime.source",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "061e1ce2a4cda1421297d643bd17698cbaaf1e106d2699255da2fd632e33878d"
+                                          },
+                                          {
+                                              "name":  "shell_environment_policy.inherit",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "ae6e9157995bdbcae79f0221fc05ca3df41dadbabd1d489c5aaee1a944a9c16d"
+                                          },
+                                          {
+                                              "name":  "shell_environment_policy.set.ANTHROPIC_AUTH_TOKEN",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "df8d077ce466507e131bd4c43bcaa96f380694a5a1aae987075cb2041ebf04d8"
+                                          },
+                                          {
+                                              "name":  "shell_environment_policy.set.ANTHROPIC_BASE_URL",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "2a373591259f1ef595e50cf31bcb27a33c94db6cf7d183a6cb81b70ec80e9495"
+                                          },
+                                          {
+                                              "name":  "shell_environment_policy.set.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "391552c099c101b131feaf24c5795a6a15bc8ec82015424e0d2b4274a369a0bf"
+                                          },
+                                          {
+                                              "name":  "shell_environment_policy.set.CLAUDE_CODE_MAX_OUTPUT_TOKENS",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "f75f4f27fa690a48602b4d533925abdded49850543c698aeb6bbf57987a456a3"
+                                          },
+                                          {
+                                              "name":  "desktop.conversationDetailMode",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "707afc8447172be15573874aa7077748f0c196d109dd565629d329d7c671e119"
+                                          },
+                                          {
+                                              "name":  "desktop.ambient-suggestions-enabled",
+                                              "category":  "boolean:true",
+                                              "semantic":  null,
+                                              "digest":  "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+                                          },
+                                          {
+                                              "name":  "desktop.integratedTerminalShell",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "7fbbfce094c78f2eedb64e8baf50e50eedf93c690c52acd3e0f3ecd11ec7f5ae"
+                                          },
+                                          {
+                                              "name":  "desktop.localeOverride",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "cb6ad26bff207781ff22d264c287efef6765b9ca8f90d29c39244f73827fedcc"
+                                          },
+                                          {
+                                              "name":  "desktop.followUpQueueMode",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "6d869e18aec9305c7e8ad0ece8837c08972b0682594c33bee8eb43f9d8d9d6b5"
+                                          },
+                                          {
+                                              "name":  "desktop.enabled-reasoning-efforts",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "19af23e6ded66c5eb1abc4db08ac552a0224cff3c9db17fde51314fd2f28def0"
+                                          },
+                                          {
+                                              "name":  "desktop.sansFontSize",
+                                              "category":  "other",
+                                              "semantic":  null,
+                                              "digest":  "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9"
+                                          },
+                                          {
+                                              "name":  "desktop.open-in-target-preferences.global",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "a4e7c64148e3949ad7571914e2b758d0d58d815c194f96c3e45d0bbdcdd8a375"
+                                          },
+                                          {
+                                              "name":  "hooks.state.\u0027C:\\Users\\chyinan\\.codex\\hooks.json:pre_tool_use:0:0\u0027.trusted_hash",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "358dd578df896880fb9b9dcc92c77f51dbd71167a11a4ba23963819af006a614"
+                                          },
+                                          {
+                                              "name":  "hooks.state.\u0027C:\\Users\\chyinan\\.codex\\hooks.json:post_tool_use:0:0\u0027.trusted_hash",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "3df62c500821fd683612fcd083f1bc52d9952647dfabb98237951947b8a4e83a"
+                                          },
+                                          {
+                                              "name":  "hooks.state.\u0027C:\\Users\\chyinan\\.codex\\hooks.json:post_tool_use:0:1\u0027.trusted_hash",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "4f676e9efcbed46228267e23ae5ed8ec1d9453b0b9007ea77a932bcfe84e5f3f"
+                                          },
+                                          {
+                                              "name":  "hooks.state.\u0027C:\\Users\\chyinan\\.codex\\hooks.json:post_tool_use:0:2\u0027.trusted_hash",
+                                              "category":  "string",
+                                              "semantic":  null,
+                                              "digest":  "0d5a0b39e7d6e1a05c9716077435094c54bceb81e1f04dbbce55033829ea9952"
+                                          }
+                                      ],
+                             "websocket":  [
+
+                                           ],
+                             "endpoint_override":  [
+
+                                                   ]
+                         },
+              "auth":  {
+                           "present":  true,
+                           "class":  "user_auth_file_opaque_fingerprint",
+                           "path_category":  "user_profile_or_install",
+                           "sha256":  "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4",
+                           "bytes":  4030
+                       },
+              "env":  [
+                          {
+                              "name":  "HTTP_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "HTTPS_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "ALL_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "NO_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "POLIS_NATIVE_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "OPENAI_BASE_URL",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "OPENAI_API_BASE",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          }
+                      ],
+              "processes":  [
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  10500,
+                                    "parent_name":  "sihost.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "33a3598a7e7bc7dfe4c0001769c59e60a263a91af2826e9ebeb1b898938070ca",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  false
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  46924,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "0d3137d88ac98d9d27973197dc0c7e7f7fddf81a0a9f2bf8bd10366f359ae3c9",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  false
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  31596,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "2a4f261f5331fc55dd757dac3e79720848ce46d279ba704adb98be9c292f91b6",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  false
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  33776,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "79f86bcbc79b8670d77d889cad5ecdd3206fbeef60a00671a33aed40eaac349d",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  41368,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "8cb0dedc8b1428a861ca0994c8795c723e91e0b0f9d5714f0c24c9d9da7f9e83",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  44100,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "a25b9fb0c4538c4c8b87b09d7b512a9c1b9c9ff76f6f76653f19bf1b2df5d747",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "codex.exe",
+                                    "pid":  7660,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "codex_install",
+                                    "executable_path_digest":  "396d4eacc63bbf5bbb45959b3d3500fef7a0d1b65b64eee72189de1ec53cd840",
+                                    "command_line_digest":  "0a0df567f454e1db18512c91e9973e088a85fed67432bda763d469db9431de8c",
+                                    "flags":  {
+                                                  "app_server":  true,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  false
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  12880,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "e2f8a1b3a7ae7eb5938039b0379fc5e4960c6b116146fe847d6da59d1acb692d",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  36140,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "6ebc8a7d989ae9d1470ccfb044056e65ea094c88b3e5f5b3af873d330c58bd24",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "codex-code-mode-host.exe",
+                                    "pid":  39292,
+                                    "parent_name":  "codex.exe",
+                                    "executable_category":  "codex_install",
+                                    "executable_path_digest":  "031108a04fabe0d296d616aecb0e7d26332bb813d56353443f7c14633402063d",
+                                    "command_line_digest":  "917cbaa5edc108ef072133c42097c815e7487fb6a826a9cda975f3071efbbbcb",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  false
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  26532,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "4865a86b4d971661c7acd2b546678c078775327ff52d14502698e2908a158c13",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  35776,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "1c8097d62338021cf900ce5390b732326475a3b286f163e9a952debdcb79e41f",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  56948,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "7aaf9f6e22e9138428183d8cf1d6959191d6197aa255587d38a383c2ed2b6095",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "ChatGPT.exe",
+                                    "pid":  58056,
+                                    "parent_name":  "ChatGPT.exe",
+                                    "executable_category":  "desktop_app",
+                                    "executable_path_digest":  "0efa7d07df1c875cc3a664d1b4ed8132df445abadc767693fb545e5bd930cbb7",
+                                    "command_line_digest":  "b5cd04e2028daf9108759ac7dbee115efbc71442d87e6e2fc9c399a2eb3449f3",
+                                    "flags":  {
+                                                  "app_server":  false,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  true
+                                              }
+                                },
+                                {
+                                    "name":  "codex.exe",
+                                    "pid":  31216,
+                                    "parent_name":  "node_repl.exe",
+                                    "executable_category":  "codex_install",
+                                    "executable_path_digest":  "396d4eacc63bbf5bbb45959b3d3500fef7a0d1b65b64eee72189de1ec53cd840",
+                                    "command_line_digest":  "cc8107299f128570e82fb2119415e2e69b07078848d41aa2d651935e3f108ebd",
+                                    "flags":  {
+                                                  "app_server":  true,
+                                                  "stdio":  false,
+                                                  "resume":  false,
+                                                  "sandbox":  false
+                                              }
+                                }
+                            ],
+              "transport":  {
+                                "websocket":  "config_or_default",
+                                "http_sse":  "cannot_determine_without_live_run",
+                                "system_proxy":  {
+                                                     "winhttp_category":  "configured",
+                                                     "winhttp_digest":  "9037d87e66deb2737479ff5d4883848dfc9dd355b4dd7115fc947cf70ddee4d7",
+                                                     "user_proxy_enabled":  true,
+                                                     "user_proxy_present":  true,
+                                                     "user_proxy_digest":  "2ede2b79df1369ad0b1144e4ce37ebdf08b7dfad3f9bf3241ec686f063f0087a",
+                                                     "auto_config_present":  false,
+                                                     "auto_config_digest":  null
+                                                 },
+                                "native_proxy":  "absent_in_observed_shell"
+                            },
+              "callback_ipc":  "current process observed but endpoint not recorded"
+          },
+    "B":  {
+              "name":  "B_polis_t6_app_server",
+              "executable":  {
+                                 "present":  true,
+                                 "class":  "linux_pinned_codex_executable",
+                                 "path_category":  "user_profile_or_install",
+                                 "sha256":  "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+                                 "bytes":  270815680
+                             },
+              "version":  "codex-cli 0.151.0",
+              "code_mode_host":  {
+                                     "present":  true,
+                                     "class":  "linux_code_mode_host",
+                                     "path_category":  "user_profile_or_install",
+                                     "sha256":  "a9adcea47799d8caaec5fbf073966fef2869f754bc7b463e30783880dfb12913",
+                                     "bytes":  69333056
+                                 },
+              "runtime":  "wsl_linux_amd64_bwrap",
+              "cwd":  "/work",
+              "home":  {
+                           "HOME":  "explicit_/home/codex",
+                           "CODEX_HOME":  "explicit_/home/codex"
+                       },
+              "config":  {
+                             "file":  {
+                                          "present":  false,
+                                          "class":  "generated_native_config",
+                                          "path_category":  "not_found",
+                                          "sha256":  null,
+                                          "bytes":  null
+                                      },
+                             "keys":  [
+
+                                      ],
+                             "websocket":  "not_recorded",
+                             "endpoint_override":  "not_recorded"
+                         },
+              "auth":  {
+                           "present":  true,
+                           "class":  "same_host_auth_file_ro_bound_to_/home/codex/auth.json",
+                           "path_category":  "user_profile_or_install",
+                           "sha256":  "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4",
+                           "bytes":  4030
+                       },
+              "env":  [
+                          {
+                              "name":  "HOME",
+                              "present":  true,
+                              "category":  "fixed_/home/codex",
+                              "digest":  "45b17a774640a1341b6062bf9c78a449b810aca3dc0460eb640744d3a66d1ef8"
+                          },
+                          {
+                              "name":  "CODEX_HOME",
+                              "present":  true,
+                              "category":  "fixed_/home/codex",
+                              "digest":  "45b17a774640a1341b6062bf9c78a449b810aca3dc0460eb640744d3a66d1ef8"
+                          },
+                          {
+                              "name":  "HTTP_PROXY",
+                              "present":  true,
+                              "category":  "localhost_proxy",
+                              "digest":  "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78777475af7ca51704"
+                          },
+                          {
+                              "name":  "HTTPS_PROXY",
+                              "present":  true,
+                              "category":  "localhost_proxy",
+                              "digest":  "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78777475af7ca51704"
+                          },
+                          {
+                              "name":  "ALL_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "NO_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "POLIS_NATIVE_PROXY",
+                              "present":  false,
+                              "category":  "controller_only_not_child_name",
+                              "digest":  "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78777475af7ca51704"
+                          },
+                          {
+                              "name":  "OPENAI_BASE_URL",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          }
+                      ],
+              "processes":  "historical_process_tree_not_recorded",
+              "launch_flags":  [
+                                   "bwrap",
+                                   "--unshare-all",
+                                   "--share-net",
+                                   "--die-with-parent",
+                                   "--new-session",
+                                   "--clearenv",
+                                   "--setenv HOME",
+                                   "--setenv CODEX_HOME",
+                                   "--setenv HTTP_PROXY",
+                                   "--setenv HTTPS_PROXY",
+                                   "/codex app-server --stdio"
+                               ],
+              "transport":  {
+                                "websocket":  "explicit_disabled",
+                                "http_sse":  "response_stream_used_exact_fallback_not_recorded",
+                                "system_proxy":  "not_inherited_due_clearenv",
+                                "native_proxy":  "localhost_HTTP_PROXY_and_HTTPS_PROXY"
+                            },
+              "callback_ipc":  "code_mode_host_present_zero_tools_callback_not_applicable"
+          },
+    "C":  {
+              "name":  "C_bare_app_server_no_turn_preflight",
+              "executable":  {
+                                 "present":  true,
+                                 "class":  "linux_pinned_codex_executable",
+                                 "path_category":  "user_profile_or_install",
+                                 "sha256":  "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+                                 "bytes":  270815680
+                             },
+              "version":  "codex-cli 0.151.0",
+              "code_mode_host":  {
+                                     "present":  true,
+                                     "class":  "linux_code_mode_host",
+                                     "path_category":  "user_profile_or_install",
+                                     "sha256":  "a9adcea47799d8caaec5fbf073966fef2869f754bc7b463e30783880dfb12913",
+                                     "bytes":  69333056
+                                 },
+              "runtime":  "wsl_linux_amd64_bwrap",
+              "cwd":  "/work",
+              "home":  {
+                           "HOME":  "explicit_/home/codex",
+                           "CODEX_HOME":  "explicit_/home/codex"
+                       },
+              "config":  {
+                             "file":  {
+                                          "present":  false,
+                                          "class":  "generated_native_config",
+                                          "path_category":  "not_found",
+                                          "sha256":  null,
+                                          "bytes":  null
+                                      },
+                             "keys":  [
+
+                                      ],
+                             "websocket":  "not_recorded",
+                             "endpoint_override":  "not_recorded"
+                         },
+              "auth":  {
+                           "present":  true,
+                           "class":  "same_host_auth_file_ro_bound_to_/home/codex/auth.json",
+                           "path_category":  "user_profile_or_install",
+                           "sha256":  "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4",
+                           "bytes":  4030
+                       },
+              "env":  [
+                          {
+                              "name":  "HOME",
+                              "present":  true,
+                              "category":  "fixed_/home/codex",
+                              "digest":  "45b17a774640a1341b6062bf9c78a449b810aca3dc0460eb640744d3a66d1ef8"
+                          },
+                          {
+                              "name":  "CODEX_HOME",
+                              "present":  true,
+                              "category":  "fixed_/home/codex",
+                              "digest":  "45b17a774640a1341b6062bf9c78a449b810aca3dc0460eb640744d3a66d1ef8"
+                          },
+                          {
+                              "name":  "HTTP_PROXY",
+                              "present":  true,
+                              "category":  "localhost_proxy",
+                              "digest":  "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78777475af7ca51704"
+                          },
+                          {
+                              "name":  "HTTPS_PROXY",
+                              "present":  true,
+                              "category":  "localhost_proxy",
+                              "digest":  "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78777475af7ca51704"
+                          },
+                          {
+                              "name":  "ALL_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "NO_PROXY",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          },
+                          {
+                              "name":  "POLIS_NATIVE_PROXY",
+                              "present":  false,
+                              "category":  "controller_only_not_child_name",
+                              "digest":  "75e38c4ba79a1f611e3696e50ad14ff4d21c9d234253ce78777475af7ca51704"
+                          },
+                          {
+                              "name":  "OPENAI_BASE_URL",
+                              "present":  false,
+                              "category":  "absent",
+                              "digest":  null
+                          }
+                      ],
+              "launch_flags":  [
+                                   "bwrap",
+                                   "--unshare-all",
+                                   "--share-net",
+                                   "--die-with-parent",
+                                   "--new-session",
+                                   "--clearenv",
+                                   "--setenv HOME",
+                                   "--setenv CODEX_HOME",
+                                   "--setenv HTTP_PROXY",
+                                   "--setenv HTTPS_PROXY",
+                                   "/codex app-server --stdio"
+                               ],
+              "transport":  {
+                                "websocket":  "explicit_disabled",
+                                "http_sse":  "response_stream_used_exact_fallback_not_recorded",
+                                "system_proxy":  "not_inherited_due_clearenv",
+                                "native_proxy":  "localhost_HTTP_PROXY_and_HTTPS_PROXY"
+                            },
+              "callback_ipc":  "app_server_initialized_thread_started_no_turn",
+              "evidence":  "evidence/development/r0.3a-real/luna-1/preflight-native/protocol.jsonl"
+          },
+    "matrix":  [
+                   {
+                       "field":  "executable_path_and_binary",
+                       "classification":  "confirmed_different",
+                       "A":  "e5aa76d19c7c94e2e9ef9b707d590206a73ac0e97c8ddc8382181242494bef75",
+                       "B":  "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a",
+                       "C":  "9739cbc928b9c573be83256acd46668f5dd4f119d2d09e05246895ca2aaf0c9a"
+                   },
+                   {
+                       "field":  "codex_version",
+                       "classification":  "confirmed_different",
+                       "A":  "codex-cli 0.153.4",
+                       "B":  "codex-cli 0.151.0",
+                       "C":  "codex-cli 0.151.0"
+                   },
+                   {
+                       "field":  "runtime_profile",
+                       "classification":  "confirmed_different",
+                       "A":  "windows_x64_desktop",
+                       "B":  "wsl_linux_amd64_bwrap",
+                       "C":  "wsl_linux_amd64_bwrap"
+                   },
+                   {
+                       "field":  "cwd",
+                       "classification":  "confirmed_different",
+                       "A":  "D:\\Programs\\Polis",
+                       "B":  "/work",
+                       "C":  "/work"
+                   },
+                   {
+                       "field":  "HOME_CODEX_HOME",
+                       "classification":  "confirmed_different",
+                       "A":  "env_absent_default_user_profile",
+                       "B":  "explicit_/home/codex",
+                       "C":  "explicit_/home/codex"
+                   },
+                   {
+                       "field":  "config_path_and_digest",
+                       "classification":  "not_recorded/cannot_compare_actual_B_file",
+                       "A":  "95e8b796b32bb68d738982e19bcf31751abb0b37b7195ba9e2dba235bbf4cfbc",
+                       "B":  null,
+                       "C":  null
+                   },
+                   {
+                       "field":  "auth_source_file_fingerprint",
+                       "classification":  "confirmed_same",
+                       "A":  "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4",
+                       "B":  "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4",
+                       "C":  "775b04c0c0249300db19aa61d567c5aa01784d00f6fdf6305d5b7ae5eee5c7f4"
+                   },
+                   {
+                       "field":  "HTTP_HTTPS_PROXY_env",
+                       "classification":  "confirmed_different",
+                       "A":  "absent_in_observed_shell",
+                       "B":  "localhost_proxy_injected",
+                       "C":  "localhost_proxy_injected"
+                   },
+                   {
+                       "field":  "POLIS_NATIVE_PROXY_env",
+                       "classification":  "confirmed_different",
+                       "A":  "absent",
+                       "B":  "controller_source_then_HTTP(S)_PROXY_child",
+                       "C":  "same_as_B"
+                   },
+                   {
+                       "field":  "websocket_config",
+                       "classification":  "confirmed_different_configuration",
+                       "A":  "config_or_default",
+                       "B":  "explicit_disabled",
+                       "C":  "explicit_disabled"
+                   },
+                   {
+                       "field":  "model_effort_defaults",
+                       "classification":  "confirmed_different",
+                       "A":  "model=gpt-5.6-luna,effort=max",
+                       "B":  "model=gpt-5.6-luna,effort=medium",
+                       "C":  "model=gpt-5.6-luna,effort=thread-registration-only"
+                   },
+                   {
+                       "field":  "app_server_stdio",
+                       "classification":  "confirmed_different",
+                       "A":  "app-server observed without --stdio",
+                       "B":  "app-server --stdio",
+                       "C":  "app-server --stdio"
+                   },
+                   {
+                       "field":  "HTTP_SSE_fallback_runtime",
+                       "classification":  "not_recorded/cannot_determine_without_live_run",
+                       "A":  "cannot_determine_without_live_run",
+                       "B":  "response_stream_used_exact_fallback_not_recorded",
+                       "C":  "no_turn"
+                   },
+                   {
+                       "field":  "OpenAI_Codex_endpoint_override",
+                       "classification":  "confirmed_same_at_manifest_absent",
+                       "A":  "absent",
+                       "B":  "absent",
+                       "C":  "absent"
+                   },
+                   {
+                       "field":  "process_ancestry",
+                       "classification":  "not_recorded/cannot_compare_historical_B",
+                       "A":  "captured_current_non_sensitive",
+                       "B":  "historical_not_recorded",
+                       "C":  "historical_not_recorded"
+                   },
+                   {
+                       "field":  "callback_local_IPC",
+                       "classification":  "not_recorded/cannot_compare",
+                       "A":  "current process observed but endpoint not recorded",
+                       "B":  "code_mode_host_present_zero_tools_callback_not_applicable",
+                       "C":  "app_server_initialized_thread_started_no_turn"
+                   }
+               ],
+    "first_confirmed_divergence":  "process envelope: Windows installed codex.exe/default user home versus pinned Linux codex under WSL+bwrap with generated home/config",
+    "first_transport_relevant_divergence":  "A observed proxy environment absent; B/C inject localhost HTTP_PROXY and HTTPS_PROXY from POLIS_NATIVE_PROXY"
+}

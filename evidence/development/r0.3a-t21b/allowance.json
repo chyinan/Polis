@@ -1,0 +1,16 @@
+{
+    "schema_version":  "t21-diagnostic-allowance-v1",
+    "qualification":  "R0.3A-T21B",
+    "authorized_model":  "gpt-5.6-luna",
+    "authorized_effort":  "medium",
+    "medium_authorized":  1,
+    "high_authorized":  0,
+    "concurrency":  1,
+    "retry":  false,
+    "reset":  false,
+    "medium_started":  1,
+    "provider_egress":  1,
+    "t20_control_fingerprint":  "b653e94bf2adfd4caa7f9982774f8d1143bdc55c0c64d50d620afdad3c8bfb7d",
+    "t21_fingerprint":  "",
+    "created_at":  "2026-09-11T10:45:29.4713648Z"
+}

@@ -137,12 +137,14 @@ func TestFaultBoundaries(t *testing.T) {
 		_, e = k.TXResolve(ctx, backend, s.Obligations[0].ID, artifact.ID, "missing-response")
 		wantCode(t, e, core.Integrity)
 		k.Close()
-		k, e = Open(ctx, dsn, root)
+		_, e = OpenWithRuntimeCASBinding(ctx, dsn, RuntimeCASBinding{CanonicalRoot: root, LayoutRevision: CASLayoutRevision, CompanyNamespace: scope.company, RequiredBlobInventoryDigest: strings.Repeat("0", 64), RequiredBlobCount: 1})
+		if e == nil {
+			t.Fatal("strict recovery unexpectedly opened with a missing artifact blob")
+		}
+		s, e = ReadSnapshot(ctx, dsn, scope.company, "fault-mission")
 		must(t, e)
-		s, e = k.Snapshot(ctx, scope, "fault-mission")
-		must(t, e)
-		if s.Artifacts[0].State != "missing" || s.Artifacts[0].Verdict != "invalidated" {
-			t.Fatal("missing artifact remained usable")
+		if s.Artifacts[0].State == "missing" || s.Artifacts[0].Verdict == "invalidated" {
+			t.Fatal("strict recovery partially invalidated the missing artifact")
 		}
 	})
 }

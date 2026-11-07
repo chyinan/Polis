@@ -1,0 +1,194 @@
+{
+  "developerInstructions": "You are one Polis product employee. Use only the registered Polis employee tools; do not use shell, web, delegation, external MCP or account tools.",
+  "turnPrompt": "Complete the assigned product task using only the registered Polis tools. Persist the requested artifact and checkpoint, then stop.",
+  "missionTitle": "R0.5B LIVE_2 real-provider product smoke",
+  "missionGoal": "Create one small product integration smoke artifact through the Polis real-provider product path.",
+  "missionAcceptanceContract": {
+    "revision": "text-acceptance@1",
+    "required_text": [
+      "Mission ID: {{mission_id}}",
+      "Task ID: {{task_id}}",
+      "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+      "Task summary: This artifact records one small product integration smoke."
+    ]
+  },
+  "taskValidationBinding": {
+    "task_id": "5b39875f8dc6463f36395b04e4504407",
+    "contract": {
+      "revision": "text-acceptance@1",
+      "required_text": [
+        "Mission ID: fed04f193f1bc6afebf9c152832ccd76",
+        "Task ID: 5b39875f8dc6463f36395b04e4504407",
+        "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+        "Task summary: This artifact records one small product integration smoke."
+      ]
+    },
+    "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+    "runner_kind": "text_contains_all",
+    "runner_revision": "text-contains-all@1",
+    "acceptance_revision": "text-acceptance@1",
+    "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+  },
+  "workCurrentResult": {
+    "task": {
+      "id": "5b39875f8dc6463f36395b04e4504407",
+      "missionId": "fed04f193f1bc6afebf9c152832ccd76",
+      "kind": "compat",
+      "owner": "emp-backend",
+      "state": "working"
+    },
+    "validationBinding": {
+      "task_id": "5b39875f8dc6463f36395b04e4504407",
+      "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+      "acceptance_revision": "text-acceptance@1",
+      "runner_kind": "text_contains_all",
+      "runner_revision": "text-contains-all@1",
+      "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721",
+      "contract": {
+        "revision": "text-acceptance@1",
+        "required_text": [
+          "Mission ID: fed04f193f1bc6afebf9c152832ccd76",
+          "Task ID: 5b39875f8dc6463f36395b04e4504407",
+          "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+          "Task summary: This artifact records one small product integration smoke."
+        ]
+      }
+    },
+    "workspace": {
+      "revision": 1,
+      "digest": "89604c50428563a10c2ff40ae05ef30971361393e0013bff4f57f508b65c62cc",
+      "contentBytes": 148
+    },
+    "toolBudget": {
+      "tool_call_limit": 16,
+      "tool_calls_used": 1,
+      "tool_calls_remaining": 15
+    },
+    "handoverFields": [
+      "EmployeeID",
+      "Task",
+      "Workspace",
+      "Obligations",
+      "Checkpoints",
+      "CompanySeq",
+      "Contract",
+      "ToolBudget"
+    ],
+    "handoverContractField": "signed-zero@1",
+    "missionTitleOrGoalIncluded": false
+  },
+  "contextReadSameHandoverShape": true,
+  "registeredToolNames": [
+    "polis_work_current",
+    "polis_context_read",
+    "polis_workspace_read",
+    "polis_workspace_replace",
+    "polis_workspace_check",
+    "polis_work_checkpoint",
+    "polis_artifact_submit"
+  ],
+  "auditedTools": [
+    {
+      "description": "Validate the current authorized Task workspace against the public acceptance contract bound to this Task. Returns structured PASS, FAIL, VALIDATION_NOT_CONFIGURED, VALIDATOR_UNAVAILABLE or INFRASTRUCTURE_ERROR feedback.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_workspace_check",
+      "type": "function"
+    },
+    {
+      "description": "Persist progress or qualified state for the current Task. A qualified checkpoint requires a passing validation receipt for the current workspace revision and TaskValidationBinding.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "decisions": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "evidence_refs": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "failed_checks": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "progress",
+              "qualified"
+            ],
+            "type": "string"
+          },
+          "next_action": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "rejected": {
+            "items": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "type": "array"
+          },
+          "summary": {
+            "maxLength": 512,
+            "type": "string"
+          }
+        },
+        "required": [
+          "decisions",
+          "evidence_refs",
+          "facts",
+          "failed_checks",
+          "kind",
+          "next_action",
+          "rejected",
+          "summary"
+        ],
+        "type": "object"
+      },
+      "name": "polis_work_checkpoint",
+      "type": "function"
+    },
+    {
+      "description": "Submit the current authorized Task workspace as a candidate artifact. Submission requires a current qualified checkpoint and matching TaskValidationBinding; a Task without configured validation cannot be qualified or submitted.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "polis_artifact_submit",
+      "type": "function"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "canonical_root": "/mnt/d/Polis-recovery/r0.3a-pagination-v3-backend-sample-6-runtime/backend/blobs",
+  "company_namespaces": [
+    "r03a-pagination-v3-company-1789379324974307400"
+  ],
+  "configured_root": "/mnt/d/Polis-recovery/r0.3a-pagination-v3-backend-sample-6-runtime/backend/blobs",
+  "digest_verified_count": 4,
+  "execution_environment": "wsl",
+  "historical_evidence_modified": false,
+  "inventory_digest": "e0a76541c569d0f4671daab81ae8b62c4bb9632621ab180f1bfe5e272427b5bf",
+  "layout_revision": "r03a-cas-layout@1",
+  "present_blob_count": 4,
+  "required_blob_count": 4,
+  "sentinel_kind": "directory",
+  "source": "production_peer_recovery_anchor_snapshot",
+  "status": "PASSED"
+}

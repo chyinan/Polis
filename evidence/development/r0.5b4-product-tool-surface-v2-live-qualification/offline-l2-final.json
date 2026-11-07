@@ -1,0 +1,36 @@
+{
+  "record_type": "polis-product-surface-offline-l2-final@1",
+  "status": "PASSED",
+  "surface_id": "polis-product-tool-surface@2",
+  "tool_count": 7,
+  "manifest_digest": "2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9",
+  "aggregate_schema_bytes": 1470,
+  "aggregate_schema_digest": "8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f",
+  "gates": {
+    "authorization_coverage": true,
+    "candidate_state_fencing_integration": true,
+    "deterministic_manifest": true,
+    "dispatcher_coverage": true,
+    "product_adapter_compatibility": true,
+    "registration_validity": true,
+    "schema_parseability": true,
+    "task_validation_binding_integration": true
+  },
+  "test_artifacts": [
+    "exact-product-surface-test.txt",
+    "offline/provider-codex-tests.txt",
+    "offline/taskvalidation-tests.txt",
+    "offline/control-tests.txt",
+    "offline/kernel-tests.txt",
+    "offline/workbench-tests.txt",
+    "offline/result.txt",
+    "post-hardening-provider-tests.txt"
+  ],
+  "provider_reservations": 0,
+  "provider_egress": 0,
+  "disposable_database_removed": true,
+  "business_database_used": false,
+  "historical_b2_surface_status": "STALE",
+  "historical_r03a_surfaces_status": "HISTORICAL / NOT_REUSABLE",
+  "recorded_at": "2026-09-17T04:45:10.714384248Z"
+}

@@ -1,0 +1,17 @@
+{
+  "allowance_start": "2026-09-10T08:48:21.460936535Z",
+  "derived_repair": true,
+  "dynamic_tool_count": 0,
+  "first_valid_output": null,
+  "initialize": true,
+  "process_start": "2026-09-10T08:48:23.260646296Z",
+  "process_stop": "2026-09-10T08:50:08.991015099Z",
+  "readiness_manifest": "2026-09-10T08:48:23.25531518Z",
+  "stop_confirmed": true,
+  "stop_receipt": "process-group:435:waited",
+  "thread_started": true,
+  "tool_events": [],
+  "turn_completed": null,
+  "turn_started": true,
+  "user_message_item": true
+}

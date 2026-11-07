@@ -1,0 +1,15 @@
+{
+    "qualification":  "R0.3A-SAMPLE-5-RECOVERY-CONTINUATION",
+    "status":  "INCONCLUSIVE",
+    "sample_5_original_recovery_attempt":  "INCONCLUSIVE",
+    "sample_5_recovery_continuation":  "INCONCLUSIVE",
+    "source_database":  "polis_r0_3a_pagination_v3_backend_20260914162229_40936",
+    "source_database_preserved":  false,
+    "recovery_package_complete":  false,
+    "error":  "You cannot call a method on a null-valued expression.",
+    "provider_egress":  0,
+    "medium":  0,
+    "high":  0,
+    "historical_evidence_modified":  false,
+    "generated_at":  "2026-09-14T08:47:21.5230054Z"
+}

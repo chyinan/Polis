@@ -23,7 +23,7 @@ func Migrate(ctx context.Context, dsn string) error {
 		return err
 	}
 	if !strings.HasPrefix(cfg.Database, "polis_r0_") {
-		return fmt.Errorf("refusing non-R0 database")
+		return fmt.Errorf("refusing non-R0 database %q", cfg.Database)
 	}
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {

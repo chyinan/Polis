@@ -3,6 +3,7 @@ package kernel
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/jackc/pgx/v5"
 	"polis/internal/core"
@@ -34,7 +35,11 @@ func (k *Kernel) TXCreateReviewProbe(ctx context.Context, s Scope, mission, arti
 			return Receipt{}, core.Conflict
 		}
 		id := newID()
-		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind,state,plan) VALUES($1,$2,$3,'emp-review','review','ready',$4)", s.company, id, mission, []byte(`{"review_of":"candidate","independence":"emp-review","contract":"signed-zero@1"}`))
+		plan, e := json.Marshal(map[string]string{"review_of": artifact, "independence": "emp-review", "contract": "signed-zero@1"})
+		if e != nil {
+			return Receipt{}, e
+		}
+		_, e = tx.Exec(ctx, "INSERT INTO tasks(company_id,id,mission_id,owner,kind,state,plan) VALUES($1,$2,$3,'emp-review','review','ready',$4)", s.company, id, mission, plan)
 		if e != nil {
 			return Receipt{}, e
 		}
@@ -43,7 +48,7 @@ func (k *Kernel) TXCreateReviewProbe(ctx context.Context, s Scope, mission, arti
 			return Receipt{}, e
 		}
 		task = Task{ID: id, Mission: mission, Owner: "emp-review", Kind: "review", State: "ready", Generation: 0}
-		return Receipt{id, "ready"}, nil
+		return Receipt{ID: id, Status: "ready"}, nil
 	})
 	return task, e
 }

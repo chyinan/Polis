@@ -1,0 +1,118 @@
+2026-09-17 14:58:39.224 CST [392] LOG:  starting PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg22.04+2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+2026-09-17 14:58:39.225 CST [392] LOG:  listening on IPv4 address "127.0.0.1", port 55482
+2026-09-17 14:58:39.228 CST [392] LOG:  listening on Unix socket "/tmp/polis-r05b5-task-role-pg.4PZXjL/socket/.s.PGSQL.55482"
+2026-09-17 14:58:39.233 CST [398] LOG:  database system was shut down at 2026-09-17 14:58:38 CST
+2026-09-17 14:58:39.236 CST [392] LOG:  database system is ready to accept connections
+2026-09-17 14:58:48.796 CST [574] ERROR:  relation "goose_db_version" does not exist at character 36
+2026-09-17 14:58:48.796 CST [574] STATEMENT:  SELECT version_id, is_applied from goose_db_version ORDER BY id DESC
+2026-09-17 15:02:11.828 CST [1159] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:02:11.828 CST [1159] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-36d8dbb7197656b0fd0bbe1097f1a2bd, 8ced4eedf9b7483958c6ef99c930bf85, compat) already exists.
+2026-09-17 15:02:11.828 CST [1159] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+	VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:04:02.041 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:06:02.427 CST [396] LOG:  checkpoint complete: wrote 1113 buffers (6.8%), wrote 3 SLRU buffers; 1 WAL file(s) added, 0 removed, 0 recycled; write=120.301 s, sync=0.070 s, total=120.387 s; sync files=437, longest=0.006 s, average=0.001 s; distance=5805 kB, estimate=5805 kB; lsn=0/1D01CA0, redo lsn=0/1D01C10
+2026-09-17 15:07:34.898 CST [1804] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:07:34.898 CST [1804] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-34fb186012cbfa982018e2dadc027ef0, 230dbecc180f8353e1d7e3e20107a20c, compat) already exists.
+2026-09-17 15:07:34.898 CST [1804] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:09:21.378 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:09:24.414 CST [396] LOG:  checkpoint complete: wrote 30 buffers (0.2%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=3.013 s, sync=0.012 s, total=3.037 s; sync files=29, longest=0.007 s, average=0.001 s; distance=83 kB, estimate=5233 kB; lsn=0/1D16C38, redo lsn=0/1D16BE0
+2026-09-17 15:10:08.169 CST [2402] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:10:08.169 CST [2402] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-control-18d60a19de0c7cfc, 6c7b05b7e931710fdf0135b5cedea4b8, compat) already exists.
+2026-09-17 15:10:08.169 CST [2402] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,'emp-backend','compat')
+2026-09-17 15:11:08.807 CST [2834] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:11:08.807 CST [2834] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-de7688f38a3db43de2f78da881d97f85, 8cdedd098a3de3236555e44929464928, compat) already exists.
+2026-09-17 15:11:08.807 CST [2834] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:14:49.127 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:14:59.364 CST [396] LOG:  checkpoint complete: wrote 102 buffers (0.6%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=10.218 s, sync=0.010 s, total=10.237 s; sync files=59, longest=0.001 s, average=0.001 s; distance=547 kB, estimate=4764 kB; lsn=0/1D9F8D8, redo lsn=0/1D9F848
+2026-09-17 15:15:37.743 CST [3583] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:15:37.743 CST [3583] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-control-18d60a669a4c4002, 23c5e5eaebcef63fb4c5d01e90455a64, compat) already exists.
+2026-09-17 15:15:37.743 CST [3583] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,'emp-backend','compat')
+2026-09-17 15:20:15.823 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:20:19.047 CST [396] LOG:  checkpoint complete: wrote 32 buffers (0.2%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=3.208 s, sync=0.006 s, total=3.224 s; sync files=23, longest=0.002 s, average=0.001 s; distance=165 kB, estimate=4304 kB; lsn=0/1DC8E98, redo lsn=0/1DC8E08
+2026-09-17 15:23:53.487 CST [4017] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:23:53.487 CST [4017] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-864c647045a8c256e307fba377683ad7, f265da1e98c6496d348e8c083c318314, compat) already exists.
+2026-09-17 15:23:53.487 CST [4017] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:24:35.472 CST [4428] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:24:35.472 CST [4428] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-ea4b1e98124932adba1472d7780f187c, 3efb6e77701e8477db34d630d06b8b54, compat) already exists.
+2026-09-17 15:24:35.472 CST [4428] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:25:33.182 CST [4786] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:25:33.182 CST [4786] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-control-18d60af13d0b4818, 329854a8e292217aa7933bef33e7ce1f, compat) already exists.
+2026-09-17 15:25:33.182 CST [4786] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:25:41.416 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:25:54.000 CST [396] LOG:  checkpoint complete: wrote 96 buffers (0.6%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=12.559 s, sync=0.013 s, total=12.585 s; sync files=56, longest=0.002 s, average=0.001 s; distance=608 kB, estimate=3935 kB; lsn=0/1E99C68, redo lsn=0/1E60E68
+2026-09-17 15:31:06.974 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:31:15.813 CST [396] LOG:  checkpoint complete: wrote 88 buffers (0.5%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=8.816 s, sync=0.017 s, total=8.839 s; sync files=54, longest=0.006 s, average=0.001 s; distance=524 kB, estimate=3594 kB; lsn=0/1EFC120, redo lsn=0/1EE4088
+2026-09-17 15:34:39.669 CST [6005] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:34:39.669 CST [6005] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-a70a1d3a4687724a95838ad6ecfb7703, e360af0ae4b46cb2d4c82629e67b6ad3, compat) already exists.
+2026-09-17 15:34:39.669 CST [6005] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:34:59.040 CST [6172] ERROR:  task_validation_bindings are immutable
+2026-09-17 15:34:59.040 CST [6172] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-09-17 15:34:59.040 CST [6172] STATEMENT:  UPDATE task_validation_bindings SET configuration_digest=$3 WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:34:59.042 CST [6172] ERROR:  permission denied for table task_validation_bindings
+2026-09-17 15:34:59.042 CST [6172] STATEMENT:  DELETE FROM task_validation_bindings WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:36:33.360 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:36:47.542 CST [396] LOG:  checkpoint complete: wrote 112 buffers (0.7%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=14.158 s, sync=0.017 s, total=14.183 s; sync files=57, longest=0.002 s, average=0.001 s; distance=728 kB, estimate=3307 kB; lsn=0/201B938, redo lsn=0/1F9A358
+2026-09-17 15:36:47.767 CST [7504] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:36:47.767 CST [7504] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-control-18d60b8e4d2f3d04, 299291a64ef0d9b9b0010dad769a2f5f, compat) already exists.
+2026-09-17 15:36:47.767 CST [7504] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:37:33.480 CST [8414] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:37:33.480 CST [8414] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-636596960a82cd500a9c3467f395d9d6, 509579d56cb202cf675033c351075752, compat) already exists.
+2026-09-17 15:37:33.480 CST [8414] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:37:33.736 CST [8418] ERROR:  task_validation_bindings are immutable
+2026-09-17 15:37:33.736 CST [8418] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-09-17 15:37:33.736 CST [8418] STATEMENT:  UPDATE task_validation_bindings SET configuration_digest=$3 WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:37:33.736 CST [8418] ERROR:  permission denied for table task_validation_bindings
+2026-09-17 15:37:33.736 CST [8418] STATEMENT:  DELETE FROM task_validation_bindings WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:38:23.779 CST [9960] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:38:23.779 CST [9960] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-control-18d60ba4a81ef15a, 49a2331c500905ef8df9fd43e598f524, compat) already exists.
+2026-09-17 15:38:23.779 CST [9960] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:39:12.170 CST [10873] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:39:12.170 CST [10873] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-15dc18d74a4d8fcb8c2e0686d8a6e953, b2b5ffeac259cd387aa0b6ec65d1a252, compat) already exists.
+2026-09-17 15:39:12.170 CST [10873] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:39:12.486 CST [10877] ERROR:  task_validation_bindings are immutable
+2026-09-17 15:39:12.486 CST [10877] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-09-17 15:39:12.486 CST [10877] STATEMENT:  UPDATE task_validation_bindings SET configuration_digest=$3 WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:39:12.487 CST [10877] ERROR:  permission denied for table task_validation_bindings
+2026-09-17 15:39:12.487 CST [10877] STATEMENT:  DELETE FROM task_validation_bindings WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:42:00.039 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:42:22.408 CST [396] LOG:  checkpoint complete: wrote 223 buffers (1.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=22.344 s, sync=0.014 s, total=22.369 s; sync files=60, longest=0.002 s, average=0.001 s; distance=1958 kB, estimate=3172 kB; lsn=0/2183E38, redo lsn=0/2183DA8
+2026-09-17 15:45:47.357 CST [14687] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:45:47.357 CST [14687] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-61942e210ba2ef48d32f43b8663881f8, 358fcbc3fc933706c4138dcc5e1e968b, compat) already exists.
+2026-09-17 15:45:47.357 CST [14687] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:46:04.149 CST [14854] ERROR:  task_validation_bindings are immutable
+2026-09-17 15:46:04.149 CST [14854] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-09-17 15:46:04.149 CST [14854] STATEMENT:  UPDATE task_validation_bindings SET configuration_digest=$3 WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:46:04.150 CST [14854] ERROR:  permission denied for table task_validation_bindings
+2026-09-17 15:46:04.150 CST [14854] STATEMENT:  DELETE FROM task_validation_bindings WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:46:35.610 CST [15165] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:46:35.610 CST [15165] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-control-18d60c172bbca120, 8bbf3eae2230d83cb94cf199fdb2b066, compat) already exists.
+2026-09-17 15:46:35.610 CST [15165] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:47:28.686 CST [396] LOG:  checkpoint starting: time
+2026-09-17 15:47:49.884 CST [396] LOG:  checkpoint complete: wrote 182 buffers (1.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=21.179 s, sync=0.012 s, total=21.198 s; sync files=63, longest=0.002 s, average=0.001 s; distance=1355 kB, estimate=2990 kB; lsn=0/22D6BC8, redo lsn=0/22D6B38
+2026-09-17 15:48:14.260 CST [15824] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:48:14.260 CST [15824] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-29e3bb273442842387790f6f677ec8ee, b9ae3e5f534e1f220344d8efcd71f83a, compat) already exists.
+2026-09-17 15:48:14.260 CST [15824] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind)
+		VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:48:32.324 CST [15991] ERROR:  task_validation_bindings are immutable
+2026-09-17 15:48:32.324 CST [15991] CONTEXT:  PL/pgSQL function reject_task_validation_binding_mutation() line 3 at RAISE
+2026-09-17 15:48:32.324 CST [15991] STATEMENT:  UPDATE task_validation_bindings SET configuration_digest=$3 WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:48:32.325 CST [15991] ERROR:  permission denied for table task_validation_bindings
+2026-09-17 15:48:32.325 CST [15991] STATEMENT:  DELETE FROM task_validation_bindings WHERE company_id=$1 AND task_id=$2
+2026-09-17 15:49:02.799 CST [16303] ERROR:  duplicate key value violates unique constraint "tasks_company_id_mission_id_kind_key"
+2026-09-17 15:49:02.799 CST [16303] DETAIL:  Key (company_id, mission_id, kind)=(r05b5-control-18d60c3970ebbac8, cfe5de26451a8f9a928ad21abd35630e, compat) already exists.
+2026-09-17 15:49:02.799 CST [16303] STATEMENT:  INSERT INTO tasks(company_id,id,mission_id,owner,kind) VALUES($1,$2,$3,$4,$5)
+2026-09-17 15:51:27.126 CST [392] LOG:  received fast shutdown request
+2026-09-17 15:51:27.128 CST [392] LOG:  aborting any active transactions
+2026-09-17 15:51:27.130 CST [392] LOG:  background worker "logical replication launcher" (PID 401) exited with exit code 1
+2026-09-17 15:51:27.130 CST [396] LOG:  shutting down
+2026-09-17 15:51:27.132 CST [396] LOG:  checkpoint starting: shutdown immediate
+2026-09-17 15:51:27.151 CST [396] LOG:  checkpoint complete: wrote 215 buffers (1.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.011 s, total=0.022 s; sync files=62, longest=0.002 s, average=0.001 s; distance=1690 kB, estimate=2860 kB; lsn=0/247D3D8, redo lsn=0/247D3D8
+2026-09-17 15:51:27.164 CST [392] LOG:  database system is shut down

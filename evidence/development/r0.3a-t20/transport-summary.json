@@ -1,0 +1,7 @@
+{
+  "derived_from": "provider-events.jsonl",
+  "duplicate_item_completed_text_ignored": true,
+  "first_valid_output_text": "POLIS_TRANSPORT_CANARY_OK",
+  "runner_recorded_sentinel_match": "mismatch",
+  "sentinel_match": "exact"
+}

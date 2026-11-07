@@ -1,0 +1,25 @@
+{
+    "task_count": 2,
+    "event_count": 28,
+    "compat_count": 1,
+    "company_count": 1,
+    "mission_count": 1,
+    "mission_state": "active",
+    "artifact_count": 0,
+    "employee_count": 4,
+    "start_event_count": 1,
+    "cancel_event_count": 0,
+    "bootstrap_plan_count": 1,
+    "worker_session_count": 1,
+    "bootstrap_plan_states": [
+        "completed"
+    ],
+    "qualified_checkpoints": 0,
+    "passing_product_checks": 1,
+    "provider_live_session_count": 0,
+    "artifact_qualification_count": 0,
+    "task_validation_binding_count": 1,
+    "provider_bearing_session_count": 1,
+    "provider_executable_task_count": 1,
+    "provider_terminal_observation_count": 1
+}

@@ -1,0 +1,21 @@
+{
+  "manifest_revision": "r0.3a-preserved-postgres-access@1",
+  "postgres_version": "18.6 (Ubuntu 18.6-1.pgdg22.04+2)",
+  "pgdata_canonical_path": "/home/chyinan/.local/state/polis-recovery/qualification/r03a-postgres-preservation-v1/pgdata",
+  "pgdata_digest": "047af16fa6e3c810b331416e483402219d76d7e899f24d353a3a439fe3a4d0cf",
+  "cluster_system_identifier": "7685322951440646545",
+  "database_name": "polis_r0_3a_preservation_qualification_v1",
+  "database_oid": "16384",
+  "database_owner": "chyinan",
+  "runtime_role_name": "polis_qualification_runtime",
+  "role_provisioning_revision": "role-provisioning@1",
+  "role_grant_spec_digest": "168429eb097512941e19d24d43b0b8674489b22318a2ea318841bcfe38610703",
+  "migration_schema_digest": "cc3ef81dcdfae4353a58205e7b7e5c39b4653023ff558a1d3e48a3dcc40af08f",
+  "company_id": "preservation-company",
+  "mission_id": "preservation-mission",
+  "backend_task_id": "preservation-backend-task",
+  "frontend_task_id": "preservation-frontend-task",
+  "created_at": "2026-09-14T00:00:00Z",
+  "preservation_reason": "deterministic physical cluster preservation qualification",
+  "credentials_included": false
+}

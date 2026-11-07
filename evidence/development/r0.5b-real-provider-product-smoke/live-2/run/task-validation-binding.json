@@ -1,0 +1,17 @@
+{
+  "task_id": "5b39875f8dc6463f36395b04e4504407",
+  "contract": {
+    "revision": "text-acceptance@1",
+    "required_text": [
+      "Mission ID: fed04f193f1bc6afebf9c152832ccd76",
+      "Task ID: 5b39875f8dc6463f36395b04e4504407",
+      "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+      "Task summary: This artifact records one small product integration smoke."
+    ]
+  },
+  "mission_id": "fed04f193f1bc6afebf9c152832ccd76",
+  "runner_kind": "text_contains_all",
+  "runner_revision": "text-contains-all@1",
+  "acceptance_revision": "text-acceptance@1",
+  "configuration_digest": "2bbaa0948f92f21cb0b7ba7c167bacdce61c91e5ee42821dad2177ba1e91a721"
+}

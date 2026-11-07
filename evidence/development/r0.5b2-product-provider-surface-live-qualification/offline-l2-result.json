@@ -1,0 +1,57 @@
+{
+  "qualification": "R0.5B2_PRODUCT_PROVIDER_SURFACE_OFFLINE_L2",
+  "status": "FAILED",
+  "overall_reason": "PRODUCT_TOOL_SURFACE_SEMANTICS_NOT_CURRENT",
+  "live_eligible": false,
+  "provider_reservation": 0,
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0,
+  "retry": 0,
+  "company_mission_task_worker_session_created": 0,
+  "checks": {
+    "exact_tool_count_7": "PASSED",
+    "exact_manifest_digest": "PASSED",
+    "manifest_deterministic_recomputed": "PASSED",
+    "registration_schema_json_parseability": "PASSED",
+    "unique_tool_names_and_ordered_registry": "PASSED",
+    "existing_r05b1_fake_adapter_vertical_slice_uses_same_manifest": "PASSED_OFFLINE_COMPATIBILITY_ONLY",
+    "formal_employee_dispatcher_names_present": "PASSED_BY_SOURCE_AND_EXISTING_TESTS",
+    "diagnostic_authorization_surface_binding": "NOT_RUN",
+    "product_tool_surface_semantics": "FAILED"
+  },
+  "semantic_findings": [
+    {
+      "tool": "polis_workspace_read",
+      "finding": "Provider-visible description hardcodes the sole allowed file as formatter.go; this is a task/fixture-specific boundary, not the generic product workspace contract."
+    },
+    {
+      "tool": "polis_workspace_replace",
+      "finding": "Provider-visible description hardcodes formatter.go and permits only pure formatting functions with specific imports, globals and test-hook restrictions. This is a task/fixture-specific contract."
+    },
+    {
+      "tool": "polis_workspace_check",
+      "finding": "Provider-visible description is tied to frozen task checks; current real serve wires OfflineProductCheckRunner, whose check accepts non-empty single-phase content rather than a qualified product acceptance policy."
+    },
+    {
+      "tool": "polis_artifact_submit",
+      "finding": "Provider-visible description says current fixed file candidate; publication semantics are not phrased as the general product Artifact contract."
+    }
+  ],
+  "phase_b_product_tool_surface_semantics": "NOT_CURRENT",
+  "semantic_review_sources": [
+    "spec/design-v0.4.5/ARCHITECTURE.md#subsection-42-3-2",
+    "spec/design-v0.4.5/ARCHITECTURE.md#subsection-44-7",
+    "spec/design-v0.4.5/ARCHITECTURE.md#subsection-45-9",
+    "internal/codex/tools.go:13-17",
+    "internal/provider/check_runner.go:11-14",
+    "cmd/polis/main.go:155"
+  ],
+  "phase_c_full_offline_l2": "BLOCKED_BY_PHASE_B",
+  "phase_d_exact_runtime_fingerprint": "NOT_RUN",
+  "phase_e_diagnostic_authorization": "NOT_CREATED",
+  "live_canary": "NOT_STARTED",
+  "business_smoke": "NOT_STARTED",
+  "historical_evidence_modified": false,
+  "raw_credentials_recorded": false
+}

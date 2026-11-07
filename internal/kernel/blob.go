@@ -46,38 +46,8 @@ func putBlob(root, company string, content []byte) (string, error) {
 		return "", e
 	}
 	stage := ".stage-" + newID()
-	f, e := r.OpenFile(stage, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-	if e != nil {
+	if e := finalizeBlob(r, stage, digest, content, defaultBlobFinalizeOperations()); e != nil {
 		return "", e
-	}
-	defer r.Remove(stage)
-	if _, e = f.Write(content); e == nil {
-		e = f.Sync()
-	}
-	closeErr := f.Close()
-	if e != nil {
-		return "", e
-	}
-	if closeErr != nil {
-		return "", closeErr
-	}
-	if e = r.Chmod(stage, 0444); e != nil {
-		return "", e
-	}
-	if e = r.Rename(stage, digest); e != nil {
-		return "", e
-	}
-	dir, e := r.Open(".")
-	if e != nil {
-		return "", e
-	}
-	e = dir.Sync()
-	closeErr = dir.Close()
-	if e != nil {
-		return "", e
-	}
-	if closeErr != nil {
-		return "", closeErr
 	}
 	return digest, nil
 }

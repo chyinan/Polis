@@ -1,0 +1,25 @@
+{
+  "aggregate_schema_bytes": 2038,
+  "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+  "controlled_runtime_manifest_digest": "12d8b4813c999a1c1343adcdaea893b03e38b2b6a6a3689c312bea8044346abb",
+  "current_binary_l1": "QUALIFIED",
+  "handler_binding_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+  "high": 0,
+  "historical_evidence_modified": false,
+  "l1_fingerprint": "c3428c5ad1d1d0f9ae9ced8c79a43d62d33a2b396a374ce3da7367c5972ff2b6",
+  "medium": 0,
+  "passed": true,
+  "policy_revisions": {
+    "acceptance_checker_revision": "peer-semantic-checker@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2"
+  },
+  "provider_egress": 0,
+  "qualification": "R0.3A-CURRENT-BINARY-REVISED-11-TOOL-L2",
+  "status": "offline_preflight_passed",
+  "t21d_surface_exact_match": true,
+  "tool_count": 11,
+  "tool_manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+  "unexplained_drift": false
+}

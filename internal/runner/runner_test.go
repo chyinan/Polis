@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -39,6 +40,40 @@ func TestNativeBundleRequiresCodeModeHost(t *testing.T) {
 	}
 	if _, _, e := NativeArgs(binary, filepath.Join(root, "home"), ""); e == nil {
 		t.Fatal("incomplete native package admitted")
+	}
+}
+
+func TestNativeArgsTransportPoliciesAreExplicitlyDistinct(t *testing.T) {
+	root := t.TempDir()
+	binary := filepath.Join(root, "codex")
+	helper := filepath.Join(root, "codex-code-mode-host")
+	if e := os.WriteFile(binary, []byte("binary"), 0700); e != nil {
+		t.Fatal(e)
+	}
+	if e := os.WriteFile(helper, []byte("helper"), 0700); e != nil {
+		t.Fatal(e)
+	}
+	_, disabledCapability, e := NativeArgsWithTransportPolicy(binary, filepath.Join(root, "disabled"), "", "", NativeTransportPolicyExplicitlyDisabled)
+	if e != nil {
+		t.Fatal(e)
+	}
+	_, defaultCapability, e := NativeArgsWithTransportPolicy(binary, filepath.Join(root, "default"), "", "", NativeTransportPolicyNativeDefault)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if disabledCapability == defaultCapability {
+		t.Fatal("explicitly disabled and native default policies share a capability digest")
+	}
+	disabled, e := os.ReadFile(filepath.Join(root, "disabled", "config.toml"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	nativeDefault, e := os.ReadFile(filepath.Join(root, "default", "config.toml"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	if !strings.Contains(string(disabled), "supports_websockets = false") || strings.Contains(string(nativeDefault), "supports_websockets = false") || !strings.Contains(string(disabled), "responses_websockets = false") || strings.Contains(string(nativeDefault), "responses_websockets = false") {
+		t.Fatalf("transport policy config mismatch: disabled=%s default=%s", disabled, nativeDefault)
 	}
 }
 func TestIsolatedVerifierRejectsBaselineAndAcceptsValidNeighbor(t *testing.T) {

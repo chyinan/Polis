@@ -1,0 +1,9 @@
+{
+  "record_type": "polis-product-checkpoint-evidence@1",
+  "status": "NOT_CREATED",
+  "task_id": null,
+  "checkpoint_id": null,
+  "kind": null,
+  "validation_receipt": null,
+  "reason": "No Task workspace or validation receipt was created."
+}

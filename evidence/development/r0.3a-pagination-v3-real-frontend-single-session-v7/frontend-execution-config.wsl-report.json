@@ -1,0 +1,17 @@
+{
+  "status": "FRONTEND_EXECUTION_CONFIG_READY",
+  "secret_sources_present": {
+    "auth_file": true,
+    "dsn": true,
+    "postgres_snapshot_dsn": true
+  },
+  "config_digest": "abddd869069d536abed4312a29a305adfdd9756b8865cdc2f124cf12d929b65a",
+  "path_encoding": "wsl_absolute",
+  "employee_id": "emp-frontend",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "purpose": "real_backend_peer_collaboration",
+  "execution_fingerprint": "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+  "tool_call_limit": 48,
+  "medium_limit": 1,
+  "concurrency": 1
+}

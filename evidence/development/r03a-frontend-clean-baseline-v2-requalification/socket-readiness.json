@@ -1,0 +1,9 @@
+{
+  "configured_directory": "/tmp/polis-pg-r03a-frontend-clean-baseline-v2-requalification",
+  "resolved_directory": "/tmp/polis-pg-r03a-frontend-clean-baseline-v2-requalification",
+  "port": 55432,
+  "effective_socket_path": "/tmp/polis-pg-r03a-frontend-clean-baseline-v2-requalification/.s.PGSQL.55432",
+  "path_bytes": 76,
+  "maximum_bytes": 107,
+  "compatibility": "PASS"
+}

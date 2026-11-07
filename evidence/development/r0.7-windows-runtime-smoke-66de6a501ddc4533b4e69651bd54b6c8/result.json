@@ -1,0 +1,10 @@
+{
+    "record_type":  "r0.7-windows-runtime-smoke@1",
+    "status":  "failed",
+    "provider_business_egress":  0,
+    "external_notifications":  0,
+    "postgres_port":  64812,
+    "backend_port":  64813,
+    "database":  "polis_r0_smoke_66de6a501ddc",
+    "failure":  "refusing non-R0 database"
+}

@@ -1,0 +1,24 @@
+{
+  "high_limit": 0,
+  "medium_limit": 1,
+  "model_calls": 0,
+  "old_allowance": "sealed",
+  "parent_problem_key": "r03a-real-peer-collaboration-v1",
+  "passed": true,
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "qualification_revalidation": {
+    "qualification": "R0.3A-T21B",
+    "execution_fingerprint": "f3f4e0f8dc64ed373bea7716237ad14932cf98c887acead7e6b5d193216b90af",
+    "codex_version": "0.153.4",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "capability_digest": "76a3f76b68973dc2e5640ac0656f34caf5d4748282c108a858ea863280db0a6f",
+    "tool_manifest_digest": "b36063bf6b136b8116a1b744042e5f0228f46d559ba711e080e82b271e59645a",
+    "tool_count": 11,
+    "auth_source_class": "controlled_diagnostic_auth_material",
+    "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+    "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+    "revalidated_at": "2026-09-11T14:37:11.8632295Z"
+  },
+  "t1": "passed"
+}

@@ -1,0 +1,19 @@
+{
+  "allowed_files": [
+    "formatter.go"
+  ],
+  "artifact_id": "57761d55c7b0dbf63668b9f8010de41d",
+  "candidate_digest": "d14c95ecfdefbced2531d7a9baf3497bab1e3ca4c5bc85c1aced6364cc10cca6",
+  "contract": "signed-zero@1",
+  "hidden_verifier": "trusted_controller_only",
+  "subject_revision": "e8c48b1b8536d9c5c55c8469bfed0c60b5cdad0c",
+  "task_input": "Preserve the signed-zero compatibility contract and implement the authorized formatting milestones for the frozen formatter candidate.",
+  "tools": [
+    "polis_work_current",
+    "polis_context_read",
+    "polis_workspace_read",
+    "polis_workspace_check",
+    "polis_work_checkpoint",
+    "polis_review_submit"
+  ]
+}

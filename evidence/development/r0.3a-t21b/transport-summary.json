@@ -1,0 +1,8 @@
+{
+  "attempted_tool_calls": [],
+  "business_side_effects": 0,
+  "derived_from": "provider-events.jsonl",
+  "first_valid_output_text": "__TRANSPORT_SENTINEL__",
+  "runner_recorded_sentinel_match": "mismatch",
+  "sentinel_match": "mismatch"
+}

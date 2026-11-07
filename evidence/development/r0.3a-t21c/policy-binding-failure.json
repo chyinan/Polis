@@ -1,0 +1,32 @@
+{
+  "source": "TestT21CQualifiedCheckpointMustBindEffectiveContract and subsequent read-only PostgreSQL query",
+  "database": "polis_r0_t21c_offline_20260912",
+  "company_id": "r03a-hardening-c9efafd6d748019f5cff0023de0ad389",
+  "session_id": "03b8c279c3e2835e263c586da75a8716",
+  "qualified_checkpoint": {
+    "id": "943d98ff96820884f92a2de3a11f9961",
+    "kind": "qualified",
+    "contract_revision_id": "03bd91f3ea168747b57890b1df45e546",
+    "workspace_revision": 2,
+    "workspace_digest": "bdd1820c48904ad8e3ebd29d0b7a3b1a69388a39bab420d47634c1700d67c0c3",
+    "evidence": "c5e45f6e74e7b41790e31c34e6d4ee76"
+  },
+  "final_contract": {
+    "id": "48b5b484739f5665c71c3d37ebc05d3b",
+    "revision": 3,
+    "state": "accepted",
+    "schema": {"items": [], "next_cursor": "", "total": 0}
+  },
+  "old_contract_state": "superseded",
+  "workspace_changed_since_checkpoint": false,
+  "artifact_submit_expected": "POLICY_DENIED",
+  "artifact_submit_actual": "success",
+  "persisted_artifact": {
+    "id": "3cd3b97e9a7415b3301c72e21fb49884",
+    "digest": "bdd1820c48904ad8e3ebd29d0b7a3b1a69388a39bab420d47634c1700d67c0c3",
+    "state": "ready",
+    "verdict": "candidate"
+  },
+  "reason": "HasQualifiedCheckpoint compares kind, workspace digest and workspace revision, but not current effective ContractRevision. Peer artifact_submit accepts that predicate.",
+  "live_model_calls": 0
+}

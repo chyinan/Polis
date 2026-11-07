@@ -1,0 +1,19 @@
+{
+  "company_id": "browser-company",
+  "frontend": "existing frontend reused",
+  "pages": [
+    "overview",
+    "group/overview",
+    "settings",
+    "operations",
+    "collaboration",
+    "notifications",
+    "mission"
+  ],
+  "api_response_count": 11,
+  "api_failures": [],
+  "screenshots": [
+    "D:\\Programs\\Polis\\evidence\\development\\r0.6-browser-dogfood\\overview.png",
+    "D:\\Programs\\Polis\\evidence\\development\\r0.6-browser-dogfood\\mission.png"
+  ]
+}

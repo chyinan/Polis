@@ -1,0 +1,9 @@
+{
+  "schema_version": "polis-product-surface-diagnostic-reservation@1",
+  "authorization_id": "r0.5b12-live-canary-1",
+  "authorization_digest": "d0ac0a38c8900510a998fc806479da17bb25f92381d708335060e1c77b1306f4",
+  "reservation_number": 1,
+  "provider_attempt_limit": 1,
+  "retry_limit": 0,
+  "reserved_at": "2026-09-20T07:45:40.3165685Z"
+}

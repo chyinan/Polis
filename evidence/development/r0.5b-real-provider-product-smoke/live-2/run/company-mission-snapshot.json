@@ -1,0 +1,21 @@
+{
+  "company_id": "r05b-live-2",
+  "company_seq": 28,
+  "employee_count": 4,
+  "mission": {
+    "id": "fed04f193f1bc6afebf9c152832ccd76",
+    "goal": "Create one small product integration smoke artifact through the Polis real-provider product path.",
+    "state": "active",
+    "title": "R0.5B LIVE_2 real-provider product smoke",
+    "contract": "r0-arithmetic@1",
+    "acceptance_contract": {
+      "revision": "text-acceptance@1",
+      "required_text": [
+        "Mission ID: {{mission_id}}",
+        "Task ID: {{task_id}}",
+        "Acknowledgement: This artifact was produced through the Polis real-provider product path.",
+        "Task summary: This artifact records one small product integration smoke."
+      ]
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "status": "inconclusive",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "model": "gpt-5.6-luna",
+  "profile": "gpt-5.6-luna/medium",
+  "started": "2026-09-10T11:27:58.232009268Z",
+  "finished": "2026-09-10T11:29:43.992179452Z",
+  "medium_started": 1,
+  "high_started": 0,
+  "provider_egress": 1,
+  "dynamic_tool_count": 0,
+  "readiness": {
+    "actual_transport": "not_observable",
+    "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+    "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+    "auth_snapshot_used": false,
+    "binary_sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da",
+    "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+    "code_mode_host_sha256": "3e85d67471825f73d02ff5f7e047ca1f6ca8caa3f59e4c6e8d9ca6ca7302cb45",
+    "cwd": "/work",
+    "dynamic_tool_count": 0,
+    "effort": "medium",
+    "guest_home": "/home/codex",
+    "host_home_path": "/mnt/d/Programs/Polis/.runtime/linux/r03a-t14c/home",
+    "host_home_path_class": "host_source",
+    "model": "gpt-5.6-luna",
+    "native_version": "codex-cli 0.153.4",
+    "provider_transport_policy": "native_default",
+    "runtime_profile": "wsl-linux-amd64",
+    "sandbox": "read-only",
+    "websocket_policy": "native_default"
+  },
+  "process_started": true,
+  "initialize_completed": true,
+  "thread_started": true,
+  "turn_started": true,
+  "turn_completed": false,
+  "auth_source_class": "mounted_codex_auth_file",
+  "auth_identity_fingerprint": "dadcac24599324742b4afd9153211bcce573e0db8f6ed3ac88e065e175bc1b58",
+  "auth_credential_revision_fingerprint": "3076536bcf87f9c619736806c7bad3cc39a57e898bd0dcd8cde72e299c6ef6d7",
+  "canonical_manifest_digest": "14ffcaa033f927e95d2f729b97495529e7b7b9f2d4a58ba8edda34c81c08fb75",
+  "source_execution_config_digest": "bac488dc0f755342769016c24301c865ac852eb23ed8f81bbd536eef8e37deea",
+  "capability_digest": "33eda3b9bb9fd48d26bc4989f8ae34c015eba8945efdf87e86aae3385a036443",
+  "launch_config_digest": "e808305f1065f404996a150f394eeb3f13dc4b37080d122d163d11b73a028fd7",
+  "configured_transport_policy": "native_default",
+  "actual_transport": "not_observable",
+  "turn_state": "first_valid_output_deadline_exceeded",
+  "transport": "inconclusive",
+  "sentinel_match": "failed",
+  "first_valid_output": false,
+  "reconnect_count": 2,
+  "reconnect_phases": [
+    "pre_first_output_reconnecting",
+    "pre_first_output_reconnecting"
+  ],
+  "first_disconnect_delta_ms": 38187,
+  "native_usage_updates": 0,
+  "token_usage": {
+    "total": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    },
+    "last": {
+      "totalTokens": 0,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0
+    }
+  },
+  "turn_lifecycle": [
+    {
+      "at": "2026-09-10T19:28:05.148874094+08:00",
+      "state": "normal_running",
+      "method": "turn/start"
+    },
+    {
+      "at": "2026-09-10T19:28:43.363143113+08:00",
+      "state": "reconnecting",
+      "method": "error",
+      "phase": "pre_first_output_reconnecting",
+      "reason": "structured responseStreamDisconnected with willRetry"
+    },
+    {
+      "at": "2026-09-10T19:29:43.976389565+08:00",
+      "state": "reconnect_deadline_exceeded",
+      "method": "timeout",
+      "phase": "pre_first_output_reconnecting",
+      "reason": "first valid output deadline elapsed while reconnecting"
+    }
+  ],
+  "stop_receipt": "process-group:438:waited",
+  "stop_confirmed": true,
+  "tool_events": [],
+  "unresolved_transport_state": false,
+  "case": "B",
+  "error": "first_valid_output_deadline_exceeded: elapsed=1m30.015861263s"
+}

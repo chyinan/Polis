@@ -1,0 +1,33 @@
+{
+  "artifact": {
+    "ID": "5bf77f15ee867b857f116faad0312c4f",
+    "Digest": "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+    "State": "ready",
+    "Verdict": "candidate"
+  },
+  "contract": {
+    "id": "4f57c71061c10ab5a78f632d8db59321",
+    "mission": "r03a-t2-mission-1789221294871371900",
+    "endpoint": "GET /items?cursor={cursor}\u0026limit={limit}",
+    "schema": "{\"items\": [\"id\", \"name\"], \"next_cursor\": \"string|null\"}",
+    "digest": "7d7325dcc9052a361e4da8691cf8ea1ae83ba25a79282faca376372343fda9be",
+    "state": "accepted",
+    "revision": 3,
+    "base_revision": 2
+  },
+  "message": {
+    "id": "7d027b5a8fd2267a68b364e47f4635ca",
+    "task_id": "3243c57410762f2cd8b666e3ad35c8c9",
+    "obligation_id": "7d027b5a8fd2267a68b364e47f4635ca",
+    "contract_revision_id": "4f57c71061c10ab5a78f632d8db59321",
+    "delivery_state": "persisted"
+  },
+  "obligation_state": "pending",
+  "planner_path": 0,
+  "stop_confirmed": true,
+  "workspace": {
+    "Digest": "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+    "Content": "package backend\n\nconst Endpoint = \"GET /items?cursor={cursor}\u0026limit={limit}\"\n\nfunc FetchItems(cursor string, limit int) string {\n\titems := []string{\"id\", \"name\"}\n\tnext_cursor := \"2\"\n\t_ = cursor\n\t_ = limit\n\t_ = items\n\t_ = next_cursor\n\treturn \"items,next_cursor\"\n}\n",
+    "Revision": 9
+  }
+}

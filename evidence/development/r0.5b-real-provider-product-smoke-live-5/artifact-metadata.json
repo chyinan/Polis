@@ -1,0 +1,12 @@
+{
+    "company_id":  "r05b-live-5",
+    "id":  "9ba046913a0d58ca0ad58df867f297b9",
+    "task_id":  "7682cd197e8436a763f22ce3198a60ce",
+    "author":  "emp-backend",
+    "digest":  "531f5988cba3b3edb01ad3671a0b4014fdf57df96bebaab9c9e199013d80021b",
+    "bytes":  514,
+    "state":  "ready",
+    "verdict":  "candidate",
+    "verifier":  null,
+    "contract":  "r0-arithmetic@1"
+}

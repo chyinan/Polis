@@ -1,0 +1,5 @@
+--- FAIL: TestProductCandidateFencesPostPublicationWorkspaceAndCheckpointWrites (0.19s)
+    product_finalization_fence_test.go:82: candidate Task accepted a post-publication workspace write: {Receipt:0x194cbe8fe900 Data:<nil> Error: Detail:}
+FAIL
+FAIL	polis/internal/kernel	0.234s
+FAIL

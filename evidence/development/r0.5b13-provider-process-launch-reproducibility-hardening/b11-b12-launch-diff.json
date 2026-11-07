@@ -1,0 +1,163 @@
+{
+  "b11": {
+    "schema_version": "polis-process-launch-spec@1",
+    "executable": "codex.exe",
+    "argv": [
+      "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+      "app-server",
+      "--stdio"
+    ],
+    "working_directory": "",
+    "stdin_mode": "redirected_pipe_write",
+    "stdout_mode": "redirected_pipe_read",
+    "stderr_mode": "redirected_pipe_read_bounded",
+    "pipe_setup_mode": "stdin_stdout_stderr_separate_pipes",
+    "process_creation_flags": [
+      "windows_hide_window"
+    ],
+    "process_group_policy": "windows_process_handle",
+    "job_object_policy": "none",
+    "environment_policy": "controlled-runtime-allowlist@1",
+    "inherited_environment_policy": "ambient-environment-denied@1",
+    "environment": [
+      {
+        "name": "CODEX_HOME",
+        "value_sha256": "c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9"
+      },
+      {
+        "name": "HOME",
+        "value_sha256": "c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9"
+      },
+      {
+        "name": "PATH",
+        "value_sha256": "1b91f4b91201ea57e2f68cb79bff702dd35f24771d40ec884b2cdb8b706f5f95"
+      },
+      {
+        "name": "SystemRoot",
+        "value_sha256": "efd19b4dfb7bcf968b9e605369281ebb13f245f89588e5ad58f3ae6ed2f6b691"
+      },
+      {
+        "name": "TEMP",
+        "value_sha256": "17757088824240d12392821de2e5b2e6f233ec446ed691d79e27605e6eed0a0f"
+      },
+      {
+        "name": "TMP",
+        "value_sha256": "17757088824240d12392821de2e5b2e6f233ec446ed691d79e27605e6eed0a0f"
+      },
+      {
+        "name": "USERPROFILE",
+        "value_sha256": "c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9"
+      },
+      {
+        "name": "WINDIR",
+        "value_sha256": "efd19b4dfb7bcf968b9e605369281ebb13f245f89588e5ad58f3ae6ed2f6b691"
+      }
+    ],
+    "runtime_root": ".runtime\\windows\\r0.5b11-provider-runtime-version-binding-hardening",
+    "runtime_home": ".runtime\\windows\\r0.5b11-provider-runtime-version-binding-hardening\\r05b11-provider-preflight\\home",
+    "temp_directory": ".runtime\\windows\\r0.5b11-provider-runtime-version-binding-hardening\\r05b11-provider-preflight\\home\\tmp",
+    "evidence_root": "evidence\\development\\r0.5b11-provider-runtime-version-binding-hardening\\provider\\r05b11-provider-preflight",
+    "runtime_root_rule": "dedicated runtime root per qualification",
+    "runtime_home_rule": "runtime_root/session_id/home",
+    "temp_directory_rule": "runtime_home/tmp",
+    "evidence_root_rule": "dedicated evidence root per qualification/session",
+    "launcher": "cmd/polis-r05b11 local preflight",
+    "pre_launch_lifecycle": [
+      "readiness_rebind",
+      "credential_snapshot",
+      "native_args",
+      "canonical_process_launch",
+      "protocol_client"
+    ]
+  },
+  "b12": {
+    "schema_version": "polis-process-launch-spec@1",
+    "executable": "codex.exe",
+    "argv": [
+      "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\controlled-runtime\\polis-r03a\\bffc5354119c8421\\codex.exe",
+      "app-server",
+      "--stdio"
+    ],
+    "working_directory": "",
+    "stdin_mode": "redirected_pipe_write",
+    "stdout_mode": "redirected_pipe_read",
+    "stderr_mode": "redirected_pipe_read_bounded",
+    "pipe_setup_mode": "stdin_stdout_stderr_separate_pipes",
+    "process_creation_flags": [
+      "windows_hide_window"
+    ],
+    "process_group_policy": "windows_process_handle",
+    "job_object_policy": "none",
+    "environment_policy": "controlled-runtime-allowlist@1",
+    "inherited_environment_policy": "ambient-environment-denied@1",
+    "environment": [
+      {
+        "name": "CODEX_HOME",
+        "value_sha256": "c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9"
+      },
+      {
+        "name": "HOME",
+        "value_sha256": "c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9"
+      },
+      {
+        "name": "PATH",
+        "value_sha256": "1b91f4b91201ea57e2f68cb79bff702dd35f24771d40ec884b2cdb8b706f5f95"
+      },
+      {
+        "name": "SystemRoot",
+        "value_sha256": "efd19b4dfb7bcf968b9e605369281ebb13f245f89588e5ad58f3ae6ed2f6b691"
+      },
+      {
+        "name": "TEMP",
+        "value_sha256": "17757088824240d12392821de2e5b2e6f233ec446ed691d79e27605e6eed0a0f"
+      },
+      {
+        "name": "TMP",
+        "value_sha256": "17757088824240d12392821de2e5b2e6f233ec446ed691d79e27605e6eed0a0f"
+      },
+      {
+        "name": "USERPROFILE",
+        "value_sha256": "c5836f7ddaa2aa6ba582c4310f62a74e777d98df5c36abcbdd1e6fb37efd56e9"
+      },
+      {
+        "name": "WINDIR",
+        "value_sha256": "efd19b4dfb7bcf968b9e605369281ebb13f245f89588e5ad58f3ae6ed2f6b691"
+      }
+    ],
+    "runtime_root": ".runtime\\windows\\r0.5b11-provider-runtime-version-binding-hardening",
+    "runtime_home": ".runtime\\windows\\r0.5b11-provider-runtime-version-binding-hardening\\r05b11-provider-preflight\\home",
+    "temp_directory": ".runtime\\windows\\r0.5b11-provider-runtime-version-binding-hardening\\r05b11-provider-preflight\\home\\tmp",
+    "evidence_root": "evidence\\development\\r0.5b12-product-tool-surface-v4-live-qualification-attempt-2\\provider\\r05b11-provider-preflight",
+    "runtime_root_rule": "dedicated runtime root per qualification",
+    "runtime_home_rule": "runtime_root/session_id/home",
+    "temp_directory_rule": "runtime_home/tmp",
+    "evidence_root_rule": "dedicated evidence root per qualification/session",
+    "launcher": "cmd/polis serve -\u003e RealProviderWorkerAdapter -\u003e CodexRuntime.Start",
+    "pre_launch_lifecycle": [
+      "readiness_rebind",
+      "credential_snapshot",
+      "native_args",
+      "canonical_process_launch",
+      "protocol_client"
+    ]
+  },
+  "b12_frozen_evidence_limit": "no OS error code or safe launch text was persisted; frozen terminal was process_start_failed with no PID",
+  "diff": {
+    "schema_version": "polis-process-launch-spec@1",
+    "changed": [
+      {
+        "field": "evidence_root",
+        "left": "evidence\\development\\r0.5b11-provider-runtime-version-binding-hardening\\provider\\r05b11-provider-preflight",
+        "right": "evidence\\development\\r0.5b12-product-tool-surface-v4-live-qualification-attempt-2\\provider\\r05b11-provider-preflight"
+      },
+      {
+        "field": "launcher",
+        "left": "cmd/polis-r05b11 local preflight",
+        "right": "cmd/polis serve -\u003e RealProviderWorkerAdapter -\u003e CodexRuntime.Start"
+      }
+    ],
+    "equal": false
+  },
+  "primary_root_cause": "REPORTING_CLASSIFICATION_DEFECT",
+  "record_type": "polis-b11-b12-process-launch-diff@1"
+}

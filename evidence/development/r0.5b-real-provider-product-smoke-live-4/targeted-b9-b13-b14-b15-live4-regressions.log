@@ -1,0 +1,5 @@
+ok  	polis/internal/kernel	0.092s
+ok  	polis/internal/control	0.085s
+ok  	polis/internal/provider	0.874s
+ok  	polis/internal/runner	0.119s
+ok  	polis/internal/workbench	0.084s

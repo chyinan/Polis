@@ -1,0 +1,7 @@
+{
+  "status": "NOT_CREATED",
+  "reason": "product_tool_surface_semantics_not_current; stopped before execution identity and diagnostic authorization",
+  "diagnostic_provider_reservation": 0,
+  "provider_egress": 0,
+  "raw_credentials_recorded": false
+}

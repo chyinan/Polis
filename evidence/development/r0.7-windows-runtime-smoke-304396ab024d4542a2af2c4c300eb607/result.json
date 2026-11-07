@@ -1,0 +1,10 @@
+{
+    "record_type":  "r0.7-windows-runtime-smoke@1",
+    "status":  "failed",
+    "provider_business_egress":  0,
+    "external_notifications":  0,
+    "postgres_port":  65153,
+    "backend_port":  65154,
+    "database":  "polis_r0_smoke_304396ab024d",
+    "failure":  "backend readiness timeout on 65154"
+}

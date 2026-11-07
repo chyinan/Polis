@@ -1,0 +1,18 @@
+# R0.5B LIVE_2 authorization and result summary
+
+## Hardened pre-reservation path
+
+- `ExecutionAuthorization` binds the LIVE_2 purpose, exact @2 manifest/schema, exact surface execution and provider L2 fingerprints, runtime envelope, immutable TaskValidationBinding digest, and initial workspace digest/revision.
+- Provider WorkerSession creation is limited to the single `compat`/`emp-backend` Task with a valid immutable public acceptance binding. Immediately before `Reserve`, the kernel rereads the Task set, Mission state, current TaskValidationBinding, workspace CAS, employee epoch/incarnation, WorkerSession state/profile/tool budget, and provider-bearing session cardinality in a read-only snapshot.
+- `CodexRuntime` requires one prior business reservation for `Start`, rejects a replay, validates ChatGPT auth structure without recording token values, pins the B4 version and binary/helper SHA-256 identities, and rechecks identity before Reserve and process start.
+- The B4 provider surface remains `polis-product-tool-surface@2`, seven tools, manifest `2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9`, schema `1470` bytes / `8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f`, execution fingerprint `fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08`, provider L2 fingerprint `4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532`.
+
+## LIVE_2 result
+
+- Browser-only Mission create, Start, readback and final Stop/Cancel used the existing Real Workbench on a fresh PostgreSQL 18.6/schema 7 cluster. The one Mission had `bootstrap_plan` (`emp-planning`) and `compat` (`emp-backend`), exactly one provider-executable Task, one immutable TaskValidationBinding, and one provider-bearing WorkerSession.
+- Exactly one Luna medium authorization, reservation, egress and turn occurred. The turn completed normally with 13 mediated tool calls in 92.336 seconds; first output arrived in 9.827 seconds. Usage was 162,336 input tokens and 2,475 output tokens. The protocol trace has one `turn/start`, one `turn/completed`, 13 `item/tool/call` events and no reconnect/resume markers. The terminal usage object's `tool_calls` field remained 0 and did not persist a reconnect counter; WorkerSession and protocol counters are authoritative.
+- The task-scoped public workspace check passed at revision 2. The employee stopped without a qualified checkpoint or Artifact, so Artifact digest and Artifact CAS resolution were not reached. This is a business task failure, not runtime uncertainty: `r0_5b_real_provider_product_smoke_live_2 = FAILED`.
+- The Mission was cancelled after preserving pre-cleanup evidence. Final states are Mission `cancelled`, planning Task `completed`, compat Task `cancelled`, WorkerSession `stopped`; there are no live provider sessions, Codex/helper processes, credential snapshots or service listeners. Retry, successor, High, second Mission and duplicate reservation counts are all zero.
+- Full result, integrity assertion and consolidated browser E2E record: `evidence/development/r0.5b-real-provider-product-smoke/live-2/run/live-2-result.json`, `post-attempt-integrity.json` and `browser-e2e.json`. Browser screenshots, state snapshots and post-attempt verification logs are in the same `run/` directory. Both dedicated PostgreSQL temporary roots were stopped and removed after evidence capture. No credentials were recorded.
+
+The LIVE_2 request is complete. Preserve this FAILED result and all R0.5A–B5/LIVE_1 evidence; do not run another provider attempt, create another Mission, run High, start SSE work or start multi-agent E2E.

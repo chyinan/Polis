@@ -1,0 +1,70 @@
+{
+  "browser": "Microsoft Edge via Playwright",
+  "companyId": "r05b-live-2",
+  "missionId": "fed04f193f1bc6afebf9c152832ccd76",
+  "browserMissionCreatePostCount": 1,
+  "browserMissionStartPostCount": 1,
+  "browserCancelPostCount": 0,
+  "postStartOverview": {
+    "missionTitleVisible": true,
+    "publicAcceptanceCriteriaVisible": true,
+    "workspaceCheckVisible": true,
+    "artifactAbsenceVisible": true,
+    "checkpointAbsenceVisible": true,
+    "stoppedProductWorkerVisible": true,
+    "page": "overview",
+    "screenshot": "browser-post-attempt-overview.png"
+  },
+  "taskView": {
+    "bootstrapPlanAndPlanningOwnerVisible": true,
+    "compatAndBackendOwnerVisible": true,
+    "bootstrapPlanCompletedVisible": true,
+    "compatWorkingVisible": true,
+    "page": "tasks",
+    "screenshot": "browser-post-attempt-tasks.png"
+  },
+  "activityView": {
+    "missionCreateVisible": true,
+    "missionStartVisible": true,
+    "providerTurnCompletedVisible": true,
+    "workerStoppedVisible": true,
+    "page": "activity",
+    "screenshot": "browser-post-attempt-activity.png"
+  },
+  "sseRequests": 0,
+  "pageErrors": [],
+  "apiTraffic": [
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "POST",
+      "path": "/api/workbench/companies/r05b-live-2/missions/fed04f193f1bc6afebf9c152832ccd76/start"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/activity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workbench/companies/r05b-live-2/overview"
+    }
+  ]
+}

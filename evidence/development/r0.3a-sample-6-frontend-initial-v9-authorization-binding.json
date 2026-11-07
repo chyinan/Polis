@@ -1,0 +1,15 @@
+{
+  "execution_fingerprint": "708790c760a905f8eeced8ba426b024341eec789bdb79ad1d89f87cb31982091",
+  "employee_id": "emp-frontend",
+  "problem_key": "r03a-real-peer-collaboration-v1",
+  "purpose": "real_frontend_handover_from_recovered_state",
+  "model": "gpt-5.6-luna",
+  "profile": "gpt-5.6-luna/medium",
+  "effort": "medium",
+  "allowance_limits": {
+    "medium_limit": 1,
+    "high_limit": 0,
+    "concurrency": 1,
+    "tool_call_limit": 48
+  }
+}

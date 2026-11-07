@@ -1,0 +1,21 @@
+{
+  "allowance_path": "D:\\Programs\\Polis\\evidence\\development\\r0.3a-pagination-v3-backend-sample-4-attempt-2\\allowance.json",
+  "behavior_verifier": "r03a-pagination-behavior@2",
+  "binding": {
+    "execution_fingerprint": "ee4513140a30430f2ca5688393336fafefc6cac4da46411a217e7eea7b70229f",
+    "employee_id": "emp-backend",
+    "problem_key": "r03a-real-peer-collaboration-v1",
+    "purpose": "real_backend_peer_collaboration",
+    "model": "gpt-5.6-luna",
+    "profile": "gpt-5.6-luna/medium",
+    "effort": "medium",
+    "allowance_limits": {
+      "medium_limit": 1,
+      "high_limit": 0,
+      "concurrency": 1,
+      "tool_call_limit": 48
+    }
+  },
+  "contract_revision": "r03a-pagination-contract@3",
+  "implementation_binding_contract": "r03a-backend-binding@2"
+}

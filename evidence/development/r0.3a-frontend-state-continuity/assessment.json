@@ -1,0 +1,38 @@
+{
+  "record_type": "r0.3a-frontend-state-continuity-assessment-v1",
+  "status": "FAILED",
+  "case": "B_ONLY_PARTIAL_STATE_EXPORTS_EXIST",
+  "frontend_live_phase": "NOT_ELIGIBLE",
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0,
+  "frontend_started": false,
+  "reviewer_started": false,
+  "authoritative_sources_checked": [
+    {
+      "path": "evidence/development/r0.3a-real-backend-employee/continuation-6/backend-state.json",
+      "classification": "partial_post_run_state_export",
+      "usable_for_identity_restore": false,
+      "known_fields": ["final_contract_id_and_revision", "message_id", "obligation_id_and_state", "artifact_id_and_digest", "workspace_revision_and_digest", "planner_path_count"],
+      "missing_required_fields": ["company_id", "backend_task_id", "complete_frontend_task_identity", "employee ownership rows", "full revision chain identities", "message sender/recipient ownership state", "checkpoint payload/evidence refs", "company sequence/event ordering"]
+    },
+    {
+      "path": ".runtime/windows/r0.3a-real-backend-continuation-6/blobs",
+      "classification": "blob_content_store_only",
+      "usable_for_identity_restore": false,
+      "reason": "contains content blobs without the authoritative relational state and ownership graph"
+    }
+  ],
+  "excluded_sources": [
+    "result.json",
+    "current-contract-verdict.json",
+    "summary/post-hoc prose",
+    "protocol tool-result prose"
+  ],
+  "required_authoritative_artifact": "database snapshot/export or complete immutable Polis recovery/state bundle",
+  "no_rows_synthesized": true,
+  "no_message_or_obligation_recreated": true,
+  "no_contract_revision_recreated": true,
+  "historical_continuation_6_modified": false,
+  "reason": "The available structured export proves some final references but cannot restore the original company/task/employee identity graph or event ordering. Rehydrating Frontend from it would require inventing missing state, so continuity is failed and the live phase is stopped before PG/allowance/provider."
+}

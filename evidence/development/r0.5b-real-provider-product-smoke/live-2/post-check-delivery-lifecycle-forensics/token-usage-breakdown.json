@@ -1,0 +1,142 @@
+{
+  "classification": "NOT_DETERMINABLE",
+  "totalInputTokens": 162336,
+  "cachedInputTokens": 124416,
+  "totalOutputTokens": 2475,
+  "reasoningOutputTokens": 1053,
+  "lastInputTokens": 15505,
+  "modelContextWindow": 258400,
+  "tokenUsageSnapshotCount": 12,
+  "snapshots": [
+    {
+      "ordinal": 1,
+      "time": "2026-09-17T10:51:07.1193017Z",
+      "lastInputTokens": 11042,
+      "lastCachedInputTokens": 0,
+      "lastOutputTokens": 117,
+      "cumulativeInputTokens": 11042,
+      "cumulativeCachedInputTokens": 0,
+      "cumulativeOutputTokens": 117
+    },
+    {
+      "ordinal": 2,
+      "time": "2026-09-17T10:51:15.4782604Z",
+      "lastInputTokens": 12107,
+      "lastCachedInputTokens": 9984,
+      "lastOutputTokens": 280,
+      "cumulativeInputTokens": 23149,
+      "cumulativeCachedInputTokens": 9984,
+      "cumulativeOutputTokens": 397
+    },
+    {
+      "ordinal": 3,
+      "time": "2026-09-17T10:51:19.4767512Z",
+      "lastInputTokens": 12469,
+      "lastCachedInputTokens": 11008,
+      "lastOutputTokens": 34,
+      "cumulativeInputTokens": 35618,
+      "cumulativeCachedInputTokens": 20992,
+      "cumulativeOutputTokens": 431
+    },
+    {
+      "ordinal": 4,
+      "time": "2026-09-17T10:51:26.9370648Z",
+      "lastInputTokens": 12781,
+      "lastCachedInputTokens": 12032,
+      "lastOutputTokens": 215,
+      "cumulativeInputTokens": 48399,
+      "cumulativeCachedInputTokens": 33024,
+      "cumulativeOutputTokens": 646
+    },
+    {
+      "ordinal": 5,
+      "time": "2026-09-17T10:51:33.852465Z",
+      "lastInputTokens": 13030,
+      "lastCachedInputTokens": 12032,
+      "lastOutputTokens": 219,
+      "cumulativeInputTokens": 61429,
+      "cumulativeCachedInputTokens": 45056,
+      "cumulativeOutputTokens": 865
+    },
+    {
+      "ordinal": 6,
+      "time": "2026-09-17T10:51:39.8316649Z",
+      "lastInputTokens": 13283,
+      "lastCachedInputTokens": 12032,
+      "lastOutputTokens": 143,
+      "cumulativeInputTokens": 74712,
+      "cumulativeCachedInputTokens": 57088,
+      "cumulativeOutputTokens": 1008
+    },
+    {
+      "ordinal": 7,
+      "time": "2026-09-17T10:51:44.8823164Z",
+      "lastInputTokens": 13951,
+      "lastCachedInputTokens": 13056,
+      "lastOutputTokens": 117,
+      "cumulativeInputTokens": 88663,
+      "cumulativeCachedInputTokens": 70144,
+      "cumulativeOutputTokens": 1125
+    },
+    {
+      "ordinal": 8,
+      "time": "2026-09-17T10:51:57.4697605Z",
+      "lastInputTokens": 14102,
+      "lastCachedInputTokens": 0,
+      "lastOutputTokens": 370,
+      "cumulativeInputTokens": 102765,
+      "cumulativeCachedInputTokens": 70144,
+      "cumulativeOutputTokens": 1495
+    },
+    {
+      "ordinal": 9,
+      "time": "2026-09-17T10:52:05.7855595Z",
+      "lastInputTokens": 14506,
+      "lastCachedInputTokens": 13056,
+      "lastOutputTokens": 197,
+      "cumulativeInputTokens": 117271,
+      "cumulativeCachedInputTokens": 83200,
+      "cumulativeOutputTokens": 1692
+    },
+    {
+      "ordinal": 10,
+      "time": "2026-09-17T10:52:09.9332428Z",
+      "lastInputTokens": 14737,
+      "lastCachedInputTokens": 14080,
+      "lastOutputTokens": 53,
+      "cumulativeInputTokens": 132008,
+      "cumulativeCachedInputTokens": 97280,
+      "cumulativeOutputTokens": 1745
+    },
+    {
+      "ordinal": 11,
+      "time": "2026-09-17T10:52:24.8176583Z",
+      "lastInputTokens": 14823,
+      "lastCachedInputTokens": 14080,
+      "lastOutputTokens": 648,
+      "cumulativeInputTokens": 146831,
+      "cumulativeCachedInputTokens": 111360,
+      "cumulativeOutputTokens": 2393
+    },
+    {
+      "ordinal": 12,
+      "time": "2026-09-17T10:52:29.5001225Z",
+      "lastInputTokens": 15505,
+      "lastCachedInputTokens": 13056,
+      "lastOutputTokens": 82,
+      "cumulativeInputTokens": 162336,
+      "cumulativeCachedInputTokens": 124416,
+      "cumulativeOutputTokens": 2475
+    }
+  ],
+  "observableContext": {
+    "registeredToolCount": 7,
+    "aggregateSchemaBytes": 1470,
+    "workCurrentToolResultChars": 1274,
+    "contextReadToolResultChars": 1274,
+    "initialWorkspaceBytes": 148,
+    "replacedWorkspaceBytes": 399,
+    "toolCallCount": 13
+  },
+  "conclusion": "Token usage accumulates over the multi-step tool turn and cached input is reported, but the frozen protocol does not attribute tokens among system/developer context, dynamic tool schemas, prior tool/result history, workspace content, and app-server/provider overhead. No component-level attribution was inferred."
+}

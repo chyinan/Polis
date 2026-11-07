@@ -176,11 +176,18 @@ func parseRecoveredCandidate(path, artifactID string) (string, kernel.Checkpoint
 			if call.Tool != tr.Tool || result.Receipt.Status != "persisted" {
 				continue
 			}
-			var candidate kernel.Checkpoint
+			var candidate struct {
+				Summary   string   `json:"summary"`
+				Facts     []string `json:"facts"`
+				Decisions []string `json:"decisions"`
+				Rejected  []string `json:"rejected"`
+				Evidence  []string `json:"evidence"`
+			}
 			if json.Unmarshal(call.Arguments, &candidate) != nil || candidate.Summary == "" || len(candidate.Facts) == 0 || len(candidate.Decisions) == 0 || len(candidate.Rejected) == 0 || len(candidate.Evidence) == 0 || !contains(candidate.Evidence, checkReceipt) {
 				continue
 			}
-			cp, cpReceipt = candidate, result.Receipt.ID
+			cp = kernel.Checkpoint{Summary: candidate.Summary, Facts: candidate.Facts, Decisions: candidate.Decisions, Rejected: candidate.Rejected, EvidenceRefs: candidate.Evidence}
+			cpReceipt = result.Receipt.ID
 		case "polis_artifact_submit":
 			if result.Receipt.Status == "candidate" && result.Receipt.ID == artifactID && cpReceipt != "" && checkedDigest != "" && checkedDigest == digestFor(checkedContent) && currentDigest == checkedDigest && currentContent == checkedContent {
 				artifactOK = true
@@ -267,25 +274,33 @@ func RunR02HighRecovery(cfg Config, oldEvidence string) (result R02Result, err e
 		return result, e
 	}
 	checker := runner.Verifier{GoRoot: cfg.GoRoot, Scratch: cfg.Root, Context: ctx}
-	review, e := runR02ReviewSession(ctx, cfg, k, s, reviewTask.ID, old.Artifact, old.Bundle, checker, 3, "independent behavior acceptance after repaired packaging")
+	review, e := runR02ReviewSession(ctx, cfg, k, s, reviewTask.ID, old.Artifact, 3, "independent behavior acceptance after repaired packaging")
 	result.CapabilityDigest = review.capability
 	result.Turns = append(result.Turns, review.turn)
+	result.ReviewerVerdict = review.turn.ReviewerVerdict
 	result.Usage.Medium = budget.Medium
 	result.Usage.High = budget.High
 	if e != nil {
 		return result, e
 	}
-	if !review.turn.CheckPassed || review.turn.CheckpointID == "" {
-		return result, errors.New("High review did not pass compiled signed-zero behavior check")
+	report, verifyErr := k.VerifyProbe(ctx, s, old.Artifact, "full", checker)
+	if report.Passed {
+		result.HiddenVerifier = "passed"
+	} else {
+		result.HiddenVerifier = "failed"
 	}
-	if ok, checkErr := k.CheckpointEvidence(ctx, review.binding, review.turn.CheckpointID); checkErr != nil || !ok {
-		return result, errors.New("High checkpoint receipt not bound to session and digest")
+	if review.turn.ReviewerVerdict != "" && review.turn.ReviewerSubmissionReceipt != "" && hasAll(review.turn.ToolEvents, "workspace_read", "work_current", "context_read", "review_submit") && !containsAny(review.turn.ToolEvents, "workspace_replace", "artifact_submit", "workspace_check", "work_checkpoint") {
+		result.ReviewIsolation = "passed"
+	} else {
+		result.ReviewIsolation = "failed"
 	}
-	if _, e = k.VerifyProbe(ctx, s, old.Artifact, "full", checker); e != nil {
-		return result, e
+	if verifyErr != nil {
+		return result, verifyErr
 	}
-	if !hasAll(review.turn.ToolEvents, "workspace_read", "workspace_check", "work_checkpoint") || containsAny(review.turn.ToolEvents, "workspace_replace", "artifact_submit") {
-		return result, errors.New("High behavior review did not remain independent/read-only")
+	if result.ReviewerVerdict != "passed" || result.HiddenVerifier != "passed" || result.ReviewIsolation != "passed" {
+		result.Status = "failed"
+		result.Behavior = "failed"
+		return result, errors.New("independent review, hidden verifier and isolation did not all pass")
 	}
 	result.Handover = "passed"
 	result.Behavior = "passed"

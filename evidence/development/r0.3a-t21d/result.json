@@ -1,0 +1,53 @@
+{
+  "qualification": "R0.3A-T21D",
+  "status": "INCONCLUSIVE",
+  "offline_qualification": "PASSED",
+  "live_canary": "INCONCLUSIVE",
+  "failure_code": "WINDOWS_CONTROLLED_INPUT_UNAVAILABLE",
+  "failure_detail": "frozen Windows Codex binary and code-mode host were unavailable before process start",
+  "missing_controlled_inputs": [
+    "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\bin\\fd4c151a749f3ab4\\codex.exe",
+    "C:\\Users\\chyinan\\AppData\\Local\\OpenAI\\Codex\\bin\\fd4c151a749f3ab4\\codex-code-mode-host.exe"
+  ],
+  "old_t21b_surface": {
+    "manifest_digest": "b36063bf6b136b8116a1b744042e5f0228f46d559ba711e080e82b271e59645a",
+    "aggregate_schema_bytes": 1792
+  },
+  "revised_t21d_surface": {
+    "tool_count": 11,
+    "manifest_digest": "8b26523174e9a198730c32c1a6ba547587bedfda7cb27bd0a5b1fa6dd7c1ff22",
+    "aggregate_schema_digest": "f91ce7dd4c5ac987a5642aa58cd52dfee67704f30597409c81232391c3e3b6e9",
+    "aggregate_schema_bytes": 2038,
+    "handler_binding_digest": "66e1721838c8b523dcd0d6a06de26995be29078eeb0e0574e2104ab56bf45b9a"
+  },
+  "policy_revisions": {
+    "checkpoint_policy_revision": "checkpoint-effective-contract@2",
+    "artifact_eligibility_policy_revision": "artifact-commit-qualification@2",
+    "contract_supersession_policy_revision": "peer-contract-supersession@2",
+    "acceptance_checker_revision": "peer-semantic-checker@2"
+  },
+  "diagnostic_allowance_created": false,
+  "medium_consumed": 0,
+  "high_consumed": 0,
+  "provider_egress": 0,
+  "process_started": false,
+  "thread_started": false,
+  "turn_started": false,
+  "first_valid_output": "NOT_RUN",
+  "turn_completed": "NOT_RUN",
+  "attempted_tools": [],
+  "business_side_effects": 0,
+  "transport_unresolved": false,
+  "retry": 0,
+  "eligible_for_revised_backend_run": false,
+  "t21c_historical_evidence_modified": false,
+  "verification": {
+    "offline_tests": "PASS",
+    "race": "PASS",
+    "vet": "PASS",
+    "linux_build": "PASS",
+    "windows_build": "PASS",
+    "powershell_syntax": "PASS",
+    "diff_check": "PASS"
+  }
+}

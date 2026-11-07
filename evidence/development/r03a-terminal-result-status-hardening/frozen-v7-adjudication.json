@@ -1,0 +1,33 @@
+{
+  "artifact_absent_is_terminal": true,
+  "frontend_real_execution": "FAILED",
+  "frozen_v7_adjudicated_status": "FAILED",
+  "frozen_v7_raw_status": "NOT_STARTED",
+  "historical_evidence_modified": false,
+  "provider_egress": 1,
+  "record_type": "r0.3a-terminal-result-status-adjudication-v1",
+  "regressions": [
+    {
+      "name": "pre-provider failure",
+      "actual": "NOT_STARTED",
+      "wanted": "NOT_STARTED"
+    },
+    {
+      "name": "provider transport inconclusive",
+      "actual": "INCONCLUSIVE",
+      "wanted": "INCONCLUSIVE"
+    },
+    {
+      "name": "completed business failure without artifact",
+      "actual": "FAILED",
+      "wanted": "FAILED"
+    },
+    {
+      "name": "successful business",
+      "actual": "PASSED",
+      "wanted": "PASSED"
+    }
+  ],
+  "session_present": true,
+  "source_result_path": "/mnt/d/Programs/Polis/evidence/development/r03a-pagination-v3-real-frontend-clean-single-session-windows-v7-attempt-8/result.json"
+}

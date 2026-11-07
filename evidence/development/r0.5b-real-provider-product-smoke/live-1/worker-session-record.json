@@ -1,0 +1,13 @@
+{
+  "record_type": "polis-worker-session-evidence@1",
+  "status": "NOT_CREATED",
+  "company_id": "r05b-live-1",
+  "mission_id": "4f000865902ec201d528c8ce3a039798",
+  "task_id": null,
+  "employee_id": null,
+  "worker_session_count": 0,
+  "live_worker_session_count": 0,
+  "orphan_worker_session_count": 0,
+  "provider_process_count": 0,
+  "reason": "Start was not attempted after the Task cardinality gate failed."
+}

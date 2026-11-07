@@ -1,0 +1,81 @@
+{
+  "qualification": "R0.3A-H1-REVIEW-DISAGREEMENT-ADJUDICATION",
+  "mode": "offline_only",
+  "model_calls": 0,
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0,
+  "historical_evidence_modified": false,
+  "frozen": {
+    "problem_key": "r03a-real-peer-collaboration-v1",
+    "contract_revision_id": "4f57c71061c10ab5a78f632d8db59321",
+    "contract_revision": 3,
+    "contract_state": "accepted",
+    "contract_digest": "7d7325dcc9052a361e4da8691cf8ea1ae83ba25a79282faca376372343fda9be",
+    "endpoint": "GET /items?cursor={cursor}&limit={limit}",
+    "schema": "{\"items\":[\"id\",\"name\"],\"next_cursor\":\"string|null\"}",
+    "message_id": "7d027b5a8fd2267a68b364e47f4635ca",
+    "obligation_id": "7d027b5a8fd2267a68b364e47f4635ca",
+    "backend_artifact_id": "5bf77f15ee867b857f116faad0312c4f",
+    "backend_digest": "5b0bdad7236e0e80ba20bbb34b291c0451ce1e67388cb2a6a3ca711adaa4bac2",
+    "frontend_artifact_id": "a0191e5ce29a56eb347b421df39fb86e",
+    "frontend_digest": "16f3c32b05a6a57edaf38d42b4c7ebf706be593c09b836ea70097dc2a0af768f",
+    "h1_subject_digest": "46fc53b6c15f91dbfe0915badee92869aca72dbfed9c170f0baedd52739e918a",
+    "h1_review_package_sha256": "18ee02fc240242a0a7e6cc68b58eb0a9874980c75205ff33632840310c512310",
+    "h1_review_record_sha256": "534602462ffffcb99acea30c7383080b3b53544a853204c6a3fb4a786a035054",
+    "h1_protocol_sha256": "50ecaf0ed81afcce63f8824e15c1948c4a8c3a77fc543a13a3b86db654bf3405",
+    "integrated_candidate_digest": null,
+    "integrated_candidate_digest_status": "not_persisted_in_h1;_derived_input_digest=15dca95680197740758e2c74f6832efc4f0d8925c66f30c11fbc63ef38c44245"
+  },
+  "reviewer_finding_ids": ["H1-F1-BACKEND", "H1-F1-FRONTEND", "H1-F1-ALGORITHM"],
+  "black_box": {
+    "backend_request_binding": "FAIL",
+    "response_shape": "FAIL",
+    "next_cursor_presence_and_type": "FAIL",
+    "backend_frontend_exchange": "FAIL",
+    "cursor_propagation": "CONTRACT_AMBIGUITY",
+    "termination": "CONTRACT_AMBIGUITY",
+    "basis": "frozen_public_contract_and_direct_observable_candidate_function_behavior; reviewer_and_hidden_verifier_results_not_used_as_inputs"
+  },
+  "hidden_verifier": {
+    "revision": "UNVERSIONED_IN_H1_EVIDENCE",
+    "source_files": [
+      {"path": "internal/probe/h1_review_core.go", "sha256": "87de06a009adcf2235c311843be6c1bc68a8a707768333b43cd9d1f5f96b530d"},
+      {"path": "internal/fixture/peer_contract.go", "sha256": "d8d93fa9ab6d025a8cf53ca51f2dd3ca1e834a98a290e8689267f21ca323eabc"}
+    ],
+    "derived_source_digest": "1902153fbc96deaf4db5e1e046ce23e2988bccbb5e38aebd815f8cf5a599d386",
+    "disputed_finding_coverage": "NOT_COVERED",
+    "quality": "FAIL_FALSE_POSITIVE"
+  },
+  "review_package": {
+    "integrity_for_disputed_finding": "PASS",
+    "integration_digest_persistence": "INSUFFICIENT_DERIVED_ONLY",
+    "stale_candidate": false,
+    "missing_source_for_disputed_finding": false,
+    "truncated_contract": false,
+    "path_reference_mismatch": false
+  },
+  "review_submit": {
+    "attempts": 11,
+    "rejected_policy_denied": 9,
+    "rejected_malformed_input": 1,
+    "accepted": 1,
+    "final_receipt_id": "review-20260913T123920.807156200Z",
+    "substantive_verdict_drift": false,
+    "quality_finding": "reference-friction-only"
+  },
+  "integration": {
+    "positive": true,
+    "negative_control_fail_as_expected": true,
+    "binding_and_negative_discrimination": "PASS",
+    "runtime_pagination_behavior": "NOT_COVERED"
+  },
+  "adjudication": {
+    "disagreement_classification": "REVIEWER_FINDING_VALID",
+    "adjudicated_subject_result": "FAIL",
+    "reviewer_quality": "VALID_FINDING_FOR_DISPUTED_CLAIM",
+    "hidden_verifier_quality": "FAIL_FALSE_POSITIVE",
+    "h1_historical_composite": "FAILED_UNCHANGED",
+    "eligible_for_new_independent_review": "NO"
+  }
+}

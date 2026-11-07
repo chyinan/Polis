@@ -1,0 +1,46 @@
+{
+  "auth_credential_revision_equal": true,
+  "auth_identity_equal": true,
+  "candidate": "T13 current-auth 0.153.4",
+  "control": "T12 current-auth 0.151.0",
+  "dynamic_tool_count": 0,
+  "factor_diff": {
+    "passed": true,
+    "fingerprint_schema_version": "canonical-manifest-v1",
+    "legacy_v1_projection_control": "d8fa5244016b0b5ea2353dd5ae7913faa57b95ba95a638df38c51c55ef783b85",
+    "legacy_v1_projection_candidate": "ec712e72f92431affc4cf52b7f80b45b062774ac4cabdcb168191e410eb12bd0",
+    "new_fingerprint": {
+      "fingerprint_schema_version": "canonical-manifest-v1",
+      "canonical_manifest_digest": "ec712e72f92431affc4cf52b7f80b45b062774ac4cabdcb168191e410eb12bd0"
+    },
+    "confirmed_divergence": [
+      "combination.codex_version",
+      "combination.binary_sha256",
+      "combination.code_mode_host_sha256",
+      "combination.capability_digest",
+      "combination.native_protocol_digest"
+    ],
+    "version_derived_fields": [
+      "combination.codex_version",
+      "combination.binary_sha256",
+      "combination.code_mode_host_sha256",
+      "combination.capability_digest",
+      "combination.native_protocol_digest"
+    ],
+    "auth_comparison": {
+      "source_class": "SAME",
+      "identity": "SAME",
+      "credential_revision": "SAME",
+      "strict_experiment_comparable": true,
+      "incomparable_fingerprint_types": false
+    }
+  },
+  "historical_evidence_recomputed_or_overwritten": false,
+  "new_t13_fingerprint": "f8db1f97ba8d5fe37c01f0442a50273f742f414e2b718926dba1f401dddd7cd0",
+  "offline_regression": "passed",
+  "old_t12_fingerprint": "f50928d55cab833759f4796a3281b4b1803ebf82c248f6ec896dde8fb90a9516",
+  "passed": true,
+  "proxy_environment_equal_and_absent": true,
+  "runtime_config_invocation_equal_after_version_paths": true,
+  "websocket_policy_equal_disabled": true
+}

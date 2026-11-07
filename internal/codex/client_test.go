@@ -5,12 +5,59 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"polis/internal/runner"
+	"strings"
 	"testing"
 	"time"
 )
+
+func TestInitializeExitBeforeProtocolHelper(t *testing.T) {
+	if os.Getenv("POLIS_INITIALIZE_EXIT_HELPER") == "1" {
+		os.Exit(17)
+	}
+}
+
+func TestInitializeFailureCapturesSafeLifecycleEvidence(t *testing.T) {
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := runner.Start("initialize-evidence", []string{exe, "-test.run=^TestInitializeExitBeforeProtocolHelper$"}, append(os.Environ(), "POLIS_INITIALIZE_EXIT_HELPER=1"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	evidenceRoot := t.TempDir()
+	client, err := NewWithModelAndVersion(p, evidenceRoot, "gpt-5.6-luna", runner.NativeVersionNumber)
+	if err != nil {
+		_, _ = p.Stop()
+		t.Fatal(err)
+	}
+	defer client.Close()
+	err = client.InitializeWithPolicy(context.Background(), DefaultTransportPolicy())
+	var failure *InitializationFailure
+	if !errors.As(err, &failure) {
+		t.Fatalf("Initialize error=%v, want structured InitializationFailure", err)
+	}
+	if failure.Phase != "initialize" || !failure.ProcessCreated || !failure.PIDPresent || !failure.ChildExitObserved || failure.InitializeAckReceived || failure.SafeMessage == "" {
+		t.Fatalf("unexpected initialization lifecycle evidence: %+v", failure)
+	}
+	if failure.StderrCategory == "raw" || failure.SafeMessage == err.Error() && failure.SafeMessage != "child exited before initialize" {
+		t.Fatalf("unsafe initialization evidence: %+v", failure)
+	}
+	raw, readErr := os.ReadFile(filepath.Join(evidenceRoot, "protocol.jsonl"))
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	for _, phase := range []string{"initialize_prepare_started", "initialize_payload_ready"} {
+		if !strings.Contains(string(raw), phase) {
+			t.Fatalf("lifecycle phase %q missing from safe protocol evidence: %s", phase, raw)
+		}
+	}
+}
 
 func TestScriptedProtocolHelper(t *testing.T) {
 	if os.Getenv("POLIS_PROTOCOL_HELPER") != "1" {
@@ -25,7 +72,7 @@ func TestScriptedProtocolHelper(t *testing.T) {
 		}
 		if m.Method == "thread/start" {
 			if os.Getenv("POLIS_WARNING_HELPER") == "1" {
-				fmt.Println(`{"method":"warning","params":{"message":"Code Mode is unavailable because failed to spawn code-mode host"}}`)
+				fmt.Println(`{"method":"warning","params":{"code":"code_mode_unavailable","message":"Code Mode is unavailable because failed to spawn code-mode host"}}`)
 			}
 			fmt.Printf("{\"id\":%s,\"result\":{\"thread\":{\"id\":\"native-thread\"},\"model\":\"gpt-5.6-sol\",\"reasoningEffort\":\"medium\",\"approvalPolicy\":\"never\",\"sandbox\":{\"type\":\"readOnly\"}}}\n", m.ID)
 		}
@@ -125,11 +172,31 @@ func TestReducedRetestBudgetDoesNotExpandToDefaults(t *testing.T) {
 	}
 }
 
-func TestPersistedBudgetKeepsOriginalDeadline(t *testing.T){
-	path:=t.TempDir()+"/expired.json"
-	started:=time.Now().UTC().Add(-11*time.Minute)
-	raw,_:=json.Marshal(Budget{Started:started,MediumLimit:2,HighLimit:1})
-	if e:=os.WriteFile(path,raw,0600);e!=nil{t.Fatal(e)}
-	b,e:=OpenBudget(path);if e!=nil{t.Fatal(e)}
-	if e=b.Reserve("high");e==nil{t.Fatal("expired budget regained a fresh window")}
+func TestBackendOnlyBudgetAllowsZeroHighTurns(t *testing.T) {
+	b, e := NewBudget(t.TempDir()+"/backend-only.json", 1, 0)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if e = b.Reserve("medium"); e != nil {
+		t.Fatal(e)
+	}
+	if e = b.Reserve("high"); e == nil {
+		t.Fatal("backend-only boundary unexpectedly reserved High")
+	}
+}
+
+func TestPersistedBudgetKeepsOriginalDeadline(t *testing.T) {
+	path := t.TempDir() + "/expired.json"
+	started := time.Now().UTC().Add(-11 * time.Minute)
+	raw, _ := json.Marshal(Budget{Started: started, MediumLimit: 2, HighLimit: 1})
+	if e := os.WriteFile(path, raw, 0600); e != nil {
+		t.Fatal(e)
+	}
+	b, e := OpenBudget(path)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if e = b.Reserve("high"); e == nil {
+		t.Fatal("expired budget regained a fresh window")
+	}
 }

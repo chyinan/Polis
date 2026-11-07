@@ -1,0 +1,11 @@
+{
+  "status": "PASSED",
+  "company_id": "r0-5b17-browser",
+  "authoritative_checkpoint_id": "e1053ac73bab502e04bfa3bb8b35e39e",
+  "api_checkpoint_id": "e1053ac73bab502e04bfa3bb8b35e39e",
+  "browser_checkpoint_id": "e1053ac73bab502e04bfa3bb8b35e39e",
+  "authoritative_artifact_id": "9ba046913a0d58ca0ad58df867f297b9",
+  "browser_artifact_id": "9ba046913a0d58ca0ad58df867f297b9",
+  "task_state": "candidate",
+  "activity_checkpoint_event_visible": true
+}

@@ -1,0 +1,7 @@
+{
+  "status": "NOT_CREATED",
+  "reason": "provider surface preflight failed before Mission/Task/WorkerSession existed",
+  "provider_reservation": 0,
+  "provider_egress": 0,
+  "raw_credentials_recorded": false
+}

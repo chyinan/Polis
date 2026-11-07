@@ -1,0 +1,10 @@
+{
+  "qualification": "R0.3A-SAMPLE-6-RESTORE-CONTINUATION-V7",
+  "status": "INCONCLUSIVE",
+  "sample_6_restore_continuation_v7": "INCONCLUSIVE",
+  "error": "v6 restore continuation failed",
+  "medium": 0,
+  "high": 0,
+  "provider_egress": 0,
+  "historical_evidence_modified": false
+}

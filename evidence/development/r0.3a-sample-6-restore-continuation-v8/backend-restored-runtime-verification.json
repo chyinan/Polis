@@ -1,0 +1,43 @@
+{
+  "artifact_workspace_continuity_report": {
+    "artifact_identity": true,
+    "artifact_lifecycle_state": true,
+    "artifact_verdict": true,
+    "artifact_digest": true,
+    "artifact_workspace_binding": true,
+    "current_workspace_binding": true,
+    "checkpoint_workspace_binding": true,
+    "checkpoint_contract_binding": true,
+    "cas_artifact_binding": true,
+    "passed": true
+  },
+  "backend_artifact_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+  "backend_artifact_id": "f73981340227622e9c16dbf45e961a3f",
+  "backend_checkpoint_id": "13164a801bac0760050c5f456bfd3f82",
+  "backend_task_id": "dff11354ffe0afc1b93e8565dc5bb026",
+  "backend_workspace_digest": "e69a3f216201711384f4988698d7c33867e52f2426d93add6c05dda4beb12672",
+  "backend_workspace_revision": 3,
+  "checks": {
+    "artifact_workspace_continuity": true,
+    "cas_digest_anchor": true,
+    "checkpoint_anchor": true,
+    "company_mission_task_employee_identities": true,
+    "contract_revision_chain_anchor": true,
+    "event_order_anchor": true,
+    "message_obligation_continuity": true,
+    "old_writer_denied": true,
+    "planner_relay_count_zero": true
+  },
+  "company_id": "r03a-pagination-v3-company-1789379324974307400",
+  "final_contract_revision_id": "92566d902cd328c0b694ef32188dabf5",
+  "frontend_task_id": "629af90e4bc469dc3e961a9bdb7d555a",
+  "historical_evidence_modified": false,
+  "message_id": "45a77c6833518bd8fef1ddfe8d28b985",
+  "mission_id": "r03a-pagination-v3-mission-1789379324974307400",
+  "obligation_id": "45a77c6833518bd8fef1ddfe8d28b985",
+  "obligation_state": "pending",
+  "restored_runtime_incarnation": "6a185b546999ae81c5764d31cc08b99c",
+  "source_runtime_incarnation": "restore-incarnation-r03a-sample-6-restore-v8-20260914T162755Z-390",
+  "status": "PASSED",
+  "synthesized_rows": 0
+}

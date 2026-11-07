@@ -1,0 +1,10 @@
+postgres_database=polis_r0_r05b4_875
+postgres_temp_root=/tmp/polis-r05b4-pg.2sMFnu
+database_prefix=polis_r0_
+provider_traffic=0
+live_business_mutations=0
+provider_registry=PASSED
+dispatcher_authorization=PASSED
+taskvalidation_integration=PASSED
+candidate_fencing_integration=PASSED
+real_provider_worker_adapter_compatibility=PASSED

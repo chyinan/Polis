@@ -1,0 +1,16 @@
+{
+  "mode": "fixture_offline_browser_smoke",
+  "server": "Vite on 127.0.0.1:5173 managed by webapp-testing with_server.py",
+  "overview": "visible",
+  "activity": "visible",
+  "evidence_disclosure": "visible",
+  "theme_after_toggle": "dark",
+  "medium_desktop_1224_horizontal_overflow": false,
+  "mobile_390_horizontal_overflow": false,
+  "group_mobile_390_horizontal_overflow": false,
+  "mobile_320_200_percent_text_horizontal_overflow": false,
+  "request_failures": [],
+  "provider_egress": 0,
+  "medium": 0,
+  "high": 0
+}
