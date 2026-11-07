@@ -1,6 +1,6 @@
 // pattern: Imperative Shell
 
-import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyOverviewView, CompanySummaryView, DataMode, EmployeeDraft, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, RuntimeSettingsView, SkillReferenceRead, SkillSummaryPage, VisibleResourcePage, ToolDescriptorView, ToolSummaryPage, WorkspaceView} from '../domain/workbench';
+import type {AcceptanceContract, ActivityEvent, ActivityView, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyOverviewView, CompanySummaryView, DataMode, EmployeeDraft, MCPToolCallQualificationView, MCPToolCallReceiptView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, RuntimeSettingsView, SkillReferenceRead, SkillSummaryPage, ToolDescriptorView, ToolSummaryPage, VisibleResourcePage, WorkspaceView} from '../domain/workbench';
 
 export type CompanyDraftOptions = Readonly<{
   id: string;
@@ -159,6 +159,20 @@ export type UpsertCapabilityBindingOptions = Readonly<{
   requestId: string;
 }>;
 
+export type ListMCPToolCallQualificationsOptions = Readonly<{
+  companyId: string;
+  bindingId?: string;
+  requestId: string;
+}>;
+
+export type ListMCPToolCallReceiptsOptions = Readonly<{
+  companyId: string;
+  bindingId?: string;
+  handle?: string;
+  limit?: number;
+  requestId: string;
+}>;
+
 export type RegisterMCPOptions = Readonly<{
   companyId: string;
   id: string;
@@ -252,6 +266,8 @@ export type WorkbenchApi = Readonly<{
   approveSkill(options: SkillRevisionStatusOptions): Promise<unknown>;
   revokeSkill(options: SkillRevisionStatusOptions): Promise<unknown>;
   upsertCapabilityBinding(options: UpsertCapabilityBindingOptions): Promise<unknown>;
+  listMCPToolCallQualifications(options: ListMCPToolCallQualificationsOptions): Promise<ReadonlyArray<MCPToolCallQualificationView>>;
+  listMCPToolCallReceipts(options: ListMCPToolCallReceiptsOptions): Promise<ReadonlyArray<MCPToolCallReceiptView>>;
   registerMCP(options: RegisterMCPOptions): Promise<unknown>;
   qualifyMCP(options: QualifyMCPOptions): Promise<unknown>;
   configureNotificationRoute(options: ConfigureNotificationRouteOptions): Promise<CompanyCommandReceipt>;

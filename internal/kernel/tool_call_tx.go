@@ -477,3 +477,55 @@ func boundedJSON(raw json.RawMessage, max int) json.RawMessage {
 	wrapper, _ := json.Marshal(map[string]any{"truncated": true, "bytes": len(raw)})
 	return wrapper
 }
+
+type ListMCPToolCallReceiptsInput struct {
+	BindingID string
+	Handle    string
+	Limit     int
+}
+
+func (k *Kernel) TXListMCPToolCallReceipts(ctx context.Context, companyID string, input ListMCPToolCallReceiptsInput) ([]MCPToolCallReceipt, error) {
+	if !core.ValidID(companyID) {
+		return nil, core.Malformed
+	}
+	if input.BindingID != "" && !core.ValidID(input.BindingID) {
+		return nil, core.Malformed
+	}
+	if input.Handle != "" {
+		if _, _, err := splitToolHandle(input.Handle); err != nil {
+			return nil, err
+		}
+	}
+	limit := input.Limit
+	if limit <= 0 {
+		limit = 50
+	}
+	if limit > 200 {
+		limit = 200
+	}
+	rows, err := k.pool.Query(ctx, `SELECT id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
+FROM mcp_tool_call_receipts
+WHERE company_id=$1 AND ($2='' OR binding_id=$2) AND ($3='' OR handle=$3)
+ORDER BY created_at DESC, id DESC
+LIMIT $4`, companyID, input.BindingID, input.Handle, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MCPToolCallReceipt{}
+	for rows.Next() {
+		var r MCPToolCallReceipt
+		var taskID, qid *string
+		var startedAt, finishedAt *string
+		if err = rows.Scan(&r.ID, &r.EmployeeID, &taskID, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt); err != nil {
+			return nil, err
+		}
+		r.CompanyID = companyID
+		r.TaskID = taskID
+		r.QualificationID = qid
+		r.StartedAt = startedAt
+		r.FinishedAt = finishedAt
+		items = append(items, r)
+	}
+	return items, rows.Err()
+}

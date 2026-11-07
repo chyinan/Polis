@@ -37,6 +37,8 @@ import type {
   ToolDescriptorView,
   VisibleResourcePage,
   ToolSummaryPage,
+  MCPToolCallQualificationView,
+  MCPToolCallReceiptView,
 } from './workbench';
 
 export type ValidationIssue = Readonly<{
@@ -839,4 +841,43 @@ export function validateCompanyOverview(value: unknown, companyId: string): Vali
 
 export function validationMessage(issues: ReadonlyArray<ValidationIssue>): string {
   return issues.map(issue => `${issue.path || 'response'}: ${issue.message}`).join('; ');
+}
+
+function isMCPToolCallQualification(value: unknown): value is MCPToolCallQualificationView {
+  return isRecord(value)
+    && hasString(value, 'companyId')
+    && hasString(value, 'id')
+    && hasString(value, 'bindingId')
+    && hasString(value, 'definitionId')
+    && hasString(value, 'handle')
+    && hasString(value, 'descriptorDigest')
+    && hasString(value, 'status')
+    && hasString(value, 'effectClass')
+    && hasString(value, 'transport');
+}
+
+export function validateMCPToolCallQualificationList(value: unknown): ValidationResult<ReadonlyArray<MCPToolCallQualificationView>> {
+  if (!Array.isArray(value) || !value.every(isMCPToolCallQualification)) {
+    return {success: false, issues: [{path: '', message: 'tool-call qualification list contains an unknown or malformed field'}]};
+  }
+  return {success: true, value: value as ReadonlyArray<MCPToolCallQualificationView>};
+}
+
+function isMCPToolCallReceipt(value: unknown): value is MCPToolCallReceiptView {
+  return isRecord(value)
+    && hasString(value, 'companyId')
+    && hasString(value, 'id')
+    && hasString(value, 'employeeId')
+    && hasString(value, 'bindingId')
+    && hasString(value, 'handle')
+    && hasString(value, 'descriptorDigest')
+    && hasString(value, 'outcome')
+    && hasString(value, 'createdAt');
+}
+
+export function validateMCPToolCallReceiptList(value: unknown): ValidationResult<ReadonlyArray<MCPToolCallReceiptView>> {
+  if (!Array.isArray(value) || !value.every(isMCPToolCallReceipt)) {
+    return {success: false, issues: [{path: '', message: 'tool-call receipt list contains an unknown or malformed field'}]};
+  }
+  return {success: true, value: value as ReadonlyArray<MCPToolCallReceiptView>};
 }

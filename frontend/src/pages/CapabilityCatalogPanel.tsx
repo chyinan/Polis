@@ -3,8 +3,8 @@
 import {useState, type ReactElement} from 'react';
 import {Settings2} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useApproveSkill, useCapabilityCatalog, useDescribeVisibleTool, useImportSkill, useImportSkillDocument, useImportSkillLibrary, useListVisibleResources, useListVisibleSkills, useListVisibleTools, useLoadSkill, useQualifyMCP, useReadSkillReference, useRegisterMCP, useRevokeSkill, useUpsertCapabilityBinding} from '../data/workbench-query';
-import type {CapabilityCatalogView, MCPServerDefinitionView, VisibleResourcePage, SkillLoadView, SkillRevisionView, SkillSummaryPage, ToolDescriptorView, ToolSummaryPage} from '../domain/workbench';
+import {useApproveSkill, useCapabilityCatalog, useDescribeVisibleTool, useImportSkill, useImportSkillDocument, useImportSkillLibrary, useListMCPToolCallQualifications, useListMCPToolCallReceipts, useListVisibleResources, useListVisibleSkills, useListVisibleTools, useLoadSkill, useQualifyMCP, useReadSkillReference, useRegisterMCP, useRevokeSkill, useUpsertCapabilityBinding} from '../data/workbench-query';
+import type {CapabilityCatalogView, MCPServerDefinitionView, MCPToolCallQualificationView, MCPToolCallReceiptView, SkillLoadView, SkillRevisionView, SkillSummaryPage, ToolDescriptorView, ToolSummaryPage, VisibleResourcePage} from '../domain/workbench';
 import {labelTransport} from '../domain/display-labels';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
@@ -31,6 +31,11 @@ export function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: W
   const readReference = useReadSkillReference(api, companyId);
   const revokeSkill = useRevokeSkill(api, companyId);
   const saveBinding = useUpsertCapabilityBinding(api, companyId);
+  const listCallQualifications = useListMCPToolCallQualifications(api, companyId);
+  const listCallReceipts = useListMCPToolCallReceipts(api, companyId);
+  const [callBindingId, setCallBindingId] = useState('');
+  const [callQualifications, setCallQualifications] = useState<ReadonlyArray<MCPToolCallQualificationView>>([]);
+  const [callReceipts, setCallReceipts] = useState<ReadonlyArray<MCPToolCallReceiptView>>([]);
   const [skillPackage, setSkillPackage] = useState('');
   const [skillName, setSkillName] = useState('');
   const [skillRevision, setSkillRevision] = useState('1');
@@ -118,6 +123,24 @@ export function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: W
           <button className={styles.commandButton} disabled={saveBinding.isPending} onClick={() => { void run(() => saveBinding.mutateAsync({employeeId, skillRevisionIds: selectedSkills, mcpDefinitionIds: selectedMCP, status: 'approved', requestId: `binding-approve-${companyId}-${Date.now()}`}).then(() => undefined), '绑定已批准。这不会启动 MCP，也不会执行技能脚本。'); }} type="button">{saveBinding.isPending ? '保存中…' : '批准绑定'}</button>
         </div>
         <div className={styles.recordList}>{catalog.bindings.length === 0 ? <div className={styles.emptyState}>当前没有能力绑定。</div> : catalog.bindings.map(binding => <div className={styles.recordRow} key={binding.id}><div className={styles.recordLead}><Settings2 aria-hidden="true" size={16} /><div><strong>{employeeLabel(binding.employeeId)}</strong><span>{binding.skillRevisionIds.length} 个技能 · {binding.mcpDefinitionIds.length} 个 MCP · 未连接</span></div></div><StatusBadge label={bindingStatus(binding.status)} tone={binding.status === 'approved' ? 'success' : binding.status === 'revoked' ? 'danger' : 'warning'} /></div>)}</div>
+      </article>
+      <article className={styles.sectionCard}>
+        <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>R0.15</span><h2 className={styles.sectionTitle}>工具调用资格与回执（只读，默认不执行）</h2></div><StatusBadge label="read-only" tone="info" /></div>
+        <p className={styles.formHint}>仅展示已登记的 `tools.call` 资格与审计回执；不提供调用/执行按钮。外部 MCP/OAuth/网络 egress 未授权。</p>
+        <div className={styles.formStack}>
+          <label className={styles.formLabel}>绑定（可选）
+            <select className={styles.formField} onChange={event => setCallBindingId(event.target.value)} value={callBindingId}>
+              <option value="">全部（按公司）</option>
+              {catalog.bindings.map(binding => <option key={binding.id} value={binding.id}>{employeeLabel(binding.employeeId)} · {binding.id}</option>)}
+            </select>
+          </label>
+          <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+            <button className={styles.commandButton} disabled={listCallQualifications.isPending} onClick={() => { void run(async () => { const items = await listCallQualifications.mutateAsync({bindingId: callBindingId || undefined, requestId: `call-qual-list-${companyId}-${Date.now()}`}); setCallQualifications(items); }, '已加载工具调用资格（只读）。'); }} type="button">{listCallQualifications.isPending ? '加载中…' : '加载资格'}</button>
+            <button className={styles.commandButton} disabled={listCallReceipts.isPending} onClick={() => { void run(async () => { const items = await listCallReceipts.mutateAsync({bindingId: callBindingId || undefined, requestId: `call-receipt-list-${companyId}-${Date.now()}`}); setCallReceipts(items); }, '已加载工具调用回执（只读）。'); }} type="button">{listCallReceipts.isPending ? '加载中…' : '加载回执'}</button>
+          </div>
+        </div>
+        {callQualifications.length > 0 ? <div className={styles.recordList}>{callQualifications.map(q => <div className={styles.recordRow} key={q.id}><div className={styles.recordLead}><div><strong>{q.handle}</strong><span>{q.effectClass} · {q.transport} · digest {q.descriptorDigest.slice(0, 18)}… · policy {q.policyRevision}</span></div></div><StatusBadge label={q.status} tone={q.status === 'approved' ? 'success' : q.status === 'revoked' || q.status === 'disabled' ? 'danger' : 'warning'} /></div>)}</div> : <div className={styles.emptyState}>未加载资格或暂无记录。</div>}
+        {callReceipts.length > 0 ? <div className={styles.recordList}>{callReceipts.map(r => <div className={styles.recordRow} key={r.id}><div className={styles.recordLead}><div><strong>{r.handle}</strong><span>{r.outcome}{r.code ? ` · ${r.code}` : ''} · {r.effectClass} · {r.createdAt}</span></div></div><StatusBadge label={r.outcome} tone={r.outcome === 'completed' ? 'success' : r.outcome === 'denied' ? 'warning' : 'danger'} /></div>)}</div> : <div className={styles.emptyState}>未加载回执或暂无记录。</div>}
       </article>
     </section>
     {message ? <div className={styles.operationNotice} role="status">{message}</div> : null}

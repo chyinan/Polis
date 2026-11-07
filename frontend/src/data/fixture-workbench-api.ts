@@ -22,6 +22,8 @@ import type {
   ToolDescriptorView,
   ToolSummaryPage,
   WorkspaceView,
+  MCPToolCallQualificationView,
+  MCPToolCallReceiptView,
 } from '../domain/workbench';
 import {validateActivityView, validateCompanyOverview, validationMessage} from '../domain/workbench-validation';
 import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type CompanyScopeOptions, type CreateMissionOptions, type CreateOperatorInstructionOptions, type MissionCommandOptions, type OperatorInstructionQueryOptions, type UpdateRuntimeSettingsOptions, type WorkbenchApi} from './workbench-api';
@@ -501,6 +503,14 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
 
   async upsertCapabilityBinding(): Promise<unknown> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'capability binding is unavailable in fixture mode');
+  }
+
+  async listMCPToolCallQualifications(): Promise<ReadonlyArray<MCPToolCallQualificationView>> {
+    return [];
+  }
+
+  async listMCPToolCallReceipts(): Promise<ReadonlyArray<MCPToolCallReceiptView>> {
+    return [];
   }
 
   async qualifyMCP(): Promise<unknown> {

@@ -258,6 +258,13 @@ type ListMCPToolCallQualificationsRequest struct {
 	RequestID string `json:"requestId"`
 }
 
+type ListMCPToolCallReceiptsRequest struct {
+	BindingID string `json:"bindingId,omitempty"`
+	Handle    string `json:"handle,omitempty"`
+	Limit     int    `json:"limit,omitempty"`
+	RequestID string `json:"requestId"`
+}
+
 type ListVisibleSkillsRequest struct {
 	EmployeeID string `json:"employeeId"`
 	Cursor     string `json:"cursor"`
@@ -311,6 +318,7 @@ type CapabilityService interface {
 	ListMCPToolCallQualifications(ctx context.Context, companyID string, request ListMCPToolCallQualificationsRequest) ([]kernel.MCPToolCallQualification, error)
 	UpsertMCPToolCallQualification(ctx context.Context, companyID string, request UpsertMCPToolCallQualificationRequest) (kernel.MCPToolCallQualification, error)
 	CallMCPTool(ctx context.Context, companyID string, request CallMCPToolRequest) (kernel.MCPToolCallReceipt, error)
+	ListMCPToolCallReceipts(ctx context.Context, companyID string, request ListMCPToolCallReceiptsRequest) ([]kernel.MCPToolCallReceipt, error)
 }
 
 type WorkerAdapter interface {

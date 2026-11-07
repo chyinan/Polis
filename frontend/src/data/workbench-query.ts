@@ -2,7 +2,7 @@
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
-import type {CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateOperatorInstructionOptions, ImportSkillDocumentOptions, ImportSkillLibraryOptions, ImportSkillOptions, MissionCommandOptions, UpdateCompanyOptions, ArchiveCompanyOptions, DescribeVisibleToolOptions, ListVisibleResourcesOptions, ListVisibleSkillsOptions, ListVisibleToolsOptions, LoadSkillOptions, QualifyMCPOptions, ReadSkillReferenceOptions, RegisterMCPOptions, SkillRevisionStatusOptions, TestNotificationOptions, UpdateRuntimeSettingsOptions, UpsertCapabilityBindingOptions, WorkbenchApi} from './workbench-api';
+import type {CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateOperatorInstructionOptions, DescribeVisibleToolOptions, ImportSkillDocumentOptions, ImportSkillLibraryOptions, ImportSkillOptions, ListMCPToolCallQualificationsOptions, ListMCPToolCallReceiptsOptions, ListVisibleResourcesOptions, ListVisibleSkillsOptions, ListVisibleToolsOptions, LoadSkillOptions, MissionCommandOptions, QualifyMCPOptions, ReadSkillReferenceOptions, RegisterMCPOptions, SkillRevisionStatusOptions, TestNotificationOptions, UpdateCompanyOptions, ArchiveCompanyOptions, UpdateRuntimeSettingsOptions, UpsertCapabilityBindingOptions, WorkbenchApi} from './workbench-api';
 import type {ActivityStreamStatus} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
@@ -130,6 +130,18 @@ export function useUpsertCapabilityBinding(api: WorkbenchApi, companyId: string)
   return useMutation({
     mutationFn: (options: Omit<UpsertCapabilityBindingOptions, 'companyId'>) => api.upsertCapabilityBinding({...options, companyId}),
     onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'capability-catalog', companyId]}),
+  });
+}
+
+export function useListMCPToolCallQualifications(api: WorkbenchApi, companyId: string) {
+  return useMutation({
+    mutationFn: (options: Omit<ListMCPToolCallQualificationsOptions, 'companyId'>) => api.listMCPToolCallQualifications({...options, companyId}),
+  });
+}
+
+export function useListMCPToolCallReceipts(api: WorkbenchApi, companyId: string) {
+  return useMutation({
+    mutationFn: (options: Omit<ListMCPToolCallReceiptsOptions, 'companyId'>) => api.listMCPToolCallReceipts({...options, companyId}),
   });
 }
 

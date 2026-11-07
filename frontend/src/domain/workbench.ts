@@ -224,6 +224,54 @@ export type ToolDescriptorView = Readonly<{
   callable: false;
 }>;
 
+export type MCPToolCallQualificationView = Readonly<{
+  companyId: string;
+  id: string;
+  bindingId: string;
+  definitionId: string;
+  serverId: string;
+  toolName: string;
+  handle: string;
+  descriptorDigest: string;
+  policyRevision: string;
+  effectClass: string;
+  status: string;
+  authorizationRef: string;
+  transport: string;
+  qualifiedBy: string;
+  qualifiedAt?: string | null;
+  expiresAt?: string | null;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}>;
+
+export type MCPToolCallReceiptView = Readonly<{
+  companyId: string;
+  id: string;
+  employeeId: string;
+  taskId?: string | null;
+  bindingId: string;
+  definitionId: string;
+  qualificationId?: string | null;
+  handle: string;
+  descriptorDigest: string;
+  argumentsDigest: string;
+  requestDigest: string;
+  idempotencyKey: string;
+  policyRevision: string;
+  authorizationRef: string;
+  effectClass: string;
+  outcome: string;
+  code: string;
+  resultDigest: string;
+  processObserved: unknown;
+  egressObserved: unknown;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  createdAt: string;
+}>;
+
 export type VisibleResource = Readonly<{
   serverId: string;
   serverName: string;

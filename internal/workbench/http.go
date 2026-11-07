@@ -365,6 +365,23 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			return
 		}
 		writeJSON(response, http.StatusOK, items)
+	case "capabilities.tools.call-receipts":
+		capabilityService, ok := service.(control.CapabilityService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("capability catalog is unavailable"))
+			return
+		}
+		var list control.ListMCPToolCallReceiptsRequest
+		if err := decodeJSON(response, request, &list); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
+			return
+		}
+		items, err := capabilityService.ListMCPToolCallReceipts(ctx, path.companyID, list)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
+			return
+		}
+		writeJSON(response, http.StatusOK, items)
 	case "capabilities.resources.list":
 		capabilityService, ok := service.(control.CapabilityService)
 		if !ok {
@@ -718,7 +735,7 @@ func parsePath(path string) (parsedPath, bool) {
 	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "skills" && (parts[3] == "manifest" || parts[3] == "library" || parts[3] == "approve" || parts[3] == "revoke" || parts[3] == "load" || parts[3] == "reference" || parts[3] == "list") {
 		return parsedPath{companyID: companyID, endpoint: "capabilities.skills." + parts[3]}, true
 	}
-	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "tools" && (parts[3] == "list" || parts[3] == "describe" || parts[3] == "call" || parts[3] == "call-qualification" || parts[3] == "call-qualifications") {
+	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "tools" && (parts[3] == "list" || parts[3] == "describe" || parts[3] == "call" || parts[3] == "call-qualification" || parts[3] == "call-qualifications" || parts[3] == "call-receipts") {
 		return parsedPath{companyID: companyID, endpoint: "capabilities.tools." + parts[3]}, true
 	}
 	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "resources" && parts[3] == "list" {
