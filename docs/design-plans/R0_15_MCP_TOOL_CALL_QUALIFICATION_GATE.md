@@ -88,7 +88,11 @@ Exact field names/status codes are deferred to the implementation slice; the pla
 - Any real MCP qualification/canary is separately authorized, evidenced, and bounded; absent that authorization, result remains planning/unqualified for live calls.
 - `NEXT_SLICE.md`, `AGENTS.md` (if stage changes), implementation report, and evidence paths updated consistently.
 
-## 7. Open decisions
+## 7. Decision follow-through
+
+Resolved as planning recommendations in `docs/implementation/R0.15_TOOL_CALL_GATE_DECISIONS.md` (D-01..D-05). Contract field/code draft: `docs/implementation/R0.15_TOOL_CALL_CONTRACT.md`. Schema 16 draft (not active, not applied): `docs/implementation/R0.15_SCHEMA16_MCP_TOOL_CALL_DRAFT.sql`. Remaining follow-ups (authorization ref shape, idempotency/unknown-outcome details, result retention/redaction, Workbench UX boundary, derived `callQualified` indicator contract) stay open until the implementation slice.
+
+## 8. Open decisions (historical; see section 7)
 
 - **Call qualification representation**: additive state on binding/definition qualification, or a dedicated approval/receipt table.
 - **Schema 16 trigger**: only if persistent call-qualification/audit structures require migration; avoid migration churn if file/receipt-only design suffices.

@@ -1,3 +1,7 @@
+# Current handoff - R0.15 tool-call qualification gate planning (2026-11-07, PLAN ONLY)
+
+R0.15 planning artifacts were added after checkpoint `1d625e31` (local, no push). The read-only capability path through R0.14 remains complete at schema 15; **no** `tools.call`, `scripts.run`, MCP tool invocation, process start, network/OAuth egress, Skill script execution, QQ send, or provider turn is authorized. New planning docs: `docs/design-plans/R0_15_MCP_TOOL_CALL_QUALIFICATION_GATE.md`, `docs/implementation/R0.15_TOOL_CALL_GATE_DECISIONS.md` (D-01..D-05), `docs/implementation/R0.15_TOOL_CALL_CONTRACT.md` (request/receipt draft + denial codes), `docs/implementation/R0.15_SCHEMA16_MCP_TOOL_CALL_DRAFT.sql` (draft only, not in `db/migrations/`, not applied). Any active migration/implementation/live qualification requires a separately authorized bounded slice.
+
 # Current handoff - R0.14 tool descriptor read (2026-10-31)
 
 An employee can read one cached tool description and input schema without a new connection. The disposable PostgreSQL test rejected a names-only receipt and returned `Ping the probe.` with `toolsCalled=0`. The workbench showed the same text beside `{"type":"object"}`. Schema remains 15. Report: `docs/implementation/R0.14_TOOL_DESCRIPTOR_REPORT.md`.
