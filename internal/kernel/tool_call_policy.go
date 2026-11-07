@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"math"
 	"strings"
 
 	"polis/internal/core"
@@ -245,7 +246,10 @@ func toolCallGate(input ToolCallGateInput) ToolCallGateResult {
 		if errors.Is(err, core.TooLarge) {
 			return denyGate(result, "ARGUMENTS_TOO_LARGE")
 		}
-		return denyGate(result, "SCHEMA_INVALID")
+		if errors.Is(err, core.Malformed) {
+			return denyGate(result, "SCHEMA_INVALID")
+		}
+		return denyGate(result, "ARGUMENTS_SCHEMA_VIOLATION")
 	}
 	if input.Qualification == nil {
 		return denyGate(result, "CALL_NOT_QUALIFIED")
@@ -288,13 +292,16 @@ func validateArgumentsAgainstSchema(schemaRaw, argsRaw json.RawMessage) error {
 	if len(argsRaw) > maxToolCallArguments {
 		return core.TooLarge
 	}
-	if len(schemaRaw) == 0 || string(bytes.TrimSpace(schemaRaw)) == "null" || string(bytes.TrimSpace(schemaRaw)) == "{}" {
+	if len(schemaRaw) == 0 {
 		return nil
 	}
-	// Minimal structural validation: schema must be an object and arguments must be
-	// a JSON object (enforced by caller). Full JSON Schema validation is deferred
-	// to a dedicated validator; unknown/complex keywords fail closed only on
-	// malformed schema, not on unsupported keywords.
+	trimmedSchema := bytes.TrimSpace(schemaRaw)
+	if len(trimmedSchema) == 0 || bytes.Equal(trimmedSchema, []byte("null")) || bytes.Equal(trimmedSchema, []byte("{}")) || bytes.Equal(trimmedSchema, []byte("true")) {
+		return nil
+	}
+	if bytes.Equal(trimmedSchema, []byte("false")) {
+		return core.Denied
+	}
 	var schema any
 	if err := json.Unmarshal(schemaRaw, &schema); err != nil {
 		return core.Malformed
@@ -307,27 +314,239 @@ func validateArgumentsAgainstSchema(schemaRaw, argsRaw json.RawMessage) error {
 	if err := json.Unmarshal(argsRaw, &args); err != nil {
 		return core.Malformed
 	}
-	argsObj, ok := args.(map[string]any)
-	if !ok {
-		return core.Malformed
+	if !validateJSONSchemaValue(schemaObj, args, 0) {
+		return core.Denied
 	}
-	if req, ok := schemaObj["required"].([]any); ok {
+	return nil
+}
+
+const maxJSONSchemaDepth = 32
+
+func validateJSONSchemaValue(schema map[string]any, value any, depth int) bool {
+	if depth > maxJSONSchemaDepth || schema == nil {
+		return true
+	}
+	if v, ok := schema["const"]; ok && !jsonSchemaEqual(v, value) {
+		return false
+	}
+	if enum, ok := schema["enum"].([]any); ok {
+		match := false
+		for _, item := range enum {
+			if jsonSchemaEqual(item, value) {
+				match = true
+				break
+			}
+		}
+		if !match {
+			return false
+		}
+	}
+	if allOf, ok := schema["allOf"].([]any); ok {
+		for _, sub := range allOf {
+			if s, ok := sub.(map[string]any); ok && !validateJSONSchemaValue(s, value, depth+1) {
+				return false
+			}
+		}
+	}
+	if anyOf, ok := schema["anyOf"].([]any); ok && len(anyOf) > 0 {
+		match := false
+		for _, sub := range anyOf {
+			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(s, value, depth+1) {
+				match = true
+				break
+			}
+		}
+		if !match {
+			return false
+		}
+	}
+	if oneOf, ok := schema["oneOf"].([]any); ok && len(oneOf) > 0 {
+		matches := 0
+		for _, sub := range oneOf {
+			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(s, value, depth+1) {
+				matches++
+			}
+		}
+		if matches != 1 {
+			return false
+		}
+	}
+	if t := schema["type"]; t != nil && !jsonSchemaTypeMatches(t, value) {
+		return false
+	}
+	switch v := value.(type) {
+	case map[string]any:
+		return validateJSONObjectSchema(schema, v, depth)
+	case []any:
+		return validateJSONArraySchema(schema, v, depth)
+	case string:
+		return validateJSONStringSchema(schema, v)
+	case float64:
+		return validateJSONNumberSchema(schema, v)
+	case bool:
+		return true
+	case nil:
+		return true
+	default:
+		return true
+	}
+}
+
+func jsonSchemaTypeMatches(t any, value any) bool {
+	switch tt := t.(type) {
+	case string:
+		return jsonSchemaSingleTypeMatches(tt, value)
+	case []any:
+		for _, item := range tt {
+			if s, ok := item.(string); ok && jsonSchemaSingleTypeMatches(s, value) {
+				return true
+			}
+		}
+		return false
+	default:
+		return true
+	}
+}
+
+func jsonSchemaSingleTypeMatches(t string, value any) bool {
+	switch t {
+	case "object":
+		_, ok := value.(map[string]any)
+		return ok
+	case "array":
+		_, ok := value.([]any)
+		return ok
+	case "string":
+		_, ok := value.(string)
+		return ok
+	case "number":
+		_, ok := value.(float64)
+		return ok
+	case "integer":
+		n, ok := value.(float64)
+		return ok && !math.IsNaN(n) && !math.IsInf(n, 0) && math.Trunc(n) == n
+	case "boolean":
+		_, ok := value.(bool)
+		return ok
+	case "null":
+		return value == nil
+	default:
+		return true
+	}
+}
+
+func validateJSONObjectSchema(schema map[string]any, obj map[string]any, depth int) bool {
+	if req, ok := schema["required"].([]any); ok {
 		for _, item := range req {
 			name, ok := item.(string)
 			if !ok {
 				continue
 			}
-			if _, exists := argsObj[name]; !exists {
-				return core.Denied
+			if _, exists := obj[name]; !exists {
+				return false
 			}
 		}
 	}
-	if props, ok := schemaObj["properties"].(map[string]any); ok && schemaObj["additionalProperties"] == false {
-		for key := range argsObj {
-			if _, exists := props[key]; !exists {
-				return core.Denied
+	props, _ := schema["properties"].(map[string]any)
+	additional, hasAdditional := schema["additionalProperties"]
+	for key, val := range obj {
+		if propSchema, ok := props[key]; ok {
+			if s, ok := propSchema.(map[string]any); ok && !validateJSONSchemaValue(s, val, depth+1) {
+				return false
+			}
+			continue
+		}
+		if hasAdditional {
+			switch a := additional.(type) {
+			case bool:
+				if !a {
+					return false
+				}
+			case map[string]any:
+				if !validateJSONSchemaValue(a, val, depth+1) {
+					return false
+				}
 			}
 		}
 	}
-	return nil
+	return true
+}
+
+func validateJSONArraySchema(schema map[string]any, arr []any, depth int) bool {
+	if min, ok := jsonSchemaInt(schema["minItems"]); ok && len(arr) < min {
+		return false
+	}
+	if max, ok := jsonSchemaInt(schema["maxItems"]); ok && len(arr) > max {
+		return false
+	}
+	if items, ok := schema["items"].(map[string]any); ok {
+		for _, item := range arr {
+			if !validateJSONSchemaValue(items, item, depth+1) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func validateJSONStringSchema(schema map[string]any, s string) bool {
+	if min, ok := jsonSchemaInt(schema["minLength"]); ok && len([]rune(s)) < min {
+		return false
+	}
+	if max, ok := jsonSchemaInt(schema["maxLength"]); ok && len([]rune(s)) > max {
+		return false
+	}
+	return true
+}
+
+func validateJSONNumberSchema(schema map[string]any, n float64) bool {
+	if min, ok := jsonSchemaNumber(schema["minimum"]); ok && n < min {
+		return false
+	}
+	if max, ok := jsonSchemaNumber(schema["maximum"]); ok && n > max {
+		return false
+	}
+	if min, ok := jsonSchemaNumber(schema["exclusiveMinimum"]); ok && n <= min {
+		return false
+	}
+	if max, ok := jsonSchemaNumber(schema["exclusiveMaximum"]); ok && n >= max {
+		return false
+	}
+	return true
+}
+
+func jsonSchemaInt(v any) (int, bool) {
+	n, ok := jsonSchemaNumber(v)
+	if !ok {
+		return 0, false
+	}
+	if math.Trunc(n) != n {
+		return 0, false
+	}
+	return int(n), true
+}
+
+func jsonSchemaNumber(v any) (float64, bool) {
+	switch n := v.(type) {
+	case float64:
+		return n, true
+	case int:
+		return float64(n), true
+	case int64:
+		return float64(n), true
+	default:
+		return 0, false
+	}
+}
+
+func jsonSchemaEqual(a, b any) bool {
+	ab, err := json.Marshal(a)
+	if err != nil {
+		return false
+	}
+	bb, err := json.Marshal(b)
+	if err != nil {
+		return false
+	}
+	return bytes.Equal(ab, bb)
 }

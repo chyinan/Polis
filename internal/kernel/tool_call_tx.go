@@ -207,6 +207,15 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 	if err != nil {
 		return MCPToolCallReceipt{}, err
 	}
+	if req.TaskID != "" {
+		var ok bool
+		if err = k.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM tasks WHERE company_id=$1 AND id=$2)`, req.CompanyID, req.TaskID).Scan(&ok); err != nil {
+			return MCPToolCallReceipt{}, err
+		}
+		if !ok {
+			return MCPToolCallReceipt{}, core.OutOfScope
+		}
+	}
 	requestDigest := toolCallRequestDigest(req)
 	argsDigest := toolCallArgumentsDigest(req.Arguments)
 	if existing, found, err := k.findToolCallReceipt(ctx, req.CompanyID, req.EmployeeID, req.Handle, req.IdempotencyKey); err != nil {

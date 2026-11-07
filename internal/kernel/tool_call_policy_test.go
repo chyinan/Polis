@@ -66,7 +66,7 @@ func TestToolCallGateSchemaRequired(t *testing.T) {
 	def := &toolCatalogSource{ID: "mcp1", Status: "candidate"}
 	qual := &MCPToolCallQualification{BindingID: "bind1", DefinitionID: "mcp1", Handle: "mcp1:t", DescriptorDigest: "sha256:abc", PolicyRevision: toolCallPolicyRevision, Status: "approved", Transport: "stdio", EffectClass: "read"}
 	got := toolCallGate(ToolCallGateInput{Request: req, BindingFound: true, BindingStatus: "approved", BindingMCPIDs: []string{"mcp1"}, Definition: def, Descriptor: desc, Qualification: qual})
-	if got.OK || got.Code != "SCHEMA_INVALID" {
+	if got.OK || got.Code != "ARGUMENTS_SCHEMA_VIOLATION" {
 		t.Fatalf("got %#v", got)
 	}
 }
@@ -74,6 +74,17 @@ func TestToolCallGateSchemaRequired(t *testing.T) {
 func TestToolCallGateAdditionalPropertiesFalse(t *testing.T) {
 	desc := &CachedToolDescriptor{Name: "t", InputSchema: json.RawMessage(`{"type":"object","properties":{"x":{"type":"string"}},"additionalProperties":false}`), Digest: "sha256:abc"}
 	req := ToolCallRequest{BindingID: "bind1", Handle: "mcp1:t", DescriptorDigest: "sha256:abc", Arguments: json.RawMessage(`{"x":"1","y":"2"}`), IdempotencyKey: "k1", PolicyRevision: toolCallPolicyRevision}
+	def := &toolCatalogSource{ID: "mcp1", Status: "candidate"}
+	qual := &MCPToolCallQualification{BindingID: "bind1", DefinitionID: "mcp1", Handle: "mcp1:t", DescriptorDigest: "sha256:abc", PolicyRevision: toolCallPolicyRevision, Status: "approved", Transport: "stdio", EffectClass: "read"}
+	got := toolCallGate(ToolCallGateInput{Request: req, BindingFound: true, BindingStatus: "approved", BindingMCPIDs: []string{"mcp1"}, Definition: def, Descriptor: desc, Qualification: qual})
+	if got.OK || got.Code != "ARGUMENTS_SCHEMA_VIOLATION" {
+		t.Fatalf("got %#v", got)
+	}
+}
+
+func TestToolCallGateMalformedSchema(t *testing.T) {
+	desc := &CachedToolDescriptor{Name: "t", InputSchema: json.RawMessage(`{"type":"object","required":`), Digest: "sha256:abc"}
+	req := ToolCallRequest{BindingID: "bind1", Handle: "mcp1:t", DescriptorDigest: "sha256:abc", Arguments: json.RawMessage(`{}`), IdempotencyKey: "k1", PolicyRevision: toolCallPolicyRevision}
 	def := &toolCatalogSource{ID: "mcp1", Status: "candidate"}
 	qual := &MCPToolCallQualification{BindingID: "bind1", DefinitionID: "mcp1", Handle: "mcp1:t", DescriptorDigest: "sha256:abc", PolicyRevision: toolCallPolicyRevision, Status: "approved", Transport: "stdio", EffectClass: "read"}
 	got := toolCallGate(ToolCallGateInput{Request: req, BindingFound: true, BindingStatus: "approved", BindingMCPIDs: []string{"mcp1"}, Definition: def, Descriptor: desc, Qualification: qual})
@@ -113,5 +124,41 @@ func TestToolCallDigestsStable(t *testing.T) {
 	}
 	if toolCallArgumentsDigest(json.RawMessage(`{"a":1}`)) == "" {
 		t.Fatal("empty args digest")
+	}
+}
+
+func TestValidateArgumentsAgainstSchemaSubset(t *testing.T) {
+	cases := []struct {
+		name    string
+		schema  string
+		args    string
+		wantErr bool
+	}{
+		{"empty schema", `{}`, `{"x":1}`, false},
+		{"type string ok", `{"type":"object","properties":{"x":{"type":"string"}}}`, `{"x":"a"}`, false},
+		{"type string bad", `{"type":"object","properties":{"x":{"type":"string"}}}`, `{"x":1}`, true},
+		{"integer ok", `{"type":"object","properties":{"n":{"type":"integer"}}}`, `{"n":3}`, false},
+		{"integer rejects float", `{"type":"object","properties":{"n":{"type":"integer"}}}`, `{"n":3.5}`, true},
+		{"enum ok", `{"type":"object","properties":{"m":{"enum":["a","b"]}}}`, `{"m":"a"}`, false},
+		{"enum bad", `{"type":"object","properties":{"m":{"enum":["a","b"]}}}`, `{"m":"c"}`, true},
+		{"array items", `{"type":"object","properties":{"a":{"type":"array","items":{"type":"string"}}}}`, `{"a":["x","y"]}`, false},
+		{"array items bad", `{"type":"object","properties":{"a":{"type":"array","items":{"type":"string"}}}}`, `{"a":["x",1]}`, true},
+		{"nested required", `{"type":"object","properties":{"o":{"type":"object","required":["y"],"properties":{"y":{"type":"number"}}}}}`, `{"o":{}}`, true},
+		{"boolean schema false", `false`, `{}`, true},
+		{"malformed schema", `{"type":`, `{}`, true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := validateArgumentsAgainstSchema(json.RawMessage(tc.schema), json.RawMessage(tc.args))
+			if tc.wantErr && err == nil {
+				t.Fatal("expected error")
+			}
+			if !tc.wantErr && err != nil {
+				t.Fatalf("unexpected %v", err)
+			}
+			if tc.name == "malformed schema" && !errors.Is(err, core.Malformed) {
+				t.Fatalf("expected malformed, got %v", err)
+			}
+		})
 	}
 }
