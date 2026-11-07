@@ -1,3 +1,14 @@
+# Current handoff - R0.15 controlled tool-call qualification gate (PLAN ONLY, 2026-11-07)
+
+Workspace checkpoint commit `1d625e31` (`chore(plan): checkpoint R0.3a-R0.14 implementation and evidence state`) captured the uncommitted R0.3a–R0.14 implementation, migrations 00003–00015, probes, frontend/desktop sources, reports, and development evidence on `master` (local only; no push). `.gitignore` now excludes build outputs, compiled probe binaries, caches, and Windows-unindexable evidence runtime temp debris.
+
+R0.14 completed the read-only capability inspection path (catalog/binding/probe receipt → `skills.load`/reference/summary → `tools.list`/summary/`tools.describe`) at schema 15. **No** `tools.call`, `scripts.run`, MCP tool invocation, Skill script execution, QQ send, or provider turn is authorized by this plan update.
+
+**Next slice (planning target, requires separate bounded slice + explicit authorization before any implementation that starts processes or sends egress):** define and qualify a deny-by-default MCP `tools.call` gate aligned with ARCHITECTURE 44.5/44.6. Design plan: `docs/design-plans/R0_15_MCP_TOOL_CALL_QUALIFICATION_GATE.md`.
+- Preconditions to design/enforce: approved `EmployeeCapabilityBinding`; non-revoked MCP definition; probe receipt `passed` with `toolsCalled=0` for the descriptor path and an explicit, separately qualified call-authorization state; task/session/epoch scope; operator/human authorization where required; no inherited secrets/ambient egress outside the declared MCPBridge boundary.
+- Plan artifacts: call contract (request/receipt/idempotency/reference digests), policy checks, structured denial reasons, audit/evidence fields, and offline regression matrix. Any live MCP call, new network path, OAuth, remote service, or cost-incurring action remains **NOT AUTHORIZED** until a dedicated qualification slice is explicitly approved.
+- Do not treat R0.10 probe, R0.14 descriptor, or binding approval as permission to call tools. Keep `RELEASE_SCOPE.json` / safety constraints unchanged.
+
 # Current handoff - R0.14 tool descriptor read (2026-10-31)
 
 `tools.describe` returns the frozen description and input schema for one handle on an employee's approved binding. The body must already be in the stored probe receipt. A names-only receipt and a revoked definition return not found, and the read does not start a process. `toolsCalled` stays 0 and `callable` stays false. Schema remains 15. Report: `docs/implementation/R0.14_TOOL_DESCRIPTOR_REPORT.md`.
