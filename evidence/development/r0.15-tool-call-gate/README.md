@@ -2,12 +2,12 @@
 
 This slice is stdio-first and deny-by-default. **No external MCP/OAuth/network egress, QQ, or provider turn is authorized by this README.**
 
-## Verified in-session (2026-11-07)
+## Verified (2026-11-07)
 
-- `go test ./internal/kernel -run TestToolCallGate -count=1` — PASS
+- `go test ./internal/kernel -run "TestToolCall|TestValidateToolCall"` — PASS
 - `go build ./...` — PASS
 - `go vet ./internal/kernel ./internal/control ./internal/workbench ./internal/core` — PASS
-- `TestMCPToolCallGateAndExecution` — compiled, **not run** (requires disposable PostgreSQL)
+- `TestMCPToolCallGateAndExecution` — **PASS** on disposable temp PostgreSQL 18/schema 16 (`polis_r0_*`, redacted DSN, bundled `.tools/pg`, local fake stdio MCP only, no external egress). See `disposable-pg-integration.md`.
 
 ## Disposable PostgreSQL integration (requires explicit local setup)
 

@@ -47,7 +47,7 @@ func TestMCPToolCallGateAndExecution(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = k.pool.Exec(ctx, `INSERT INTO employees(company_id,id) VALUES($1,'emp-backend') ON CONFLICT DO NOTHING`, scope.company); err != nil {
+	if _, err = k.pool.Exec(ctx, `INSERT INTO employees(company_id,id,display_name,role_name,model_profile) VALUES($1,'emp-backend','Backend','backend','deterministic/fake') ON CONFLICT (company_id,id) DO NOTHING`, scope.company); err != nil {
 		t.Fatal(err)
 	}
 	def, err := k.TXRegisterMCPServerDefinition(ctx, scope.company, MCPServerDefinitionInput{ID: "mcp-local", Name: "local", Transport: "stdio", Command: &fakeCmd, Args: []string{}, DescriptorDigest: "sha256:" + repeatHex("ab", 32)})
