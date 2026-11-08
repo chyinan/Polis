@@ -159,6 +159,9 @@ func TestValidateArgumentsAgainstSchemaSubset(t *testing.T) {
 		{"nested required", `{"type":"object","properties":{"o":{"type":"object","required":["y"],"properties":{"y":{"type":"number"}}}}}`, `{"o":{}}`, true},
 		{"pattern ok", `{"type":"object","properties":{"id":{"type":"string","pattern":"^[a-z]+$"}}}`, `{"id":"abc"}`, false},
 		{"pattern bad", `{"type":"object","properties":{"id":{"type":"string","pattern":"^[a-z]+$"}}}`, `{"id":"a1"}`, true},
+		{"local ref ok", `{"type":"object","properties":{"x":{"$ref":"#/$defs/s"}},"$defs":{"s":{"type":"string","minLength":2}}}`, `{"x":"ab"}`, false},
+		{"local ref bad", `{"type":"object","properties":{"x":{"$ref":"#/$defs/s"}},"$defs":{"s":{"type":"string","minLength":2}}}`, `{"x":"a"}`, true},
+		{"external ref rejected", `{"type":"object","properties":{"x":{"$ref":"https://example.test/schema"}}}`, `{"x":"a"}`, true},
 		{"boolean schema false", `false`, `{}`, true},
 		{"malformed schema", `{"type":`, `{}`, true},
 	}

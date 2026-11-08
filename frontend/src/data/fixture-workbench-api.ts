@@ -513,6 +513,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
     return [];
   }
 
+  async getMCPToolCallReceipt(): Promise<MCPToolCallReceiptView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'tool-call receipt detail is unavailable in fixture mode');
+  }
+
   async qualifyMCP(): Promise<unknown> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'capability qualification is unavailable in fixture mode');
   }

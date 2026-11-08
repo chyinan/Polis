@@ -315,7 +315,7 @@ func validateArgumentsAgainstSchema(schemaRaw, argsRaw json.RawMessage) error {
 	if err := json.Unmarshal(argsRaw, &args); err != nil {
 		return core.Malformed
 	}
-	if !validateJSONSchemaValue(schemaObj, args, 0) {
+	if !validateJSONSchemaValue(schemaObj, schemaObj, args, 0, nil) {
 		return core.Denied
 	}
 	return nil
@@ -323,9 +323,30 @@ func validateArgumentsAgainstSchema(schemaRaw, argsRaw json.RawMessage) error {
 
 const maxJSONSchemaDepth = 32
 
-func validateJSONSchemaValue(schema map[string]any, value any, depth int) bool {
+func validateJSONSchemaValue(root, schema map[string]any, value any, depth int, refStack map[string]struct{}) bool {
 	if depth > maxJSONSchemaDepth || schema == nil {
 		return true
+	}
+	if ref, ok := schema["$ref"].(string); ok && ref != "" {
+		if !strings.HasPrefix(ref, "#") {
+			return false
+		}
+		if refStack == nil {
+			refStack = map[string]struct{}{}
+		}
+		if _, seen := refStack[ref]; seen {
+			return false
+		}
+		resolved, ok := resolveJSONPointerSchema(root, ref)
+		if !ok {
+			return false
+		}
+		nextStack := make(map[string]struct{}, len(refStack)+1)
+		for k := range refStack {
+			nextStack[k] = struct{}{}
+		}
+		nextStack[ref] = struct{}{}
+		return validateJSONSchemaValue(root, resolved, value, depth+1, nextStack)
 	}
 	if v, ok := schema["const"]; ok && !jsonSchemaEqual(v, value) {
 		return false
@@ -344,7 +365,7 @@ func validateJSONSchemaValue(schema map[string]any, value any, depth int) bool {
 	}
 	if allOf, ok := schema["allOf"].([]any); ok {
 		for _, sub := range allOf {
-			if s, ok := sub.(map[string]any); ok && !validateJSONSchemaValue(s, value, depth+1) {
+			if s, ok := sub.(map[string]any); ok && !validateJSONSchemaValue(root, s, value, depth+1, refStack) {
 				return false
 			}
 		}
@@ -352,7 +373,7 @@ func validateJSONSchemaValue(schema map[string]any, value any, depth int) bool {
 	if anyOf, ok := schema["anyOf"].([]any); ok && len(anyOf) > 0 {
 		match := false
 		for _, sub := range anyOf {
-			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(s, value, depth+1) {
+			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(root, s, value, depth+1, refStack) {
 				match = true
 				break
 			}
@@ -364,7 +385,7 @@ func validateJSONSchemaValue(schema map[string]any, value any, depth int) bool {
 	if oneOf, ok := schema["oneOf"].([]any); ok && len(oneOf) > 0 {
 		matches := 0
 		for _, sub := range oneOf {
-			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(s, value, depth+1) {
+			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(root, s, value, depth+1, refStack) {
 				matches++
 			}
 		}
@@ -377,9 +398,9 @@ func validateJSONSchemaValue(schema map[string]any, value any, depth int) bool {
 	}
 	switch v := value.(type) {
 	case map[string]any:
-		return validateJSONObjectSchema(schema, v, depth)
+		return validateJSONObjectSchema(root, schema, v, depth, refStack)
 	case []any:
-		return validateJSONArraySchema(schema, v, depth)
+		return validateJSONArraySchema(root, schema, v, depth, refStack)
 	case string:
 		return validateJSONStringSchema(schema, v)
 	case float64:
@@ -391,6 +412,43 @@ func validateJSONSchemaValue(schema map[string]any, value any, depth int) bool {
 	default:
 		return true
 	}
+}
+
+func resolveJSONPointerSchema(root map[string]any, ref string) (map[string]any, bool) {
+	if ref == "#" {
+		return root, true
+	}
+	if !strings.HasPrefix(ref, "#/") {
+		return nil, false
+	}
+	var current any = root
+	for _, raw := range strings.Split(strings.TrimPrefix(ref, "#/"), "/") {
+		token := strings.ReplaceAll(strings.ReplaceAll(raw, "~1", "/"), "~0", "~")
+		switch node := current.(type) {
+		case map[string]any:
+			next, ok := node[token]
+			if !ok {
+				return nil, false
+			}
+			current = next
+		case []any:
+			idx := 0
+			for _, ch := range token {
+				if ch < '0' || ch > '9' {
+					return nil, false
+				}
+				idx = idx*10 + int(ch-'0')
+			}
+			if idx < 0 || idx >= len(node) {
+				return nil, false
+			}
+			current = node[idx]
+		default:
+			return nil, false
+		}
+	}
+	obj, ok := current.(map[string]any)
+	return obj, ok
 }
 
 func jsonSchemaTypeMatches(t any, value any) bool {
@@ -436,7 +494,7 @@ func jsonSchemaSingleTypeMatches(t string, value any) bool {
 	}
 }
 
-func validateJSONObjectSchema(schema map[string]any, obj map[string]any, depth int) bool {
+func validateJSONObjectSchema(root, schema map[string]any, obj map[string]any, depth int, refStack map[string]struct{}) bool {
 	if req, ok := schema["required"].([]any); ok {
 		for _, item := range req {
 			name, ok := item.(string)
@@ -452,7 +510,7 @@ func validateJSONObjectSchema(schema map[string]any, obj map[string]any, depth i
 	additional, hasAdditional := schema["additionalProperties"]
 	for key, val := range obj {
 		if propSchema, ok := props[key]; ok {
-			if s, ok := propSchema.(map[string]any); ok && !validateJSONSchemaValue(s, val, depth+1) {
+			if s, ok := propSchema.(map[string]any); ok && !validateJSONSchemaValue(root, s, val, depth+1, refStack) {
 				return false
 			}
 			continue
@@ -464,7 +522,7 @@ func validateJSONObjectSchema(schema map[string]any, obj map[string]any, depth i
 					return false
 				}
 			case map[string]any:
-				if !validateJSONSchemaValue(a, val, depth+1) {
+				if !validateJSONSchemaValue(root, a, val, depth+1, refStack) {
 					return false
 				}
 			}
@@ -473,7 +531,7 @@ func validateJSONObjectSchema(schema map[string]any, obj map[string]any, depth i
 	return true
 }
 
-func validateJSONArraySchema(schema map[string]any, arr []any, depth int) bool {
+func validateJSONArraySchema(root, schema map[string]any, arr []any, depth int, refStack map[string]struct{}) bool {
 	if min, ok := jsonSchemaInt(schema["minItems"]); ok && len(arr) < min {
 		return false
 	}
@@ -482,7 +540,7 @@ func validateJSONArraySchema(schema map[string]any, arr []any, depth int) bool {
 	}
 	if items, ok := schema["items"].(map[string]any); ok {
 		for _, item := range arr {
-			if !validateJSONSchemaValue(items, item, depth+1) {
+			if !validateJSONSchemaValue(root, items, item, depth+1, refStack) {
 				return false
 			}
 		}

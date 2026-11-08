@@ -1,8 +1,8 @@
 // pattern: Imperative Shell
 
 import type {ActivityView, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyOverviewView, CompanySummaryView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, RuntimeSettingsView, WorkspaceView} from '../domain/workbench';
-import {validateActivityEvent, validateActivityView, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyList, validateCompanyOverview, validateMCPToolCallQualificationList, validateMCPToolCallReceiptList, validateMissionCommandReceipt, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateRuntimeSettings, validateSkillReferenceRead, validateSkillSummaryPage, validateVisibleResourcePage, validateToolDescriptor, validateToolSummaryPage, validateWorkspace, validationMessage} from '../domain/workbench-validation';
-import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateOperatorInstructionOptions, type DescribeVisibleToolOptions, type ImportSkillDocumentOptions, type ImportSkillLibraryOptions, type ImportSkillOptions, type ListMCPToolCallQualificationsOptions, type ListMCPToolCallReceiptsOptions, type ListVisibleResourcesOptions, type ListVisibleSkillsOptions, type ListVisibleToolsOptions, type LoadSkillOptions, type MissionCommandOptions, type OperatorInstructionQueryOptions, type QualifyMCPOptions, type ReadSkillReferenceOptions, type RegisterMCPOptions, type SkillRevisionStatusOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type UpsertCapabilityBindingOptions, type WorkbenchApi} from './workbench-api';
+import {validateActivityEvent, validateActivityView, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyList, validateCompanyOverview, validateMCPToolCallQualificationList, validateMCPToolCallReceipt, validateMCPToolCallReceiptList, validateMissionCommandReceipt, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateRuntimeSettings, validateSkillReferenceRead, validateSkillSummaryPage, validateVisibleResourcePage, validateToolDescriptor, validateToolSummaryPage, validateWorkspace, validationMessage} from '../domain/workbench-validation';
+import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateOperatorInstructionOptions, type DescribeVisibleToolOptions, type GetMCPToolCallReceiptOptions, type ImportSkillDocumentOptions, type ImportSkillLibraryOptions, type ImportSkillOptions, type ListMCPToolCallQualificationsOptions, type ListMCPToolCallReceiptsOptions, type ListVisibleResourcesOptions, type ListVisibleSkillsOptions, type ListVisibleToolsOptions, type LoadSkillOptions, type MissionCommandOptions, type OperatorInstructionQueryOptions, type QualifyMCPOptions, type ReadSkillReferenceOptions, type RegisterMCPOptions, type SkillRevisionStatusOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type UpsertCapabilityBindingOptions, type WorkbenchApi} from './workbench-api';
 
 export class RealWorkbenchApi implements WorkbenchApi {
   readonly mode = 'real' as const;
@@ -252,6 +252,15 @@ export class RealWorkbenchApi implements WorkbenchApi {
     const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/capabilities/tools/call-receipts`, options.requestId, {bindingId: options.bindingId, handle: options.handle, limit: options.limit, requestId: options.requestId});
     const result = validateMCPToolCallReceiptList(raw);
     if (!result.success) throw new Error(`failed to list tool-call receipts: ${validationMessage(result.issues)}`);
+    return result.value;
+  }
+
+  async getMCPToolCallReceipt(options: GetMCPToolCallReceiptOptions) {
+    assertCompanyScope(options.companyId);
+    assertRequestID(options.requestId);
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/capabilities/tools/call-receipt`, options.requestId, {receiptId: options.receiptId, requestId: options.requestId});
+    const result = validateMCPToolCallReceipt(raw);
+    if (!result.success) throw new Error(`failed to get tool-call receipt: ${validationMessage(result.issues)}`);
     return result.value;
   }
 

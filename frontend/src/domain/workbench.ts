@@ -265,6 +265,8 @@ export type MCPToolCallReceiptView = Readonly<{
   outcome: string;
   code: string;
   resultDigest: string;
+  resultJson?: unknown;
+  errorJson?: unknown;
   processObserved: unknown;
   egressObserved: unknown;
   startedAt?: string | null;

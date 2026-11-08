@@ -881,3 +881,10 @@ export function validateMCPToolCallReceiptList(value: unknown): ValidationResult
   }
   return {success: true, value: value as ReadonlyArray<MCPToolCallReceiptView>};
 }
+
+export function validateMCPToolCallReceipt(value: unknown): ValidationResult<MCPToolCallReceiptView> {
+  if (!isMCPToolCallReceipt(value)) {
+    return {success: false, issues: [{path: '', message: 'tool-call receipt contains an unknown or malformed field'}]};
+  }
+  return {success: true, value: value as MCPToolCallReceiptView};
+}
