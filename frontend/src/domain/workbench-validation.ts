@@ -863,6 +863,13 @@ export function validateMCPToolCallQualificationList(value: unknown): Validation
   return {success: true, value: value as ReadonlyArray<MCPToolCallQualificationView>};
 }
 
+export function validateMCPToolCallQualification(value: unknown): ValidationResult<MCPToolCallQualificationView> {
+  if (!isMCPToolCallQualification(value)) {
+    return {success: false, issues: [{path: '', message: 'tool-call qualification contains an unknown or malformed field'}]};
+  }
+  return {success: true, value: value as MCPToolCallQualificationView};
+}
+
 function isMCPToolCallReceipt(value: unknown): value is MCPToolCallReceiptView {
   return isRecord(value)
     && hasString(value, 'companyId')

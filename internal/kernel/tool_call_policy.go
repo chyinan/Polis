@@ -8,8 +8,12 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"net"
+	"net/mail"
+	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"polis/internal/core"
 )
@@ -550,6 +554,8 @@ func validateJSONArraySchema(root, schema map[string]any, arr []any, depth int, 
 
 const maxJSONSchemaPatternLength = 1024
 
+var uuidPattern = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$`)
+
 func validateJSONStringSchema(schema map[string]any, s string) bool {
 	if min, ok := jsonSchemaInt(schema["minLength"]); ok && len([]rune(s)) < min {
 		return false
@@ -569,7 +575,67 @@ func validateJSONStringSchema(schema map[string]any, s string) bool {
 			return false
 		}
 	}
+	if format, ok := schema["format"].(string); ok && format != "" {
+		if !validateJSONSchemaFormat(format, s) {
+			return false
+		}
+	}
 	return true
+}
+
+func validateJSONSchemaFormat(format, value string) bool {
+	// Unknown formats are treated as annotations (pass) to avoid breaking schemas.
+	switch format {
+	case "date-time":
+		_, err := time.Parse(time.RFC3339Nano, value)
+		if err == nil {
+			return true
+		}
+		_, err = time.Parse(time.RFC3339, value)
+		return err == nil
+	case "date":
+		_, err := time.Parse("2006-01-02", value)
+		return err == nil
+	case "time":
+		for _, layout := range []string{"15:04:05Z07:00", "15:04:05.999999999Z07:00", "15:04:05", "15:04:05.999999999"} {
+			if _, err := time.Parse(layout, value); err == nil {
+				return true
+			}
+		}
+		return false
+	case "email":
+		if len(value) > 254 {
+			return false
+		}
+		addr, err := mail.ParseAddress(value)
+		return err == nil && addr != nil && addr.Address == value && strings.Contains(value, "@")
+	case "uri", "uri-reference":
+		if len(value) > 2048 {
+			return false
+		}
+		_, err := url.Parse(value)
+		return err == nil
+	case "uuid":
+		return uuidPattern.MatchString(value)
+	case "ipv4":
+		ip := net.ParseIP(value)
+		return ip != nil && ip.To4() != nil && !strings.Contains(value, ":")
+	case "ipv6":
+		ip := net.ParseIP(value)
+		return ip != nil && strings.Contains(value, ":")
+	case "hostname":
+		if len(value) == 0 || len(value) > 253 {
+			return false
+		}
+		for _, label := range strings.Split(strings.TrimSuffix(value, "."), ".") {
+			if len(label) == 0 || len(label) > 63 {
+				return false
+			}
+		}
+		return true
+	default:
+		return true
+	}
 }
 
 func validateJSONNumberSchema(schema map[string]any, n float64) bool {

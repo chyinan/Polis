@@ -3,7 +3,7 @@
 import {useState, type ReactElement} from 'react';
 import {Settings2} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useApproveSkill, useCapabilityCatalog, useDescribeVisibleTool, useGetMCPToolCallReceipt, useImportSkill, useImportSkillDocument, useImportSkillLibrary, useListMCPToolCallQualifications, useListMCPToolCallReceipts, useListVisibleResources, useListVisibleSkills, useListVisibleTools, useLoadSkill, useQualifyMCP, useReadSkillReference, useRegisterMCP, useRevokeSkill, useUpsertCapabilityBinding} from '../data/workbench-query';
+import {useApproveSkill, useCapabilityCatalog, useDescribeVisibleTool, useGetMCPToolCallReceipt, useImportSkill, useImportSkillDocument, useImportSkillLibrary, useListMCPToolCallQualifications, useListMCPToolCallReceipts, useListVisibleResources, useListVisibleSkills, useListVisibleTools, useLoadSkill, useQualifyMCP, useReadSkillReference, useRegisterMCP, useRevokeSkill, useUpsertCapabilityBinding, useUpsertMCPToolCallQualification} from '../data/workbench-query';
 import type {CapabilityCatalogView, MCPServerDefinitionView, MCPToolCallQualificationView, MCPToolCallReceiptView, SkillLoadView, SkillRevisionView, SkillSummaryPage, ToolDescriptorView, ToolSummaryPage, VisibleResourcePage} from '../domain/workbench';
 import {labelTransport} from '../domain/display-labels';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
@@ -34,10 +34,19 @@ export function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: W
   const listCallQualifications = useListMCPToolCallQualifications(api, companyId);
   const listCallReceipts = useListMCPToolCallReceipts(api, companyId);
   const getCallReceipt = useGetMCPToolCallReceipt(api, companyId);
+  const upsertCallQualification = useUpsertMCPToolCallQualification(api, companyId);
   const [callBindingId, setCallBindingId] = useState('');
   const [callQualifications, setCallQualifications] = useState<ReadonlyArray<MCPToolCallQualificationView>>([]);
   const [callReceipts, setCallReceipts] = useState<ReadonlyArray<MCPToolCallReceiptView>>([]);
   const [callReceiptDetail, setCallReceiptDetail] = useState<MCPToolCallReceiptView | null>(null);
+  const [callQualBindingId, setCallQualBindingId] = useState('');
+  const [callQualDefinitionId, setCallQualDefinitionId] = useState('');
+  const [callQualHandle, setCallQualHandle] = useState('');
+  const [callQualDigest, setCallQualDigest] = useState('');
+  const [callQualStatus, setCallQualStatus] = useState<'draft' | 'approved' | 'disabled' | 'revoked'>('draft');
+  const [callQualEffect, setCallQualEffect] = useState<'read' | 'idempotent' | 'effectful' | 'unknown'>('read');
+  const [callQualAuth, setCallQualAuth] = useState('');
+  const [callQualNotes, setCallQualNotes] = useState('');
   const [skillPackage, setSkillPackage] = useState('');
   const [skillName, setSkillName] = useState('');
   const [skillRevision, setSkillRevision] = useState('1');
@@ -128,7 +137,22 @@ export function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: W
       </article>
       <article className={styles.sectionCard}>
         <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>R0.15</span><h2 className={styles.sectionTitle}>工具调用资格与回执（只读，默认不执行）</h2></div><StatusBadge label="read-only" tone="info" /></div>
-        <p className={styles.formHint}>仅展示已登记的 `tools.call` 资格与审计回执；不提供调用/执行按钮。外部 MCP/OAuth/网络 egress 未授权。</p>
+        <p className={styles.formHint}>仅展示已登记的 `tools.call` 资格与审计回执；不提供调用/执行按钮。资格管理为显式配置动作，不执行工具。外部 MCP/OAuth/网络 egress 未授权。</p>
+        <details className={styles.formStack}>
+          <summary className={styles.formLabel}>显式调用资格管理（不执行工具）</summary>
+          <p className={styles.formHint}>填写绑定/定义/handle/descriptor digest 后保存资格。`approved` 仅表示通过资格登记；实际 `tools.call` 仍受绑定、定义、digest、policy、transport、effect 授权与门禁约束。effectful/unknown 通常需要 authorization ref。</p>
+          <label className={styles.formLabel}>bindingId<input className={styles.formField} onChange={e => setCallQualBindingId(e.target.value)} placeholder={callBindingId || '绑定 ID'} value={callQualBindingId} /></label>
+          <label className={styles.formLabel}>definitionId (MCP server id)<input className={styles.formField} onChange={e => setCallQualDefinitionId(e.target.value)} placeholder="mcp-..." value={callQualDefinitionId} /></label>
+          <label className={styles.formLabel}>handle<input className={styles.formField} onChange={e => setCallQualHandle(e.target.value)} placeholder="serverId:toolName" value={callQualHandle} /></label>
+          <label className={styles.formLabel}>descriptorDigest<input className={styles.formField} onChange={e => setCallQualDigest(e.target.value)} placeholder="sha256:..." value={callQualDigest} /></label>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            <label className={styles.formLabel}>status<select className={styles.formField} onChange={e => setCallQualStatus(e.target.value as typeof callQualStatus)} value={callQualStatus}><option value="draft">draft</option><option value="approved">approved</option><option value="disabled">disabled</option><option value="revoked">revoked</option></select></label>
+            <label className={styles.formLabel}>effect<select className={styles.formField} onChange={e => setCallQualEffect(e.target.value as typeof callQualEffect)} value={callQualEffect}><option value="read">read</option><option value="idempotent">idempotent</option><option value="effectful">effectful</option><option value="unknown">unknown</option></select></label>
+          </div>
+          <label className={styles.formLabel}>authorizationRef（effectful/unknown 建议填写）<input className={styles.formField} onChange={e => setCallQualAuth(e.target.value)} value={callQualAuth} /></label>
+          <label className={styles.formLabel}>notes<input className={styles.formField} onChange={e => setCallQualNotes(e.target.value)} value={callQualNotes} /></label>
+          <button className={styles.commandButton} disabled={upsertCallQualification.isPending} onClick={() => { void run(async () => { const bindingId = callQualBindingId.trim() || callBindingId.trim(); if (!bindingId || !callQualDefinitionId.trim() || !callQualHandle.trim() || !callQualDigest.trim()) throw new Error('bindingId/definitionId/handle/descriptorDigest 为必填'); const saved = await upsertCallQualification.mutateAsync({bindingId, definitionId: callQualDefinitionId.trim(), handle: callQualHandle.trim(), descriptorDigest: callQualDigest.trim(), status: callQualStatus, effectClass: callQualEffect, authorizationRef: callQualAuth.trim() || undefined, notes: callQualNotes.trim() || undefined, requestId: `call-qual-upsert-${companyId}-${Date.now()}`}); setCallQualifications(prev => [saved, ...prev.filter(q => q.id !== saved.id)]); }, '已保存调用资格（仅登记/配置，不执行工具）。'); }} type="button">{upsertCallQualification.isPending ? '保存中…' : '保存/更新调用资格（不执行）'}</button>
+        </details>
         <div className={styles.formStack}>
           <label className={styles.formLabel}>绑定（可选）
             <select className={styles.formField} onChange={event => setCallBindingId(event.target.value)} value={callBindingId}>

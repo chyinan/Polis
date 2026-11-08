@@ -517,6 +517,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
     throw new CommandApiError('SIMULATED_MODE', 409, 'tool-call receipt detail is unavailable in fixture mode');
   }
 
+  async upsertMCPToolCallQualification(): Promise<MCPToolCallQualificationView> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'tool-call qualification management is unavailable in fixture mode');
+  }
+
   async qualifyMCP(): Promise<unknown> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'capability qualification is unavailable in fixture mode');
   }

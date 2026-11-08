@@ -179,6 +179,21 @@ export type GetMCPToolCallReceiptOptions = Readonly<{
   requestId: string;
 }>;
 
+export type UpsertMCPToolCallQualificationOptions = Readonly<{
+  companyId: string;
+  bindingId: string;
+  definitionId: string;
+  handle: string;
+  descriptorDigest: string;
+  policyRevision?: string;
+  effectClass?: 'read' | 'idempotent' | 'effectful' | 'unknown';
+  status?: 'draft' | 'approved' | 'disabled' | 'revoked' | 'expired';
+  authorizationRef?: string;
+  qualifiedBy?: string;
+  notes?: string;
+  requestId: string;
+}>;
+
 export type RegisterMCPOptions = Readonly<{
   companyId: string;
   id: string;
@@ -275,6 +290,7 @@ export type WorkbenchApi = Readonly<{
   listMCPToolCallQualifications(options: ListMCPToolCallQualificationsOptions): Promise<ReadonlyArray<MCPToolCallQualificationView>>;
   listMCPToolCallReceipts(options: ListMCPToolCallReceiptsOptions): Promise<ReadonlyArray<MCPToolCallReceiptView>>;
   getMCPToolCallReceipt(options: GetMCPToolCallReceiptOptions): Promise<MCPToolCallReceiptView>;
+  upsertMCPToolCallQualification(options: UpsertMCPToolCallQualificationOptions): Promise<MCPToolCallQualificationView>;
   registerMCP(options: RegisterMCPOptions): Promise<unknown>;
   qualifyMCP(options: QualifyMCPOptions): Promise<unknown>;
   configureNotificationRoute(options: ConfigureNotificationRouteOptions): Promise<CompanyCommandReceipt>;

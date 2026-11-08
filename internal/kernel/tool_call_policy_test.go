@@ -162,6 +162,12 @@ func TestValidateArgumentsAgainstSchemaSubset(t *testing.T) {
 		{"local ref ok", `{"type":"object","properties":{"x":{"$ref":"#/$defs/s"}},"$defs":{"s":{"type":"string","minLength":2}}}`, `{"x":"ab"}`, false},
 		{"local ref bad", `{"type":"object","properties":{"x":{"$ref":"#/$defs/s"}},"$defs":{"s":{"type":"string","minLength":2}}}`, `{"x":"a"}`, true},
 		{"external ref rejected", `{"type":"object","properties":{"x":{"$ref":"https://example.test/schema"}}}`, `{"x":"a"}`, true},
+		{"format uuid ok", `{"type":"object","properties":{"id":{"type":"string","format":"uuid"}}}`, `{"id":"123e4567-e89b-12d3-a456-426614174000"}`, false},
+		{"format uuid bad", `{"type":"object","properties":{"id":{"type":"string","format":"uuid"}}}`, `{"id":"not-a-uuid"}`, true},
+		{"format date-time ok", `{"type":"object","properties":{"t":{"type":"string","format":"date-time"}}}`, `{"t":"2026-11-08T12:00:00Z"}`, false},
+		{"format ipv4 ok", `{"type":"object","properties":{"ip":{"type":"string","format":"ipv4"}}}`, `{"ip":"127.0.0.1"}`, false},
+		{"format ipv6 ok", `{"type":"object","properties":{"ip":{"type":"string","format":"ipv6"}}}`, `{"ip":"::1"}`, false},
+		{"format unknown passes", `{"type":"object","properties":{"x":{"type":"string","format":"vendor-custom"}}}`, `{"x":"anything"}`, false},
 		{"boolean schema false", `false`, `{}`, true},
 		{"malformed schema", `{"type":`, `{}`, true},
 	}
