@@ -258,6 +258,13 @@ func (s *Service) ListMCPToolCallReceipts(ctx context.Context, companyID string,
 	return s.runtime.TXListMCPToolCallReceipts(ctx, companyID, kernel.ListMCPToolCallReceiptsInput{BindingID: request.BindingID, Handle: request.Handle, Limit: request.Limit})
 }
 
+func (s *Service) GetMCPToolCallReceipt(ctx context.Context, companyID string, request GetMCPToolCallReceiptRequest) (kernel.MCPToolCallReceipt, error) {
+	if strings.TrimSpace(request.RequestID) == "" {
+		return kernel.MCPToolCallReceipt{}, core.Malformed
+	}
+	return s.runtime.TXGetMCPToolCallReceipt(ctx, companyID, request.ReceiptID)
+}
+
 func (s *Service) GetRuntimeSettings(ctx context.Context, companyID string) (RuntimeSettings, error) {
 	company, err := s.runtime.CompanyDetails(ctx, companyID)
 	if err != nil {

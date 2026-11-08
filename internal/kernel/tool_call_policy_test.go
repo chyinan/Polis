@@ -4,6 +4,7 @@ package kernel
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"testing"
 
 	"polis/internal/core"
@@ -127,6 +128,18 @@ func TestToolCallDigestsStable(t *testing.T) {
 	}
 }
 
+func TestRedactBoundedJSONMasksSensitiveKeys(t *testing.T) {
+	raw := json.RawMessage(`{"ok":1,"authorization":"Bearer secret","nested":{"api_key":"k"},"items":[{"token":"t"}]}`)
+	out := redactBoundedJSON(raw, 4096)
+	s := string(out)
+	if strings.Contains(s, "Bearer secret") || strings.Contains(s, `"api_key":"k"`) || strings.Contains(s, `"token":"t"`) {
+		t.Fatalf("sensitive values not redacted: %s", s)
+	}
+	if !strings.Contains(s, "[REDACTED]") || !strings.Contains(s, `"ok":1`) {
+		t.Fatalf("unexpected redaction output: %s", s)
+	}
+}
+
 func TestValidateArgumentsAgainstSchemaSubset(t *testing.T) {
 	cases := []struct {
 		name    string
@@ -144,6 +157,8 @@ func TestValidateArgumentsAgainstSchemaSubset(t *testing.T) {
 		{"array items", `{"type":"object","properties":{"a":{"type":"array","items":{"type":"string"}}}}`, `{"a":["x","y"]}`, false},
 		{"array items bad", `{"type":"object","properties":{"a":{"type":"array","items":{"type":"string"}}}}`, `{"a":["x",1]}`, true},
 		{"nested required", `{"type":"object","properties":{"o":{"type":"object","required":["y"],"properties":{"y":{"type":"number"}}}}}`, `{"o":{}}`, true},
+		{"pattern ok", `{"type":"object","properties":{"id":{"type":"string","pattern":"^[a-z]+$"}}}`, `{"id":"abc"}`, false},
+		{"pattern bad", `{"type":"object","properties":{"id":{"type":"string","pattern":"^[a-z]+$"}}}`, `{"id":"a1"}`, true},
 		{"boolean schema false", `false`, `{}`, true},
 		{"malformed schema", `{"type":`, `{}`, true},
 	}

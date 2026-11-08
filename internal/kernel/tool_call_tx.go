@@ -529,3 +529,84 @@ LIMIT $4`, companyID, input.BindingID, input.Handle, limit)
 	}
 	return items, rows.Err()
 }
+
+func (k *Kernel) TXGetMCPToolCallReceipt(ctx context.Context, companyID, receiptID string) (MCPToolCallReceipt, error) {
+	if !core.ValidID(companyID) || !core.ValidID(receiptID) {
+		return MCPToolCallReceipt{}, core.Malformed
+	}
+	var r MCPToolCallReceipt
+	var taskID, qid *string
+	var resultJSON, errorJSON []byte
+	var startedAt, finishedAt *string
+	err := k.pool.QueryRow(ctx, `SELECT id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,result_json,error_json,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
+FROM mcp_tool_call_receipts WHERE company_id=$1 AND id=$2`, companyID, receiptID).Scan(&r.ID, &r.EmployeeID, &taskID, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &resultJSON, &errorJSON, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return MCPToolCallReceipt{}, core.OutOfScope
+	}
+	if err != nil {
+		return MCPToolCallReceipt{}, err
+	}
+	r.CompanyID = companyID
+	r.TaskID = taskID
+	r.QualificationID = qid
+	r.ResultJSON = redactBoundedJSON(resultJSON, maxToolCallResult)
+	r.ErrorJSON = redactBoundedJSON(errorJSON, maxToolCallResult)
+	r.StartedAt = startedAt
+	r.FinishedAt = finishedAt
+	return r, nil
+}
+
+func redactBoundedJSON(raw json.RawMessage, max int) json.RawMessage {
+	if len(raw) == 0 {
+		return nil
+	}
+	if len(raw) > max {
+		raw = boundedJSON(raw, max)
+	}
+	var v any
+	if err := json.Unmarshal(raw, &v); err != nil {
+		return boundedJSON(raw, max)
+	}
+	redacted := redactSensitiveJSONValue(v, 0)
+	b, err := json.Marshal(redacted)
+	if err != nil {
+		return boundedJSON(raw, max)
+	}
+	return boundedJSON(b, max)
+}
+
+func redactSensitiveJSONValue(v any, depth int) any {
+	if depth > 16 {
+		return "[TRUNCATED_DEPTH]"
+	}
+	switch x := v.(type) {
+	case map[string]any:
+		out := make(map[string]any, len(x))
+		for k, vv := range x {
+			if isSensitiveReceiptKey(k) {
+				out[k] = "[REDACTED]"
+				continue
+			}
+			out[k] = redactSensitiveJSONValue(vv, depth+1)
+		}
+		return out
+	case []any:
+		out := make([]any, len(x))
+		for i, vv := range x {
+			out[i] = redactSensitiveJSONValue(vv, depth+1)
+		}
+		return out
+	default:
+		return v
+	}
+}
+
+func isSensitiveReceiptKey(key string) bool {
+	k := strings.ToLower(key)
+	for _, needle := range []string{"authorization", "token", "secret", "password", "passwd", "api_key", "apikey", "cookie", "set-cookie", "credential", "private_key", "privatekey", "access_key", "accesskey", "session"} {
+		if strings.Contains(k, needle) {
+			return true
+		}
+	}
+	return false
+}

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"regexp"
 	"strings"
 
 	"polis/internal/core"
@@ -489,12 +490,26 @@ func validateJSONArraySchema(schema map[string]any, arr []any, depth int) bool {
 	return true
 }
 
+const maxJSONSchemaPatternLength = 1024
+
 func validateJSONStringSchema(schema map[string]any, s string) bool {
 	if min, ok := jsonSchemaInt(schema["minLength"]); ok && len([]rune(s)) < min {
 		return false
 	}
 	if max, ok := jsonSchemaInt(schema["maxLength"]); ok && len([]rune(s)) > max {
 		return false
+	}
+	if pattern, ok := schema["pattern"].(string); ok && pattern != "" {
+		if len(pattern) > maxJSONSchemaPatternLength {
+			return false
+		}
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return false
+		}
+		if !re.MatchString(s) {
+			return false
+		}
 	}
 	return true
 }
