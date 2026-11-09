@@ -47,6 +47,9 @@ export function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: W
   const [callQualEffect, setCallQualEffect] = useState<'read' | 'idempotent' | 'effectful' | 'unknown'>('read');
   const [callQualAuth, setCallQualAuth] = useState('');
   const [callQualNotes, setCallQualNotes] = useState('');
+  const [qualPrefillEmployee, setQualPrefillEmployee] = useState<(typeof employees)[number]['id']>('emp-backend');
+  const [qualVisibleTools, setQualVisibleTools] = useState<ToolSummaryPage | null>(null);
+  const [qualPrefilling, setQualPrefilling] = useState(false);
   const [skillPackage, setSkillPackage] = useState('');
   const [skillName, setSkillName] = useState('');
   const [skillRevision, setSkillRevision] = useState('1');
@@ -152,6 +155,13 @@ export function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: W
           <label className={styles.formLabel}>authorizationRef（effectful/unknown 建议填写）<input className={styles.formField} onChange={e => setCallQualAuth(e.target.value)} value={callQualAuth} /></label>
           <label className={styles.formLabel}>notes<input className={styles.formField} onChange={e => setCallQualNotes(e.target.value)} value={callQualNotes} /></label>
           <button className={styles.commandButton} disabled={upsertCallQualification.isPending} onClick={() => { void run(async () => { const bindingId = callQualBindingId.trim() || callBindingId.trim(); if (!bindingId || !callQualDefinitionId.trim() || !callQualHandle.trim() || !callQualDigest.trim()) throw new Error('bindingId/definitionId/handle/descriptorDigest 为必填'); const saved = await upsertCallQualification.mutateAsync({bindingId, definitionId: callQualDefinitionId.trim(), handle: callQualHandle.trim(), descriptorDigest: callQualDigest.trim(), status: callQualStatus, effectClass: callQualEffect, authorizationRef: callQualAuth.trim() || undefined, notes: callQualNotes.trim() || undefined, requestId: `call-qual-upsert-${companyId}-${Date.now()}`}); setCallQualifications(prev => [saved, ...prev.filter(q => q.id !== saved.id)]); }, '已保存调用资格（仅登记/配置，不执行工具）。'); }} type="button">{upsertCallQualification.isPending ? '保存中…' : '保存/更新调用资格（不执行）'}</button>
+        </details>
+        <details className={styles.formStack}>
+          <summary className={styles.formLabel}>从可见工具描述填充资格表单（只读，不调用工具）</summary>
+          <p className={styles.formHint}>使用 R0.14 `tools.list`/`tools.describe` 读取缓存描述与 digest；不会启动 MCP 进程或调用工具。</p>
+          <label className={styles.formLabel}>员工<select className={styles.formField} onChange={e => setQualPrefillEmployee(e.target.value as (typeof employees)[number]['id'])} value={qualPrefillEmployee}>{employees.map(employee => <option key={employee.id} value={employee.id}>{employee.label}</option>)}</select></label>
+          <button className={styles.commandButton} disabled={listTools.isPending} onClick={() => { void run(async () => { const page = await listTools.mutateAsync({employeeId: qualPrefillEmployee, cursor: '', limit: 32, requestId: `qual-prefill-list-${companyId}-${Date.now()}`}); setQualVisibleTools(page); }, '已列出可见工具（只读）。'); }} type="button">{listTools.isPending ? '列出中…' : '列出可见工具'}</button>
+          {qualVisibleTools ? <div className={styles.recordList}>{qualVisibleTools.items.length === 0 ? <div className={styles.emptyState}>该员工当前无可见工具。</div> : qualVisibleTools.items.map(item => <div className={styles.recordRow} key={item.handle}><div className={styles.recordLead}><div><strong>{item.toolName}</strong><span>{item.handle} · {item.serverName}</span></div></div><button className={styles.commandButton} disabled={qualPrefilling} onClick={() => { void run(async () => { setQualPrefilling(true); try { const d = await describeTool.mutateAsync({employeeId: qualPrefillEmployee, handle: item.handle, requestId: `qual-prefill-desc-${companyId}-${Date.now()}`}); setCallQualBindingId(callBindingId || (catalog.bindings.find(b => b.employeeId === qualPrefillEmployee && b.status === 'approved')?.id ?? '')); setCallQualDefinitionId(d.serverId); setCallQualHandle(d.handle); setCallQualDigest(d.descriptorDigest); } finally { setQualPrefilling(false); } }, '已填充资格表单字段（只读描述，不执行工具）。'); }} type="button">填入表单</button></div>)}</div> : null}
         </details>
         <div className={styles.formStack}>
           <label className={styles.formLabel}>绑定（可选）
