@@ -208,12 +208,16 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 		return MCPToolCallReceipt{}, err
 	}
 	if req.TaskID != "" {
-		var ok bool
-		if err = k.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM tasks WHERE company_id=$1 AND id=$2)`, req.CompanyID, req.TaskID).Scan(&ok); err != nil {
+		var owner string
+		err = k.pool.QueryRow(ctx, `SELECT owner FROM tasks WHERE company_id=$1 AND id=$2`, req.CompanyID, req.TaskID).Scan(&owner)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return MCPToolCallReceipt{}, core.OutOfScope
+		}
+		if err != nil {
 			return MCPToolCallReceipt{}, err
 		}
-		if !ok {
-			return MCPToolCallReceipt{}, core.OutOfScope
+		if owner != req.EmployeeID {
+			return MCPToolCallReceipt{}, core.Denied
 		}
 	}
 	requestDigest := toolCallRequestDigest(req)
@@ -222,7 +226,7 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 		return MCPToolCallReceipt{}, err
 	} else if found {
 		if existing.RequestDigest != requestDigest {
-			return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "IDEMPOTENCY_CONFLICT", "", nil)
+			return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "IDEMPOTENCY_CONFLICT", "", nil, "idempotency key reused with different request digest")
 		}
 		return existing, nil
 	}
@@ -231,10 +235,10 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 		return MCPToolCallReceipt{}, err
 	}
 	if !gate.OK {
-		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate.Code, target.definitionID, qid)
+		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate.Code, target.definitionID, qid, gate.Detail)
 	}
 	if target.command == "" {
-		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid)
+		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid, "stdio command not available")
 	}
 	// Execute outside the gate read transaction. Local stdio only (D-03).
 	started := time.Now().UTC()
@@ -373,13 +377,18 @@ FROM mcp_tool_call_qualifications WHERE company_id=$1 AND binding_id=$2 AND defi
 	return result, target, qualID, nil
 }
 
-func (k *Kernel) insertDeniedToolCallReceipt(ctx context.Context, req ToolCallRequest, requestDigest, argsDigest, code, definitionID string, qualificationID *string) (MCPToolCallReceipt, error) {
+func (k *Kernel) insertDeniedToolCallReceipt(ctx context.Context, req ToolCallRequest, requestDigest, argsDigest, code, definitionID string, qualificationID *string, detail string) (MCPToolCallReceipt, error) {
 	r := MCPToolCallReceipt{
 		CompanyID: req.CompanyID, ID: newID(), EmployeeID: req.EmployeeID, BindingID: req.BindingID, DefinitionID: definitionID,
 		QualificationID: qualificationID, Handle: req.Handle, DescriptorDigest: req.DescriptorDigest,
 		ArgumentsDigest: argsDigest, RequestDigest: requestDigest, IdempotencyKey: req.IdempotencyKey, PolicyRevision: req.PolicyRevision,
 		AuthorizationRef: req.AuthorizationRef, EffectClass: "unknown", Outcome: "denied", Code: code,
 		ProcessObserved: json.RawMessage(`{}`), EgressObserved: json.RawMessage(`{"external":false}`),
+	}
+	if detail != "" {
+		if b, err := json.Marshal(map[string]any{"message": detail}); err == nil {
+			r.ErrorJSON = b
+		}
 	}
 	if req.TaskID != "" {
 		r.TaskID = &req.TaskID
@@ -389,10 +398,10 @@ func (k *Kernel) insertDeniedToolCallReceipt(ctx context.Context, req ToolCallRe
 			r.DefinitionID = serverID
 		}
 	}
-	err := k.pool.QueryRow(ctx, `INSERT INTO mcp_tool_call_receipts(company_id,id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,process_observed,egress_observed)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'denied',$16,$17,$18)
+	err := k.pool.QueryRow(ctx, `INSERT INTO mcp_tool_call_receipts(company_id,id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,error_json,process_observed,egress_observed)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'denied',$16,$17,$18,$19)
 ON CONFLICT(company_id,employee_id,handle,idempotency_key) DO UPDATE SET company_id=EXCLUDED.company_id
-RETURNING created_at::text`, r.CompanyID, r.ID, r.EmployeeID, r.TaskID, r.BindingID, r.DefinitionID, r.QualificationID, r.Handle, r.DescriptorDigest, r.ArgumentsDigest, r.RequestDigest, r.IdempotencyKey, r.PolicyRevision, r.AuthorizationRef, r.EffectClass, r.Code, r.ProcessObserved, r.EgressObserved).Scan(&r.CreatedAt)
+RETURNING created_at::text`, r.CompanyID, r.ID, r.EmployeeID, r.TaskID, r.BindingID, r.DefinitionID, r.QualificationID, r.Handle, r.DescriptorDigest, r.ArgumentsDigest, r.RequestDigest, r.IdempotencyKey, r.PolicyRevision, r.AuthorizationRef, r.EffectClass, r.Code, r.ErrorJSON, r.ProcessObserved, r.EgressObserved).Scan(&r.CreatedAt)
 	if err != nil {
 		return MCPToolCallReceipt{}, err
 	}

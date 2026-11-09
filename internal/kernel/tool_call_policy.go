@@ -107,6 +107,7 @@ type ToolCallGateResult struct {
 	ServerID     string
 	ToolName     string
 	EffectClass  string
+	Detail       string
 }
 
 var allowedToolCallEffectClasses = map[string]struct{}{"read": {}, "idempotent": {}, "effectful": {}, "unknown": {}}
@@ -254,7 +255,16 @@ func toolCallGate(input ToolCallGateInput) ToolCallGateResult {
 		if errors.Is(err, core.Malformed) {
 			return denyGate(result, "SCHEMA_INVALID")
 		}
-		return denyGate(result, "ARGUMENTS_SCHEMA_VIOLATION")
+		result = denyGate(result, "ARGUMENTS_SCHEMA_VIOLATION")
+		var sv *schemaViolationError
+		if errors.As(err, &sv) && sv != nil {
+			if sv.Path != "" {
+				result.Detail = sv.Path + ": " + sv.Message
+			} else {
+				result.Detail = sv.Message
+			}
+		}
+		return result
 	}
 	if input.Qualification == nil {
 		return denyGate(result, "CALL_NOT_QUALIFIED")
@@ -293,6 +303,28 @@ func denyGate(result ToolCallGateResult, code string) ToolCallGateResult {
 	return result
 }
 
+type schemaViolationError struct {
+	Path    string
+	Message string
+}
+
+func (e *schemaViolationError) Error() string {
+	if e == nil {
+		return "schema violation"
+	}
+	if e.Path != "" {
+		return e.Path + ": " + e.Message
+	}
+	return e.Message
+}
+
+func schemaViolation(path, message string) error {
+	if message == "" {
+		message = "arguments do not satisfy schema"
+	}
+	return &schemaViolationError{Path: path, Message: message}
+}
+
 func validateArgumentsAgainstSchema(schemaRaw, argsRaw json.RawMessage) error {
 	if len(argsRaw) > maxToolCallArguments {
 		return core.TooLarge
@@ -305,7 +337,7 @@ func validateArgumentsAgainstSchema(schemaRaw, argsRaw json.RawMessage) error {
 		return nil
 	}
 	if bytes.Equal(trimmedSchema, []byte("false")) {
-		return core.Denied
+		return schemaViolation("$", "schema is false")
 	}
 	var schema any
 	if err := json.Unmarshal(schemaRaw, &schema); err != nil {
@@ -319,41 +351,55 @@ func validateArgumentsAgainstSchema(schemaRaw, argsRaw json.RawMessage) error {
 	if err := json.Unmarshal(argsRaw, &args); err != nil {
 		return core.Malformed
 	}
-	if !validateJSONSchemaValue(schemaObj, schemaObj, args, 0, nil) {
-		return core.Denied
+	if path, msg, ok := validateJSONSchemaValue(schemaObj, schemaObj, args, "$", 0, nil); !ok {
+		return schemaViolation(path, msg)
 	}
 	return nil
 }
 
 const maxJSONSchemaDepth = 32
 
-func validateJSONSchemaValue(root, schema map[string]any, value any, depth int, refStack map[string]struct{}) bool {
-	if depth > maxJSONSchemaDepth || schema == nil {
-		return true
+func schemaOK() (string, string, bool) { return "", "", true }
+func schemaFail(path, msg string) (string, string, bool) {
+	if msg == "" {
+		msg = "schema constraint failed"
+	}
+	if path == "" {
+		path = "$"
+	}
+	return path, msg, false
+}
+
+func validateJSONSchemaValue(root, schema map[string]any, value any, path string, depth int, refStack map[string]struct{}) (string, string, bool) {
+	if depth > maxJSONSchemaDepth {
+		return schemaFail(path, "schema depth limit exceeded")
+	}
+	if schema == nil {
+		return schemaOK()
 	}
 	if ref, ok := schema["$ref"].(string); ok && ref != "" {
 		if !strings.HasPrefix(ref, "#") {
-			return false
+			return schemaFail(path, "external $ref is not allowed")
 		}
 		if refStack == nil {
 			refStack = map[string]struct{}{}
 		}
 		if _, seen := refStack[ref]; seen {
-			return false
+			return schemaFail(path, "cyclic $ref")
 		}
 		resolved, ok := resolveJSONPointerSchema(root, ref)
 		if !ok {
-			return false
+			return schemaFail(path, "unresolved $ref")
 		}
 		nextStack := make(map[string]struct{}, len(refStack)+1)
 		for k := range refStack {
 			nextStack[k] = struct{}{}
 		}
 		nextStack[ref] = struct{}{}
-		return validateJSONSchemaValue(root, resolved, value, depth+1, nextStack)
+		return validateJSONSchemaValue(root, resolved, value, path, depth+1, nextStack)
 	}
 	if v, ok := schema["const"]; ok && !jsonSchemaEqual(v, value) {
-		return false
+		return schemaFail(path, "const mismatch")
 	}
 	if enum, ok := schema["enum"].([]any); ok {
 		match := false
@@ -364,57 +410,61 @@ func validateJSONSchemaValue(root, schema map[string]any, value any, depth int, 
 			}
 		}
 		if !match {
-			return false
+			return schemaFail(path, "enum mismatch")
 		}
 	}
 	if allOf, ok := schema["allOf"].([]any); ok {
 		for _, sub := range allOf {
-			if s, ok := sub.(map[string]any); ok && !validateJSONSchemaValue(root, s, value, depth+1, refStack) {
-				return false
+			if s, ok := sub.(map[string]any); ok {
+				if p, m, okv := validateJSONSchemaValue(root, s, value, path, depth+1, refStack); !okv {
+					return p, m, false
+				}
 			}
 		}
 	}
 	if anyOf, ok := schema["anyOf"].([]any); ok && len(anyOf) > 0 {
 		match := false
 		for _, sub := range anyOf {
-			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(root, s, value, depth+1, refStack) {
-				match = true
-				break
+			if s, ok := sub.(map[string]any); ok {
+				if _, _, okv := validateJSONSchemaValue(root, s, value, path, depth+1, refStack); okv {
+					match = true
+					break
+				}
 			}
 		}
 		if !match {
-			return false
+			return schemaFail(path, "anyOf mismatch")
 		}
 	}
 	if oneOf, ok := schema["oneOf"].([]any); ok && len(oneOf) > 0 {
 		matches := 0
 		for _, sub := range oneOf {
-			if s, ok := sub.(map[string]any); ok && validateJSONSchemaValue(root, s, value, depth+1, refStack) {
-				matches++
+			if s, ok := sub.(map[string]any); ok {
+				if _, _, okv := validateJSONSchemaValue(root, s, value, path, depth+1, refStack); okv {
+					matches++
+				}
 			}
 		}
 		if matches != 1 {
-			return false
+			return schemaFail(path, "oneOf mismatch")
 		}
 	}
 	if t := schema["type"]; t != nil && !jsonSchemaTypeMatches(t, value) {
-		return false
+		return schemaFail(path, "type mismatch")
 	}
 	switch v := value.(type) {
 	case map[string]any:
-		return validateJSONObjectSchema(root, schema, v, depth, refStack)
+		return validateJSONObjectSchema(root, schema, v, path, depth, refStack)
 	case []any:
-		return validateJSONArraySchema(root, schema, v, depth, refStack)
+		return validateJSONArraySchema(root, schema, v, path, depth, refStack)
 	case string:
-		return validateJSONStringSchema(schema, v)
+		return validateJSONStringSchema(schema, v, path)
 	case float64:
-		return validateJSONNumberSchema(schema, v)
-	case bool:
-		return true
-	case nil:
-		return true
+		return validateJSONNumberSchema(schema, v, path)
+	case bool, nil:
+		return schemaOK()
 	default:
-		return true
+		return schemaOK()
 	}
 }
 
@@ -498,7 +548,7 @@ func jsonSchemaSingleTypeMatches(t string, value any) bool {
 	}
 }
 
-func validateJSONObjectSchema(root, schema map[string]any, obj map[string]any, depth int, refStack map[string]struct{}) bool {
+func validateJSONObjectSchema(root, schema map[string]any, obj map[string]any, path string, depth int, refStack map[string]struct{}) (string, string, bool) {
 	if req, ok := schema["required"].([]any); ok {
 		for _, item := range req {
 			name, ok := item.(string)
@@ -506,16 +556,19 @@ func validateJSONObjectSchema(root, schema map[string]any, obj map[string]any, d
 				continue
 			}
 			if _, exists := obj[name]; !exists {
-				return false
+				return schemaFail(path+"."+name, "required property missing")
 			}
 		}
 	}
 	props, _ := schema["properties"].(map[string]any)
 	additional, hasAdditional := schema["additionalProperties"]
 	for key, val := range obj {
+		childPath := path + "." + key
 		if propSchema, ok := props[key]; ok {
-			if s, ok := propSchema.(map[string]any); ok && !validateJSONSchemaValue(root, s, val, depth+1, refStack) {
-				return false
+			if s, ok := propSchema.(map[string]any); ok {
+				if p, m, okv := validateJSONSchemaValue(root, s, val, childPath, depth+1, refStack); !okv {
+					return p, m, false
+				}
 			}
 			continue
 		}
@@ -523,64 +576,66 @@ func validateJSONObjectSchema(root, schema map[string]any, obj map[string]any, d
 			switch a := additional.(type) {
 			case bool:
 				if !a {
-					return false
+					return schemaFail(childPath, "additional property not allowed")
 				}
 			case map[string]any:
-				if !validateJSONSchemaValue(root, a, val, depth+1, refStack) {
-					return false
+				if p, m, okv := validateJSONSchemaValue(root, a, val, childPath, depth+1, refStack); !okv {
+					return p, m, false
 				}
 			}
 		}
 	}
-	return true
+	return schemaOK()
 }
 
-func validateJSONArraySchema(root, schema map[string]any, arr []any, depth int, refStack map[string]struct{}) bool {
+func validateJSONArraySchema(root, schema map[string]any, arr []any, path string, depth int, refStack map[string]struct{}) (string, string, bool) {
 	if min, ok := jsonSchemaInt(schema["minItems"]); ok && len(arr) < min {
-		return false
+		return schemaFail(path, "minItems violated")
 	}
 	if max, ok := jsonSchemaInt(schema["maxItems"]); ok && len(arr) > max {
-		return false
+		return schemaFail(path, "maxItems violated")
 	}
 	if items, ok := schema["items"].(map[string]any); ok {
-		for _, item := range arr {
-			if !validateJSONSchemaValue(root, items, item, depth+1, refStack) {
-				return false
+		for i, item := range arr {
+			if p, m, okv := validateJSONSchemaValue(root, items, item, path+"["+itoa(i)+"]", depth+1, refStack); !okv {
+				return p, m, false
 			}
 		}
 	}
-	return true
+	return schemaOK()
 }
+
+
 
 const maxJSONSchemaPatternLength = 1024
 
 var uuidPattern = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$`)
 
-func validateJSONStringSchema(schema map[string]any, s string) bool {
+func validateJSONStringSchema(schema map[string]any, s, path string) (string, string, bool) {
 	if min, ok := jsonSchemaInt(schema["minLength"]); ok && len([]rune(s)) < min {
-		return false
+		return schemaFail(path, "minLength violated")
 	}
 	if max, ok := jsonSchemaInt(schema["maxLength"]); ok && len([]rune(s)) > max {
-		return false
+		return schemaFail(path, "maxLength violated")
 	}
 	if pattern, ok := schema["pattern"].(string); ok && pattern != "" {
 		if len(pattern) > maxJSONSchemaPatternLength {
-			return false
+			return schemaFail(path, "pattern too long")
 		}
 		re, err := regexp.Compile(pattern)
 		if err != nil {
-			return false
+			return schemaFail(path, "pattern invalid")
 		}
 		if !re.MatchString(s) {
-			return false
+			return schemaFail(path, "pattern mismatch")
 		}
 	}
 	if format, ok := schema["format"].(string); ok && format != "" {
 		if !validateJSONSchemaFormat(format, s) {
-			return false
+			return schemaFail(path, "format mismatch")
 		}
 	}
-	return true
+	return schemaOK()
 }
 
 func validateJSONSchemaFormat(format, value string) bool {
@@ -638,20 +693,20 @@ func validateJSONSchemaFormat(format, value string) bool {
 	}
 }
 
-func validateJSONNumberSchema(schema map[string]any, n float64) bool {
+func validateJSONNumberSchema(schema map[string]any, n float64, path string) (string, string, bool) {
 	if min, ok := jsonSchemaNumber(schema["minimum"]); ok && n < min {
-		return false
+		return schemaFail(path, "minimum violated")
 	}
 	if max, ok := jsonSchemaNumber(schema["maximum"]); ok && n > max {
-		return false
+		return schemaFail(path, "maximum violated")
 	}
 	if min, ok := jsonSchemaNumber(schema["exclusiveMinimum"]); ok && n <= min {
-		return false
+		return schemaFail(path, "exclusiveMinimum violated")
 	}
 	if max, ok := jsonSchemaNumber(schema["exclusiveMaximum"]); ok && n >= max {
-		return false
+		return schemaFail(path, "exclusiveMaximum violated")
 	}
-	return true
+	return schemaOK()
 }
 
 func jsonSchemaInt(v any) (int, bool) {
