@@ -220,6 +220,11 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 			return MCPToolCallReceipt{}, core.Denied
 		}
 	}
+	if strings.TrimSpace(req.SessionID) != "" {
+		if err := k.validateToolCallSessionContext(ctx, req); err != nil {
+			return MCPToolCallReceipt{}, err
+		}
+	}
 	requestDigest := toolCallRequestDigest(req)
 	argsDigest := toolCallArgumentsDigest(req.Arguments)
 	if existing, found, err := k.findToolCallReceipt(ctx, req.CompanyID, req.EmployeeID, req.Handle, req.IdempotencyKey); err != nil {
@@ -618,4 +623,39 @@ func isSensitiveReceiptKey(key string) bool {
 		}
 	}
 	return false
+}
+
+func (k *Kernel) validateToolCallSessionContext(ctx context.Context, req ToolCallRequest) error {
+	var state, employeeID, taskID, incarnation string
+	var epoch, employeeEpoch int64
+	err := k.pool.QueryRow(ctx, `SELECT s.state,s.employee_id,s.task_id,s.epoch,s.incarnation,e.epoch
+FROM worker_sessions s JOIN employees e ON e.company_id=s.company_id AND e.id=s.employee_id
+WHERE s.company_id=$1 AND s.id=$2`, req.CompanyID, req.SessionID).Scan(&state, &employeeID, &taskID, &epoch, &incarnation, &employeeEpoch)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return core.OutOfScope
+	}
+	if err != nil {
+		return err
+	}
+	if employeeID != req.EmployeeID {
+		return core.Denied
+	}
+	if req.TaskID != "" && taskID != req.TaskID {
+		return core.Denied
+	}
+	// Fencing: runtime incarnation must match DB session incarnation; session/employee epochs must align.
+	if incarnation != k.incarnation || epoch != employeeEpoch {
+		return core.StaleEpoch
+	}
+	if req.SessionEpoch > 0 && req.SessionEpoch != epoch {
+		return core.StaleEpoch
+	}
+	if strings.TrimSpace(req.SessionIncarnation) != "" && req.SessionIncarnation != incarnation {
+		return core.StaleEpoch
+	}
+	switch state {
+	case "stopped", "reconcile_required":
+		return core.Denied
+	}
+	return nil
 }

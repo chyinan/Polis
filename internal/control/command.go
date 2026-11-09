@@ -227,16 +227,19 @@ type DescribeVisibleToolRequest struct {
 }
 
 type CallMCPToolRequest struct {
-	EmployeeID       string          `json:"employeeId"`
-	TaskID           string          `json:"taskId,omitempty"`
-	BindingID        string          `json:"bindingId"`
-	Handle           string          `json:"handle"`
-	DescriptorDigest string          `json:"descriptorDigest"`
-	Arguments        json.RawMessage `json:"arguments"`
-	IdempotencyKey   string          `json:"idempotencyKey"`
-	PolicyRevision   string          `json:"policyRevision,omitempty"`
-	AuthorizationRef string          `json:"authorizationRef,omitempty"`
-	RequestID        string          `json:"requestId"`
+	EmployeeID         string          `json:"employeeId"`
+	TaskID             string          `json:"taskId,omitempty"`
+	BindingID          string          `json:"bindingId"`
+	SessionID          string          `json:"sessionId,omitempty"`
+	SessionEpoch       int64           `json:"sessionEpoch,omitempty"`
+	SessionIncarnation string          `json:"sessionIncarnation,omitempty"`
+	Handle             string          `json:"handle"`
+	DescriptorDigest   string          `json:"descriptorDigest"`
+	Arguments          json.RawMessage `json:"arguments"`
+	IdempotencyKey     string          `json:"idempotencyKey"`
+	PolicyRevision     string          `json:"policyRevision,omitempty"`
+	AuthorizationRef   string          `json:"authorizationRef,omitempty"`
+	RequestID          string          `json:"requestId"`
 }
 
 type UpsertMCPToolCallQualificationRequest struct {

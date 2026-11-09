@@ -248,7 +248,7 @@ func (s *Service) CallMCPTool(ctx context.Context, companyID string, request Cal
 	if policy == "" {
 		policy = "r15-tools-call@1"
 	}
-	return s.runtime.TXCallMCPTool(ctx, kernel.ToolCallRequest{CompanyID: companyID, EmployeeID: request.EmployeeID, TaskID: request.TaskID, BindingID: request.BindingID, Handle: request.Handle, DescriptorDigest: request.DescriptorDigest, Arguments: request.Arguments, IdempotencyKey: request.IdempotencyKey, PolicyRevision: policy, AuthorizationRef: request.AuthorizationRef})
+	return s.runtime.TXCallMCPTool(ctx, kernel.ToolCallRequest{CompanyID: companyID, EmployeeID: request.EmployeeID, TaskID: request.TaskID, BindingID: request.BindingID, SessionID: request.SessionID, SessionEpoch: request.SessionEpoch, SessionIncarnation: request.SessionIncarnation, Handle: request.Handle, DescriptorDigest: request.DescriptorDigest, Arguments: request.Arguments, IdempotencyKey: request.IdempotencyKey, PolicyRevision: policy, AuthorizationRef: request.AuthorizationRef})
 }
 
 func (s *Service) ListMCPToolCallReceipts(ctx context.Context, companyID string, request ListMCPToolCallReceiptsRequest) ([]kernel.MCPToolCallReceipt, error) {

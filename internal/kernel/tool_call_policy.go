@@ -26,17 +26,20 @@ const (
 )
 
 type ToolCallRequest struct {
-	CompanyID         string          `json:"companyId"`
-	EmployeeID        string          `json:"employeeId"`
-	TaskID            string          `json:"taskId,omitempty"`
-	BindingID         string          `json:"bindingId"`
-	Handle            string          `json:"handle"`
-	DescriptorDigest  string          `json:"descriptorDigest"`
-	Arguments         json.RawMessage `json:"arguments"`
-	IdempotencyKey    string          `json:"idempotencyKey"`
-	PolicyRevision    string          `json:"policyRevision"`
-	AuthorizationRef  string          `json:"authorizationRef,omitempty"`
-	EffectClassHint   string          `json:"effectClassHint,omitempty"`
+	CompanyID          string          `json:"companyId"`
+	EmployeeID         string          `json:"employeeId"`
+	TaskID             string          `json:"taskId,omitempty"`
+	BindingID          string          `json:"bindingId"`
+	SessionID          string          `json:"sessionId,omitempty"`
+	SessionEpoch       int64           `json:"sessionEpoch,omitempty"`
+	SessionIncarnation string          `json:"sessionIncarnation,omitempty"`
+	Handle             string          `json:"handle"`
+	DescriptorDigest   string          `json:"descriptorDigest"`
+	Arguments          json.RawMessage `json:"arguments"`
+	IdempotencyKey     string          `json:"idempotencyKey"`
+	PolicyRevision     string          `json:"policyRevision"`
+	AuthorizationRef   string          `json:"authorizationRef,omitempty"`
+	EffectClassHint    string          `json:"effectClassHint,omitempty"`
 }
 
 type MCPToolCallQualification struct {
@@ -123,6 +126,15 @@ func validateToolCallRequest(req ToolCallRequest) (ToolCallRequest, error) {
 	if strings.TrimSpace(req.TaskID) != "" && !core.ValidID(req.TaskID) {
 		return req, core.Malformed
 	}
+	if strings.TrimSpace(req.SessionID) != "" && !core.ValidID(req.SessionID) {
+		return req, core.Malformed
+	}
+	if req.SessionEpoch < 0 {
+		return req, core.Malformed
+	}
+	if len(req.SessionIncarnation) > 256 || strings.ContainsAny(req.SessionIncarnation, "\r\n\t") {
+		return req, core.Malformed
+	}
 	if !core.ValidID(req.BindingID) || req.DescriptorDigest == "" || strings.TrimSpace(req.IdempotencyKey) == "" {
 		return req, core.Malformed
 	}
@@ -165,16 +177,19 @@ func validateToolCallRequest(req ToolCallRequest) (ToolCallRequest, error) {
 func toolCallRequestDigest(req ToolCallRequest) string {
 	canonicalArgs, _ := marshalCanonicalJSON(req.Arguments)
 	encoded, _ := json.Marshal(struct {
-		CompanyID        string          `json:"companyId"`
-		EmployeeID       string          `json:"employeeId"`
-		TaskID           string          `json:"taskId"`
-		BindingID        string          `json:"bindingId"`
-		Handle           string          `json:"handle"`
-		DescriptorDigest string          `json:"descriptorDigest"`
-		Arguments        json.RawMessage `json:"arguments"`
-		PolicyRevision   string          `json:"policyRevision"`
-		AuthorizationRef string          `json:"authorizationRef"`
-	}{req.CompanyID, req.EmployeeID, strings.TrimSpace(req.TaskID), req.BindingID, req.Handle, req.DescriptorDigest, canonicalArgs, req.PolicyRevision, req.AuthorizationRef})
+		CompanyID          string          `json:"companyId"`
+		EmployeeID         string          `json:"employeeId"`
+		TaskID             string          `json:"taskId"`
+		BindingID          string          `json:"bindingId"`
+		SessionID          string          `json:"sessionId"`
+		SessionEpoch       int64           `json:"sessionEpoch"`
+		SessionIncarnation string          `json:"sessionIncarnation"`
+		Handle             string          `json:"handle"`
+		DescriptorDigest   string          `json:"descriptorDigest"`
+		Arguments          json.RawMessage `json:"arguments"`
+		PolicyRevision     string          `json:"policyRevision"`
+		AuthorizationRef   string          `json:"authorizationRef"`
+	}{req.CompanyID, req.EmployeeID, strings.TrimSpace(req.TaskID), req.BindingID, strings.TrimSpace(req.SessionID), req.SessionEpoch, strings.TrimSpace(req.SessionIncarnation), req.Handle, req.DescriptorDigest, canonicalArgs, req.PolicyRevision, req.AuthorizationRef})
 	sum := sha256.Sum256(encoded)
 	return "sha256:" + hex.EncodeToString(sum[:])
 }
