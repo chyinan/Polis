@@ -135,6 +135,17 @@ func TestMCPToolCallGateAndExecution(t *testing.T) {
 	if len(schemaDenied.ErrorJSON) == 0 || !strings.Contains(string(schemaDenied.ErrorJSON), "$.x") {
 		t.Fatalf("expected bounded schema violation detail, got %s", string(schemaDenied.ErrorJSON))
 	}
+	var schemaErr struct {
+		Message string `json:"message"`
+		Path    string `json:"path"`
+		Reason  string `json:"reason"`
+	}
+	if err := json.Unmarshal(schemaDenied.ErrorJSON, &schemaErr); err != nil {
+		t.Fatalf("unmarshal schema error json: %v", err)
+	}
+	if schemaErr.Path != "$.x" || schemaErr.Reason == "" || !strings.Contains(schemaErr.Message, "$.x") {
+		t.Fatalf("expected structured schema violation detail, got %+v", schemaErr)
+	}
 
 	if _, err = k.pool.Exec(ctx, `INSERT INTO employees(company_id,id,display_name,role_name,model_profile) VALUES($1,'emp-frontend','Frontend','frontend','deterministic/fake') ON CONFLICT (company_id,id) DO NOTHING`, scope.company); err != nil {
 		t.Fatal(err)

@@ -231,7 +231,7 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 		return MCPToolCallReceipt{}, err
 	} else if found {
 		if existing.RequestDigest != requestDigest {
-			return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "IDEMPOTENCY_CONFLICT", "", nil, "idempotency key reused with different request digest")
+			return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "IDEMPOTENCY_CONFLICT", "", nil, "idempotency key reused with different request digest", "", "")
 		}
 		return existing, nil
 	}
@@ -240,10 +240,10 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 		return MCPToolCallReceipt{}, err
 	}
 	if !gate.OK {
-		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate.Code, target.definitionID, qid, gate.Detail)
+		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate.Code, target.definitionID, qid, gate.Detail, gate.DetailPath, gate.DetailReason)
 	}
 	if target.command == "" {
-		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid, "stdio command not available")
+		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid, "stdio command not available", "", "")
 	}
 	// Execute outside the gate read transaction. Local stdio only (D-03).
 	started := time.Now().UTC()
@@ -382,7 +382,7 @@ FROM mcp_tool_call_qualifications WHERE company_id=$1 AND binding_id=$2 AND defi
 	return result, target, qualID, nil
 }
 
-func (k *Kernel) insertDeniedToolCallReceipt(ctx context.Context, req ToolCallRequest, requestDigest, argsDigest, code, definitionID string, qualificationID *string, detail string) (MCPToolCallReceipt, error) {
+func (k *Kernel) insertDeniedToolCallReceipt(ctx context.Context, req ToolCallRequest, requestDigest, argsDigest, code, definitionID string, qualificationID *string, detail, detailPath, detailReason string) (MCPToolCallReceipt, error) {
 	r := MCPToolCallReceipt{
 		CompanyID: req.CompanyID, ID: newID(), EmployeeID: req.EmployeeID, BindingID: req.BindingID, DefinitionID: definitionID,
 		QualificationID: qualificationID, Handle: req.Handle, DescriptorDigest: req.DescriptorDigest,
@@ -390,8 +390,18 @@ func (k *Kernel) insertDeniedToolCallReceipt(ctx context.Context, req ToolCallRe
 		AuthorizationRef: req.AuthorizationRef, EffectClass: "unknown", Outcome: "denied", Code: code,
 		ProcessObserved: json.RawMessage(`{}`), EgressObserved: json.RawMessage(`{"external":false}`),
 	}
-	if detail != "" {
-		if b, err := json.Marshal(map[string]any{"message": detail}); err == nil {
+	if detail != "" || detailPath != "" || detailReason != "" {
+		payload := map[string]any{}
+		if detail != "" {
+			payload["message"] = detail
+		}
+		if detailPath != "" {
+			payload["path"] = detailPath
+		}
+		if detailReason != "" {
+			payload["reason"] = detailReason
+		}
+		if b, err := json.Marshal(payload); err == nil {
 			r.ErrorJSON = b
 		}
 	}

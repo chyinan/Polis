@@ -111,6 +111,8 @@ type ToolCallGateResult struct {
 	ToolName     string
 	EffectClass  string
 	Detail       string
+	DetailPath   string
+	DetailReason string
 }
 
 var allowedToolCallEffectClasses = map[string]struct{}{"read": {}, "idempotent": {}, "effectful": {}, "unknown": {}}
@@ -273,6 +275,8 @@ func toolCallGate(input ToolCallGateInput) ToolCallGateResult {
 		result = denyGate(result, "ARGUMENTS_SCHEMA_VIOLATION")
 		var sv *schemaViolationError
 		if errors.As(err, &sv) && sv != nil {
+			result.DetailPath = sv.Path
+			result.DetailReason = sv.Message
 			if sv.Path != "" {
 				result.Detail = sv.Path + ": " + sv.Message
 			} else {
