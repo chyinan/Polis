@@ -260,11 +260,12 @@ type toolCallTarget struct {
 
 func (k *Kernel) findToolCallReceipt(ctx context.Context, companyID, employeeID, handle, idempotencyKey string) (MCPToolCallReceipt, bool, error) {
 	var r MCPToolCallReceipt
-	var taskID, qid *string
+	var taskID, sessionID, qid *string
+	var sessionEpoch *int64
 	var resultJSON, errorJSON []byte
 	var startedAt, finishedAt *string
-	err := k.pool.QueryRow(ctx, `SELECT id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,result_json,error_json,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
-FROM mcp_tool_call_receipts WHERE company_id=$1 AND employee_id=$2 AND handle=$3 AND idempotency_key=$4`, companyID, employeeID, handle, idempotencyKey).Scan(&r.ID, &r.EmployeeID, &taskID, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &resultJSON, &errorJSON, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt)
+	err := k.pool.QueryRow(ctx, `SELECT id,employee_id,task_id,session_id,session_epoch,session_incarnation,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,result_json,error_json,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
+FROM mcp_tool_call_receipts WHERE company_id=$1 AND employee_id=$2 AND handle=$3 AND idempotency_key=$4`, companyID, employeeID, handle, idempotencyKey).Scan(&r.ID, &r.EmployeeID, &taskID, &sessionID, &sessionEpoch, &r.SessionIncarnation, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &resultJSON, &errorJSON, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return MCPToolCallReceipt{}, false, nil
 	}
@@ -273,6 +274,8 @@ FROM mcp_tool_call_receipts WHERE company_id=$1 AND employee_id=$2 AND handle=$3
 	}
 	r.CompanyID = companyID
 	r.TaskID = taskID
+	r.SessionID = sessionID
+	r.SessionEpoch = sessionEpoch
 	r.QualificationID = qid
 	r.ResultJSON = resultJSON
 	r.ErrorJSON = errorJSON
@@ -408,15 +411,24 @@ func (k *Kernel) insertDeniedToolCallReceipt(ctx context.Context, req ToolCallRe
 	if req.TaskID != "" {
 		r.TaskID = &req.TaskID
 	}
+	if strings.TrimSpace(req.SessionID) != "" {
+		sid := req.SessionID
+		r.SessionID = &sid
+		if req.SessionEpoch > 0 {
+			ep := req.SessionEpoch
+			r.SessionEpoch = &ep
+		}
+		r.SessionIncarnation = strings.TrimSpace(req.SessionIncarnation)
+	}
 	if definitionID == "" {
 		if serverID, _, err := splitToolHandle(req.Handle); err == nil {
 			r.DefinitionID = serverID
 		}
 	}
-	err := k.pool.QueryRow(ctx, `INSERT INTO mcp_tool_call_receipts(company_id,id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,error_json,process_observed,egress_observed)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'denied',$16,$17,$18,$19)
+	err := k.pool.QueryRow(ctx, `INSERT INTO mcp_tool_call_receipts(company_id,id,employee_id,task_id,session_id,session_epoch,session_incarnation,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,error_json,process_observed,egress_observed)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,'denied',$19,$20,$21,$22)
 ON CONFLICT(company_id,employee_id,handle,idempotency_key) DO UPDATE SET company_id=EXCLUDED.company_id
-RETURNING created_at::text`, r.CompanyID, r.ID, r.EmployeeID, r.TaskID, r.BindingID, r.DefinitionID, r.QualificationID, r.Handle, r.DescriptorDigest, r.ArgumentsDigest, r.RequestDigest, r.IdempotencyKey, r.PolicyRevision, r.AuthorizationRef, r.EffectClass, r.Code, r.ErrorJSON, r.ProcessObserved, r.EgressObserved).Scan(&r.CreatedAt)
+RETURNING created_at::text`, r.CompanyID, r.ID, r.EmployeeID, r.TaskID, r.SessionID, r.SessionEpoch, r.SessionIncarnation, r.BindingID, r.DefinitionID, r.QualificationID, r.Handle, r.DescriptorDigest, r.ArgumentsDigest, r.RequestDigest, r.IdempotencyKey, r.PolicyRevision, r.AuthorizationRef, r.EffectClass, r.Code, r.ErrorJSON, r.ProcessObserved, r.EgressObserved).Scan(&r.CreatedAt)
 	if err != nil {
 		return MCPToolCallReceipt{}, err
 	}
@@ -474,14 +486,23 @@ func (k *Kernel) insertExecutedToolCallReceipt(ctx context.Context, req ToolCall
 	if req.TaskID != "" {
 		r.TaskID = &req.TaskID
 	}
+	if strings.TrimSpace(req.SessionID) != "" {
+		sid := req.SessionID
+		r.SessionID = &sid
+		if req.SessionEpoch > 0 {
+			ep := req.SessionEpoch
+			r.SessionEpoch = &ep
+		}
+		r.SessionIncarnation = strings.TrimSpace(req.SessionIncarnation)
+	}
 	startedText := started.UTC().Format(time.RFC3339Nano)
 	finishedText := finished.UTC().Format(time.RFC3339Nano)
 	r.StartedAt = &startedText
 	r.FinishedAt = &finishedText
-	err := k.pool.QueryRow(ctx, `INSERT INTO mcp_tool_call_receipts(company_id,id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,result_json,error_json,process_observed,egress_observed,started_at,finished_at)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
+	err := k.pool.QueryRow(ctx, `INSERT INTO mcp_tool_call_receipts(company_id,id,employee_id,task_id,session_id,session_epoch,session_incarnation,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,result_json,error_json,process_observed,egress_observed,started_at,finished_at)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27)
 ON CONFLICT(company_id,employee_id,handle,idempotency_key) DO UPDATE SET company_id=EXCLUDED.company_id
-RETURNING created_at::text`, r.CompanyID, r.ID, r.EmployeeID, r.TaskID, r.BindingID, r.DefinitionID, r.QualificationID, r.Handle, r.DescriptorDigest, r.ArgumentsDigest, r.RequestDigest, r.IdempotencyKey, r.PolicyRevision, r.AuthorizationRef, r.EffectClass, r.Outcome, r.Code, r.ResultDigest, r.ResultJSON, r.ErrorJSON, r.ProcessObserved, r.EgressObserved, started, finished).Scan(&r.CreatedAt)
+RETURNING created_at::text`, r.CompanyID, r.ID, r.EmployeeID, r.TaskID, r.SessionID, r.SessionEpoch, r.SessionIncarnation, r.BindingID, r.DefinitionID, r.QualificationID, r.Handle, r.DescriptorDigest, r.ArgumentsDigest, r.RequestDigest, r.IdempotencyKey, r.PolicyRevision, r.AuthorizationRef, r.EffectClass, r.Outcome, r.Code, r.ResultDigest, r.ResultJSON, r.ErrorJSON, r.ProcessObserved, r.EgressObserved, started, finished).Scan(&r.CreatedAt)
 	if err != nil {
 		return MCPToolCallReceipt{}, err
 	}
@@ -527,7 +548,7 @@ func (k *Kernel) TXListMCPToolCallReceipts(ctx context.Context, companyID string
 	if limit > 200 {
 		limit = 200
 	}
-	rows, err := k.pool.Query(ctx, `SELECT id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
+	rows, err := k.pool.Query(ctx, `SELECT id,employee_id,task_id,session_id,session_epoch,session_incarnation,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
 FROM mcp_tool_call_receipts
 WHERE company_id=$1 AND ($2='' OR binding_id=$2) AND ($3='' OR handle=$3)
 ORDER BY created_at DESC, id DESC
@@ -539,13 +560,16 @@ LIMIT $4`, companyID, input.BindingID, input.Handle, limit)
 	items := []MCPToolCallReceipt{}
 	for rows.Next() {
 		var r MCPToolCallReceipt
-		var taskID, qid *string
+		var taskID, sessionID, qid *string
+		var sessionEpoch *int64
 		var startedAt, finishedAt *string
-		if err = rows.Scan(&r.ID, &r.EmployeeID, &taskID, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt); err != nil {
+		if err = rows.Scan(&r.ID, &r.EmployeeID, &taskID, &sessionID, &sessionEpoch, &r.SessionIncarnation, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt); err != nil {
 			return nil, err
 		}
 		r.CompanyID = companyID
 		r.TaskID = taskID
+		r.SessionID = sessionID
+		r.SessionEpoch = sessionEpoch
 		r.QualificationID = qid
 		r.StartedAt = startedAt
 		r.FinishedAt = finishedAt
@@ -559,11 +583,12 @@ func (k *Kernel) TXGetMCPToolCallReceipt(ctx context.Context, companyID, receipt
 		return MCPToolCallReceipt{}, core.Malformed
 	}
 	var r MCPToolCallReceipt
-	var taskID, qid *string
+	var taskID, sessionID, qid *string
+	var sessionEpoch *int64
 	var resultJSON, errorJSON []byte
 	var startedAt, finishedAt *string
-	err := k.pool.QueryRow(ctx, `SELECT id,employee_id,task_id,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,result_json,error_json,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
-FROM mcp_tool_call_receipts WHERE company_id=$1 AND id=$2`, companyID, receiptID).Scan(&r.ID, &r.EmployeeID, &taskID, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &resultJSON, &errorJSON, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt)
+	err := k.pool.QueryRow(ctx, `SELECT id,employee_id,task_id,session_id,session_epoch,session_incarnation,binding_id,definition_id,qualification_id,handle,descriptor_digest,arguments_digest,request_digest,idempotency_key,policy_revision,authorization_ref,effect_class,outcome,code,result_digest,result_json,error_json,process_observed,egress_observed,started_at::text,finished_at::text,created_at::text
+FROM mcp_tool_call_receipts WHERE company_id=$1 AND id=$2`, companyID, receiptID).Scan(&r.ID, &r.EmployeeID, &taskID, &sessionID, &sessionEpoch, &r.SessionIncarnation, &r.BindingID, &r.DefinitionID, &qid, &r.Handle, &r.DescriptorDigest, &r.ArgumentsDigest, &r.RequestDigest, &r.IdempotencyKey, &r.PolicyRevision, &r.AuthorizationRef, &r.EffectClass, &r.Outcome, &r.Code, &r.ResultDigest, &resultJSON, &errorJSON, &r.ProcessObserved, &r.EgressObserved, &startedAt, &finishedAt, &r.CreatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return MCPToolCallReceipt{}, core.OutOfScope
 	}
@@ -572,6 +597,8 @@ FROM mcp_tool_call_receipts WHERE company_id=$1 AND id=$2`, companyID, receiptID
 	}
 	r.CompanyID = companyID
 	r.TaskID = taskID
+	r.SessionID = sessionID
+	r.SessionEpoch = sessionEpoch
 	r.QualificationID = qid
 	r.ResultJSON = redactBoundedJSON(resultJSON, maxToolCallResult)
 	r.ErrorJSON = redactBoundedJSON(errorJSON, maxToolCallResult)

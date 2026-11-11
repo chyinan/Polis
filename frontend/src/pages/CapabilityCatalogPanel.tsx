@@ -177,7 +177,17 @@ export function CapabilityCatalogPanel({api, companyId, query}: Readonly<{api: W
         </div>
         {callQualifications.length > 0 ? <div className={styles.recordList}>{callQualifications.map(q => <div className={styles.recordRow} key={q.id}><div className={styles.recordLead}><div><strong>{q.handle}</strong><span>{q.effectClass} · {q.transport} · digest {q.descriptorDigest.slice(0, 18)}… · policy {q.policyRevision}</span></div></div><StatusBadge label={q.status} tone={q.status === 'approved' ? 'success' : q.status === 'revoked' || q.status === 'disabled' ? 'danger' : 'warning'} /></div>)}</div> : <div className={styles.emptyState}>未加载资格或暂无记录。</div>}
         {callReceipts.length > 0 ? <div className={styles.recordList}>{callReceipts.map(r => <div className={styles.recordRow} key={r.id}><div className={styles.recordLead}><div><strong>{r.handle}</strong><span>{r.outcome}{r.code ? ` · ${r.code}` : ''} · {r.effectClass} · {r.createdAt}</span></div></div><div style={{display:'flex',gap:8,alignItems:'center'}}><button className={styles.commandButton} disabled={getCallReceipt.isPending} onClick={() => { void run(async () => { const detail = await getCallReceipt.mutateAsync({receiptId: r.id, requestId: `call-receipt-${r.id}-${Date.now()}`}); setCallReceiptDetail(detail); }, '已加载回执详情（只读、脱敏）。'); }} type="button">详情</button><StatusBadge label={r.outcome} tone={r.outcome === 'completed' ? 'success' : r.outcome === 'denied' ? 'warning' : 'danger'} /></div></div>)}</div> : <div className={styles.emptyState}>未加载回执或暂无记录。</div>}
-        {callReceiptDetail ? <div className={styles.recordList}><div className={styles.recordRow}><div className={styles.recordLead}><div><strong>回执详情 {callReceiptDetail.id}</strong><span>{callReceiptDetail.handle} · {callReceiptDetail.outcome}{callReceiptDetail.code ? ` · ${callReceiptDetail.code}` : ''} · req {callReceiptDetail.requestDigest.slice(0,18)}… · args {callReceiptDetail.argumentsDigest.slice(0,18)}…</span></div></div><button className={styles.commandButton} onClick={() => setCallReceiptDetail(null)} type="button">关闭</button></div><pre className={styles.formHint} style={{whiteSpace:'pre-wrap',margin:0}}>{JSON.stringify({resultJson: callReceiptDetail.resultJson ?? null, errorJson: callReceiptDetail.errorJson ?? null, processObserved: callReceiptDetail.processObserved, egressObserved: callReceiptDetail.egressObserved}, null, 2)}</pre></div> : null}
+        {callReceiptDetail ? <div className={styles.recordList}><div className={styles.recordRow}><div className={styles.recordLead}><div><strong>回执详情 {callReceiptDetail.id}</strong><span>{callReceiptDetail.handle} · {callReceiptDetail.outcome}{callReceiptDetail.code ? ` · ${callReceiptDetail.code}` : ''} · req {callReceiptDetail.requestDigest.slice(0,18)}… · args {callReceiptDetail.argumentsDigest.slice(0,18)}…</span></div></div><button className={styles.commandButton} onClick={() => setCallReceiptDetail(null)} type="button">关闭</button></div><pre className={styles.formHint} style={{whiteSpace:'pre-wrap',margin:0}}>{JSON.stringify({
+  session: callReceiptDetail.sessionId ? {
+    sessionId: callReceiptDetail.sessionId,
+    sessionEpoch: callReceiptDetail.sessionEpoch ?? null,
+    sessionIncarnation: callReceiptDetail.sessionIncarnation ?? '',
+  } : null,
+  resultJson: callReceiptDetail.resultJson ?? null,
+  errorJson: callReceiptDetail.errorJson ?? null,
+  processObserved: callReceiptDetail.processObserved,
+  egressObserved: callReceiptDetail.egressObserved,
+}, null, 2)}</pre></div> : null}
       </article>
     </section>
     {message ? <div className={styles.operationNotice} role="status">{message}</div> : null}

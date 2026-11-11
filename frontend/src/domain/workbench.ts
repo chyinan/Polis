@@ -251,6 +251,9 @@ export type MCPToolCallReceiptView = Readonly<{
   id: string;
   employeeId: string;
   taskId?: string | null;
+  sessionId?: string | null;
+  sessionEpoch?: number | null;
+  sessionIncarnation?: string;
   bindingId: string;
   definitionId: string;
   qualificationId?: string | null;

@@ -879,7 +879,10 @@ function isMCPToolCallReceipt(value: unknown): value is MCPToolCallReceiptView {
     && hasString(value, 'handle')
     && hasString(value, 'descriptorDigest')
     && hasString(value, 'outcome')
-    && hasString(value, 'createdAt');
+    && hasString(value, 'createdAt')
+    && (value.sessionId === undefined || value.sessionId === null || typeof value.sessionId === 'string')
+    && (value.sessionEpoch === undefined || value.sessionEpoch === null || typeof value.sessionEpoch === 'number')
+    && (value.sessionIncarnation === undefined || typeof value.sessionIncarnation === 'string');
 }
 
 export function validateMCPToolCallReceiptList(value: unknown): ValidationResult<ReadonlyArray<MCPToolCallReceiptView>> {
