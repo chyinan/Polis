@@ -15,7 +15,7 @@ CREATE TABLE mcp_tool_call_qualifications (
  effect_class text NOT NULL DEFAULT 'unknown' CHECK (effect_class IN ('read','idempotent','effectful','unknown')),
  status text NOT NULL CHECK (status IN ('draft','approved','disabled','revoked','expired')),
  authorization_ref text NOT NULL DEFAULT '',
- transport text NOT NULL DEFAULT 'stdio' CHECK (transport IN ('stdio')),
+ transport text NOT NULL DEFAULT 'stdio' CHECK (transport IN ('stdio','streamable_http')),
  qualified_by text NOT NULL DEFAULT '',
  qualified_at timestamptz,
  expires_at timestamptz,

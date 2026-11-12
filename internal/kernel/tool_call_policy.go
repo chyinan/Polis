@@ -304,7 +304,7 @@ func toolCallGate(input ToolCallGateInput) ToolCallGateResult {
 	default:
 		return denyGate(result, "CALL_NOT_QUALIFIED")
 	}
-	if q.Transport != "stdio" {
+	if q.Transport != "stdio" && q.Transport != "streamable_http" {
 		return denyGate(result, "TRANSPORT_NOT_QUALIFIED")
 	}
 	if q.EffectClass != "" {

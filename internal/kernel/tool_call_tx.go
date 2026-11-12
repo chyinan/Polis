@@ -109,9 +109,9 @@ func (k *Kernel) TXUpsertMCPToolCallQualification(ctx context.Context, companyID
 	if bindingStatus == "revoked" && input.Status == "approved" {
 		return MCPToolCallQualification{}, core.Denied
 	}
-	var defStatus string
+	var defStatus, defTransport string
 	var qualificationRaw []byte
-	err = tx.QueryRow(ctx, `SELECT status,qualification FROM mcp_server_definitions WHERE company_id=$1 AND id=$2`, companyID, input.DefinitionID).Scan(&defStatus, &qualificationRaw)
+	err = tx.QueryRow(ctx, `SELECT status,transport,qualification FROM mcp_server_definitions WHERE company_id=$1 AND id=$2`, companyID, input.DefinitionID).Scan(&defStatus, &defTransport, &qualificationRaw)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return MCPToolCallQualification{}, core.OutOfScope
 	}
@@ -119,6 +119,9 @@ func (k *Kernel) TXUpsertMCPToolCallQualification(ctx context.Context, companyID
 		return MCPToolCallQualification{}, err
 	}
 	if defStatus == "revoked" && input.Status == "approved" {
+		return MCPToolCallQualification{}, core.Denied
+	}
+	if defTransport != "stdio" && defTransport != "streamable_http" {
 		return MCPToolCallQualification{}, core.Denied
 	}
 	desc, _, descErr := cachedDescriptorFromQualification(qualificationRaw, toolName)
@@ -146,10 +149,10 @@ func (k *Kernel) TXUpsertMCPToolCallQualification(ctx context.Context, companyID
 	}
 	var q MCPToolCallQualification
 	err = tx.QueryRow(ctx, `INSERT INTO mcp_tool_call_qualifications(company_id,id,binding_id,definition_id,server_id,tool_name,handle,descriptor_digest,policy_revision,effect_class,status,authorization_ref,transport,qualified_by,qualified_at,notes,updated_at)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'stdio',$13,$14,$15,clock_timestamp())
-ON CONFLICT(company_id,id) DO UPDATE SET effect_class=EXCLUDED.effect_class,status=EXCLUDED.status,authorization_ref=EXCLUDED.authorization_ref,qualified_by=EXCLUDED.qualified_by,qualified_at=COALESCE(EXCLUDED.qualified_at,mcp_tool_call_qualifications.qualified_at),notes=EXCLUDED.notes,updated_at=clock_timestamp()
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,clock_timestamp())
+ON CONFLICT(company_id,id) DO UPDATE SET effect_class=EXCLUDED.effect_class,status=EXCLUDED.status,authorization_ref=EXCLUDED.authorization_ref,transport=EXCLUDED.transport,qualified_by=EXCLUDED.qualified_by,qualified_at=COALESCE(EXCLUDED.qualified_at,mcp_tool_call_qualifications.qualified_at),notes=EXCLUDED.notes,updated_at=clock_timestamp()
 RETURNING id,binding_id,definition_id,server_id,tool_name,handle,descriptor_digest,policy_revision,effect_class,status,authorization_ref,transport,qualified_by,qualified_at::text,expires_at::text,notes,created_at::text,updated_at::text`,
-		companyID, existingID, input.BindingID, input.DefinitionID, serverID, toolName, input.Handle, input.DescriptorDigest, input.PolicyRevision, input.EffectClass, input.Status, input.AuthorizationRef, input.QualifiedBy, qualifiedAt, input.Notes,
+		companyID, existingID, input.BindingID, input.DefinitionID, serverID, toolName, input.Handle, input.DescriptorDigest, input.PolicyRevision, input.EffectClass, input.Status, input.AuthorizationRef, defTransport, input.QualifiedBy, qualifiedAt, input.Notes,
 	).Scan(&q.ID, &q.BindingID, &q.DefinitionID, &q.ServerID, &q.ToolName, &q.Handle, &q.DescriptorDigest, &q.PolicyRevision, &q.EffectClass, &q.Status, &q.AuthorizationRef, &q.Transport, &q.QualifiedBy, &q.QualifiedAt, &q.ExpiresAt, &q.Notes, &q.CreatedAt, &q.UpdatedAt)
 	if err != nil {
 		return MCPToolCallQualification{}, err
@@ -242,20 +245,36 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 	if !gate.OK {
 		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate.Code, target.definitionID, qid, gate.Detail, gate.DetailPath, gate.DetailReason)
 	}
-	if target.command == "" {
-		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid, "stdio command not available", "", "")
-	}
-	// Execute outside the gate read transaction. Local stdio only (D-03).
+	// Execute outside the gate read transaction. Qualified local transports only.
 	started := time.Now().UTC()
-	callResult, callErr := CallStdioMCPTool(ctx, target.command, target.args, gate.ToolName, req.Arguments)
+	var (
+		callResult StdioCallResult
+		callErr    error
+	)
+	switch target.transport {
+	case "stdio":
+		if target.command == "" {
+			return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid, "stdio command not available", "", "")
+		}
+		callResult, callErr = CallStdioMCPTool(ctx, target.command, target.args, gate.ToolName, req.Arguments)
+	case "streamable_http":
+		if target.endpoint == "" {
+			return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid, "http endpoint not available", "", "")
+		}
+		callResult, callErr = CallStreamableHTTPMCPTool(ctx, target.endpoint, gate.ToolName, req.Arguments)
+	default:
+		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, "TRANSPORT_NOT_QUALIFIED", target.definitionID, qid, "transport not qualified", "", "")
+	}
 	finished := time.Now().UTC()
-	return k.insertExecutedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate, target.definitionID, qid, started, finished, callResult, callErr)
+	return k.insertExecutedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate, target, qid, started, finished, callResult, callErr)
 }
 
 type toolCallTarget struct {
 	definitionID string
+	transport    string
 	command      string
 	args         []string
+	endpoint     string
 }
 
 func (k *Kernel) findToolCallReceipt(ctx context.Context, companyID, employeeID, handle, idempotencyKey string) (MCPToolCallReceipt, bool, error) {
@@ -317,10 +336,10 @@ func (k *Kernel) evaluateToolCallGate(ctx context.Context, req ToolCallRequest) 
 	var target toolCallTarget
 	if gateInput.BindingFound {
 		var def toolCatalogSource
-		var command *string
+		var command, endpoint *string
 		var argsRaw []byte
 		var transport string
-		err = tx.QueryRow(ctx, `SELECT id,name,status,transport,command,args,descriptor_digest,qualification FROM mcp_server_definitions WHERE company_id=$1 AND id=$2`, req.CompanyID, serverID).Scan(&def.ID, &def.Name, &def.Status, &transport, &command, &argsRaw, &def.DescriptorDigest, &def.Qualification)
+		err = tx.QueryRow(ctx, `SELECT id,name,status,transport,endpoint,command,args,descriptor_digest,qualification FROM mcp_server_definitions WHERE company_id=$1 AND id=$2`, req.CompanyID, serverID).Scan(&def.ID, &def.Name, &def.Status, &transport, &endpoint, &command, &argsRaw, &def.DescriptorDigest, &def.Qualification)
 		if errors.Is(err, pgx.ErrNoRows) {
 			gateInput.Definition = nil
 		} else if err != nil {
@@ -328,6 +347,7 @@ func (k *Kernel) evaluateToolCallGate(ctx context.Context, req ToolCallRequest) 
 		} else {
 			gateInput.Definition = &def
 			target.definitionID = def.ID
+			target.transport = transport
 			if transport == "stdio" && command != nil {
 				target.command = *command
 				if len(argsRaw) > 0 {
@@ -335,6 +355,9 @@ func (k *Kernel) evaluateToolCallGate(ctx context.Context, req ToolCallRequest) 
 						return ToolCallGateResult{}, toolCallTarget{}, nil, core.Malformed
 					}
 				}
+			}
+			if transport == "streamable_http" && endpoint != nil {
+				target.endpoint = *endpoint
 			}
 			desc, _, derr := cachedDescriptorFromQualification(def.Qualification, toolName)
 			if derr != nil {
@@ -444,14 +467,19 @@ RETURNING created_at::text`, r.CompanyID, r.ID, r.EmployeeID, r.TaskID, r.Sessio
 	return r, nil
 }
 
-func (k *Kernel) insertExecutedToolCallReceipt(ctx context.Context, req ToolCallRequest, requestDigest, argsDigest string, gate ToolCallGateResult, definitionID string, qualificationID *string, started, finished time.Time, callResult StdioCallResult, callErr error) (MCPToolCallReceipt, error) {
+func (k *Kernel) insertExecutedToolCallReceipt(ctx context.Context, req ToolCallRequest, requestDigest, argsDigest string, gate ToolCallGateResult, target toolCallTarget, qualificationID *string, started, finished time.Time, callResult StdioCallResult, callErr error) (MCPToolCallReceipt, error) {
+	definitionID := target.definitionID
+	transport := target.transport
+	if transport == "" {
+		transport = "stdio"
+	}
 	outcome := "completed"
 	code := ""
 	var resultJSON json.RawMessage
 	var errorJSON json.RawMessage
 	resultDigest := ""
-	processObserved, _ := json.Marshal(map[string]any{"started": true, "transport": "stdio", "stderrSummary": callResult.StderrSummary, "toolsCalled": callResult.ToolsCalled})
-	egressObserved := json.RawMessage(`{"external":false,"transport":"stdio"}`)
+	processObserved, _ := json.Marshal(map[string]any{"started": true, "transport": transport, "stderrSummary": callResult.StderrSummary, "toolsCalled": callResult.ToolsCalled})
+	egressObserved, _ := json.Marshal(map[string]any{"external": false, "transport": transport, "localOnly": transport == "streamable_http"})
 	if callErr != nil {
 		if errors.Is(callErr, context.DeadlineExceeded) {
 			outcome = "timeout"

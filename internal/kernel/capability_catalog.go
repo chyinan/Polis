@@ -594,32 +594,55 @@ func (k *Kernel) QualifyRegisteredMCP(ctx context.Context, companyID, serverID s
 		return MCPServerDefinition{}, core.Malformed
 	}
 	var transport, status, name string
-	var command *string
+	var endpoint, command *string
 	var argsRaw []byte
-	err := k.pool.QueryRow(ctx, `SELECT name,transport,command,args,status FROM mcp_server_definitions WHERE company_id=$1 AND id=$2`, companyID, serverID).Scan(&name, &transport, &command, &argsRaw, &status)
+	err := k.pool.QueryRow(ctx, `SELECT name,transport,endpoint,command,args,status FROM mcp_server_definitions WHERE company_id=$1 AND id=$2`, companyID, serverID).Scan(&name, &transport, &endpoint, &command, &argsRaw, &status)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return MCPServerDefinition{}, core.OutOfScope
 	}
 	if err != nil {
 		return MCPServerDefinition{}, err
 	}
-	if transport != "stdio" || (status != "unverified" && status != "candidate") || command == nil {
+	if status != "unverified" && status != "candidate" {
 		return MCPServerDefinition{}, core.Denied
 	}
-	var args []string
-	if err = json.Unmarshal(argsRaw, &args); err != nil {
-		return MCPServerDefinition{}, core.Malformed
+	var (
+		result        StdioProbeResult
+		probeErr      error
+		networkAccess bool
+		connStatus    = "unprovisioned"
+	)
+	switch transport {
+	case "stdio":
+		if command == nil {
+			return MCPServerDefinition{}, core.Denied
+		}
+		var args []string
+		if err = json.Unmarshal(argsRaw, &args); err != nil {
+			return MCPServerDefinition{}, core.Malformed
+		}
+		result, probeErr = QualifyStdioMCP(ctx, *command, args)
+		networkAccess = false
+	case "streamable_http":
+		if endpoint == nil {
+			return MCPServerDefinition{}, core.Denied
+		}
+		// Bounded qualification: local-only endpoint sandbox enforced by transport.
+		result, probeErr = QualifyStreamableHTTPMCP(ctx, *endpoint)
+		networkAccess = true // local loopback HTTP connection attempted (sandboxed)
+		connStatus = "local_http"
+	default:
+		return MCPServerDefinition{}, core.Denied
 	}
-	result, err := QualifyStdioMCP(ctx, *command, args)
-	if err != nil {
-		return MCPServerDefinition{}, err
+	if probeErr != nil {
+		return MCPServerDefinition{}, probeErr
 	}
 	qualification, err := json.Marshal(map[string]any{
-		"formatStatus": "checked", "executionStatus": "unverified", "connectionStatus": "unprovisioned",
-		"scriptsExecuted": false, "networkAccess": false, "networkRestricted": result.NetworkRestricted,
+		"formatStatus": "checked", "executionStatus": "unverified", "connectionStatus": connStatus,
+		"scriptsExecuted": false, "networkAccess": networkAccess, "networkRestricted": result.NetworkRestricted,
 		"probeStatus": "passed", "protocolVersion": result.ProtocolVersion, "serverName": result.ServerName,
 		"serverVersion": result.ServerVersion, "toolNames": result.ToolNames, "toolDescriptors": result.ToolDescriptors, "toolsCalled": result.ToolsCalled,
-		"resourceSummaries": result.ResourceSummaries, "resourcesRead": 0,
+		"resourceSummaries": result.ResourceSummaries, "resourcesRead": 0, "transport": transport,
 	})
 	if err != nil {
 		return MCPServerDefinition{}, err
@@ -627,8 +650,8 @@ func (k *Kernel) QualifyRegisteredMCP(ctx context.Context, companyID, serverID s
 	var item MCPServerDefinition
 	err = k.pool.QueryRow(ctx, `UPDATE mcp_server_definitions
 SET status='candidate', descriptor_digest=$3, qualification=$4
-WHERE company_id=$1 AND id=$2 AND transport='stdio' AND status IN ('unverified','candidate') AND command=$5
-RETURNING id,name,transport,endpoint,command,args,descriptor_digest,status,qualification,created_at::text`, companyID, serverID, result.DescriptorDigest, qualification, *command).Scan(&item.ID, &item.Name, &item.Transport, &item.Endpoint, &item.Command, &item.Args, &item.DescriptorDigest, &item.Status, &item.Qualification, &item.CreatedAt)
+WHERE company_id=$1 AND id=$2 AND status IN ('unverified','candidate')
+RETURNING id,name,transport,endpoint,command,args,descriptor_digest,status,qualification,created_at::text`, companyID, serverID, result.DescriptorDigest, qualification).Scan(&item.ID, &item.Name, &item.Transport, &item.Endpoint, &item.Command, &item.Args, &item.DescriptorDigest, &item.Status, &item.Qualification, &item.CreatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return MCPServerDefinition{}, core.Conflict
 	}

@@ -19,6 +19,13 @@ func TestToolCallGateDenyByDefault(t *testing.T) {
 	if got := toolCallGate(base); !got.OK {
 		t.Fatalf("expected ok, got %#v", got)
 	}
+	httpOK := base
+	httpQual := *qual
+	httpQual.Transport = "streamable_http"
+	httpOK.Qualification = &httpQual
+	if got := toolCallGate(httpOK); !got.OK {
+		t.Fatalf("expected streamable_http qualified call ok, got %#v", got)
+	}
 	cases := []struct {
 		name string
 		mut  func(*ToolCallGateInput)
@@ -35,7 +42,7 @@ func TestToolCallGateDenyByDefault(t *testing.T) {
 		{"qualification missing", func(in *ToolCallGateInput) { in.Qualification = nil }, "CALL_NOT_QUALIFIED"},
 		{"qualification revoked", func(in *ToolCallGateInput) { q := *qual; q.Status = "revoked"; in.Qualification = &q }, "CALL_QUALIFICATION_REVOKED"},
 		{"policy mismatch", func(in *ToolCallGateInput) { q := *qual; q.PolicyRevision = "other"; in.Qualification = &q }, "CALL_NOT_QUALIFIED"},
-		{"transport", func(in *ToolCallGateInput) { q := *qual; q.Transport = "streamable_http"; in.Qualification = &q }, "TRANSPORT_NOT_QUALIFIED"},
+		{"transport", func(in *ToolCallGateInput) { q := *qual; q.Transport = "sse"; in.Qualification = &q }, "TRANSPORT_NOT_QUALIFIED"},
 		{"effectful auth required", func(in *ToolCallGateInput) { q := *qual; q.EffectClass = "effectful"; in.Qualification = &q }, "AUTHORIZATION_REQUIRED"},
 		{"unknown auth required", func(in *ToolCallGateInput) { q := *qual; q.EffectClass = "unknown"; in.Qualification = &q }, "AUTHORIZATION_REQUIRED"},
 	}
