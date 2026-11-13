@@ -16,6 +16,14 @@ import styles from '../styles/workbench.module.css';
 type PageProps = Readonly<{api: WorkbenchApi; companyId: string}>;
 
 const CUSTOM_CODEX_MODEL = '__custom_codex_model__';
+const CUSTOM_DEEPSEEK_MODEL = '__custom_deepseek_model__';
+const DEEPSEEK_MODELS = ['deepseek-flash', 'deepseek-v4-pro'] as const;
+const DEEPSEEK_EFFORTS = [
+  {id: 'none', label: '关闭思考'},
+  {id: 'low', label: '低'},
+  {id: 'high', label: '高 · 官方默认'},
+  {id: 'max', label: '最大'},
+] as const;
 
 function ViewHeader({eyebrow, title, action}: Readonly<{eyebrow: string; title: string; action?: ReactNode}>) {
   return <div className={styles.viewHeader}><div><p className={styles.eyebrow}>{eyebrow}</p><h1 className={styles.pageTitle}>{title}</h1></div>{action ? <div className={styles.viewHeaderAction}>{action}</div> : null}</div>;
@@ -95,8 +103,12 @@ function OperatorInstructionPanel({companyId, instructionsQuery, missionId, over
   async function submit(): Promise<void> {
     const trimmed = content.trim();
     if (trimmed === '') return;
-    await sendInstruction.mutateAsync({missionId, employeeId: employeeId || null, taskId: taskId || null, content: trimmed, requestId: `operator-instruction-${companyId}-${Date.now()}`});
-    setContent('');
+    try {
+      await sendInstruction.mutateAsync({missionId, employeeId: employeeId || null, taskId: taskId || null, content: trimmed, requestId: `operator-instruction-${companyId}-${Date.now()}`});
+      setContent('');
+    } catch {
+      // mutation state surfaces the error
+    }
   }
   return <section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>人工介入</span><h2 className={styles.sectionTitle}>给运行中的员工补充信息</h2></div><StatusBadge label="权威来源" tone="info" /></div><div className={styles.formStack}><label className={styles.formLabel}>指令内容<textarea className={styles.formField} rows={3} value={content} onChange={event => setContent(event.target.value)} placeholder="例如：继续当前方向，并优先处理最新验证反馈。" /></label><div className={styles.wizardGrid}><label className={styles.formLabel}>目标员工<select className={styles.formField} value={employeeId} onChange={event => setEmployeeId(event.target.value)}><option value="">公司级指令</option>{overview.employees.map(employee => <option key={employee.employeeId} value={employee.employeeId}>{employee.displayName} · {employee.employeeId}</option>)}</select></label><label className={styles.formLabel}>目标任务<select className={styles.formField} value={taskId} onChange={event => setTaskId(event.target.value)}><option value="">不绑定具体任务</option>{overview.tasks.map(task => <option key={task.taskId} value={task.taskId}>{task.title} · {task.taskId}</option>)}</select></label></div>{sendInstruction.isError ? <p className={styles.formError} role="alert">指令未受理：{sendInstruction.error.message}</p> : null}<button className={styles.commandButton} disabled={sendInstruction.isPending || overview.mission.state !== 'active' || content.trim() === ''} onClick={() => { void submit(); }} type="button">{sendInstruction.isPending ? '正在受理…' : '受理指令'}</button><p className={styles.formHint}>受理会写入控制面并进入活动时间线；待处理不等于员工已经应用。</p></div><div className={styles.recordList}>{instructionsQuery.isPending ? <div className={styles.emptyState} role="status">正在读取历史指令</div> : instructionsQuery.isError ? <div className={styles.errorState} role="alert">指令历史读取失败：{instructionsQuery.error.message}</div> : instructionsQuery.data.length === 0 ? <div className={styles.emptyState}>当前没有人工指令。</div> : instructionsQuery.data.map(instruction => <div className={styles.recordRow} key={instruction.instructionId}><div className={styles.recordLead}><MessageSquare aria-hidden="true" size={16} /><div><strong>{instruction.content}</strong><span>{instruction.instructionId} · {instruction.employeeId ?? '公司级'} · {instruction.taskId ?? '使命作用域'}</span></div></div><StatusBadge label={labelDisplayValue(instruction.state)} tone={instruction.state === 'applied' ? 'success' : instruction.state === 'rejected' ? 'danger' : 'warning'} /></div>)}</div></section>;
 }
@@ -215,17 +227,41 @@ export function NotificationsPage({api, companyId}: PageProps) {
   const test = useTestNotification(api, companyId);
   const [destination, setDestination] = useState('local://workbench');
   const [enabled, setEnabled] = useState(false);
-  if (query.isPending) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="接管通知" /><LoadingPanel label="正在读取通知路由" /></div>;
-  if (query.isError) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="接管通知" /><ErrorPanel message={query.error.message} /></div>;
+  const [formError, setFormError] = useState<string | null>(null);
+  useEffect(() => {
+    const route = query.data?.routes[0];
+    if (!route) return;
+    setDestination(route.destination || 'local://workbench');
+    setEnabled(route.enabled);
+  }, [query.data]);
+  if (query.isPending) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 通知" title="对外通知" /><LoadingPanel label="正在读取通知路由" /></div>;
+  if (query.isError) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 通知" title="对外通知" /><ErrorPanel message={query.error.message} /></div>;
   const route = query.data.routes[0] ?? null;
   async function saveRoute(): Promise<void> {
-    await configure.mutateAsync({adapter: 'local', destination, enabled, requestId: `notification-route-${companyId}-${Date.now()}`});
+    const trimmedDestination = destination.trim();
+    if (trimmedDestination === '') {
+      setFormError('请填写目标地址');
+      return;
+    }
+    setFormError(null);
+    try {
+      await configure.mutateAsync({adapter: 'local', destination: trimmedDestination, enabled, requestId: `notification-route-${companyId}-${Date.now()}`});
+    } catch {
+      // mutation state surfaces the error
+    }
   }
   async function sendTest(): Promise<void> {
-    await test.mutateAsync({requestId: `notification-test-${companyId}-${Date.now()}`});
+    setFormError(null);
+    try {
+      await test.mutateAsync({requestId: `notification-test-${companyId}-${Date.now()}`});
+    } catch {
+      // mutation state surfaces the error
+    }
   }
-  return <div className={styles.viewStack}><ViewHeader action={<StatusBadge label={route?.enabled ? '已启用' : '已停用'} tone={route?.enabled ? 'success' : 'neutral'} />} eyebrow="公司 / 设置" title="接管通知" /><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>通知通道</span><h2 className={styles.sectionTitle}>通道配置</h2></div><Radio aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.formStack}><label className={styles.formLabel}>适配器<input className={styles.formField} value="本地记录" readOnly /></label><label className={styles.formLabel}>目标地址<input className={styles.formField} value={destination} onChange={event => setDestination(event.target.value)} /></label><label className={styles.formLabel}><input checked={enabled} onChange={event => setEnabled(event.target.checked)} type="checkbox" /> 启用本地适配器</label><div className={styles.wizardActions}><button className={styles.commandButton} disabled={configure.isPending} onClick={() => { void saveRoute(); }} type="button">{configure.isPending ? '正在保存…' : '保存路由'}</button><button className={styles.textButton} disabled={test.isPending || !route?.enabled} onClick={() => { void sendTest(); }} type="button">{test.isPending ? '正在测试…' : '测试通知'}</button></div>{configure.isError || test.isError ? <p className={styles.formError} role="alert">通知操作失败：{configure.error?.message ?? test.error?.message}</p> : null}<p className={styles.formHint}>当前本地适配器只记录投递结果；未配置 QQ 或其他外部账户，不会产生外部发送。</p></div></section><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>投递结果</span><h2 className={styles.sectionTitle}>投递结果</h2></div><StatusBadge label={`${query.data.deliveries.length} 条`} tone="info" /></div><div className={styles.recordList}>{query.data.deliveries.length === 0 ? <div className={styles.emptyState}>暂无通知投递。</div> : query.data.deliveries.map(delivery => <div className={styles.recordRow} key={delivery.deliveryId}><div className={styles.recordLead}><Radio aria-hidden="true" size={16} /><div><strong>{labelNotificationAdapter(delivery.adapter)} · {labelDisplayValue(delivery.state)}</strong><span>{delivery.deliveryId} · 意图 {delivery.intentId}</span></div></div><div className={styles.recordMeta}><StatusBadge label={delivery.errorCode ?? '无错误'} tone={delivery.errorCode ? 'danger' : 'success'} /></div></div>)}</div></section></div>;
+  const actionError = formError ?? (configure.isError ? `通知操作失败：${configure.error.message}` : test.isError ? `通知操作失败：${test.error.message}` : null);
+  return <div className={styles.viewStack}><ViewHeader action={<StatusBadge label={route?.enabled ? '已启用' : '已停用'} tone={route?.enabled ? 'success' : 'neutral'} />} eyebrow="公司 / 通知" title="对外通知" /><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>通知通道</span><h2 className={styles.sectionTitle}>通道配置</h2></div><Radio aria-hidden="true" className={styles.icon} size={18} /></div><div className={styles.formStack}><label className={styles.formLabel}>适配器<input className={styles.formField} value="本地记录" readOnly /></label><label className={styles.formLabel}>目标地址<input className={styles.formField} value={destination} onChange={event => setDestination(event.target.value)} placeholder="例如 local://workbench" /></label><label className={styles.formLabel}><input checked={enabled} onChange={event => setEnabled(event.target.checked)} type="checkbox" /> 启用本地通知记录</label><div className={styles.wizardActions}><button className={styles.commandButton} disabled={configure.isPending || test.isPending} onClick={() => { void saveRoute(); }} type="button">{configure.isPending ? '正在保存…' : '保存路由'}</button><button className={styles.textButton} disabled={test.isPending || configure.isPending || !(route?.enabled ?? enabled)} onClick={() => { void sendTest(); }} type="button">{test.isPending ? '正在测试…' : '发送通知'}</button></div>{actionError ? <p className={styles.formError} role="alert">{actionError}</p> : null}{configure.isSuccess && !configure.isPending ? <p className={styles.formHint} role="status">路由配置已保存。</p> : null}<p className={styles.formHint}>当前实现仅保存本地记录；未实现 QQ 或其他外部账号绑定，保存不等于外部发送。发送通知会按当前已保存且启用的路由创建本地投递记录。</p></div></section><section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>投递结果</span><h2 className={styles.sectionTitle}>投递结果</h2></div><StatusBadge label={`${query.data.deliveries.length} 条`} tone="info" /></div><div className={styles.recordList}>{query.data.deliveries.length === 0 ? <div className={styles.emptyState}>暂无通知投递。</div> : query.data.deliveries.map(delivery => <div className={styles.recordRow} key={delivery.deliveryId}><div className={styles.recordLead}><Radio aria-hidden="true" size={16} /><div><strong>{labelNotificationAdapter(delivery.adapter)} · {labelDisplayValue(delivery.state)}</strong><span>{delivery.deliveryId} · 意图 {delivery.intentId}</span></div></div><div className={styles.recordMeta}><StatusBadge label={delivery.errorCode ?? '无错误'} tone={delivery.errorCode ? 'danger' : 'success'} /></div></div>)}</div></section></div>;
 }
+
 
 export function SettingsPage({api, companyId}: PageProps) {
   const query = useCompanyOverview(api, companyId);
@@ -249,13 +285,20 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
   const [model, setModel] = useState(runtime.model);
   const [effort, setEffort] = useState(runtime.effort);
   const [profile, setProfile] = useState(runtime.profile);
+  const [apiKey, setApiKey] = useState('');
+  const [clearApiKey, setClearApiKey] = useState(false);
   useEffect(() => {
     setProvider(runtime.provider);
     setModel(runtime.model);
     setEffort(runtime.effort);
     setProfile(runtime.profile);
-  }, [runtime.effort, runtime.model, runtime.profile, runtime.provider]);
+    setApiKey('');
+    setClearApiKey(false);
+  }, [runtime.effort, runtime.model, runtime.profile, runtime.provider, runtime.authReadiness]);
   const isCodexProvider = provider === 'codex';
+  const isOpenAIProvider = provider === 'openai';
+  const isDeepSeekProvider = provider === 'deepseek';
+  const isHTTPProvider = isOpenAIProvider || isDeepSeekProvider;
   const catalogQuery = useCodexModelCatalog(api, runtime.companyId, isCodexProvider);
   const codexModels = catalogQuery.data?.models ?? [];
   const selectedModel = codexModels.find(option => option.model === model);
@@ -279,8 +322,14 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
         ? 'success'
         : 'warning';
   const modelSelection = selectedModel === undefined ? CUSTOM_CODEX_MODEL : model;
+  const deepSeekModelSelection = DEEPSEEK_MODELS.includes(model as typeof DEEPSEEK_MODELS[number]) ? model : CUSTOM_DEEPSEEK_MODEL;
   const profileToSave = isCodexProvider ? `${model}/${effort}` : profile;
-  const hasUnsavedChanges = provider !== runtime.provider || model !== runtime.model || effort !== runtime.effort || (!isCodexProvider && profile !== runtime.profile);
+  const keyReady = !isHTTPProvider || apiKey.trim() !== '' || (runtime.provider === provider && runtime.authReadiness === 'configured' && !clearApiKey);
+  const hasUnsavedChanges = provider !== runtime.provider || model !== runtime.model || apiKey.trim() !== '' || clearApiKey || (isOpenAIProvider
+    ? profile !== runtime.profile || runtime.effort !== 'chat'
+    : isDeepSeekProvider
+      ? profile !== runtime.profile || effort !== runtime.effort
+      : effort !== runtime.effort || (!isCodexProvider && profile !== runtime.profile));
 
   function changeProvider(nextProvider: string): void {
     setProvider(nextProvider);
@@ -289,11 +338,35 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
         setModel('');
         setEffort('');
       }
+      setApiKey('');
+      setClearApiKey(false);
+      return;
+    }
+    if (nextProvider === 'openai') {
+      if (provider !== 'openai') {
+        setModel('');
+        setProfile('https://api.openai.com/v1');
+      }
+      setEffort('chat');
+      setApiKey('');
+      setClearApiKey(false);
+      return;
+    }
+    if (nextProvider === 'deepseek') {
+      if (provider !== 'deepseek') {
+        setModel('deepseek-flash');
+        setProfile('https://api.deepseek.com');
+        setEffort('high');
+      }
+      setApiKey('');
+      setClearApiKey(false);
       return;
     }
     setModel('deterministic/fake');
     setEffort('bounded');
     setProfile('deterministic/fake');
+    setApiKey('');
+    setClearApiKey(false);
   }
 
   function changeCodexModel(nextModel: string): void {
@@ -312,7 +385,9 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
   }
 
   async function saveRuntimeSettings(): Promise<void> {
-    await update.mutateAsync({companyId: runtime.companyId, provider, model, effort, profile: profileToSave, requestId: `runtime-settings-${runtime.companyId}-${Date.now()}`});
+    await update.mutateAsync({companyId: runtime.companyId, provider, model, effort: isOpenAIProvider ? 'chat' : effort, profile: profileToSave, apiKey: isHTTPProvider ? apiKey.trim() : undefined, clearApiKey: isHTTPProvider && clearApiKey, requestId: `runtime-settings-${runtime.companyId}-${Date.now()}`});
+    setApiKey('');
+    setClearApiKey(false);
   }
   return <article className={`${styles.sectionCard} ${styles.runtimeSettingsCard}`}>
     <div className={styles.sectionHeader}>
@@ -325,9 +400,15 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
           <option value="deterministic">本地确定性</option>
           <option value="fake">离线 Fake</option>
           <option value="codex">Codex</option>
-          {!['deterministic', 'fake', 'codex'].includes(provider) ? <option value={provider}>当前：{provider}</option> : null}
+          <option value="openai">OpenAI 协议</option>
+          <option value="deepseek">DeepSeek</option>
+          {!['deterministic', 'fake', 'codex', 'openai', 'deepseek'].includes(provider) ? <option value={provider}>当前：{provider}</option> : null}
         </select>
       </label>
+      {isHTTPProvider ? <label className={styles.formLabel}>接口地址
+        <input className={styles.formField} value={profile} onChange={event => setProfile(event.target.value)} placeholder={isDeepSeekProvider ? 'https://api.deepseek.com' : 'https://api.openai.com/v1'} spellCheck={false} />
+        <span className={styles.formHint}>{isDeepSeekProvider ? 'DeepSeek 官方 OpenAI 兼容地址是 https://api.deepseek.com。' : '兼容 OpenAI Chat Completions 的基址。公网地址必须是 https；本机回环地址可以用 http。'}</span>
+      </label> : null}
       {isCodexProvider ? <div className={styles.runtimeField}>
         <label className={styles.formLabel}>模型
           <select className={`${styles.formField} ${styles.runtimeSelect}`} disabled={catalogQuery.isFetching && !catalogQuery.isSuccess} value={modelSelection} onChange={event => changeCodexModel(event.target.value)}>
@@ -340,9 +421,20 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
         {catalogQuery.isError ? <div className={styles.catalogError} role="alert"><span>Codex 模型目录读取失败：{catalogQuery.error.message}</span><button className={styles.textButton} onClick={() => { void catalogQuery.refetch(); }} type="button">重试</button></div> : null}
         {catalogQuery.isSuccess && codexModels.length === 0 ? <p className={styles.formHint}>Codex 当前没有返回可选模型，可输入模型 ID。</p> : null}
         <p className={styles.formHint}>列表来自本机 Codex runtime；仅读取模型元数据，不会创建对话或发送模型内容。</p>
-      </div> : <label className={styles.formLabel}>模型
-        <input className={styles.formField} value={model} onChange={event => setModel(event.target.value)} />
+      </div> : isDeepSeekProvider ? <label className={styles.formLabel}>模型
+        <select className={`${styles.formField} ${styles.runtimeSelect}`} value={deepSeekModelSelection} onChange={event => setModel(event.target.value === CUSTOM_DEEPSEEK_MODEL ? '' : event.target.value)}>
+          {DEEPSEEK_MODELS.map(item => <option key={item} value={item}>{item}</option>)}
+          <option value={CUSTOM_DEEPSEEK_MODEL}>自定义模型 ID…</option>
+        </select>
+        {deepSeekModelSelection === CUSTOM_DEEPSEEK_MODEL ? <input aria-label="自定义 DeepSeek 模型 ID" className={styles.formField} onChange={event => setModel(event.target.value)} placeholder="输入 DeepSeek 模型 ID" spellCheck={false} value={model} /> : null}
+      </label> : <label className={styles.formLabel}>模型
+        <input className={styles.formField} value={model} onChange={event => setModel(event.target.value)} placeholder={isOpenAIProvider ? '例如 gpt-4o-mini' : undefined} spellCheck={false} />
       </label>}
+      {isHTTPProvider ? <label className={styles.formLabel}>API Key
+        <input className={styles.formField} autoComplete="off" onChange={event => { setApiKey(event.target.value); setClearApiKey(false); }} placeholder={runtime.provider === provider && runtime.authReadiness === 'configured' && !clearApiKey ? '已保存，留空则不修改' : '只写入本机，不会回显'} type="password" value={apiKey} />
+        <span className={styles.formHint}>{clearApiKey ? '保存后会删除已保存的密钥。' : runtime.provider === provider && runtime.authReadiness === 'configured' ? '本机已有密钥。页面不会读回密钥内容。' : '保存后只在本机凭据文件中保留密钥。'}</span>
+        {runtime.provider === provider && runtime.authReadiness === 'configured' ? <button className={styles.textButton} onClick={() => { setClearApiKey(true); setApiKey(''); }} type="button">清除已保存的密钥</button> : null}
+      </label> : null}
       {isCodexProvider ? <div className={styles.runtimeField}>
         {selectedModel !== undefined && selectedModel.supportedReasoningEfforts.length > 0 ? <label className={styles.formLabel}>推理强度
           <select className={`${styles.formField} ${styles.runtimeSelect}`} value={selectedEffort?.reasoningEffort ?? ''} onChange={event => setEffort(event.target.value)}>
@@ -353,18 +445,23 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
           <input className={styles.formField} value={effort} onChange={event => setEffort(event.target.value)} placeholder="先从 Codex 目录选择模型" />
         </label>}
         <p className={styles.formHint}>{selectedModel === undefined ? '自定义模型需要手动填写 Codex 接受的推理强度 ID。' : `此列表由 Codex 为 ${selectedModel.displayName} 返回。`}</p>
-      </div> : <label className={styles.formLabel}>推理强度
+      </div> : isDeepSeekProvider ? <label className={styles.formLabel}>思考强度
+        <select className={`${styles.formField} ${styles.runtimeSelect}`} value={DEEPSEEK_EFFORTS.some(item => item.id === effort) ? effort : 'high'} onChange={event => setEffort(event.target.value)}>
+          {DEEPSEEK_EFFORTS.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+        </select>
+        <span className={styles.formHint}>关闭思考对应 reasoning_effort=none。低、高、最大对应 low、high、max，并开启思考。思考模式下 temperature 不生效。</span>
+      </label> : isOpenAIProvider ? null : <label className={styles.formLabel}>推理强度
         <input className={styles.formField} value={effort} onChange={event => setEffort(event.target.value)} />
       </label>}
       {isCodexProvider ? <label className={styles.formLabel}>配置档案
         <input className={`${styles.formField} ${styles.runtimeReadOnlyField}`} readOnly value={profileToSave} />
         <span className={styles.formHint}>由所选模型和推理强度生成。</span>
-      </label> : <label className={styles.formLabel}>配置档案
+      </label> : isHTTPProvider ? null : <label className={styles.formLabel}>配置档案
         <input className={styles.formField} value={profile} onChange={event => setProfile(event.target.value)} />
       </label>}
     </div>
     <div className={styles.runtimeStatusGrid}>
-      <DataRow label="认证就绪状态" value={<StatusBadge label={labelDisplayValue(runtime.authReadiness)} tone={runtime.authReadiness === 'ready' || runtime.authReadiness === 'not_required' ? 'success' : 'warning'} />} />
+      <DataRow label="认证就绪状态" value={<StatusBadge label={labelDisplayValue(runtime.authReadiness)} tone={runtime.authReadiness === 'ready' || runtime.authReadiness === 'configured' || runtime.authReadiness === 'not_required' ? 'success' : 'warning'} />} />
       <DataRow label="运行时版本" value={labelDisplayValue(runtime.runtimeVersion)} mono />
       <DataRow label="产品工具面资格" value={labelDisplayValue(runtime.productSurfaceQualification)} mono />
       <DataRow label="PostgreSQL" value={labelDisplayValue(runtime.postgresqlStatus)} />
@@ -374,8 +471,8 @@ function RuntimeSettingsPanel({api, runtime}: Readonly<{api: WorkbenchApi; runti
     {update.isError ? <p className={styles.formError} role="alert">保存失败：{update.error.message}</p> : null}
     {update.isSuccess && !hasUnsavedChanges ? <p className={styles.runtimeSaved} role="status">配置已保存，将在运行时重启后生效。</p> : null}
     <div className={styles.runtimeActions}>
-      <button className={styles.commandButton} disabled={update.isPending || (isCodexProvider && catalogQuery.isFetching) || (isCodexProvider && selectedModel !== undefined && selectedModel.supportedReasoningEfforts.length > 0 && selectedEffort === undefined) || !hasUnsavedChanges || model.trim() === '' || effort.trim() === '' || profileToSave.trim() === ''} onClick={() => { void saveRuntimeSettings().catch(() => undefined); }} type="button">{update.isPending ? '正在保存…' : '保存运行时配置'}</button>
-      <p className={styles.formHint}>凭据只显示就绪状态；保存不会读取、返回或记录秘密，也不会发起模型调用。变更在运行时重启后生效。</p>
+      <button className={styles.commandButton} disabled={update.isPending || (isCodexProvider && catalogQuery.isFetching) || (isCodexProvider && selectedModel !== undefined && selectedModel.supportedReasoningEfforts.length > 0 && selectedEffort === undefined) || (isHTTPProvider && !keyReady) || !hasUnsavedChanges || model.trim() === '' || (!isOpenAIProvider && effort.trim() === '') || profileToSave.trim() === ''} onClick={() => { void saveRuntimeSettings().catch(() => undefined); }} type="button">{update.isPending ? '正在保存…' : '保存运行时配置'}</button>
+      <p className={styles.formHint}>{isHTTPProvider ? '密钥只写入本机凭据文件，接口不返回密钥，保存也不会向该地址发送请求。员工回合仍使用当前已启动的运行时，变更在重启后才会被下一次执行读取。' : '凭据只显示就绪状态；保存不会读取、返回或记录秘密，也不会发起模型调用。变更在运行时重启后生效。'}</p>
     </div>
   </article>;
 }
@@ -386,17 +483,41 @@ function OrganizationSettings({api, company}: Readonly<{api: WorkbenchApi; compa
   const archive = useArchiveCompany(api);
   const [name, setName] = useState(company.name);
   const [workspaceRoot, setWorkspaceRoot] = useState(company.workspaceRoot);
+  const [validationError, setValidationError] = useState<string | null>(null);
   useEffect(() => {
     setName(company.name);
     setWorkspaceRoot(company.workspaceRoot);
-  }, [company.name, company.workspaceRoot]);
+    setValidationError(null);
+  }, [company.name, company.workspaceRoot, company.id]);
+  const trimmedName = name.trim();
+  const trimmedWorkspaceRoot = workspaceRoot.trim();
+  const nameError = trimmedName === '' ? '请填写公司名称' : trimmedName.length > 200 ? '公司名称不能超过 200 个字符' : null;
+  const workspaceError = trimmedWorkspaceRoot === '' ? '请填写工作区 / 项目目录' : trimmedWorkspaceRoot.length > 1024 ? '工作区目录不能超过 1024 个字符' : null;
+  const hasChanges = trimmedName !== company.name || trimmedWorkspaceRoot !== company.workspaceRoot;
   async function save(): Promise<void> {
-    await update.mutateAsync({companyId: company.id, name, workspaceRoot, roster: company.roster, requestId: `company-update-${company.id}-${Date.now()}`});
+    setValidationError(null);
+    if (nameError || workspaceError) {
+      setValidationError(nameError ?? workspaceError);
+      return;
+    }
+    if (!hasChanges) return;
+    try {
+      await update.mutateAsync({companyId: company.id, name: trimmedName, workspaceRoot: trimmedWorkspaceRoot, roster: company.roster, requestId: `company-update-${company.id}-${Date.now()}`});
+    } catch {
+      // mutation state surfaces the error
+    }
   }
   async function archiveCompany(): Promise<void> {
-    if (!window.confirm('确认归档此公司？历史记录会保留，进行中的使命必须先停止。')) return;
-    await archive.mutateAsync({companyId: company.id, requestId: `company-archive-${company.id}-${Date.now()}`});
-    navigate('/group/overview');
+    if (!window.confirm('确认归档此公司？历史记录会保留，但进行中的使命将被停止。')) return;
+    setValidationError(null);
+    try {
+      await archive.mutateAsync({companyId: company.id, requestId: `company-archive-${company.id}-${Date.now()}`});
+      navigate('/group/overview');
+    } catch {
+      // mutation state surfaces the error
+    }
   }
-  return <section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>公司 / 组织</span><h2 className={styles.sectionTitle}>公司基本信息</h2></div><StatusBadge label={company.state === 'active' ? '运行中' : '已归档'} tone={company.state === 'active' ? 'success' : 'neutral'} /></div><div className={styles.formStack}><label className={styles.formLabel}>公司名称<input className={styles.formField} value={name} onChange={event => setName(event.target.value)} /></label><label className={styles.formLabel}>工作区 / 项目目录<input className={styles.formField} value={workspaceRoot} onChange={event => setWorkspaceRoot(event.target.value)} /></label><div className={styles.detailRows}><DataRow label="固定员工" value={`${company.roster.length} 个逻辑员工`} /><DataRow label="员工 ID" value={company.roster.map(employee => employee.id).join(' · ')} mono /></div>{update.isError || archive.isError ? <p className={styles.formError} role="alert">操作失败：{update.error?.message ?? archive.error?.message}</p> : null}<div className={styles.wizardActions}><button className={styles.commandButton} disabled={update.isPending || company.state === 'archived'} onClick={() => { void save(); }} type="button">{update.isPending ? '正在保存…' : '保存基本信息'}</button>{company.state === 'active' ? <button className={styles.textButton} disabled={archive.isPending} onClick={() => { void archiveCompany(); }}>{archive.isPending ? '正在归档…' : '归档公司'}</button> : null}</div></div></section>;
+  const actionError = validationError ?? (update.isError ? `操作失败：${update.error.message}` : archive.isError ? `操作失败：${archive.error.message}` : null);
+  return <section className={styles.sectionCard}><div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>公司 / 组织</span><h2 className={styles.sectionTitle}>公司基本信息</h2></div><StatusBadge label={company.state === 'active' ? '活跃' : '已归档'} tone={company.state === 'active' ? 'success' : 'neutral'} /></div><div className={styles.formStack}><label className={styles.formLabel}>公司名称<input className={styles.formField} value={name} onChange={event => setName(event.target.value)} /></label><label className={styles.formLabel}>工作区 / 项目目录<input className={styles.formField} value={workspaceRoot} onChange={event => setWorkspaceRoot(event.target.value)} /></label><div className={styles.detailRows}><DataRow label="固定员工" value={`${company.roster.length} 个逻辑员工`} /><DataRow label="员工 ID" value={company.roster.map(employee => employee.id).join(' · ')} mono /></div><p className={styles.formHint}>固定员工的显示名、岗位与模型配置由创建时的组织草案确定；此处可更新公司名称与工作区目录。</p>{actionError ? <p className={styles.formError} role="alert">{actionError}</p> : null}{update.isSuccess && !update.isPending && !hasChanges ? <p className={styles.formHint} role="status">基本信息已保存。</p> : null}<div className={styles.wizardActions}><button className={styles.commandButton} disabled={update.isPending || archive.isPending || company.state === 'archived' || !hasChanges} onClick={() => { void save(); }} type="button">{update.isPending ? '正在保存…' : '保存基本信息'}</button>{company.state === 'active' ? <button className={styles.textButton} disabled={archive.isPending || update.isPending} onClick={() => { void archiveCompany(); }} type="button">{archive.isPending ? '正在归档…' : '归档公司'}</button> : null}</div></div></section>;
 }
+
