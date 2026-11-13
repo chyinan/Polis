@@ -7,6 +7,7 @@ const DISPLAY_LABELS: Readonly<Record<string, string>> = {
   blocked: '已阻塞',
   candidate: '候选',
   cancelled: '已取消',
+  configured: '已配置',
   corrupt: '已损坏',
   declined: '已拒绝',
   deferred: '已延期',

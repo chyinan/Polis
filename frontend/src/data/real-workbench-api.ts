@@ -68,7 +68,10 @@ export class RealWorkbenchApi implements WorkbenchApi {
   async updateRuntimeSettings(options: UpdateRuntimeSettingsOptions): Promise<CompanyCommandReceipt> {
     assertCompanyScope(options.companyId);
     assertRequestID(options.requestId);
-    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/settings`, options.requestId, {provider: options.provider, model: options.model, effort: options.effort, profile: options.profile, requestId: options.requestId});
+    const body: {provider: string; model: string; effort: string; profile: string; requestId: string; apiKey?: string; clearApiKey?: boolean} = {provider: options.provider, model: options.model, effort: options.effort, profile: options.profile, requestId: options.requestId};
+    if (options.apiKey) body.apiKey = options.apiKey;
+    if (options.clearApiKey) body.clearApiKey = true;
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/settings`, options.requestId, body);
     return validateCompanyCommandReceipt(raw, 'runtime.settings.update');
   }
 

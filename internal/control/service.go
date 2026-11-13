@@ -278,6 +278,9 @@ func (s *Service) GetRuntimeSettings(ctx context.Context, companyID string) (Run
 	}
 	if settings.WorkerMode == "deterministic" {
 		settings.AuthReadiness = "not_required"
+		if readiness, ok := providerCredentialReadiness(s.runtime, companyID, settings.Provider); ok {
+			settings.AuthReadiness = readiness
+		}
 		settings.RuntimeVersion = "local"
 		if settings.Provider == "deterministic" {
 			settings.RuntimeReadiness = "ready"
@@ -304,7 +307,11 @@ func (s *Service) GetRuntimeSettings(ctx context.Context, companyID string) (Run
 	}
 	settings.RuntimeVersion = firstNonEmpty(os.Getenv("POLIS_PROVIDER_EXPECTED_VERSION"), "unconfigured")
 	settings.ProductSurfaceQualification = provider.ProductToolSurfaceQualification
-	settings.AuthReadiness = providerAuthReadiness(activeProvider)
+	if readiness, ok := providerCredentialReadiness(s.runtime, companyID, settings.Provider); ok {
+		settings.AuthReadiness = readiness
+	} else {
+		settings.AuthReadiness = providerAuthReadiness(activeProvider)
+	}
 	if settings.Provider != activeProvider || settings.Model != activeModel || settings.Effort != activeEffort {
 		settings.RuntimeReadiness = "restart_required"
 		return settings, nil
@@ -324,14 +331,88 @@ func (s *Service) UpdateRuntimeSettings(ctx context.Context, companyID string, r
 	if err := validateRequestID(request.RequestID); err != nil {
 		return CommandReceipt{}, err
 	}
-	if request.Provider != "deterministic" && request.Provider != "fake" && request.Provider != "codex" {
+	if request.Provider != "deterministic" && request.Provider != "fake" && request.Provider != "codex" && request.Provider != "openai" && request.Provider != "deepseek" {
+		return CommandReceipt{}, core.Malformed
+	}
+	if request.Provider == "openai" || request.Provider == "deepseek" {
+		endpoint, err := normalizeOpenAIEndpoint(request.Profile)
+		if err != nil {
+			return CommandReceipt{}, err
+		}
+		if err = validateOpenAIModel(request.Model); err != nil {
+			return CommandReceipt{}, err
+		}
+		request.Profile = endpoint
+		if request.Provider == "openai" {
+			request.Effort = "chat"
+		} else {
+			request.Effort, err = normalizeDeepSeekEffort(request.Effort)
+			if err != nil {
+				return CommandReceipt{}, err
+			}
+		}
+		key := strings.TrimSpace(request.APIKey)
+		if request.ClearAPIKey && key != "" {
+			return CommandReceipt{}, core.Malformed
+		}
+		if key != "" {
+			if err = validateOpenAIAPIKey(key); err != nil {
+				return CommandReceipt{}, err
+			}
+		}
+		request.APIKey = key
+	} else if strings.TrimSpace(request.APIKey) != "" || request.ClearAPIKey {
 		return CommandReceipt{}, core.Malformed
 	}
 	receipt, err := s.runtime.TXUpdateRuntimeSettings(ctx, companyID, request.Provider, request.Model, request.Effort, request.Profile, request.RequestID)
 	if err != nil {
 		return CommandReceipt{}, err
 	}
+	if err = syncProviderCredential(s.runtime, companyID, request); err != nil {
+		return CommandReceipt{}, err
+	}
 	return commandReceiptForTarget("runtime.settings.update", request.RequestID, "company", companyID, receipt.Status), nil
+}
+
+func providerCredentialReadiness(runtime *kernel.Kernel, companyID, providerName string) (string, bool) {
+	switch providerName {
+	case "openai":
+		return openAIAuthReadiness(runtime.OpenAICredentialConfigured(companyID)), true
+	case "deepseek":
+		return openAIAuthReadiness(runtime.DeepSeekCredentialConfigured(companyID)), true
+	default:
+		return "", false
+	}
+}
+
+func syncProviderCredential(runtime *kernel.Kernel, companyID string, request UpdateRuntimeSettingsRequest) error {
+	if request.Provider != "openai" {
+		if err := runtime.ClearOpenAIAPIKey(companyID); err != nil {
+			return err
+		}
+	} else if request.ClearAPIKey {
+		if err := runtime.ClearOpenAIAPIKey(companyID); err != nil {
+			return err
+		}
+	} else if request.APIKey != "" {
+		if err := runtime.WriteOpenAIAPIKey(companyID, request.APIKey); err != nil {
+			return err
+		}
+	}
+	if request.Provider != "deepseek" {
+		if err := runtime.ClearDeepSeekAPIKey(companyID); err != nil {
+			return err
+		}
+	} else if request.ClearAPIKey {
+		if err := runtime.ClearDeepSeekAPIKey(companyID); err != nil {
+			return err
+		}
+	} else if request.APIKey != "" {
+		if err := runtime.WriteDeepSeekAPIKey(companyID, request.APIKey); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *Service) ListCodexModels(ctx context.Context, companyID string) (provider.CodexModelCatalog, error) {
@@ -476,6 +557,13 @@ func companySummary(company kernel.CompanyDetails) CompanySummary {
 	roster := make([]organization.EmployeeDraft, len(company.Roster))
 	copy(roster, company.Roster)
 	return CompanySummary{ID: company.ID, Name: company.Name, WorkspaceRoot: company.WorkspaceRoot, State: company.State, Roster: roster}
+}
+
+func openAIAuthReadiness(configured bool) string {
+	if configured {
+		return "configured"
+	}
+	return "missing"
 }
 
 func providerAuthReadiness(transport string) string {

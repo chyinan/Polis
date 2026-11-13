@@ -29,6 +29,8 @@ export type UpdateRuntimeSettingsOptions = Readonly<{
   model: string;
   effort: string;
   profile: string;
+  apiKey?: string;
+  clearApiKey?: boolean;
   requestId: string;
 }>;
 

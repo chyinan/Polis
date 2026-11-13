@@ -56,11 +56,13 @@ type UpdateCompanyRequest struct {
 }
 
 type UpdateRuntimeSettingsRequest struct {
-	Provider  string `json:"provider"`
-	Model     string `json:"model"`
-	Effort    string `json:"effort"`
-	Profile   string `json:"profile"`
-	RequestID string `json:"requestId"`
+	Provider    string `json:"provider"`
+	Model       string `json:"model"`
+	Effort      string `json:"effort"`
+	Profile     string `json:"profile"`
+	APIKey      string `json:"apiKey,omitempty"`
+	ClearAPIKey bool   `json:"clearApiKey,omitempty"`
+	RequestID   string `json:"requestId"`
 }
 
 type ConfigureNotificationRouteRequest struct {
