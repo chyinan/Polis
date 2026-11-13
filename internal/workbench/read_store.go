@@ -64,8 +64,8 @@ func (s *PostgresReadStore) ensureSchema(ctx context.Context) error {
 	if err := s.pool.QueryRow(ctx, "SELECT COALESCE(max(version_id),0) FROM goose_db_version WHERE is_applied").Scan(&version); err != nil {
 		return err
 	}
-	if version != 15 {
-		return fmt.Errorf("workbench read store requires schema 15, got %d", version)
+	if version != 16 {
+		return fmt.Errorf("workbench read store requires schema 16, got %d", version)
 	}
 	return nil
 }
