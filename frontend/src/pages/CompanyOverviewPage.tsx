@@ -1,15 +1,14 @@
 // pattern: Imperative Shell
 
-import {ArrowUpRight, BadgeCheck, CircleAlert, Clock3, Link2, LockKeyhole, MessageSquare, Play, Radio, Square, UsersRound} from 'lucide-react';
+import {ArrowUpRight, BadgeCheck, CircleAlert, Link2, MessageSquare, Play, Radio, Square} from 'lucide-react';
 import {useRef, useState, type FormEvent} from 'react';
 import {Link} from 'react-router-dom';
-import type {AcceptanceContract, CompanyOverviewView, EmployeeSummary, StatusTone} from '../domain/workbench';
+import type {CompanyOverviewView, EmployeeSummary, StatusTone} from '../domain/workbench';
 import {formatEntityId, formatEventTime} from '../domain/activity-presentation';
 import {labelDataMode, labelDisplayValue, labelRole} from '../domain/display-labels';
 import {selectCheckpointForTask} from '../domain/checkpoint-projection';
 import {useCancelMission, useCompanyOverview, useCreateMission, useStartMission} from '../data/workbench-query';
 import {CommandApiError, type WorkbenchApi} from '../data/workbench-api';
-import {isAcceptanceContract} from '../domain/workbench-validation';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import styles from '../styles/workbench.module.css';
 
@@ -33,12 +32,6 @@ function statusLabel(status: EmployeeSummary['status']['primary']): string {
     stopped: '已停止',
   };
   return labels[status];
-}
-
-function statusIcon(status: EmployeeSummary['status']['primary']) {
-  if (status === 'working') return Radio;
-  if (status === 'sleeping') return Clock3;
-  return LockKeyhole;
 }
 
 function statusTone(tone: StatusTone): 'info' | 'neutral' | 'success' | 'warning' | 'danger' {
@@ -137,12 +130,6 @@ function MissionCard({overview, api, companyId}: Readonly<{overview: CompanyOver
         <div><span className={styles.sourceFieldLabel}>合同版本</span><div className={styles.revisionValue}><strong>{revision ? `版本 ${revision.revision}` : isMissionConfigured ? '不可得' : '未配置'}</strong><span>{revision ? labelDisplayValue(revision.state) : isMissionConfigured ? '未知' : '未配置'}</span></div></div>
         <StatusBadge label={revision ? labelDisplayValue(revision.state) : isMissionConfigured ? '未知' : '未配置'} tone={revision?.state === 'accepted' ? 'success' : isMissionConfigured ? 'info' : 'neutral'} />
       </div>
-      <section className={styles.acceptancePanel} data-acceptance-contract={mission.acceptanceContract ? 'configured' : 'not-configured'} aria-label="公开验收条件">
-        <div className={styles.acceptanceHeader}><BadgeCheck aria-hidden="true" size={15} /><strong>公开验收条件</strong></div>
-        {mission.acceptanceContract ? <ol>
-          {mission.acceptanceContract.required_text.map((criterion, index) => <li key={`${index}-${criterion}`}>{criterion}</li>)}
-        </ol> : <p>未配置。员工可以探索，但不能创建合格检查点或提交产物。</p>}
-      </section>
       <MissionControls api={api} companyId={companyId} mission={mission} />
     </article>
   );
@@ -156,10 +143,9 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
   const cancelMutation = useCancelMission(api, companyId);
   const [title, setTitle] = useState('');
   const [goal, setGoal] = useState('');
-  const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [phase, setPhase] = useState<CommandPhase>('idle');
   const [message, setMessage] = useState<string | null>(null);
-  const createRequest = useRef<Readonly<{title: string; goal: string; criteria: string; requestId: string}> | null>(null);
+  const createRequest = useRef<Readonly<{title: string; goal: string; requestId: string}> | null>(null);
   const startRequestID = useRef<string | null>(null);
   const cancelRequestID = useRef<string | null>(null);
 
@@ -177,29 +163,32 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
     event.preventDefault();
     const trimmedTitle = title.trim();
     const trimmedGoal = goal.trim();
-    const criteria = acceptanceCriteria.split(/\r?\n/).map(item => item.trim()).filter(Boolean);
-    const acceptanceContract: AcceptanceContract | null = criteria.length === 0 ? null : {revision: 'text-acceptance@1', required_text: criteria};
     if (trimmedTitle === '' || trimmedGoal === '') {
       setPhase('error');
-      setMessage('标题和目标正文不能为空');
+      setMessage('标题与目标正文不能为空');
       return;
     }
-    if (acceptanceContract !== null && !isAcceptanceContract(acceptanceContract)) {
+    if (trimmedTitle.length > 200) {
       setPhase('error');
-      setMessage('验收条件需为 1–8 条非空文本，每条不超过 512 字节；仅支持 {{mission_id}} 和 {{task_id}} 占位符。');
+      setMessage('使命标题不能超过 200 个字符');
       return;
     }
-    const pending = createRequest.current?.title === trimmedTitle && createRequest.current.goal === trimmedGoal && createRequest.current.criteria === acceptanceCriteria
+    if (trimmedGoal.length > 4096) {
+      setPhase('error');
+      setMessage('目标正文不能超过 4096 个字符');
+      return;
+    }
+    const pending = createRequest.current?.title === trimmedTitle && createRequest.current.goal === trimmedGoal
       ? createRequest.current
-      : {title: trimmedTitle, goal: trimmedGoal, criteria: acceptanceCriteria, requestId: crypto.randomUUID()};
+      : {title: trimmedTitle, goal: trimmedGoal, requestId: crypto.randomUUID()};
     createRequest.current = pending;
     setPhase('submitting');
     setMessage(null);
     try {
-      await createMutation.mutateAsync({title: pending.title, goal: pending.goal, acceptanceContract, requestId: pending.requestId});
+      await createMutation.mutateAsync({title: pending.title, goal: pending.goal, acceptanceContract: null, requestId: pending.requestId});
       createRequest.current = null;
       setPhase('accepted');
-      setMessage('使命目标已受理，正在重新读取权威快照。');
+      setMessage('使命目标已受理；状态以后续读取权威事实为准。');
     } catch (error) {
       setFailure(error);
     }
@@ -241,10 +230,8 @@ function MissionControls({api, companyId, mission}: Readonly<{api: WorkbenchApi;
   return <section className={styles.missionControls} aria-label="使命操作">
     <div className={styles.subsectionHeader}><span>人工操作</span><code>{missionStateLabel(mission.state)}</code></div>
     {canCreate ? <form className={styles.formStack} onSubmit={handleCreate}>
-      <label className={styles.formLabel}>使命标题<input data-command-field="mission-title" className={styles.formField} value={title} onChange={event => setTitle(event.target.value)} placeholder="例如：完成本期目标" /></label>
-      <label className={styles.formLabel}>目标正文<textarea data-command-field="mission-goal" className={styles.formField} rows={3} value={goal} onChange={event => setGoal(event.target.value)} placeholder="描述目标与可检查结果" /></label>
-      <label className={styles.formLabel}>公开验收条件（可选，每行一条）<textarea data-command-field="mission-acceptance" className={styles.formField} rows={4} value={acceptanceCriteria} onChange={event => setAcceptanceCriteria(event.target.value)} placeholder={'使命 ID：{{mission_id}}\n任务 ID：{{task_id}}\n确认说明：\n任务摘要：'} aria-describedby="mission-acceptance-help" /></label>
-      <p className={styles.formHint} id="mission-acceptance-help">条件会随使命显示，并在启动时冻结到任务。无条件的任务只允许探索，不能通过正式验收提交产物。</p>
+      <label className={styles.formLabel}>使命标题<input data-command-field="mission-title" className={styles.formField} value={title} onChange={event => setTitle(event.target.value)} placeholder="例如：完成本期目标" maxLength={200} /></label>
+      <label className={styles.formLabel}>目标正文<textarea data-command-field="mission-goal" className={styles.formField} rows={3} value={goal} onChange={event => setGoal(event.target.value)} placeholder="描述目标与可检查结果" maxLength={4096} /></label>
       <button className={styles.commandButton} data-command="mission-create" disabled={isSubmitting} type="submit"><Play aria-hidden="true" size={14} />{isSubmitting ? '提交中…' : '提交使命目标'}</button>
     </form> : <div className={styles.wizardActions}>
       {canStart ? <button className={styles.commandButton} data-command="mission-start" disabled={isSubmitting} onClick={() => void handleStart()} type="button"><Play aria-hidden="true" size={14} />{isSubmitting ? '启动中…' : '启动使命'}</button> : null}
@@ -274,16 +261,15 @@ function EpochCard({overview}: Readonly<{overview: CompanyOverviewView}>) {
 }
 
 function EmployeeCard({employee}: Readonly<{employee: EmployeeSummary}>) {
-  const Icon = statusIcon(employee.status.primary);
   return (
     <article className={styles.employeeCard} data-employee-id={employee.employeeId} data-employee-state={employee.status.primary}>
       <div className={styles.employeeHeader}>
-        <div><p className={styles.cardEyebrow}>{labelRole(employee.role)}</p><h3 className={styles.employeeName}>{employee.displayName}</h3></div>
+        <div>
+          <p className={styles.cardEyebrow}>{labelRole(employee.role)}</p>
+          <h3 className={styles.employeeName}>{employee.displayName}</h3>
+          <p className={styles.employeeIdLine}><span>逻辑身份</span><code>{employee.employeeId}</code></p>
+        </div>
         <StatusBadge label={statusLabel(employee.status.primary)} tone={statusTone(employee.status.tone)} />
-      </div>
-      <div className={styles.identityRow}>
-        <span className={styles.identityIcon}><UsersRound aria-hidden="true" size={14} /></span>
-        <span><span className={styles.identityLabel}>员工逻辑身份</span><code className={styles.identityId}>{employee.employeeId}</code></span>
       </div>
       <div className={styles.sessionBlock}>
         <div className={styles.subsectionHeader}><span>WorkerSession</span><code>{employee.sessionId ? formatEntityId(employee.sessionId) : '未启动'}</code></div>
@@ -294,17 +280,21 @@ function EmployeeCard({employee}: Readonly<{employee: EmployeeSummary}>) {
           <div><span className={styles.fieldLabel}>执行中的工具</span><span className={styles.fieldValue}>{employee.status.inFlightTools}</span></div>
         </div>
       </div>
-      <div className={styles.taskRow}>
-        <span className={styles.taskGlyph}><Icon aria-hidden="true" size={14} /></span>
-        <span className={styles.taskContent}>
-          <span className={styles.fieldLabel}>当前任务 · {employee.currentTask?.id ?? '无'}</span>
-          <span className={styles.taskTitle}>{employee.currentTask?.label ?? '当前无任务占用'}</span>
-          <span className={styles.taskState}>{employee.currentTask ? '已绑定当前作用域' : '当前没有进行中的任务'}</span>
-        </span>
-      </div>
       <div className={styles.employeeFooter}>
-        <div><span className={styles.fieldLabel}>资格状态</span><StatusBadge label={labelDisplayValue(employee.qualification.status)} tone={qualificationTone(employee.qualification.status)} /><code className={styles.handoverDetail}>{employee.qualification.evidenceId ? formatEntityId(employee.qualification.evidenceId) : '暂无证据'}</code></div>
-        <div className={styles.handoverInfo}><span className={styles.fieldLabel}>交接 / 接班人</span><span className={styles.handoverValue}>{employee.sessionState === 'stopped' ? '可继续查看' : '暂无接班人'}</span></div>
+        <div>
+          <span className={styles.fieldLabel}>当前任务</span>
+          <span className={styles.taskTitle}>{employee.currentTask?.label ?? '当前无任务占用'}</span>
+          <span className={styles.taskState}>{employee.currentTask ? formatEntityId(employee.currentTask.id) : '当前没有进行中的任务'}</span>
+        </div>
+        <div>
+          <span className={styles.fieldLabel}>资格状态</span>
+          <StatusBadge label={labelDisplayValue(employee.qualification.status)} tone={qualificationTone(employee.qualification.status)} />
+          <code className={styles.handoverDetail}>{employee.qualification.evidenceId ? formatEntityId(employee.qualification.evidenceId) : '暂无证据'}</code>
+        </div>
+        <div>
+          <span className={styles.fieldLabel}>交接 / 接班人</span>
+          <span className={styles.handoverValue}>{employee.sessionState === 'stopped' ? '可继续查看' : '暂无接班人'}</span>
+        </div>
       </div>
     </article>
   );
