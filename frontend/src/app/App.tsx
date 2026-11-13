@@ -146,7 +146,7 @@ function DesktopCompanyResolver({api, runtime}: Readonly<{api: WorkbenchApi; run
         return;
       }
       setCompanyId(first.id);
-      void setLastCompany(first.id);
+      void setLastCompany(first.id).catch(() => undefined);
     }).catch(readError => setError(readError instanceof Error ? readError.message : '读取公司目录失败'));
   }, [api, companyId]);
   if (error !== null) return <DesktopFailurePage message={error} onRetry={() => window.location.reload()} onOpenLogs={() => { void openDesktopLogs(); }} />;
@@ -173,22 +173,39 @@ function DesktopFirstRunWizard({api, runtime, onComplete}: Readonly<{api: Workbe
   const [workspaceRoot, setWorkspaceRoot] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const companyId = useMemo(() => slugify(name) || 'company', [name]);
+  const companyId = useMemo(() => slugify(name), [name]);
+  const validationError = useMemo(() => {
+    const trimmedName = name.trim();
+    const trimmedRoot = workspaceRoot.trim();
+    if (trimmedName === '') return '请填写公司名称';
+    if (trimmedName.length > 200) return '公司名称不能超过 200 个字符';
+    if (companyId === '') return '无法从公司名称生成有效的公司 ID，请使用包含字母或数字的名称';
+    if (!/^[a-zA-Z0-9_-]{1,80}$/.test(companyId)) return '公司 ID 格式无效，请调整公司名称';
+    if (trimmedRoot === '') return '请填写工作区 / 项目目录';
+    if (trimmedRoot.length > 1024) return '工作区目录不能超过 1024 个字符';
+    return null;
+  }, [companyId, name, workspaceRoot]);
+
   async function createCompany(): Promise<void> {
-    if (name.trim() === '' || workspaceRoot.trim() === '') { setError('公司名称和工作区目录不能为空'); return; }
+    if (validationError !== null) {
+      setError(validationError);
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
-      const receipt = await api.createCompany({id: companyId, name: name.trim(), workspaceRoot: workspaceRoot.trim(), roster: desktopRoster, requestId: `desktop-company-${companyId}`});
+      const trimmedName = name.trim();
+      const trimmedRoot = workspaceRoot.trim();
+      const receipt = await api.createCompany({id: companyId, name: trimmedName, workspaceRoot: trimmedRoot, roster: desktopRoster, requestId: `desktop-company-${companyId}-${Date.now()}`});
       await setLastCompany(receipt.targetId);
       onComplete({...runtime, first_run_required: false, last_company_id: receipt.targetId});
     } catch (createError) {
-      setError(createError instanceof Error ? createError.message : '创建公司失败');
+      setError(createError instanceof Error ? labelErrorMessage(createError.message) : '创建公司失败');
     } finally {
       setSubmitting(false);
     }
   }
-  return <main className={styles.desktopGate}><p className={styles.eyebrow}>POLIS DESKTOP / 首次设置</p><h1>欢迎使用 Polis</h1><p className={styles.desktopGateLead}>本地数据库和 Polis 运行时已准备好。完成一次配置后，之后双击即可恢复上次公司。</p><section className={styles.desktopWizardCard}><div className={styles.desktopStatusList}><div className={styles.desktopStatusRow}><span>PostgreSQL</span><strong data-state={runtime.database.state}>{desktopStateLabel(runtime.database.state)}</strong></div><div className={styles.desktopStatusRow}><span>Polis 运行时</span><strong data-state={runtime.backend.state}>{desktopStateLabel(runtime.backend.state)}</strong></div><div className={styles.desktopStatusRow}><span>AI 运行时</span><strong data-state={runtime.provider.state}>{runtime.provider.state === 'ready' ? '已就绪' : '需要设置'}</strong></div></div><label className={styles.formLabel}>公司名称<input className={styles.formField} value={name} onChange={event => setName(event.target.value)} placeholder="例如：内容实验室" /></label><label className={styles.formLabel}>工作区 / 项目目录<input className={styles.formField} value={workspaceRoot} onChange={event => setWorkspaceRoot(event.target.value)} placeholder="例如：C:\\workspace\\content-lab" /></label><p className={styles.formHint}>将使用当前产品固定角色模板：规划、后端、前端、审查。不会执行 SQL，也不会发起真实模型业务。</p>{error ? <p className={styles.formError} role="alert">{labelErrorMessage(error)}</p> : null}<div className={styles.wizardActions}><button className={styles.commandButton} disabled={submitting} onClick={() => { void createCompany(); }} type="button">{submitting ? '正在创建…' : '创建公司并进入工作台'}</button></div></section></main>;
+  return <main className={styles.desktopGate}><p className={styles.eyebrow}>POLIS DESKTOP / 首次设置</p><h1>欢迎使用 Polis</h1><p className={styles.desktopGateLead}>本地数据库和 Polis 运行时已准备好。完成一次配置后，之后双击即可恢复上次公司。</p><section className={styles.desktopWizardCard}><div className={styles.desktopStatusList}><div className={styles.desktopStatusRow}><span>PostgreSQL</span><strong data-state={runtime.database.state}>{desktopStateLabel(runtime.database.state)}</strong></div><div className={styles.desktopStatusRow}><span>Polis 运行时</span><strong data-state={runtime.backend.state}>{desktopStateLabel(runtime.backend.state)}</strong></div><div className={styles.desktopStatusRow}><span>AI 运行时</span><strong data-state={runtime.provider.state}>{runtime.provider.state === 'ready' ? '已就绪' : '需要设置'}</strong></div></div><label className={styles.formLabel}>公司名称<input className={styles.formField} value={name} onChange={event => setName(event.target.value)} placeholder="例如：内容实验室" /></label><label className={styles.formLabel}>工作区 / 项目目录<input className={styles.formField} value={workspaceRoot} onChange={event => setWorkspaceRoot(event.target.value)} placeholder="例如：C:\\workspace\\content-lab" /></label><p className={styles.formHint}>将自动生成公司 ID：{companyId || '（等待输入有效名称）'}。使用当前产品固定角色模板：规划、后端、前端、审查。不会执行 SQL，也不会发起真实模型业务。</p><p className={styles.formHint}>公司创建后，可在公司设置 → 能力中配置技能与 MCP 绑定。</p>{error ? <p className={styles.formError} role="alert">{error}</p> : null}<div className={styles.wizardActions}><button className={styles.commandButton} disabled={submitting} onClick={() => { void createCompany(); }} type="button">{submitting ? '正在创建…' : '创建公司并进入工作台'}</button></div></section></main>;
 }
 
 const desktopRoster: ReadonlyArray<EmployeeDraft> = [
@@ -199,7 +216,14 @@ const desktopRoster: ReadonlyArray<EmployeeDraft> = [
 ];
 
 function slugify(value: string): string {
-  return value.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s._]+/g, '-')
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/-{2,}/g, '-')
+    .replace(/^[-_]+|[-_]+$/g, '')
+    .slice(0, 80);
 }
 
 function startupStageLabel(stage: string): string {
