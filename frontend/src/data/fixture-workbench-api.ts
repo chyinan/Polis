@@ -450,7 +450,7 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
   }
 
   async listNotifications(_options: CompanyScopeOptions): Promise<NotificationsView> {
-    return {routes: [], deliveries: []};
+    return {routes: [], deliveries: [], pendingIntentCount: 0};
   }
 
   async listCapabilityCatalog(_options: CompanyScopeOptions): Promise<{skills: ReadonlyArray<never>; mcpServers: ReadonlyArray<never>; bindings: ReadonlyArray<never>; loads: ReadonlyArray<never>}> {
@@ -534,6 +534,10 @@ export class FixtureWorkbenchApi implements WorkbenchApi {
   }
 
   async testNotification(): Promise<Readonly<{intentId: string; deliveryId: string; adapter: string; state: string; requestId: string; accepted: true; acceptedAt: string}>> {
+    throw new CommandApiError('SIMULATED_MODE', 409, 'commands are unavailable in fixture mode');
+  }
+
+  async dispatchNotifications(): Promise<Readonly<{intents: number; dispatched: number; delivered: number; failed: number; requestId: string; accepted: true; acceptedAt: string}>> {
     throw new CommandApiError('SIMULATED_MODE', 409, 'commands are unavailable in fixture mode');
   }
 

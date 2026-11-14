@@ -221,7 +221,8 @@ function isNotifications(value: unknown): value is NotificationsView {
     && Array.isArray(value.routes)
     && value.routes.every(route => isRecord(route) && hasString(route, 'routeId') && isOneOf(route.adapter, ['local', 'webhook', 'qq_official']) && typeof route.enabled === 'boolean' && typeof route.destination === 'string' && hasString(route, 'status') && typeof route.secretConfigured === 'boolean' && isRecord(route.config))
     && Array.isArray(value.deliveries)
-    && value.deliveries.every(delivery => isRecord(delivery) && hasString(delivery, 'deliveryId') && hasString(delivery, 'intentId') && hasString(delivery, 'adapter') && hasString(delivery, 'state') && isNullableString(delivery.errorCode) && hasString(delivery, 'createdAt'));
+    && value.deliveries.every(delivery => isRecord(delivery) && hasString(delivery, 'deliveryId') && hasString(delivery, 'intentId') && hasString(delivery, 'adapter') && hasString(delivery, 'state') && isNullableString(delivery.errorCode) && hasString(delivery, 'createdAt'))
+    && typeof value.pendingIntentCount === 'number' && Number.isInteger(value.pendingIntentCount) && value.pendingIntentCount >= 0;
 }
 
 export function isAcceptanceContract(value: unknown): value is AcceptanceContract {

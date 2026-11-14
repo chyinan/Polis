@@ -3,7 +3,7 @@
 import {useEffect, useMemo, useState, type ReactElement} from 'react';
 import {BellRing, Check, FileSearch, Link2, MessageSquareWarning} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useConfigureNotificationRoute, useNotifications, useTestNotification} from '../data/workbench-query';
+import {useConfigureNotificationRoute, useDispatchNotifications, useNotifications, useTestNotification} from '../data/workbench-query';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
 import {labelDisplayValue, labelErrorMessage, labelNotificationAdapter} from '../domain/display-labels';
 import type {NotificationRouteView} from '../domain/workbench';
@@ -16,6 +16,7 @@ export function NotificationSettingsPage({api, companyId}: NotificationSettingsP
   const query = useNotifications(api, companyId);
   const configure = useConfigureNotificationRoute(api, companyId);
   const test = useTestNotification(api, companyId);
+  const dispatch = useDispatchNotifications(api, companyId);
 
   const [adapter, setAdapter] = useState<Adapter>('local');
   const [enabled, setEnabled] = useState(false);
@@ -78,7 +79,9 @@ export function NotificationSettingsPage({api, companyId}: NotificationSettingsP
   const currentRoute = routesByAdapter.get(adapter) ?? null;
   const savedEnabled = currentRoute?.enabled ?? false;
   const deliveryCount = query.data.deliveries.length;
-  const canSendTest = !configure.isPending && !test.isPending && savedEnabled;
+  const pendingIntentCount = query.data.pendingIntentCount;
+  const canSendTest = !configure.isPending && !test.isPending && !dispatch.isPending && savedEnabled;
+  const canDispatch = !configure.isPending && !test.isPending && !dispatch.isPending && pendingIntentCount > 0;
 
   async function saveRoute(): Promise<void> {
     setMessage(null);
@@ -112,12 +115,24 @@ export function NotificationSettingsPage({api, companyId}: NotificationSettingsP
   async function sendTest(): Promise<void> {
     setMessage(null);
     try {
-      await test.mutateAsync({requestId: `notification-test-${companyId}-${Date.now()}`});
+      const result = await test.mutateAsync({adapter, requestId: `notification-test-${companyId}-${adapter}-${Date.now()}`});
       setMessageTone('status');
-      setMessage('已创建测试通知投递记录（按当前已保存且启用的路由执行）。');
+      setMessage(`已对 ${labelNotificationAdapter(result.adapter)} 发送测试通知：${labelDisplayValue(result.state)}。`);
     } catch (error) {
       setMessageTone('error');
       setMessage(error instanceof Error ? `发送测试失败：${labelErrorMessage(error.message)}` : '发送测试通知失败');
+    }
+  }
+
+  async function dispatchPending(): Promise<void> {
+    setMessage(null);
+    try {
+      const result = await dispatch.mutateAsync({requestId: `notification-dispatch-${companyId}-${Date.now()}`});
+      setMessageTone('status');
+      setMessage(`已处理待发送通知：扫描 ${result.intents} 条，投递尝试 ${result.dispatched} 次（成功 ${result.delivered}，失败 ${result.failed}）。`);
+    } catch (error) {
+      setMessageTone('error');
+      setMessage(error instanceof Error ? `处理待发送通知失败：${labelErrorMessage(error.message)}` : '处理待发送通知失败');
     }
   }
 
@@ -171,21 +186,22 @@ export function NotificationSettingsPage({api, companyId}: NotificationSettingsP
       </div>
 
       <div className={styles.notificationActions}>
-        <button className={styles.commandButton} disabled={configure.isPending || test.isPending} onClick={() => { void saveRoute(); }} type="button">{configure.isPending ? '正在保存…' : '保存路由'}</button>
-        <button className={styles.textButton} disabled={!canSendTest} onClick={() => { void sendTest(); }} title={savedEnabled ? '按当前已保存且启用的路由发送测试通知' : '请先保存并启用本地路由'} type="button">{test.isPending ? '正在发送…' : '发送测试通知'}</button>
+        <button className={styles.commandButton} disabled={configure.isPending || test.isPending || dispatch.isPending} onClick={() => { void saveRoute(); }} type="button">{configure.isPending ? '正在保存…' : '保存路由'}</button>
+        <button className={styles.textButton} disabled={!canSendTest} onClick={() => { void sendTest(); }} title={savedEnabled ? `按当前选中的 ${labelNotificationAdapter(adapter)} 路由发送测试通知` : '请先保存并启用当前适配器路由'} type="button">{test.isPending ? '正在发送…' : '发送测试通知'}</button>
+        <button className={styles.textButton} disabled={!canDispatch} onClick={() => { void dispatchPending(); }} title={pendingIntentCount > 0 ? '将待发送通知投递到当前已启用的路由' : '当前没有待发送通知意图'} type="button">{dispatch.isPending ? '正在处理…' : `处理待发送通知${pendingIntentCount > 0 ? ` (${pendingIntentCount})` : ''}`}</button>
         <button className={styles.textButton} onClick={() => { setMessageTone('status'); setMessage(adapter === 'qq_official' ? 'QQ 适配器按官方 v2 API 实现：获取 access_token（bots.qq.com）后向 api.sgroup.qq.com 发送消息。主动消息能力/额度受平台权限、目标关系与风控限制，需使用已授权的 AppID/AppSecret 与有效 OpenID。' : adapter === 'webhook' ? 'Webhook 适配器会向配置的 URL 发送 JSON POST；若配置密钥，将附带 HMAC-SHA256 签名头 X-Polis-Signature-256 与时间戳。' : '本地适配器仅记录通知，不发起外部请求。'); }} type="button">适配器说明</button>
       </div>
       {message ? <p className={messageTone === 'error' ? styles.formError : styles.notificationNotice} role={messageTone === 'error' ? 'alert' : 'status'}>{message}</p> : null}
-      <p className={styles.formHint}>Webhook/QQ 目标地址与密钥在后端保存；前端不会回显密钥，已保存的敏感目标以脱敏形式展示。测试发送会按后端当前已保存且启用的路由执行；实际到达性取决于目标服务/平台权限、网络与凭据有效性。</p>
+      <p className={styles.formHint}>Webhook/QQ 目标地址与密钥在后端保存；前端不会回显密钥，已保存的敏感目标以脱敏形式展示。测试发送按当前选中且已保存启用的适配器路由执行；“处理待发送通知”会尝试投递系统产生的待发送通知意图。实际到达性取决于目标服务/平台权限、网络与凭据有效性。</p>
     </section>
 
     <section className={styles.notificationSection}>
       <div className={styles.sectionHeader}><div><span className={styles.cardEyebrow}>投递状态</span><h2 className={styles.sectionTitle}>投递结果</h2></div><Link2 aria-hidden="true" className={styles.icon} size={18} /></div>
       <div className={styles.notificationStateList}>
+        <NotificationStateRow label="待发送意图" value={pendingIntentCount > 0 ? `${pendingIntentCount} 条待处理` : '暂无待处理'} icon={<MessageSquareWarning aria-hidden="true" size={15} />} />
         <NotificationStateRow label="人工处理" value="工作台可接管" icon={<Check aria-hidden="true" size={15} />} />
         <NotificationStateRow label="通知投递" value={deliveryCount > 0 ? `${deliveryCount} 条记录` : '暂无记录'} icon={<BellRing aria-hidden="true" size={15} />} />
         <NotificationStateRow label="平台回执" value="按适配器实际返回为准" icon={<FileSearch aria-hidden="true" size={15} />} />
-        <NotificationStateRow label="失败降级" value="保留为通知意图/记录" icon={<MessageSquareWarning aria-hidden="true" size={15} />} />
       </div>
       <div className={styles.recordList}>
         {query.data.deliveries.length === 0 ? <div className={styles.emptyState}>暂无通知投递记录。</div> : query.data.deliveries.map(delivery => <div className={styles.recordRow} key={delivery.deliveryId}><div className={styles.recordLead}><BellRing aria-hidden="true" size={16} /><div><strong>{labelNotificationAdapter(delivery.adapter)} · {labelDisplayValue(delivery.state)}</strong><span>{delivery.deliveryId} · 意图 {delivery.intentId}</span></div></div><div className={styles.recordMeta}><StatusBadge label={delivery.errorCode ?? '无错误'} tone={delivery.errorCode ? 'danger' : delivery.state === 'delivered' ? 'success' : 'warning'} /></div></div>)}

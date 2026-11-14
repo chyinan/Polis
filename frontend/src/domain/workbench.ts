@@ -157,6 +157,7 @@ export type NotificationDeliveryView = Readonly<{
 export type NotificationsView = Readonly<{
   routes: ReadonlyArray<NotificationRouteView>;
   deliveries: ReadonlyArray<NotificationDeliveryView>;
+  pendingIntentCount: number;
 }>;
 
 export type SkillRevisionView = Readonly<{

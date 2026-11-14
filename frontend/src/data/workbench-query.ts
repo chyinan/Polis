@@ -2,7 +2,7 @@
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
-import type {CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateOperatorInstructionOptions, DescribeVisibleToolOptions, GetMCPToolCallReceiptOptions, ImportSkillDocumentOptions, ImportSkillLibraryOptions, ImportSkillOptions, ListMCPToolCallQualificationsOptions, ListMCPToolCallReceiptsOptions, ListVisibleResourcesOptions, ListVisibleSkillsOptions, ListVisibleToolsOptions, LoadSkillOptions, MissionCommandOptions, QualifyMCPOptions, ReadSkillReferenceOptions, RegisterMCPOptions, SkillRevisionStatusOptions, TestNotificationOptions, UpdateCompanyOptions, ArchiveCompanyOptions, UpdateRuntimeSettingsOptions, UpsertCapabilityBindingOptions, UpsertMCPToolCallQualificationOptions, WorkbenchApi} from './workbench-api';
+import type {CompanyDraftOptions, ConfigureNotificationRouteOptions, CreateMissionOptions, CreateOperatorInstructionOptions, DescribeVisibleToolOptions, DispatchNotificationsOptions, GetMCPToolCallReceiptOptions, ImportSkillDocumentOptions, ImportSkillLibraryOptions, ImportSkillOptions, ListMCPToolCallQualificationsOptions, ListMCPToolCallReceiptsOptions, ListVisibleResourcesOptions, ListVisibleSkillsOptions, ListVisibleToolsOptions, LoadSkillOptions, MissionCommandOptions, QualifyMCPOptions, ReadSkillReferenceOptions, RegisterMCPOptions, SkillRevisionStatusOptions, TestNotificationOptions, UpdateCompanyOptions, ArchiveCompanyOptions, UpdateRuntimeSettingsOptions, UpsertCapabilityBindingOptions, UpsertMCPToolCallQualificationOptions, WorkbenchApi} from './workbench-api';
 import type {ActivityStreamStatus} from './workbench-api';
 
 export function useCompanyOverview(api: WorkbenchApi, companyId: string) {
@@ -342,6 +342,14 @@ export function useTestNotification(api: WorkbenchApi, companyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (options: Omit<TestNotificationOptions, 'companyId'>) => api.testNotification({...options, companyId}),
+    onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'notifications', companyId]}),
+  });
+}
+
+export function useDispatchNotifications(api: WorkbenchApi, companyId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (options: Omit<DispatchNotificationsOptions, 'companyId'>) => api.dispatchNotifications({...options, companyId}),
     onSuccess: async () => queryClient.invalidateQueries({queryKey: ['workbench', api.mode, 'notifications', companyId]}),
   });
 }

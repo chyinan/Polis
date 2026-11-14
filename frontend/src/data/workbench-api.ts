@@ -60,6 +60,14 @@ export type ConfigureNotificationRouteOptions = Readonly<{
 
 export type TestNotificationOptions = Readonly<{
   companyId: string;
+  adapter?: 'local' | 'webhook' | 'qq_official';
+  requestId: string;
+}>;
+
+export type DispatchNotificationsOptions = Readonly<{
+  companyId: string;
+  adapter?: 'local' | 'webhook' | 'qq_official';
+  limit?: number;
   requestId: string;
 }>;
 
@@ -300,6 +308,7 @@ export type WorkbenchApi = Readonly<{
   qualifyMCP(options: QualifyMCPOptions): Promise<unknown>;
   configureNotificationRoute(options: ConfigureNotificationRouteOptions): Promise<CompanyCommandReceipt>;
   testNotification(options: TestNotificationOptions): Promise<Readonly<{intentId: string; deliveryId: string; adapter: string; state: string; requestId: string; accepted: true; acceptedAt: string}>>;
+  dispatchNotifications(options: DispatchNotificationsOptions): Promise<Readonly<{intents: number; dispatched: number; delivered: number; failed: number; requestId: string; accepted: true; acceptedAt: string}>>;
   getCompanyOverview(options: CompanyScopeOptions): Promise<CompanyOverviewView>;
   listActivityEvents(options: ActivityQueryOptions): Promise<ActivityView>;
   createMission(options: CreateMissionOptions): Promise<MissionCommandReceipt>;

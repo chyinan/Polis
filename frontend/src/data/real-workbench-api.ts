@@ -2,7 +2,7 @@
 
 import type {ActivityView, ArtifactDetailView, CapabilityCatalogView, CodexModelCatalogView, CollaborationItem, CompanyCommandReceipt, CompanyOverviewView, CompanySummaryView, MissionCommandReceipt, NotificationsView, OperatorInstructionReceipt, OperatorInstructionView, OperationsView, RuntimeSettingsView, WorkspaceView} from '../domain/workbench';
 import {validateActivityEvent, validateActivityView, validateArtifactDetail, validateCapabilityCatalog, validateCodexModelCatalog, validateCollaboration, validateCompanyList, validateCompanyOverview, validateMCPToolCallQualification, validateMCPToolCallQualificationList, validateMCPToolCallReceipt, validateMCPToolCallReceiptList, validateMissionCommandReceipt, validateNotifications, validateOperatorInstructionReceipt, validateOperatorInstructions, validateOperations, validateRuntimeSettings, validateSkillReferenceRead, validateSkillSummaryPage, validateVisibleResourcePage, validateToolDescriptor, validateToolSummaryPage, validateWorkspace, validationMessage} from '../domain/workbench-validation';
-import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateOperatorInstructionOptions, type DescribeVisibleToolOptions, type GetMCPToolCallReceiptOptions, type ImportSkillDocumentOptions, type ImportSkillLibraryOptions, type ImportSkillOptions, type ListMCPToolCallQualificationsOptions, type ListMCPToolCallReceiptsOptions, type ListVisibleResourcesOptions, type ListVisibleSkillsOptions, type ListVisibleToolsOptions, type LoadSkillOptions, type MissionCommandOptions, type OperatorInstructionQueryOptions, type QualifyMCPOptions, type ReadSkillReferenceOptions, type RegisterMCPOptions, type SkillRevisionStatusOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type UpsertCapabilityBindingOptions, type UpsertMCPToolCallQualificationOptions, type WorkbenchApi} from './workbench-api';
+import {assertCompanyScope, CommandApiError, isValidActivityLimit, isValidOpaqueCursor, type ActivityEventListener, type ActivityQueryOptions, type ActivityStreamOptions, type ActivityStreamStatusListener, type ArchiveCompanyOptions, type CompanyDraftOptions, type CompanyScopeOptions, type ConfigureNotificationRouteOptions, type CreateMissionOptions, type CreateOperatorInstructionOptions, type DescribeVisibleToolOptions, type DispatchNotificationsOptions, type GetMCPToolCallReceiptOptions, type ImportSkillDocumentOptions, type ImportSkillLibraryOptions, type ImportSkillOptions, type ListMCPToolCallQualificationsOptions, type ListMCPToolCallReceiptsOptions, type ListVisibleResourcesOptions, type ListVisibleSkillsOptions, type ListVisibleToolsOptions, type LoadSkillOptions, type MissionCommandOptions, type OperatorInstructionQueryOptions, type QualifyMCPOptions, type ReadSkillReferenceOptions, type RegisterMCPOptions, type SkillRevisionStatusOptions, type TestNotificationOptions, type UpdateCompanyOptions, type UpdateRuntimeSettingsOptions, type UpsertCapabilityBindingOptions, type UpsertMCPToolCallQualificationOptions, type WorkbenchApi} from './workbench-api';
 
 export class RealWorkbenchApi implements WorkbenchApi {
   readonly mode = 'real' as const;
@@ -312,11 +312,21 @@ export class RealWorkbenchApi implements WorkbenchApi {
   async testNotification(options: TestNotificationOptions): Promise<Readonly<{intentId: string; deliveryId: string; adapter: string; state: string; requestId: string; accepted: true; acceptedAt: string}>> {
     assertCompanyScope(options.companyId);
     assertRequestID(options.requestId);
-    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/notifications/test`, options.requestId, {requestId: options.requestId});
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/notifications/test`, options.requestId, {adapter: options.adapter, requestId: options.requestId});
     if (!isRecord(raw) || typeof raw.intentId !== 'string' || typeof raw.deliveryId !== 'string' || typeof raw.adapter !== 'string' || typeof raw.state !== 'string' || raw.requestId !== options.requestId || raw.accepted !== true || typeof raw.acceptedAt !== 'string') {
       throw new Error('failed to parse notification test receipt: response is malformed');
     }
     return raw as Readonly<{intentId: string; deliveryId: string; adapter: string; state: string; requestId: string; accepted: true; acceptedAt: string}>;
+  }
+
+  async dispatchNotifications(options: DispatchNotificationsOptions): Promise<Readonly<{intents: number; dispatched: number; delivered: number; failed: number; requestId: string; accepted: true; acceptedAt: string}>> {
+    assertCompanyScope(options.companyId);
+    assertRequestID(options.requestId);
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/notifications/dispatch`, options.requestId, {adapter: options.adapter, limit: options.limit, requestId: options.requestId});
+    if (!isRecord(raw) || typeof raw.intents !== 'number' || typeof raw.dispatched !== 'number' || typeof raw.delivered !== 'number' || typeof raw.failed !== 'number' || raw.requestId !== options.requestId || raw.accepted !== true || typeof raw.acceptedAt !== 'string') {
+      throw new Error('failed to parse notification dispatch receipt: response is malformed');
+    }
+    return raw as Readonly<{intents: number; dispatched: number; delivered: number; failed: number; requestId: string; accepted: true; acceptedAt: string}>;
   }
 
   async getCompanyOverview(options: CompanyScopeOptions): Promise<CompanyOverviewView> {
