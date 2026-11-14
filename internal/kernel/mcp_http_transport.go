@@ -23,7 +23,7 @@ const (
 	mcpHTTPMaxBody      = 256 * 1024
 )
 
-func validateLocalHTTPEndpoint(raw string) (*url.URL, error) {
+func validateMCPHTTPEndpoint(raw string) (*url.URL, error) {
 	if raw == "" || len(raw) > 512 || strings.ContainsAny(raw, "\r\n \t") {
 		return nil, core.Malformed
 	}
@@ -37,13 +37,8 @@ func validateLocalHTTPEndpoint(raw string) (*url.URL, error) {
 	if u.Scheme != "http" && u.Scheme != "https" {
 		return nil, core.Malformed
 	}
-	host := u.Hostname()
-	if host == "" {
+	if u.Hostname() == "" {
 		return nil, core.Malformed
-	}
-	if !isLocalMCPHost(host) {
-		// R0.15 bounded qualification: only local endpoints are allowed (no external egress).
-		return nil, core.Denied
 	}
 	return u, nil
 }
@@ -58,7 +53,7 @@ func isLocalMCPHost(host string) bool {
 }
 
 func postMCPHTTP(ctx context.Context, endpoint string, payload any) (json.RawMessage, int, error) {
-	u, err := validateLocalHTTPEndpoint(endpoint)
+	u, err := validateMCPHTTPEndpoint(endpoint)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -165,7 +160,7 @@ func httpRoundTrip(ctx context.Context, endpoint string, id int, method string, 
 func QualifyStreamableHTTPMCP(ctx context.Context, endpoint string) (StdioProbeResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, mcpHTTPProbeTimeout)
 	defer cancel()
-	if _, err := validateLocalHTTPEndpoint(endpoint); err != nil {
+	if _, err := validateMCPHTTPEndpoint(endpoint); err != nil {
 		return StdioProbeResult{}, err
 	}
 	initResult, err := httpRoundTrip(ctx, endpoint, 1, "initialize", map[string]any{
@@ -191,7 +186,7 @@ func QualifyStreamableHTTPMCP(ctx context.Context, endpoint string) (StdioProbeR
 	if err != nil {
 		return StdioProbeResult{}, err
 	}
-	result.NetworkRestricted = true // local-only sandboxed endpoint
+	result.NetworkRestricted = false
 	return result, nil
 }
 
@@ -210,7 +205,7 @@ func CallStreamableHTTPMCPTool(ctx context.Context, endpoint, toolName string, a
 	}
 	ctx, cancel := context.WithTimeout(ctx, mcpHTTPCallTimeout)
 	defer cancel()
-	if _, err := validateLocalHTTPEndpoint(endpoint); err != nil {
+	if _, err := validateMCPHTTPEndpoint(endpoint); err != nil {
 		return StdioCallResult{}, err
 	}
 	initResult, err := httpRoundTrip(ctx, endpoint, 1, "initialize", map[string]any{

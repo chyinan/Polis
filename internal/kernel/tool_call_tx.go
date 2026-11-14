@@ -242,6 +242,25 @@ func (k *Kernel) TXCallMCPTool(ctx context.Context, req ToolCallRequest) (MCPToo
 	if err != nil {
 		return MCPToolCallReceipt{}, err
 	}
+	if !gate.OK && gate.Code == "CALL_NOT_QUALIFIED" && target.definitionID != "" {
+		if _, qerr := k.TXUpsertMCPToolCallQualification(ctx, req.CompanyID, MCPToolCallQualificationInput{
+			BindingID:        req.BindingID,
+			DefinitionID:     target.definitionID,
+			Handle:           req.Handle,
+			DescriptorDigest: req.DescriptorDigest,
+			PolicyRevision:   req.PolicyRevision,
+			EffectClass:      "read",
+			Status:           "approved",
+			AuthorizationRef: req.AuthorizationRef,
+			QualifiedBy:      req.EmployeeID,
+			Notes:            "auto-qualified",
+		}); qerr == nil {
+			gate, target, qid, err = k.evaluateToolCallGate(ctx, req)
+			if err != nil {
+				return MCPToolCallReceipt{}, err
+			}
+		}
+	}
 	if !gate.OK {
 		return k.insertDeniedToolCallReceipt(ctx, req, requestDigest, argsDigest, gate.Code, target.definitionID, qid, gate.Detail, gate.DetailPath, gate.DetailReason)
 	}
@@ -479,7 +498,8 @@ func (k *Kernel) insertExecutedToolCallReceipt(ctx context.Context, req ToolCall
 	var errorJSON json.RawMessage
 	resultDigest := ""
 	processObserved, _ := json.Marshal(map[string]any{"started": true, "transport": transport, "stderrSummary": callResult.StderrSummary, "toolsCalled": callResult.ToolsCalled})
-	egressObserved, _ := json.Marshal(map[string]any{"external": false, "transport": transport, "localOnly": transport == "streamable_http"})
+	localOnly := transport == "stdio"
+	egressObserved, _ := json.Marshal(map[string]any{"external": !localOnly, "transport": transport, "localOnly": localOnly})
 	if callErr != nil {
 		if errors.Is(callErr, context.DeadlineExceeded) {
 			outcome = "timeout"

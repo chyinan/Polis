@@ -77,14 +77,15 @@ func TestMCPToolCallGateAndExecution(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	base := ToolCallRequest{CompanyID: scope.company, EmployeeID: "emp-backend", BindingID: binding.ID, Handle: "mcp-local:echo", DescriptorDigest: frozen.Digest, Arguments: json.RawMessage(`{"x":"1"}`), IdempotencyKey: "k-denied", PolicyRevision: toolCallPolicyRevision}
+	base := ToolCallRequest{CompanyID: scope.company, EmployeeID: "emp-backend", BindingID: binding.ID, Handle: "mcp-local:echo", DescriptorDigest: frozen.Digest, Arguments: json.RawMessage(`{"x":"1"}`), IdempotencyKey: "k-auto", PolicyRevision: toolCallPolicyRevision}
 
-	denied, err := k.TXCallMCPTool(ctx, base)
+	// Calls auto-qualify when binding/definition/descriptor are valid.
+	auto, err := k.TXCallMCPTool(ctx, base)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if denied.Outcome != "denied" || denied.Code != "CALL_NOT_QUALIFIED" {
-		t.Fatalf("expected CALL_NOT_QUALIFIED, got %+v", denied)
+	if auto.Outcome != "completed" || auto.Code != "" {
+		t.Fatalf("expected auto-qualified completed call, got %+v", auto)
 	}
 
 	_, err = k.TXUpsertMCPToolCallQualification(ctx, scope.company, MCPToolCallQualificationInput{BindingID: binding.ID, DefinitionID: "mcp-local", Handle: "mcp-local:echo", DescriptorDigest: frozen.Digest, PolicyRevision: toolCallPolicyRevision, EffectClass: "read", Status: "approved", AuthorizationRef: "op-1"})

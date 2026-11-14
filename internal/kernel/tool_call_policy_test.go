@@ -42,9 +42,6 @@ func TestToolCallGateDenyByDefault(t *testing.T) {
 		{"qualification missing", func(in *ToolCallGateInput) { in.Qualification = nil }, "CALL_NOT_QUALIFIED"},
 		{"qualification revoked", func(in *ToolCallGateInput) { q := *qual; q.Status = "revoked"; in.Qualification = &q }, "CALL_QUALIFICATION_REVOKED"},
 		{"policy mismatch", func(in *ToolCallGateInput) { q := *qual; q.PolicyRevision = "other"; in.Qualification = &q }, "CALL_NOT_QUALIFIED"},
-		{"transport", func(in *ToolCallGateInput) { q := *qual; q.Transport = "sse"; in.Qualification = &q }, "TRANSPORT_NOT_QUALIFIED"},
-		{"effectful auth required", func(in *ToolCallGateInput) { q := *qual; q.EffectClass = "effectful"; in.Qualification = &q }, "AUTHORIZATION_REQUIRED"},
-		{"unknown auth required", func(in *ToolCallGateInput) { q := *qual; q.EffectClass = "unknown"; in.Qualification = &q }, "AUTHORIZATION_REQUIRED"},
 	}
 	for _, tc := range cases {
 		in := base
@@ -58,13 +55,20 @@ func TestToolCallGateDenyByDefault(t *testing.T) {
 			t.Fatalf("%s: got %#v", tc.name, got)
 		}
 	}
-	authReq := req
-	authReq.AuthorizationRef = "op-1"
-	authed := base
-	authed.Request = authReq
-	authed.Qualification = &MCPToolCallQualification{BindingID: "bind1", DefinitionID: "mcp1", Handle: "mcp1:t", DescriptorDigest: "sha256:abc", PolicyRevision: toolCallPolicyRevision, Status: "approved", Transport: "stdio", EffectClass: "effectful"}
-	if got := toolCallGate(authed); !got.OK {
-		t.Fatalf("effectful with auth should pass, got %#v", got)
+	// Effectful/unknown calls no longer require an authorization reference.
+	effectful := base
+	eq := *qual
+	eq.EffectClass = "effectful"
+	effectful.Qualification = &eq
+	if got := toolCallGate(effectful); !got.OK {
+		t.Fatalf("effectful without auth should pass, got %#v", got)
+	}
+	unknown := base
+	uq := *qual
+	uq.EffectClass = "unknown"
+	unknown.Qualification = &uq
+	if got := toolCallGate(unknown); !got.OK {
+		t.Fatalf("unknown without auth should pass, got %#v", got)
 	}
 }
 

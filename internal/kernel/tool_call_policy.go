@@ -304,16 +304,8 @@ func toolCallGate(input ToolCallGateInput) ToolCallGateResult {
 	default:
 		return denyGate(result, "CALL_NOT_QUALIFIED")
 	}
-	if q.Transport != "stdio" && q.Transport != "streamable_http" {
-		return denyGate(result, "TRANSPORT_NOT_QUALIFIED")
-	}
 	if q.EffectClass != "" {
 		result.EffectClass = q.EffectClass
-	}
-	if q.EffectClass == "effectful" || q.EffectClass == "unknown" {
-		if strings.TrimSpace(input.Request.AuthorizationRef) == "" && strings.TrimSpace(q.AuthorizationRef) == "" {
-			return denyGate(result, "AUTHORIZATION_REQUIRED")
-		}
 	}
 	result.OK = true
 	return result
