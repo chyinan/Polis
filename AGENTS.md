@@ -1,37 +1,41 @@
-# Polis
+# Polis — Contributor & Agent Guide
 
-Last verified: 2026-11-07.
+Polis is an open-source runtime and workbench for running persistent, multi-agent “company” workflows. The backend is authoritative for state and execution; the frontend is the presentation layer.
 
-Current stage: R0.15 MCP `tools.call` qualification gate is implemented as a bounded local, deny-by-default slice (schema 16 active: `00016_r15_mcp_tool_call.sql`, locally amended in this unpushed slice; kernel gate requires schema 16). It adds call qualifications/receipts (with optional session audit context), gate preconditions (binding/definition/descriptor digest/policy/explicit call qualification/authorization for effectful or unknown calls, task/session fencing), control/workbench endpoints (`capabilities.tools.call`, `call-qualification(s)`, `call-receipt(s)`), and local fake-MCP tests. Qualified transports: **stdio** and **streamable_http against local loopback endpoints only** (HTTP sandbox denies non-local endpoints; no external egress). Integration: `TestMCPToolCallGateAndExecution` and `TestMCPStreamableHTTPToolCallGateAndExecution` PASS on disposable PostgreSQL (`POLIS_TEST_DSN`, local fake stdio/HTTP servers only). **No external MCP/OAuth/network egress, QQ, or provider turn exercised; real remote endpoints/OAuth remain unqualified.** Plan/contracts: `docs/design-plans/R0_15_MCP_TOOL_CALL_QUALIFICATION_GATE.md`, `docs/implementation/R0.15_TOOL_CALL_GATE_DECISIONS.md`, `docs/implementation/R0.15_TOOL_CALL_CONTRACT.md`.
+## Stack
+- **Backend:** Go, PostgreSQL 18, pgx, sqlc, goose (migrations in `db/migrations/`)
+- **Frontend:** React + TypeScript + Vite (`frontend/`)
+- **Key dirs:** `cmd/` (binaries), `internal/` (kernel/control/provider/workbench/etc.), `db/` (migrations, queries), `frontend/`, `scripts/`, `docs/`, `spec/`
 
-Previous stage: R0.14 tool descriptor read remains implemented on the capability catalog. `tools.describe` returns the frozen description and input schema for one cached tool handle. It does not start a process or call a tool, and a names-only receipt stays unreadable. Report: `docs/implementation/R0.14_TOOL_DESCRIPTOR_REPORT.md`.
+## Architecture notes
+- **State authority:** PostgreSQL is the source of truth. `frontend/` is presentation-only and should consume backend/workbench APIs (default production path: `RealWorkbenchApi`); it must not read the database or provider credentials directly.
+- **Schema:** migrations are sequential in `db/migrations/`. The kernel enforces a schema version gate at startup—new schema-dependent features require a migration and gate update.
+- **Kernel invariants:** preserve transactional boundaries, writer/session fencing, CAS/workspace digest-revision checks, idempotent command handling, and safe credential handling (secrets must not be returned to the UI or logged in receipts).
+- **Capabilities/MCP:** skills and MCP definitions can be registered/bound in the catalog. Tool probing/description/listing are read-oriented; `tools.call` executes via configured transports with request validation, digests, and audit receipts. Keep changes consistent with the existing kernel/control/workbench contracts.
 
-Current stage: R0.6 DOGFOOD MVP FOUNDATION is COMPLETE_BY_COMPOSITE_EVIDENCE for the local/deterministic product baseline. A–I supporting surfaces passed targeted and disposable PostgreSQL validation; the real browser smoke reused the existing frontend and RealWorkbenchApi with API failures=0. External QQ/webhook delivery remains NOT_RUN and unqualified by authorization; no new real-provider smoke was run. Final report: `docs/implementation/R0.6_DOGFOOD_MVP_REPORT.md`; evidence root: `evidence/development/r0.6-*`.
+## Local development
+Common commands (run from repo root; many scripts target a Linux/WSL environment):
 
-Historical R0.5B9 context: the deterministic delivery transaction remains PASSED offline. Product workers keep explicit workspace editing, validation-feedback handling and a final `polis_task_submit({})` decision; the control plane deterministically creates the qualified checkpoint, publishes the validated Artifact and transitions the Task to `candidate` within the existing staged/CAS recovery boundary. Duplicate delivery is idempotent for the same validated Task/workspace, and checkpoint/Artifact/candidate publication is transactionally atomic at the database boundary without claiming distributed exactly-once semantics. Structured delivery failures include validation, stale workspace, fencing, Task state and staging/publication reasons. R0.5B10 exact surface and offline L2 passed, but its single diagnostic live attempt is `INCONCLUSIVE`: reservation=1, provider_egress=0, initialize failed because the authorized 0.155 runtime did not match the available 0.154 provider userAgent; no v4 provider L2 fingerprint was created and @4 is not qualified for business samples. Evidence is under `evidence/development/r0.5b10-product-tool-surface-v4-live-qualification/`. LIVE_2 remains permanently frozen FAILED; the B9 counterfactual replay is offline-only.
+```sh
+# Go
+bash scripts/go.sh test ./...
+bash scripts/go.sh build ./cmd/...
+bash scripts/go.sh vet ./...
 
-Previous stage: R0.5B7 checkpoint schema and error-feedback hardening is PASSED offline. Read the current handoff at the top of docs/implementation/NEXT_SLICE.md, docs/implementation/PROGRESS.md, the B7 qualification under evidence/development/r0.5b7-checkpoint-schema-error-feedback-hardening/, and historical integration contracts before continuing. The Draft 0.4.5 ARCHITECTURE.md remains semantic authority; chapter 46 and RELEASE_SCOPE.json determine release scope.
+# Frontend
+cd frontend
+npm install
+npm run dev
+npm run typecheck
+npm run test
+npm run build
+```
 
-Use Go / PostgreSQL 18 / pgx / sqlc / goose. New concrete names are Polis, `polis`, `polisd`; internal packages stay neutral. Preserve the original design snapshot and archive. Development evidence belongs in `evidence/development/`.
+- Use disposable/local databases for development and tests (e.g. dedicated `polis_r0_*` databases). Do not point tests at production or shared business data.
+- Integration tests that require PostgreSQL may be gated by environment variables (e.g. `POLIS_TEST_DSN`) and/or helper scripts in `scripts/`.
 
-One principal code writer. No real employee model turns, QQ sends, external MCP or business accounts without separate authorization. Dependency installation is authorized. Test databases and files are dedicated temporary resources; never use business databases or global cleanup. No push, publication or automatic expansion into full R1/R2/R3.
-
-R0.1 authorization is historical and retained. R0.2 authorization: GPT-5.6 Luna Medium + Medium + optional High, one harness, concurrency 1, exactly at most 2 Medium and 1 High turn, 10 minutes total, no automatic retry of unknown outcomes or increased allowance. Only disposable fixture data; no QQ/MCP/GitHub. Complete offline verification before consuming this allowance. Preserve attempt counters and evidence across failure; do not reset the budget by restarting a probe.
-
-The R0.1 attempt ended inconclusive after 3 Medium turns and 0 High turns; preserve `evidence/development/r0.1/real/allowance.json`. R0.2 consumed 2 Medium turns and 0 High turns; its 10-minute window expired before the optional High could be reserved. Preserve `evidence/development/r0.2/luna-1/allowance.json` and do not reset it. A future High-only retry requires a new explicit authorization. Offline tests and inspection remain allowed.
-
-Commands (WSL Linux, from this workspace): `bash scripts/go.sh test ./...`, `bash scripts/go.sh build ./cmd/...`. Integration entry and actual results are recorded in `docs/implementation/PROGRESS.md`; unexecuted tests must remain unexecuted.
-
-`internal/` holds pure validation and I/O modules; `db/` holds migrations and sqlc queries; `scripts/` holds bounded local test tooling. Continue from `docs/implementation/PROGRESS.md` and `NEXT_SLICE.md` after restart.
-
-The R0.3A pagination acceptance boundary is explicit: `r03a-pagination-contract@3` defines request cursor/limit behavior, structured `items`/`next_cursor`, exact next-page propagation and null termination. `r03a-pagination-behavior@1` executes candidate behavior in a bounded isolated process; static marker checks are not acceptance evidence for this contract. Integration reports must keep lifecycle binding, collaboration causality, pagination runtime behavior and response-shape compatibility as separate dimensions. Peer delivery occurs while the backend task is `working`; artifact publication transitions it to `candidate`, after which `collab.send` is denied. Historical H1/continuation evidence is immutable.
-
-R0.4 historical context kept `frontend/` as presentation authority and Go/PostgreSQL as data authority. The R0.6 runtime/read-store schema was 11 and requires a dedicated `polis_r0_` database. The kernel schema gate is now 16 (R0.15 adds `mcp_tool_call_qualifications`/`mcp_tool_call_receipts`; earlier capability catalog slices reached schema 15). The default frontend path is `RealWorkbenchApi`; `FixtureWorkbenchApi` requires explicit fixture mode and never serves production data. Workbench SSE is now PostgreSQL LISTEN-backed and company_seq-scoped; it must not be replaced by fake polling.
-
-R0.5B3 product employee surface semantic remediation passed offline. `provider.ProductToolSurface()` registers `codex.ProductEmployeeTools()`; legacy `codex.Tools()` and R0.3A peer registries retain their historical semantics. Mission acceptance criteria are public; Start freezes an immutable task-scoped `TaskValidationBinding` in `task_validation_bindings`. Product workspace mutation requires digest+revision CAS and is fenced, along with check/checkpoint, once the Task is `candidate`. Without a binding, workspace checks return `VALIDATION_NOT_CONFIGURED` and qualified checkpoint/Artifact submission are denied. Preserve the B3 real-WorkerAdapter/fake-transport evidence and all R0.5A/B1/B2 evidence.
-
-R0.5B4 product tool surface v2 live L2 passed for `polis-product-tool-surface@2`: 7 tools, manifest `2b403fc0f3c9a1513473828e66203becb7ac5202f298f917034fd95929a9f3b9`, schema 1470 bytes / `8f2e1ee8ba8c8d456af9ce9839f62a854bfe7c9f5847613657ccd7f77a9da04f`. The product exact-surface execution fingerprint is `fecc17cac69231575c13d3e2d767e31560e60ebe8dc2fb20921b925ac8d95f08`; the product provider L2 fingerprint is `4c206409f827211cb9f7b18d37da5d096efb7f735c90eaed15e4692128d6a532`. Its single gpt-5.6-luna/medium diagnostic used one reservation and one provider egress, returned the exact sentinel with zero tool calls/reconnects, completed and stopped cleanly, and created no business objects or mutations. The second reservation was denied. B2 surface is STALE; R0.3A surfaces are HISTORICAL / NOT_REUSABLE. `eligible_for_r0_5b_real_provider_smoke=YES` permits only a separately authorized business smoke; it does not authorize that run, High, retry, successor, or multi-agent E2E. Preserve R0.5A/B1/B2/B3 evidence and keep R1/R2/R3 scope closed.
-
-R0.5B5 offline product Task role/cardinality hardening is PASSED. `tasks.kind` is represented by `core.TaskKind`; only `compat` owned by `emp-backend` is provider-executable for the current product adapter. `bootstrap_plan` remains an `emp-planning` control Task and may use the deterministic/fake WorkerSession path, but product-provider WorkerSession creation and provider authorization deny it. A real product Start path has two Task rows (`bootstrap_plan` and `compat`) with exactly one provider-executable Task, one bound WorkerSession, one immutable TaskValidationBinding, and one passing product check. Count real execution fan-out rather than all Task rows. The exact @2 provider-visible surface is unchanged and B4 remains QUALIFIED_REUSABLE. `eligible_for_r0_5b_live_2=YES` is eligibility only: do not start LIVE_2 or send provider traffic until separate explicit authorization. LIVE_1 remains frozen INCONCLUSIVE; preserve all R0.5A–B4 and LIVE_1 evidence.
-
-R0.6 product baseline is complete at schema 11. `frontend/` remains presentation authority and `RealWorkbenchApi` remains the default production path. The baseline includes Company/organization management, desired runtime settings with secret-safe readiness, PostgreSQL LISTEN-backed company-seq SSE, operator instructions, collaboration projection, authorized CAS workspace/Artifact preview, operations/health projection, local deterministic notification intents/routes/deliveries, and restart/recovery UX. R0.6 did not run QQ/webhook external sends, real-provider business execution, or provider qualification. Do not infer external notification success from local delivery, and do not start LIVE_6 or any provider retry. See `docs/implementation/R0.6_DOGFOOD_GAP_MATRIX.md`, `docs/implementation/R0.6_DOGFOOD_MVP_REPORT.md`, and `PROGRESS-r0-6-dogfood-mvp-foundation.md`.
+## Working conventions
+- Keep changes scoped and consistent with existing patterns; prefer fixing root causes over adding parallel paths.
+- Validate behavior when possible (targeted tests/typecheck/build) and report what was or wasn’t verified.
+- Treat `evidence/` and historical implementation reports as archival context; avoid rewriting or deleting historical records unless explicitly requested.
+- Be explicit about security-sensitive changes (credential storage, external network/tool execution, auth, and data access). Favor safe defaults.

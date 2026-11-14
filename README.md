@@ -1,53 +1,80 @@
 # Polis
 
-**Polis — A runtime for persistent autonomous AI organizations.**
+**Polis** is an open-source runtime and workbench for building and operating persistent, multi-agent “company” workflows.
 
-Build AI organizations that outlive their models.
+It combines a Go + PostgreSQL backend (companies, missions, tasks, workers/sessions, workspaces, artifacts, events, capabilities) with a React workbench UI for creating companies, configuring runtime/capabilities, running missions, and inspecting collaboration, evidence, and operations.
 
-Polis｜长期自治 AI 组织运行时
+> **Status:** active development. Core local/workbench flows and the capability catalog are implemented; some integrations (external notification delivery, remote/provider-specific production qualification, etc.) depend on your environment and configuration.
 
-This checkout contains the R0 deterministic kernel and the R0.2 opt-in Codex worker probe. Default `polis`/`polisd` commands still use FakeWorkers. R0.2 used GPT-5.6 Luna: two real Medium turns completed the mediated partial task and same-Employee handover continuation; the optional High behavior review was not run because the authorized 10-minute window expired. See [the R0.2 report](docs/implementation/R0_2_REPORT.md).
+## Repository layout
 
-## Run in the prepared workspace
+- `cmd/` — CLI and services (e.g. `polis`, `polisd`)
+- `internal/` — kernel, control, workbench, provider/runtime, and capability/domain logic
+- `db/` — PostgreSQL migrations and SQL/query definitions
+- `frontend/` — React + TypeScript workbench UI
+- `desktop/` — desktop shell (Tauri) packaging/runtime
+- `scripts/` — local tooling and test helpers
+- `docs/` — implementation notes and reports
+- `spec/` — design/reference material
+- `evidence/` — historical verification artifacts (archival)
 
-From Windows PowerShell:
+## Prerequisites
 
-```powershell
-rtk proxy wsl -d Ubuntu-22.04 -u root -- bash /mnt/d/Programs/Polis/scripts/prepare-linux-storage.sh
-rtk proxy wsl -d Ubuntu-22.04 -- bash /mnt/d/Programs/Polis/scripts/start-test-pg.sh
-rtk proxy wsl -d Ubuntu-22.04 -- bash /mnt/d/Programs/Polis/scripts/test.sh
-rtk proxy wsl -d Ubuntu-22.04 -- bash /mnt/d/Programs/Polis/scripts/demo.sh
-```
+- Go (compatible with `go.mod`)
+- PostgreSQL 18 (for runtime-backed usage and DB-backed tests)
+- Node.js + npm (for the frontend)
 
-The first command mounts this workspace's ext4 image; it does not change WSL configuration. Skip the PG start command while the dedicated instance is already running. Tests create unique `polis_r0_test_*` databases, migrate explicitly with management credentials, run with a non-superuser role, then drop only their own database. The demo likewise drops its own database and preserves its JSON evidence and small artifact file. It does not connect to business databases.
+## Getting started
 
-From WSL in `/mnt/d/Programs/Polis`:
+### Backend
 
 ```sh
-POLIS_TEST_RACE=1 bash scripts/test.sh
-bash scripts/go.sh test ./internal/core
-bash scripts/go.sh vet ./...
+# build
 bash scripts/go.sh build ./cmd/...
-.tools/bin/sqlc generate
+
+# test / checks
+bash scripts/go.sh test ./...
+bash scripts/go.sh vet ./...
 ```
 
-`go test ./...` without `POLIS_TEST_DSN` explicitly skips PG tests; this is not a PG pass. Use `scripts/test.sh` for the complete integration entry. Go's race detector needs the installed WSL gcc/libc headers.
+Notes:
+- Many DB-backed tests and integration flows require a **disposable** PostgreSQL database (commonly via `POLIS_TEST_DSN`) and/or helpers in `scripts/`. Do not run tests against production or shared business data.
+- Migrations live in `db/migrations/` and are applied via the project’s migration tooling/commands (see `cmd/polis` and `scripts/`).
 
-## Concrete commands
+### Frontend
 
-`polis migrate` uses `POLIS_DSN` for a dedicated R0 database and is an explicit management operation. Business startup does not apply migrations. Runtime `POLIS_DSN` must identify a non-superuser role on PostgreSQL 18, and `POLIS_BLOB_ROOT` must identify this installation's private artifact root.
+```sh
+cd frontend
+npm install
+npm run dev
+```
 
-- `polis create COMPANY MISSION`: create a fixed roster and draft mission, without running workers.
-- `polis start COMPANY MISSION`: persist a unique bootstrap task.
-- `polisd --company COMPANY --steps 8`: execute up to eight fake boundaries, returning immediately when idle. Restarting it reconstitutes pending work.
-- `polis status COMPANY MISSION`: return a read-only repeatable-read snapshot; does not take controller ownership or change epoch.
+Other useful commands:
 
-The CLI is a trusted local OS management interface. No worker network API, web login or general command executor exists. `polisd` deliberately exits at the bounded slice boundary. The mission retains its slot after task acceptance; full mission closing/terminal lifecycle is a later slice, not a hidden success claim.
+```sh
+npm run typecheck
+npm run test
+npm run build
+```
 
-## Evidence and limits
+### Desktop shell
 
-See `docs/implementation/PROGRESS.md`, `STARTUP_REVIEW.md` and `SLICE_TESTS.json` for actual results, versions, safety applicability and the next ticket. Raw evidence is under `evidence/development/`. `spec/design-v0.4.5/` and `spec/archives/` preserve the baseline.
+See `desktop/` and `docs/implementation/R0.7_DESKTOP_REPORT.md` for desktop runtime/build notes.
 
-Process-kill recovery is tested. Host power loss, OS old-writer isolation, real model handover, money ceilings, full RLS qualification, downloads/GC, MCP, QQ, UI and organization value are not demonstrated. The production Go binary uses PG only; Python is limited to documentation checks and development tooling.
+## Configuration & capabilities
 
-Stop the temporary database with `rtk proxy wsl -d Ubuntu-22.04 -- bash /mnt/d/Programs/Polis/scripts/stop-test-pg.sh`. The image may stay mounted for Go caches; no daemon is installed to start it automatically.
+- **Runtime/providers:** runtime and provider/model/profile settings (including local deterministic modes and configured HTTP-compatible providers) are managed through backend/workbench APIs. Credentials are handled by the backend and are not exposed to the UI.
+- **Capabilities (Skills/MCP):** the capability catalog supports skill/MCP definitions, bindings, probing, descriptor/summary reads, and tool-call execution with request validation and audit receipts, subject to configured transports and kernel/control policies.
+- **External side effects:** real outbound integrations (e.g. third-party notifications, remote MCP targets, hosted provider execution) depend on adapters, credentials, and environment-specific setup.
+
+## Documentation
+
+- [`AGENTS.md`](AGENTS.md) — contributor/agent working guide
+- [`docs/implementation/NEXT_SLICE.md`](docs/implementation/NEXT_SLICE.md) — current implementation status and suggested next steps
+- [`docs/implementation/`](docs/implementation/) — implementation reports and notes
+- [`spec/`](spec/) — design/reference snapshots
+- [`evidence/`](evidence/) — historical verification artifacts (kept for traceability)
+
+## Contributing
+
+Issues and pull requests are welcome. Please keep changes scoped, follow existing patterns, and include validation (tests/typecheck/build) where practical. For behavior or security-sensitive changes, document impact and configuration clearly.
