@@ -75,11 +75,32 @@ type ConfigureNotificationRouteRequest struct {
 	RequestID   string          `json:"requestId"`
 }
 
+type TestNotificationRequest struct {
+	Adapter   string `json:"adapter,omitempty"`
+	RequestID string `json:"requestId"`
+}
+
 type NotificationTestReceipt struct {
 	IntentID   string `json:"intentId"`
 	DeliveryID string `json:"deliveryId"`
 	Adapter    string `json:"adapter"`
 	State      string `json:"state"`
+	RequestID  string `json:"requestId"`
+	Accepted   bool   `json:"accepted"`
+	AcceptedAt string `json:"acceptedAt"`
+}
+
+type DispatchNotificationsRequest struct {
+	Adapter   string `json:"adapter,omitempty"`
+	Limit     int    `json:"limit,omitempty"`
+	RequestID string `json:"requestId"`
+}
+
+type NotificationDispatchReceipt struct {
+	Intents    int    `json:"intents"`
+	Dispatched int    `json:"dispatched"`
+	Delivered  int    `json:"delivered"`
+	Failed     int    `json:"failed"`
 	RequestID  string `json:"requestId"`
 	Accepted   bool   `json:"accepted"`
 	AcceptedAt string `json:"acceptedAt"`
@@ -150,7 +171,8 @@ type OperatorInstructionService interface {
 
 type NotificationCommandService interface {
 	ConfigureNotificationRoute(ctx context.Context, companyID string, request ConfigureNotificationRouteRequest) (CommandReceipt, error)
-	TestNotification(ctx context.Context, companyID, requestID string) (NotificationTestReceipt, error)
+	TestNotification(ctx context.Context, companyID string, request TestNotificationRequest) (NotificationTestReceipt, error)
+	DispatchNotifications(ctx context.Context, companyID string, request DispatchNotificationsRequest) (NotificationDispatchReceipt, error)
 }
 
 type CapabilityCatalog struct {

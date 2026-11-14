@@ -172,8 +172,15 @@ ON CONFLICT(company_id,adapter) DO UPDATE SET enabled=EXCLUDED.enabled,destinati
 	})
 }
 
-func (k *Kernel) TXTestNotification(ctx context.Context, s Scope, key string) (NotificationTestReceipt, error) {
-	route, err := k.loadEnabledNotificationRoute(ctx, s.company)
+type NotificationDispatchReceipt struct {
+	Intents    int
+	Dispatched int
+	Delivered  int
+	Failed     int
+}
+
+func (k *Kernel) TXTestNotification(ctx context.Context, s Scope, key, adapter string) (NotificationTestReceipt, error) {
+	route, err := k.loadEnabledNotificationRoute(ctx, s.company, adapter)
 	if err != nil {
 		return NotificationTestReceipt{}, err
 	}
@@ -206,19 +213,152 @@ func (k *Kernel) TXTestNotification(ctx context.Context, s Scope, key string) (N
 	return notificationTestReceipt(route.Adapter, receipt.ID, receipt.ID, receipt.Status), nil
 }
 
-func (k *Kernel) loadEnabledNotificationRoute(ctx context.Context, companyID string) (notificationRouteRecord, error) {
-	var route notificationRouteRecord
-	err := k.pool.QueryRow(ctx, `SELECT id,adapter,enabled,destination,status,config FROM notification_routes WHERE company_id=$1 AND enabled ORDER BY id LIMIT 1`, companyID).Scan(&route.ID, &route.Adapter, &route.Enabled, &route.Destination, &route.Status, &route.Config)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return notificationRouteRecord{}, core.ConflictError{Reason: "notification route is not enabled", CurrentState: "disabled"}
+type pendingNotificationIntent struct {
+	ID        string
+	EventKind string
+	Payload   []byte
+}
+
+func (k *Kernel) TXDispatchPendingNotifications(ctx context.Context, s Scope, adapter string, limit int) (NotificationDispatchReceipt, error) {
+	if adapter != "" && adapter != "local" && adapter != "webhook" && adapter != "qq_official" {
+		return NotificationDispatchReceipt{}, core.Malformed
 	}
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+	routes, err := k.loadEnabledNotificationRoutes(ctx, s.company, adapter)
+	if err != nil {
+		return NotificationDispatchReceipt{}, err
+	}
+	if len(routes) == 0 {
+		return NotificationDispatchReceipt{}, core.ConflictError{Reason: "notification route is not enabled", CurrentState: "disabled"}
+	}
+	intents, err := k.listPendingNotificationIntents(ctx, s.company, limit)
+	if err != nil {
+		return NotificationDispatchReceipt{}, err
+	}
+	receipt := NotificationDispatchReceipt{Intents: len(intents)}
+	for _, intent := range intents {
+		handled := false
+		for _, route := range routes {
+			exists, exErr := k.notificationDeliveryExists(ctx, s.company, intent.ID, route.Adapter)
+			if exErr != nil {
+				return NotificationDispatchReceipt{}, exErr
+			}
+			if exists {
+				handled = true
+				continue
+			}
+			state, errCode, _ := k.executeNotificationSend(ctx, s.company, route, intent.EventKind, intent.Payload)
+			if insErr := k.insertNotificationDeliveryResult(ctx, s.company, intent.ID, route.Adapter, state, errCode); insErr != nil {
+				return NotificationDispatchReceipt{}, insErr
+			}
+			handled = true
+			receipt.Dispatched++
+			if state == "delivered" {
+				receipt.Delivered++
+			} else {
+				receipt.Failed++
+			}
+		}
+		if handled {
+			if err := k.refreshNotificationIntentState(ctx, s.company, intent.ID); err != nil {
+				return NotificationDispatchReceipt{}, err
+			}
+		}
+	}
+	return receipt, nil
+}
+
+func (k *Kernel) listPendingNotificationIntents(ctx context.Context, companyID string, limit int) ([]pendingNotificationIntent, error) {
+	rows, err := k.pool.Query(ctx, `SELECT id,event_kind,payload FROM notification_intents WHERE company_id=$1 AND state='pending' ORDER BY created_at,id LIMIT $2`, companyID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := make([]pendingNotificationIntent, 0)
+	for rows.Next() {
+		var item pendingNotificationIntent
+		var payload []byte
+		if err := rows.Scan(&item.ID, &item.EventKind, &payload); err != nil {
+			return nil, err
+		}
+		item.Payload = payload
+		items = append(items, item)
+	}
+	return items, rows.Err()
+}
+
+func (k *Kernel) notificationDeliveryExists(ctx context.Context, companyID, intentID, adapter string) (bool, error) {
+	var exists bool
+	err := k.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM notification_deliveries WHERE company_id=$1 AND intent_id=$2 AND adapter=$3)`, companyID, intentID, adapter).Scan(&exists)
+	return exists, err
+}
+
+func (k *Kernel) insertNotificationDeliveryResult(ctx context.Context, companyID, intentID, adapter, state, errCode string) error {
+	var errCodePtr *string
+	if errCode != "" {
+		errCodePtr = &errCode
+	}
+	_, err := k.pool.Exec(ctx, `INSERT INTO notification_deliveries(company_id,id,intent_id,adapter,state,error_code) VALUES($1,$2,$3,$4,$5,$6)
+ON CONFLICT DO NOTHING`, companyID, newID(), intentID, adapter, state, errCodePtr)
+	return err
+}
+
+func (k *Kernel) refreshNotificationIntentState(ctx context.Context, companyID, intentID string) error {
+	var delivered, failed, total int
+	if err := k.pool.QueryRow(ctx, `SELECT count(*) FILTER (WHERE state='delivered'), count(*) FILTER (WHERE state='failed' OR state='unknown'), count(*) FROM notification_deliveries WHERE company_id=$1 AND intent_id=$2`, companyID, intentID).Scan(&delivered, &failed, &total); err != nil {
+		return err
+	}
+	state := "pending"
+	switch {
+	case delivered > 0:
+		state = "delivered"
+	case total > 0 && failed == total:
+		state = "failed"
+	case total > 0:
+		state = "pending"
+	}
+	_, err := k.pool.Exec(ctx, `UPDATE notification_intents SET state=$3 WHERE company_id=$1 AND id=$2`, companyID, intentID, state)
+	return err
+}
+
+func (k *Kernel) loadEnabledNotificationRoutes(ctx context.Context, companyID, adapter string) ([]notificationRouteRecord, error) {
+	query := `SELECT id,adapter,enabled,destination,status,config FROM notification_routes WHERE company_id=$1 AND enabled`
+	args := []any{companyID}
+	if strings.TrimSpace(adapter) != "" {
+		query += ` AND adapter=$2`
+		args = append(args, strings.TrimSpace(adapter))
+	}
+	query += ` ORDER BY id`
+	rows, err := k.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	routes := make([]notificationRouteRecord, 0)
+	for rows.Next() {
+		var route notificationRouteRecord
+		if err := rows.Scan(&route.ID, &route.Adapter, &route.Enabled, &route.Destination, &route.Status, &route.Config); err != nil {
+			return nil, err
+		}
+		routes = append(routes, route)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return routes, nil
+}
+
+func (k *Kernel) loadEnabledNotificationRoute(ctx context.Context, companyID, adapter string) (notificationRouteRecord, error) {
+	routes, err := k.loadEnabledNotificationRoutes(ctx, companyID, adapter)
 	if err != nil {
 		return notificationRouteRecord{}, err
 	}
-	if !route.Enabled {
-		return notificationRouteRecord{}, core.Conflict
+	if len(routes) == 0 {
+		return notificationRouteRecord{}, core.ConflictError{Reason: "notification route is not enabled", CurrentState: "disabled"}
 	}
-	return route, nil
+	return routes[0], nil
 }
 
 func (k *Kernel) executeNotificationSend(ctx context.Context, companyID string, route notificationRouteRecord, eventKind string, payload []byte) (state string, errorCode string, err error) {

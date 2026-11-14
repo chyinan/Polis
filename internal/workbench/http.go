@@ -235,12 +235,29 @@ func serveRequest(model ReadModel, service control.CommandService, response http
 			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("notification command service is unavailable"))
 			return
 		}
-		var input control.MissionCommandRequest
+		var input control.TestNotificationRequest
 		if err := decodeJSON(response, request, &input); err != nil {
 			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
 			return
 		}
-		receipt, err := notificationService.TestNotification(ctx, path.companyID, input.RequestID)
+		receipt, err := notificationService.TestNotification(ctx, path.companyID, input)
+		if err != nil {
+			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
+			return
+		}
+		writeJSON(response, http.StatusAccepted, receipt)
+	case "notifications.dispatch":
+		notificationService, ok := service.(control.NotificationCommandService)
+		if !ok {
+			writeCommandErrorForTarget(response, http.StatusNotImplemented, path.companyID, path.companyID, "company", errors.New("notification command service is unavailable"))
+			return
+		}
+		var input control.DispatchNotificationsRequest
+		if err := decodeJSON(response, request, &input); err != nil {
+			writeCommandErrorForTarget(response, http.StatusBadRequest, path.companyID, path.companyID, "company", err)
+			return
+		}
+		receipt, err := notificationService.DispatchNotifications(ctx, path.companyID, input)
 		if err != nil {
 			writeCommandErrorForTarget(response, commandStatus(err), path.companyID, path.companyID, "company", err)
 			return
@@ -761,7 +778,7 @@ func parsePath(path string) (parsedPath, bool) {
 	if len(parts) == 4 && parts[1] == "capabilities" && parts[2] == "mcp" && parts[3] == "qualify" {
 		return parsedPath{companyID: companyID, endpoint: "capabilities.mcp.qualify"}, true
 	}
-	if len(parts) == 3 && parts[1] == "notifications" && (parts[2] == "route" || parts[2] == "test") {
+	if len(parts) == 3 && parts[1] == "notifications" && (parts[2] == "route" || parts[2] == "test" || parts[2] == "dispatch") {
 		return parsedPath{companyID: companyID, endpoint: "notifications." + parts[2]}, true
 	}
 	if len(parts) != 4 || parts[1] != "missions" || parts[2] == "" || parts[3] == "" {

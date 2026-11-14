@@ -178,15 +178,20 @@ type fakeCommandService struct {
 
 type fakeNotificationCommandService struct {
 	fakeCommandService
-	testReceipt control.NotificationTestReceipt
+	testReceipt     control.NotificationTestReceipt
+	dispatchReceipt control.NotificationDispatchReceipt
 }
 
 func (f fakeNotificationCommandService) ConfigureNotificationRoute(context.Context, string, control.ConfigureNotificationRouteRequest) (control.CommandReceipt, error) {
 	return control.CommandReceipt{CommandID: "route-1", CommandType: "notification.route.update", TargetType: "company", TargetID: "company-1", RequestID: "route-1", Accepted: true, AcceptedAt: "2026-09-22T00:00:00Z", ResultingState: "configured"}, nil
 }
 
-func (f fakeNotificationCommandService) TestNotification(context.Context, string, string) (control.NotificationTestReceipt, error) {
+func (f fakeNotificationCommandService) TestNotification(context.Context, string, control.TestNotificationRequest) (control.NotificationTestReceipt, error) {
 	return f.testReceipt, nil
+}
+
+func (f fakeNotificationCommandService) DispatchNotifications(context.Context, string, control.DispatchNotificationsRequest) (control.NotificationDispatchReceipt, error) {
+	return f.dispatchReceipt, nil
 }
 
 func (f fakeCommandService) CreateMission(context.Context, string, control.CreateMissionRequest) (control.CommandReceipt, error) {

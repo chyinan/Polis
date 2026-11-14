@@ -545,18 +545,40 @@ func (s *Service) ConfigureNotificationRoute(ctx context.Context, companyID stri
 	return commandReceiptForTarget("notification.route.update", request.RequestID, "company", companyID, receipt.Status), nil
 }
 
-func (s *Service) TestNotification(ctx context.Context, companyID, requestID string) (NotificationTestReceipt, error) {
+func (s *Service) TestNotification(ctx context.Context, companyID string, request TestNotificationRequest) (NotificationTestReceipt, error) {
 	if !core.ValidID(companyID) {
 		return NotificationTestReceipt{}, core.Malformed
 	}
-	if err := validateRequestID(requestID); err != nil {
+	if err := validateRequestID(request.RequestID); err != nil {
 		return NotificationTestReceipt{}, err
 	}
-	receipt, err := s.runtime.TXTestNotification(ctx, s.runtime.LocalScope(companyID), requestID)
+	adapter := strings.TrimSpace(request.Adapter)
+	if adapter != "" && adapter != "local" && adapter != "webhook" && adapter != "qq_official" {
+		return NotificationTestReceipt{}, core.Malformed
+	}
+	receipt, err := s.runtime.TXTestNotification(ctx, s.runtime.LocalScope(companyID), request.RequestID, adapter)
 	if err != nil {
 		return NotificationTestReceipt{}, err
 	}
-	return NotificationTestReceipt{IntentID: receipt.IntentID, DeliveryID: receipt.DeliveryID, Adapter: receipt.Adapter, State: receipt.State, RequestID: requestID, Accepted: true, AcceptedAt: time.Now().UTC().Format(time.RFC3339Nano)}, nil
+	return NotificationTestReceipt{IntentID: receipt.IntentID, DeliveryID: receipt.DeliveryID, Adapter: receipt.Adapter, State: receipt.State, RequestID: request.RequestID, Accepted: true, AcceptedAt: time.Now().UTC().Format(time.RFC3339Nano)}, nil
+}
+
+func (s *Service) DispatchNotifications(ctx context.Context, companyID string, request DispatchNotificationsRequest) (NotificationDispatchReceipt, error) {
+	if !core.ValidID(companyID) {
+		return NotificationDispatchReceipt{}, core.Malformed
+	}
+	if err := validateRequestID(request.RequestID); err != nil {
+		return NotificationDispatchReceipt{}, err
+	}
+	adapter := strings.TrimSpace(request.Adapter)
+	if adapter != "" && adapter != "local" && adapter != "webhook" && adapter != "qq_official" {
+		return NotificationDispatchReceipt{}, core.Malformed
+	}
+	receipt, err := s.runtime.TXDispatchPendingNotifications(ctx, s.runtime.LocalScope(companyID), adapter, request.Limit)
+	if err != nil {
+		return NotificationDispatchReceipt{}, err
+	}
+	return NotificationDispatchReceipt{Intents: receipt.Intents, Dispatched: receipt.Dispatched, Delivered: receipt.Delivered, Failed: receipt.Failed, RequestID: request.RequestID, Accepted: true, AcceptedAt: time.Now().UTC().Format(time.RFC3339Nano)}, nil
 }
 
 func (s *Service) Close() {

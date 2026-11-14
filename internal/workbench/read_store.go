@@ -463,6 +463,9 @@ func (s *PostgresReadStore) ListNotifications(ctx context.Context, companyID str
 	if err = routes.Err(); err != nil {
 		return NotificationsView{}, err
 	}
+	if err = tx.QueryRow(ctx, `SELECT count(*) FROM notification_intents WHERE company_id=$1 AND state='pending'`, companyID).Scan(&view.PendingIntentCount); err != nil {
+		return NotificationsView{}, err
+	}
 	deliveries, err := tx.Query(ctx, `SELECT id,intent_id,adapter,state,error_code,created_at FROM notification_deliveries WHERE company_id=$1 ORDER BY created_at DESC,id DESC LIMIT 100`, companyID)
 	if err != nil {
 		return NotificationsView{}, err

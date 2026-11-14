@@ -284,8 +284,9 @@ type NotificationDeliveryView struct {
 }
 
 type NotificationsView struct {
-	Routes     []NotificationRouteView    `json:"routes"`
-	Deliveries []NotificationDeliveryView `json:"deliveries"`
+	Routes             []NotificationRouteView    `json:"routes"`
+	Deliveries         []NotificationDeliveryView `json:"deliveries"`
+	PendingIntentCount int                        `json:"pendingIntentCount"`
 }
 
 type CompanyOverviewView struct {

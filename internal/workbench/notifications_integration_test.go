@@ -27,11 +27,11 @@ func TestPostgresLocalNotificationDeliveryIsReadable(t *testing.T) {
 	if _, err = runtime.TXConfigureNotificationRoute(ctx, scope, kernel.NotificationRouteInput{Adapter: "local", Destination: "local://workbench", Enabled: true}, "route-1"); err != nil {
 		t.Fatal(err)
 	}
-	receipt, err := runtime.TXTestNotification(ctx, scope, "test-1")
+	receipt, err := runtime.TXTestNotification(ctx, scope, "test-1", "local")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if receipt.State != "delivered" {
+	if receipt.State != "delivered" || receipt.Adapter != "local" {
 		t.Fatalf("notification test receipt = %+v", receipt)
 	}
 	store, err := NewPostgresReadStore(ctx, dsn)
@@ -43,7 +43,7 @@ func TestPostgresLocalNotificationDeliveryIsReadable(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(view.Routes) != 1 || !view.Routes[0].Enabled || len(view.Deliveries) != 1 || view.Deliveries[0].State != "delivered" {
+	if len(view.Routes) != 1 || !view.Routes[0].Enabled || len(view.Deliveries) != 1 || view.Deliveries[0].State != "delivered" || view.PendingIntentCount < 0 {
 		t.Fatalf("notifications view = %+v", view)
 	}
 }
