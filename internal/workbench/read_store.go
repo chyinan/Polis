@@ -64,8 +64,8 @@ func (s *PostgresReadStore) ensureSchema(ctx context.Context) error {
 	if err := s.pool.QueryRow(ctx, "SELECT COALESCE(max(version_id),0) FROM goose_db_version WHERE is_applied").Scan(&version); err != nil {
 		return err
 	}
-	if version != 16 {
-		return fmt.Errorf("workbench read store requires schema 16, got %d", version)
+	if version != 17 {
+		return fmt.Errorf("workbench read store requires schema 17, got %d", version)
 	}
 	return nil
 }
@@ -440,17 +440,23 @@ func (s *PostgresReadStore) ListNotifications(ctx context.Context, companyID str
 	}
 	defer tx.Rollback(ctx)
 	view := NotificationsView{Routes: []NotificationRouteView{}, Deliveries: []NotificationDeliveryView{}}
-	routes, err := tx.Query(ctx, `SELECT id,adapter,enabled,destination,status FROM notification_routes WHERE company_id=$1 ORDER BY id`, companyID)
+	routes, err := tx.Query(ctx, `SELECT id,adapter,enabled,destination,status,config FROM notification_routes WHERE company_id=$1 ORDER BY id`, companyID)
 	if err != nil {
 		return NotificationsView{}, err
 	}
 	for routes.Next() {
 		var route NotificationRouteView
-		if err = routes.Scan(&route.RouteID, &route.Adapter, &route.Enabled, &route.Destination, &route.Status); err != nil {
+		var config []byte
+		if err = routes.Scan(&route.RouteID, &route.Adapter, &route.Enabled, &route.Destination, &route.Status, &config); err != nil {
 			routes.Close()
 			return NotificationsView{}, err
 		}
+		if len(config) == 0 {
+			config = []byte(`{}`)
+		}
+		route.Config = json.RawMessage(config)
 		route.Destination = notificationDestinationForView(route.Adapter, route.Destination)
+		route.SecretConfigured = notificationSecretConfiguredInRoot(s.blobRoot, companyID, route.Adapter)
 		view.Routes = append(view.Routes, route)
 	}
 	routes.Close()

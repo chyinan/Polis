@@ -3,6 +3,7 @@ package workbench
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"polis/internal/taskvalidation"
@@ -264,11 +265,13 @@ type OperationsView struct {
 }
 
 type NotificationRouteView struct {
-	RouteID     string `json:"routeId"`
-	Adapter     string `json:"adapter"`
-	Enabled     bool   `json:"enabled"`
-	Destination string `json:"destination"`
-	Status      string `json:"status"`
+	RouteID          string          `json:"routeId"`
+	Adapter          string          `json:"adapter"`
+	Enabled          bool            `json:"enabled"`
+	Destination      string          `json:"destination"`
+	Status           string          `json:"status"`
+	Config           json.RawMessage `json:"config,omitempty"`
+	SecretConfigured bool            `json:"secretConfigured"`
 }
 
 type NotificationDeliveryView struct {

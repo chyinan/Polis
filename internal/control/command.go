@@ -66,10 +66,13 @@ type UpdateRuntimeSettingsRequest struct {
 }
 
 type ConfigureNotificationRouteRequest struct {
-	Adapter     string `json:"adapter"`
-	Destination string `json:"destination"`
-	Enabled     bool   `json:"enabled"`
-	RequestID   string `json:"requestId"`
+	Adapter     string          `json:"adapter"`
+	Destination string          `json:"destination"`
+	Enabled     bool            `json:"enabled"`
+	Config      json.RawMessage `json:"config,omitempty"`
+	Secret      string          `json:"secret,omitempty"`
+	ClearSecret bool            `json:"clearSecret,omitempty"`
+	RequestID   string          `json:"requestId"`
 }
 
 type NotificationTestReceipt struct {

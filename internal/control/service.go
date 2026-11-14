@@ -512,15 +512,35 @@ func (s *Service) CreateOperatorInstruction(ctx context.Context, companyID strin
 }
 
 func (s *Service) ConfigureNotificationRoute(ctx context.Context, companyID string, request ConfigureNotificationRouteRequest) (CommandReceipt, error) {
-	if !core.ValidID(companyID) || (request.Adapter != "local" && request.Adapter != "webhook") || len(request.Destination) > 512 {
+	if !core.ValidID(companyID) {
+		return CommandReceipt{}, core.Malformed
+	}
+	adapter := strings.TrimSpace(request.Adapter)
+	if adapter != "local" && adapter != "webhook" && adapter != "qq_official" {
 		return CommandReceipt{}, core.Malformed
 	}
 	if err := validateRequestID(request.RequestID); err != nil {
 		return CommandReceipt{}, err
 	}
-	receipt, err := s.runtime.TXConfigureNotificationRoute(ctx, s.runtime.LocalScope(companyID), kernel.NotificationRouteInput{Adapter: request.Adapter, Destination: request.Destination, Enabled: request.Enabled}, request.RequestID)
+	request.Secret = strings.TrimSpace(request.Secret)
+	if request.ClearSecret && request.Secret != "" {
+		return CommandReceipt{}, core.Malformed
+	}
+	if adapter == "local" && (request.Secret != "" || request.ClearSecret) {
+		return CommandReceipt{}, core.Malformed
+	}
+	receipt, err := s.runtime.TXConfigureNotificationRoute(ctx, s.runtime.LocalScope(companyID), kernel.NotificationRouteInput{Adapter: adapter, Destination: request.Destination, Enabled: request.Enabled, Config: request.Config}, request.RequestID)
 	if err != nil {
 		return CommandReceipt{}, err
+	}
+	if request.ClearSecret {
+		if err := s.runtime.ClearNotificationSecret(companyID, adapter); err != nil {
+			return CommandReceipt{}, err
+		}
+	} else if request.Secret != "" {
+		if err := s.runtime.WriteNotificationSecret(companyID, adapter, request.Secret); err != nil {
+			return CommandReceipt{}, err
+		}
 	}
 	return commandReceiptForTarget("notification.route.update", request.RequestID, "company", companyID, receipt.Status), nil
 }
