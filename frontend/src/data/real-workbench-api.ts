@@ -297,7 +297,15 @@ export class RealWorkbenchApi implements WorkbenchApi {
   async configureNotificationRoute(options: ConfigureNotificationRouteOptions): Promise<CompanyCommandReceipt> {
     assertCompanyScope(options.companyId);
     assertRequestID(options.requestId);
-    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/notifications/route`, options.requestId, {adapter: options.adapter, destination: options.destination, enabled: options.enabled, requestId: options.requestId});
+    const raw = await this.post(`/companies/${encodeURIComponent(options.companyId)}/notifications/route`, options.requestId, {
+      adapter: options.adapter,
+      destination: options.destination,
+      enabled: options.enabled,
+      config: options.config ?? {},
+      secret: options.secret,
+      clearSecret: options.clearSecret,
+      requestId: options.requestId,
+    });
     return validateCompanyCommandReceipt(raw, 'notification.route.update');
   }
 

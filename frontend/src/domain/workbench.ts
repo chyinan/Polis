@@ -137,10 +137,12 @@ export type OperationsView = Readonly<{
 
 export type NotificationRouteView = Readonly<{
   routeId: string;
-  adapter: 'local' | 'webhook';
+  adapter: 'local' | 'webhook' | 'qq_official';
   enabled: boolean;
   destination: string;
   status: string;
+  config: Record<string, unknown>;
+  secretConfigured: boolean;
 }>;
 
 export type NotificationDeliveryView = Readonly<{

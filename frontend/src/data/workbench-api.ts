@@ -49,9 +49,12 @@ export type CreateOperatorInstructionOptions = Readonly<{
 
 export type ConfigureNotificationRouteOptions = Readonly<{
   companyId: string;
-  adapter: 'local' | 'webhook';
+  adapter: 'local' | 'webhook' | 'qq_official';
   destination: string;
   enabled: boolean;
+  config?: Record<string, unknown>;
+  secret?: string;
+  clearSecret?: boolean;
   requestId: string;
 }>;
 

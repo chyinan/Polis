@@ -219,7 +219,7 @@ function isOperations(value: unknown): value is OperationsView {
 function isNotifications(value: unknown): value is NotificationsView {
   return isRecord(value)
     && Array.isArray(value.routes)
-    && value.routes.every(route => isRecord(route) && hasString(route, 'routeId') && isOneOf(route.adapter, ['local', 'webhook']) && typeof route.enabled === 'boolean' && typeof route.destination === 'string' && hasString(route, 'status'))
+    && value.routes.every(route => isRecord(route) && hasString(route, 'routeId') && isOneOf(route.adapter, ['local', 'webhook', 'qq_official']) && typeof route.enabled === 'boolean' && typeof route.destination === 'string' && hasString(route, 'status') && typeof route.secretConfigured === 'boolean' && isRecord(route.config))
     && Array.isArray(value.deliveries)
     && value.deliveries.every(delivery => isRecord(delivery) && hasString(delivery, 'deliveryId') && hasString(delivery, 'intentId') && hasString(delivery, 'adapter') && hasString(delivery, 'state') && isNullableString(delivery.errorCode) && hasString(delivery, 'createdAt'));
 }
