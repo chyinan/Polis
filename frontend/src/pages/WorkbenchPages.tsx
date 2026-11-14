@@ -3,14 +3,15 @@
 import {useEffect, useState, type ReactElement, type ReactNode} from 'react';
 import {BadgeCheck, Check, CircleAlert, FileCheck2, Filter, Layers3, LockKeyhole, MessageSquare, Radio, Settings2, ShieldAlert, Target, UsersRound} from 'lucide-react';
 import type {WorkbenchApi} from '../data/workbench-api';
-import {useCodexModelCatalog, useCollaboration, useCompanyList, useCompanyOverview, useArchiveCompany, useConfigureNotificationRoute, useNotifications, useOperations, useOperatorInstructions, useRuntimeSettings, useSendOperatorInstruction, useTestNotification, useUpdateCompany, useUpdateRuntimeSettings} from '../data/workbench-query';
+import {useCapabilityCatalog, useCodexModelCatalog, useCollaboration, useCompanyList, useCompanyOverview, useArchiveCompany, useConfigureNotificationRoute, useNotifications, useOperations, useOperatorInstructions, useRuntimeSettings, useSendOperatorInstruction, useTestNotification, useUpdateCompany, useUpdateRuntimeSettings} from '../data/workbench-query';
 import type {CompanyOverviewView, CompanySummaryView, EmployeeSummary, RuntimeSettingsView, StatusTone, TaskSummary} from '../domain/workbench';
 import {useNavigate} from 'react-router-dom';
 import {formatEntityId, formatEventTime} from '../domain/activity-presentation';
 import {labelDataMode, labelDisplayValue, labelErrorMessage, labelFreshness, labelNotificationAdapter, labelQuality, labelResourceNote, labelRole} from '../domain/display-labels';
 import {selectCheckpointForTask} from '../domain/checkpoint-projection';
 import {StatusBadge} from '../components/status-badge/StatusBadge';
-import {CapabilitiesSubpage, EmployeeSubpage, MissionSubpage, TaskSubpage} from './SubpagePanels';
+import {EmployeeSubpage, MissionSubpage, TaskSubpage} from './SubpagePanels';
+import {CapabilityCatalogPanel} from './CapabilityCatalogPanel';
 import styles from '../styles/workbench.module.css';
 
 type PageProps = Readonly<{api: WorkbenchApi; companyId: string}>;
@@ -267,12 +268,13 @@ export function SettingsPage({api, companyId}: PageProps) {
   const query = useCompanyOverview(api, companyId);
   const companiesQuery = useCompanyList(api);
   const runtimeQuery = useRuntimeSettings(api, companyId);
+  const catalogQuery = useCapabilityCatalog(api, companyId);
   const [tab, setTab] = useState<'workspace' | 'capabilities'>('workspace');
   const state = renderOverviewState(query, '正在读取工作台设置');
   if (state) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" />{state}</div>;
   const overview = getOverview(query);
   const company = companiesQuery.data?.find(item => item.id === companyId) ?? null;
-  if (tab === 'capabilities') return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={[{id: 'workspace' as const, label: '工作区'}, {id: 'capabilities' as const, label: '能力'}]} /><CapabilitiesSubpage overview={overview} /></div>;
+  if (tab === 'capabilities') return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><TabBar active={tab} onChange={setTab} tabs={[{id: 'workspace' as const, label: '工作区'}, {id: 'capabilities' as const, label: '能力'}]} /><CapabilityCatalogPanel api={api} companyId={companyId} query={catalogQuery} /></div>;
   if (runtimeQuery.isPending) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><div className={styles.emptyState} role="status"><Radio aria-hidden="true" size={18} /><span>正在读取运行时就绪状态</span></div></div>;
   if (runtimeQuery.isError) return <div className={styles.viewStack}><ViewHeader eyebrow="公司 / 设置" title="设置" /><ErrorPanel message={runtimeQuery.error.message} /></div>;
   const runtime = runtimeQuery.data;
